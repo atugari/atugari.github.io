@@ -205,7 +205,7 @@
     const el = document.getElementById(targetId);
     el.innerHTML = '<div class="rank-loading">読み込み中...</div>';
     try {
-      const res = await fetch(`${DB_URL}/rankings.json?orderBy="score"&limitToLast=10`);
+      const res = await fetch(`${DB_URL}/rankings.json`);
       const data = await res.json();
       if (!data) {
         el.innerHTML = '<div class="rank-empty">まだ記録がありません</div>';
