@@ -19,14 +19,12 @@
     .nick-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);padding:24px 20px;margin-bottom:16px;text-align:center;}
     .nick-card h1{font-size:20px;font-weight:500;margin-bottom:6px;}
     .nick-card p{font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.8;}
-    .nick-input{width:100%;font-size:15px;padding:10px 14px;border-radius:var(--rs);border:1px solid var(--border2);background:var(--surface);color:var(--text);margin-bottom:12px;text-align:center;font-family:'Noto Sans JP',sans-serif;}
+    .nick-input{width:100%;font-size:15px;padding:10px 14px;border-radius:var(--rs);border:1px solid var(--border2);background:var(--surface);color:var(--text);margin-bottom:8px;text-align:center;font-family:'Noto Sans JP',sans-serif;}
     .nick-input:focus{outline:none;border-color:var(--blue);}
-
-    /* ランキングタブ */
-    .rank-tabs{display:flex;gap:4px;margin-bottom:0;border-bottom:1px solid var(--border2);}
+    .nick-msg{font-size:12px;margin-bottom:10px;min-height:16px;text-align:center;}
+    .rank-tabs{display:flex;gap:4px;border-bottom:1px solid var(--border2);}
     .rank-tab{flex:1;padding:8px 4px;font-size:12px;text-align:center;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;font-family:'Noto Sans JP',sans-serif;background:none;border-top:none;border-left:none;border-right:none;}
     .rank-tab.active{color:var(--blue);border-bottom:2px solid var(--blue);font-weight:500;}
-
     .game-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
     .stage-info{font-size:12px;color:var(--text2);}
     .stage-val{font-size:15px;font-weight:500;color:var(--text);}
@@ -71,13 +69,13 @@
     .stage-scores{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;}
     .ss-item{background:var(--surface2);border-radius:var(--rs);padding:10px 8px;text-align:center;}
     .ss-label{font-size:11px;color:var(--text3);margin-bottom:3px;}
-    .ss-val{font-family:'DM Mono',monospace;font-size:18px;font-weight:500;color:var(--text);}
+    .ss-val{font-family:'DM Mono',monospace;font-size:16px;font-weight:500;color:var(--text);}
     .total-label{font-size:12px;color:var(--text2);}
     .total-score{font-family:'DM Mono',monospace;font-size:30px;font-weight:500;color:var(--text);margin:6px 0 4px;}
     .ranking-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;margin-bottom:14px;}
     .ranking-header{padding:11px 16px;border-bottom:1px solid var(--border2);font-size:13px;font-weight:500;display:flex;justify-content:space-between;align-items:center;}
     .ranking-refresh{font-size:11px;color:var(--text3);cursor:pointer;background:none;border:none;font-family:'Noto Sans JP',sans-serif;}
-    .ranking-list-wrap{max-height:400px;overflow-y:auto;}
+    .ranking-list-wrap{max-height:500px;overflow-y:auto;}
     .ranking-row{padding:9px 16px;border-bottom:1px solid var(--border2);display:flex;align-items:center;gap:10px;font-size:13px;}
     .ranking-row:last-child{border-bottom:none;}
     .rank-num{font-size:13px;font-weight:500;color:var(--text3);width:28px;flex-shrink:0;text-align:center;}
@@ -87,6 +85,7 @@
     .rank-name.me{color:var(--blue);}
     .rank-date{font-size:10px;color:var(--text3);margin-top:1px;}
     .rank-score{font-family:'DM Mono',monospace;color:var(--text);flex-shrink:0;text-align:right;}
+    .more-btn{display:block;width:100%;padding:12px;text-align:center;font-size:12px;border-top:1px solid var(--border2);background:none;border-left:none;border-right:none;border-bottom:none;cursor:pointer;color:var(--text2);font-family:'Noto Sans JP',sans-serif;}
     .rank-empty,.rank-loading{padding:20px 16px;font-size:12px;color:var(--text3);text-align:center;}
     footer{margin-top:24px;padding-top:16px;border-top:1px solid var(--border2);text-align:center;font-size:11px;color:var(--text3);line-height:2.2;}
     footer a{color:var(--text3);text-decoration:underline;}
@@ -113,23 +112,21 @@
       <h1>丸場所記憶ゲーム</h1>
       <p>Lv.5 → Lv.7 → Lv.10 の順に挑戦！<br>丸が全部消えたら<strong>5秒以内</strong>にタップして答えよう。<br>3ステージの合計スコアでランキングを競おう！</p>
       <input class="nick-input" id="nick-input" type="text" placeholder="ニックネームを入力" maxlength="12">
+      <div class="nick-msg" id="nick-msg"></div>
       <button class="btn primary" onclick="startChallenge()" style="width:100%">チャレンジ開始！</button>
+      <p style="font-size:11px;color:var(--text3);margin-top:10px;line-height:1.7;">※ このゲームはこの端末からのみスコアを更新できます。別の端末からは同じニックネームで上書きできません。</p>
     </div>
     <div class="ranking-card">
-      <div class="ranking-header">
-        ランキング
-        <button class="ranking-refresh" onclick="loadRanking(currentRankTab)">更新</button>
-      </div>
-      <div style="padding:0 0 0 0;">
-        <div class="rank-tabs">
-          <button class="rank-tab active" onclick="switchRankTab('all')">全期間</button>
-          <button class="rank-tab" onclick="switchRankTab('week')">今週</button>
-          <button class="rank-tab" onclick="switchRankTab('day')">今日</button>
-        </div>
+      <div class="ranking-header">ランキング<button class="ranking-refresh" onclick="loadRanking(currentRankTab)">更新</button></div>
+      <div class="rank-tabs">
+        <button class="rank-tab active" onclick="switchRankTab('all')">全期間</button>
+        <button class="rank-tab" onclick="switchRankTab('week')">今週</button>
+        <button class="rank-tab" onclick="switchRankTab('day')">今日</button>
       </div>
       <div class="ranking-list-wrap" id="rank-list-nick"><div class="rank-loading">読み込み中...</div></div>
     </div>
     <footer>
+      <a href="halloffame.html">🏆 殿堂入り</a>　|　
       <a href="privacy.html">プライバシーポリシー</a>　|　
       <a href="guide.html">使い方ガイド</a>　|　
       <a href="faq.html">よくある質問</a>　|　
@@ -185,18 +182,16 @@
       <div id="my-rank-label" style="font-size:13px;color:var(--text3);margin-top:6px;"></div>
     </div>
     <div class="ranking-card">
-      <div class="ranking-header">
-        ランキング
-        <button class="ranking-refresh" onclick="loadRanking(currentRankTab)">更新</button>
-      </div>
-      <div style="padding:0;">
-        <div class="rank-tabs">
-          <button class="rank-tab active" onclick="switchRankTab('all')">全期間</button>
-          <button class="rank-tab" onclick="switchRankTab('week')">今週</button>
-          <button class="rank-tab" onclick="switchRankTab('day')">今日</button>
-        </div>
+      <div class="ranking-header">ランキング<button class="ranking-refresh" onclick="loadRanking(currentRankTab)">更新</button></div>
+      <div class="rank-tabs">
+        <button class="rank-tab active" onclick="switchRankTab('all')">全期間</button>
+        <button class="rank-tab" onclick="switchRankTab('week')">今週</button>
+        <button class="rank-tab" onclick="switchRankTab('day')">今日</button>
       </div>
       <div class="ranking-list-wrap" id="rank-list-result"><div class="rank-loading">読み込み中...</div></div>
+    </div>
+    <div style="text-align:center;margin-bottom:10px;">
+      <a href="halloffame.html" style="font-size:13px;color:var(--text2);text-decoration:none;">🏆 殿堂入りを見る</a>
     </div>
     <div class="btn-row">
       <button class="btn" onclick="goToNick()">🏠 ホームへ戻る</button>
@@ -206,131 +201,191 @@
 </div>
 
 <script>
-  const DB_URL = 'https://ad-game-7b40a-default-rtdb.asia-southeast1.firebasedatabase.app';
-  const ONE_YEAR = 365 * 24 * 60 * 60 * 1000;
-  const ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
-  const ONE_DAY = 24 * 60 * 60 * 1000;
+  const DB_URL='https://ad-game-7b40a-default-rtdb.asia-southeast1.firebasedatabase.app';
+  const ONE_YEAR=365*24*60*60*1000;
+  const ONE_WEEK=7*24*60*60*1000;
+  const ONE_DAY=24*60*60*1000;
 
-  let currentRankTab = 'all';
-  let nickname = '';
+  // 端末IDを生成・保存（一度作ったら変わらない）
+  function getDeviceId() {
+    let id = localStorage.getItem('adgame_device_id');
+    if (!id) {
+      id = 'dev_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,10);
+      localStorage.setItem('adgame_device_id', id);
+    }
+    return id;
+  }
+  const DEVICE_ID = getDeviceId();
 
-  function switchRankTab(tab) {
-    currentRankTab = tab;
-    // 全タブのactiveを外す
-    document.querySelectorAll('.rank-tab').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.rank-tab').forEach(b => {
-      if((tab==='all'&&b.textContent==='全期間')||(tab==='week'&&b.textContent==='今週')||(tab==='day'&&b.textContent==='今日')) b.classList.add('active');
+  let currentRankTab='all', nickname='';
+
+  function fmtDate(ts){
+    if(!ts)return'';
+    const d=new Date(ts);
+    return d.getFullYear()+'/'+(d.getMonth()+1).toString().padStart(2,'0')+'/'+d.getDate().toString().padStart(2,'0')+' '+d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
+  }
+
+  function fmtMan(n){
+    if(n<10000)return n.toLocaleString()+'点';
+    const man=Math.floor(n/10000);
+    const rest=n%10000;
+    return rest>0?man+'万'+rest.toLocaleString()+'点':man+'万点';
+  }
+
+  function switchRankTab(tab){
+    currentRankTab=tab;
+    document.querySelectorAll('.rank-tab').forEach(b=>{
+      b.classList.toggle('active',
+        (tab==='all'&&b.textContent==='全期間')||
+        (tab==='week'&&b.textContent==='今週')||
+        (tab==='day'&&b.textContent==='今日')
+      );
     });
     loadRanking(tab);
   }
 
-  function fmtDate(ts) {
-    if (!ts) return '';
-    const d = new Date(ts);
-    return `${d.getFullYear()}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getDate().toString().padStart(2,'0')} ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
-  }
+  async function saveScore(nick, totalScore, stageScores){
+    try{
+      const now=Date.now();
+      const key=encodeURIComponent(nick.trim().replace(/[.#$[\]/]/g,'_'));
+      const url=DB_URL+'/rankings/'+key+'.json';
+      const res=await fetch(url);
+      const existing=await res.json();
+      const isExpired=existing&&(now-existing.updatedAt)>ONE_YEAR;
 
-  // 万表記（例：53720 → 5万3720点）
-  function fmtMan(n) {
-    if (n < 10000) return n.toLocaleString() + '点';
-    const man = Math.floor(n / 10000);
-    const rest = n % 10000;
-    return rest > 0 ? man + '万' + rest.toLocaleString() + '点' : man + '万点';
-  }
+      // 他の端末のデータは絶対に上書きしない
+      if(existing&&existing.deviceId&&existing.deviceId!==DEVICE_ID){
+        console.log('別端末のデータのため保存スキップ');
+        return;
+      }
 
-  async function saveScore(nick, totalScore, stageScores) {
-    try {
-      const now = Date.now();
-      const key = encodeURIComponent(nick.trim().replace(/[.#$\[\]/]/g, '_'));
-      const url = `${DB_URL}/rankings/${key}.json`;
-      const res = await fetch(url);
-      const existing = await res.json();
-      // 1年以上前のデータはリセット
-      const isExpired = existing && (now - existing.updatedAt) > ONE_YEAR;
-      if (!existing || isExpired || existing.score < totalScore) {
-        await fetch(url, {
-          method: 'PUT',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({
-            name: nick.trim(),
-            score: totalScore,
-            s0: stageScores[0],
-            s1: stageScores[1],
-            s2: stageScores[2],
-            updatedAt: now
+      if(!existing||isExpired||existing.score<totalScore){
+        // 全ランキングを取得して上位0.1%チェック
+        const allRes=await fetch(DB_URL+'/rankings.json');
+        const allData=await allRes.json();
+        let top01since=existing&&!isExpired?existing.top01since:null;
+
+        if(allData){
+          const validEntries=Object.values(allData)
+            .filter(e=>e&&e.score&&(now-e.updatedAt)<=ONE_YEAR)
+            .sort((a,b)=>b.score-a.score);
+          const total=validEntries.length;
+          const threshold=Math.max(1,Math.floor(total*0.001)); // 上位0.1%の人数
+          const myRank=validEntries.filter(e=>e.score>totalScore).length+1;
+          const isTop01=myRank<=threshold||total<1000&&myRank===1; // 1000人未満は1位のみ
+
+          if(isTop01&&!top01since){
+            top01since=now; // 初めて0.1%入り
+          } else if(!isTop01){
+            top01since=null; // 0.1%から外れたらリセット
+          }
+        }
+
+        // 殿堂入りチェック（90日以上0.1%維持）
+        const isHallOfFame=top01since&&(now-top01since)>=90*24*60*60*1000;
+        if(isHallOfFame){
+          // 殿堂入りリストに登録
+          const hofKey=encodeURIComponent(nick.trim().replace(/[.#$[\]/]/g,'_'));
+          const hofRes=await fetch(DB_URL+'/halloffame/'+hofKey+'.json');
+          const hofExisting=await hofRes.json();
+          if(!hofExisting){
+            await fetch(DB_URL+'/halloffame/'+hofKey+'.json',{
+              method:'PUT',
+              headers:{'Content-Type':'application/json'},
+              body:JSON.stringify({
+                name:nick.trim(),
+                score:totalScore,
+                deviceId:DEVICE_ID,
+                since:top01since,
+                inductedAt:now
+              })
+            });
+          }
+        }
+
+        await fetch(url,{
+          method:'PUT',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({
+            name:nick.trim(),
+            score:totalScore,
+            s0:stageScores[0],
+            s1:stageScores[1],
+            s2:stageScores[2],
+            updatedAt:now,
+            deviceId:DEVICE_ID,
+            top01since:top01since||null,
+            hallOfFame:isHallOfFame||false
           })
         });
       }
-    } catch(e) { console.error('保存エラー:', e); }
+    }catch(e){console.error('保存エラー:',e);}
   }
 
-  async function loadRanking(tab) {
-    const targetId = document.getElementById('screen-result').classList.contains('active') ? 'rank-list-result' : 'rank-list-nick';
-    const el = document.getElementById(targetId);
-    el.innerHTML = '<div class="rank-loading">読み込み中...</div>';
-    try {
-      const res = await fetch(`${DB_URL}/rankings.json`);
-      const data = await res.json();
-      if (!data) { el.innerHTML = '<div class="rank-empty">まだ記録がありません</div>'; return; }
-
-      const now = Date.now();
-      let entries = Object.values(data).filter(e => {
-        if (!e || !e.score) return false;
-        // 1年以上前はフィルタ
-        if ((now - e.updatedAt) > ONE_YEAR) return false;
-        if (tab === 'week') return (now - e.updatedAt) <= ONE_WEEK;
-        if (tab === 'day')  return (now - e.updatedAt) <= ONE_DAY;
+  async function loadRanking(tab){
+    const isResult=document.getElementById('screen-result').classList.contains('active');
+    const targetId=isResult?'rank-list-result':'rank-list-nick';
+    const el=document.getElementById(targetId);
+    el.innerHTML='<div class="rank-loading">読み込み中...</div>';
+    try{
+      const res=await fetch(DB_URL+'/rankings.json');
+      const data=await res.json();
+      if(!data){el.innerHTML='<div class="rank-empty">まだ記録がありません</div>';return;}
+      const now=Date.now();
+      let entries=Object.values(data).filter(e=>{
+        if(!e||!e.score)return false;
+        if((now-e.updatedAt)>ONE_YEAR)return false;
+        if(tab==='week')return(now-e.updatedAt)<=ONE_WEEK;
+        if(tab==='day')return(now-e.updatedAt)<=ONE_DAY;
         return true;
       });
+      entries.sort((a,b)=>b.score-a.score);
+      const all100=entries.slice(0,100);
+      const top10=all100.slice(0,10);
+      if(all100.length===0){el.innerHTML='<div class="rank-empty">まだ記録がありません</div>';return;}
 
-      entries.sort((a, b) => b.score - a.score);
-      const all100 = entries.slice(0, 100);
-      const top10 = all100.slice(0, 10);
-
-      if (all100.length === 0) { el.innerHTML = '<div class="rank-empty">まだ記録がありません</div>'; return; }
-
-      function renderRows(list) {
-        el.innerHTML = '';
-        list.forEach((entry, i) => {
-          const row = document.createElement('div');
-          row.className = 'ranking-row';
-          const rc = i===0?'gold':i===1?'silver':i===2?'bronze':'';
-          const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}.`;
-          const isMe = entry.name === nickname;
-          row.innerHTML =
-            `<span class="rank-num ${rc}">${medal}</span>` +
-            `<div class="rank-info">` +
-              `<div class="rank-name${isMe?' me':''}">` + entry.name + (isMe?' ◀ あなた':'') + `</div>` +
-              `<div class="rank-date">` + fmtDate(entry.updatedAt) + `</div>` +
-            `</div>` +
-            `<span class="rank-score">` + entry.score.toLocaleString() + `pt</span>`;
+      function renderRows(list){
+        el.innerHTML='';
+        list.forEach((entry,i)=>{
+          const row=document.createElement('div');
+          row.className='ranking-row';
+          const rc=i===0?'gold':i===1?'silver':i===2?'bronze':'';
+          const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.';
+          const isMe=entry.name===nickname&&entry.deviceId===DEVICE_ID;
+          const hofBadge=entry.hallOfFame?'<span style="font-size:10px;background:#FAC775;color:#412402;padding:1px 5px;border-radius:4px;margin-left:4px;">殿堂</span>':'';
+          row.innerHTML=
+            '<span class="rank-num '+rc+'">'+medal+'</span>'+
+            '<div class="rank-info">'+
+              '<div class="rank-name'+(isMe?' me':'')+'">'+entry.name+hofBadge+(isMe?' ◀ あなた':'')+'</div>'+
+              '<div class="rank-date">'+fmtDate(entry.updatedAt)+'</div>'+
+            '</div>'+
+            '<span class="rank-score">'+entry.score.toLocaleString()+'pt</span>';
           el.appendChild(row);
         });
       }
       renderRows(top10);
-      if (all100.length > 10) {
-        const moreBtn = document.createElement('button');
-        moreBtn.className = 'ranking-refresh';
-        moreBtn.style = 'display:block;width:100%;padding:12px;text-align:center;font-size:12px;border-top:1px solid var(--border2);';
-        moreBtn.textContent = `100位まで表示（全${all100.length}件）`;
-        moreBtn.onclick = () => { renderRows(all100); moreBtn.remove(); };
-        el.appendChild(moreBtn);
+      if(all100.length>10){
+        const btn=document.createElement('button');
+        btn.className='more-btn';
+        btn.textContent='100位まで表示（全'+all100.length+'件）';
+        btn.onclick=()=>{renderRows(all100);btn.remove();};
+        el.appendChild(btn);
       }
-    } catch(e) {
-      el.innerHTML = '<div class="rank-empty">読み込みに失敗しました</div>';
-      console.error('取得エラー:', e);
+    }catch(e){
+      el.innerHTML='<div class="rank-empty">読み込みに失敗しました</div>';
+      console.error(e);
     }
   }
 
   // ゲームロジック
   const STAGE_LEVELS=[5,7,10];
   const LEVEL_CFG={
-    5: {dots:5,  goldMs:400, silverMs:750,  redMs:1200, fadeIn:400},
-    7: {dots:7,  goldMs:280, silverMs:560,  redMs:900,  fadeIn:320},
-    10:{dots:10, goldMs:130, silverMs:270,  redMs:460,  fadeIn:190},
+    5:{dots:5, goldMs:400,silverMs:750, redMs:1200,fadeIn:400},
+    7:{dots:7, goldMs:280,silverMs:560, redMs:900, fadeIn:320},
+    10:{dots:10,goldMs:130,silverMs:270,redMs:460, fadeIn:190},
   };
   const POINTS={gold:3000,silver:2000,red:1000};
-  const TIME_LIMIT=5000, TICK=50;
+  const TIME_LIMIT=5000,TICK=50;
 
   let stageIdx=0,stageScores=[0,0,0],totalScore=0;
   let phase='idle',correctCells=[],selectedCells=[],dotMap={};
@@ -342,21 +397,37 @@
   function getCfg(){return LEVEL_CFG[STAGE_LEVELS[stageIdx]];}
   function randomTypes(n){const p=['gold','silver','red'];return Array.from({length:n},()=>p[Math.floor(Math.random()*p.length)]);}
 
-  function confirmRestart() {
-    if (confirm('最初からやり直しますか？\n現在のスコアはリセットされます。')) {
-      clearInterval(timerInterval);
-      goToNick();
-    }
-  }
-
-  function startChallenge(){
+  async function startChallenge(){
     const val=document.getElementById('nick-input').value.trim();
-    if(!val){alert('ニックネームを入力してください');return;}
-    nickname=val;stageIdx=0;stageScores=[0,0,0];totalScore=0;
+    const msgEl=document.getElementById('nick-msg');
+    if(!val){msgEl.textContent='ニックネームを入力してください';msgEl.style.color='var(--accent)';return;}
+    msgEl.textContent='確認中...';msgEl.style.color='var(--text3)';
+
+    // 既存データの端末IDをチェック
+    try{
+      const key=encodeURIComponent(val.replace(/[.#$[\]/]/g,'_'));
+      const res=await fetch(DB_URL+'/rankings/'+key+'.json');
+      const existing=await res.json();
+      const now=Date.now();
+      const isExpired=existing&&(now-existing.updatedAt)>ONE_YEAR;
+      if(existing&&!isExpired&&existing.deviceId&&existing.deviceId!==DEVICE_ID){
+        msgEl.textContent='このニックネームは別の端末で使用中です。別の名前を使ってください。';
+        msgEl.style.color='var(--accent)';
+        return;
+      }
+      msgEl.textContent=existing&&!isExpired?'ようこそ！スコアを更新しよう！':'新規登録します';
+      msgEl.style.color='var(--green)';
+    }catch(e){
+      msgEl.textContent='';
+    }
+
+    nickname=val;
+    localStorage.setItem('adgame_nick',val);
+    stageIdx=0;stageScores=[0,0,0];totalScore=0;
     updateProgress();showScreen('screen-game');
     document.getElementById('total-score-disp').textContent='0';
     document.getElementById('stage-score-disp').textContent='0';
-    document.getElementById('stage-label').textContent=`1/3 (Lv.${STAGE_LEVELS[0]})`;
+    document.getElementById('stage-label').textContent='1/3 (Lv.'+STAGE_LEVELS[0]+')';
     document.getElementById('start-btn').textContent='スタート！';
     document.getElementById('start-btn').disabled=false;
     document.getElementById('answer-btn').disabled=true;
@@ -364,6 +435,12 @@
     document.getElementById('timer-text').textContent='';
     setMsg('スタートを押してください');
     buildGrid();
+  }
+
+  function confirmRestart(){
+    if(confirm('最初からやり直しますか？\n現在のスコアはリセットされます。')){
+      clearInterval(timerInterval);goToNick();
+    }
   }
 
   function updateProgress(){
@@ -383,17 +460,16 @@
       c.appendChild(d);g.appendChild(c);
     }
   }
-  function getCell(i){return document.querySelector(`.cell[data-idx="${i}"]`);}
+  function getCell(i){return document.querySelector('.cell[data-idx="'+i+'"]');}
   function getDot(i){return document.getElementById('dot-'+i);}
   function updateSelCount(){
     const el=document.getElementById('sel-count');
     if(phase!=='answering'){el.textContent='';return;}
-    el.textContent=`選択中: ${selectedCells.length} / ${getCfg().dots} 個`;
+    el.textContent='選択中: '+selectedCells.length+' / '+getCfg().dots+' 個';
   }
 
   function startTimer(){
-    let timeLeft=TIME_LIMIT;
-    timeRemaining=timeLeft;
+    let timeLeft=TIME_LIMIT;timeRemaining=timeLeft;
     const bar=document.getElementById('timer-bar');
     const txt=document.getElementById('timer-text');
     document.getElementById('timer-wrap').style.display='block';
@@ -401,10 +477,10 @@
     bar.className='timer-bar';txt.className='timer-text';
     clearInterval(timerInterval);
     timerInterval=setInterval(()=>{
-      timeLeft-=TICK; timeRemaining=timeLeft;
+      timeLeft-=TICK;timeRemaining=timeLeft;
       const pct=Math.max(0,timeLeft/TIME_LIMIT*100);
       bar.style.transition='width 0.05s linear';bar.style.width=pct+'%';
-      txt.textContent=`残り ${(timeLeft/1000).toFixed(1)} 秒`;
+      txt.textContent='残り '+(timeLeft/1000).toFixed(1)+' 秒';
       if(pct<=33){bar.className='timer-bar danger';txt.className='timer-text danger';}
       if(timeLeft<=0){clearInterval(timerInterval);phase='timeout';setMsg('時間切れ！','fail');submitAnswer(true);}
     },TICK);
@@ -442,20 +518,17 @@
       setTimeout(()=>{
         const dot=getDot(pos);dot.className='dot '+color;
         requestAnimationFrame(()=>requestAnimationFrame(()=>{
-          dot.style.transition=`opacity ${FADE}ms ease-in-out`;dot.style.opacity='1';
+          dot.style.transition='opacity '+FADE+'ms ease-in-out';dot.style.opacity='1';
         }));
-        setTimeout(()=>{dot.style.transition=`opacity ${FADE}ms ease-in-out`;dot.style.opacity='0';},FADE+dur);
+        setTimeout(()=>{dot.style.transition='opacity '+FADE+'ms ease-in-out';dot.style.opacity='0';},FADE+dur);
       },delay);
     });
-    setTimeout(()=>{
-      document.getElementById('grid').classList.remove('locked');
-      enterAnswerPhase();
-    },lastFinish+150);
+    setTimeout(()=>{document.getElementById('grid').classList.remove('locked');enterAnswerPhase();},lastFinish+150);
   }
 
   function enterAnswerPhase(){
     phase='answering';
-    setMsg(`⚡ 今すぐ！${getCfg().dots}個を5秒以内にタップ！`,'info');
+    setMsg('⚡ 今すぐ！'+getCfg().dots+'個を5秒以内にタップ！','info');
     document.getElementById('answer-btn').disabled=false;
     updateSelCount();startTimer();
   }
@@ -465,10 +538,10 @@
     const cfg=getCfg(),cell=getCell(idx);
     if(selectedCells.includes(idx)){
       selectedCells=selectedCells.filter(i=>i!==idx);cell.classList.remove('selected');
-    } else {
+    }else{
       if(selectedCells.length>=cfg.dots){
-        setMsg(`選べるのは${cfg.dots}個まで！`,'fail');
-        setTimeout(()=>setMsg(`⚡ 今すぐ！${cfg.dots}個を5秒以内にタップ！`,'info'),800);
+        setMsg('選べるのは'+cfg.dots+'個まで！','fail');
+        setTimeout(()=>setMsg('⚡ 今すぐ！'+cfg.dots+'個を5秒以内にタップ！','info'),800);
         return;
       }
       selectedCells.push(idx);cell.classList.add('selected');
@@ -497,9 +570,8 @@
     const wrong=selectedCells.filter(i=>!correctCells.includes(i)).length;
     const cfg=getCfg();
 
-    // 全問正解かつミスなしのとき余り時間ボーナス（1点単位）
     let timeBonus=0;
-    if(!isTimeout && correct===cfg.dots && wrong===0){
+    if(!isTimeout&&correct===cfg.dots&&wrong===0){
       timeBonus=Math.max(0,Math.floor(timeRemaining/5));
       stageGain+=timeBonus;
     }
@@ -511,21 +583,21 @@
 
     if(isTimeout&&correct===0){setMsg('時間切れ！0点…','fail');}
     else if(correct===cfg.dots&&wrong===0){
-      const bonusMsg=timeBonus>0?` ⚡+${timeBonus.toLocaleString()}pt`:'';
-      setMsg(`完璧！ +${stageGain.toLocaleString()}点${bonusMsg}`,'success');
+      const bonusMsg=timeBonus>0?' ⚡+'+timeBonus.toLocaleString()+'pt':'';
+      setMsg('完璧！ +'+stageGain.toLocaleString()+'点'+bonusMsg,'success');
     }
-    else{setMsg(`${correct}/${cfg.dots}個正解。+${stageGain.toLocaleString()}点`,stageGain>0?'':'fail');}
+    else{setMsg(correct+'/'+cfg.dots+'個正解。+'+stageGain.toLocaleString()+'点',stageGain>0?'':'fail');}
 
     setTimeout(()=>{
       stageIdx++;
       if(stageIdx<3){
         updateProgress();
-        document.getElementById('stage-label').textContent=`${stageIdx+1}/3 (Lv.${STAGE_LEVELS[stageIdx]})`;
-        document.getElementById('start-btn').textContent=`次のステージへ (Lv.${STAGE_LEVELS[stageIdx]})`;
+        document.getElementById('stage-label').textContent=(stageIdx+1)+'/3 (Lv.'+STAGE_LEVELS[stageIdx]+')';
+        document.getElementById('start-btn').textContent='次のステージへ (Lv.'+STAGE_LEVELS[stageIdx]+')';
         document.getElementById('start-btn').disabled=false;
-        setMsg(`次はLv.${STAGE_LEVELS[stageIdx]}！準備ができたらスタート`,'info');
+        setMsg('次はLv.'+STAGE_LEVELS[stageIdx]+'！準備ができたらスタート','info');
         buildGrid();
-      } else {finishChallenge();}
+      }else{finishChallenge();}
     },1800);
   }
 
@@ -535,31 +607,53 @@
     document.getElementById('rs2').textContent=fmtMan(stageScores[2]);
     document.getElementById('final-score').textContent=fmtMan(totalScore);
     showScreen('screen-result');
-    await saveScore(nickname, totalScore, stageScores);
-    // 自分の順位を計算して表示
-    try {
-      const res = await fetch(DB_URL + '/rankings.json');
-      const data = await res.json();
-      if (data) {
-        const now = Date.now();
-        const entries = Object.values(data)
-          .filter(e => e && e.score && (now - e.updatedAt) <= ONE_YEAR)
-          .sort((a, b) => b.score - a.score);
-        const myRank = entries.findIndex(e => e.name === nickname) + 1;
-        const total = entries.length;
-        const el = document.getElementById('my-rank-label');
-        if (myRank > 0) {
-          el.textContent = '全期間ランキング ' + myRank + '位 / ' + total + '人中';
-          el.style.color = myRank <= 3 ? '#D4A017' : 'var(--text3)';
+    await saveScore(nickname,totalScore,stageScores);
+
+    // 自分の順位を表示
+    try{
+      const res=await fetch(DB_URL+'/rankings.json');
+      const data=await res.json();
+      if(data){
+        const now=Date.now();
+        const entries=Object.values(data)
+          .filter(e=>e&&e.score&&(now-e.updatedAt)<=ONE_YEAR)
+          .sort((a,b)=>b.score-a.score);
+        const myRank=entries.findIndex(e=>e.name===nickname&&e.deviceId===DEVICE_ID)+1;
+        const total=entries.length;
+        const el=document.getElementById('my-rank-label');
+        if(myRank>0){
+          el.textContent='全期間ランキング '+myRank+'位 / '+total+'人中';
+          el.style.color=myRank<=3?'#D4A017':'var(--text3)';
         }
       }
-    } catch(e) {}
+    }catch(e){}
+
     loadRanking(currentRankTab);
   }
 
   function goToNick(){
     showScreen('screen-nick');
     loadRanking(currentRankTab);
+  }
+
+  // 起動時に前回のニックネームを復元
+  const savedNick=localStorage.getItem('adgame_nick');
+  const lastChangeStr=localStorage.getItem('adgame_nick_changed');
+  const lastChange=lastChangeStr?parseInt(lastChangeStr):0;
+  const CHANGE_LIMIT=30*24*60*60*1000;
+  if(savedNick){
+    document.getElementById('nick-input').value=savedNick;
+    const daysSince=Math.floor((Date.now()-lastChange)/(24*60*60*1000));
+    const daysLeft=30-daysSince;
+    if(Date.now()-lastChange<CHANGE_LIMIT){
+      document.getElementById('nick-msg').textContent='ニックネームはあと'+daysLeft+'日後に変更できます';
+      document.getElementById('nick-msg').style.color='var(--text3)';
+      document.getElementById('nick-input').readOnly=true;
+      document.getElementById('nick-input').style.opacity='0.6';
+    } else {
+      document.getElementById('nick-msg').textContent='前回のニックネームを復元しました（変更可能）';
+      document.getElementById('nick-msg').style.color='var(--text3)';
+    }
   }
 
   loadRanking('all');
