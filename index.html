@@ -182,6 +182,7 @@
       </div>
       <div class="total-label">合計スコア</div>
       <div class="total-score" id="final-score">0</div>
+      <div id="my-rank-label" style="font-size:13px;color:var(--text3);margin-top:6px;"></div>
     </div>
     <div class="ranking-card">
       <div class="ranking-header">
@@ -198,6 +199,7 @@
       <div class="ranking-list-wrap" id="rank-list-result"><div class="rank-loading">読み込み中...</div></div>
     </div>
     <div class="btn-row">
+      <button class="btn" onclick="goToNick()">🏠 ホームへ戻る</button>
       <button class="btn primary" onclick="goToNick()">もう一度挑戦！</button>
     </div>
   </div>
@@ -226,6 +228,14 @@
     if (!ts) return '';
     const d = new Date(ts);
     return `${d.getFullYear()}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getDate().toString().padStart(2,'0')} ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
+  }
+
+  // 万表記（例：53720 → 5万3720点）
+  function fmtMan(n) {
+    if (n < 10000) return n.toLocaleString() + '点';
+    const man = Math.floor(n / 10000);
+    const rest = n % 10000;
+    return rest > 0 ? man + '万' + rest.toLocaleString() + '点' : man + '万点';
   }
 
   async function saveScore(nick, totalScore, stageScores) {
@@ -274,26 +284,38 @@
       });
 
       entries.sort((a, b) => b.score - a.score);
-      entries = entries.slice(0, 100); // 最大100位
+      const all100 = entries.slice(0, 100);
+      const top10 = all100.slice(0, 10);
 
-      if (entries.length === 0) { el.innerHTML = '<div class="rank-empty">まだ記録がありません</div>'; return; }
+      if (all100.length === 0) { el.innerHTML = '<div class="rank-empty">まだ記録がありません</div>'; return; }
 
-      el.innerHTML = '';
-      entries.forEach((entry, i) => {
-        const row = document.createElement('div');
-        row.className = 'ranking-row';
-        const rc = i===0?'gold':i===1?'silver':i===2?'bronze':'';
-        const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}.`;
-        const isMe = entry.name === nickname;
-        row.innerHTML =
-          `<span class="rank-num ${rc}">${medal}</span>` +
-          `<div class="rank-info">` +
-            `<div class="rank-name${isMe?' me':''}">${entry.name}${isMe?' ◀ あなた':''}</div>` +
-            `<div class="rank-date">${fmtDate(entry.updatedAt)}</div>` +
-          `</div>` +
-          `<span class="rank-score">${entry.score.toLocaleString()}pt</span>`;
-        el.appendChild(row);
-      });
+      function renderRows(list) {
+        el.innerHTML = '';
+        list.forEach((entry, i) => {
+          const row = document.createElement('div');
+          row.className = 'ranking-row';
+          const rc = i===0?'gold':i===1?'silver':i===2?'bronze':'';
+          const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}.`;
+          const isMe = entry.name === nickname;
+          row.innerHTML =
+            `<span class="rank-num ${rc}">${medal}</span>` +
+            `<div class="rank-info">` +
+              `<div class="rank-name${isMe?' me':''}">` + entry.name + (isMe?' ◀ あなた':'') + `</div>` +
+              `<div class="rank-date">` + fmtDate(entry.updatedAt) + `</div>` +
+            `</div>` +
+            `<span class="rank-score">` + entry.score.toLocaleString() + `pt</span>`;
+          el.appendChild(row);
+        });
+      }
+      renderRows(top10);
+      if (all100.length > 10) {
+        const moreBtn = document.createElement('button');
+        moreBtn.className = 'ranking-refresh';
+        moreBtn.style = 'display:block;width:100%;padding:12px;text-align:center;font-size:12px;border-top:1px solid var(--border2);';
+        moreBtn.textContent = `100位まで表示（全${all100.length}件）`;
+        moreBtn.onclick = () => { renderRows(all100); moreBtn.remove(); };
+        el.appendChild(moreBtn);
+      }
     } catch(e) {
       el.innerHTML = '<div class="rank-empty">読み込みに失敗しました</div>';
       console.error('取得エラー:', e);
@@ -508,12 +530,30 @@
   }
 
   async function finishChallenge(){
-    document.getElementById('rs0').textContent=stageScores[0].toLocaleString();
-    document.getElementById('rs1').textContent=stageScores[1].toLocaleString();
-    document.getElementById('rs2').textContent=stageScores[2].toLocaleString();
-    document.getElementById('final-score').textContent=totalScore.toLocaleString();
+    document.getElementById('rs0').textContent=fmtMan(stageScores[0]);
+    document.getElementById('rs1').textContent=fmtMan(stageScores[1]);
+    document.getElementById('rs2').textContent=fmtMan(stageScores[2]);
+    document.getElementById('final-score').textContent=fmtMan(totalScore);
     showScreen('screen-result');
     await saveScore(nickname, totalScore, stageScores);
+    // 自分の順位を計算して表示
+    try {
+      const res = await fetch(DB_URL + '/rankings.json');
+      const data = await res.json();
+      if (data) {
+        const now = Date.now();
+        const entries = Object.values(data)
+          .filter(e => e && e.score && (now - e.updatedAt) <= ONE_YEAR)
+          .sort((a, b) => b.score - a.score);
+        const myRank = entries.findIndex(e => e.name === nickname) + 1;
+        const total = entries.length;
+        const el = document.getElementById('my-rank-label');
+        if (myRank > 0) {
+          el.textContent = '全期間ランキング ' + myRank + '位 / ' + total + '人中';
+          el.style.color = myRank <= 3 ? '#D4A017' : 'var(--text3)';
+        }
+      }
+    } catch(e) {}
     loadRanking(currentRankTab);
   }
 
