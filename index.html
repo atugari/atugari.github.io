@@ -39,7 +39,7 @@
     .timer-text{font-family:'DM Mono',monospace;text-align:center;font-size:12px;font-weight:500;margin-bottom:6px;min-height:18px;color:var(--text2);}
     .timer-text.danger{color:var(--accent);}
     .msg{text-align:center;font-size:13px;color:var(--text2);min-height:20px;margin-bottom:10px;}
-    .msg.success{color:var(--green);} .msg.fail{color:var(--accent);} .msg.info{color:var(--blue);} .msg.watch{color:var(--accent);font-weight:500;} .grid.locked{pointer-events:none;opacity:0.65;} .grid.locked .cell{cursor:default;}
+    .msg.success{color:var(--green);} .msg.fail{color:var(--accent);} .msg.info{color:var(--blue);} .msg.watch{color:var(--accent);font-weight:500;}
     .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px;}
     .cell{aspect-ratio:1;border-radius:var(--rs);background:var(--surface2);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background 0.1s;}
     .cell:hover{background:var(--surface);} .cell:active{transform:scale(0.95);}
@@ -47,6 +47,7 @@
     .cell.correct{border:2px solid var(--green) !important;background:rgba(29,158,117,0.08);}
     .cell.wrong{border:2px solid var(--accent) !important;background:rgba(216,90,48,0.08);}
     .cell.missed{border:2px dashed var(--accent) !important;}
+    .grid.locked{pointer-events:none;opacity:0.65;} .grid.locked .cell{cursor:default;}
     .dot{width:50%;height:50%;border-radius:50%;pointer-events:none;opacity:0;}
     .dot.gold{background:radial-gradient(circle at 35% 35%,#FFE066,#D4A017);}
     .dot.silver{background:radial-gradient(circle at 35% 35%,#E8E8E8,#9A9A9A);}
@@ -99,7 +100,6 @@
     広告審査通過後にここに表示されます
   </div>
 
-  <!-- ニックネーム画面 -->
   <div class="screen active" id="screen-nick">
     <div class="nick-card">
       <h1>広告記憶ゲーム</h1>
@@ -120,7 +120,6 @@
     </footer>
   </div>
 
-  <!-- ゲーム画面 -->
   <div class="screen" id="screen-game">
     <div class="game-header">
       <div class="stage-info">ステージ<br><span class="stage-val" id="stage-label">1/3</span></div>
@@ -150,7 +149,6 @@
     </div>
   </div>
 
-  <!-- 結果画面 -->
   <div class="screen" id="screen-result">
     <div class="result-card">
       <h2>チャレンジ完了！</h2>
@@ -172,77 +170,68 @@
   </div>
 </div>
 
-<!-- Firebase SDK -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-  import { getFirestore, doc, setDoc, getDoc, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyCwIH0lXYNVYbcpmEDGXRRPxRueyOD0XoU",
-    authDomain: "ad-game-7b40a.firebaseapp.com",
-    projectId: "ad-game-7b40a",
-    storageBucket: "ad-game-7b40a.firebasestorage.app",
-    messagingSenderId: "5960938874",
-    appId: "1:5960938874:web:0fac17704f74f5f0f512c3"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+<script>
+  // Realtime Database URL
+  const DB_URL = 'https://ad-game-7b40a-default-rtdb.asia-southeast1.firebasedatabase.app';
 
   // ランキング保存
-  window.saveScoreToFirebase = async function(nickname, totalScore, stageScores) {
+  async function saveScore(nickname, totalScore, stageScores) {
     try {
-      const key = nickname.trim().replace(/\s/g, '_');
-      const ref = doc(db, 'rankings', key);
-      const existing = await getDoc(ref);
-      if (!existing.exists() || existing.data().score < totalScore) {
-        await setDoc(ref, {
-          name: nickname,
+      const key = encodeURIComponent(nickname.trim().replace(/[.#$\[\]]/g, '_'));
+      const url = `${DB_URL}/rankings/${key}.json`;
+      // 既存スコアを取得
+      const res = await fetch(url);
+      const existing = await res.json();
+      if (existing && existing.score >= totalScore) return; // 自己ベスト以下なら保存しない
+      await fetch(url, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          name: nickname.trim(),
           score: totalScore,
           s0: stageScores[0],
           s1: stageScores[1],
           s2: stageScores[2],
           updatedAt: Date.now()
-        });
-      }
+        })
+      });
     } catch(e) {
-      console.error('スコア保存エラー:', e);
+      console.error('保存エラー:', e);
     }
-  };
+  }
 
   // ランキング取得
-  window.loadRankingFromFirebase = async function(targetId, myNickname) {
+  async function loadRanking(targetId) {
     const el = document.getElementById(targetId);
     el.innerHTML = '<div class="rank-loading">読み込み中...</div>';
     try {
-      const q = query(collection(db, 'rankings'), orderBy('score', 'desc'), limit(10));
-      const snapshot = await getDocs(q);
-      if (snapshot.empty) {
+      const res = await fetch(`${DB_URL}/rankings.json?orderBy="score"&limitToLast=10`);
+      const data = await res.json();
+      if (!data) {
+        el.innerHTML = '<div class="rank-empty">まだ記録がありません</div>';
+        return;
+      }
+      const entries = Object.values(data).sort((a, b) => b.score - a.score).slice(0, 10);
+      if (entries.length === 0) {
         el.innerHTML = '<div class="rank-empty">まだ記録がありません</div>';
         return;
       }
       el.innerHTML = '';
-      snapshot.docs.forEach((docSnap, i) => {
-        const entry = docSnap.data();
+      entries.forEach((entry, i) => {
         const row = document.createElement('div');
         row.className = 'ranking-row';
         const rc = i===0?'gold':i===1?'silver':i===2?'bronze':'';
         const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.';
-        const isMe = entry.name === myNickname;
+        const isMe = entry.name === nickname;
         row.innerHTML = `<span class="rank-num ${rc}">${medal}</span><span class="rank-name${isMe?' me':''}">${entry.name}${isMe?' ◀ あなた':''}</span><span class="rank-score">${entry.score.toLocaleString()}pt</span>`;
         el.appendChild(row);
       });
     } catch(e) {
       el.innerHTML = '<div class="rank-empty">読み込みに失敗しました</div>';
-      console.error('ランキング取得エラー:', e);
+      console.error('取得エラー:', e);
     }
-  };
+  }
 
-  // 初期ロード
-  window.loadRankingFromFirebase('rank-list-nick', '');
-</script>
-
-<script>
   const STAGE_LEVELS=[5,7,10];
   const LEVEL_CFG={
     5: {dots:5,  goldMs:400, silverMs:750,  redMs:1200, fadeIn:400},
@@ -261,10 +250,6 @@
   function setMsg(t,c=''){const el=document.getElementById('game-msg');el.textContent=t;el.className='msg'+(c?' '+c:'');}
   function getCfg(){return LEVEL_CFG[STAGE_LEVELS[stageIdx]];}
   function randomTypes(n){const p=['gold','silver','red'];return Array.from({length:n},()=>p[Math.floor(Math.random()*p.length)]);}
-
-  function loadRanking(targetId){
-    if(window.loadRankingFromFirebase) window.loadRankingFromFirebase(targetId, nickname);
-  }
 
   function startChallenge(){
     const val=document.getElementById('nick-input').value.trim();
@@ -335,7 +320,10 @@
     document.getElementById('answer-btn').disabled=true;
     document.getElementById('sel-count').textContent='';
     document.getElementById('stage-score-disp').textContent='0';
-    stopTimer();setMsg('👁 よく見て覚えよう！タップはまだダメ！','watch');buildGrid();document.getElementById('grid').classList.add('locked');
+    stopTimer();
+    setMsg('👁 よく見て覚えよう！タップはまだダメ！','watch');
+    buildGrid();
+    document.getElementById('grid').classList.add('locked');
 
     const cfg=getCfg(),FADE=cfg.fadeIn;
     const positions=shuffle([...Array(16).keys()]).slice(0,cfg.dots);
@@ -358,7 +346,10 @@
         setTimeout(()=>{dot.style.transition=`opacity ${FADE}ms ease-in-out`;dot.style.opacity='0';},FADE+dur);
       },delay);
     });
-    setTimeout(()=>{document.getElementById('grid').classList.remove('locked');enterAnswerPhase();},lastFinish+150);
+    setTimeout(()=>{
+      document.getElementById('grid').classList.remove('locked');
+      enterAnswerPhase();
+    },lastFinish+150);
   }
 
   function enterAnswerPhase(){
@@ -433,7 +424,7 @@
     document.getElementById('rs2').textContent=stageScores[2].toLocaleString();
     document.getElementById('final-score').textContent=totalScore.toLocaleString();
     showScreen('screen-result');
-    if(window.saveScoreToFirebase) await window.saveScoreToFirebase(nickname, totalScore, stageScores);
+    await saveScore(nickname, totalScore, stageScores);
     loadRanking('rank-list-result');
   }
 
@@ -441,6 +432,9 @@
     showScreen('screen-nick');
     loadRanking('rank-list-nick');
   }
+
+  // 初期ロード
+  loadRanking('rank-list-nick');
 </script>
 </body>
 </html>
