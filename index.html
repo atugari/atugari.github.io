@@ -108,8 +108,19 @@
     .title-name{font-size:13px;font-weight:500;color:var(--text);}
     .title-date{font-size:10px;color:var(--text3);margin-top:1px;}
     .titles-empty{padding:16px;font-size:12px;color:var(--text3);text-align:center;}
-    /* 表示切替ボタン */
-    #toggle-sections-btn{width:100%;margin-bottom:12px;padding:8px;font-size:12px;color:var(--text3);background:var(--surface);border:1px solid var(--border2);border-radius:var(--rs);cursor:pointer;font-family:'Noto Sans JP',sans-serif;display:none;}
+    /* 表示設定パネル */
+    .disp-settings{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;margin-bottom:16px;}
+    .disp-settings-hd{padding:10px 16px;border-bottom:1px solid var(--border2);font-size:12px;font-weight:500;color:var(--text2);display:flex;align-items:center;gap:6px;}
+    .disp-row{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border2);}
+    .disp-row:last-child{border-bottom:none;}
+    .disp-label{font-size:13px;color:var(--text);}
+    /* トグルスイッチ */
+    .toggle-wrap{position:relative;width:38px;height:22px;flex-shrink:0;}
+    .toggle-wrap input{opacity:0;width:0;height:0;position:absolute;}
+    .toggle-track{display:block;width:38px;height:22px;background:var(--surface2);border:1px solid var(--border2);border-radius:11px;cursor:pointer;transition:background 0.2s,border-color 0.2s;}
+    .toggle-wrap input:checked + .toggle-track{background:var(--green);border-color:var(--green);}
+    .toggle-thumb{position:absolute;top:3px;left:3px;width:16px;height:16px;background:#fff;border-radius:50%;transition:transform 0.2s;pointer-events:none;box-shadow:0 1px 3px rgba(0,0,0,0.15);}
+    .toggle-wrap input:checked ~ .toggle-thumb{transform:translateX(16px);}
   </style>
 </head>
 <body>
@@ -121,7 +132,7 @@
   <div class="toast-desc" id="toast-desc"></div>
 </div>
 <div class="app">
-  <div class="ad-label">広 告</div>
+  <div class="ad-label" id="ad-label-wrap">広 告</div>
   <div class="adsense-slot" id="ad-slot">
     <!-- AdSense審査通過後、このコメントをinsタグに置き換える
     <ins class="adsbygoogle" style="display:block"
@@ -137,6 +148,43 @@
   <!-- ニックネーム画面 -->
   <div class="screen active" id="screen-nick">
 
+    <!-- 表示設定パネル -->
+    <div class="disp-settings" id="disp-settings-panel">
+      <div class="disp-settings-hd">⚙️ ホームの表示設定</div>
+      <div class="disp-row">
+        <span class="disp-label">📢 バナー広告</span>
+        <label class="toggle-wrap">
+          <input type="checkbox" id="tog-ad" onchange="applyDispSettings()">
+          <span class="toggle-track"></span>
+          <span class="toggle-thumb"></span>
+        </label>
+      </div>
+      <div class="disp-row">
+        <span class="disp-label">🏆 月間等ランキング</span>
+        <label class="toggle-wrap">
+          <input type="checkbox" id="tog-banner" onchange="applyDispSettings()">
+          <span class="toggle-track"></span>
+          <span class="toggle-thumb"></span>
+        </label>
+      </div>
+      <div class="disp-row">
+        <span class="disp-label">🎖️ 最近入手した称号</span>
+        <label class="toggle-wrap">
+          <input type="checkbox" id="tog-titles" onchange="applyDispSettings()">
+          <span class="toggle-track"></span>
+          <span class="toggle-thumb"></span>
+        </label>
+      </div>
+      <div class="disp-row">
+        <span class="disp-label">🎮 ゲームカード</span>
+        <label class="toggle-wrap">
+          <input type="checkbox" id="tog-game" onchange="applyDispSettings()">
+          <span class="toggle-track"></span>
+          <span class="toggle-thumb"></span>
+        </label>
+      </div>
+    </div>
+
     <!-- 月間ランキングバナー -->
     <div id="monthly-banner" style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;margin-bottom:16px;">
       <div style="background:linear-gradient(135deg,#1D9E75,#0F6E56);padding:14px 16px;display:flex;justify-content:space-between;align-items:center;">
@@ -144,7 +192,6 @@
           <div style="font-size:11px;color:rgba(255,255,255,0.75);margin-bottom:2px;">🏆 今月のランキング</div>
           <div style="font-size:16px;font-weight:500;color:#fff;" id="banner-month-label"></div>
         </div>
-        <button onclick="hideSections()" style="font-size:11px;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);border:none;border-radius:var(--rs);padding:4px 10px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;">非表示</button>
       </div>
       <div class="rank-tabs" style="border-bottom:1px solid var(--border2);">
         <button class="rank-tab active" id="banner-tab-month" onclick="switchBannerTab('month')">今月</button>
@@ -166,9 +213,8 @@
       </div>
     </div>
 
-    <!-- 表示切替ボタン（非表示時に表示） -->
-    <button id="toggle-sections-btn" onclick="showSections()">📋 ランキング・称号を表示する</button>
-
+    <!-- ゲームカード -->
+    <div id="nick-card-wrap">
     <div class="nick-card">
       <h1>丸場所記憶ゲーム</h1>
       <p>Lv.5 → Lv.7 → Lv.10 の順に挑戦！<br>丸が全部消えたら<strong>5秒以内</strong>にタップして答えよう。<br>3ステージの合計スコアでランキングを競おう！</p>
@@ -176,6 +222,7 @@
       <div class="nick-msg" id="nick-msg"></div>
       <button class="btn primary" onclick="startChallenge()" style="width:100%">チャレンジ開始！</button>
       <p style="font-size:11px;color:var(--text3);margin-top:10px;line-height:1.7;">※ このゲームはこの端末からのみスコアを更新できます。別の端末からは同じニックネームで上書きできません。</p>
+    </div>
     </div>
     <footer>
       <span class="disabled-link">🏆 殿堂入り</span>　|　
@@ -748,23 +795,58 @@
     return now.getFullYear() + '年' + (now.getMonth()+1) + '月';
   }
 
-  function hideSections() {
-    document.getElementById('monthly-banner').style.display = 'none';
-    document.getElementById('titles-section').style.display = 'none';
-    document.getElementById('toggle-sections-btn').style.display = 'block';
-    localStorage.setItem('adgame_sections_hidden', '1');
+  // ===== 表示設定 =====
+  // キー: adgame_disp  値: {ad,banner,titles,game}  すべてtrue=表示
+  function getDispSettings() {
+    try {
+      const s = JSON.parse(localStorage.getItem('adgame_disp') || '{}');
+      return {
+        ad:     s.ad     !== false,
+        banner: s.banner !== false,
+        titles: s.titles !== false,
+        game:   s.game   !== false,
+      };
+    } catch(e) {
+      return { ad:true, banner:true, titles:true, game:true };
+    }
   }
 
-  function showSections() {
-    document.getElementById('monthly-banner').style.display = 'block';
-    document.getElementById('titles-section').style.display = 'block';
-    document.getElementById('toggle-sections-btn').style.display = 'none';
-    localStorage.removeItem('adgame_sections_hidden');
-    loadBannerRanking(currentBannerTab);
+  function applyDispSettings() {
+    // トグルの現在値を読む
+    const s = {
+      ad:     document.getElementById('tog-ad').checked,
+      banner: document.getElementById('tog-banner').checked,
+      titles: document.getElementById('tog-titles').checked,
+      game:   document.getElementById('tog-game').checked,
+    };
+    localStorage.setItem('adgame_disp', JSON.stringify(s));
+
+    const show = (id, visible) => {
+      const el = document.getElementById(id);
+      if(el) el.style.display = visible ? '' : 'none';
+    };
+    show('ad-label-wrap',   s.ad);
+    show('ad-slot',         s.ad);
+    show('monthly-banner',  s.banner);
+    show('titles-section',  s.titles);
+    show('nick-card-wrap',  s.game);
+
+    if(s.banner) loadBannerRanking(currentBannerTab);
+    if(s.titles) renderHomeTitles();
   }
 
-  // 後方互換：古いキーも消す
+  function initDispSettings() {
+    const s = getDispSettings();
+    document.getElementById('tog-ad').checked     = s.ad;
+    document.getElementById('tog-banner').checked = s.banner;
+    document.getElementById('tog-titles').checked = s.titles;
+    document.getElementById('tog-game').checked   = s.game;
+    applyDispSettings();
+  }
+
+  // 後方互換：古いキーを削除
   localStorage.removeItem('adgame_banner_hidden');
+  localStorage.removeItem('adgame_sections_hidden');
 
   // ===== 称号システム =====
   // 称号マスターデータ（あとで追加しやすい構造）
@@ -894,16 +976,9 @@
     }
   }
 
-  // セクションの表示状態を復元
+  // 初期化
   document.getElementById('banner-month-label').textContent = getBannerMonthLabel();
-  if(localStorage.getItem('adgame_sections_hidden')==='1'){
-    document.getElementById('monthly-banner').style.display='none';
-    document.getElementById('titles-section').style.display='none';
-    document.getElementById('toggle-sections-btn').style.display='block';
-  } else {
-    loadBannerRanking('month');
-  }
-
+  initDispSettings();
   renderHomeTitles();
 
 </script>
