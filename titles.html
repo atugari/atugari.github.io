@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>称号一覧 | 丸場所記憶ゲーム</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+JP:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--bg:#f7f6f2;--surface:#fff;--surface2:#f0efe9;--border2:rgba(0,0,0,0.06);--text:#1a1a18;--text2:#6b6b65;--text3:#a8a8a2;--green:#1D9E75;--blue:#378ADD;--accent:#D85A30;--r:14px;--rs:8px;}
+    @media(prefers-color-scheme:dark){:root{--bg:#141412;--surface:#1e1e1b;--surface2:#28281f;--border2:rgba(255,255,255,0.06);--text:#f0efe9;--text2:#9a9a92;--text3:#5a5a54;}}
+    body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;font-size:15px;line-height:1.6;min-height:100dvh;}
+    .app{max-width:420px;margin:0 auto;padding:16px 16px 48px;}
+    .page-header{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border2);}
+    .back-btn{font-size:20px;text-decoration:none;color:var(--text2);line-height:1;}
+    .page-title{font-size:18px;font-weight:500;}
+    .section-label{font-size:11px;color:var(--text3);letter-spacing:0.06em;margin:0 0 8px;padding:0 2px;}
+    .card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;margin-bottom:20px;}
+    .title-row{padding:14px 16px;border-bottom:1px solid var(--border2);display:flex;align-items:center;gap:14px;}
+    .title-row:last-child{border-bottom:none;}
+    .title-row.locked{opacity:0.4;}
+    .title-icon-wrap{width:44px;height:44px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+    .title-row.unlocked .title-icon-wrap{background:linear-gradient(135deg,#fff9e6,#ffeaa0);}
+    @media(prefers-color-scheme:dark){.title-row.unlocked .title-icon-wrap{background:linear-gradient(135deg,#3a3010,#564a10);}}
+    .title-body{flex:1;}
+    .title-name{font-size:14px;font-weight:500;color:var(--text);margin-bottom:2px;}
+    .title-desc{font-size:12px;color:var(--text2);}
+    .title-obtained{font-size:10px;color:var(--green);margin-top:3px;}
+    .lock-badge{font-size:10px;color:var(--text3);flex-shrink:0;}
+    .empty-state{padding:32px 16px;text-align:center;font-size:13px;color:var(--text3);}
+    .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+    .stat-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--rs);padding:14px 16px;text-align:center;}
+    .stat-val{font-family:'DM Mono',monospace;font-size:24px;font-weight:500;color:var(--text);}
+    .stat-label{font-size:11px;color:var(--text3);margin-top:3px;}
+    footer{margin-top:24px;padding-top:16px;border-top:1px solid var(--border2);text-align:center;font-size:11px;color:var(--text3);}
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="page-header">
+    <a class="back-btn" href="index.html">←</a>
+    <span class="page-title">🎖️ 称号一覧</span>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-val" id="count-obtained">0</div>
+      <div class="stat-label">入手済み</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="count-total">0</div>
+      <div class="stat-label">全称号数</div>
+    </div>
+  </div>
+
+  <div class="section-label">入手済み</div>
+  <div class="card" id="obtained-list">
+    <div class="empty-state">まだ称号を入手していません</div>
+  </div>
+
+  <div class="section-label">未入手</div>
+  <div class="card" id="locked-list">
+    <div class="empty-state">称号はまだ登録されていません</div>
+  </div>
+
+  <footer>&copy; 2026 丸場所記憶ゲーム</footer>
+</div>
+
+<script>
+  // 称号マスターデータ（index.htmlと同じ内容を保つこと）
+  const TITLE_DEFS = [
+    // 例: { id:'first_clear', icon:'🌟', name:'はじめての挑戦', desc:'初めてチャレンジを完了する', check:(s,ss)=>true }
+    // 称号が追加されたらここに記述する
+  ];
+
+  function fmtDate(ts){
+    if(!ts)return'';
+    const d=new Date(ts);
+    return d.getFullYear()+'/'+(d.getMonth()+1).toString().padStart(2,'0')+'/'+d.getDate().toString().padStart(2,'0')+' '+d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
+  }
+
+  function getMyTitles(){
+    try{return JSON.parse(localStorage.getItem('adgame_titles')||'[]');}catch(e){return[];}
+  }
+
+  function render(){
+    const myTitles = getMyTitles();
+    const myIds = new Set(myTitles.map(t=>t.id));
+    const myMap = {};
+    myTitles.forEach(t=>myMap[t.id]=t);
+
+    const obtained = TITLE_DEFS.filter(d=>myIds.has(d.id));
+    const locked   = TITLE_DEFS.filter(d=>!myIds.has(d.id));
+
+    document.getElementById('count-obtained').textContent = obtained.length;
+    document.getElementById('count-total').textContent    = TITLE_DEFS.length;
+
+    // 入手済み
+    const obtainedEl = document.getElementById('obtained-list');
+    if(obtained.length === 0){
+      obtainedEl.innerHTML = '<div class="empty-state">まだ称号を入手していません</div>';
+    } else {
+      obtainedEl.innerHTML = '';
+      // 入手日時順（新しい順）
+      const sorted = [...obtained].sort((a,b)=>(myMap[b.id].obtainedAt||0)-(myMap[a.id].obtainedAt||0));
+      sorted.forEach(def=>{
+        const t = myMap[def.id];
+        const row = document.createElement('div');
+        row.className = 'title-row unlocked';
+        row.innerHTML =
+          '<div class="title-icon-wrap">'+def.icon+'</div>'+
+          '<div class="title-body">'+
+            '<div class="title-name">'+def.name+'</div>'+
+            '<div class="title-desc">'+def.desc+'</div>'+
+            '<div class="title-obtained">入手日時：'+fmtDate(t.obtainedAt)+'</div>'+
+          '</div>';
+        obtainedEl.appendChild(row);
+      });
+    }
+
+    // 未入手
+    const lockedEl = document.getElementById('locked-list');
+    if(locked.length === 0){
+      lockedEl.innerHTML = '<div class="empty-state">'+(TITLE_DEFS.length===0?'称号はまだ登録されていません':'すべての称号を入手しました！')+'</div>';
+    } else {
+      lockedEl.innerHTML = '';
+      locked.forEach(def=>{
+        const row = document.createElement('div');
+        row.className = 'title-row locked';
+        row.innerHTML =
+          '<div class="title-icon-wrap">🔒</div>'+
+          '<div class="title-body">'+
+            '<div class="title-name">'+def.name+'</div>'+
+            '<div class="title-desc">'+def.desc+'</div>'+
+          '</div>';
+        lockedEl.appendChild(row);
+      });
+    }
+  }
+
+  render();
+</script>
+</body>
+</html>

@@ -89,9 +89,37 @@
     .rank-empty,.rank-loading{padding:20px 16px;font-size:12px;color:var(--text3);text-align:center;}
     footer{margin-top:24px;padding-top:16px;border-top:1px solid var(--border2);text-align:center;font-size:11px;color:var(--text3);line-height:2.2;}
     footer a{color:var(--text3);text-decoration:underline;}
+    footer span.disabled-link{color:var(--text3);text-decoration:underline;cursor:default;opacity:0.45;}
+    /* 称号トースト */
+    #title-toast{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-80px);z-index:9999;background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);padding:12px 20px;box-shadow:0 4px 20px rgba(0,0,0,0.12);text-align:center;min-width:260px;max-width:340px;transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1),opacity 0.35s;opacity:0;pointer-events:none;}
+    #title-toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+    #title-toast .toast-label{font-size:10px;color:var(--text3);letter-spacing:0.06em;margin-bottom:3px;}
+    #title-toast .toast-icon{font-size:22px;margin-bottom:4px;}
+    #title-toast .toast-name{font-size:15px;font-weight:500;color:var(--text);}
+    #title-toast .toast-desc{font-size:11px;color:var(--text2);margin-top:2px;}
+    /* 称号セクション */
+    .titles-section{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;margin-bottom:16px;}
+    .titles-section-header{padding:11px 16px;border-bottom:1px solid var(--border2);font-size:13px;font-weight:500;display:flex;justify-content:space-between;align-items:center;}
+    .titles-section-header a{font-size:11px;color:var(--blue);text-decoration:none;}
+    .titles-list{padding:8px 0;}
+    .title-row{padding:8px 16px;display:flex;align-items:center;gap:10px;}
+    .title-icon{font-size:20px;width:28px;text-align:center;flex-shrink:0;}
+    .title-info{flex:1;}
+    .title-name{font-size:13px;font-weight:500;color:var(--text);}
+    .title-date{font-size:10px;color:var(--text3);margin-top:1px;}
+    .titles-empty{padding:16px;font-size:12px;color:var(--text3);text-align:center;}
+    /* 表示切替ボタン */
+    #toggle-sections-btn{width:100%;margin-bottom:12px;padding:8px;font-size:12px;color:var(--text3);background:var(--surface);border:1px solid var(--border2);border-radius:var(--rs);cursor:pointer;font-family:'Noto Sans JP',sans-serif;display:none;}
   </style>
 </head>
 <body>
+<!-- 称号入手トースト -->
+<div id="title-toast">
+  <div class="toast-label">🎉 称号を入手！</div>
+  <div class="toast-icon" id="toast-icon"></div>
+  <div class="toast-name" id="toast-name"></div>
+  <div class="toast-desc" id="toast-desc"></div>
+</div>
 <div class="app">
   <div class="ad-label">広 告</div>
   <div class="adsense-slot" id="ad-slot">
@@ -116,7 +144,7 @@
           <div style="font-size:11px;color:rgba(255,255,255,0.75);margin-bottom:2px;">🏆 今月のランキング</div>
           <div style="font-size:16px;font-weight:500;color:#fff;" id="banner-month-label"></div>
         </div>
-        <button onclick="hideBanner()" style="font-size:11px;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);border:none;border-radius:var(--rs);padding:4px 10px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;">非表示</button>
+        <button onclick="hideSections()" style="font-size:11px;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);border:none;border-radius:var(--rs);padding:4px 10px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;">非表示</button>
       </div>
       <div class="rank-tabs" style="border-bottom:1px solid var(--border2);">
         <button class="rank-tab active" id="banner-tab-month" onclick="switchBannerTab('month')">今月</button>
@@ -126,7 +154,20 @@
       </div>
       <div style="max-height:260px;overflow-y:auto;" id="banner-rank-list"><div class="rank-loading">読み込み中...</div></div>
     </div>
-    <button id="show-banner-btn" onclick="showBanner()" style="display:none;width:100%;margin-bottom:12px;padding:8px;font-size:12px;color:var(--text3);background:var(--surface);border:1px solid var(--border2);border-radius:var(--rs);cursor:pointer;font-family:'Noto Sans JP',sans-serif;">🏆 月間ランキングを表示する</button>
+
+    <!-- 称号セクション -->
+    <div id="titles-section" class="titles-section">
+      <div class="titles-section-header">
+        <span>🎖️ 最近入手した称号</span>
+        <a href="titles.html">すべて見る →</a>
+      </div>
+      <div class="titles-list" id="home-titles-list">
+        <div class="titles-empty">まだ称号を入手していません</div>
+      </div>
+    </div>
+
+    <!-- 表示切替ボタン（非表示時に表示） -->
+    <button id="toggle-sections-btn" onclick="showSections()">📋 ランキング・称号を表示する</button>
 
     <div class="nick-card">
       <h1>丸場所記憶ゲーム</h1>
@@ -136,18 +177,8 @@
       <button class="btn primary" onclick="startChallenge()" style="width:100%">チャレンジ開始！</button>
       <p style="font-size:11px;color:var(--text3);margin-top:10px;line-height:1.7;">※ このゲームはこの端末からのみスコアを更新できます。別の端末からは同じニックネームで上書きできません。</p>
     </div>
-    <div class="ranking-card">
-      <div class="ranking-header">ランキング<button class="ranking-refresh" onclick="loadRanking(currentRankTab)">更新</button></div>
-      <div class="rank-tabs">
-        <button class="rank-tab active" onclick="switchRankTab('all')">歴代</button>
-        <button class="rank-tab" onclick="switchRankTab('month')">今月</button>
-        <button class="rank-tab" onclick="switchRankTab('week')">今週</button>
-        <button class="rank-tab" onclick="switchRankTab('day')">今日</button>
-      </div>
-      <div class="ranking-list-wrap" id="rank-list-nick"><div class="rank-loading">読み込み中...</div></div>
-    </div>
     <footer>
-      <a href="halloffame.html">🏆 殿堂入り</a>　|　
+      <span class="disabled-link">🏆 殿堂入り</span>　|　
       <a href="privacy.html">プライバシーポリシー</a>　|　
       <a href="guide.html">使い方ガイド</a>　|　
       <a href="faq.html">よくある質問</a>　|　
@@ -213,7 +244,7 @@
       <div class="ranking-list-wrap" id="rank-list-result"><div class="rank-loading">読み込み中...</div></div>
     </div>
     <div style="text-align:center;margin-bottom:10px;">
-      <a href="halloffame.html" style="font-size:13px;color:var(--text2);text-decoration:none;">🏆 殿堂入りを見る</a>
+      <span style="font-size:13px;color:var(--text3);opacity:0.45;">🏆 殿堂入りを見る</span>
     </div>
     <div class="btn-row">
       <button class="btn" onclick="goToNick()">🏠 ホームへ戻る</button>
@@ -347,9 +378,8 @@
   }
 
   async function loadRanking(tab){
-    const isResult=document.getElementById('screen-result').classList.contains('active');
-    const targetId=isResult?'rank-list-result':'rank-list-nick';
-    const el=document.getElementById(targetId);
+    const el=document.getElementById('rank-list-result');
+    if(!el)return;
     el.innerHTML='<div class="rank-loading">読み込み中...</div>';
     try{
       const res=await fetch(DB_URL+'/rankings.json');
@@ -661,6 +691,7 @@
     document.getElementById('final-score').textContent=fmtMan(totalScore);
     showScreen('screen-result');
     await saveScore(nickname,totalScore,stageScores);
+    checkAndGrantTitles(totalScore, stageScores);
 
     // 自分の順位を表示
     try{
@@ -686,7 +717,7 @@
 
   function goToNick(){
     showScreen('screen-nick');
-    loadRanking(currentRankTab);
+    renderHomeTitles();
   }
 
   // 起動時に前回のニックネームを復元
@@ -717,17 +748,100 @@
     return now.getFullYear() + '年' + (now.getMonth()+1) + '月';
   }
 
-  function hideBanner() {
+  function hideSections() {
     document.getElementById('monthly-banner').style.display = 'none';
-    document.getElementById('show-banner-btn').style.display = 'block';
-    localStorage.setItem('adgame_banner_hidden', '1');
+    document.getElementById('titles-section').style.display = 'none';
+    document.getElementById('toggle-sections-btn').style.display = 'block';
+    localStorage.setItem('adgame_sections_hidden', '1');
   }
 
-  function showBanner() {
+  function showSections() {
     document.getElementById('monthly-banner').style.display = 'block';
-    document.getElementById('show-banner-btn').style.display = 'none';
-    localStorage.removeItem('adgame_banner_hidden');
+    document.getElementById('titles-section').style.display = 'block';
+    document.getElementById('toggle-sections-btn').style.display = 'none';
+    localStorage.removeItem('adgame_sections_hidden');
     loadBannerRanking(currentBannerTab);
+  }
+
+  // 後方互換：古いキーも消す
+  localStorage.removeItem('adgame_banner_hidden');
+
+  // ===== 称号システム =====
+  // 称号マスターデータ（あとで追加しやすい構造）
+  const TITLE_DEFS = [
+    // { id, icon, name, desc, check(score, stageScores) }
+    // 現時点ではプレースホルダー。チャレンジ完了時にチェックされる
+  ];
+
+  function getMyTitles() {
+    try { return JSON.parse(localStorage.getItem('adgame_titles') || '[]'); }
+    catch(e) { return []; }
+  }
+
+  function saveMyTitles(titles) {
+    localStorage.setItem('adgame_titles', JSON.stringify(titles));
+  }
+
+  // チャレンジ完了後に称号チェック・新規付与
+  function checkAndGrantTitles(score, stageScores) {
+    const existing = getMyTitles();
+    const existingIds = new Set(existing.map(t => t.id));
+    const newTitles = [];
+    for (const def of TITLE_DEFS) {
+      if (!existingIds.has(def.id) && def.check(score, stageScores)) {
+        const entry = { id: def.id, obtainedAt: Date.now() };
+        newTitles.push({ def, entry });
+        existing.unshift(entry); // 最近入手順（先頭）
+      }
+    }
+    if (newTitles.length > 0) {
+      saveMyTitles(existing);
+      // 順番にトーストを表示（1つずつ）
+      let delay = 0;
+      for (const { def } of newTitles) {
+        setTimeout(() => showTitleToast(def), delay);
+        delay += 6200;
+      }
+      renderHomeTitles();
+    }
+    return newTitles;
+  }
+
+  // トースト表示
+  let toastTimer = null;
+  function showTitleToast(def) {
+    const toast = document.getElementById('title-toast');
+    document.getElementById('toast-icon').textContent = def.icon;
+    document.getElementById('toast-name').textContent = def.name;
+    document.getElementById('toast-desc').textContent = def.desc;
+    toast.classList.add('show');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 5000);
+  }
+
+  // ホームの称号3件レンダリング
+  function renderHomeTitles() {
+    const el = document.getElementById('home-titles-list');
+    if (!el) return;
+    const titles = getMyTitles().slice(0, 3);
+    if (titles.length === 0) {
+      el.innerHTML = '<div class="titles-empty">まだ称号を入手していません</div>';
+      return;
+    }
+    el.innerHTML = '';
+    titles.forEach(t => {
+      const def = TITLE_DEFS.find(d => d.id === t.id);
+      if (!def) return;
+      const row = document.createElement('div');
+      row.className = 'title-row';
+      row.innerHTML =
+        '<div class="title-icon">'+def.icon+'</div>'+
+        '<div class="title-info">'+
+          '<div class="title-name">'+def.name+'</div>'+
+          '<div class="title-date">'+fmtDate(t.obtainedAt)+'</div>'+
+        '</div>';
+      el.appendChild(row);
+    });
   }
 
   function switchBannerTab(tab) {
@@ -780,16 +894,18 @@
     }
   }
 
-  // バナーの表示状態を復元
+  // セクションの表示状態を復元
   document.getElementById('banner-month-label').textContent = getBannerMonthLabel();
-  if(localStorage.getItem('adgame_banner_hidden')==='1'){
+  if(localStorage.getItem('adgame_sections_hidden')==='1'){
     document.getElementById('monthly-banner').style.display='none';
-    document.getElementById('show-banner-btn').style.display='block';
+    document.getElementById('titles-section').style.display='none';
+    document.getElementById('toggle-sections-btn').style.display='block';
   } else {
     loadBannerRanking('month');
   }
 
-  loadRanking('all');
+  renderHomeTitles();
+
 </script>
 </body>
 </html>
