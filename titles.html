@@ -188,25 +188,43 @@
   </div>
   <div class="stats-grid">
     <div class="stat-card"><div class="stat-val" id="count-obtained">0</div><div class="stat-label">入手済み</div></div>
-    <div class="stat-card"><div class="stat-val" id="count-total">0</div><div class="stat-label">全称号数</div></div>
+    <div class="stat-card"><div class="stat-val" id="count-total">0</div><div class="stat-label">全称号数 *</div></div>
   </div>
-  <div class="section-label">入手済み</div>
-  <div class="card" id="obtained-list"><div class="empty-state">まだ称号を入手していません</div></div>
-  <div class="section-label">未入手</div>
-  <div class="card" id="locked-list"><div class="empty-state">称号はまだ登録されていません</div></div>
+  <div style="font-size:10px;color:var(--text3);margin:-12px 0 16px 2px;">* Arcane称号は全称号数に含まれません</div>
+
+  <div class="section-label">ノーマル</div>
+  <div class="card" id="list-normal"><div class="empty-state">まだ称号を入手していません</div></div>
+
+  <div class="section-label">シークレット</div>
+  <div class="card" id="list-secret"><div class="empty-state">まだ称号を入手していません</div></div>
+
+  <div class="section-label">Arcane</div>
+  <div class="card" id="list-arcane">
+    <div style="padding:16px;font-size:12px;color:var(--text3);text-align:center;line-height:1.8;">
+      個数・内容・条件、すべて不明。<br>存在に気づいた時、それが入手の証明。
+    </div>
+  </div>
+
   <footer>&copy; 2026 丸場所記憶ゲーム</footer>
 </div>
 
 <script>
   const TITLE_DEFS = [
+    // type: 'normal' = ノーマル（内容・条件すべて公開）
+    // type: 'secret' = シークレット（個数は分かる、内容は抽象的にぼかす）
+    // type: 'arcane' = Arcane（個数・内容・条件すべて非公開）
     {
       id: 'ad_killer',
+      type: 'secret',
       icon: '🙏',
       name: 'それは勘弁してくれ……',
+      nameHidden: 'それは勘弁してくれ……',   // 未入手時に表示するぼかし名
       desc: '広告を非表示にしようとした',
+      descHidden: '何かをしようとしたあなたへ。', // 未入手時に表示するぼかし説明
     },
     {
       id: 'cheat_detected',
+      type: 'arcane',
       icon: '🃏',
       name: '一つの手段',
       desc: 'チート等を使った判定になった者に与えられる称号。一つの手段なのでお咎めなし。チート等を使っていない場合は不具合なので、現状と状況を報告してくれたら助かります！',
@@ -230,47 +248,99 @@
     if(btn){ btn.textContent='非表示にしました'; btn.classList.add('done'); }
   }
 
-  // ===== 通常一覧 =====
+  // ===== 一覧レンダリング =====
   function render(myIds, myMap){
-    const obtained = TITLE_DEFS.filter(d=>myIds.has(d.id));
-    const locked   = TITLE_DEFS.filter(d=>!myIds.has(d.id));
-    document.getElementById('count-obtained').textContent = obtained.length;
-    document.getElementById('count-total').textContent    = TITLE_DEFS.length;
+    // Arcane以外を全称号数にカウント
+    const countableTotal = TITLE_DEFS.filter(d=>d.type!=='arcane').length;
+    const countableObtained = TITLE_DEFS.filter(d=>d.type!=='arcane'&&myIds.has(d.id)).length;
+    // Arcaneは入手済みのみカウント
+    const arcaneObtained = TITLE_DEFS.filter(d=>d.type==='arcane'&&myIds.has(d.id)).length;
 
-    const obtainedEl = document.getElementById('obtained-list');
-    if(obtained.length===0){
-      obtainedEl.innerHTML='<div class="empty-state">まだ称号を入手していません</div>';
-    } else {
-      obtainedEl.innerHTML='';
-      [...obtained].sort((a,b)=>(myMap[b.id]?.obtainedAt||0)-(myMap[a.id]?.obtainedAt||0)).forEach(def=>{
-        const t=myMap[def.id];
-        const row=document.createElement('div');
-        row.className='title-row-plain unlocked';
+    document.getElementById('count-obtained').textContent = countableObtained + arcaneObtained;
+    document.getElementById('count-total').textContent    = countableTotal;
 
-        // ad_killer 専用の詳細アクション
+    // ノーマル
+    renderCategory('normal', myIds, myMap);
+    // シークレット
+    renderCategory('secret', myIds, myMap);
+    // Arcane（入手済みのみ表示）
+    renderArcane(myIds, myMap);
+  }
+
+  function renderCategory(type, myIds, myMap){
+    const elId = type==='normal'?'list-normal':'list-secret';
+    const el = document.getElementById(elId);
+    const defs = TITLE_DEFS.filter(d=>d.type===type);
+    if(defs.length===0){ el.innerHTML='<div class="empty-state">称号はまだ登録されていません</div>'; return; }
+
+    el.innerHTML='';
+    defs.forEach(def=>{
+      const obtained = myIds.has(def.id);
+      const t = myMap[def.id];
+      const row = document.createElement('div');
+      row.className = 'title-row-plain ' + (obtained?'unlocked':'locked');
+
+      if(obtained){
+        // 入手済み：フル表示
         let extra='';
         if(def.id==='ad_killer'){
           const alreadyHidden = localStorage.getItem(AD_ROW_HIDDEN_KEY)==='1';
           extra='<div class="tr-action"><button id="hide-ad-row-btn" class="tr-action-btn'+(alreadyHidden?' done':'')+'" onclick="hideAdRow()">'+(alreadyHidden?'非表示にしました':'設定から広告トグルを非表示にする')+'</button></div>';
         }
+        row.innerHTML=
+          '<div class="tr-icon-wrap">'+def.icon+'</div>'+
+          '<div class="tr-body">'+
+            '<div class="tr-name">'+def.name+'</div>'+
+            '<div class="tr-desc">'+def.desc+'</div>'+
+            '<div class="tr-date">入手：'+fmtDate(t?.obtainedAt)+'</div>'+
+            extra+
+          '</div>';
+      } else if(type==='secret'){
+        // シークレット未入手：ぼかして表示
+        row.innerHTML=
+          '<div class="tr-icon-wrap" style="font-size:14px;color:var(--text3);">?</div>'+
+          '<div class="tr-body">'+
+            '<div class="tr-name" style="filter:blur(3px);user-select:none;">'+def.nameHidden+'</div>'+
+            '<div class="tr-desc" style="filter:blur(2px);user-select:none;">'+def.descHidden+'</div>'+
+          '</div>';
+      } else {
+        // ノーマル未入手：そのまま表示
+        row.innerHTML=
+          '<div class="tr-icon-wrap" style="font-size:14px;color:var(--text3);">?</div>'+
+          '<div class="tr-body">'+
+            '<div class="tr-name">'+def.name+'</div>'+
+            '<div class="tr-desc">'+def.desc+'</div>'+
+          '</div>';
+      }
+      el.appendChild(row);
+    });
+  }
 
-        row.innerHTML='<div class="tr-icon-wrap">'+def.icon+'</div><div class="tr-body"><div class="tr-name">'+def.name+'</div><div class="tr-desc">'+def.desc+'</div><div class="tr-date">入手：'+fmtDate(t?.obtainedAt)+'</div>'+extra+'</div>';
-        obtainedEl.appendChild(row);
-      });
+  function renderArcane(myIds, myMap){
+    const el = document.getElementById('list-arcane');
+    const obtained = TITLE_DEFS.filter(d=>d.type==='arcane'&&myIds.has(d.id));
+    if(obtained.length===0){
+      el.innerHTML=
+        '<div style="padding:16px;font-size:12px;color:var(--text3);text-align:center;line-height:1.8;">'+
+        '個数・内容・条件、すべて不明。<br>存在に気づいた時、それが入手の証明。'+
+        '</div>';
+      return;
     }
-
-    const lockedEl = document.getElementById('locked-list');
-    if(locked.length===0){
-      lockedEl.innerHTML='<div class="empty-state">'+(TITLE_DEFS.length===0?'称号はまだ登録されていません':'すべての称号を入手しました！')+'</div>';
-    } else {
-      lockedEl.innerHTML='';
-      locked.forEach(def=>{
-        const row=document.createElement('div');
-        row.className='title-row-plain locked';
-        row.innerHTML='<div class="tr-icon-wrap" style="font-size:14px;color:var(--text3);">?</div><div class="tr-body"><div class="tr-name">'+def.name+'</div><div class="tr-desc">'+def.desc+'</div></div>';
-        lockedEl.appendChild(row);
+    el.innerHTML='';
+    obtained.sort((a,b)=>(myMap[b.id]?.obtainedAt||0)-(myMap[a.id]?.obtainedAt||0))
+      .forEach(def=>{
+        const t = myMap[def.id];
+        const row = document.createElement('div');
+        row.className = 'title-row-plain unlocked';
+        row.innerHTML=
+          '<div class="tr-icon-wrap">'+def.icon+'</div>'+
+          '<div class="tr-body">'+
+            '<div class="tr-name">'+def.name+'</div>'+
+            '<div class="tr-desc">'+def.desc+'</div>'+
+            '<div class="tr-date">入手：'+fmtDate(t?.obtainedAt)+'</div>'+
+          '</div>';
+        el.appendChild(row);
       });
-    }
   }
 
   // ===== エアライド演出 =====
@@ -279,18 +349,24 @@
   function buildGrid(myIds){
     const grid = document.getElementById('ar-grid');
     grid.innerHTML='';
-    if(TITLE_DEFS.length===0) return false;
-    TITLE_DEFS.forEach(def=>{
+    // Arcane未入手は演出グリッドに表示しない
+    const visibleDefs = TITLE_DEFS.filter(d => d.type!=='arcane' || myIds.has(d.id));
+    if(visibleDefs.length===0) return false;
+    visibleDefs.forEach(def=>{
       const ok = myIds.has(def.id);
       const cell = document.createElement('div');
       cell.className = 'ar-cell'+(ok?'':' locked-cell');
       cell.dataset.id = def.id;
+      // シークレット未入手はぼかし表示
+      const showName = ok ? def.name : (def.type==='secret' ? '???' : '???');
+      const showDesc = ok ? def.desc : '';
+      const showIcon = ok ? def.icon : '?';
       cell.innerHTML =
         '<div class="ar-ring"></div>'+
         '<div class="ar-flash"></div>'+
-        '<span class="ar-icon">'+(ok?def.icon:'?')+'</span>'+
-        '<div class="ar-name">'+(ok?def.name:'???')+'</div>'+
-        '<div class="ar-desc">'+(ok?def.desc:'')+'</div>';
+        '<span class="ar-icon">'+showIcon+'</span>'+
+        '<div class="ar-name">'+showName+'</div>'+
+        '<div class="ar-desc">'+showDesc+'</div>';
       grid.appendChild(cell);
     });
     return true;
@@ -393,7 +469,7 @@
   const DB_URL = 'https://ad-game-7b40a-default-rtdb.asia-southeast1.firebasedatabase.app';
 
   // index.htmlと同じハッシュ・ソルト・セッションキーを使う
-  const _OWNER_HASH = 'aa774ac51d1ddc98a5b325605ce19c848114f7d82959b88385cf654466405b5b'; // ← index.htmlと同じ値を設定すること
+  const _OWNER_HASH = 'YOUR_HASH_HERE'; // ← index.htmlと同じ値を設定すること
   const _OWNER_SALT = '丸場所記憶ゲーム_製作者専用_2026_SALT_v1';
   const _AUTH_SESSION_KEY = 'adgame_owner_auth';
 
