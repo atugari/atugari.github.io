@@ -324,6 +324,29 @@
   const ONE_WEEK=7*24*60*60*1000;
   const ONE_DAY=24*60*60*1000;
 
+  // 広告トグルのロック状態キー
+  const AD_LOCKED_KEY = 'adgame_ad_locked';
+  // 広告トグル行を完全に非表示にするキー
+  const AD_ROW_HIDDEN_KEY = 'adgame_ad_row_hidden';
+
+  // 称号マスターデータ
+  const TITLE_DEFS = [
+    {
+      id: 'ad_killer',
+      icon: '🙏',
+      name: 'それは勘弁してくれ……',
+      desc: '広告を非表示にしようとした',
+      check: () => false,
+    },
+    {
+      id: 'cheat_detected',
+      icon: '🃏',
+      name: '一つの手段',
+      desc: 'チート等を使った判定になった者に与えられる称号。一つの手段なのでお咎めなし。チート等を使っていない場合は不具合なので、現状と状況を報告してくれたら助かります！',
+      check: () => false,
+    },
+  ];
+
   // 端末IDを生成・保存（一度作ったら変わらない）
   function getDeviceId() {
     let id = localStorage.getItem('adgame_device_id');
@@ -366,6 +389,25 @@
   async function saveScore(nick, totalScore, stageScores){
     try{
       const now=Date.now();
+
+      // ===== チート検証 =====
+      const valid = _validateScore(totalScore, stageScores, _challengeStartTs);
+      if(!valid.ok){
+        // 称号「一つの手段」を付与
+        const existing = getMyTitles();
+        const existingIds = new Set(existing.map(t => t.id));
+        const def = TITLE_DEFS.find(d => d.id === 'cheat_detected');
+        if(def && !existingIds.has('cheat_detected')){
+          existing.unshift({ id: 'cheat_detected', obtainedAt: Date.now() });
+          saveMyTitles(existing);
+          setTimeout(() => { showTitleToast(def); renderHomeTitles(); }, 2000);
+        }
+        return; // スコアは保存しない
+      }
+
+      // 署名生成
+      const sig = await _sign(totalScore, stageScores[0], stageScores[1], stageScores[2], DEVICE_ID, now);
+
       const key=encodeURIComponent(nick.trim().replace(/[.#$[\]/]/g,'_'));
       const url=DB_URL+'/rankings/'+key+'.json';
       const res=await fetch(url);
@@ -374,7 +416,6 @@
 
       // 他の端末のデータは絶対に上書きしない
       if(existing&&existing.deviceId&&existing.deviceId!==DEVICE_ID){
-        console.log('別端末のデータのため保存スキップ');
         return;
       }
 
@@ -386,24 +427,23 @@
 
         if(allData){
           const validEntries=Object.values(allData)
-            .filter(e=>e&&e.score&&(now-e.updatedAt)<=ONE_YEAR)
+            .filter(e=>_isValidEntry(e)&&(now-e.updatedAt)<=ONE_YEAR)
             .sort((a,b)=>b.score-a.score);
           const total=validEntries.length;
-          const threshold=Math.max(1,Math.floor(total*0.001)); // 上位0.1%の人数
+          const threshold=Math.max(1,Math.floor(total*0.001));
           const myRank=validEntries.filter(e=>e.score>totalScore).length+1;
-          const isTop01=myRank<=threshold||total<1000&&myRank===1; // 1000人未満は1位のみ
+          const isTop01=myRank<=threshold||total<1000&&myRank===1;
 
           if(isTop01&&!top01since){
-            top01since=now; // 初めて0.1%入り
+            top01since=now;
           } else if(!isTop01){
-            top01since=null; // 0.1%から外れたらリセット
+            top01since=null;
           }
         }
 
         // 殿堂入りチェック（90日以上0.1%維持）
         const isHallOfFame=top01since&&(now-top01since)>=90*24*60*60*1000;
         if(isHallOfFame){
-          // 殿堂入りリストに登録
           const hofKey=encodeURIComponent(nick.trim().replace(/[.#$[\]/]/g,'_'));
           const hofRes=await fetch(DB_URL+'/halloffame/'+hofKey+'.json');
           const hofExisting=await hofRes.json();
@@ -434,11 +474,13 @@
             updatedAt:now,
             deviceId:DEVICE_ID,
             top01since:top01since||null,
-            hallOfFame:isHallOfFame||false
+            hallOfFame:isHallOfFame||false,
+            _sig:sig,                          // 署名
+            _dt:_devtoolsDetected?1:0,         // DevTools検知フラグ
           })
         });
       }
-    }catch(e){console.error('保存エラー:',e);}
+    }catch(e){}
   }
 
   async function loadRanking(tab){
@@ -451,7 +493,7 @@
       if(!data){el.innerHTML='<div class="rank-empty">まだ記録がありません</div>';return;}
       const now=Date.now();
       let entries=Object.values(data).filter(e=>{
-        if(!e||!e.score)return false;
+        if(!_isValidEntry(e))return false;
         if((now-e.updatedAt)>ONE_YEAR)return false;
         if(tab==='month')return(now-e.updatedAt)<=ONE_MONTH;
         if(tab==='week')return(now-e.updatedAt)<=ONE_WEEK;
@@ -515,7 +557,106 @@
   let phase='idle',correctCells=[],selectedCells=[],dotMap={};
   let timerInterval=null,timeRemaining=0;
 
-  function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+  // ===== チート対策 =====
+
+  // 理論上の最大スコア（厳密計算）
+  // タイムボーナス: timeRemaining/5、最大5000/5=1000pt（全正解時のみ）
+  // Lv5:  dots5 × gold3000 + timeBonus1000 = 16000
+  // Lv7:  dots7 × gold3000 + timeBonus1000 = 22000
+  // Lv10: dots10 × gold3000 + timeBonus1000 = 31000
+  // 合計理論最大 = 69000、安全マージン+50%（将来の仕様変更や誤差を吸収）
+  const MAX_STAGE_SCORE = [16000*1.5, 22000*1.5, 31000*1.5];
+  const MAX_TOTAL_SCORE = 69000 * 1.5;
+
+  // ゲーム開始タイムスタンプ
+  let _stageStartTs = 0;
+  let _challengeStartTs = 0;
+
+  // 正規プレイの最短時間（ms）を厳密に計算
+  // startStage → 丸表示(maxDelay700+fadeIn+dur+fadeIn+150) → 回答フェーズ → submitAnswer → 1800ms待機
+  // Lv5最短:  700+400+400+400+150 = 2050ms（丸表示）+ 答えるまで最低200ms = 2250ms
+  // Lv7最短:  700+320+280+320+150+200 = 1970ms
+  // Lv10最短: 700+190+130+190+150+200 = 1560ms
+  // ステージ間待機: 1800ms × 2回 = 3600ms
+  // スタートボタン3回タップ: 最低300ms × 3 = 900ms
+  // 合計最短 ≒ 2250+1970+1560+3600+900 = 10280ms
+  // 安全マージン: 50%（= 5140ms）さらに余裕を持たせて4000ms
+  const MIN_TOTAL_MS = 4000;
+
+  // DevTools検知（誤検知しにくい方法のみ使用）
+  // モバイルブラウザでconsole.logを使うと誤検知するため使わない
+  // 代わりにウィンドウサイズの差分（DevToolsを開くと縮む）を使う
+  let _devtoolsDetected = false;
+  (function detectDevtools(){
+    const threshold = 160;
+    setInterval(()=>{
+      // PCのみ有効（モバイルは常にouterWidth≒innerWidth）
+      const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+      if(isMobile) return;
+      if(
+        window.outerWidth - window.innerWidth > threshold ||
+        window.outerHeight - window.innerHeight > threshold
+      ){
+        _devtoolsDetected = true;
+      }
+    }, 2000);
+  })();
+
+  // 署名生成（HMAC-SHA256）
+  async function _sign(score, s0, s1, s2, deviceId, ts){
+    const _k = [68,52,71,65,95,83,73,71,95,75,69,89,95,50,48,50,54]
+      .map(c=>String.fromCharCode(c)).join('');
+    // tsを10分単位に丸める（時刻ズレ許容）
+    const tsBucket = Math.floor(ts / 600000);
+    const msg = `${score}|${s0}|${s1}|${s2}|${deviceId}|${tsBucket}|${_k}`;
+    try {
+      const enc = new TextEncoder();
+      const key = await crypto.subtle.importKey(
+        'raw', enc.encode(_k), {name:'HMAC',hash:'SHA-256'}, false, ['sign']
+      );
+      const sig = await crypto.subtle.sign('HMAC', key, enc.encode(msg));
+      return Array.from(new Uint8Array(sig)).slice(0,8)
+        .map(b=>b.toString(16).padStart(2,'0')).join('');
+    } catch(e) {
+      let h = 0x811c9dc5;
+      for(let i=0;i<msg.length;i++){
+        h ^= msg.charCodeAt(i);
+        h = (h * 0x01000193) >>> 0;
+      }
+      return h.toString(16).padStart(8,'0');
+    }
+  }
+
+  // スコア検証（保存前）
+  function _validateScore(score, stageScores, challengeStartTs){
+    // 1. スコア上限チェック（十分な余裕を持たせているので正規プレイで引っかかることはない）
+    if(score > MAX_TOTAL_SCORE) return {ok:false, reason:'overflow'};
+    for(let i=0;i<3;i++){
+      if((stageScores[i]||0) > MAX_STAGE_SCORE[i]) return {ok:false, reason:'stage_overflow'};
+      if((stageScores[i]||0) < 0) return {ok:false, reason:'negative'};
+    }
+    // 2. 時間整合性チェック（challengeStartTsが0=未設定の場合はスキップ）
+    if(challengeStartTs > 0){
+      const elapsed = Date.now() - challengeStartTs;
+      if(elapsed < MIN_TOTAL_MS) return {ok:false, reason:'too_fast'};
+    }
+    return {ok:true};
+  }
+
+  // ランキング表示フィルタ（既存データへの互換性を考慮して緩く設定）
+  function _isValidEntry(entry){
+    if(!entry || !entry.score) return false;
+    // 絶対にありえない値のみ弾く（理論最大の3倍を超えたら確実に不正）
+    if(entry.score > MAX_TOTAL_SCORE * 3) return false;
+    if(entry.score < 0) return false;
+    // s0/s1/s2が揃っている場合のみ合計チェック（古いデータには存在しない可能性あり）
+    if(entry.s0 !== undefined && entry.s1 !== undefined && entry.s2 !== undefined){
+      const sum = (entry.s0||0) + (entry.s1||0) + (entry.s2||0);
+      // 合計の差が大きすぎる場合のみ弾く（誤差3000pt許容）
+      if(Math.abs(sum - entry.score) > 3000) return false;
+    }
+    return true;
+  }
   function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
   function setMsg(t,c=''){const el=document.getElementById('game-msg');el.textContent=t;el.className='msg'+(c?' '+c:'');}
   function getCfg(){return LEVEL_CFG[STAGE_LEVELS[stageIdx]];}
@@ -600,6 +741,7 @@
     nickname=val;
     localStorage.setItem('adgame_nick',val);
     stageIdx=0;stageScores=[0,0,0];totalScore=0;
+    _challengeStartTs = Date.now(); // チート対策：チャレンジ開始時刻を記録
     updateProgress();showScreen('screen-game');
     document.getElementById('total-score-disp').textContent='0';
     document.getElementById('stage-score-disp').textContent='0';
@@ -669,6 +811,7 @@
 
   function startStage(){
     phase='showing';selectedCells=[];dotMap={};
+    _stageStartTs = Date.now(); // チート対策：ステージ開始時刻
     document.getElementById('start-btn').disabled=true;
     document.getElementById('answer-btn').disabled=true;
     document.getElementById('sel-count').textContent='';
@@ -793,7 +936,7 @@
       if(data){
         const now=Date.now();
         const entries=Object.values(data)
-          .filter(e=>e&&e.score&&(now-e.updatedAt)<=ONE_YEAR)
+          .filter(e=>_isValidEntry(e)&&(now-e.updatedAt)<=ONE_YEAR)
           .sort((a,b)=>b.score-a.score);
         const myRank=entries.findIndex(e=>e.name===nickname&&e.deviceId===DEVICE_ID)+1;
         const total=entries.length;
@@ -965,20 +1108,6 @@
   localStorage.removeItem('adgame_sections_hidden');
 
   // ===== 称号システム =====
-  const TITLE_DEFS = [
-    {
-      id: 'ad_killer',
-      icon: '🙏',
-      name: 'それは勘弁してくれ……',
-      desc: '広告を非表示にしようとした',
-      check: () => false, // チャレンジ完了時ではなく広告OFFで付与するため常にfalse
-    },
-  ];
-
-  // 広告トグルのロック状態キー
-  const AD_LOCKED_KEY = 'adgame_ad_locked';
-  // 広告トグル行を完全に非表示にするキー
-  const AD_ROW_HIDDEN_KEY = 'adgame_ad_row_hidden';
 
   function getMyTitles() {
     try { return JSON.parse(localStorage.getItem('adgame_titles') || '[]'); }
@@ -1070,7 +1199,7 @@
       if(!data){el.innerHTML='<div class="rank-empty">まだ記録がありません</div>';return;}
       const now = Date.now();
       let entries = Object.values(data).filter(e=>{
-        if(!e||!e.score)return false;
+        if(!_isValidEntry(e))return false;
         if((now-e.updatedAt)>ONE_YEAR)return false;
         if(tab==='month')return(now-e.updatedAt)<=ONE_MONTH;
         if(tab==='week')return(now-e.updatedAt)<=ONE_WEEK;
