@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>設定 | 丸場所記憶ゲーム</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+JP:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--bg:#f7f6f2;--surface:#fff;--surface2:#f0efe9;--border2:rgba(0,0,0,0.06);--text:#1a1a18;--text2:#6b6b65;--text3:#a8a8a2;--green:#1D9E75;--blue:#378ADD;--accent:#D85A30;--r:14px;--rs:8px;}
+    @media(prefers-color-scheme:dark){:root{--bg:#141412;--surface:#1e1e1b;--surface2:#28281f;--border2:rgba(255,255,255,0.06);--text:#f0efe9;--text2:#9a9a92;--text3:#5a5a54;}}
+    body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;font-size:15px;line-height:1.6;min-height:100dvh;}
+    .app{max-width:420px;margin:0 auto;padding:16px 16px 48px;}
+    .page-header{display:flex;align-items:center;gap:10px;margin-bottom:24px;padding-bottom:14px;border-bottom:1px solid var(--border2);}
+    .back-btn{font-size:20px;text-decoration:none;color:var(--text2);line-height:1;}
+    .page-title{font-size:18px;font-weight:500;}
+    .section-title{font-size:11px;color:var(--text3);letter-spacing:0.06em;margin:0 0 8px 2px;}
+    .card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;margin-bottom:24px;}
+
+    /* 消えるデータ一覧 */
+    .data-list{padding:4px 0;}
+    .data-item{display:flex;align-items:flex-start;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border2);}
+    .data-item:last-child{border-bottom:none;}
+    .data-icon{font-size:18px;width:24px;text-align:center;flex-shrink:0;margin-top:1px;}
+    .data-body{}
+    .data-name{font-size:13px;font-weight:500;color:var(--text);}
+    .data-desc{font-size:11px;color:var(--text2);margin-top:1px;line-height:1.6;}
+
+    /* 警告バナー */
+    .warn-banner{background:rgba(216,90,48,0.07);border:1px solid rgba(216,90,48,0.2);border-radius:var(--rs);padding:12px 14px;margin-bottom:16px;font-size:12px;color:var(--accent);line-height:1.7;}
+    .warn-banner strong{font-weight:500;}
+
+    /* スライダー確認 */
+    .slider-section{padding:16px;}
+    .slider-label{font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.7;}
+    .slider-wrap{position:relative;height:44px;background:var(--surface2);border:1px solid var(--border2);border-radius:22px;overflow:hidden;cursor:pointer;user-select:none;-webkit-user-select:none;}
+    .slider-track-fill{position:absolute;left:0;top:0;height:100%;width:0%;background:linear-gradient(90deg,rgba(216,90,48,0.15),rgba(216,90,48,0.35));border-radius:22px;transition:none;pointer-events:none;}
+    .slider-thumb{position:absolute;top:4px;left:4px;width:36px;height:36px;background:var(--surface);border:1px solid var(--border2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 1px 4px rgba(0,0,0,0.10);transition:none;pointer-events:none;}
+    .slider-hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--text3);pointer-events:none;transition:opacity 0.2s;}
+    .slider-hint.hidden{opacity:0;}
+    .slider-done{display:none;padding:10px 16px 16px;}
+    .slider-done-msg{font-size:12px;color:var(--accent);margin-bottom:12px;line-height:1.7;}
+
+    /* 削除ボタン */
+    .delete-btn{display:block;width:100%;padding:13px 0;border-radius:var(--r);border:1px solid var(--accent);background:var(--accent);font-size:15px;font-weight:500;color:#fff;cursor:pointer;font-family:'Noto Sans JP',sans-serif;transition:background 0.1s;text-align:center;}
+    .delete-btn:hover{background:#c04828;}
+    .delete-btn:active{transform:scale(0.98);}
+    .delete-btn:disabled{opacity:0.4;cursor:not-allowed;}
+
+    /* 進捗モーダル */
+    #progress-modal{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;}
+    #progress-modal.show{display:flex;}
+    .modal-inner{background:var(--surface);border-radius:var(--r);padding:24px 20px;width:min(320px,88vw);text-align:center;}
+    .modal-title{font-size:15px;font-weight:500;margin-bottom:8px;}
+    .modal-msg{font-size:12px;color:var(--text2);margin-bottom:16px;min-height:20px;line-height:1.7;}
+    .modal-bar-wrap{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;margin-bottom:16px;}
+    .modal-bar{height:100%;width:0%;background:var(--accent);border-radius:3px;transition:width 0.3s ease;}
+    .modal-close{display:none;width:100%;padding:10px 0;border-radius:var(--rs);border:none;background:var(--green);color:#fff;font-size:14px;font-weight:500;cursor:pointer;font-family:'Noto Sans JP',sans-serif;}
+
+    footer{margin-top:24px;padding-top:16px;border-top:1px solid var(--border2);text-align:center;font-size:11px;color:var(--text3);}
+  </style>
+</head>
+<body>
+
+<div id="progress-modal">
+  <div class="modal-inner">
+    <div class="modal-title" id="modal-title">データを消去中...</div>
+    <div class="modal-msg" id="modal-msg">ランキングデータを削除しています</div>
+    <div class="modal-bar-wrap"><div class="modal-bar" id="modal-bar"></div></div>
+    <button class="modal-close" id="modal-close" onclick="location.href='index.html'">ホームへ戻る</button>
+  </div>
+</div>
+
+<div class="app">
+  <div class="page-header">
+    <a class="back-btn" href="index.html">←</a>
+    <span class="page-title">設定</span>
+  </div>
+
+  <!-- 消えるデータの説明 -->
+  <div class="section-title">データをリセットすると消えるもの</div>
+  <div class="card">
+    <div class="data-list">
+      <div class="data-item">
+        <div class="data-icon">👤</div>
+        <div class="data-body">
+          <div class="data-name">ニックネーム・変更制限</div>
+          <div class="data-desc">登録したニックネームと30日変更制限がリセットされ、新しい名前で登録できるようになります。</div>
+        </div>
+      </div>
+      <div class="data-item">
+        <div class="data-icon">🏆</div>
+        <div class="data-body">
+          <div class="data-name">ランキングスコア</div>
+          <div class="data-desc">あなたのスコアがランキングから完全に削除されます。1位のデータが消えた場合は2位以下が繰り上がります。</div>
+        </div>
+      </div>
+      <div class="data-item">
+        <div class="data-icon">🎖️</div>
+        <div class="data-body">
+          <div class="data-name">入手した称号</div>
+          <div class="data-desc">これまでに入手した称号がすべて消えます。再度条件を満たすと再入手できます。</div>
+        </div>
+      </div>
+      <div class="data-item">
+        <div class="data-icon">⚙️</div>
+        <div class="data-body">
+          <div class="data-name">表示設定・広告ロック</div>
+          <div class="data-desc">ホームの表示設定がすべて初期状態に戻ります。広告トグルのロックも解除されます。</div>
+        </div>
+      </div>
+      <div class="data-item">
+        <div class="data-icon">📱</div>
+        <div class="data-body">
+          <div class="data-name">端末ID</div>
+          <div class="data-desc">この端末の識別IDがリセットされます。新規プレイヤーとして扱われます。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 警告 -->
+  <div class="warn-banner">
+    <strong>注意：この操作は取り消せません。</strong><br>
+    消去したランキングスコアや称号は元に戻せません。本当にすべてのデータを消してよい場合のみ進めてください。
+  </div>
+
+  <!-- スライダー確認 -->
+  <div class="section-title">ステップ 1 — スライダーを右まで動かす</div>
+  <div class="card">
+    <div class="slider-section">
+      <div class="slider-label">誤操作防止のため、スライダーを右端まで動かしてください。</div>
+      <div class="slider-wrap" id="slider-wrap">
+        <div class="slider-track-fill" id="slider-fill"></div>
+        <div class="slider-thumb" id="slider-thumb">→</div>
+        <div class="slider-hint" id="slider-hint">→ スライドして確認</div>
+      </div>
+    </div>
+    <div class="slider-done" id="slider-done">
+      <div class="slider-done-msg">スライダー確認完了。次のステップに進んでください。</div>
+      <div class="section-title" style="margin-bottom:8px;">ステップ 2 — 削除ボタンを押す</div>
+      <button class="delete-btn" id="delete-btn" onclick="confirmDelete()">すべてのデータを消去する</button>
+    </div>
+  </div>
+
+  <footer>&copy; 2026 丸場所記憶ゲーム</footer>
+</div>
+
+<script>
+  const DB_URL = 'https://ad-game-7b40a-default-rtdb.asia-southeast1.firebasedatabase.app';
+
+  // ===== スライダー =====
+  const wrap  = document.getElementById('slider-wrap');
+  const thumb = document.getElementById('slider-thumb');
+  const fill  = document.getElementById('slider-fill');
+  const hint  = document.getElementById('slider-hint');
+  let dragging = false;
+  let startX = 0;
+  let currentX = 0;
+  const THUMB_W = 36;
+
+  function getMaxX(){ return wrap.offsetWidth - THUMB_W - 8; }
+
+  function setThumb(x){
+    const max = getMaxX();
+    x = Math.max(0, Math.min(x, max));
+    currentX = x;
+    thumb.style.transform = `translateX(${x}px)`;
+    fill.style.width = (x / max * 100) + '%';
+    if(x > 8) hint.classList.add('hidden');
+    else hint.classList.remove('hidden');
+    if(x >= max - 2) onSliderComplete();
+  }
+
+  function onSliderComplete(){
+    thumb.textContent = '✓';
+    thumb.style.background = 'var(--accent)';
+    thumb.style.color = '#fff';
+    thumb.style.border = 'none';
+    fill.style.background = 'rgba(216,90,48,0.25)';
+    wrap.style.pointerEvents = 'none';
+    document.getElementById('slider-done').style.display = 'block';
+  }
+
+  // タッチ
+  wrap.addEventListener('touchstart', e => {
+    const touch = e.touches[0];
+    const rect = wrap.getBoundingClientRect();
+    if(touch.clientX - rect.left < THUMB_W + 16) {
+      dragging = true;
+      startX = touch.clientX - currentX;
+    }
+    e.preventDefault();
+  }, {passive:false});
+  wrap.addEventListener('touchmove', e => {
+    if(!dragging) return;
+    setThumb(e.touches[0].clientX - startX);
+    e.preventDefault();
+  }, {passive:false});
+  wrap.addEventListener('touchend', () => {
+    if(!dragging) return;
+    dragging = false;
+    if(currentX < getMaxX() - 2) setThumb(0); // 完了していなければ戻す
+  });
+
+  // マウス
+  wrap.addEventListener('mousedown', e => {
+    const rect = wrap.getBoundingClientRect();
+    if(e.clientX - rect.left < THUMB_W + 16) {
+      dragging = true;
+      startX = e.clientX - currentX;
+    }
+  });
+  document.addEventListener('mousemove', e => {
+    if(!dragging) return;
+    setThumb(e.clientX - startX);
+  });
+  document.addEventListener('mouseup', () => {
+    if(!dragging) return;
+    dragging = false;
+    if(currentX < getMaxX() - 2) setThumb(0);
+  });
+
+  // ===== 削除処理 =====
+  function confirmDelete(){
+    // 二重確認ダイアログ
+    const nick = localStorage.getItem('adgame_nick') || '（未登録）';
+    const ok = confirm(
+      '【最終確認】\n\n' +
+      'ニックネーム「' + nick + '」のすべてのデータを\n' +
+      '完全に消去します。\n\n' +
+      '・ランキングスコア\n' +
+      '・称号\n' +
+      '・表示設定\n' +
+      '・端末ID\n\n' +
+      'この操作は取り消せません。\n本当に消去しますか？'
+    );
+    if(!ok) return;
+
+    // 2回目の確認
+    const ok2 = confirm(
+      '本当によろしいですか？\n\n' +
+      '「OK」を押すとすぐにデータが消去されます。'
+    );
+    if(!ok2) return;
+
+    runDelete(nick);
+  }
+
+  async function runDelete(nick){
+    const modal = document.getElementById('progress-modal');
+    const bar   = document.getElementById('modal-bar');
+    const msg   = document.getElementById('modal-msg');
+    const title = document.getElementById('modal-title');
+    modal.classList.add('show');
+
+    function setProgress(pct, text){
+      bar.style.width = pct + '%';
+      msg.textContent = text;
+    }
+
+    try {
+      // 1. Firebaseからランキングスコアを削除
+      setProgress(10, 'ランキングデータを削除中...');
+      const savedNick = localStorage.getItem('adgame_nick');
+      if(savedNick){
+        const key = encodeURIComponent(savedNick.trim().replace(/[.#$[\]/]/g,'_'));
+        await fetch(DB_URL + '/rankings/' + key + '.json', { method: 'DELETE' });
+      }
+      setProgress(40, 'ランキングデータを削除しました');
+
+      // 2. Firebaseから殿堂入りデータも削除
+      setProgress(50, '殿堂入りデータを確認中...');
+      if(savedNick){
+        const key = encodeURIComponent(savedNick.trim().replace(/[.#$[\]/]/g,'_'));
+        await fetch(DB_URL + '/halloffame/' + key + '.json', { method: 'DELETE' });
+      }
+      setProgress(70, '完了');
+
+      // 3. localStorageを全消去
+      setProgress(85, '端末のデータを消去中...');
+      localStorage.clear();
+      setProgress(100, 'すべてのデータを消去しました');
+
+      // 完了表示
+      title.textContent = '消去完了';
+      msg.textContent = 'すべてのデータを消去しました。ホームへ戻ると新規プレイヤーとして開始できます。';
+      document.getElementById('modal-close').style.display = 'block';
+
+    } catch(e) {
+      // ネットワークエラーでもlocalStorageは消す
+      localStorage.clear();
+      setProgress(100, '完了（一部ネットワークエラーあり）');
+      title.textContent = '消去完了';
+      msg.textContent = '端末データは消去しました。ランキング削除に失敗した可能性があります。ホームへ戻ってください。';
+      document.getElementById('modal-close').style.display = 'block';
+    }
+  }
+</script>
+</body>
+</html>
