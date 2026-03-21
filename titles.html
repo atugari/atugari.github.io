@@ -131,14 +131,14 @@
   </div>
 </div>
 
-<div id="airride-overlay">
+<div id="airride-overlay" style="display:none;">
   <div class="ar-header" id="ar-header">称号一覧</div>
   <div class="ar-grid" id="ar-grid"></div>
   <div class="ar-skip" onclick="skipAirride()">タップしてスキップ</div>
   <div class="ar-done-msg" id="ar-done-msg">タップして続ける</div>
 </div>
 
-<div class="app" id="main-app" style="opacity:0;transition:opacity 0.4s;">
+<div class="app" id="main-app">
   <div class="page-header">
     <a class="back-btn" href="index.html">←</a>
     <span class="page-title" id="page-title-tap" style="user-select:none;">称号一覧</span>
@@ -304,10 +304,7 @@
   function finishAirride(){
     const overlay=document.getElementById('airride-overlay');
     overlay.classList.add('fade-out');
-    setTimeout(()=>{
-      overlay.style.display='none';
-      document.getElementById('main-app').style.opacity='1';
-    },500);
+    setTimeout(()=>{ overlay.style.display='none'; },500);
   }
 
   // ===== 初期化 =====
@@ -319,16 +316,12 @@
 
     render(myIds, myMap);
 
-    if(TITLE_DEFS.length===0 || myIds.size===0){
-      const ov=document.getElementById('airride-overlay');
-      ov.style.transition='none';
-      ov.style.opacity='0';
-      ov.style.display='none';
-      const app=document.getElementById('main-app');
-      app.style.transition='none';
-      app.style.opacity='1';
-      return;
-    }
+    // 称号データがない or 未入手なら演出なしでそのまま表示
+    if(TITLE_DEFS.length === 0 || myIds.size === 0) return;
+
+    // 称号がある時だけオーバーレイを表示して演出
+    const ov = document.getElementById('airride-overlay');
+    ov.style.display = 'flex';
     runAirride(myIds);
   })();
 
