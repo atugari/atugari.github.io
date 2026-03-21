@@ -110,7 +110,14 @@
     .titles-empty{padding:16px;font-size:12px;color:var(--text3);text-align:center;}
     /* 表示設定パネル */
     .disp-settings{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;margin-bottom:16px;}
-    .disp-settings-hd{padding:10px 16px;border-bottom:1px solid var(--border2);font-size:12px;font-weight:500;color:var(--text2);display:flex;align-items:center;gap:6px;}
+    .disp-settings-hd{padding:11px 16px;font-size:13px;font-weight:500;color:var(--text);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;-webkit-tap-highlight-color:rgba(0,0,0,0.05);}
+    .disp-settings-hd:active{background:var(--surface2);}
+    .disp-settings-hd-left{display:flex;flex-direction:column;gap:1px;}
+    .disp-settings-hd-sub{font-size:11px;color:var(--text3);font-weight:400;}
+    .disp-settings-hd-arrow{font-size:11px;color:var(--text3);transition:transform 0.2s;flex-shrink:0;}
+    .disp-settings-hd-arrow.open{transform:rotate(180deg);}
+    .disp-body{border-top:0px solid var(--border2);overflow:hidden;max-height:0;transition:max-height 0.25s ease,border-top-width 0.01s;}
+    .disp-body.open{max-height:400px;border-top-width:1px;}
     .disp-row{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border2);}
     .disp-row:last-child{border-bottom:none;}
     .disp-label{font-size:13px;color:var(--text);}
@@ -150,38 +157,46 @@
 
     <!-- 表示設定パネル -->
     <div class="disp-settings" id="disp-settings-panel">
-      <div class="disp-settings-hd">⚙️ ホームの表示設定</div>
-      <div class="disp-row">
-        <span class="disp-label">📢 バナー広告</span>
-        <label class="toggle-wrap">
-          <input type="checkbox" id="tog-ad" onchange="applyDispSettings()">
-          <span class="toggle-track"></span>
-          <span class="toggle-thumb"></span>
-        </label>
+      <div class="disp-settings-hd" onclick="toggleDispPanel()">
+        <div class="disp-settings-hd-left">
+          <span>ホームの表示設定</span>
+          <span class="disp-settings-hd-sub">タップして表示・非表示を切り替え</span>
+        </div>
+        <span class="disp-settings-hd-arrow" id="disp-arrow">▼</span>
       </div>
-      <div class="disp-row">
-        <span class="disp-label">🏆 月間等ランキング</span>
-        <label class="toggle-wrap">
-          <input type="checkbox" id="tog-banner" onchange="applyDispSettings()">
-          <span class="toggle-track"></span>
-          <span class="toggle-thumb"></span>
-        </label>
-      </div>
-      <div class="disp-row">
-        <span class="disp-label">🎖️ 最近入手した称号</span>
-        <label class="toggle-wrap">
-          <input type="checkbox" id="tog-titles" onchange="applyDispSettings()">
-          <span class="toggle-track"></span>
-          <span class="toggle-thumb"></span>
-        </label>
-      </div>
-      <div class="disp-row">
-        <span class="disp-label">🎮 ゲームカード</span>
-        <label class="toggle-wrap">
-          <input type="checkbox" id="tog-game" onchange="applyDispSettings()">
-          <span class="toggle-track"></span>
-          <span class="toggle-thumb"></span>
-        </label>
+      <div class="disp-body" id="disp-body">
+        <div class="disp-row">
+          <span class="disp-label">バナー広告</span>
+          <label class="toggle-wrap">
+            <input type="checkbox" id="tog-ad" onchange="applyDispSettings()">
+            <span class="toggle-track"></span>
+            <span class="toggle-thumb"></span>
+          </label>
+        </div>
+        <div class="disp-row">
+          <span class="disp-label">月間等ランキング</span>
+          <label class="toggle-wrap">
+            <input type="checkbox" id="tog-banner" onchange="applyDispSettings()">
+            <span class="toggle-track"></span>
+            <span class="toggle-thumb"></span>
+          </label>
+        </div>
+        <div class="disp-row">
+          <span class="disp-label">最近入手した称号</span>
+          <label class="toggle-wrap">
+            <input type="checkbox" id="tog-titles" onchange="applyDispSettings()">
+            <span class="toggle-track"></span>
+            <span class="toggle-thumb"></span>
+          </label>
+        </div>
+        <div class="disp-row">
+          <span class="disp-label">ゲームカード</span>
+          <label class="toggle-wrap">
+            <input type="checkbox" id="tog-game" onchange="applyDispSettings()">
+            <span class="toggle-track"></span>
+            <span class="toggle-thumb"></span>
+          </label>
+        </div>
       </div>
     </div>
 
@@ -189,7 +204,7 @@
     <div id="monthly-banner" style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;margin-bottom:16px;">
       <div style="background:linear-gradient(135deg,#1D9E75,#0F6E56);padding:14px 16px;display:flex;justify-content:space-between;align-items:center;">
         <div>
-          <div style="font-size:11px;color:rgba(255,255,255,0.75);margin-bottom:2px;">🏆 今月のランキング</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.75);margin-bottom:2px;">今月のランキング</div>
           <div style="font-size:16px;font-weight:500;color:#fff;" id="banner-month-label"></div>
         </div>
       </div>
@@ -205,7 +220,7 @@
     <!-- 称号セクション -->
     <div id="titles-section" class="titles-section">
       <div class="titles-section-header">
-        <span>🎖️ 最近入手した称号</span>
+        <span>最近入手した称号</span>
         <a href="titles.html">すべて見る →</a>
       </div>
       <div class="titles-list" id="home-titles-list">
@@ -225,7 +240,7 @@
     </div>
     </div>
     <footer>
-      <span class="disabled-link">🏆 殿堂入り</span>　|　
+      <span class="disabled-link">殿堂入り</span>　|　
       <a href="privacy.html">プライバシーポリシー</a>　|　
       <a href="guide.html">使い方ガイド</a>　|　
       <a href="faq.html">よくある質問</a>　|　
@@ -452,7 +467,7 @@
           const row=document.createElement('div');
           row.className='ranking-row';
           const rc=i===0?'gold':i===1?'silver':i===2?'bronze':'';
-          const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.';
+          const medal=i===0?'1位':i===1?'2位':i===2?'3位':(i+1)+'位';
           const isMe=entry.name===nickname&&entry.deviceId===DEVICE_ID;
           const hofBadge=entry.hallOfFame?'<span style="font-size:10px;background:#FAC775;color:#412402;padding:1px 5px;border-radius:4px;margin-left:4px;">殿堂</span>':'';
           row.innerHTML=
@@ -811,6 +826,14 @@
     }
   }
 
+  function toggleDispPanel() {
+    const body = document.getElementById('disp-body');
+    const arrow = document.getElementById('disp-arrow');
+    const isOpen = body.classList.contains('open');
+    body.classList.toggle('open', !isOpen);
+    arrow.classList.toggle('open', !isOpen);
+  }
+
   function applyDispSettings() {
     // トグルの現在値を読む
     const s = {
@@ -960,7 +983,7 @@
         const row=document.createElement('div');
         row.className='ranking-row';
         const rc=i===0?'gold':i===1?'silver':i===2?'bronze':'';
-        const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.';
+        const medal=i===0?'1位':i===1?'2位':i===2?'3位':(i+1)+'位';
         const isMe=entry.name===nickname&&entry.deviceId===DEVICE_ID;
         row.innerHTML=
           '<span class="rank-num '+rc+'">'+medal+'</span>'+

@@ -15,63 +15,80 @@
     .page-header{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border2);}
     .back-btn{font-size:20px;text-decoration:none;color:var(--text2);line-height:1;}
     .page-title{font-size:18px;font-weight:500;}
-    .section-label{font-size:11px;color:var(--text3);letter-spacing:0.06em;margin:0 0 8px;padding:0 2px;}
-    .card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;margin-bottom:20px;}
-    .title-row{padding:14px 16px;border-bottom:1px solid var(--border2);display:flex;align-items:center;gap:14px;}
-    .title-row:last-child{border-bottom:none;}
-    .title-row.locked{opacity:0.4;}
-    .title-icon-wrap{width:44px;height:44px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
-    .title-row.unlocked .title-icon-wrap{background:linear-gradient(135deg,#fff9e6,#ffeaa0);}
-    @media(prefers-color-scheme:dark){.title-row.unlocked .title-icon-wrap{background:linear-gradient(135deg,#3a3010,#564a10);}}
-    .title-body{flex:1;}
-    .title-name{font-size:14px;font-weight:500;color:var(--text);margin-bottom:2px;}
-    .title-desc{font-size:12px;color:var(--text2);}
-    .title-obtained{font-size:10px;color:var(--green);margin-top:3px;}
-    .lock-badge{font-size:10px;color:var(--text3);flex-shrink:0;}
-    .empty-state{padding:32px 16px;text-align:center;font-size:13px;color:var(--text3);}
     .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
     .stat-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--rs);padding:14px 16px;text-align:center;}
     .stat-val{font-family:'DM Mono',monospace;font-size:24px;font-weight:500;color:var(--text);}
     .stat-label{font-size:11px;color:var(--text3);margin-top:3px;}
+    .section-label{font-size:11px;color:var(--text3);letter-spacing:0.06em;margin:0 0 8px;padding:0 2px;}
+    .card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;margin-bottom:20px;}
+    .title-row-plain{padding:14px 16px;border-bottom:1px solid var(--border2);display:flex;align-items:center;gap:14px;}
+    .title-row-plain:last-child{border-bottom:none;}
+    .title-row-plain.locked{opacity:0.4;}
+    .tr-icon-wrap{width:44px;height:44px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+    .title-row-plain.unlocked .tr-icon-wrap{background:linear-gradient(135deg,#fff9e6,#ffeaa0);}
+    @media(prefers-color-scheme:dark){.title-row-plain.unlocked .tr-icon-wrap{background:linear-gradient(135deg,#3a3010,#564a10);}}
+    .tr-body{flex:1;}
+    .tr-name{font-size:14px;font-weight:500;color:var(--text);margin-bottom:2px;}
+    .tr-desc{font-size:12px;color:var(--text2);}
+    .tr-date{font-size:10px;color:var(--green);margin-top:3px;}
+    .empty-state{padding:32px 16px;text-align:center;font-size:13px;color:var(--text3);}
     footer{margin-top:24px;padding-top:16px;border-top:1px solid var(--border2);text-align:center;font-size:11px;color:var(--text3);}
+
+    /* ===== エアライド演出オーバーレイ ===== */
+    #airride-overlay{position:fixed;inset:0;z-index:9999;background:#09090700;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:1;transition:opacity 0.5s ease;}
+    #airride-overlay.fade-out{opacity:0;pointer-events:none;}
+    #airride-overlay.bg-in{background:#090907ee;}
+    .ar-header{color:#e8e8d8;font-size:13px;font-weight:500;margin-bottom:16px;letter-spacing:0.1em;opacity:0;transition:opacity 0.5s;}
+    .ar-header.show{opacity:1;}
+    .ar-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:min(340px,88vw);max-height:72vh;overflow-y:auto;padding:2px;}
+    .ar-cell{background:#111110;border:1px solid #252520;border-radius:12px;padding:16px 12px;text-align:center;position:relative;overflow:hidden;transition:border-color 0.3s;}
+    .ar-cell.locked-cell{opacity:0.25;}
+    .ar-flash{position:absolute;inset:0;border-radius:12px;opacity:0;pointer-events:none;background:radial-gradient(circle,rgba(255,230,80,0.75) 0%,rgba(255,180,0,0) 68%);}
+    .ar-icon{font-size:28px;line-height:1;display:block;margin-bottom:7px;transition:filter 0.4s ease,transform 0.45s cubic-bezier(0.34,1.56,0.64,1);filter:brightness(0.12);}
+    .ar-name{font-size:12px;font-weight:500;color:#1e1e18;transition:color 0.4s;margin-bottom:3px;}
+    .ar-desc{font-size:10px;color:#1a1a14;transition:color 0.4s;line-height:1.5;}
+    .ar-cell.done .ar-icon{filter:brightness(1);transform:scale(1.12);}
+    .ar-cell.done .ar-name{color:#ddddc8;}
+    .ar-cell.done .ar-desc{color:#888876;}
+    .ar-cell.done{border-color:#3a3820;}
+    .ar-ring{position:absolute;inset:-2px;border-radius:14px;opacity:0;pointer-events:none;border:2px solid transparent;}
+    @keyframes flash-pop{0%{opacity:0}25%{opacity:1}100%{opacity:0}}
+    @keyframes ring-glow{0%{opacity:0;border-color:#ffe87a}30%{opacity:1;border-color:#ffcc00}70%{opacity:0.6;border-color:#ff9900}100%{opacity:0;border-color:transparent}}
+    @keyframes bg-darken{from{background:#09090700}to{background:#090907ee}}
+    .ar-skip{margin-top:18px;font-size:11px;color:#404038;cursor:pointer;user-select:none;transition:color 0.2s;}
+    .ar-skip:hover,.ar-skip:active{color:#888876;}
+    .ar-done-msg{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);color:#ffe87a;font-size:12px;font-weight:500;letter-spacing:0.08em;opacity:0;transition:opacity 0.5s;white-space:nowrap;}
+    .ar-done-msg.show{opacity:1;}
   </style>
 </head>
 <body>
-<div class="app">
+
+<div id="airride-overlay">
+  <div class="ar-header" id="ar-header">称号一覧</div>
+  <div class="ar-grid" id="ar-grid"></div>
+  <div class="ar-skip" onclick="skipAirride()">タップしてスキップ</div>
+  <div class="ar-done-msg" id="ar-done-msg">タップして続ける</div>
+</div>
+
+<div class="app" id="main-app" style="opacity:0;transition:opacity 0.4s;">
   <div class="page-header">
     <a class="back-btn" href="index.html">←</a>
-    <span class="page-title">🎖️ 称号一覧</span>
+    <span class="page-title">称号一覧</span>
   </div>
-
   <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-val" id="count-obtained">0</div>
-      <div class="stat-label">入手済み</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-val" id="count-total">0</div>
-      <div class="stat-label">全称号数</div>
-    </div>
+    <div class="stat-card"><div class="stat-val" id="count-obtained">0</div><div class="stat-label">入手済み</div></div>
+    <div class="stat-card"><div class="stat-val" id="count-total">0</div><div class="stat-label">全称号数</div></div>
   </div>
-
   <div class="section-label">入手済み</div>
-  <div class="card" id="obtained-list">
-    <div class="empty-state">まだ称号を入手していません</div>
-  </div>
-
+  <div class="card" id="obtained-list"><div class="empty-state">まだ称号を入手していません</div></div>
   <div class="section-label">未入手</div>
-  <div class="card" id="locked-list">
-    <div class="empty-state">称号はまだ登録されていません</div>
-  </div>
-
+  <div class="card" id="locked-list"><div class="empty-state">称号はまだ登録されていません</div></div>
   <footer>&copy; 2026 丸場所記憶ゲーム</footer>
 </div>
 
 <script>
-  // 称号マスターデータ（index.htmlと同じ内容を保つこと）
   const TITLE_DEFS = [
-    // 例: { id:'first_clear', icon:'🌟', name:'はじめての挑戦', desc:'初めてチャレンジを完了する', check:(s,ss)=>true }
-    // 称号が追加されたらここに記述する
+    // { id:'first_clear', icon:'★', name:'はじめての挑戦', desc:'初めてチャレンジを完了した' }
   ];
 
   function fmtDate(ts){
@@ -79,67 +96,145 @@
     const d=new Date(ts);
     return d.getFullYear()+'/'+(d.getMonth()+1).toString().padStart(2,'0')+'/'+d.getDate().toString().padStart(2,'0')+' '+d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
   }
+  function getMyTitles(){try{return JSON.parse(localStorage.getItem('adgame_titles')||'[]');}catch(e){return[];}}
 
-  function getMyTitles(){
-    try{return JSON.parse(localStorage.getItem('adgame_titles')||'[]');}catch(e){return[];}
-  }
-
-  function render(){
-    const myTitles = getMyTitles();
-    const myIds = new Set(myTitles.map(t=>t.id));
-    const myMap = {};
-    myTitles.forEach(t=>myMap[t.id]=t);
-
+  // ===== 通常一覧 =====
+  function render(myIds, myMap){
     const obtained = TITLE_DEFS.filter(d=>myIds.has(d.id));
     const locked   = TITLE_DEFS.filter(d=>!myIds.has(d.id));
-
     document.getElementById('count-obtained').textContent = obtained.length;
     document.getElementById('count-total').textContent    = TITLE_DEFS.length;
 
-    // 入手済み
     const obtainedEl = document.getElementById('obtained-list');
-    if(obtained.length === 0){
-      obtainedEl.innerHTML = '<div class="empty-state">まだ称号を入手していません</div>';
+    if(obtained.length===0){
+      obtainedEl.innerHTML='<div class="empty-state">まだ称号を入手していません</div>';
     } else {
-      obtainedEl.innerHTML = '';
-      // 入手日時順（新しい順）
-      const sorted = [...obtained].sort((a,b)=>(myMap[b.id].obtainedAt||0)-(myMap[a.id].obtainedAt||0));
-      sorted.forEach(def=>{
-        const t = myMap[def.id];
-        const row = document.createElement('div');
-        row.className = 'title-row unlocked';
-        row.innerHTML =
-          '<div class="title-icon-wrap">'+def.icon+'</div>'+
-          '<div class="title-body">'+
-            '<div class="title-name">'+def.name+'</div>'+
-            '<div class="title-desc">'+def.desc+'</div>'+
-            '<div class="title-obtained">入手日時：'+fmtDate(t.obtainedAt)+'</div>'+
-          '</div>';
+      obtainedEl.innerHTML='';
+      [...obtained].sort((a,b)=>(myMap[b.id]?.obtainedAt||0)-(myMap[a.id]?.obtainedAt||0)).forEach(def=>{
+        const t=myMap[def.id];
+        const row=document.createElement('div');
+        row.className='title-row-plain unlocked';
+        row.innerHTML='<div class="tr-icon-wrap">'+def.icon+'</div><div class="tr-body"><div class="tr-name">'+def.name+'</div><div class="tr-desc">'+def.desc+'</div><div class="tr-date">入手：'+fmtDate(t?.obtainedAt)+'</div></div>';
         obtainedEl.appendChild(row);
       });
     }
 
-    // 未入手
     const lockedEl = document.getElementById('locked-list');
-    if(locked.length === 0){
-      lockedEl.innerHTML = '<div class="empty-state">'+(TITLE_DEFS.length===0?'称号はまだ登録されていません':'すべての称号を入手しました！')+'</div>';
+    if(locked.length===0){
+      lockedEl.innerHTML='<div class="empty-state">'+(TITLE_DEFS.length===0?'称号はまだ登録されていません':'すべての称号を入手しました！')+'</div>';
     } else {
-      lockedEl.innerHTML = '';
+      lockedEl.innerHTML='';
       locked.forEach(def=>{
-        const row = document.createElement('div');
-        row.className = 'title-row locked';
-        row.innerHTML =
-          '<div class="title-icon-wrap">🔒</div>'+
-          '<div class="title-body">'+
-            '<div class="title-name">'+def.name+'</div>'+
-            '<div class="title-desc">'+def.desc+'</div>'+
-          '</div>';
+        const row=document.createElement('div');
+        row.className='title-row-plain locked';
+        row.innerHTML='<div class="tr-icon-wrap" style="font-size:14px;color:var(--text3);">?</div><div class="tr-body"><div class="tr-name">'+def.name+'</div><div class="tr-desc">'+def.desc+'</div></div>';
         lockedEl.appendChild(row);
       });
     }
   }
 
-  render();
+  // ===== エアライド演出 =====
+  let arSkipped = false;
+
+  function buildGrid(myIds){
+    const grid = document.getElementById('ar-grid');
+    grid.innerHTML='';
+    if(TITLE_DEFS.length===0) return false;
+    TITLE_DEFS.forEach(def=>{
+      const ok = myIds.has(def.id);
+      const cell = document.createElement('div');
+      cell.className = 'ar-cell'+(ok?'':' locked-cell');
+      cell.dataset.id = def.id;
+      cell.innerHTML =
+        '<div class="ar-ring"></div>'+
+        '<div class="ar-flash"></div>'+
+        '<span class="ar-icon">'+(ok?def.icon:'?')+'</span>'+
+        '<div class="ar-name">'+(ok?def.name:'???')+'</div>'+
+        '<div class="ar-desc">'+(ok?def.desc:'')+'</div>';
+      grid.appendChild(cell);
+    });
+    return true;
+  }
+
+  function delay(ms){return new Promise(r=>setTimeout(r,ms));}
+
+  async function runAirride(myIds){
+    const overlay = document.getElementById('airride-overlay');
+    const header  = document.getElementById('ar-header');
+    const doneMsg = document.getElementById('ar-done-msg');
+
+    if(!buildGrid(myIds)){ skipAirride(); return; }
+
+    // 背景を暗くする
+    overlay.style.animation='bg-darken 0.6s ease forwards';
+    overlay.style.background='#090907ee';
+    await delay(400);
+    if(arSkipped) return;
+
+    header.classList.add('show');
+    await delay(300);
+
+    const cells = [...document.querySelectorAll('.ar-cell:not(.locked-cell)')];
+    for(let i=0;i<cells.length;i++){
+      if(arSkipped) break;
+      await delay(i===0?100:90);
+      if(arSkipped) break;
+
+      const cell = cells[i];
+      const flash = cell.querySelector('.ar-flash');
+      const ring  = cell.querySelector('.ar-ring');
+
+      // フラッシュ
+      flash.style.animation='flash-pop 0.5s ease-out forwards';
+      ring.style.animation='ring-glow 0.6s ease-out forwards';
+
+      cell.classList.add('done');
+      cell.style.borderColor='#4a4428';
+
+      await delay(600);
+      flash.style.animation='';
+      ring.style.animation='';
+    }
+
+    if(!arSkipped){
+      await delay(500);
+      doneMsg.classList.add('show');
+      overlay.addEventListener('click', finishAirride, {once:true});
+      overlay.addEventListener('touchend', finishAirride, {once:true});
+    }
+  }
+
+  function skipAirride(){
+    arSkipped=true;
+    document.querySelectorAll('.ar-cell:not(.locked-cell)').forEach(c=>c.classList.add('done'));
+    finishAirride();
+  }
+
+  function finishAirride(){
+    const overlay=document.getElementById('airride-overlay');
+    overlay.classList.add('fade-out');
+    setTimeout(()=>{
+      overlay.style.display='none';
+      document.getElementById('main-app').style.opacity='1';
+    },500);
+  }
+
+  // ===== 初期化 =====
+  (function init(){
+    const myTitles = getMyTitles();
+    const myIds    = new Set(myTitles.map(t=>t.id));
+    const myMap    = {};
+    myTitles.forEach(t=>myMap[t.id]=t);
+
+    render(myIds, myMap);
+
+    if(TITLE_DEFS.length===0 || myIds.size===0){
+      document.getElementById('airride-overlay').style.display='none';
+      document.getElementById('main-app').style.opacity='1';
+      return;
+    }
+    runAirride(myIds);
+  })();
 </script>
 </body>
 </html>
