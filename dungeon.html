@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#1a1a18">
+  <title>四角迷宮（試作版）</title>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{
+      --cell:44px;
+      --bg:#1a1a18;
+      --surface:#252520;
+      --border:#333330;
+      --floor:#2a2a26;
+      --wall:#111110;
+      --player:#1D9E75;
+      --enemy:#D85A30;
+      --text:#f0efe9;
+      --text2:#9a9a92;
+      --text3:#5a5a54;
+    }
+    html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;overflow:hidden;touch-action:none;}
+
+    /* ===== ヘッダー ===== */
+    .hd{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--surface);border-bottom:1px solid var(--border);height:44px;flex-shrink:0;}
+    .hd-title{font-size:14px;font-weight:500;}
+    .hd-back{font-size:13px;color:var(--text2);text-decoration:none;padding:4px 8px;}
+    .hd-info{font-size:12px;color:var(--text2);}
+
+    /* ===== ゲームエリア ===== */
+    .game-wrap{display:flex;flex-direction:column;height:100%;max-width:420px;margin:0 auto;}
+    .viewport-outer{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;}
+
+    /* 7.5マス分の表示領域 */
+    .viewport{
+      width:calc(var(--cell)*7.5);
+      height:calc(var(--cell)*7.5);
+      overflow:hidden;
+      position:relative;
+      border:1px solid var(--border);
+    }
+
+    /* 10×10のマップ全体 */
+    .map-layer{
+      position:absolute;
+      width:calc(var(--cell)*10);
+      height:calc(var(--cell)*10);
+      transition:transform 0.12s ease-out;
+    }
+
+    /* セル */
+    .cell{
+      position:absolute;
+      width:var(--cell);
+      height:var(--cell);
+      border:1px solid var(--border);
+    }
+    .cell.floor{background:var(--floor);}
+    .cell.wall{background:var(--wall);}
+
+    /* キャラクター */
+    .player{
+      position:absolute;
+      width:calc(var(--cell) - 10px);
+      height:calc(var(--cell) - 10px);
+      background:var(--player);
+      border-radius:6px;
+      z-index:10;
+      transition:left 0.12s ease-out, top 0.12s ease-out;
+      display:flex;align-items:center;justify-content:center;
+      font-size:18px;
+    }
+
+    /* 敵 */
+    .enemy-token{
+      position:absolute;
+      width:calc(var(--cell) - 10px);
+      height:calc(var(--cell) - 10px);
+      background:var(--enemy);
+      border-radius:4px;
+      z-index:9;
+      display:flex;align-items:center;justify-content:center;
+      font-size:16px;
+      opacity:0.9;
+    }
+
+    /* 方向インジケーター（キャラが向いている方向） */
+    .player::after{
+      content:'';
+      position:absolute;
+      width:8px;height:8px;
+      background:rgba(255,255,255,0.6);
+      border-radius:50%;
+    }
+    .player.dir-up::after{top:3px;left:50%;transform:translateX(-50%);}
+    .player.dir-down::after{bottom:3px;left:50%;transform:translateX(-50%);}
+    .player.dir-left::after{left:3px;top:50%;transform:translateY(-50%);}
+    .player.dir-right::after{right:3px;top:50%;transform:translateY(-50%);}
+
+    /* ===== UI下部 ===== */
+    .bottom-ui{flex-shrink:0;padding:8px 12px 12px;background:var(--surface);border-top:1px solid var(--border);}
+
+    /* ステータスバー */
+    .status-bar{display:flex;gap:12px;margin-bottom:10px;font-size:12px;color:var(--text2);}
+    .status-item{display:flex;align-items:center;gap:4px;}
+    .status-val{font-weight:500;color:var(--text);}
+
+    /* 十字キー */
+    .dpad{
+      display:grid;
+      grid-template-columns:repeat(3,44px);
+      grid-template-rows:repeat(3,44px);
+      gap:4px;
+      margin:0 auto;
+      width:fit-content;
+    }
+    .dpad-btn{
+      width:44px;height:44px;
+      border-radius:8px;
+      border:1px solid var(--border);
+      background:#2e2e2a;
+      color:var(--text);
+      font-size:18px;
+      display:flex;align-items:center;justify-content:center;
+      cursor:pointer;
+      user-select:none;
+      -webkit-tap-highlight-color:rgba(0,0,0,0);
+      active-scale:0.92;
+      transition:background 0.08s;
+    }
+    .dpad-btn:active{background:#3e3e38;}
+    .dpad-btn.empty{background:transparent;border-color:transparent;pointer-events:none;}
+    .dev-banner{background:#534AB7;color:#fff;text-align:center;font-size:11px;padding:5px;letter-spacing:0.05em;flex-shrink:0;}
+    .demo-badge{font-size:9px;background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.4);border-radius:4px;padding:1px 5px;margin-left:5px;vertical-align:middle;letter-spacing:0.05em;}
+  </style>
+</head>
+<body>
+<div class="game-wrap">
+
+  <!-- 開発中バナー -->
+  <div class="dev-banner">🚧 現在開発中のゲームです。内容は変更される場合があります 🚧</div>
+
+  <!-- ヘッダー -->
+  <div class="hd">
+    <a class="hd-back" href="index.html">← 戻る</a>
+    <span class="hd-title">四角迷宮<span class="demo-badge">試作版</span></span>
+    <span class="hd-info" id="hd-room">部屋 1</span>
+  </div>
+
+  <!-- ビューポート（7.5×7.5表示） -->
+  <div class="viewport-outer">
+    <div class="viewport" id="viewport">
+      <div class="map-layer" id="map-layer">
+        <!-- セル・プレイヤー・敵はJSで生成 -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 下部UI -->
+  <div class="bottom-ui">
+    <div class="status-bar">
+      <div class="status-item">HP <span class="status-val" id="st-hp">100</span></div>
+      <div class="status-item">部屋 <span class="status-val" id="st-room">1-1</span></div>
+      <div class="status-item">敵 <span class="status-val" id="st-enemies">3</span></div>
+    </div>
+    <!-- 十字キー -->
+    <div class="dpad">
+      <div class="dpad-btn empty"></div>
+      <div class="dpad-btn" id="btn-up"   ontouchstart="move('up')"   onclick="move('up')">▲</div>
+      <div class="dpad-btn empty"></div>
+      <div class="dpad-btn" id="btn-left" ontouchstart="move('left')" onclick="move('left')">◀</div>
+      <div class="dpad-btn center">待機</div>
+      <div class="dpad-btn" id="btn-right" ontouchstart="move('right')" onclick="move('right')">▶</div>
+      <div class="dpad-btn empty"></div>
+      <div class="dpad-btn" id="btn-down" ontouchstart="move('down')" onclick="move('down')">▼</div>
+      <div class="dpad-btn empty"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const CELL = 44;       // 1マスのpxサイズ
+  const MAP_SIZE = 10;   // マップは10×10
+  const VIEW = 7.5;      // 表示は7.5マス
+
+  // ===== ゲーム状態 =====
+  let player = { x:2, y:2, dir:'down', hp:100, maxHp:100 };
+  let enemies = [];
+  let map = [];  // 0=床, 1=壁
+
+  // ===== マップ生成 =====
+  function initMap(){
+    // 全部床にする（フェーズ1はシンプルに）
+    map = Array.from({length:MAP_SIZE}, () => Array(MAP_SIZE).fill(0));
+  }
+
+  // ===== 敵の仮配置 =====
+  function initEnemies(){
+    enemies = [
+      {id:0, x:7, y:7},
+      {id:1, x:5, y:8},
+      {id:2, x:8, y:3},
+    ];
+  }
+
+  // ===== マップ描画 =====
+  function renderMap(){
+    const layer = document.getElementById('map-layer');
+    layer.innerHTML = '';
+
+    // セルを配置
+    for(let y=0; y<MAP_SIZE; y++){
+      for(let x=0; x<MAP_SIZE; x++){
+        const cell = document.createElement('div');
+        cell.className = 'cell ' + (map[y][x]===1 ? 'wall' : 'floor');
+        cell.style.left = x * CELL + 'px';
+        cell.style.top  = y * CELL + 'px';
+        layer.appendChild(cell);
+      }
+    }
+
+    // 敵を配置
+    enemies.forEach(e => {
+      const el = document.createElement('div');
+      el.className = 'enemy-token';
+      el.id = 'enemy-' + e.id;
+      el.style.left = (e.x * CELL + 5) + 'px';
+      el.style.top  = (e.y * CELL + 5) + 'px';
+      el.textContent = '👾';
+      layer.appendChild(el);
+    });
+
+    // プレイヤーを配置
+    const playerEl = document.createElement('div');
+    playerEl.className = 'player dir-' + player.dir;
+    playerEl.id = 'player';
+    playerEl.style.left = (player.x * CELL + 5) + 'px';
+    playerEl.style.top  = (player.y * CELL + 5) + 'px';
+    playerEl.textContent = '🧍';
+    layer.appendChild(playerEl);
+
+    // 視点を更新
+    updateViewport(false);
+  }
+
+  // ===== 視点更新 =====
+  // キャラクターが常に画面中央になるよう、マップ全体をずらす
+  // アニメ有無をフラグで切り替え
+  function updateViewport(animate=true){
+    const layer = document.getElementById('map-layer');
+
+    // ビューポートの中心 = VIEW/2 マス
+    // マップをずらす量 = プレイヤー位置 - ビューポート中心
+    const offsetX = -(player.x * CELL - (VIEW/2 - 0.5) * CELL);
+    const offsetY = -(player.y * CELL - (VIEW/2 - 0.5) * CELL);
+
+    // マップ範囲外に出ないようクランプ
+    const minX = -(MAP_SIZE * CELL - VIEW * CELL);
+    const maxX = 0;
+    const minY = -(MAP_SIZE * CELL - VIEW * CELL);
+    const maxY = 0;
+
+    const clampedX = Math.max(minX, Math.min(maxX, offsetX));
+    const clampedY = Math.max(minY, Math.min(maxY, offsetY));
+
+    if(animate){
+      layer.style.transition = 'transform 0.12s ease-out';
+    } else {
+      layer.style.transition = 'none';
+    }
+    layer.style.transform = `translate(${clampedX}px, ${clampedY}px)`;
+  }
+
+  // ===== プレイヤー移動 =====
+  let moving = false;
+  function move(dir){
+    if(moving) return;
+
+    // 向きを更新
+    player.dir = dir;
+
+    // 移動先を計算
+    let nx = player.x;
+    let ny = player.y;
+    if(dir==='up')    ny--;
+    if(dir==='down')  ny++;
+    if(dir==='left')  nx--;
+    if(dir==='right') nx++;
+
+    // 壁・範囲チェック
+    if(nx<0||nx>=MAP_SIZE||ny<0||ny>=MAP_SIZE||map[ny][nx]===1){
+      // 向きだけ変えて移動しない
+      updatePlayerEl();
+      return;
+    }
+
+    // 敵のいるマスには移動不可（フェーズ2で攻撃に変える）
+    const hitEnemy = enemies.find(e=>e.x===nx&&e.y===ny);
+    if(hitEnemy){
+      // 向きだけ変えて返す
+      updatePlayerEl();
+      return;
+    }
+
+    moving = true;
+    player.x = nx;
+    player.y = ny;
+
+    // プレイヤーの位置を更新
+    updatePlayerEl();
+    // 視点を更新（同じタイミング・同じ速度でマップをずらす）
+    updateViewport(true);
+
+    setTimeout(()=>{ moving = false; }, 130);
+  }
+
+  // ===== プレイヤー表示更新 =====
+  function updatePlayerEl(){
+    const el = document.getElementById('player');
+    if(!el) return;
+    el.style.left = (player.x * CELL + 5) + 'px';
+    el.style.top  = (player.y * CELL + 5) + 'px';
+    el.className = 'player dir-' + player.dir;
+  }
+
+  // ===== ステータス表示更新 =====
+  function updateStatus(){
+    document.getElementById('st-hp').textContent = player.hp;
+    document.getElementById('st-enemies').textContent = enemies.length;
+  }
+
+  // ===== キーボード対応（PC用） =====
+  document.addEventListener('keydown', e=>{
+    const map2 = {ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',
+                  w:'up',s:'down',a:'left',d:'right'};
+    if(map2[e.key]){ e.preventDefault(); move(map2[e.key]); }
+  });
+
+  // タッチの二重発火防止
+  document.querySelectorAll('.dpad-btn').forEach(btn=>{
+    btn.addEventListener('touchstart', e=>{ e.preventDefault(); }, {passive:false});
+  });
+
+  // ===== 初期化 =====
+  function init(){
+    initMap();
+    initEnemies();
+    renderMap();
+    updateStatus();
+  }
+
+  init();
+</script>
+</body>
+</html>
