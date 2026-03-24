@@ -7,345 +7,325 @@
   <title>四角迷宮（試作版）</title>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    :root{
-      --cell:44px;
-      --bg:#1a1a18;
-      --surface:#252520;
-      --border:#333330;
-      --floor:#2a2a26;
-      --wall:#111110;
-      --player:#1D9E75;
-      --enemy:#D85A30;
-      --text:#f0efe9;
-      --text2:#9a9a92;
-      --text3:#5a5a54;
-    }
-    html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;overflow:hidden;touch-action:none;}
-
-    /* ===== ヘッダー ===== */
-    .hd{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--surface);border-bottom:1px solid var(--border);height:44px;flex-shrink:0;}
+    :root{--cell:44px;--bg:#1a1a18;--surface:#252520;--border:#333330;--floor:#2a2a26;--floor2:#242420;--wall:#111110;--player:#1D9E75;--enemy:#D85A30;--atk:#378ADD;--text:#f0efe9;--text2:#9a9a92;--text3:#5a5a54;}
+    html,body{height:100%;background:var(--bg);color:var(--text);font-family:sans-serif;overflow:hidden;touch-action:none;}
+    .game-wrap{display:flex;flex-direction:column;height:100%;max-width:420px;margin:0 auto;}
+    .dev-banner{background:#534AB7;color:#fff;text-align:center;font-size:11px;padding:5px;flex-shrink:0;}
+    .hd{display:flex;align-items:center;justify-content:space-between;padding:0 12px;background:var(--surface);border-bottom:1px solid var(--border);height:44px;flex-shrink:0;}
     .hd-title{font-size:14px;font-weight:500;}
     .hd-back{font-size:13px;color:var(--text2);text-decoration:none;padding:4px 8px;}
-    .hd-info{font-size:12px;color:var(--text2);}
-
-    /* ===== ゲームエリア ===== */
-    .game-wrap{display:flex;flex-direction:column;height:100%;max-width:420px;margin:0 auto;}
-    .viewport-outer{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;}
-
-    /* 7.5マス分の表示領域 */
-    .viewport{
-      width:calc(var(--cell)*7.5);
-      height:calc(var(--cell)*7.5);
-      overflow:hidden;
-      position:relative;
-      border:1px solid var(--border);
-    }
-
-    /* 10×10のマップ全体 */
-    .map-layer{
-      position:absolute;
-      width:calc(var(--cell)*10);
-      height:calc(var(--cell)*10);
-      transition:transform 0.12s ease-out;
-    }
-
-    /* セル */
-    .cell{
-      position:absolute;
-      width:var(--cell);
-      height:var(--cell);
-      border:1px solid var(--border);
-    }
+    .hd-info{font-size:11px;color:var(--text2);}
+    .demo-badge{font-size:9px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:3px;padding:1px 5px;margin-left:5px;vertical-align:middle;}
+    .hp-bar-wrap{flex-shrink:0;padding:4px 12px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+    .hp-label{font-size:11px;color:var(--text2);width:28px;}
+    .hp-track{flex:1;height:8px;background:#333;border-radius:4px;overflow:hidden;}
+    .hp-fill{height:100%;background:var(--player);border-radius:4px;transition:width 0.3s;}
+    .hp-fill.low{background:#D85A30;}
+    .hp-num{font-size:11px;color:var(--text2);min-width:56px;text-align:right;}
+    .viewport-outer{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--bg);}
+    .viewport{width:calc(var(--cell)*7.5);height:calc(var(--cell)*7.5);overflow:hidden;position:relative;border:1px solid var(--border);}
+    .map-layer{position:absolute;transition:transform 0.12s ease-out;}
+    .cell{position:absolute;width:var(--cell);height:var(--cell);border:1px solid var(--border);}
     .cell.floor{background:var(--floor);}
+    .cell.floor2{background:var(--floor2);}
     .cell.wall{background:var(--wall);}
-
-    /* キャラクター */
-    .player{
-      position:absolute;
-      width:calc(var(--cell) - 10px);
-      height:calc(var(--cell) - 10px);
-      background:var(--player);
-      border-radius:6px;
-      z-index:10;
-      transition:left 0.12s ease-out, top 0.12s ease-out;
-    }
-
-    /* 敵 */
-    .enemy-token{
-      position:absolute;
-      width:calc(var(--cell) - 10px);
-      height:calc(var(--cell) - 10px);
-      background:var(--enemy);
-      border-radius:4px;
-      z-index:9;
-      opacity:0.9;
-    }
-
-    /* 方向インジケーター（キャラが向いている方向） */
-    .player::after{
-      content:'';
-      position:absolute;
-      width:8px;height:8px;
-      background:rgba(255,255,255,0.6);
-      border-radius:50%;
-    }
+    .cell.atk-range{background:rgba(55,138,221,0.25);border-color:rgba(55,138,221,0.5);}
+    .player{position:absolute;width:calc(var(--cell) - 10px);height:calc(var(--cell) - 10px);background:var(--player);border-radius:6px;z-index:10;transition:left 0.12s ease-out,top 0.12s ease-out;}
+    .player::after{content:'';position:absolute;width:7px;height:7px;background:rgba(255,255,255,0.7);border-radius:50%;}
     .player.dir-up::after{top:3px;left:50%;transform:translateX(-50%);}
     .player.dir-down::after{bottom:3px;left:50%;transform:translateX(-50%);}
     .player.dir-left::after{left:3px;top:50%;transform:translateY(-50%);}
     .player.dir-right::after{right:3px;top:50%;transform:translateY(-50%);}
-
-    /* ===== UI下部 ===== */
-    .bottom-ui{flex-shrink:0;padding:8px 12px 12px;background:var(--surface);border-top:1px solid var(--border);}
-
-    /* ステータスバー */
-    .status-bar{display:flex;gap:12px;margin-bottom:10px;font-size:12px;color:var(--text2);}
-    .status-item{display:flex;align-items:center;gap:4px;}
-    .status-val{font-weight:500;color:var(--text);}
-
-    /* 十字キー */
-    .dpad{
-      display:grid;
-      grid-template-columns:repeat(3,44px);
-      grid-template-rows:repeat(3,44px);
-      gap:4px;
-      margin:0 auto;
-      width:fit-content;
-    }
-    .dpad-btn{
-      width:44px;height:44px;
-      border-radius:8px;
-      border:1px solid var(--border);
-      background:#2e2e2a;
-      color:var(--text);
-      font-size:18px;
-      display:flex;align-items:center;justify-content:center;
-      cursor:pointer;
-      user-select:none;
-      -webkit-tap-highlight-color:rgba(0,0,0,0);
-      active-scale:0.92;
-      transition:background 0.08s;
-    }
+    .enemy-token{position:absolute;width:calc(var(--cell) - 10px);height:calc(var(--cell) - 10px);background:var(--enemy);border-radius:4px;z-index:9;}
+    @keyframes hit-flash{0%{background:#fff;}100%{background:var(--enemy);}}
+    .bottom-ui{flex-shrink:0;padding:6px 12px 10px;background:var(--surface);border-top:1px solid var(--border);}
+    .weapon-bar{display:flex;align-items:center;gap:6px;margin-bottom:7px;font-size:12px;flex-wrap:wrap;}
+    .weapon-name{font-weight:500;color:var(--text);}
+    .weapon-atk{color:var(--text2);font-size:11px;}
+    .rarity-badge{font-size:10px;padding:1px 6px;border-radius:3px;font-weight:500;}
+    .rarity-C{background:#333;color:#aaa;}
+    .rarity-B{background:rgba(29,158,117,0.2);color:#1D9E75;}
+    .rarity-A{background:rgba(55,138,221,0.2);color:#378ADD;}
+    .rarity-S{background:rgba(83,74,183,0.2);color:#a09af0;}
+    .atk-btn{margin-left:auto;padding:5px 14px;border-radius:6px;border:1px solid var(--atk);background:none;color:var(--atk);font-size:12px;cursor:pointer;white-space:nowrap;}
+    .atk-btn:active{background:rgba(55,138,221,0.15);}
+    .atk-btn.active{background:var(--atk);color:#fff;}
+    .dpad{display:grid;grid-template-columns:repeat(3,44px);grid-template-rows:repeat(3,44px);gap:4px;margin:0 auto;width:fit-content;}
+    .dpad-btn{width:44px;height:44px;border-radius:8px;border:1px solid var(--border);background:#2e2e2a;color:var(--text);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;-webkit-tap-highlight-color:rgba(0,0,0,0);}
     .dpad-btn:active{background:#3e3e38;}
     .dpad-btn.empty{background:transparent;border-color:transparent;pointer-events:none;}
-    .dev-banner{background:#534AB7;color:#fff;text-align:center;font-size:11px;padding:5px;letter-spacing:0.05em;flex-shrink:0;}
-    .demo-badge{font-size:9px;background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.4);border-radius:4px;padding:1px 5px;margin-left:5px;vertical-align:middle;letter-spacing:0.05em;}
+    .dpad-btn.center{background:#1a1a18;font-size:10px;color:var(--text3);}
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;}
+    .overlay-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;width:100%;max-width:360px;}
+    .overlay-title{font-size:16px;font-weight:500;margin-bottom:6px;}
+    .overlay-sub{font-size:12px;color:var(--text2);margin-bottom:16px;line-height:1.7;}
+    .weapon-card{background:#1a1a18;border:1.5px solid var(--border);border-radius:8px;padding:14px;margin-bottom:10px;cursor:pointer;}
+    .weapon-card:last-child{margin-bottom:0;}
+    .weapon-card:active{border-color:var(--player);}
+    .weapon-card-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+    .weapon-card-name{font-size:15px;font-weight:500;}
+    .weapon-card-stats{font-size:12px;color:var(--text2);line-height:1.8;}
+    .weapon-card-range{font-size:11px;color:var(--text3);margin-top:4px;}
+    .stat-base{color:var(--text);}
+    .stat-bonus{color:#1D9E75;}
+    .stat-minus{color:#D85A30;}
+    .msg-log{position:absolute;bottom:0;left:0;right:0;padding:4px 8px;font-size:11px;color:rgba(240,239,233,0.85);background:rgba(20,20,18,0.8);pointer-events:none;min-height:20px;}
   </style>
 </head>
 <body>
 <div class="game-wrap">
-
-  <!-- 開発中バナー -->
   <div class="dev-banner">現在開発中のゲームです。内容は変更される場合があります</div>
-
-  <!-- ヘッダー -->
   <div class="hd">
     <a class="hd-back" href="index.html">← 戻る</a>
     <span class="hd-title">四角迷宮<span class="demo-badge">試作版</span></span>
-    <span class="hd-info" id="hd-room">部屋 1</span>
+    <span class="hd-info" id="hd-info">安全な部屋</span>
   </div>
-
-  <!-- ビューポート（7.5×7.5表示） -->
+  <div class="hp-bar-wrap">
+    <span class="hp-label">HP</span>
+    <div class="hp-track"><div class="hp-fill" id="hp-fill" style="width:100%"></div></div>
+    <span class="hp-num" id="hp-num">100 / 100</span>
+  </div>
   <div class="viewport-outer">
     <div class="viewport" id="viewport">
-      <div class="map-layer" id="map-layer">
-        <!-- セル・プレイヤー・敵はJSで生成 -->
-      </div>
+      <div class="map-layer" id="map-layer"></div>
     </div>
   </div>
-
-  <!-- 下部UI -->
   <div class="bottom-ui">
-    <div class="status-bar">
-      <div class="status-item">HP <span class="status-val" id="st-hp">100</span></div>
-      <div class="status-item">部屋 <span class="status-val" id="st-room">1-1</span></div>
-      <div class="status-item">敵 <span class="status-val" id="st-enemies">3</span></div>
+    <div class="weapon-bar">
+      <span class="weapon-name" id="weapon-name">武器未選択</span>
+      <span class="weapon-atk" id="weapon-atk"></span>
+      <button class="atk-btn" id="atk-btn" onclick="toggleAtkMode()">攻撃</button>
     </div>
-    <!-- 十字キー -->
     <div class="dpad">
       <div class="dpad-btn empty"></div>
-      <div class="dpad-btn" id="btn-up"   ontouchstart="move('up')"   onclick="move('up')">▲</div>
+      <div class="dpad-btn" ontouchstart="em(event,'up')"    onclick="doMove('up')">▲</div>
       <div class="dpad-btn empty"></div>
-      <div class="dpad-btn" id="btn-left" ontouchstart="move('left')" onclick="move('left')">◀</div>
+      <div class="dpad-btn" ontouchstart="em(event,'left')"  onclick="doMove('left')">◀</div>
       <div class="dpad-btn center">待機</div>
-      <div class="dpad-btn" id="btn-right" ontouchstart="move('right')" onclick="move('right')">▶</div>
+      <div class="dpad-btn" ontouchstart="em(event,'right')" onclick="doMove('right')">▶</div>
       <div class="dpad-btn empty"></div>
-      <div class="dpad-btn" id="btn-down" ontouchstart="move('down')" onclick="move('down')">▼</div>
+      <div class="dpad-btn" ontouchstart="em(event,'down')"  onclick="doMove('down')">▼</div>
       <div class="dpad-btn empty"></div>
     </div>
   </div>
+</div>
 
+<div class="overlay" id="weapon-overlay">
+  <div class="overlay-box">
+    <div class="overlay-title">武器を選ぶ</div>
+    <div class="overlay-sub">安全な部屋に2つの武器があった。<br>1つを選んで出発しよう。</div>
+    <div id="weapon-choices"></div>
+  </div>
 </div>
 
 <script>
-  const CELL = 44;       // 1マスのpxサイズ
-  const MAP_SIZE = 10;   // マップは10×10
-  const VIEW = 7.5;      // 表示は7.5マス
+const CELL=44, SAFE=5, MAP=10;
 
-  // ===== ゲーム状態 =====
-  let player = { x:2, y:2, dir:'down', hp:100, maxHp:100 };
-  let enemies = [];
-  let map = [];  // 0=床, 1=壁
+const WDEFS={
+  fu:  {name:'歩',  baseAtk:28,spread:8, rarity:'B',range:[[0,1]],                                           desc:'前方1マス。攻撃力が高い。'},
+  kyo: {name:'香',  baseAtk:18,spread:10,rarity:'C',range:[[0,1],[0,2]],                                     desc:'前方2マス。攻撃力は控えめ。'},
+  kei: {name:'桂',  baseAtk:22,spread:8, rarity:'B',range:[[-1,2],[1,2]],                                    desc:'前方2マス左右1ずれ。跳び越える。'},
+  hi:  {name:'飛',  baseAtk:20,spread:6, rarity:'A',range:[[0,1],[0,2],[1,0],[2,0],[-1,0],[-2,0]],           desc:'縦横2マス。汎用性の高いレア武器。'},
+  kaku:{name:'角',  baseAtk:20,spread:6, rarity:'A',range:[[1,1],[2,2],[-1,1],[-2,2],[1,-1],[2,-2],[-1,-1],[-2,-2]],desc:'斜め2マス。汎用性の高いレア武器。'},
+  gin: {name:'銀',  baseAtk:14,spread:6, rarity:'C',range:[[0,1],[1,1],[-1,1],[1,-1],[-1,-1]],               desc:'前方と斜め4方向。囲まれた時に強い。'},
+};
 
-  // ===== マップ生成 =====
-  function initMap(){
-    // 全部床にする（フェーズ1はシンプルに）
-    map = Array.from({length:MAP_SIZE}, () => Array(MAP_SIZE).fill(0));
-  }
+let player={x:2,y:2,dir:'down',hp:100,maxHp:100,weapon:null};
+let enemies=[], map=[], mapSize=SAFE, phase='safe', atkMode=false, moving=false, msgTmr=null;
 
-  // ===== 敵の仮配置 =====
-  function initEnemies(){
-    enemies = [
-      {id:0, x:7, y:7},
-      {id:1, x:5, y:8},
-      {id:2, x:8, y:3},
-    ];
-  }
+function genWeapon(id){
+  const d=WDEFS[id];
+  const bonus=Math.floor(Math.random()*d.spread)-Math.floor(d.spread/2);
+  return {id,name:d.name,atk:d.baseAtk+bonus,baseAtk:d.baseAtk,bonus,rarity:d.rarity,range:d.range,desc:d.desc};
+}
+function pickWeapons(){
+  const pool=Object.keys(WDEFS).sort(()=>Math.random()-0.5);
+  return [genWeapon(pool[0]),genWeapon(pool[1])];
+}
 
-  // ===== マップ描画 =====
-  function renderMap(){
-    const layer = document.getElementById('map-layer');
-    layer.innerHTML = '';
+function initSafe(){
+  mapSize=SAFE; map=Array.from({length:SAFE},()=>Array(SAFE).fill(0));
+  player.x=2;player.y=2;player.dir='down'; enemies=[]; phase='safe';
+}
+function initBattle(){
+  mapSize=MAP; map=Array.from({length:MAP},()=>Array(MAP).fill(0));
+  player.x=1;player.y=1;player.dir='down';
+  enemies=[];
+  const pos=[];
+  while(pos.length<3){const x=5+Math.floor(Math.random()*4),y=5+Math.floor(Math.random()*4);if(!pos.find(p=>p.x===x&&p.y===y))pos.push({x,y});}
+  pos.forEach((p,i)=>enemies.push({id:i,x:p.x,y:p.y,hp:40,maxHp:40}));
+  phase='battle'; updHd();
+}
 
-    // セルを配置
-    for(let y=0; y<MAP_SIZE; y++){
-      for(let x=0; x<MAP_SIZE; x++){
-        const cell = document.createElement('div');
-        cell.className = 'cell ' + (map[y][x]===1 ? 'wall' : 'floor');
-        cell.style.left = x * CELL + 'px';
-        cell.style.top  = y * CELL + 'px';
-        layer.appendChild(cell);
-      }
-    }
+function atkCells(){
+  if(!player.weapon)return[];
+  const dir=player.dir,raw=player.weapon.range;
+  return raw.map(([dx,dy])=>{
+    let rx,ry;
+    if(dir==='down'){rx=dx;ry=dy;}
+    else if(dir==='up'){rx=-dx;ry=-dy;}
+    else if(dir==='right'){rx=dy;ry=-dx;}
+    else{rx=-dy;ry=dx;}
+    return{x:player.x+rx,y:player.y+ry};
+  }).filter(c=>c.x>=0&&c.x<mapSize&&c.y>=0&&c.y<mapSize);
+}
 
-    // 敵を配置
-    enemies.forEach(e => {
-      const el = document.createElement('div');
-      el.className = 'enemy-token';
-      el.id = 'enemy-' + e.id;
-      el.style.left = (e.x * CELL + 5) + 'px';
-      el.style.top  = (e.y * CELL + 5) + 'px';
-      layer.appendChild(el);
-    });
+function render(){
+  const layer=document.getElementById('map-layer');
+  layer.innerHTML='';
+  layer.style.width=mapSize*CELL+'px';
+  layer.style.height=mapSize*CELL+'px';
+  const ac=atkMode?atkCells():[];
+  const as=new Set(ac.map(c=>c.x+','+c.y));
 
-    // プレイヤーを配置
-    const playerEl = document.createElement('div');
-    playerEl.className = 'player dir-' + player.dir;
-    playerEl.id = 'player';
-    playerEl.style.left = (player.x * CELL + 5) + 'px';
-    playerEl.style.top  = (player.y * CELL + 5) + 'px';
-    layer.appendChild(playerEl);
+  for(let y=0;y<mapSize;y++){for(let x=0;x<mapSize;x++){
+    const c=document.createElement('div');
+    const ia=as.has(x+','+y);
+    c.className='cell '+(ia?'atk-range':(map[y][x]?'wall':((x+y)%2===0?'floor':'floor2')));
+    c.style.left=x*CELL+'px';c.style.top=y*CELL+'px';
+    if(atkMode&&ia){(function(cx,cy){
+      c.addEventListener('click',()=>doAtk(cx,cy));
+      c.addEventListener('touchend',e=>{e.preventDefault();doAtk(cx,cy);});
+    })(x,y);}
+    layer.appendChild(c);
+  }}
 
-    // 視点を更新
-    updateViewport(false);
-  }
-
-  // ===== 視点更新 =====
-  // キャラクターが常に画面中央になるよう、マップ全体をずらす
-  // アニメ有無をフラグで切り替え
-  function updateViewport(animate=true){
-    const layer = document.getElementById('map-layer');
-
-    // ビューポートの中心 = VIEW/2 マス
-    // マップをずらす量 = プレイヤー位置 - ビューポート中心
-    const offsetX = -(player.x * CELL - (VIEW/2 - 0.5) * CELL);
-    const offsetY = -(player.y * CELL - (VIEW/2 - 0.5) * CELL);
-
-    // マップ範囲外に出ないようクランプ
-    const minX = -(MAP_SIZE * CELL - VIEW * CELL);
-    const maxX = 0;
-    const minY = -(MAP_SIZE * CELL - VIEW * CELL);
-    const maxY = 0;
-
-    const clampedX = Math.max(minX, Math.min(maxX, offsetX));
-    const clampedY = Math.max(minY, Math.min(maxY, offsetY));
-
-    if(animate){
-      layer.style.transition = 'transform 0.12s ease-out';
-    } else {
-      layer.style.transition = 'none';
-    }
-    layer.style.transform = `translate(${clampedX}px, ${clampedY}px)`;
-  }
-
-  // ===== プレイヤー移動 =====
-  let moving = false;
-  function move(dir){
-    if(moving) return;
-
-    // 向きを更新
-    player.dir = dir;
-
-    // 移動先を計算
-    let nx = player.x;
-    let ny = player.y;
-    if(dir==='up')    ny--;
-    if(dir==='down')  ny++;
-    if(dir==='left')  nx--;
-    if(dir==='right') nx++;
-
-    // 壁・範囲チェック
-    if(nx<0||nx>=MAP_SIZE||ny<0||ny>=MAP_SIZE||map[ny][nx]===1){
-      // 向きだけ変えて移動しない
-      updatePlayerEl();
-      return;
-    }
-
-    // 敵のいるマスには移動不可（フェーズ2で攻撃に変える）
-    const hitEnemy = enemies.find(e=>e.x===nx&&e.y===ny);
-    if(hitEnemy){
-      // 向きだけ変えて返す
-      updatePlayerEl();
-      return;
-    }
-
-    moving = true;
-    player.x = nx;
-    player.y = ny;
-
-    // プレイヤーの位置を更新
-    updatePlayerEl();
-    // 視点を更新（同じタイミング・同じ速度でマップをずらす）
-    updateViewport(true);
-
-    setTimeout(()=>{ moving = false; }, 130);
-  }
-
-  // ===== プレイヤー表示更新 =====
-  function updatePlayerEl(){
-    const el = document.getElementById('player');
-    if(!el) return;
-    el.style.left = (player.x * CELL + 5) + 'px';
-    el.style.top  = (player.y * CELL + 5) + 'px';
-    el.className = 'player dir-' + player.dir;
-  }
-
-  // ===== ステータス表示更新 =====
-  function updateStatus(){
-    document.getElementById('st-hp').textContent = player.hp;
-    document.getElementById('st-enemies').textContent = enemies.length;
-  }
-
-  // ===== キーボード対応（PC用） =====
-  document.addEventListener('keydown', e=>{
-    const map2 = {ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',
-                  w:'up',s:'down',a:'left',d:'right'};
-    if(map2[e.key]){ e.preventDefault(); move(map2[e.key]); }
+  enemies.forEach(e=>{
+    const el=document.createElement('div');
+    el.className='enemy-token';el.id='e'+e.id;
+    el.style.left=(e.x*CELL+5)+'px';el.style.top=(e.y*CELL+5)+'px';
+    const inR=ac.some(c=>c.x===e.x&&c.y===e.y);
+    if(atkMode&&inR){el.style.cursor='pointer';el.style.outline='2px solid #378ADD';
+      el.addEventListener('click',()=>doAtk(e.x,e.y));
+      el.addEventListener('touchend',ev=>{ev.preventDefault();doAtk(e.x,e.y);});}
+    layer.appendChild(el);
   });
 
-  // タッチの二重発火防止
-  document.querySelectorAll('.dpad-btn').forEach(btn=>{
-    btn.addEventListener('touchstart', e=>{ e.preventDefault(); }, {passive:false});
-  });
+  const pe=document.createElement('div');
+  pe.className='player dir-'+player.dir;pe.id='player';
+  pe.style.left=(player.x*CELL+5)+'px';pe.style.top=(player.y*CELL+5)+'px';
+  layer.appendChild(pe);
+  updVp(false);
+}
 
-  // ===== 初期化 =====
-  function init(){
-    initMap();
-    initEnemies();
-    renderMap();
-    updateStatus();
+function updVp(anim=true){
+  const layer=document.getElementById('map-layer');
+  const vw=CELL*7.5,vh=CELL*7.5,mw=mapSize*CELL,mh=mapSize*CELL;
+  let ox,oy;
+  if(mapSize<=SAFE){ox=(vw-mw)/2;oy=(vh-mh)/2;}
+  else{
+    ox=-(player.x*CELL-(vw/2-CELL/2));oy=-(player.y*CELL-(vh/2-CELL/2));
+    ox=Math.max(-(mw-vw),Math.min(0,ox));oy=Math.max(-(mh-vh),Math.min(0,oy));
   }
+  layer.style.transition=anim?'transform 0.12s ease-out':'none';
+  layer.style.transform=`translate(${ox}px,${oy}px)`;
+}
 
-  init();
+function updPl(){
+  const el=document.getElementById('player');if(!el)return;
+  el.style.left=(player.x*CELL+5)+'px';el.style.top=(player.y*CELL+5)+'px';
+  el.className='player dir-'+player.dir;
+}
+
+function em(e,dir){e.preventDefault();doMove(dir);}
+function doMove(dir){
+  if(moving)return;
+  player.dir=dir;
+  let nx=player.x,ny=player.y;
+  if(dir==='up')ny--;else if(dir==='down')ny++;else if(dir==='left')nx--;else nx++;
+  if(nx<0||nx>=mapSize||ny<0||ny>=mapSize||map[ny][nx]===1){updPl();if(atkMode)render();return;}
+  if(phase==='safe'&&ny>=SAFE){
+    if(player.weapon){startBattle();return;}
+    showMsg('先に武器を選んでください');return;
+  }
+  if(enemies.find(e=>e.x===nx&&e.y===ny)){updPl();return;}
+  moving=true;player.x=nx;player.y=ny;
+  if(atkMode){render();updVp(true);}else{updPl();updVp(true);}
+  setTimeout(()=>{moving=false;},130);
+}
+
+function toggleAtkMode(){
+  if(!player.weapon){showMsg('武器を選んでください');return;}
+  atkMode=!atkMode;
+  document.getElementById('atk-btn').classList.toggle('active',atkMode);
+  render();
+}
+
+function doAtk(x,y){
+  const t=enemies.find(e=>e.x===x&&e.y===y);
+  if(!t){atkMode=false;render();return;}
+  const dmg=player.weapon.atk;
+  t.hp-=dmg;
+  showMsg(player.weapon.name+'で攻撃！ダメージ '+dmg);
+  const el=document.getElementById('e'+t.id);
+  if(el){el.style.animation='none';requestAnimationFrame(()=>{el.style.animation='hit-flash 0.2s ease';});}
+  if(t.hp<=0){
+    enemies=enemies.filter(e=>e.id!==t.id);
+    setTimeout(()=>{
+      showMsg('倒した！（残り'+enemies.length+'体）');
+      if(enemies.length===0)setTimeout(()=>showMsg('全員倒した！次の部屋への道が開いた'),600);
+    },250);
+  }
+  atkMode=false;
+  document.getElementById('atk-btn').classList.remove('active');
+  setTimeout(()=>render(),230);
+  updHd();
+}
+
+function startBattle(){initBattle();render();showMsg('敵の部屋に入った！向きを合わせて「攻撃」を押そう');}
+
+function updHpBar(){
+  const pct=player.hp/player.maxHp*100;
+  const f=document.getElementById('hp-fill');
+  f.style.width=pct+'%';f.className='hp-fill'+(pct<=30?' low':'');
+  document.getElementById('hp-num').textContent=player.hp+' / '+player.maxHp;
+}
+function updHd(){
+  document.getElementById('hd-info').textContent=phase==='safe'?'安全な部屋':'敵 '+enemies.length+'体';
+}
+function updWpn(){
+  if(!player.weapon){document.getElementById('weapon-name').textContent='武器未選択';document.getElementById('weapon-atk').textContent='';return;}
+  const w=player.weapon;
+  const bs=w.bonus>0?'<span class="stat-bonus">+'+w.bonus+'</span>':w.bonus<0?'<span class="stat-minus">'+w.bonus+'</span>':'';
+  document.getElementById('weapon-name').innerHTML='<span class="rarity-badge rarity-'+w.rarity+'">'+w.rarity+'</span> '+w.name;
+  document.getElementById('weapon-atk').innerHTML='攻撃 <span class="stat-base">'+w.baseAtk+'</span>'+bs+' = '+w.atk;
+}
+
+function showMsg(txt){
+  clearTimeout(msgTmr);
+  let log=document.getElementById('msg-log');
+  if(!log){log=document.createElement('div');log.id='msg-log';log.className='msg-log';document.getElementById('viewport').appendChild(log);}
+  log.textContent=txt;
+  msgTmr=setTimeout(()=>{if(log)log.textContent='';},3000);
+}
+
+function showWpnOverlay(){
+  const weapons=pickWeapons();
+  const box=document.getElementById('weapon-choices');
+  box.innerHTML='';
+  weapons.forEach(w=>{
+    const card=document.createElement('div');card.className='weapon-card';
+    const bs=w.bonus>0?'+'+w.bonus:w.bonus<0?''+w.bonus:'0';
+    const bc=w.bonus>0?'stat-bonus':w.bonus<0?'stat-minus':'';
+    card.innerHTML=
+      '<div class="weapon-card-top"><span class="rarity-badge rarity-'+w.rarity+'">'+w.rarity+'</span><span class="weapon-card-name">'+w.name+'</span></div>'+
+      '<div class="weapon-card-stats">攻撃力：<span class="stat-base">'+w.baseAtk+'</span> <span class="'+bc+'">('+bs+')</span> = <strong>'+w.atk+'</strong></div>'+
+      '<div class="weapon-card-range">'+w.desc+'</div>';
+    card.addEventListener('click',()=>{player.weapon=w;document.getElementById('weapon-overlay').style.display='none';updWpn();showMsg(w.name+'を装備！下端まで移動すると次の部屋へ進める');});
+    box.appendChild(card);
+  });
+  document.getElementById('weapon-overlay').style.display='flex';
+}
+
+document.addEventListener('keydown',e=>{
+  const m={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',w:'up',s:'down',a:'left',d:'right'};
+  if(m[e.key]){e.preventDefault();doMove(m[e.key]);}
+  if(e.key===' '){e.preventDefault();toggleAtkMode();}
+});
+document.querySelectorAll('.dpad-btn').forEach(b=>b.addEventListener('touchstart',e=>e.preventDefault(),{passive:false}));
+
+function init(){initSafe();render();updHpBar();updWpn();updHd();setTimeout(showWpnOverlay,300);}
+init();
 </script>
 </body>
 </html>
