@@ -104,13 +104,13 @@
     </div>
     <div class="dpad">
       <div class="dpad-btn empty"></div>
-      <div class="dpad-btn" ontouchstart="em(event,'up')"    onclick="doMove('up')">▲</div>
+      <div class="dpad-btn" id="dbtn-up"    onmousedown="startMove('up')"    onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="startMoveT(event,'up')"    ontouchend="stopMove()" ontouchcancel="stopMove()">▲</div>
       <div class="dpad-btn empty"></div>
-      <div class="dpad-btn" ontouchstart="em(event,'left')"  onclick="doMove('left')">◀</div>
+      <div class="dpad-btn" id="dbtn-left"  onmousedown="startMove('left')"  onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="startMoveT(event,'left')"  ontouchend="stopMove()" ontouchcancel="stopMove()">◀</div>
       <div class="dpad-btn center">待機</div>
-      <div class="dpad-btn" ontouchstart="em(event,'right')" onclick="doMove('right')">▶</div>
+      <div class="dpad-btn" id="dbtn-right" onmousedown="startMove('right')" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="startMoveT(event,'right')" ontouchend="stopMove()" ontouchcancel="stopMove()">▶</div>
       <div class="dpad-btn empty"></div>
-      <div class="dpad-btn" ontouchstart="em(event,'down')"  onclick="doMove('down')">▼</div>
+      <div class="dpad-btn" id="dbtn-down"  onmousedown="startMove('down')"  onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="startMoveT(event,'down')"  ontouchend="stopMove()" ontouchcancel="stopMove()">▼</div>
       <div class="dpad-btn empty"></div>
     </div>
   </div>
@@ -118,8 +118,8 @@
 
 <div class="overlay" id="weapon-overlay">
   <div class="overlay-box">
-    <div class="overlay-title">武器を選ぶ</div>
-    <div class="overlay-sub">安全な部屋に2つの武器があった。<br>1つを選んで出発しよう。</div>
+    <div class="overlay-title">武器を選べ</div>
+    <div class="overlay-sub">安全な部屋に2つの武器が残されていた。<br>どちらかを手に取り、迷宮へ踏み込め。</div>
     <div id="weapon-choices"></div>
   </div>
 </div>
@@ -227,6 +227,27 @@ function updPl(){
   el.className='player dir-'+player.dir;
 }
 
+// ===== 長押し移動 =====
+const MOVE_DELAY  = 400;  // 長押し開始までの待機時間(ms)
+const MOVE_REPEAT = 220;  // リピート間隔(ms)
+const MOVE_ANIM   = 180;  // 移動アニメ時間(ms)
+let moveHoldTimer = null;
+let moveRepeatTimer = null;
+
+function startMoveT(e, dir){ e.preventDefault(); startMove(dir); }
+function startMove(dir){
+  stopMove();
+  doMove(dir);
+  moveHoldTimer = setTimeout(()=>{
+    moveRepeatTimer = setInterval(()=>doMove(dir), MOVE_REPEAT);
+  }, MOVE_DELAY);
+}
+function stopMove(){
+  clearTimeout(moveHoldTimer);
+  clearInterval(moveRepeatTimer);
+  moveHoldTimer = null; moveRepeatTimer = null;
+}
+
 function em(e,dir){e.preventDefault();doMove(dir);}
 function doMove(dir){
   if(moving)return;
@@ -234,7 +255,6 @@ function doMove(dir){
   let nx=player.x,ny=player.y;
   if(dir==='up')ny--;else if(dir==='down')ny++;else if(dir==='left')nx--;else nx++;
 
-  // 安全部屋の出口チェック（範囲外チェックより先に）
   if(phase==='safe'&&ny>=SAFE){
     startBattle();return;
   }
@@ -242,39 +262,54 @@ function doMove(dir){
   if(nx<0||nx>=mapSize||ny<0||ny>=mapSize||map[ny][nx]===1){updPl();render();return;}
   if(enemies.find(e=>e.x===nx&&e.y===ny)){updPl();return;}
   moving=true;player.x=nx;player.y=ny;
+
+  // 移動アニメ：マップ遷移はCSSトランジションで行い、MOVE_ANIM後に解放
+  const layer=document.getElementById('map-layer');
+  layer.style.transition=`transform ${MOVE_ANIM}ms ease-out`;
+  const pe=document.getElementById('player');
+  if(pe){pe.style.transition=`left ${MOVE_ANIM}ms ease-out, top ${MOVE_ANIM}ms ease-out`;}
   render();updVp(true);
-  setTimeout(()=>{moving=false;},130);
+  setTimeout(()=>{ moving=false; }, MOVE_ANIM);
 }
 
-// 攻撃ボタン：向いている方向の範囲内にいる敵を即攻撃
+// ===== 攻撃クールダウン =====
+let atkCooldown = false;
+const ATK_CD = 600; // ms
+
 function doAttack(){
-  if(!player.weapon){showMsg('武器を選んでください');return;}
+  if(!player.weapon){showMsg('——武器を手にしていない。先に武器を選ばれよ。');return;}
+  if(atkCooldown) return;
   const ac=atkCells();
   const targets=enemies.filter(e=>ac.some(c=>c.x===e.x&&c.y===e.y));
-  if(targets.length===0){showMsg('攻撃範囲内に敵がいない。向きを変えよう');return;}
+  if(targets.length===0){showMsg('——攻撃範囲内に敵影なし。向きを変えよ。');return;}
+
+  atkCooldown=true;
+  document.getElementById('atk-btn').style.opacity='0.4';
+  setTimeout(()=>{
+    atkCooldown=false;
+    document.getElementById('atk-btn').style.opacity='1';
+  }, ATK_CD);
 
   targets.forEach(t=>{
     const dmg=player.weapon.atk;
     t.hp-=dmg;
     const el=document.getElementById('e'+t.id);
     if(el){el.style.animation='none';requestAnimationFrame(()=>{el.style.animation='hit-flash 0.2s ease';});}
-    if(t.hp<=0){
-      enemies=enemies.filter(e=>e.id!==t.id);
-    }
+    if(t.hp<=0){ enemies=enemies.filter(e=>e.id!==t.id); }
   });
 
   const hit=targets.length;
   const dead=targets.filter(t=>t.hp<=0).length;
-  let msg=player.weapon.name+'で攻撃！'+hit+'体にダメージ '+player.weapon.atk;
-  if(dead>0) msg+=' （'+dead+'体倒した）';
+  let msg='——'+player.weapon.name+'を振るった。'+hit+'体に'+player.weapon.atk+'のダメージ。';
+  if(dead>0) msg+=' '+dead+'体を討ち取った。';
   showMsg(msg);
-  if(enemies.length===0) setTimeout(()=>showMsg('全員倒した！次の部屋への道が開いた'),600);
+  if(enemies.length===0) setTimeout(()=>showMsg('——全ての敵を倒した。次の部屋への道が開かれた。'),700);
 
   setTimeout(()=>render(),230);
   updHd();
 }
 
-function startBattle(){initBattle();render();showMsg('敵の部屋に入った！向きを合わせて「攻撃」を押そう');}
+function startBattle(){initBattle();render();showMsg('——部屋に踏み込んだ。敵の気配がする。向きを合わせ、攻撃せよ。');}
 
 function updHpBar(){
   const pct=player.hp/player.maxHp*100;
@@ -329,20 +364,51 @@ function showMsg(txt){
   msgTmr=setTimeout(()=>{if(log)log.textContent='';},6000);
 }
 
+function drawMiniRange(canvas, weapon){
+  if(!canvas||!weapon) return;
+  const ctx=canvas.getContext('2d');
+  const S=66, cs=22;
+  ctx.clearRect(0,0,S,S);
+  const raw=weapon.range;
+  const rs=new Set(raw.map(([dx,dy])=>dx+','+dy));
+  for(let gy=-1;gy<=1;gy++){for(let gx=-1;gx<=1;gx++){
+    const px=(gx+1)*cs, py=(gy+1)*cs;
+    const isP=gx===0&&gy===0;
+    const isA=rs.has(gx+','+gy);
+    ctx.fillStyle=isP?'#1D9E75':isA?'rgba(55,138,221,0.55)':'#252520';
+    ctx.fillRect(px+1,py+1,cs-2,cs-2);
+    ctx.strokeStyle='#333';ctx.lineWidth=1;
+    ctx.strokeRect(px+0.5,py+0.5,cs-1,cs-1);
+  }}
+}
+
 function showWpnOverlay(){
   const weapons=pickWeapons();
   const box=document.getElementById('weapon-choices');
   box.innerHTML='';
-  weapons.forEach(w=>{
+  weapons.forEach((w,idx)=>{
     const card=document.createElement('div');card.className='weapon-card';
     const bs=w.bonus>0?'+'+w.bonus:w.bonus<0?''+w.bonus:'0';
     const bc=w.bonus>0?'stat-bonus':w.bonus<0?'stat-minus':'';
+    const canvasId='wc-canvas-'+idx;
     card.innerHTML=
-      '<div class="weapon-card-top"><span class="rarity-badge rarity-'+w.rarity+'">'+w.rarity+'</span><span class="weapon-card-name">'+w.name+'</span></div>'+
-      '<div class="weapon-card-stats">攻撃力：<span class="stat-base">'+w.baseAtk+'</span> <span class="'+bc+'">('+bs+')</span> = <strong>'+w.atk+'</strong></div>'+
-      '<div class="weapon-card-range">'+w.desc+'</div>';
-    card.addEventListener('click',()=>{player.weapon=w;document.getElementById('weapon-overlay').style.display='none';updWpn();showMsg(w.name+'を装備！下端まで移動すると次の部屋へ進める');});
+      '<div style="display:flex;gap:10px;align-items:flex-start;">'+
+        '<div style="flex:1;min-width:0;">'+
+          '<div class="weapon-card-top"><span class="rarity-badge rarity-'+w.rarity+'">'+w.rarity+'</span><span class="weapon-card-name">'+w.name+'</span></div>'+
+          '<div class="weapon-card-stats">攻撃力：<span class="stat-base">'+w.baseAtk+'</span> <span class="'+bc+'">('+bs+')</span> = <strong>'+w.atk+'</strong></div>'+
+          '<div class="weapon-card-range">'+w.desc+'</div>'+
+        '</div>'+
+        '<canvas id="'+canvasId+'" width="66" height="66" style="flex-shrink:0;image-rendering:pixelated;"></canvas>'+
+      '</div>';
+    card.addEventListener('click',()=>{
+      player.weapon=w;
+      document.getElementById('weapon-overlay').style.display='none';
+      updWpn();
+      showMsg('——'+w.name+'を手に取った。さあ、進もう。');
+    });
     box.appendChild(card);
+    // Canvas描画はDOM追加後に実行
+    requestAnimationFrame(()=>drawMiniRange(document.getElementById(canvasId), w));
   });
   document.getElementById('weapon-overlay').style.display='flex';
 }
@@ -370,7 +436,7 @@ const AXIS_THRESHOLD = 0.5;
 
 window.addEventListener('gamepadconnected', e=>{
   gpConnected = true;
-  showMsg('コントローラーが接続されました');
+  showMsg('——外なる力が宿った。コントローラーが繋がれた。');
   if(!gpInterval) gpInterval = setInterval(pollGamepad, 100);
 });
 window.addEventListener('gamepaddisconnected', e=>{
