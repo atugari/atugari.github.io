@@ -99,7 +99,7 @@
         <div class="weapon-atk" id="weapon-atk"></div>
       </div>
       <!-- 攻撃範囲ミニグリッド -->
-      <canvas id="range-canvas" width="66" height="66" style="flex-shrink:0;image-rendering:pixelated;"></canvas>
+      <canvas id="range-canvas" width="110" height="110" style="flex-shrink:0;image-rendering:pixelated;"></canvas>
       <button class="atk-btn" id="atk-btn" onclick="doAttack()">攻撃</button>
     </div>
     <div class="dpad">
@@ -131,7 +131,7 @@ const WDEFS={
   fu:  {name:'歩',  baseAtk:28,spread:8, rarity:'B',range:[[0,1]],                                           desc:'前方1マス。攻撃力が高い。'},
   kyo: {name:'香',  baseAtk:18,spread:10,rarity:'C',range:[[0,1],[0,2]],                                     desc:'前方2マス。攻撃力は控えめ。'},
   kei: {name:'桂',  baseAtk:22,spread:8, rarity:'B',range:[[-1,2],[1,2]],                                    desc:'前方2マス左右1ずれ。跳び越える。'},
-  hi:  {name:'飛',  baseAtk:20,spread:6, rarity:'A',range:[[0,1],[0,2],[1,0],[2,0],[-1,0],[-2,0]],           desc:'縦横2マス。汎用性の高いレア武器。'},
+  hi:  {name:'飛',  baseAtk:20,spread:6, rarity:'A',range:[[0,1],[0,2],[0,-1],[0,-2],[1,0],[2,0],[-1,0],[-2,0]], desc:'縦横2マス。汎用性の高いレア武器。'},
   kaku:{name:'角',  baseAtk:20,spread:6, rarity:'A',range:[[1,1],[2,2],[-1,1],[-2,2],[1,-1],[2,-2],[-1,-1],[-2,-2]],desc:'斜め2マス。汎用性の高いレア武器。'},
   gin: {name:'銀',  baseAtk:14,spread:6, rarity:'C',range:[[0,1],[1,1],[-1,1],[1,-1],[-1,-1]],               desc:'前方と斜め4方向。囲まれた時に強い。'},
 };
@@ -251,7 +251,15 @@ function stopMove(){
 function em(e,dir){e.preventDefault();doMove(dir);}
 function doMove(dir){
   if(moving)return;
-  player.dir=dir;
+
+  // 今向いている方向と違う場合は向くだけで移動しない
+  if(player.dir !== dir){
+    player.dir = dir;
+    updPl();
+    render();
+    return;
+  }
+
   let nx=player.x,ny=player.y;
   if(dir==='up')ny--;else if(dir==='down')ny++;else if(dir==='left')nx--;else nx++;
 
@@ -263,7 +271,6 @@ function doMove(dir){
   if(enemies.find(e=>e.x===nx&&e.y===ny)){updPl();return;}
   moving=true;player.x=nx;player.y=ny;
 
-  // 移動アニメ：マップ遷移はCSSトランジションで行い、MOVE_ANIM後に解放
   const layer=document.getElementById('map-layer');
   layer.style.transition=`transform ${MOVE_ANIM}ms ease-out`;
   const pe=document.getElementById('player');
@@ -324,7 +331,8 @@ function drawRangeCanvas(){
   const canvas=document.getElementById('range-canvas');
   if(!canvas)return;
   const ctx=canvas.getContext('2d');
-  const S=66,cs=22,grid=3; // 5×5グリッドを22pxで描画
+  const S=110, cs=22; // 5×5 × 22px
+  canvas.width=S; canvas.height=S;
   ctx.clearRect(0,0,S,S);
 
   if(!player.weapon){
@@ -332,18 +340,25 @@ function drawRangeCanvas(){
     return;
   }
 
-  // 向きは 'down' 固定で表示（プレイヤー中心）
   const raw=player.weapon.range;
-  const rangeSet=new Set(raw.map(([dx,dy])=>dx+','+dy));
+  const rs=new Set(raw.map(([dx,dy])=>dx+','+dy));
+  const name=player.weapon.name;
 
-  for(let gy=-1;gy<=1;gy++){for(let gx=-1;gx<=1;gx++){
-    const px=(gx+1)*cs,py=(gy+1)*cs;
-    const isPlayer=gx===0&&gy===0;
-    const isAtk=rangeSet.has(gx+','+gy);
-    ctx.fillStyle=isPlayer?'#1D9E75':isAtk?'rgba(55,138,221,0.5)':'#252520';
+  for(let gy=-2;gy<=2;gy++){for(let gx=-2;gx<=2;gx++){
+    const px=(gx+2)*cs, py=(2-gy)*cs; // 上下反転：gy正=下→画面上方向
+    const isP=gx===0&&gy===0;
+    const isA=rs.has(gx+','+gy);
+    ctx.fillStyle=isP?'#1D9E75':isA?'rgba(55,138,221,0.55)':'#252520';
     ctx.fillRect(px+1,py+1,cs-2,cs-2);
     ctx.strokeStyle='#333';ctx.lineWidth=1;
     ctx.strokeRect(px+0.5,py+0.5,cs-1,cs-1);
+    // プレイヤーマスに漢字
+    if(isP){
+      ctx.fillStyle='#fff';
+      ctx.font=`bold ${cs*0.65}px sans-serif`;
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(name, px+cs/2, py+cs/2);
+    }
   }}
 }
 
@@ -367,18 +382,27 @@ function showMsg(txt){
 function drawMiniRange(canvas, weapon){
   if(!canvas||!weapon) return;
   const ctx=canvas.getContext('2d');
-  const S=66, cs=22;
+  const S=110, cs=22;
+  canvas.width=S; canvas.height=S;
   ctx.clearRect(0,0,S,S);
   const raw=weapon.range;
   const rs=new Set(raw.map(([dx,dy])=>dx+','+dy));
-  for(let gy=-1;gy<=1;gy++){for(let gx=-1;gx<=1;gx++){
-    const px=(gx+1)*cs, py=(gy+1)*cs;
+  const name=weapon.name;
+
+  for(let gy=-2;gy<=2;gy++){for(let gx=-2;gx<=2;gx++){
+    const px=(gx+2)*cs, py=(2-gy)*cs; // 上下反転
     const isP=gx===0&&gy===0;
     const isA=rs.has(gx+','+gy);
     ctx.fillStyle=isP?'#1D9E75':isA?'rgba(55,138,221,0.55)':'#252520';
     ctx.fillRect(px+1,py+1,cs-2,cs-2);
     ctx.strokeStyle='#333';ctx.lineWidth=1;
     ctx.strokeRect(px+0.5,py+0.5,cs-1,cs-1);
+    if(isP){
+      ctx.fillStyle='#fff';
+      ctx.font=`bold ${cs*0.65}px sans-serif`;
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(name, px+cs/2, py+cs/2);
+    }
   }}
 }
 
@@ -398,7 +422,7 @@ function showWpnOverlay(){
           '<div class="weapon-card-stats">攻撃力：<span class="stat-base">'+w.baseAtk+'</span> <span class="'+bc+'">('+bs+')</span> = <strong>'+w.atk+'</strong></div>'+
           '<div class="weapon-card-range">'+w.desc+'</div>'+
         '</div>'+
-        '<canvas id="'+canvasId+'" width="66" height="66" style="flex-shrink:0;image-rendering:pixelated;"></canvas>'+
+        '<canvas id="'+canvasId+'" width="110" height="110" style="flex-shrink:0;image-rendering:pixelated;"></canvas>'+
       '</div>';
     card.addEventListener('click',()=>{
       player.weapon=w;
