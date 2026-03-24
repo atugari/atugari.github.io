@@ -100,7 +100,7 @@
       </div>
       <!-- 攻撃範囲ミニグリッド -->
       <canvas id="range-canvas" width="66" height="66" style="flex-shrink:0;image-rendering:pixelated;"></canvas>
-      <button class="atk-btn" id="atk-btn" onclick="toggleAtkMode()">攻撃</button>
+      <button class="atk-btn" id="atk-btn" onclick="doAttack()">攻撃</button>
     </div>
     <div class="dpad">
       <div class="dpad-btn empty"></div>
@@ -137,7 +137,7 @@ const WDEFS={
 };
 
 let player={x:2,y:2,dir:'down',hp:100,maxHp:100,weapon:null};
-let enemies=[], map=[], mapSize=SAFE, phase='safe', atkMode=false, moving=false, msgTmr=null;
+let enemies=[], map=[], mapSize=SAFE, phase='safe', atkMode=true, moving=false, msgTmr=null;
 
 function genWeapon(id){
   const d=WDEFS[id];
@@ -189,10 +189,6 @@ function render(){
     const ia=as.has(x+','+y);
     c.className='cell '+(ia?'atk-range':(map[y][x]?'wall':((x+y)%2===0?'floor':'floor2')));
     c.style.left=x*CELL+'px';c.style.top=y*CELL+'px';
-    if(atkMode&&ia){(function(cx,cy){
-      c.addEventListener('click',()=>doAtk(cx,cy));
-      c.addEventListener('touchend',e=>{e.preventDefault();doAtk(cx,cy);});
-    })(x,y);}
     layer.appendChild(c);
   }}
 
@@ -201,9 +197,7 @@ function render(){
     el.className='enemy-token';el.id='e'+e.id;
     el.style.left=(e.x*CELL+5)+'px';el.style.top=(e.y*CELL+5)+'px';
     const inR=ac.some(c=>c.x===e.x&&c.y===e.y);
-    if(atkMode&&inR){el.style.cursor='pointer';el.style.outline='2px solid #378ADD';
-      el.addEventListener('click',()=>doAtk(e.x,e.y));
-      el.addEventListener('touchend',ev=>{ev.preventDefault();doAtk(e.x,e.y);});}
+    if(inR){el.style.outline='2px solid #378ADD';}
     layer.appendChild(el);
   });
 
@@ -245,37 +239,37 @@ function doMove(dir){
     startBattle();return;
   }
 
-  if(nx<0||nx>=mapSize||ny<0||ny>=mapSize||map[ny][nx]===1){updPl();if(atkMode)render();return;}
+  if(nx<0||nx>=mapSize||ny<0||ny>=mapSize||map[ny][nx]===1){updPl();render();return;}
   if(enemies.find(e=>e.x===nx&&e.y===ny)){updPl();return;}
   moving=true;player.x=nx;player.y=ny;
-  if(atkMode){render();updVp(true);}else{updPl();updVp(true);}
+  render();updVp(true);
   setTimeout(()=>{moving=false;},130);
 }
 
-function toggleAtkMode(){
+// 攻撃ボタン：向いている方向の範囲内にいる敵を即攻撃
+function doAttack(){
   if(!player.weapon){showMsg('武器を選んでください');return;}
-  atkMode=!atkMode;
-  document.getElementById('atk-btn').classList.toggle('active',atkMode);
-  render();
-}
+  const ac=atkCells();
+  const targets=enemies.filter(e=>ac.some(c=>c.x===e.x&&c.y===e.y));
+  if(targets.length===0){showMsg('攻撃範囲内に敵がいない。向きを変えよう');return;}
 
-function doAtk(x,y){
-  const t=enemies.find(e=>e.x===x&&e.y===y);
-  if(!t){atkMode=false;render();return;}
-  const dmg=player.weapon.atk;
-  t.hp-=dmg;
-  showMsg(player.weapon.name+'で攻撃！ダメージ '+dmg);
-  const el=document.getElementById('e'+t.id);
-  if(el){el.style.animation='none';requestAnimationFrame(()=>{el.style.animation='hit-flash 0.2s ease';});}
-  if(t.hp<=0){
-    enemies=enemies.filter(e=>e.id!==t.id);
-    setTimeout(()=>{
-      showMsg('倒した！（残り'+enemies.length+'体）');
-      if(enemies.length===0)setTimeout(()=>showMsg('全員倒した！次の部屋への道が開いた'),600);
-    },250);
-  }
-  atkMode=false;
-  document.getElementById('atk-btn').classList.remove('active');
+  targets.forEach(t=>{
+    const dmg=player.weapon.atk;
+    t.hp-=dmg;
+    const el=document.getElementById('e'+t.id);
+    if(el){el.style.animation='none';requestAnimationFrame(()=>{el.style.animation='hit-flash 0.2s ease';});}
+    if(t.hp<=0){
+      enemies=enemies.filter(e=>e.id!==t.id);
+    }
+  });
+
+  const hit=targets.length;
+  const dead=targets.filter(t=>t.hp<=0).length;
+  let msg=player.weapon.name+'で攻撃！'+hit+'体にダメージ '+player.weapon.atk;
+  if(dead>0) msg+=' （'+dead+'体倒した）';
+  showMsg(msg);
+  if(enemies.length===0) setTimeout(()=>showMsg('全員倒した！次の部屋への道が開いた'),600);
+
   setTimeout(()=>render(),230);
   updHd();
 }
@@ -356,9 +350,84 @@ function showWpnOverlay(){
 document.addEventListener('keydown',e=>{
   const m={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',w:'up',s:'down',a:'left',d:'right'};
   if(m[e.key]){e.preventDefault();doMove(m[e.key]);}
-  if(e.key===' '){e.preventDefault();toggleAtkMode();}
+  if(e.key===' '){e.preventDefault();doAttack();}
 });
 document.querySelectorAll('.dpad-btn').forEach(b=>b.addEventListener('touchstart',e=>e.preventDefault(),{passive:false}));
+
+// ===== ゲームパッド対応 =====
+// 対応ボタン（Xbox/PS/プロコン共通）
+// 十字キー上下左右: axes[0]/axes[1] または buttons[12-15]
+// Aボタン（攻撃）: buttons[0]
+// 武器選択オーバーレイ中はAで決定
+
+let gpLastBtn = {};      // ボタンの前フレーム状態
+let gpLastAxis = {};     // スティックの前フレーム状態
+let gpInterval = null;
+let gpConnected = false;
+
+// スティックの入力閾値
+const AXIS_THRESHOLD = 0.5;
+
+window.addEventListener('gamepadconnected', e=>{
+  gpConnected = true;
+  showMsg('コントローラーが接続されました');
+  if(!gpInterval) gpInterval = setInterval(pollGamepad, 100);
+});
+window.addEventListener('gamepaddisconnected', e=>{
+  gpConnected = false;
+  clearInterval(gpInterval); gpInterval = null;
+});
+
+function pollGamepad(){
+  const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+  const pad = Array.from(pads).find(p=>p&&p.connected);
+  if(!pad) return;
+
+  // ボタン押下判定（前フレームでOFFだった場合のみ反応）
+  function pressed(idx){
+    const cur = pad.buttons[idx]?.pressed || false;
+    const prev = gpLastBtn[idx] || false;
+    gpLastBtn[idx] = cur;
+    return cur && !prev;
+  }
+
+  // スティック・十字キーの方向判定
+  const ax = pad.axes[0] || 0;
+  const ay = pad.axes[1] || 0;
+
+  // 十字キー（buttons 12=上 13=下 14=左 15=右）
+  if(pressed(12) || (ay < -AXIS_THRESHOLD && !(gpLastAxis.up))) doMove('up');
+  if(pressed(13) || (ay >  AXIS_THRESHOLD && !(gpLastAxis.down))) doMove('down');
+  if(pressed(14) || (ax < -AXIS_THRESHOLD && !(gpLastAxis.left))) doMove('left');
+  if(pressed(15) || (ax >  AXIS_THRESHOLD && !(gpLastAxis.right))) doMove('right');
+
+  // スティックの前フレーム状態を保存
+  gpLastAxis.up    = ay < -AXIS_THRESHOLD;
+  gpLastAxis.down  = ay >  AXIS_THRESHOLD;
+  gpLastAxis.left  = ax < -AXIS_THRESHOLD;
+  gpLastAxis.right = ax >  AXIS_THRESHOLD;
+
+  // Aボタン（Xbox）/ ×ボタン（PS）/ Bボタン（Switch）= 攻撃
+  if(pressed(0)){
+    const overlay = document.getElementById('weapon-overlay');
+    if(overlay.style.display !== 'none'){
+      // 武器選択中：最初のカードを選択
+      const first = overlay.querySelector('.weapon-card');
+      if(first) first.click();
+    } else {
+      doAttack();
+    }
+  }
+
+  // Bボタン（Xbox）/ ○ボタン（PS）/ Aボタン（Switch）= 武器選択中に次のカードを選択
+  if(pressed(1)){
+    const overlay = document.getElementById('weapon-overlay');
+    if(overlay.style.display !== 'none'){
+      const cards = overlay.querySelectorAll('.weapon-card');
+      if(cards[1]) cards[1].click();
+    }
+  }
+}
 
 function init(){initSafe();render();updHpBar();updWpn();updHd();drawRangeCanvas();setTimeout(showWpnOverlay,300);}
 init();
