@@ -37,8 +37,15 @@
     .player.dir-down::after{bottom:3px;left:50%;transform:translateX(-50%);}
     .player.dir-left::after{left:3px;top:50%;transform:translateY(-50%);}
     .player.dir-right::after{right:3px;top:50%;transform:translateY(-50%);}
-    .enemy-token{position:absolute;width:calc(var(--cell) - 10px);height:calc(var(--cell) - 10px);background:var(--enemy);border-radius:4px;z-index:9;}
+    .enemy-token{position:absolute;width:calc(var(--cell) - 10px);height:calc(var(--cell) - 10px);background:var(--enemy);border-radius:4px;z-index:9;transition:left 0.1s,top 0.1s;}
+    .enemy-token.alert{outline:2px solid #FFD700;box-shadow:0 0 6px rgba(255,215,0,0.6);}
+    .enemy-token.alert::after{content:'!';position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:12px;font-weight:700;color:#FFD700;text-shadow:0 0 4px #000;}
     @keyframes hit-flash{0%{background:#fff;}100%{background:var(--enemy);}}
+    @keyframes player-flash{0%,100%{background:var(--player);}30%{background:#fff;}}
+    @keyframes shake-h{0%,100%{transform:translateX(0);}20%{transform:translateX(-5px);}40%{transform:translateX(5px);}60%{transform:translateX(-4px);}80%{transform:translateX(4px);}}
+    @keyframes shake-v{0%,100%{transform:translateY(0);}20%{transform:translateY(-4px);}40%{transform:translateY(4px);}60%{transform:translateY(-3px);}80%{transform:translateY(3px);}}
+    .player.damaged{animation:player-flash 0.35s ease,shake-h 0.3s ease;}
+    .map-layer.atk-shake{animation:shake-v 0.25s ease;}
     .bottom-ui{flex-shrink:0;padding:6px 12px 10px;background:var(--surface);border-top:1px solid var(--border);}
     .weapon-bar{display:flex;align-items:center;gap:6px;margin-bottom:7px;font-size:12px;flex-wrap:wrap;}
     .weapon-name{font-weight:500;color:var(--text);}
@@ -108,7 +115,7 @@
       <div class="dpad-btn" id="dbtn-up"    onmousedown="startMove('up')"    onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="startMoveT(event,'up')"    ontouchend="stopMove()" ontouchcancel="stopMove()">▲</div>
       <div class="dpad-btn empty"></div>
       <div class="dpad-btn" id="dbtn-left"  onmousedown="startMove('left')"  onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="startMoveT(event,'left')"  ontouchend="stopMove()" ontouchcancel="stopMove()">◀</div>
-      <div class="dpad-btn center">待機</div>
+      <div class="dpad-btn center" onclick="waitAction()">待機</div>
       <div class="dpad-btn" id="dbtn-right" onmousedown="startMove('right')" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="startMoveT(event,'right')" ontouchend="stopMove()" ontouchcancel="stopMove()">▶</div>
       <div class="dpad-btn empty"></div>
       <div class="dpad-btn" id="dbtn-down"  onmousedown="startMove('down')"  onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="startMoveT(event,'down')"  ontouchend="stopMove()" ontouchcancel="stopMove()">▼</div>
@@ -235,6 +242,7 @@ function render(){
     el.style.left=(e.x*CELL+5)+'px';el.style.top=(e.y*CELL+5)+'px';
     const inR=ac.some(c=>c.x===e.x&&c.y===e.y);
     if(inR){el.style.outline='2px solid #378ADD';}
+    if(e.alertTurn) el.classList.add('alert');
     layer.appendChild(el);
   });
 
@@ -337,6 +345,8 @@ function doAttack(){
     document.getElementById('atk-btn').style.opacity='1';
   }, ATK_CD);
 
+  atkShake(); // 攻撃shake演出
+
   targets.forEach(t=>{
     const dmg=player.weapon.atk;
     t.hp-=dmg;
@@ -356,15 +366,19 @@ function doAttack(){
   updHd();
 }
 
+// ===== 待機 =====
+function waitAction(){
+  if(phase!=='battle') return;
+  enemyTurn();
+}
+
 function startBattle(){initBattle();render();showMsg('——部屋に踏み込んだ。敵の気配がする。向きを合わせ、攻撃せよ。');}
 
 // ===== 敵AI・ターン処理 =====
-const SENSE_RANGE = 4; // 感知範囲（マス）
+const SENSE_RANGE = 4;
 
-// マンハッタン距離
 function mdist(ax,ay,bx,by){ return Math.abs(ax-bx)+Math.abs(ay-by); }
 
-// 移動できるかチェック（壁・柱・他の敵・プレイヤー）
 function canMove(x,y){
   if(x<0||x>=mapSize||y<0||y>=mapSize) return false;
   if(map[y][x]===1||map[y][x]===2) return false;
@@ -372,11 +386,9 @@ function canMove(x,y){
   return true;
 }
 
-// プレイヤーに向かう方向に1マス移動
 function moveToward(e){
   const dx=player.x-e.x, dy=player.y-e.y;
   const moves=[];
-  // 縦横の優先方向を距離で決める
   if(Math.abs(dx)>=Math.abs(dy)){
     moves.push([Math.sign(dx),0],[0,Math.sign(dy)],[0,-Math.sign(dy)],[-Math.sign(dx),0]);
   } else {
@@ -388,7 +400,6 @@ function moveToward(e){
   }
 }
 
-// うろつき移動（ランダム）
 function wander(e){
   const dirs=[[0,1],[0,-1],[1,0],[-1,0]].sort(()=>Math.random()-0.5);
   for(const [mx,my] of dirs){
@@ -397,43 +408,67 @@ function wander(e){
   }
 }
 
-// プレイヤーに隣接しているか
 function isAdjacentToPlayer(e){
   return mdist(e.x,e.y,player.x,player.y)===1;
 }
 
-// 敵のターン処理（プレイヤーが1ターン行動した後に呼ぶ）
+// 敵のターン処理
+// alertTurn=true の敵は今ターン攻撃する
+// alertTurn=false で隣接した場合は alertTurn=true にして次ターンに攻撃予告
 function enemyTurn(){
   if(phase!=='battle'||enemies.length===0) return;
-  let damaged=false;
+  let totalDmg=0;
 
   enemies.forEach(e=>{
     const dist=mdist(e.x,e.y,player.x,player.y);
+    const adj=isAdjacentToPlayer(e);
 
-    if(isAdjacentToPlayer(e)){
-      // 隣接→攻撃
-      const dmg=8+Math.floor(Math.random()*6); // 8〜13ダメージ
+    if(adj && e.alertTurn){
+      // 予告済み → 今ターン攻撃
+      const dmg=8+Math.floor(Math.random()*6);
       player.hp=Math.max(0,player.hp-dmg);
-      damaged=true;
-    } else if(dist<=SENSE_RANGE){
-      // 感知範囲内→近づく
-      moveToward(e);
+      totalDmg+=dmg;
+      e.alertTurn=false;
+    } else if(adj && !e.alertTurn){
+      // 初めて隣接 → 攻撃予告（このターンは攻撃しない）
+      e.alertTurn=true;
     } else {
-      // 範囲外→うろつく
-      wander(e);
+      // 離れている場合は予告解除
+      e.alertTurn=false;
+      if(dist<=SENSE_RANGE) moveToward(e);
+      else wander(e);
     }
   });
 
-  if(damaged){
+  // 予告中の敵がいるか確認してメッセージ
+  const alertCount=enemies.filter(e=>e.alertTurn).length;
+  if(alertCount>0){
+    showMsg('——敵が攻撃の構えを見せた。次のターンに攻撃が来る！');
+  }
+
+  if(totalDmg>0){
     updHpBar();
-    // プレイヤーをフラッシュ
+    // プレイヤーダメージ演出（CSSクラスで）
     const pe=document.getElementById('player');
-    if(pe){pe.style.background='#fff';setTimeout(()=>{pe.style.background='var(--player)';},180);}
-    showMsg('——敵の一撃を受けた。HP: '+player.hp+' / '+player.maxHp);
-    if(player.hp<=0){ setTimeout(()=>gameOver(),300); return; }
+    if(pe){
+      pe.classList.remove('damaged');
+      requestAnimationFrame(()=>{ pe.classList.add('damaged'); });
+      setTimeout(()=>pe.classList.remove('damaged'), 400);
+    }
+    showMsg('——敵の一撃を受けた！ '+totalDmg+' ダメージ。HP: '+player.hp+' / '+player.maxHp);
+    if(player.hp<=0){ setTimeout(()=>gameOver(),400); return; }
   }
 
   render();
+}
+
+// 攻撃時のshake演出
+function atkShake(){
+  const layer=document.getElementById('map-layer');
+  if(!layer) return;
+  layer.classList.remove('atk-shake');
+  requestAnimationFrame(()=>{ layer.classList.add('atk-shake'); });
+  setTimeout(()=>layer.classList.remove('atk-shake'), 280);
 }
 
 // ===== ゲームオーバー =====
