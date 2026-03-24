@@ -336,12 +336,44 @@
 
   // 称号マスターデータ
   const TITLE_DEFS = [
+    // ノーマル称号（2人に1人・22,000pt以上）
+    {
+      id: 'score_normal',
+      type: 'normal',
+      icon: '🔵',
+      name: '見届けた者',
+      desc: '合計スコア22,000pt以上を達成した。3ステージすべてを見届け、記憶の入口に立った証。',
+      check: (score) => score >= 22000,
+    },
+    // シークレット称号（10人に1人・42,000pt以上）
+    {
+      id: 'score_secret',
+      type: 'secret',
+      icon: '🟣',
+      name: '冗護なき記憶力',
+      desc: '合計スコア42,000pt以上を達成した。',
+      nameHidden: '冗護なき○○力',
+      descHidden: '記憶に関する、ある力の証明。',
+      check: (score) => score >= 42000,
+    },
+    // アルカナ称号（100人に1人・60,000pt以上）
+    {
+      id: 'score_arcane',
+      type: 'arcane',
+      icon: '💠',
+      name: 'フォートレス・メモリア',
+      desc: '合計スコア60,000pt以上を達成した。難攻不落の記憶の城塞。到達者は100人に1人にも満たない。',
+      check: (score) => score >= 60000,
+    },
+    // 既存の特殊称号
     {
       id: 'ad_killer',
       type: 'secret',
       icon: '🙏',
       name: 'それは勘弁してくれ……',
       desc: '広告を非表示にしようとした',
+      nameHidden: 'それは○弁してくれ……',
+      descHidden: '何かを消そうとした、あなたへ。',
       check: () => false,
     },
     {
@@ -1231,7 +1263,7 @@
       // Arcane称号はホームでも名前・アイコンを表示（入手済みなので）
       // typeバッジを小さく付ける
       const typeBadge = def.type === 'secret' ? '<span style="font-size:9px;background:var(--blue);color:#fff;padding:1px 5px;border-radius:3px;margin-left:4px;vertical-align:middle;">SECRET</span>'
-                      : def.type === 'arcane'  ? '<span style="font-size:9px;background:#534AB7;color:#fff;padding:1px 5px;border-radius:3px;margin-left:4px;vertical-align:middle;">ARCANE</span>'
+                      : def.type === 'arcane'  ? '<span style="font-size:9px;background:#534AB7;color:#fff;padding:1px 5px;border-radius:3px;margin-left:4px;vertical-align:middle;">アルカナ</span>'
                       : '';
       row.innerHTML =
         '<div class="title-icon">'+def.icon+'</div>'+

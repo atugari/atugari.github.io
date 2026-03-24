@@ -198,7 +198,7 @@
   <div class="section-label">シークレット</div>
   <div class="card" id="list-secret"><div class="empty-state">まだ称号を入手していません</div></div>
 
-  <div class="section-label">Arcane</div>
+  <div class="section-label">アルカナ</div>
   <div class="card" id="list-arcane">
     <div style="padding:16px;font-size:12px;color:var(--text3);text-align:center;line-height:1.8;">
       個数・内容・条件、すべて不明。<br>存在に気づいた時、それが入手の証明。
@@ -212,15 +212,38 @@
   const TITLE_DEFS = [
     // type: 'normal' = ノーマル（内容・条件すべて公開）
     // type: 'secret' = シークレット（個数は分かる、内容は抽象的にぼかす）
-    // type: 'arcane' = Arcane（個数・内容・条件すべて非公開）
+    // type: 'arcane' = アルカナ（個数・内容・条件すべて非公開）
+    {
+      id: 'score_normal',
+      type: 'normal',
+      icon: '🔵',
+      name: '見届けた者',
+      desc: '合計スコア22,000pt以上を達成した。3ステージすべてを見届け、記憶の入口に立った証。',
+    },
+    {
+      id: 'score_secret',
+      type: 'secret',
+      icon: '🟣',
+      name: '冗護なき記憶力',
+      desc: '合計スコア42,000pt以上を達成した。',
+      nameHidden: '冗護なき○○力',
+      descHidden: '記憶に関する、ある力の証明。',
+    },
+    {
+      id: 'score_arcane',
+      type: 'arcane',
+      icon: '💠',
+      name: 'フォートレス・メモリア',
+      desc: '合計スコア60,000pt以上を達成した。難攻不落の記憶の城塞。到達者は100人に1人にも満たない。',
+    },
     {
       id: 'ad_killer',
       type: 'secret',
       icon: '🙏',
       name: 'それは勘弁してくれ……',
-      nameHidden: 'それは勘弁してくれ……',   // 未入手時に表示するぼかし名
+      nameHidden: 'それは○弁してくれ……',
       desc: '広告を非表示にしようとした',
-      descHidden: '何かをしようとしたあなたへ。', // 未入手時に表示するぼかし説明
+      descHidden: '何かをしようとしたあなたへ。',
     },
     {
       id: 'cheat_detected',
