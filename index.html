@@ -553,8 +553,8 @@
   // ゲームロジック
   const STAGE_LEVELS=[5,7,10];
   const LEVEL_CFG={
-    5:{dots:5, goldMs:400,silverMs:750, redMs:1200,fadeIn:400},
-    7:{dots:7, goldMs:280,silverMs:560, redMs:900, fadeIn:320},
+    5:{dots:5, goldMs:130,silverMs:270,redMs:460, fadeIn:190},
+    7:{dots:7, goldMs:130,silverMs:270,redMs:460, fadeIn:190},
     10:{dots:10,goldMs:130,silverMs:270,redMs:460, fadeIn:190},
   };
   const POINTS={gold:3000,silver:2000,red:1000};
@@ -674,7 +674,7 @@
   // パスワードをPBKDF2(100,000回)でストレッチングしたハッシュ。
   // gen_hash.html でパスワードを入力して生成した値をここに貼る。
   // ハッシュからパスワードを逆算するのは現実的に不可能。
-  const _OWNER_HASH = 'aa774ac51d1ddc98a5b325605ce19c848114f7d82959b88385cf654466405b5b'; // ← gen_hash.html で生成した値に差し替える
+  const _OWNER_HASH = 'YOUR_HASH_HERE'; // ← gen_hash.html で生成した値に差し替える
   const _OWNER_SALT = '丸場所記憶ゲーム_製作者専用_2026_SALT_v1';
   const _AUTH_SESSION_KEY = 'adgame_owner_auth'; // sessionStorage（タブを閉じると消える）
 
