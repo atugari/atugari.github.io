@@ -68,8 +68,6 @@
       border-radius:6px;
       z-index:10;
       transition:left 0.12s ease-out, top 0.12s ease-out;
-      display:flex;align-items:center;justify-content:center;
-      font-size:18px;
     }
 
     /* 敵 */
@@ -80,8 +78,6 @@
       background:var(--enemy);
       border-radius:4px;
       z-index:9;
-      display:flex;align-items:center;justify-content:center;
-      font-size:16px;
       opacity:0.9;
     }
 
@@ -139,7 +135,7 @@
 <div class="game-wrap">
 
   <!-- 開発中バナー -->
-  <div class="dev-banner">🚧 現在開発中のゲームです。内容は変更される場合があります 🚧</div>
+  <div class="dev-banner">現在開発中のゲームです。内容は変更される場合があります</div>
 
   <!-- ヘッダー -->
   <div class="hd">
@@ -228,7 +224,6 @@
       el.id = 'enemy-' + e.id;
       el.style.left = (e.x * CELL + 5) + 'px';
       el.style.top  = (e.y * CELL + 5) + 'px';
-      el.textContent = '👾';
       layer.appendChild(el);
     });
 
@@ -238,7 +233,6 @@
     playerEl.id = 'player';
     playerEl.style.left = (player.x * CELL + 5) + 'px';
     playerEl.style.top  = (player.y * CELL + 5) + 'px';
-    playerEl.textContent = '🧍';
     layer.appendChild(playerEl);
 
     // 視点を更新
