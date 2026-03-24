@@ -69,7 +69,7 @@
     .stat-base{color:var(--text);}
     .stat-bonus{color:#1D9E75;}
     .stat-minus{color:#D85A30;}
-    .msg-log{position:absolute;bottom:0;left:0;right:0;padding:4px 8px;font-size:11px;color:rgba(240,239,233,0.85);background:rgba(20,20,18,0.8);pointer-events:none;min-height:20px;}
+    .msg-log{position:absolute;bottom:0;left:0;right:0;padding:8px 12px;font-size:13px;font-weight:500;color:#fff;background:rgba(20,20,18,0.92);pointer-events:none;min-height:36px;line-height:1.6;border-top:1px solid #444;}
   </style>
 </head>
 <body>
@@ -92,8 +92,14 @@
   </div>
   <div class="bottom-ui">
     <div class="weapon-bar">
-      <span class="weapon-name" id="weapon-name">武器未選択</span>
-      <span class="weapon-atk" id="weapon-atk"></span>
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">
+          <span class="weapon-name" id="weapon-name">武器未選択</span>
+        </div>
+        <div class="weapon-atk" id="weapon-atk"></div>
+      </div>
+      <!-- 攻撃範囲ミニグリッド -->
+      <canvas id="range-canvas" width="66" height="66" style="flex-shrink:0;image-rendering:pixelated;"></canvas>
       <button class="atk-btn" id="atk-btn" onclick="toggleAtkMode()">攻撃</button>
     </div>
     <div class="dpad">
@@ -233,11 +239,13 @@ function doMove(dir){
   player.dir=dir;
   let nx=player.x,ny=player.y;
   if(dir==='up')ny--;else if(dir==='down')ny++;else if(dir==='left')nx--;else nx++;
-  if(nx<0||nx>=mapSize||ny<0||ny>=mapSize||map[ny][nx]===1){updPl();if(atkMode)render();return;}
+
+  // 安全部屋の出口チェック（範囲外チェックより先に）
   if(phase==='safe'&&ny>=SAFE){
-    if(player.weapon){startBattle();return;}
-    showMsg('先に武器を選んでください');return;
+    startBattle();return;
   }
+
+  if(nx<0||nx>=mapSize||ny<0||ny>=mapSize||map[ny][nx]===1){updPl();if(atkMode)render();return;}
   if(enemies.find(e=>e.x===nx&&e.y===ny)){updPl();return;}
   moving=true;player.x=nx;player.y=ny;
   if(atkMode){render();updVp(true);}else{updPl();updVp(true);}
@@ -283,12 +291,40 @@ function updHpBar(){
 function updHd(){
   document.getElementById('hd-info').textContent=phase==='safe'?'安全な部屋':'敵 '+enemies.length+'体';
 }
+function drawRangeCanvas(){
+  const canvas=document.getElementById('range-canvas');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const S=66,cs=22,grid=3; // 5×5グリッドを22pxで描画
+  ctx.clearRect(0,0,S,S);
+
+  if(!player.weapon){
+    ctx.fillStyle='#222';ctx.fillRect(0,0,S,S);
+    return;
+  }
+
+  // 向きは 'down' 固定で表示（プレイヤー中心）
+  const raw=player.weapon.range;
+  const rangeSet=new Set(raw.map(([dx,dy])=>dx+','+dy));
+
+  for(let gy=-1;gy<=1;gy++){for(let gx=-1;gx<=1;gx++){
+    const px=(gx+1)*cs,py=(gy+1)*cs;
+    const isPlayer=gx===0&&gy===0;
+    const isAtk=rangeSet.has(gx+','+gy);
+    ctx.fillStyle=isPlayer?'#1D9E75':isAtk?'rgba(55,138,221,0.5)':'#252520';
+    ctx.fillRect(px+1,py+1,cs-2,cs-2);
+    ctx.strokeStyle='#333';ctx.lineWidth=1;
+    ctx.strokeRect(px+0.5,py+0.5,cs-1,cs-1);
+  }}
+}
+
 function updWpn(){
   if(!player.weapon){document.getElementById('weapon-name').textContent='武器未選択';document.getElementById('weapon-atk').textContent='';return;}
   const w=player.weapon;
   const bs=w.bonus>0?'<span class="stat-bonus">+'+w.bonus+'</span>':w.bonus<0?'<span class="stat-minus">'+w.bonus+'</span>':'';
   document.getElementById('weapon-name').innerHTML='<span class="rarity-badge rarity-'+w.rarity+'">'+w.rarity+'</span> '+w.name;
   document.getElementById('weapon-atk').innerHTML='攻撃 <span class="stat-base">'+w.baseAtk+'</span>'+bs+' = '+w.atk;
+  drawRangeCanvas();
 }
 
 function showMsg(txt){
@@ -296,7 +332,7 @@ function showMsg(txt){
   let log=document.getElementById('msg-log');
   if(!log){log=document.createElement('div');log.id='msg-log';log.className='msg-log';document.getElementById('viewport').appendChild(log);}
   log.textContent=txt;
-  msgTmr=setTimeout(()=>{if(log)log.textContent='';},3000);
+  msgTmr=setTimeout(()=>{if(log)log.textContent='';},6000);
 }
 
 function showWpnOverlay(){
@@ -324,7 +360,7 @@ document.addEventListener('keydown',e=>{
 });
 document.querySelectorAll('.dpad-btn').forEach(b=>b.addEventListener('touchstart',e=>e.preventDefault(),{passive:false}));
 
-function init(){initSafe();render();updHpBar();updWpn();updHd();setTimeout(showWpnOverlay,300);}
+function init(){initSafe();render();updHpBar();updWpn();updHd();drawRangeCanvas();setTimeout(showWpnOverlay,300);}
 init();
 </script>
 </body>
