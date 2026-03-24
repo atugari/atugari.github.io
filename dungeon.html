@@ -31,6 +31,7 @@
     .cell.wall{background:var(--wall);}
     .cell.pillar{background:#3a3830;border:1px solid #555548;box-shadow:inset 0 0 0 3px #2a2820;}
     .cell.atk-range{background:rgba(55,138,221,0.25);border-color:rgba(55,138,221,0.5);}
+    .cell.alert-range{background:rgba(216,90,48,0.22);border-color:rgba(216,90,48,0.5);}
     .player{position:absolute;width:calc(var(--cell) - 10px);height:calc(var(--cell) - 10px);background:var(--player);border-radius:6px;z-index:10;transition:left 0.12s ease-out,top 0.12s ease-out;}
     .player::after{content:'';position:absolute;width:7px;height:7px;background:rgba(255,255,255,0.7);border-radius:50%;}
     .player.dir-up::after{top:3px;left:50%;transform:translateX(-50%);}
@@ -77,7 +78,18 @@
     .stat-base{color:var(--text);}
     .stat-bonus{color:#1D9E75;}
     .stat-minus{color:#D85A30;}
-    .msg-log{position:absolute;bottom:0;left:0;right:0;padding:8px 12px;font-size:13px;font-weight:500;color:#fff;background:rgba(20,20,18,0.92);pointer-events:none;min-height:36px;line-height:1.6;border-top:1px solid #444;}
+    .msg-log{padding:6px 12px;font-size:12px;font-weight:500;color:#fff;background:rgba(20,20,18,0.96);min-height:32px;line-height:1.6;border-top:1px solid #444;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+    .msg-log-text{flex:1;}
+    .msg-log-icon{font-size:10px;color:var(--text3);flex-shrink:0;}
+    .log-panel{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.7);display:none;flex-direction:column;justify-content:flex-end;}
+    .log-panel.open{display:flex;}
+    .log-inner{background:#1a1a18;border-top:1px solid #444;max-height:60vh;overflow-y:auto;padding:12px;}
+    .log-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+    .log-title{font-size:13px;font-weight:500;color:var(--text2);}
+    .log-close{font-size:18px;color:var(--text3);cursor:pointer;padding:0 4px;}
+    .log-entry{font-size:12px;color:var(--text2);padding:5px 0;border-bottom:1px solid #2a2a28;line-height:1.7;}
+    .log-entry:last-child{border-bottom:none;}
+    .log-entry.latest{color:#fff;}
   </style>
 </head>
 <body>
@@ -98,6 +110,13 @@
       <div class="map-layer" id="map-layer"></div>
     </div>
   </div>
+
+  <!-- メッセージログ（ビューポート下・下部UI上） -->
+  <div class="msg-log" id="msg-log" onclick="toggleLogPanel()">
+    <span class="msg-log-text" id="msg-log-text">——迷宮の扉が開かれた。</span>
+    <span class="msg-log-icon">▲ ログ</span>
+  </div>
+
   <div class="bottom-ui">
     <div class="weapon-bar">
       <div style="flex:1;min-width:0;">
@@ -121,6 +140,16 @@
       <div class="dpad-btn" id="dbtn-down"  onmousedown="startMove('down')"  onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="startMoveT(event,'down')"  ontouchend="stopMove()" ontouchcancel="stopMove()">▼</div>
       <div class="dpad-btn empty"></div>
     </div>
+  </div>
+</div>
+
+<div class="log-panel" id="log-panel" onclick="toggleLogPanel()">
+  <div class="log-inner" onclick="event.stopPropagation()">
+    <div class="log-header">
+      <span class="log-title">ログ履歴</span>
+      <span class="log-close" onclick="toggleLogPanel()">✕</span>
+    </div>
+    <div id="log-entries"></div>
   </div>
 </div>
 
@@ -157,7 +186,7 @@ const WDEFS={
 };
 
 let player={x:2,y:2,dir:'down',hp:100,maxHp:100,weapon:null};
-let enemies=[], map=[], mapSize=SAFE, phase='safe', atkMode=true, moving=false, msgTmr=null;
+let enemies=[], map=[], mapSize=SAFE, phase='safe', atkMode=true, moving=false;
 
 function genWeapon(id){
   const d=WDEFS[id];
@@ -227,11 +256,20 @@ function render(){
   const ac=atkMode?atkCells():[];
   const as=new Set(ac.map(c=>c.x+','+c.y));
 
+  // 構え中の敵の攻撃範囲（隣接4マス）を赤でハイライト
+  const alertRangeSet=new Set();
+  enemies.filter(e=>e.alertTurn).forEach(e=>{
+    [[0,1],[0,-1],[1,0],[-1,0]].forEach(([dx,dy])=>{
+      alertRangeSet.add((e.x+dx)+','+(e.y+dy));
+    });
+  });
+
   for(let y=0;y<mapSize;y++){for(let x=0;x<mapSize;x++){
     const c=document.createElement('div');
     const ia=as.has(x+','+y);
+    const isAlert=alertRangeSet.has(x+','+y);
     const isPillar = map[y][x]===2;
-    c.className='cell '+(ia?'atk-range':(isPillar?'pillar':(map[y][x]?'wall':((x+y)%2===0?'floor':'floor2'))));
+    c.className='cell '+(ia?'atk-range':isAlert?'alert-range':(isPillar?'pillar':(map[y][x]?'wall':((x+y)%2===0?'floor':'floor2'))));
     c.style.left=x*CELL+'px';c.style.top=y*CELL+'px';
     layer.appendChild(c);
   }}
@@ -323,7 +361,7 @@ function doMove(dir){
   render();updVp(true);
   setTimeout(()=>{
     moving=false;
-    enemyTurn();
+    if(phase==='battle') enemyTurn();
   }, MOVE_ANIM);
 }
 
@@ -369,6 +407,8 @@ function doAttack(){
 // ===== 待機 =====
 function waitAction(){
   if(phase!=='battle') return;
+  stopMove(); // 長押し中でも強制停止
+  moving=false; // movingフラグを強制リセット
   enemyTurn();
 }
 
@@ -396,7 +436,10 @@ function moveToward(e){
   }
   for(const [mx,my] of moves){
     const nx=e.x+mx, ny=e.y+my;
-    if(canMove(nx,ny)){ e.x=nx; e.y=ny; return; }
+    if(canMove(nx,ny)){
+      e.prevX=e.x; e.prevY=e.y; // 前の位置を記録
+      e.x=nx; e.y=ny; return;
+    }
   }
 }
 
@@ -404,7 +447,10 @@ function wander(e){
   const dirs=[[0,1],[0,-1],[1,0],[-1,0]].sort(()=>Math.random()-0.5);
   for(const [mx,my] of dirs){
     const nx=e.x+mx, ny=e.y+my;
-    if(canMove(nx,ny)){ e.x=nx; e.y=ny; return; }
+    if(canMove(nx,ny)){
+      e.prevX=e.x; e.prevY=e.y;
+      e.x=nx; e.y=ny; return;
+    }
   }
 }
 
@@ -413,42 +459,45 @@ function isAdjacentToPlayer(e){
 }
 
 // 敵のターン処理
-// alertTurn=true の敵は今ターン攻撃する
-// alertTurn=false で隣接した場合は alertTurn=true にして次ターンに攻撃予告
+// alertTurn=true は構え状態（キャンセル不可）→次ターンで攻撃
 function enemyTurn(){
   if(phase!=='battle'||enemies.length===0) return;
   let totalDmg=0;
+  let newAlert=false;
 
   enemies.forEach(e=>{
+    e.prevX=e.x; e.prevY=e.y; // 移動前の位置を記録
     const dist=mdist(e.x,e.y,player.x,player.y);
     const adj=isAdjacentToPlayer(e);
 
-    if(adj && e.alertTurn){
-      // 予告済み → 今ターン攻撃
-      const dmg=8+Math.floor(Math.random()*6);
-      player.hp=Math.max(0,player.hp-dmg);
-      totalDmg+=dmg;
+    if(e.alertTurn){
+      // 構え状態（キャンセル不可）→ 隣接していれば攻撃、離れていても攻撃（構えはキャンセルされない）
+      if(adj){
+        const dmg=8+Math.floor(Math.random()*6);
+        player.hp=Math.max(0,player.hp-dmg);
+        totalDmg+=dmg;
+      } else {
+        // 離れた場合は攻撃空振り（構えが崩れる）
+        showMsg('——敵の攻撃が空を切った。');
+      }
       e.alertTurn=false;
-    } else if(adj && !e.alertTurn){
-      // 初めて隣接 → 攻撃予告（このターンは攻撃しない）
+    } else if(adj){
+      // 新たに隣接 → 構えに入る（移動しない）
       e.alertTurn=true;
+      newAlert=true;
     } else {
-      // 離れている場合は予告解除
-      e.alertTurn=false;
+      // 通常移動
       if(dist<=SENSE_RANGE) moveToward(e);
       else wander(e);
     }
   });
 
-  // 予告中の敵がいるか確認してメッセージ
-  const alertCount=enemies.filter(e=>e.alertTurn).length;
-  if(alertCount>0){
-    showMsg('——敵が攻撃の構えを見せた。次のターンに攻撃が来る！');
+  if(newAlert){
+    showMsg('——敵が攻撃の構えに入った！次のターン、その位置にいると攻撃を受ける！');
   }
 
   if(totalDmg>0){
     updHpBar();
-    // プレイヤーダメージ演出（CSSクラスで）
     const pe=document.getElementById('player');
     if(pe){
       pe.classList.remove('damaged');
@@ -459,7 +508,35 @@ function enemyTurn(){
     if(player.hp<=0){ setTimeout(()=>gameOver(),400); return; }
   }
 
-  render();
+  // 敵の移動モーション：前の位置から現在位置にアニメ
+  renderWithEnemyMotion();
+}
+
+// 敵の移動モーションつきrender
+function renderWithEnemyMotion(){
+  // まず前の位置でrenderしてから、CSSトランジションで現在位置に移動
+  const prevPositions={};
+  enemies.forEach(e=>{ prevPositions[e.id]={x:e.prevX??e.x, y:e.prevY??e.y}; });
+
+  render(); // 現在位置でDOMを生成
+
+  // 敵トークンを一旦前の位置に戻してからアニメ
+  enemies.forEach(e=>{
+    const el=document.getElementById('e'+e.id);
+    if(!el) return;
+    const prev=prevPositions[e.id];
+    if(prev.x===e.x && prev.y===e.y) return; // 動いていない
+    // トランジションを一時的にオフにして前の位置にセット
+    el.style.transition='none';
+    el.style.left=(prev.x*CELL+5)+'px';
+    el.style.top=(prev.y*CELL+5)+'px';
+    // 次フレームでトランジションONにして現在位置へ
+    requestAnimationFrame(()=>{
+      el.style.transition='left 0.2s ease-out, top 0.2s ease-out';
+      el.style.left=(e.x*CELL+5)+'px';
+      el.style.top=(e.y*CELL+5)+'px';
+    });
+  });
 }
 
 // 攻撃時のshake演出
@@ -543,12 +620,35 @@ function updWpn(){
   drawRangeCanvas();
 }
 
+// ===== メッセージ・ログ =====
+let msgLog = [];
+const MAX_LOG = 20;
+
 function showMsg(txt){
-  clearTimeout(msgTmr);
-  let log=document.getElementById('msg-log');
-  if(!log){log=document.createElement('div');log.id='msg-log';log.className='msg-log';document.getElementById('viewport').appendChild(log);}
-  log.textContent=txt;
-  msgTmr=setTimeout(()=>{if(log)log.textContent='';},6000);
+  msgLog.unshift(txt);
+  if(msgLog.length>MAX_LOG) msgLog.pop();
+  const el=document.getElementById('msg-log-text');
+  if(el) el.textContent=txt;
+  // ログパネルが開いていれば更新
+  if(document.getElementById('log-panel').classList.contains('open')) renderLogPanel();
+}
+
+function renderLogPanel(){
+  const box=document.getElementById('log-entries');
+  box.innerHTML='';
+  msgLog.forEach((t,i)=>{
+    const d=document.createElement('div');
+    d.className='log-entry'+(i===0?' latest':'');
+    d.textContent=t;
+    box.appendChild(d);
+  });
+}
+
+function toggleLogPanel(){
+  const p=document.getElementById('log-panel');
+  const isOpen=p.classList.contains('open');
+  if(!isOpen){ renderLogPanel(); p.classList.add('open'); }
+  else p.classList.remove('open');
 }
 
 function drawMiniRange(canvas, weapon){
