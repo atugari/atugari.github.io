@@ -664,6 +664,7 @@
     }
     return true;
   }
+  function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
   function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
   function setMsg(t,c=''){const el=document.getElementById('game-msg');el.textContent=t;el.className='msg'+(c?' '+c:'');}
   function getCfg(){return LEVEL_CFG[STAGE_LEVELS[stageIdx]];}
