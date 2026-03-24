@@ -29,6 +29,7 @@
     .cell.floor{background:var(--floor);}
     .cell.floor2{background:var(--floor2);}
     .cell.wall{background:var(--wall);}
+    .cell.pillar{background:#3a3830;border:1px solid #555548;box-shadow:inset 0 0 0 3px #2a2820;}
     .cell.atk-range{background:rgba(55,138,221,0.25);border-color:rgba(55,138,221,0.5);}
     .player{position:absolute;width:calc(var(--cell) - 10px);height:calc(var(--cell) - 10px);background:var(--player);border-radius:6px;z-index:10;transition:left 0.12s ease-out,top 0.12s ease-out;}
     .player::after{content:'';position:absolute;width:7px;height:7px;background:rgba(255,255,255,0.7);border-radius:50%;}
@@ -116,6 +117,18 @@
   </div>
 </div>
 
+<div class="overlay" id="gameover-overlay" style="display:none;">
+  <div class="overlay-box" style="text-align:center;">
+    <div style="font-size:28px;margin-bottom:12px;">†</div>
+    <div class="overlay-title" style="font-size:20px;margin-bottom:8px;">力尽きた</div>
+    <div style="font-size:13px;color:var(--text2);line-height:1.9;margin-bottom:20px;">
+      ——その者は迷宮の闇に呑まれた。<br>
+      されど、挑戦を諦める必要はない。
+    </div>
+    <button onclick="restartGame()" style="width:100%;padding:12px;border-radius:8px;border:1px solid var(--player);background:none;color:var(--player);font-size:14px;font-weight:500;cursor:pointer;">もう一度挑む</button>
+  </div>
+</div>
+
 <div class="overlay" id="weapon-overlay">
   <div class="overlay-box">
     <div class="overlay-title">武器を選べ</div>
@@ -157,8 +170,31 @@ function initBattle(){
   mapSize=MAP; map=Array.from({length:MAP},()=>Array(MAP).fill(0));
   player.x=1;player.y=1;player.dir='down';
   enemies=[];
+
+  // 柱をランダム配置（4〜6本）
+  // プレイヤー周辺・敵配置エリアを除いた場所に置く
+  const pillarCount = 4 + Math.floor(Math.random()*3);
+  let placed = 0, attempts = 0;
+  while(placed < pillarCount && attempts < 100){
+    attempts++;
+    const px = 2 + Math.floor(Math.random()*6);
+    const py = 2 + Math.floor(Math.random()*6);
+    // プレイヤー周辺3×3とすでに柱があるマスは除外
+    if(Math.abs(px-1)<=1 && Math.abs(py-1)<=1) continue;
+    if(map[py][px]!==0) continue;
+    map[py][px] = 2; // 2=柱
+    placed++;
+  }
+
+  // 敵3体をランダム配置（柱・プレイヤーと被らない場所）
   const pos=[];
-  while(pos.length<3){const x=5+Math.floor(Math.random()*4),y=5+Math.floor(Math.random()*4);if(!pos.find(p=>p.x===x&&p.y===y))pos.push({x,y});}
+  attempts=0;
+  while(pos.length<3 && attempts<100){
+    attempts++;
+    const x=4+Math.floor(Math.random()*5),y=4+Math.floor(Math.random()*5);
+    if(map[y][x]!==0) continue;
+    if(!pos.find(p=>p.x===x&&p.y===y)) pos.push({x,y});
+  }
   pos.forEach((p,i)=>enemies.push({id:i,x:p.x,y:p.y,hp:40,maxHp:40}));
   phase='battle'; updHd();
 }
@@ -187,7 +223,8 @@ function render(){
   for(let y=0;y<mapSize;y++){for(let x=0;x<mapSize;x++){
     const c=document.createElement('div');
     const ia=as.has(x+','+y);
-    c.className='cell '+(ia?'atk-range':(map[y][x]?'wall':((x+y)%2===0?'floor':'floor2')));
+    const isPillar = map[y][x]===2;
+    c.className='cell '+(ia?'atk-range':(isPillar?'pillar':(map[y][x]?'wall':((x+y)%2===0?'floor':'floor2'))));
     c.style.left=x*CELL+'px';c.style.top=y*CELL+'px';
     layer.appendChild(c);
   }}
@@ -267,7 +304,7 @@ function doMove(dir){
     startBattle();return;
   }
 
-  if(nx<0||nx>=mapSize||ny<0||ny>=mapSize||map[ny][nx]===1){updPl();render();return;}
+  if(nx<0||nx>=mapSize||ny<0||ny>=mapSize||map[ny][nx]===1||map[ny][nx]===2){updPl();render();return;}
   if(enemies.find(e=>e.x===nx&&e.y===ny)){updPl();return;}
   moving=true;player.x=nx;player.y=ny;
 
@@ -276,7 +313,10 @@ function doMove(dir){
   const pe=document.getElementById('player');
   if(pe){pe.style.transition=`left ${MOVE_ANIM}ms ease-out, top ${MOVE_ANIM}ms ease-out`;}
   render();updVp(true);
-  setTimeout(()=>{ moving=false; }, MOVE_ANIM);
+  setTimeout(()=>{
+    moving=false;
+    enemyTurn();
+  }, MOVE_ANIM);
 }
 
 // ===== 攻撃クールダウン =====
@@ -312,11 +352,108 @@ function doAttack(){
   showMsg(msg);
   if(enemies.length===0) setTimeout(()=>showMsg('——全ての敵を倒した。次の部屋への道が開かれた。'),700);
 
-  setTimeout(()=>render(),230);
+  setTimeout(()=>{ render(); enemyTurn(); },230);
   updHd();
 }
 
 function startBattle(){initBattle();render();showMsg('——部屋に踏み込んだ。敵の気配がする。向きを合わせ、攻撃せよ。');}
+
+// ===== 敵AI・ターン処理 =====
+const SENSE_RANGE = 4; // 感知範囲（マス）
+
+// マンハッタン距離
+function mdist(ax,ay,bx,by){ return Math.abs(ax-bx)+Math.abs(ay-by); }
+
+// 移動できるかチェック（壁・柱・他の敵・プレイヤー）
+function canMove(x,y){
+  if(x<0||x>=mapSize||y<0||y>=mapSize) return false;
+  if(map[y][x]===1||map[y][x]===2) return false;
+  if(enemies.find(e=>e.x===x&&e.y===y)) return false;
+  return true;
+}
+
+// プレイヤーに向かう方向に1マス移動
+function moveToward(e){
+  const dx=player.x-e.x, dy=player.y-e.y;
+  const moves=[];
+  // 縦横の優先方向を距離で決める
+  if(Math.abs(dx)>=Math.abs(dy)){
+    moves.push([Math.sign(dx),0],[0,Math.sign(dy)],[0,-Math.sign(dy)],[-Math.sign(dx),0]);
+  } else {
+    moves.push([0,Math.sign(dy)],[Math.sign(dx),0],[-Math.sign(dx),0],[0,-Math.sign(dy)]);
+  }
+  for(const [mx,my] of moves){
+    const nx=e.x+mx, ny=e.y+my;
+    if(canMove(nx,ny)){ e.x=nx; e.y=ny; return; }
+  }
+}
+
+// うろつき移動（ランダム）
+function wander(e){
+  const dirs=[[0,1],[0,-1],[1,0],[-1,0]].sort(()=>Math.random()-0.5);
+  for(const [mx,my] of dirs){
+    const nx=e.x+mx, ny=e.y+my;
+    if(canMove(nx,ny)){ e.x=nx; e.y=ny; return; }
+  }
+}
+
+// プレイヤーに隣接しているか
+function isAdjacentToPlayer(e){
+  return mdist(e.x,e.y,player.x,player.y)===1;
+}
+
+// 敵のターン処理（プレイヤーが1ターン行動した後に呼ぶ）
+function enemyTurn(){
+  if(phase!=='battle'||enemies.length===0) return;
+  let damaged=false;
+
+  enemies.forEach(e=>{
+    const dist=mdist(e.x,e.y,player.x,player.y);
+
+    if(isAdjacentToPlayer(e)){
+      // 隣接→攻撃
+      const dmg=8+Math.floor(Math.random()*6); // 8〜13ダメージ
+      player.hp=Math.max(0,player.hp-dmg);
+      damaged=true;
+    } else if(dist<=SENSE_RANGE){
+      // 感知範囲内→近づく
+      moveToward(e);
+    } else {
+      // 範囲外→うろつく
+      wander(e);
+    }
+  });
+
+  if(damaged){
+    updHpBar();
+    // プレイヤーをフラッシュ
+    const pe=document.getElementById('player');
+    if(pe){pe.style.background='#fff';setTimeout(()=>{pe.style.background='var(--player)';},180);}
+    showMsg('——敵の一撃を受けた。HP: '+player.hp+' / '+player.maxHp);
+    if(player.hp<=0){ setTimeout(()=>gameOver(),300); return; }
+  }
+
+  render();
+}
+
+// ===== ゲームオーバー =====
+function gameOver(){
+  stopMove();
+  document.getElementById('gameover-overlay').style.display='flex';
+}
+
+function restartGame(){
+  player.hp=player.maxHp;
+  player.weapon=null;
+  document.getElementById('gameover-overlay').style.display='none';
+  initSafe();
+  render();
+  updHpBar();
+  updWpn();
+  updHd();
+  drawRangeCanvas();
+  setTimeout(showWpnOverlay,300);
+}
 
 function updHpBar(){
   const pct=player.hp/player.maxHp*100;
