@@ -210,48 +210,70 @@
 
 <script>
   const TITLE_DEFS = [
-    // type: 'normal' = ノーマル（内容・条件すべて公開）
-    // type: 'secret' = シークレット（個数は分かる、内容は抽象的にぼかす）
-    // type: 'arcane' = アルカナ（個数・内容・条件すべて非公開）
-    {
-      id: 'score_normal',
-      type: 'normal',
-      icon: '🔵',
-      name: '見届けた者',
-      desc: '合計スコア22,000pt以上を達成した。3ステージすべてを見届け、記憶の入口に立った証。',
-    },
-    {
-      id: 'score_secret',
-      type: 'secret',
-      icon: '🟣',
-      name: '冗護なき記憶力',
-      desc: '合計スコア42,000pt以上を達成した。',
-      nameHidden: '冗護なき○○力',
-      descHidden: '記憶に関する、ある力の証明。',
-    },
-    {
-      id: 'score_arcane',
-      type: 'arcane',
-      icon: '💠',
-      name: 'フォートレス・メモリア',
-      desc: '合計スコア60,000pt以上を達成した。難攻不落の記憶の城塞。到達者は100人に1人にも満たない。',
-    },
-    {
-      id: 'ad_killer',
-      type: 'secret',
-      icon: '🙏',
-      name: 'それは勘弁してくれ……',
-      nameHidden: 'それは○弁してくれ……',
-      desc: '広告を非表示にしようとした',
-      descHidden: '何かをしようとしたあなたへ。',
-    },
-    {
-      id: 'cheat_detected',
-      type: 'arcane',
-      icon: '🃏',
-      name: '一つの手段',
-      desc: 'チート等を使った判定になった者に与えられる称号。一つの手段なのでお咎めなし。チート等を使っていない場合は不具合なので、現状と状況を報告してくれたら助かります！',
-    },
+    { id:'score_normal', type:'normal', icon:'🔵', name:'見届けた者',
+      desc:'合計スコア22,000pt以上を達成した。3ステージすべてを見届け、記憶の入口に立った証。' },
+    { id:'score_secret', type:'secret', icon:'🟣', name:'冗護なき記憶力',
+      desc:'合計スコア42,000pt以上を達成した。',
+      nameHidden:'冗護なき○○力', descHidden:'記憶に関する、ある力の証明。' },
+    { id:'score_arcane', type:'arcane', icon:'💠', name:'フォートレス・メモリア',
+      desc:'合計スコア60,000pt以上を達成した。難攻不落の記憶の城塞。' },
+
+    { id:'all_gold_lv5',   type:'normal', icon:'🌕', name:'金色の記憶・Ⅰ',   desc:'Lv.5で全ての丸が金色だった。' },
+    { id:'all_gold_lv7',   type:'normal', icon:'🌕', name:'金色の記憶・Ⅱ',   desc:'Lv.7で全ての丸が金色だった。' },
+    { id:'all_gold_lv10',  type:'normal', icon:'🌕', name:'金色の記憶・Ⅲ',   desc:'Lv.10で全ての丸が金色だった。10個すべてが金色の瞬間。' },
+    { id:'all_silver_lv5', type:'normal', icon:'🌙', name:'銀色の記憶・Ⅰ',   desc:'Lv.5で全ての丸が銀色だった。' },
+    { id:'all_silver_lv7', type:'normal', icon:'🌙', name:'銀色の記憶・Ⅱ',   desc:'Lv.7で全ての丸が銀色だった。' },
+    { id:'all_silver_lv10',type:'normal', icon:'🌙', name:'銀色の記憶・Ⅲ',   desc:'Lv.10で全ての丸が銀色だった。10個すべてが銀色の瞬間。' },
+    { id:'all_red_lv5',    type:'normal', icon:'🔴', name:'赤色の記憶・Ⅰ',   desc:'Lv.5で全ての丸が赤色だった。' },
+    { id:'all_red_lv7',    type:'normal', icon:'🔴', name:'赤色の記憶・Ⅱ',   desc:'Lv.7で全ての丸が赤色だった。' },
+    { id:'all_red_lv10',   type:'normal', icon:'🔴', name:'赤色の記憶・Ⅲ',   desc:'Lv.10で全ての丸が赤色だった。10個すべてが赤色の瞬間。' },
+
+    { id:'perfect_gold_lv5',    type:'secret', icon:'✨', name:'黄金の見届け者・Ⅰ',
+      desc:'Lv.5で全ての丸が金色かつ全問正解した。',
+      nameHidden:'黄金の○届け者・Ⅰ', descHidden:'金色に輝く記憶を、完璧に見届けた。' },
+    { id:'perfect_gold_lv7',    type:'secret', icon:'✨', name:'黄金の見届け者・Ⅱ',
+      desc:'Lv.7で全ての丸が金色かつ全問正解した。',
+      nameHidden:'黄金の○届け者・Ⅱ', descHidden:'金色に輝く記憶を、完璧に見届けた。' },
+    { id:'perfect_gold_lv10',   type:'secret', icon:'✨', name:'黄金の見届け者・Ⅲ',
+      desc:'Lv.10で全ての丸が金色かつ全問正解した。10個の金色をすべて捉えた。',
+      nameHidden:'黄金の○届け者・Ⅲ', descHidden:'金色に輝く記憶を、完璧に見届けた。' },
+    { id:'perfect_silver_lv5',  type:'secret', icon:'🌟', name:'白銀の見届け者・Ⅰ',
+      desc:'Lv.5で全ての丸が銀色かつ全問正解した。',
+      nameHidden:'白銀の○届け者・Ⅰ', descHidden:'銀色の記憶を、完璧に捉えた。' },
+    { id:'perfect_silver_lv7',  type:'secret', icon:'🌟', name:'白銀の見届け者・Ⅱ',
+      desc:'Lv.7で全ての丸が銀色かつ全問正解した。',
+      nameHidden:'白銀の○届け者・Ⅱ', descHidden:'銀色の記憶を、完璧に捉えた。' },
+    { id:'perfect_silver_lv10', type:'secret', icon:'🌟', name:'白銀の見届け者・Ⅲ',
+      desc:'Lv.10で全ての丸が銀色かつ全問正解した。10個の銀色をすべて捉えた。',
+      nameHidden:'白銀の○届け者・Ⅲ', descHidden:'銀色の記憶を、完璧に捉えた。' },
+    { id:'perfect_red_lv5',     type:'secret', icon:'🔥', name:'紅蓮の見届け者・Ⅰ',
+      desc:'Lv.5で全ての丸が赤色かつ全問正解した。',
+      nameHidden:'紅蓮の○届け者・Ⅰ', descHidden:'赤く燃える記憶を、完璧に刻んだ。' },
+    { id:'perfect_red_lv7',     type:'secret', icon:'🔥', name:'紅蓮の見届け者・Ⅱ',
+      desc:'Lv.7で全ての丸が赤色かつ全問正解した。',
+      nameHidden:'紅蓮の○届け者・Ⅱ', descHidden:'赤く燃える記憶を、完璧に刻んだ。' },
+    { id:'perfect_red_lv10',    type:'secret', icon:'🔥', name:'紅蓮の見届け者・Ⅲ',
+      desc:'Lv.10で全ての丸が赤色かつ全問正解した。10個の赤をすべて刻んだ。',
+      nameHidden:'紅蓮の○届け者・Ⅲ', descHidden:'赤く燃える記憶を、完璧に刻んだ。' },
+
+    { id:'triple_gold',           type:'arcane', icon:'👑', name:'三重の黄金',
+      desc:'3ステージすべてで全ての丸が金色だった。奇跡的な確率の一致。' },
+    { id:'triple_silver',         type:'arcane', icon:'🪐', name:'三重の白銀',
+      desc:'3ステージすべてで全ての丸が銀色だった。' },
+    { id:'triple_red',            type:'arcane', icon:'🌋', name:'三重の紅蓮',
+      desc:'3ステージすべてで全ての丸が赤色だった。' },
+    { id:'triple_perfect_gold',   type:'arcane', icon:'🏆', name:'黄金の完全制覇',
+      desc:'3ステージすべてで全ての丸が金色かつ全問正解した。この記録に到達した者は極めて少ない。' },
+    { id:'triple_perfect_silver', type:'arcane', icon:'🥈', name:'白銀の完全制覇',
+      desc:'3ステージすべてで全ての丸が銀色かつ全問正解した。' },
+    { id:'triple_perfect_red',    type:'arcane', icon:'🌹', name:'紅蓮の完全制覇',
+      desc:'3ステージすべてで全ての丸が赤色かつ全問正解した。' },
+
+    { id:'ad_killer', type:'secret', icon:'🙏', name:'それは勘弁してくれ……',
+      desc:'広告を非表示にしようとした',
+      nameHidden:'それは○弁してくれ……', descHidden:'何かを消そうとした、あなたへ。' },
+    { id:'cheat_detected', type:'arcane', icon:'🃏', name:'一つの手段',
+      desc:'チート等を使った判定になった者に与えられる称号。一つの手段なのでお咎めなし。チート等を使っていない場合は不具合なので、現状と状況を報告してくれたら助かります！' },
   ];
 
   const AD_LOCKED_KEY   = 'adgame_ad_locked';
@@ -492,7 +514,7 @@
   const DB_URL = 'https://ad-game-7b40a-default-rtdb.asia-southeast1.firebasedatabase.app';
 
   // index.htmlと同じハッシュ・ソルト・セッションキーを使う
-  const _OWNER_HASH = 'aa774ac51d1ddc98a5b325605ce19c848114f7d82959b88385cf654466405b5b'; // ← index.htmlと同じ値を設定すること
+  const _OWNER_HASH = 'YOUR_HASH_HERE'; // ← index.htmlと同じ値を設定すること
   const _OWNER_SALT = '丸場所記憶ゲーム_製作者専用_2026_SALT_v1';
   const _AUTH_SESSION_KEY = 'adgame_owner_auth';
 

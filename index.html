@@ -233,6 +233,33 @@
       </div>
     </div>
 
+    <!-- 更新ログ -->
+    <div id="update-log-section" style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;margin-bottom:16px;">
+      <div style="padding:11px 16px;border-bottom:1px solid var(--border2);font-size:13px;font-weight:500;display:flex;justify-content:space-between;align-items:center;">
+        <span>更新情報</span>
+        <button onclick="toggleUpdateLog()" id="update-log-toggle" style="font-size:11px;color:var(--text3);background:none;border:none;cursor:pointer;font-family:'Noto Sans JP',sans-serif;">▼ 過去の更新</button>
+      </div>
+      <!-- 最新の更新 -->
+      <div style="padding:12px 16px;border-bottom:1px solid var(--border2);">
+        <div style="font-size:11px;color:var(--text3);margin-bottom:3px;">2026/03/21</div>
+        <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;">称号システムを大幅追加</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.7;">ノーマル・シークレット・アルカナの3カテゴリに新称号を追加しました。スコアによる称号のほか、丸の色にまつわる全24種の称号が新たに入手できます。</div>
+      </div>
+      <!-- 過去の更新（折りたたみ） -->
+      <div id="update-log-old" style="display:none;">
+        <div style="padding:12px 16px;border-bottom:1px solid var(--border2);">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:3px;">2026/03/21</div>
+          <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;">難易度調整・各種ページ追加</div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.7;">全ステージの丸の表示速度をLv.10に統一しました。使い方ガイド・よくある質問・お問い合わせ・設定・自慢ページを追加しました。</div>
+        </div>
+        <div style="padding:12px 16px;">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:3px;">2026/03/21</div>
+          <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;">称号・セキュリティ機能を追加</div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.7;">称号システム・製作者認証・チート対策・データリセット機能などを実装しました。</div>
+        </div>
+      </div>
+    </div>
+
     <!-- ゲームカード -->
     <div id="nick-card-wrap">
     <div class="nick-card">
@@ -336,54 +363,119 @@
 
   // 称号マスターデータ
   const TITLE_DEFS = [
-    // ノーマル称号（2人に1人・22,000pt以上）
-    {
-      id: 'score_normal',
-      type: 'normal',
-      icon: '🔵',
-      name: '見届けた者',
-      desc: '合計スコア22,000pt以上を達成した。3ステージすべてを見届け、記憶の入口に立った証。',
-      check: (score) => score >= 22000,
-    },
-    // シークレット称号（10人に1人・42,000pt以上）
-    {
-      id: 'score_secret',
-      type: 'secret',
-      icon: '🟣',
-      name: '冗護なき記憶力',
-      desc: '合計スコア42,000pt以上を達成した。',
-      nameHidden: '冗護なき○○力',
-      descHidden: '記憶に関する、ある力の証明。',
-      check: (score) => score >= 42000,
-    },
-    // アルカナ称号（100人に1人・60,000pt以上）
-    {
-      id: 'score_arcane',
-      type: 'arcane',
-      icon: '💠',
-      name: 'フォートレス・メモリア',
-      desc: '合計スコア60,000pt以上を達成した。難攻不落の記憶の城塞。到達者は100人に1人にも満たない。',
-      check: (score) => score >= 60000,
-    },
-    // 既存の特殊称号
-    {
-      id: 'ad_killer',
-      type: 'secret',
-      icon: '🙏',
-      name: 'それは勘弁してくれ……',
-      desc: '広告を非表示にしようとした',
-      nameHidden: 'それは○弁してくれ……',
-      descHidden: '何かを消そうとした、あなたへ。',
-      check: () => false,
-    },
-    {
-      id: 'cheat_detected',
-      type: 'arcane',
-      icon: '🃏',
-      name: '一つの手段',
-      desc: 'チート等を使った判定になった者に与えられる称号。一つの手段なのでお咎めなし。チート等を使っていない場合は不具合なので、現状と状況を報告してくれたら助かります！',
-      check: () => false,
-    },
+    // ===== スコア系 =====
+    { id:'score_normal', type:'normal', icon:'🔵', name:'見届けた者',
+      desc:'合計スコア22,000pt以上を達成した。3ステージすべてを見届け、記憶の入口に立った証。',
+      check:(s)=>s>=22000 },
+    { id:'score_secret', type:'secret', icon:'🟣', name:'冗護なき記憶力',
+      desc:'合計スコア42,000pt以上を達成した。',
+      nameHidden:'冗護なき○○力', descHidden:'記憶に関する、ある力の証明。',
+      check:(s)=>s>=42000 },
+    { id:'score_arcane', type:'arcane', icon:'💠', name:'フォートレス・メモリア',
+      desc:'合計スコア60,000pt以上を達成した。難攻不落の記憶の城塞。到達者は100人に1人にも満たない。',
+      check:(s)=>s>=60000 },
+
+    // ===== 色出現系 ノーマル（出現するだけ） =====
+    { id:'all_gold_lv5',   type:'normal', icon:'🌕', name:'金色の記憶・Ⅰ',
+      desc:'Lv.5で全ての丸が金色だった。確率は運次第。',
+      check:(_,__,cr)=>cr[0]?.allColor==='gold' },
+    { id:'all_gold_lv7',   type:'normal', icon:'🌕', name:'金色の記憶・Ⅱ',
+      desc:'Lv.7で全ての丸が金色だった。',
+      check:(_,__,cr)=>cr[1]?.allColor==='gold' },
+    { id:'all_gold_lv10',  type:'normal', icon:'🌕', name:'金色の記憶・Ⅲ',
+      desc:'Lv.10で全ての丸が金色だった。10個すべてが金色の瞬間。',
+      check:(_,__,cr)=>cr[2]?.allColor==='gold' },
+
+    { id:'all_silver_lv5', type:'normal', icon:'🌙', name:'銀色の記憶・Ⅰ',
+      desc:'Lv.5で全ての丸が銀色だった。',
+      check:(_,__,cr)=>cr[0]?.allColor==='silver' },
+    { id:'all_silver_lv7', type:'normal', icon:'🌙', name:'銀色の記憶・Ⅱ',
+      desc:'Lv.7で全ての丸が銀色だった。',
+      check:(_,__,cr)=>cr[1]?.allColor==='silver' },
+    { id:'all_silver_lv10',type:'normal', icon:'🌙', name:'銀色の記憶・Ⅲ',
+      desc:'Lv.10で全ての丸が銀色だった。10個すべてが銀色の瞬間。',
+      check:(_,__,cr)=>cr[2]?.allColor==='silver' },
+
+    { id:'all_red_lv5',    type:'normal', icon:'🔴', name:'赤色の記憶・Ⅰ',
+      desc:'Lv.5で全ての丸が赤色だった。',
+      check:(_,__,cr)=>cr[0]?.allColor==='red' },
+    { id:'all_red_lv7',    type:'normal', icon:'🔴', name:'赤色の記憶・Ⅱ',
+      desc:'Lv.7で全ての丸が赤色だった。',
+      check:(_,__,cr)=>cr[1]?.allColor==='red' },
+    { id:'all_red_lv10',   type:'normal', icon:'🔴', name:'赤色の記憶・Ⅲ',
+      desc:'Lv.10で全ての丸が赤色だった。10個すべてが赤色の瞬間。',
+      check:(_,__,cr)=>cr[2]?.allColor==='red' },
+
+    // ===== 色全正解系 シークレット（出現＋全問正解） =====
+    { id:'perfect_gold_lv5',   type:'secret', icon:'✨', name:'黄金の見届け者・Ⅰ',
+      desc:'Lv.5で全ての丸が金色かつ全問正解した。',
+      nameHidden:'黄金の○届け者・Ⅰ', descHidden:'金色に輝く記憶を、完璧に見届けた。',
+      check:(_,__,cr)=>cr[0]?.allColor==='gold'&&cr[0]?.perfect },
+    { id:'perfect_gold_lv7',   type:'secret', icon:'✨', name:'黄金の見届け者・Ⅱ',
+      desc:'Lv.7で全ての丸が金色かつ全問正解した。',
+      nameHidden:'黄金の○届け者・Ⅱ', descHidden:'金色に輝く記憶を、完璧に見届けた。',
+      check:(_,__,cr)=>cr[1]?.allColor==='gold'&&cr[1]?.perfect },
+    { id:'perfect_gold_lv10',  type:'secret', icon:'✨', name:'黄金の見届け者・Ⅲ',
+      desc:'Lv.10で全ての丸が金色かつ全問正解した。10個の金色をすべて捉えた。',
+      nameHidden:'黄金の○届け者・Ⅲ', descHidden:'金色に輝く記憶を、完璧に見届けた。',
+      check:(_,__,cr)=>cr[2]?.allColor==='gold'&&cr[2]?.perfect },
+
+    { id:'perfect_silver_lv5', type:'secret', icon:'🌟', name:'白銀の見届け者・Ⅰ',
+      desc:'Lv.5で全ての丸が銀色かつ全問正解した。',
+      nameHidden:'白銀の○届け者・Ⅰ', descHidden:'銀色の記憶を、完璧に捉えた。',
+      check:(_,__,cr)=>cr[0]?.allColor==='silver'&&cr[0]?.perfect },
+    { id:'perfect_silver_lv7', type:'secret', icon:'🌟', name:'白銀の見届け者・Ⅱ',
+      desc:'Lv.7で全ての丸が銀色かつ全問正解した。',
+      nameHidden:'白銀の○届け者・Ⅱ', descHidden:'銀色の記憶を、完璧に捉えた。',
+      check:(_,__,cr)=>cr[1]?.allColor==='silver'&&cr[1]?.perfect },
+    { id:'perfect_silver_lv10',type:'secret', icon:'🌟', name:'白銀の見届け者・Ⅲ',
+      desc:'Lv.10で全ての丸が銀色かつ全問正解した。10個の銀色をすべて捉えた。',
+      nameHidden:'白銀の○届け者・Ⅲ', descHidden:'銀色の記憶を、完璧に捉えた。',
+      check:(_,__,cr)=>cr[2]?.allColor==='silver'&&cr[2]?.perfect },
+
+    { id:'perfect_red_lv5',    type:'secret', icon:'🔥', name:'紅蓮の見届け者・Ⅰ',
+      desc:'Lv.5で全ての丸が赤色かつ全問正解した。',
+      nameHidden:'紅蓮の○届け者・Ⅰ', descHidden:'赤く燃える記憶を、完璧に刻んだ。',
+      check:(_,__,cr)=>cr[0]?.allColor==='red'&&cr[0]?.perfect },
+    { id:'perfect_red_lv7',    type:'secret', icon:'🔥', name:'紅蓮の見届け者・Ⅱ',
+      desc:'Lv.7で全ての丸が赤色かつ全問正解した。',
+      nameHidden:'紅蓮の○届け者・Ⅱ', descHidden:'赤く燃える記憶を、完璧に刻んだ。',
+      check:(_,__,cr)=>cr[1]?.allColor==='red'&&cr[1]?.perfect },
+    { id:'perfect_red_lv10',   type:'secret', icon:'🔥', name:'紅蓮の見届け者・Ⅲ',
+      desc:'Lv.10で全ての丸が赤色かつ全問正解した。10個の赤をすべて刻んだ。',
+      nameHidden:'紅蓮の○届け者・Ⅲ', descHidden:'赤く燃える記憶を、完璧に刻んだ。',
+      check:(_,__,cr)=>cr[2]?.allColor==='red'&&cr[2]?.perfect },
+
+    // ===== 全ステージ同色系 アルカナ =====
+    { id:'triple_gold',   type:'arcane', icon:'👑', name:'三重の黄金',
+      desc:'3ステージすべてで全ての丸が金色だった。奇跡的な確率の一致。',
+      check:(_,__,cr)=>cr[0]?.allColor==='gold'&&cr[1]?.allColor==='gold'&&cr[2]?.allColor==='gold' },
+    { id:'triple_silver', type:'arcane', icon:'🪐', name:'三重の白銀',
+      desc:'3ステージすべてで全ての丸が銀色だった。',
+      check:(_,__,cr)=>cr[0]?.allColor==='silver'&&cr[1]?.allColor==='silver'&&cr[2]?.allColor==='silver' },
+    { id:'triple_red',    type:'arcane', icon:'🌋', name:'三重の紅蓮',
+      desc:'3ステージすべてで全ての丸が赤色だった。',
+      check:(_,__,cr)=>cr[0]?.allColor==='red'&&cr[1]?.allColor==='red'&&cr[2]?.allColor==='red' },
+
+    // ===== 全ステージ同色全正解 アルカナ =====
+    { id:'triple_perfect_gold',   type:'arcane', icon:'🏆', name:'黄金の完全制覇',
+      desc:'3ステージすべてで全ての丸が金色かつ全問正解した。この記録に到達した者は極めて少ない。',
+      check:(_,__,cr)=>cr[0]?.allColor==='gold'&&cr[0]?.perfect&&cr[1]?.allColor==='gold'&&cr[1]?.perfect&&cr[2]?.allColor==='gold'&&cr[2]?.perfect },
+    { id:'triple_perfect_silver', type:'arcane', icon:'🥈', name:'白銀の完全制覇',
+      desc:'3ステージすべてで全ての丸が銀色かつ全問正解した。',
+      check:(_,__,cr)=>cr[0]?.allColor==='silver'&&cr[0]?.perfect&&cr[1]?.allColor==='silver'&&cr[1]?.perfect&&cr[2]?.allColor==='silver'&&cr[2]?.perfect },
+    { id:'triple_perfect_red',    type:'arcane', icon:'🌹', name:'紅蓮の完全制覇',
+      desc:'3ステージすべてで全ての丸が赤色かつ全問正解した。',
+      check:(_,__,cr)=>cr[0]?.allColor==='red'&&cr[0]?.perfect&&cr[1]?.allColor==='red'&&cr[1]?.perfect&&cr[2]?.allColor==='red'&&cr[2]?.perfect },
+
+    // ===== 特殊称号 =====
+    { id:'ad_killer', type:'secret', icon:'🙏', name:'それは勘弁してくれ……',
+      desc:'広告を非表示にしようとした',
+      nameHidden:'それは○弁してくれ……', descHidden:'何かを消そうとした、あなたへ。',
+      check:()=>false },
+    { id:'cheat_detected', type:'arcane', icon:'🃏', name:'一つの手段',
+      desc:'チート等を使った判定になった者に与えられる称号。一つの手段なのでお咎めなし。チート等を使っていない場合は不具合なので、現状と状況を報告してくれたら助かります！',
+      check:()=>false },
   ];
 
   // 端末IDを生成・保存（一度作ったら変わらない）
@@ -595,6 +687,9 @@
   let stageIdx=0,stageScores=[0,0,0],totalScore=0;
   let phase='idle',correctCells=[],selectedCells=[],dotMap={};
   let timerInterval=null,timeRemaining=0;
+  // 各ステージの色情報と正解状況を記録（称号判定用）
+  // { allColor:'gold'|'silver'|'red'|null, perfect:bool }
+  let stageColorResults=[{},{},{}];
 
   // ===== チート対策 =====
 
@@ -706,7 +801,7 @@
   // パスワードをPBKDF2(100,000回)でストレッチングしたハッシュ。
   // gen_hash.html でパスワードを入力して生成した値をここに貼る。
   // ハッシュからパスワードを逆算するのは現実的に不可能。
-  const _OWNER_HASH = 'aa774ac51d1ddc98a5b325605ce19c848114f7d82959b88385cf654466405b5b'; // ← gen_hash.html で生成した値に差し替える
+  const _OWNER_HASH = 'YOUR_HASH_HERE'; // ← gen_hash.html で生成した値に差し替える
   const _OWNER_SALT = '丸場所記憶ゲーム_製作者専用_2026_SALT_v1';
   const _AUTH_SESSION_KEY = 'adgame_owner_auth'; // sessionStorage（タブを閉じると消える）
 
@@ -819,6 +914,7 @@
     nickname=val;
     localStorage.setItem('adgame_nick',val);
     stageIdx=0;stageScores=[0,0,0];totalScore=0;
+    stageColorResults=[{},{},{}];
     _challengeStartTs = Date.now(); // チート対策：チャレンジ開始時刻を記録
     updateProgress();showScreen('screen-game');
     document.getElementById('total-score-disp').textContent='0';
@@ -967,6 +1063,13 @@
     const wrong=selectedCells.filter(i=>!correctCells.includes(i)).length;
     const cfg=getCfg();
 
+    // 色情報を記録（称号判定用）
+    const colors = Object.values(dotMap);
+    const uniqueColors = [...new Set(colors)];
+    const allSameColor = uniqueColors.length === 1 ? uniqueColors[0] : null;
+    const isPerfect = correct === cfg.dots && wrong === 0 && !isTimeout;
+    stageColorResults[stageIdx] = { allColor: allSameColor, perfect: isPerfect };
+
     let timeBonus=0;
     if(!isTimeout&&correct===cfg.dots&&wrong===0){
       timeBonus=Math.max(0,Math.floor(timeRemaining/5));
@@ -1005,7 +1108,7 @@
     document.getElementById('final-score').textContent=fmtMan(totalScore);
     showScreen('screen-result');
     await saveScore(nickname,totalScore,stageScores);
-    checkAndGrantTitles(totalScore, stageScores);
+    checkAndGrantTitles(totalScore, stageScores, stageColorResults);
 
     // 自分の順位を表示
     try{
@@ -1076,6 +1179,14 @@
     } catch(e) {
       return { ad:true, banner:true, titles:true, game:true };
     }
+  }
+
+  function toggleUpdateLog(){
+    const old = document.getElementById('update-log-old');
+    const btn = document.getElementById('update-log-toggle');
+    const isOpen = old.style.display !== 'none';
+    old.style.display = isOpen ? 'none' : 'block';
+    btn.textContent = isOpen ? '▼ 過去の更新' : '▲ 閉じる';
   }
 
   function toggleDispPanel() {
@@ -1209,12 +1320,13 @@
   }
 
   // チャレンジ完了後に称号チェック・新規付与
-  function checkAndGrantTitles(score, stageScores) {
+  function checkAndGrantTitles(score, stageScores, colorResults) {
+    const cr = colorResults || [{},{},{}];
     const existing = getMyTitles();
     const existingIds = new Set(existing.map(t => t.id));
     const newTitles = [];
     for (const def of TITLE_DEFS) {
-      if (!existingIds.has(def.id) && def.check(score, stageScores)) {
+      if (!existingIds.has(def.id) && def.check(score, stageScores, cr)) {
         const entry = { id: def.id, obtainedAt: Date.now() };
         newTitles.push({ def, entry });
         existing.unshift(entry); // 最近入手順（先頭）
