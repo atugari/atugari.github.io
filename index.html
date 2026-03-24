@@ -6,6 +6,11 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
+  <meta name="theme-color" content="#1D9E75">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="丸場所">
+  <link rel="manifest" href="manifest.json">
   <meta name="description" content="丸が消えた場所を5秒以内に当てる記憶ゲーム！3ステージの合計スコアでランキングを競おう。">
   <title>丸場所記憶ゲーム</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -156,10 +161,18 @@
         <span class="disp-settings-hd-arrow" id="disp-arrow">▼</span>
       </div>
       <div class="disp-body" id="disp-body">
-        <div class="disp-row" id="disp-row-ad">
+        <div class="disp-row" id="disp-row-ad" style="display:none;">
           <span class="disp-label">バナー広告</span>
           <label class="toggle-wrap" id="tog-ad-wrap">
             <input type="checkbox" id="tog-ad" onchange="applyDispSettings()">
+            <span class="toggle-track"></span>
+            <span class="toggle-thumb"></span>
+          </label>
+        </div>
+        <div class="disp-row">
+          <span class="disp-label">ニュース</span>
+          <label class="toggle-wrap">
+            <input type="checkbox" id="tog-news" onchange="applyDispSettings()">
             <span class="toggle-track"></span>
             <span class="toggle-thumb"></span>
           </label>
@@ -181,6 +194,14 @@
           </label>
         </div>
         <div class="disp-row">
+          <span class="disp-label">更新情報</span>
+          <label class="toggle-wrap">
+            <input type="checkbox" id="tog-updates" onchange="applyDispSettings()">
+            <span class="toggle-track"></span>
+            <span class="toggle-thumb"></span>
+          </label>
+        </div>
+        <div class="disp-row">
           <span class="disp-label">ゲームカード</span>
           <label class="toggle-wrap">
             <input type="checkbox" id="tog-game" onchange="applyDispSettings()">
@@ -191,18 +212,14 @@
       </div>
     </div>
 
-    <!-- バナー広告（設定パネルの下） -->
-    <div class="ad-label" id="ad-label-wrap">広 告</div>
-    <div class="adsense-slot" id="ad-slot">
-      <!-- AdSense審査通過後、このコメントをinsタグに置き換える
-      <ins class="adsbygoogle" style="display:block"
-           data-ad-client="ca-pub-YOUR_ADSENSE_ID"
-           data-ad-slot="YOUR_AD_SLOT_ID"
-           data-ad-format="auto"
-           data-full-width-responsive="true"></ins>
-      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-      -->
-      広告審査通過後にここに表示されます
+    <!-- ニュースバナー -->
+    <div id="news-banner" style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;margin-bottom:16px;">
+      <div style="background:linear-gradient(135deg,#378ADD,#185FA5);padding:10px 14px;display:flex;align-items:center;gap:8px;">
+        <span style="font-size:10px;font-weight:500;color:rgba(255,255,255,0.85);letter-spacing:0.06em;">NEWS</span>
+      </div>
+      <div id="news-content" style="padding:12px 16px;font-size:13px;color:var(--text);line-height:1.8;min-height:48px;">
+        <div style="font-size:12px;color:var(--text3);">読み込み中...</div>
+      </div>
     </div>
 
     <!-- 月間ランキングバナー -->
@@ -241,22 +258,12 @@
       </div>
       <!-- 最新の更新 -->
       <div style="padding:12px 16px;border-bottom:1px solid var(--border2);">
-        <div style="font-size:11px;color:var(--text3);margin-bottom:3px;">2026/03/21</div>
-        <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;">称号システムを大幅追加</div>
-        <div style="font-size:12px;color:var(--text2);line-height:1.7;">ノーマル・シークレット・アルカナの3カテゴリに新称号を追加しました。スコアによる称号のほか、丸の色にまつわる全24種の称号が新たに入手できます。</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:3px;">2026/03/24</div>
+        <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;">称号大幅追加・ニュース枠・PWA対応</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.7;">称号を20種類以上新たに追加しました。また、ホームにニュース枠を追加しました。表示設定から更新情報・ニュースの表示・非表示も切り替えられるようになりました。さらにホーム画面への追加でアプリのように使えるようになりました。</div>
       </div>
       <!-- 過去の更新（折りたたみ） -->
       <div id="update-log-old" style="display:none;">
-        <div style="padding:12px 16px;border-bottom:1px solid var(--border2);">
-          <div style="font-size:11px;color:var(--text3);margin-bottom:3px;">2026/03/21</div>
-          <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;">難易度調整・各種ページ追加</div>
-          <div style="font-size:12px;color:var(--text2);line-height:1.7;">全ステージの丸の表示速度をLv.10に統一しました。使い方ガイド・よくある質問・お問い合わせ・設定・自慢ページを追加しました。</div>
-        </div>
-        <div style="padding:12px 16px;">
-          <div style="font-size:11px;color:var(--text3);margin-bottom:3px;">2026/03/21</div>
-          <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;">称号・セキュリティ機能を追加</div>
-          <div style="font-size:12px;color:var(--text2);line-height:1.7;">称号システム・製作者認証・チート対策・データリセット機能などを実装しました。</div>
-        </div>
       </div>
     </div>
 
@@ -801,7 +808,7 @@
   // パスワードをPBKDF2(100,000回)でストレッチングしたハッシュ。
   // gen_hash.html でパスワードを入力して生成した値をここに貼る。
   // ハッシュからパスワードを逆算するのは現実的に不可能。
-  const _OWNER_HASH = 'aa774ac51d1ddc98a5b325605ce19c848114f7d82959b88385cf654466405b5b'; // ← gen_hash.html で生成した値に差し替える
+  const _OWNER_HASH = 'YOUR_HASH_HERE'; // ← gen_hash.html で生成した値に差し替える
   const _OWNER_SALT = '丸場所記憶ゲーム_製作者専用_2026_SALT_v1';
   const _AUTH_SESSION_KEY = 'adgame_owner_auth'; // sessionStorage（タブを閉じると消える）
 
@@ -1166,19 +1173,67 @@
   }
 
   // ===== 表示設定 =====
-  // キー: adgame_disp  値: {ad,banner,titles,game}  すべてtrue=表示
   function getDispSettings() {
     try {
       const s = JSON.parse(localStorage.getItem('adgame_disp') || '{}');
       return {
-        ad:     s.ad     !== false,
-        banner: s.banner !== false,
-        titles: s.titles !== false,
-        game:   s.game   !== false,
+        ad:      s.ad      !== false,
+        news:    s.news    !== false,
+        banner:  s.banner  !== false,
+        titles:  s.titles  !== false,
+        updates: s.updates !== false,
+        game:    s.game    !== false,
       };
     } catch(e) {
-      return { ad:true, banner:true, titles:true, game:true };
+      return { ad:true, news:true, banner:true, titles:true, updates:true, game:true };
     }
+  }
+
+  function applyDispSettings() {
+    const s = {
+      ad:      document.getElementById('tog-ad').checked,
+      news:    document.getElementById('tog-news').checked,
+      banner:  document.getElementById('tog-banner').checked,
+      titles:  document.getElementById('tog-titles').checked,
+      updates: document.getElementById('tog-updates').checked,
+      game:    document.getElementById('tog-game').checked,
+    };
+
+    if (!s.ad && !localStorage.getItem(AD_LOCKED_KEY)) {
+      grantAdKillerTitle();
+      return;
+    }
+
+    localStorage.setItem('adgame_disp', JSON.stringify(s));
+    const show = (id, visible) => { const el=document.getElementById(id); if(el) el.style.display = visible ? '' : 'none'; };
+    show('news-banner',      s.news);
+    show('monthly-banner',   s.banner);
+    show('titles-section',   s.titles);
+    show('update-log-section', s.updates);
+    show('nick-card-wrap',   s.game);
+    if(s.banner) loadBannerRanking(currentBannerTab);
+    if(s.titles) renderHomeTitles();
+    if(s.news)   loadNewsBanner();
+  }
+
+  function initDispSettings() {
+    if(!localStorage.getItem(AD_LOCKED_KEY)){
+      try {
+        const disp = JSON.parse(localStorage.getItem('adgame_disp') || '{}');
+        if(disp.ad === false){ disp.ad = true; localStorage.setItem('adgame_disp', JSON.stringify(disp)); }
+      } catch(e) {}
+    }
+    const s = getDispSettings();
+    document.getElementById('tog-ad').checked      = s.ad;
+    document.getElementById('tog-news').checked    = s.news;
+    document.getElementById('tog-banner').checked  = s.banner;
+    document.getElementById('tog-titles').checked  = s.titles;
+    document.getElementById('tog-updates').checked = s.updates;
+    document.getElementById('tog-game').checked    = s.game;
+
+    if(localStorage.getItem(AD_LOCKED_KEY)==='1') lockAdToggle();
+    applyAdRowHidden();
+    applyDispSettings();
   }
 
   function toggleUpdateLog(){
@@ -1195,31 +1250,6 @@
     const isOpen = body.classList.contains('open');
     body.classList.toggle('open', !isOpen);
     arrow.classList.toggle('open', !isOpen);
-  }
-
-  function applyDispSettings() {
-    const s = {
-      ad:     document.getElementById('tog-ad').checked,
-      banner: document.getElementById('tog-banner').checked,
-      titles: document.getElementById('tog-titles').checked,
-      game:   document.getElementById('tog-game').checked,
-    };
-
-    // 広告をOFFにしようとした → 称号付与して強制ON
-    if (!s.ad && !localStorage.getItem(AD_LOCKED_KEY)) {
-      grantAdKillerTitle();
-      return; // grantAdKillerTitle内でONに戻して再呼び出し
-    }
-
-    localStorage.setItem('adgame_disp', JSON.stringify(s));
-    const show = (id, visible) => { const el=document.getElementById(id); if(el) el.style.display = visible ? '' : 'none'; };
-    show('ad-label-wrap',  s.ad);
-    show('ad-slot',        s.ad);
-    show('monthly-banner', s.banner);
-    show('titles-section', s.titles);
-    show('nick-card-wrap', s.game);
-    if(s.banner) loadBannerRanking(currentBannerTab);
-    if(s.titles) renderHomeTitles();
   }
 
   // 称号「それは勘弁してくれ……」付与＋広告強制ON＋トグルロック
@@ -1245,21 +1275,24 @@
     // 設定を保存（ad=true で）
     const s = {
       ad: true,
-      banner: document.getElementById('tog-banner').checked,
-      titles: document.getElementById('tog-titles').checked,
-      game:   document.getElementById('tog-game').checked,
+      news:    document.getElementById('tog-news').checked,
+      banner:  document.getElementById('tog-banner').checked,
+      titles:  document.getElementById('tog-titles').checked,
+      updates: document.getElementById('tog-updates').checked,
+      game:    document.getElementById('tog-game').checked,
     };
     localStorage.setItem('adgame_disp', JSON.stringify(s));
     localStorage.setItem(AD_LOCKED_KEY, '1');
 
     const show = (id, visible) => { const el=document.getElementById(id); if(el) el.style.display = visible ? '' : 'none'; };
-    show('ad-label-wrap',  true);
-    show('ad-slot',        true);
-    show('monthly-banner', s.banner);
-    show('titles-section', s.titles);
-    show('nick-card-wrap', s.game);
+    show('news-banner',        s.news);
+    show('monthly-banner',     s.banner);
+    show('titles-section',     s.titles);
+    show('update-log-section', s.updates);
+    show('nick-card-wrap',     s.game);
     if(s.banner) loadBannerRanking(currentBannerTab);
     if(s.titles) renderHomeTitles();
+    if(s.news)   loadNewsBanner();
   }
 
   function lockAdToggle() {
@@ -1308,7 +1341,66 @@
   localStorage.removeItem('adgame_banner_hidden');
   localStorage.removeItem('adgame_sections_hidden');
 
-  // ===== 称号システム =====
+  // ===== ニュースバナー =====
+  // Firebaseから最近シークレット称号を取得したユーザーを取得して表示
+  // 宣伝スロットも交互に表示
+  const NEWS_ADS = [
+    // 製作者の他のゲーム・告知をここに追加
+    // { text: '新作ゲーム「○○」近日公開！', link: null },
+  ];
+
+  async function loadNewsBanner(){
+    const el = document.getElementById('news-content');
+    if(!el) return;
+
+    // シークレット称号IDリスト
+    const secretIds = TITLE_DEFS.filter(d=>d.type==='secret').map(d=>d.id);
+
+    try {
+      const res  = await fetch(DB_URL+'/rankings.json');
+      const data = await res.json();
+      if(!data){ showNewsDefault(el); return; }
+
+      const now = Date.now();
+      // 過去30日以内にスコアを更新したユーザーから称号情報を取得
+      // ※称号はlocalStorageなのでFirebaseには入っていない
+      // → ランキング上位者の名前を「最近活発なプレイヤー」として表示
+      const recent = Object.values(data)
+        .filter(e=>e&&e.name&&e.score&&(now-e.updatedAt)<30*24*60*60*1000)
+        .sort((a,b)=>b.updatedAt-a.updatedAt)
+        .slice(0,5);
+
+      // ニュース候補を作成
+      const newsItems = [];
+
+      // 最近プレイしたユーザーのスコア速報
+      recent.forEach(e=>{
+        if(e.score >= 42000){
+          newsItems.push({ text:'🔥 '+e.name+' が高スコア '+e.score.toLocaleString()+'pt を記録！' });
+        }
+      });
+
+      // 宣伝スロット
+      NEWS_ADS.forEach(ad=>newsItems.push(ad));
+
+      // デフォルトメッセージ
+      if(newsItems.length===0){
+        newsItems.push({ text:'あなたのプレイがランキングに刻まれます。チャレンジしよう！' });
+      }
+
+      // ランダムに1件表示
+      const item = newsItems[Math.floor(Math.random()*newsItems.length)];
+      el.innerHTML = '<div style="font-size:13px;color:var(--text);line-height:1.8;">'
+        + (item.link ? '<a href="'+item.link+'" style="color:var(--blue);text-decoration:none;">'+item.text+'</a>' : item.text)
+        + '</div>';
+
+    } catch(e){ showNewsDefault(el); }
+  }
+
+  function showNewsDefault(el){
+    if(!el) return;
+    el.innerHTML = '<div style="font-size:13px;color:var(--text2);">あなたのプレイがランキングに刻まれます。チャレンジしよう！</div>';
+  }
 
   function getMyTitles() {
     try { return JSON.parse(localStorage.getItem('adgame_titles') || '[]'); }
@@ -1441,6 +1533,11 @@
   document.getElementById('banner-month-label').textContent = getBannerMonthLabel();
   initDispSettings();
   renderHomeTitles();
+
+  // PWA: Service Worker 登録
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('/ad-tracker/sw.js').catch(()=>{});
+  }
 
 </script>
 </body>
