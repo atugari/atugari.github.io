@@ -258,11 +258,17 @@
       </div>
       <!-- 最新の更新 -->
       <div style="padding:12px 16px;border-bottom:1px solid var(--border2);">
+        <div style="font-size:11px;color:var(--text3);margin-bottom:3px;">2026/03/26</div>
+        <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;">【バグ修正】今日のランキングにスコアが表示されない問題</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.7;">過去最高スコアより低い点数でプレイした場合、「今日」タブにスコアが表示されない不具合を修正しました。</div>
+      </div>
+      <!-- ひとつ前の更新 -->
+      <div style="padding:12px 16px;border-bottom:1px solid var(--border2);">
         <div style="font-size:11px;color:var(--text3);margin-bottom:3px;">2026/03/25</div>
         <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;">新ミニゲーム 鋭意制作中</div>
         <div style="font-size:12px;color:var(--text2);line-height:1.7;">新しいミニゲームを制作中です。公開をお楽しみに！</div>
       </div>
-      <!-- ひとつ前の更新 -->
+      <!-- ふたつ前の更新（折りたたみへ移動） -->
       <div style="padding:12px 16px;border-bottom:1px solid var(--border2);">
         <div style="font-size:11px;color:var(--text3);margin-bottom:3px;">2026/03/24</div>
         <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;">称号大幅追加・ニュース枠・PWA対応</div>
@@ -563,7 +569,17 @@
         return;
       }
 
-      if(!existing||isExpired||existing.score<totalScore){
+      // 今日のベストスコアを計算（日付が変わったらリセット）
+      const todayStart = new Date(now); todayStart.setHours(0,0,0,0);
+      const todayStartTs = todayStart.getTime();
+      const prevTodayBest = existing && !isExpired && existing.lastPlayedAt >= todayStartTs
+        ? (existing.todayBest || 0) : 0;
+      const todayBest = Math.max(prevTodayBest, totalScore);
+
+      // ベストスコア更新の場合のみ全体スコアを書き換え、それ以外はlastPlayedAt・todayBestのみ更新
+      const isBestUpdate = !existing || isExpired || existing.score < totalScore;
+
+      if(isBestUpdate){
         // 全ランキングを取得して上位0.1%チェック
         const allRes=await fetch(DB_URL+'/rankings.json');
         const allData=await allRes.json();
@@ -616,11 +632,23 @@
             s1:stageScores[1],
             s2:stageScores[2],
             updatedAt:now,
+            lastPlayedAt:now,           // 最終プレイ日時（常に更新）
+            todayBest:todayBest,        // 今日のベストスコア
             deviceId:DEVICE_ID,
             top01since:top01since||null,
             hallOfFame:isHallOfFame||false,
-            _sig:sig,                          // 署名
-            _dt:_devtoolsDetected?1:0,         // DevTools検知フラグ
+            _sig:sig,
+            _dt:_devtoolsDetected?1:0,
+          })
+        });
+      } else {
+        // ベスト更新なし → lastPlayedAt と todayBest だけ PATCH で更新
+        await fetch(url,{
+          method:'PATCH',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({
+            lastPlayedAt:now,
+            todayBest:todayBest,
           })
         });
       }
@@ -636,15 +664,29 @@
       const data=await res.json();
       if(!data){el.innerHTML='<div class="rank-empty">まだ記録がありません</div>';return;}
       const now=Date.now();
+      // lastPlayedAt があればそちらを優先、なければ updatedAt にフォールバック（後方互換）
+      const todayStart = new Date(now); todayStart.setHours(0,0,0,0);
+      const todayStartTs = todayStart.getTime();
       let entries=Object.values(data).filter(e=>{
         if(!_isValidEntry(e))return false;
         if((now-e.updatedAt)>ONE_YEAR)return false;
-        if(tab==='month')return(now-e.updatedAt)<=ONE_MONTH;
-        if(tab==='week')return(now-e.updatedAt)<=ONE_WEEK;
-        if(tab==='day')return(now-e.updatedAt)<=ONE_DAY;
+        const playedAt = e.lastPlayedAt || e.updatedAt;
+        if(tab==='month')return(now-playedAt)<=ONE_MONTH;
+        if(tab==='week')return(now-playedAt)<=ONE_WEEK;
+        if(tab==='day')return playedAt>=todayStartTs;
         return true;
       });
-      entries.sort((a,b)=>b.score-a.score);
+      // dayタブは今日のベストスコア優先、それ以外は歴代最高スコア
+      entries = entries.map(e => {
+        if(tab==='day'){
+          const playedAt = e.lastPlayedAt || e.updatedAt;
+          const isTodayPlay = playedAt >= todayStartTs;
+          const displayScore = isTodayPlay && e.todayBest != null ? e.todayBest : e.score;
+          return {...e, _displayScore: displayScore, _displayDate: e.lastPlayedAt||e.updatedAt};
+        }
+        return {...e, _displayScore: e.score, _displayDate: e.lastPlayedAt||e.updatedAt};
+      });
+      entries.sort((a,b)=>b._displayScore-a._displayScore);
       const all100=entries.slice(0,100);
       const top10=all100.slice(0,10);
       if(all100.length===0){el.innerHTML='<div class="rank-empty">まだ記録がありません</div>';return;}
@@ -662,9 +704,9 @@
             '<span class="rank-num '+rc+'">'+medal+'</span>'+
             '<div class="rank-info">'+
               '<div class="rank-name'+(isMe?' me':'')+'">'+entry.name+hofBadge+(isMe?' ◀ あなた':'')+'</div>'+
-              '<div class="rank-date">'+fmtDate(entry.updatedAt)+'</div>'+
+              '<div class="rank-date">'+fmtDate(entry._displayDate)+'</div>'+
             '</div>'+
-            '<span class="rank-score">'+entry.score.toLocaleString()+'pt</span>';
+            '<span class="rank-score">'+entry._displayScore.toLocaleString()+'pt</span>';
           el.appendChild(row);
         });
       }
@@ -1502,15 +1544,24 @@
       const data = await res.json();
       if(!data){el.innerHTML='<div class="rank-empty">まだ記録がありません</div>';return;}
       const now = Date.now();
+      const todayStart2 = new Date(now); todayStart2.setHours(0,0,0,0);
+      const todayStartTs2 = todayStart2.getTime();
       let entries = Object.values(data).filter(e=>{
         if(!_isValidEntry(e))return false;
         if((now-e.updatedAt)>ONE_YEAR)return false;
-        if(tab==='month')return(now-e.updatedAt)<=ONE_MONTH;
-        if(tab==='week')return(now-e.updatedAt)<=ONE_WEEK;
-        if(tab==='day')return(now-e.updatedAt)<=ONE_DAY;
+        const playedAt = e.lastPlayedAt || e.updatedAt;
+        if(tab==='month')return(now-playedAt)<=ONE_MONTH;
+        if(tab==='week')return(now-playedAt)<=ONE_WEEK;
+        if(tab==='day')return playedAt>=todayStartTs2;
         return true;
       });
-      entries.sort((a,b)=>b.score-a.score);
+      entries = entries.map(e => {
+        const playedAt = e.lastPlayedAt || e.updatedAt;
+        const isTodayPlay = playedAt >= todayStartTs2;
+        const displayScore = tab==='day' && isTodayPlay && e.todayBest != null ? e.todayBest : e.score;
+        return {...e, _displayScore: displayScore, _displayDate: playedAt};
+      });
+      entries.sort((a,b)=>b._displayScore-a._displayScore);
       const top10 = entries.slice(0,10);
       if(entries.length===0){el.innerHTML='<div class="rank-empty">'+(tab==='all'?'まだ記録がありません':'この期間の記録はありません')+'</div>';return;}
       el.innerHTML='';
@@ -1524,9 +1575,9 @@
           '<span class="rank-num '+rc+'">'+medal+'</span>'+
           '<div class="rank-info">'+
             '<div class="rank-name'+(isMe?' me':'')+'">'+entry.name+(isMe?' ◀ あなた':'')+'</div>'+
-            '<div class="rank-date">'+fmtDate(entry.updatedAt)+'</div>'+
+            '<div class="rank-date">'+fmtDate(entry._displayDate)+'</div>'+
           '</div>'+
-          '<span class="rank-score">'+entry.score.toLocaleString()+'pt</span>';
+          '<span class="rank-score">'+entry._displayScore.toLocaleString()+'pt</span>';
         el.appendChild(row);
       });
     } catch(e) {
