@@ -255,35 +255,30 @@
       <div style="padding:11px 16px;border-bottom:1px solid var(--border2);font-size:13px;font-weight:500;">
         <span>更新情報</span>
       </div>
-      <!-- 最新2件を常時表示（新しい順） -->
+      <!-- 最新1件を常時表示 -->
       <div id="update-log-recent">
         <div style="padding:12px 16px;border-bottom:1px solid var(--border2);">
           <div style="font-size:11px;color:var(--text3);margin-bottom:3px;">2026/03/26</div>
-          <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;">【バグ修正・UI改善】更新ログの表示・動作を修正</div>
-          <div style="font-size:12px;color:var(--text2);line-height:1.7;">更新ログの「閉じる」が機能しない不具合、同日の更新順が逆になっていた問題、「過去の更新」ボタンと「閉じる」が重なる問題を修正しました。また、最新2件のみ表示し残りは折りたたむようにしました。加えて、ホームの表示設定がページ再読み込みでリセットされることがある不具合も修正しました。</div>
-        </div>
-        <div style="padding:12px 16px;border-bottom:1px solid var(--border2);">
-          <div style="font-size:11px;color:var(--text3);margin-bottom:3px;">2026/03/26</div>
-          <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;">【UI改善】「最初からやり直す」ボタンの誤タップ防止</div>
-          <div style="font-size:12px;color:var(--text2);line-height:1.7;">スタートボタン・答えるボタンのすぐ下にあった「最初からやり直す」ボタンを、誤って押しにくい位置に移動しました。</div>
+          <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;">【修正】更新ログに種別表示・表示件数を改善</div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.7;">更新ログの各エントリに「修正」「機能追加」などの種別を追加しました。最新1件のみ常時表示し、過去の更新は修正・機能追加ごとに最新3件ずつ目次形式で確認できるようにしました。</div>
         </div>
       </div>
-      <!-- 過去の更新（折りたたみ） -->
+      <!-- 過去の更新（折りたたみ・目次形式） -->
       <div id="update-log-old" style="display:none;">
-        <div style="padding:12px 16px;border-bottom:1px solid var(--border2);">
-          <div style="font-size:11px;color:var(--text3);margin-bottom:3px;">2026/03/26</div>
-          <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;">【バグ修正】今日のランキングにスコアが表示されない問題</div>
-          <div style="font-size:12px;color:var(--text2);line-height:1.7;">過去最高スコアより低い点数でプレイした場合、「今日」タブにスコアが表示されない不具合を修正しました。</div>
+        <div style="padding:10px 16px;border-bottom:1px solid var(--border2);background:var(--surface2);">
+          <div style="font-size:11px;font-weight:500;color:var(--text2);margin-bottom:6px;">修正（最新3件）</div>
+          <div id="ul-fix-list"></div>
         </div>
-        <div style="padding:12px 16px;border-bottom:1px solid var(--border2);">
-          <div style="font-size:11px;color:var(--text3);margin-bottom:3px;">2026/03/25</div>
-          <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;">新ミニゲーム 鋭意制作中</div>
-          <div style="font-size:12px;color:var(--text2);line-height:1.7;">新しいミニゲームを制作中です。公開をお楽しみに！</div>
+        <div style="padding:10px 16px;border-bottom:1px solid var(--border2);background:var(--surface2);">
+          <div style="font-size:11px;font-weight:500;color:var(--text2);margin-bottom:6px;">機能追加（最新3件）</div>
+          <div id="ul-feat-list"></div>
         </div>
-        <div style="padding:12px 16px;border-bottom:1px solid var(--border2);">
-          <div style="font-size:11px;color:var(--text3);margin-bottom:3px;">2026/03/24</div>
-          <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;">称号大幅追加・ニュース枠・PWA対応</div>
-          <div style="font-size:12px;color:var(--text2);line-height:1.7;">称号を20種類以上新たに追加しました。また、ホームにニュース枠を追加しました。表示設定から更新情報・ニュースの表示・非表示も切り替えられるようになりました。さらにホーム画面への追加でアプリのように使えるようになりました。</div>
+        <!-- 詳細表示エリア -->
+        <div id="ul-detail" style="display:none;padding:12px 16px;border-bottom:1px solid var(--border2);">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:3px;" id="ul-detail-date"></div>
+          <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px;" id="ul-detail-title"></div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.7;" id="ul-detail-body"></div>
+          <button onclick="closeUpdateDetail()" style="margin-top:8px;font-size:11px;color:var(--text3);background:none;border:none;cursor:pointer;padding:0;font-family:'Noto Sans JP',sans-serif;">▲ 閉じる</button>
         </div>
       </div>
       <!-- 過去の更新トグルボタン -->
@@ -1299,10 +1294,71 @@
     applyDispSettings();
   }
 
+  // 更新ログデータ
+  const UPDATE_LOG_FIX = [
+    { date:'2026/03/26', title:'0点でランキング1位と表示される問題',
+      body:'結果画面の順位表示が今回のスコアではなく過去のハイスコアを参照していた不具合を修正しました。0点以下のスコアはランキングに保存されないようにもなりました。' },
+    { date:'2026/03/26', title:'更新ログの表示・動作を修正',
+      body:'更新ログの「閉じる」が機能しない不具合、同日の更新順が逆になっていた問題、「過去の更新」ボタンと「閉じる」が重なる問題を修正しました。また、ホームの表示設定がページ再読み込みでリセットされることがある不具合も修正しました。' },
+    { date:'2026/03/26', title:'今日のランキングにスコアが表示されない問題',
+      body:'過去最高スコアより低い点数でプレイした場合、「今日」タブにスコアが表示されない不具合を修正しました。' },
+  ];
+  const UPDATE_LOG_FEAT = [
+    { date:'2026/03/26', title:'「最初からやり直す」ボタンの誤タップ防止',
+      body:'スタートボタン・答えるボタンのすぐ下にあった「最初からやり直す」ボタンを、誤って押しにくい位置に移動しました。' },
+    { date:'2026/03/24', title:'称号大幅追加・ニュース枠・PWA対応',
+      body:'称号を20種類以上新たに追加しました。また、ホームにニュース枠を追加しました。表示設定から更新情報・ニュースの表示・非表示も切り替えられるようになりました。さらにホーム画面への追加でアプリのように使えるようになりました。' },
+    { date:'2026/03/25', title:'新ミニゲーム 鋭意制作中',
+      body:'新しいミニゲームを制作中です。公開をお楽しみに！' },
+  ];
+
+  let _ulDetailTarget = null;
+
+  function renderUpdateLogList(data, containerId) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    el.innerHTML = '';
+    data.slice(0, 3).forEach((item, i) => {
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border2);cursor:pointer;';
+      row.innerHTML =
+        '<span style="font-size:12px;color:var(--text);flex:1;padding-right:8px;">' + item.title + '</span>' +
+        '<span style="font-size:10px;color:var(--text3);white-space:nowrap;">' + item.date + '</span>';
+      row.addEventListener('click', () => showUpdateDetail(item, containerId + '_' + i));
+      el.appendChild(row);
+    });
+    // 最後のrowのborder-bottomを消す
+    const rows = el.querySelectorAll('div');
+    if (rows.length > 0) rows[rows.length - 1].style.borderBottom = 'none';
+  }
+
+  function showUpdateDetail(item, key) {
+    const detail = document.getElementById('ul-detail');
+    if (_ulDetailTarget === key && detail.style.display !== 'none') {
+      closeUpdateDetail();
+      return;
+    }
+    _ulDetailTarget = key;
+    document.getElementById('ul-detail-date').textContent = item.date;
+    document.getElementById('ul-detail-title').textContent = item.title;
+    document.getElementById('ul-detail-body').textContent = item.body;
+    detail.style.display = 'block';
+  }
+
+  function closeUpdateDetail() {
+    document.getElementById('ul-detail').style.display = 'none';
+    _ulDetailTarget = null;
+  }
+
   function toggleUpdateLog(){
     const oldEl = document.getElementById('update-log-old');
     const btn = document.getElementById('update-log-toggle');
     const isOpen = oldEl.style.display !== 'none';
+    if (!isOpen) {
+      renderUpdateLogList(UPDATE_LOG_FIX, 'ul-fix-list');
+      renderUpdateLogList(UPDATE_LOG_FEAT, 'ul-feat-list');
+      closeUpdateDetail();
+    }
     oldEl.style.display = isOpen ? 'none' : 'block';
     btn.textContent = isOpen ? '▼ 過去の更新を見る' : '▲ 閉じる';
   }
