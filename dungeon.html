@@ -54,9 +54,9 @@
     .player::before,.player::after{display:none;}
     .player .dot{position:absolute;width:10px;height:10px;background:rgba(255,255,255,0.85);border-radius:50%;pointer-events:none;}
     /* 敵 */
-    .enemy-token{position:absolute;width:calc(var(--cell) - 4px);height:calc(var(--cell) - 4px);background:var(--enemy);border-radius:4px;z-index:9;transition:left 0.18s ease-out,top 0.18s ease-out;box-shadow:0 0 0 2px var(--bg),inset 0 0 0 2px rgba(0,0,0,0.3);}
+    .enemy-token{position:absolute;width:calc(var(--cell) - 4px);height:calc(var(--cell) - 4px);background:var(--enemy);border-radius:4px;z-index:9;transition:left 0.18s ease-out,top 0.18s ease-out;box-shadow:inset 0 0 0 2px rgba(0,0,0,0.3);}
     .enemy-token::before{display:none;}
-    .enemy-token.alert{outline:2px solid #FFD700;outline-offset:2px;box-shadow:0 0 0 2px var(--bg),inset 0 0 0 2px rgba(0,0,0,0.3),0 0 8px rgba(255,215,0,0.5);}
+    .enemy-token.alert{outline:2px solid #FFD700;outline-offset:2px;box-shadow:inset 0 0 0 2px rgba(0,0,0,0.3),0 0 8px rgba(255,215,0,0.5);}
     .enemy-token.alert .warn{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:13px;font-weight:700;color:#FFD700;text-shadow:0 0 4px #000;white-space:nowrap;}
     @keyframes hit-flash{0%{background:#fff;}100%{background:var(--enemy);}}
     @keyframes player-flash{0%,100%{background:var(--player);}30%{background:#fff;}}
@@ -474,9 +474,9 @@ function doMove(dir){
   setTimeout(()=>{
     moving=false;
     if(phase==='battle'){
-      // プレイヤーが移動した後、隣接中の敵は即alertTurnに入る（移動より攻撃優先）
+      // 移動前に隣接していた敵（旧座標基準）をalertに
       enemies.forEach(e=>{
-        if(mdist(e.x,e.y,player.x,player.y)===1 && !e.alertTurn){
+        if(mdist(e.x,e.y,fromX,fromY)===1 && !e.alertTurn){
           e.alertTurn=true;e.wasAdjacent=true;
         }
       });
@@ -576,9 +576,8 @@ function enemyTurn(playerMoved=false){
     const adj=dist===1;
 
     if(e.alertTurn){
-      // 構え状態：移動しない（キャンセル不可）
       if(adj){
-        // 隣接していれば攻撃
+        // 隣接→攻撃命中
         const dmg=8+Math.floor(Math.random()*6);
         player.hp=Math.max(0,player.hp-dmg);
         totalDmg+=dmg;
@@ -586,10 +585,11 @@ function enemyTurn(playerMoved=false){
         let bumpDir='down';
         if(dx===1)bumpDir='right';else if(dx===-1)bumpDir='left';else if(dy===-1)bumpDir='up';
         e.bumpDir=bumpDir;
-        e.alertTurn=false;e.wasAdjacent=false;
+      } else {
+        // 離れている→空振り（構えを解いてから通常行動に戻る）
+        showMsg('敵が攻撃したが空振りした！');
       }
-      // 離れていてもalertTurnのままで移動しない（構えはキャンセルされない）
-      // alertTurnは次に隣接した時に攻撃するまで維持
+      e.alertTurn=false;e.wasAdjacent=false;
 
     } else if(adj){
       // 新たに隣接：即alert
