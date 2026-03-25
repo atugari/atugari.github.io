@@ -47,9 +47,9 @@
     .player::before,.player::after{display:none;}
     .player .dot{position:absolute;width:10px;height:10px;background:rgba(255,255,255,0.85);border-radius:50%;pointer-events:none;}
     /* 敵 */
-    .enemy-token{position:absolute;width:calc(var(--cell) - 4px);height:calc(var(--cell) - 4px);background:var(--enemy);border-radius:4px;z-index:9;transition:left 0.18s ease-out,top 0.18s ease-out;}
+    .enemy-token{position:absolute;width:calc(var(--cell) - 4px);height:calc(var(--cell) - 4px);background:var(--enemy);border-radius:4px;z-index:9;transition:left 0.18s ease-out,top 0.18s ease-out;box-shadow:0 0 0 2px var(--bg),inset 0 0 0 2px rgba(0,0,0,0.3);}
     .enemy-token::before{display:none;}
-    .enemy-token.alert{outline:2px solid #FFD700;box-shadow:0 0 6px rgba(255,215,0,0.6);}
+    .enemy-token.alert{outline:2px solid #FFD700;outline-offset:2px;box-shadow:0 0 0 2px var(--bg),inset 0 0 0 2px rgba(0,0,0,0.3),0 0 8px rgba(255,215,0,0.5);}
     .enemy-token.alert .warn{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:13px;font-weight:700;color:#FFD700;text-shadow:0 0 4px #000;white-space:nowrap;}
     @keyframes hit-flash{0%{background:#fff;}100%{background:var(--enemy);}}
     @keyframes player-flash{0%,100%{background:var(--player);}30%{background:#fff;}}
@@ -384,8 +384,7 @@ function doMove(dir){
   if(moving)return;
   if(player.dir!==dir){
     player.dir=dir;updPl();render();
-    if(phase==='battle') enemyTurn(); // 向き変更も1ターン消費
-    return;
+    return; // 向き変更はターン消費しない
   }
   let nx=player.x,ny=player.y;
   if(dir==='up')ny--;else if(dir==='down')ny++;else if(dir==='left')nx--;else nx++;
@@ -489,14 +488,22 @@ function enemyTurn(){
     e.prevX=e.x;e.prevY=e.y;
     const dist=mdist(e.x,e.y,player.x,player.y);
     const adj=dist===1;
+
     if(e.alertTurn){
       // 構え状態はキャンセル不可→攻撃
       if(adj){const dmg=8+Math.floor(Math.random()*6);player.hp=Math.max(0,player.hp-dmg);totalDmg+=dmg;}
       else showMsg('敵が攻撃したが外れた。');
       e.alertTurn=false;
-    } else if(adj){
+      e.wasAdjacent=false;
+    } else if(adj && e.wasAdjacent){
+      // 前のターンから隣接したまま → 今ターンで構えに入る
       e.alertTurn=true;newAlert=true;
+    } else if(adj && !e.wasAdjacent){
+      // 今ターン初めて隣接 → まだ構えに入らない（wasAdjacentをtrueに）
+      e.wasAdjacent=true;
     } else {
+      // 離れている
+      e.wasAdjacent=false;
       if(dist<=SENSE_RANGE)moveToward(e);else wander(e);
     }
   });
