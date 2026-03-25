@@ -258,6 +258,12 @@
       </div>
       <!-- 最新の更新 -->
       <div style="padding:12px 16px;border-bottom:1px solid var(--border2);">
+        <div style="font-size:11px;color:var(--text3);margin-bottom:3px;">2026/03/25</div>
+        <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;">新ミニゲーム 鋭意制作中</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.7;">新しいミニゲームを制作中です。公開をお楽しみに！</div>
+      </div>
+      <!-- ひとつ前の更新 -->
+      <div style="padding:12px 16px;border-bottom:1px solid var(--border2);">
         <div style="font-size:11px;color:var(--text3);margin-bottom:3px;">2026/03/24</div>
         <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;">称号大幅追加・ニュース枠・PWA対応</div>
         <div style="font-size:12px;color:var(--text2);line-height:1.7;">称号を20種類以上新たに追加しました。また、ホームにニュース枠を追加しました。表示設定から更新情報・ニュースの表示・非表示も切り替えられるようになりました。さらにホーム画面への追加でアプリのように使えるようになりました。</div>
@@ -285,8 +291,7 @@
       <a href="faq.html">よくある質問</a>　|　
       <a href="contact.html">お問い合わせ</a>　|　
       <a href="settings.html">設定</a>　|　
-      <a href="share.html">自慢する</a>　|　
-      <a href="dungeon.html">四角迷宮</a><br>
+      <a href="share.html">自慢する</a><br>
       &copy; 2026 丸場所記憶ゲーム
     </footer>
   </div>
@@ -1346,8 +1351,7 @@
   // Firebaseから最近シークレット称号を取得したユーザーを取得して表示
   // 宣伝スロットも交互に表示
   const NEWS_ADS = [
-    // 製作者の他のゲーム・告知をここに追加
-    // { text: '新作ゲーム「○○」近日公開！', link: null },
+    { text: '新ミニゲームを鋭意制作中！公開をお楽しみに。', link: null },
   ];
 
   async function loadNewsBanner(){
