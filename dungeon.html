@@ -34,14 +34,14 @@
     .hp-num{font-size:11px;color:var(--text2);min-width:56px;text-align:right;}
     /* ビューポート */
     .viewport-outer{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--bg);}
-    .viewport{width:calc(var(--cell)*7.5);height:calc(var(--cell)*7.5);overflow:hidden;position:relative;}
-    .map-layer{position:absolute;}
+    .viewport{width:calc(var(--cell)*8);height:calc(var(--cell)*8);overflow:hidden;position:relative;}
+    .map-layer{position:absolute;left:0;top:0;}
     /* セル */
     .cell{position:absolute;width:var(--cell);height:var(--cell);box-sizing:border-box;}
     .cell.floor{background:var(--floor);}
     .cell.floor2{background:var(--floor2);}
     .cell.wall{background:var(--wall);}
-    .cell.pillar{background:#3a3830;box-shadow:inset 0 0 0 3px #555548;}
+    .cell.pillar{background:#3a3830;outline:3px solid #555548;outline-offset:-3px;}
     .cell.atk-range{background:rgba(55,138,221,0.22);}
     .cell.alert-range{background:rgba(255,100,0,0.28);}
     .cell.exit{background:#1a3a2a;}
@@ -436,7 +436,7 @@ function render(){
 
 function updVp(anim=true){
   const layer=document.getElementById('map-layer');
-  const vw=CELL*7.5,vh=CELL*7.5,mw=mapSize*CELL,mh=mapSize*CELL;
+  const vw=CELL*8,vh=CELL*8,mw=mapSize*CELL,mh=mapSize*CELL;
   let ox,oy;
   if(mapSize<=SAFE){ox=(vw-mw)/2;oy=(vh-mh)/2;}
   else{
@@ -543,15 +543,12 @@ function waitAction(){
 function doAttack(){
   if(!player.weapon){showMsg('武器を選んでください。');return;}
   if(atkCooldown)return;
-  const ac=atkCells();
-  const targets=enemies.filter(e=>ac.some(c=>c.x===e.x&&c.y===e.y));
-  if(targets.length===0){showMsg('攻撃範囲内に敵がいません。向きを変えてください。');return;}
 
   atkCooldown=true;
   document.getElementById('atk-btn').style.opacity='0.4';
   setTimeout(()=>{atkCooldown=false;document.getElementById('atk-btn').style.opacity='1';},ATK_CD);
 
-  // 桂馬：後退してから攻撃
+  // 桂馬：先に後退してから攻撃範囲を計算
   if(player.weapon.id==='kei'){
     const retreatMap={up:[0,1],down:[0,-1],left:[1,0],right:[-1,0]};
     const [rdx,rdy]=retreatMap[player.dir];
@@ -571,7 +568,7 @@ function doAttack(){
       }
       updVp(true);
     }
-    // 桂：左右にbump
+    // bump
     const pe2=document.getElementById('player');
     if(pe2){
       const bc=(player.dir==='up'||player.dir==='down')?'bump-left':'bump-up';
@@ -579,8 +576,27 @@ function doAttack(){
       requestAnimationFrame(()=>pe2.classList.add(bc));
       setTimeout(()=>pe2.classList.remove(bc),240);
     }
+    // 後退後の範囲で当たり判定
+    const ac=atkCells();
+    const targets=enemies.filter(e=>ac.some(c=>c.x===e.x&&c.y===e.y));
+    targets.forEach(t=>{
+      t.hp-=player.weapon.atk;
+      const el=document.getElementById('e'+t.id);
+      if(el){el.classList.remove('hit');requestAnimationFrame(()=>el.classList.add('hit'));setTimeout(()=>el.classList.remove('hit'),280);}
+      if(t.hp<=0)enemies=enemies.filter(e=>e.id!==t.id);
+    });
+    const dead=targets.filter(t=>t.hp<=0).length;
+    if(targets.length===0){
+      showMsg('【桂】後退して攻撃！しかし空振りした。');
+    } else {
+      let msg='【桂】後退して攻撃！'+targets.length+'体に'+player.weapon.atk+'のダメージ。';
+      if(dead>0)msg+=' '+dead+'体を討ち取った。';
+      showMsg(msg);
+    }
+
   } else {
-    // 攻撃範囲の重心方向にbump
+    // 通常武器：攻撃範囲の重心方向にbump
+    const ac=atkCells();
     const pe=document.getElementById('player');
     if(pe){
       const sdx=ac.reduce((s,c)=>s+(c.x-player.x),0);
@@ -590,21 +606,23 @@ function doAttack(){
       requestAnimationFrame(()=>pe.classList.add('bump-'+bdir));
       setTimeout(()=>pe.classList.remove('bump-'+bdir),240);
     }
+    const targets=enemies.filter(e=>ac.some(c=>c.x===e.x&&c.y===e.y));
+    targets.forEach(t=>{
+      t.hp-=player.weapon.atk;
+      const el=document.getElementById('e'+t.id);
+      if(el){el.classList.remove('hit');requestAnimationFrame(()=>el.classList.add('hit'));setTimeout(()=>el.classList.remove('hit'),280);}
+      if(t.hp<=0)enemies=enemies.filter(e=>e.id!==t.id);
+    });
+    const dead=targets.filter(t=>t.hp<=0).length;
+    if(targets.length===0){
+      showMsg(player.weapon.name+'を振るった。しかし空振りした。');
+    } else {
+      let msg=player.weapon.name+'を振るった。'+targets.length+'体に'+player.weapon.atk+'のダメージ。';
+      if(dead>0)msg+=' '+dead+'体を討ち取った。';
+      showMsg(msg);
+    }
   }
 
-  targets.forEach(t=>{
-    t.hp-=player.weapon.atk;
-    const el=document.getElementById('e'+t.id);
-    if(el){el.classList.remove('hit');requestAnimationFrame(()=>el.classList.add('hit'));setTimeout(()=>el.classList.remove('hit'),280);}
-    if(t.hp<=0)enemies=enemies.filter(e=>e.id!==t.id);
-  });
-
-  const dead=targets.filter(t=>t.hp<=0).length;
-  let msg=player.weapon.id==='kei'?
-    '【桂】後退して攻撃！'+targets.length+'体に'+player.weapon.atk+'のダメージ。':
-    player.weapon.name+'を振るった。'+targets.length+'体に'+player.weapon.atk+'のダメージ。';
-  if(dead>0)msg+=' '+dead+'体を討ち取った。';
-  showMsg(msg);
   if(enemies.length===0){
     setTimeout(()=>{showMsg('全ての敵を倒した！出口が開かれた。');render();},500);
   }
