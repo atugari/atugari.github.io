@@ -26,11 +26,11 @@
     .hp-bar-wrap{flex-shrink:0;padding:4px 12px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
     .hp-label{font-size:11px;color:var(--text2);width:28px;}
     .hp-track{flex:1;height:10px;background:#333;border-radius:4px;overflow:hidden;position:relative;}
-    .hp-fill{height:100%;background:var(--player);border-radius:4px;transition:width 0.4s ease-out;position:relative;z-index:2;}
+    .hp-fill{height:100%;background:var(--player);border-radius:4px;transition:width 0.5s ease-out;position:relative;z-index:2;}
     .hp-fill.low{background:#E05A4A;}
-    .hp-pending{position:absolute;top:0;right:0;height:100%;background:#E05A4A;border-radius:0 4px 4px 0;z-index:1;transition:width 0.8s ease-out 0.6s;}
-    @keyframes hp-blink{0%,100%{opacity:1;}40%{opacity:0.15;}80%{opacity:0.15;}}
-    .hp-pending.blink{animation:hp-blink 0.35s ease 3;}
+    .hp-pending{position:absolute;top:0;left:0;height:100%;background:#E05A4A;border-radius:4px;z-index:1;transition:none;}
+    @keyframes hp-blink{0%,100%{opacity:1;}30%{opacity:0.1;}60%{opacity:1;}80%{opacity:0.1;}}
+    .hp-pending.blink{animation:hp-blink 0.4s ease 4;}
     .hp-num{font-size:11px;color:var(--text2);min-width:56px;text-align:right;}
     /* ビューポート */
     .viewport-outer{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--bg);}
@@ -38,13 +38,17 @@
     .map-layer{position:absolute;}
     /* セル */
     .cell{position:absolute;width:var(--cell);height:var(--cell);box-sizing:border-box;}
-    .cell.floor{background:var(--floor);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.04);}
+    .cell.floor{background:var(--floor);}
     .cell.floor2{background:var(--floor2);}
     .cell.wall{background:var(--wall);}
-    .cell.pillar{background:#3a3830;box-shadow:inset 0 0 0 3px #2a2820,inset 0 0 0 4px #555548;}
-    .cell.atk-range{background:rgba(55,138,221,0.22);box-shadow:inset 0 0 0 2px rgba(55,138,221,0.95);}
-    .cell.alert-range{background:rgba(255,100,0,0.28);box-shadow:inset 0 0 0 2px rgba(255,130,0,1);}
-    .cell.exit{background:#1a3a2a;box-shadow:inset 0 0 0 2px #2D9E6A;}
+    .cell.pillar{background:#3a3830;border:3px solid #555548;}
+    .cell.atk-range{background:rgba(55,138,221,0.22);}
+    .cell.alert-range{background:rgba(255,100,0,0.28);}
+    .cell.exit{background:#1a3a2a;}
+    /* 攻撃範囲枠：セルと独立したオーバーレイ。z-indexを高くしてclipされない */
+    .range-border{position:absolute;pointer-events:none;z-index:20;}
+    .range-border.atk{border:2px solid rgba(55,138,221,0.95);}
+    .range-border.alert{border:2px solid rgba(255,130,0,1);}
     /* プレイヤー */
     .player{position:absolute;width:calc(var(--cell) - 4px);height:calc(var(--cell) - 4px);background:var(--player);border-radius:6px;z-index:10;transition:left 0.18s ease-out,top 0.18s ease-out;}
     .player::before,.player::after{display:none;}
@@ -302,9 +306,8 @@ function atkCells(){
 // ===== マップ描画（セルのみ再描画、キャラは位置更新） =====
 function render(){
   const layer=document.getElementById('map-layer');
-  // セルだけ再生成
-  const existing=layer.querySelectorAll('.cell');
-  existing.forEach(c=>c.remove());
+  // セルと枠だけ再生成
+  layer.querySelectorAll('.cell,.range-border').forEach(c=>c.remove());
   layer.style.width=mapSize*CELL+'px';
   layer.style.height=mapSize*CELL+'px';
 
@@ -328,6 +331,19 @@ function render(){
     else c.className='cell '+(((x+y)%2===0)?'floor':'floor2');
     c.style.left=x*CELL+'px';c.style.top=y*CELL+'px';
     layer.appendChild(c);
+
+    // 攻撃範囲の枠：セルとは独立したオーバーレイ（z-index:20）で描画
+    // これによりoverflow:hiddenによるclipの影響を受けない
+    if(ia||al){
+      const b=document.createElement('div');
+      b.className='range-border '+(al?'alert':'atk');
+      // セルより1px内側に収めてclipされないよう調整
+      b.style.left=(x*CELL+1)+'px';
+      b.style.top=(y*CELL+1)+'px';
+      b.style.width=(CELL-2)+'px';
+      b.style.height=(CELL-2)+'px';
+      layer.appendChild(b);
+    }
   }}
 
   // 敵：存在しなければ生成、あれば位置・クラス更新
@@ -444,15 +460,30 @@ function doMove(dir){
   if(map[ny][nx]===1||map[ny][nx]===2){updPl();return;}
   if(enemies.find(e=>e.x===nx&&e.y===ny)){updPl();return;}
 
-  moving=true;player.x=nx;player.y=ny;
-  render();updVp(true);
-  setTimeout(()=>{moving=false;if(phase==='battle')enemyTurn();},MOVE_ANIM);
+  moving=true;
+  const fromX=player.x, fromY=player.y; // 移動前座標を保存
+  player.x=nx;player.y=ny;
+
+  // プレイヤー移動アニメ：前の位置→新しい位置
+  render(); // 新座標でDOMを更新（transitionが効く）
+  const pe2=document.getElementById('player');
+  if(pe2){
+    // 一旦transitionなしで前の位置にセット → 次フレームでtransitionONにして現在位置へ
+    pe2.style.transition='none';
+    pe2.style.left=(fromX*CELL+2)+'px';pe2.style.top=(fromY*CELL+2)+'px';
+    requestAnimationFrame(()=>{
+      pe2.style.transition='left '+MOVE_ANIM+'ms ease-out,top '+MOVE_ANIM+'ms ease-out';
+      pe2.style.left=(nx*CELL+2)+'px';pe2.style.top=(ny*CELL+2)+'px';
+    });
+  }
+  updVp(true);
+  setTimeout(()=>{moving=false;if(phase==='battle')enemyTurn(true);},MOVE_ANIM);
 }
 
 // ===== 待機 =====
 function waitAction(){
   stopMove();moving=false;
-  if(phase==='battle')enemyTurn();
+  if(phase==='battle')enemyTurn(false);
 }
 
 // ===== 攻撃 =====
@@ -493,11 +524,10 @@ function doAttack(){
   }
   setTimeout(()=>{
     render();
-    // 攻撃後も隣接している敵のwasAdjacentを維持
     enemies.forEach(e=>{
       if(mdist(e.x,e.y,player.x,player.y)===1) e.wasAdjacent=true;
     });
-    enemyTurn();
+    enemyTurn(false);
   },250);
   updHd();
 }
@@ -531,16 +561,16 @@ function wander(e){
   }
 }
 
-function enemyTurn(){
+function enemyTurn(playerMoved=false){
   if(phase!=='battle'||enemies.length===0)return;
   let totalDmg=0,newAlert=false;
+
   enemies.forEach(e=>{
     e.prevX=e.x;e.prevY=e.y;
     const dist=mdist(e.x,e.y,player.x,player.y);
     const adj=dist===1;
 
     if(e.alertTurn){
-      // 構え状態→攻撃（キャンセル不可）
       if(adj){
         const dmg=8+Math.floor(Math.random()*6);
         player.hp=Math.max(0,player.hp-dmg);
@@ -552,24 +582,18 @@ function enemyTurn(){
       } else {
         showMsg('敵が攻撃したが外れた。');
       }
-      e.alertTurn=false;
-      e.wasAdjacent=false;
+      e.alertTurn=false;e.wasAdjacent=false;
+
     } else if(adj){
-      // 隣接中は移動しない（wasAdjacentの状態に関わらず）
-      if(e.wasAdjacent){
-        // 前のターンから隣接継続 → 構えに入る
-        e.alertTurn=true;newAlert=true;
-      } else {
-        // 今ターン初めて隣接 → wasAdjacentだけセット、移動なし
-        e.wasAdjacent=true;
-      }
+      // 隣接中は移動せず即alert（1ターンで構えに入る）
+      e.alertTurn=true;newAlert=true;e.wasAdjacent=true;
+
     } else {
-      // 離れている → 通常移動
-      e.wasAdjacent=false;
-      e.alertTurn=false;
+      e.wasAdjacent=false;e.alertTurn=false;
       if(dist<=SENSE_RANGE)moveToward(e);else wander(e);
     }
   });
+
   if(newAlert)showMsg('敵が攻撃の構えに入った！次のターンに攻撃してくる！');
   if(totalDmg>0){
     updHpBar(totalDmg);
@@ -578,27 +602,24 @@ function enemyTurn(){
     showMsg('敵の攻撃を受けた！ '+totalDmg+' ダメージ。HP: '+player.hp+' / '+player.maxHp);
     if(player.hp<=0){setTimeout(()=>gameOver(),400);return;}
   }
-  // 敵移動モーション＋体当たりモーション
+
   render();
   enemies.forEach(e=>{
     const el=document.getElementById('e'+e.id);if(!el)return;
-    // 体当たりモーション（攻撃した敵）
     if(e.bumpDir){
       const bc='bump-'+e.bumpDir;
       el.classList.remove('bump-up','bump-down','bump-left','bump-right');
       requestAnimationFrame(()=>el.classList.add(bc));
       setTimeout(()=>el.classList.remove(bc),240);
-      e.bumpDir=null;
-      return;
+      e.bumpDir=null;return;
     }
-    // 移動モーション
     if(e.prevX===e.x&&e.prevY===e.y)return;
     el.style.transition='none';
     el.style.left=(e.prevX*CELL+2)+'px';el.style.top=(e.prevY*CELL+2)+'px';
-    requestAnimationFrame(()=>{
-      el.style.transition='left 0.2s ease-out,top 0.2s ease-out';
+    requestAnimationFrame(()=>{requestAnimationFrame(()=>{
+      el.style.transition='left 0.22s ease-out,top 0.22s ease-out';
       el.style.left=(e.x*CELL+2)+'px';el.style.top=(e.y*CELL+2)+'px';
-    });
+    });});
   });
 }
 
@@ -621,41 +642,40 @@ function updHpBar(dmg=0){
   const f=document.getElementById('hp-fill');
   const p=document.getElementById('hp-pending');
 
-  if(dmg>0){
-    // ダメージ演出：減る部分を赤く表示→点滅→消える
+  if(dmg>0 && p){
     const prevPct=(newHp+dmg)/player.maxHp*100;
     const dmgPct=dmg/player.maxHp*100;
 
-    // まず現在のHPバーはそのまま、pendingで減る分を赤く表示
+    // HPバーはまだ前のHP幅のまま
     f.style.transition='none';
     f.style.width=prevPct+'%';
     f.className='hp-fill'+(pct<=30?' low':'');
 
+    // pendingをダメージ分だけ右端に配置（左から始まりdmg幅）
     p.style.transition='none';
+    p.style.left=pct+'%';
     p.style.width=dmgPct+'%';
-    p.style.right=(100-prevPct)+'%';
-    p.style.left='auto';
     p.classList.remove('blink');
 
-    // 次フレームで点滅開始
-    requestAnimationFrame(()=>{
-      requestAnimationFrame(()=>{
-        p.classList.add('blink');
-        // 点滅終了後（約1.1秒）にHPバーを縮小＆pending消去
-        setTimeout(()=>{
-          f.style.transition='width 0.5s ease-out';
-          f.style.width=pct+'%';
-          p.style.transition='width 0.5s ease-out 0.1s';
-          p.style.width='0%';
-          p.classList.remove('blink');
-        },1050);
-      });
-    });
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      // 点滅開始
+      p.classList.add('blink');
+      const blinkDur=1600; // 点滅時間 (0.4s × 4回)
+      setTimeout(()=>{
+        // 点滅終了→HPバーを縮小、pendingを左から消す
+        f.style.transition='width 0.5s ease-out';
+        f.style.width=pct+'%';
+        p.classList.remove('blink');
+        p.style.transition='width 0.5s ease-out, left 0.5s ease-out';
+        p.style.width='0%';
+        p.style.left=pct+'%';
+      },blinkDur);
+    }));
   } else {
     f.style.transition='width 0.3s ease-out';
     f.style.width=pct+'%';
     f.className='hp-fill'+(pct<=30?' low':'');
-    p.style.width='0%';
+    if(p){p.style.width='0%';}
   }
   document.getElementById('hp-num').textContent=newHp+' / '+player.maxHp;
 }
