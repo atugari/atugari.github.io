@@ -34,13 +34,13 @@
     .viewport{width:calc(var(--cell)*7.5);height:calc(var(--cell)*7.5);overflow:hidden;position:relative;border:1px solid var(--border);}
     .map-layer{position:absolute;}
     /* セル */
-    .cell{position:absolute;width:var(--cell);height:var(--cell);border:1px solid var(--border);box-sizing:border-box;}
-    .cell.floor{background:var(--floor);}
+    .cell{position:absolute;width:var(--cell);height:var(--cell);box-sizing:border-box;}
+    .cell.floor{background:var(--floor);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.04);}
     .cell.floor2{background:var(--floor2);}
     .cell.wall{background:var(--wall);}
-    .cell.pillar{background:#3a3830;box-sizing:border-box;border:2px solid #666658;box-shadow:inset 0 0 0 4px #2a2820;}
-    .cell.atk-range{background:rgba(55,138,221,0.2);box-shadow:inset 0 0 0 2px rgba(55,138,221,0.9);}
-    .cell.alert-range{background:rgba(255,100,0,0.25);box-shadow:inset 0 0 0 2px rgba(255,130,0,0.95);z-index:1;}
+    .cell.pillar{background:#3a3830;box-shadow:inset 0 0 0 3px #2a2820,inset 0 0 0 4px #555548;}
+    .cell.atk-range{background:rgba(55,138,221,0.22);box-shadow:inset 0 0 0 2px rgba(55,138,221,0.95);}
+    .cell.alert-range{background:rgba(255,100,0,0.28);box-shadow:inset 0 0 0 2px rgba(255,130,0,1);}
     .cell.exit{background:#1a3a2a;box-shadow:inset 0 0 0 2px #2D9E6A;}
     /* プレイヤー */
     .player{position:absolute;width:calc(var(--cell) - 4px);height:calc(var(--cell) - 4px);background:var(--player);border-radius:6px;z-index:10;transition:left 0.18s ease-out,top 0.18s ease-out;}
@@ -53,11 +53,11 @@
     .enemy-token.alert .warn{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:13px;font-weight:700;color:#FFD700;text-shadow:0 0 4px #000;white-space:nowrap;}
     @keyframes hit-flash{0%{background:#fff;}100%{background:var(--enemy);}}
     @keyframes player-flash{0%,100%{background:var(--player);}30%{background:#fff;}}
-    @keyframes bump-up{0%,100%{transform:translateY(0);}35%{transform:translateY(-10px);}65%{transform:translateY(0);}}
-    @keyframes bump-down{0%,100%{transform:translateY(0);}35%{transform:translateY(10px);}65%{transform:translateY(0);}}
-    @keyframes bump-left{0%,100%{transform:translateX(0);}35%{transform:translateX(-10px);}65%{transform:translateX(0);}}
-    @keyframes bump-right{0%,100%{transform:translateX(0);}35%{transform:translateX(10px);}65%{transform:translateX(0);}}
-    @keyframes shake-h{0%,100%{transform:translateX(0);}20%{transform:translateX(-5px);}40%{transform:translateX(5px);}60%{transform:translateX(-4px);}80%{transform:translateX(4px);}}
+    @keyframes bump-up{0%,100%{transform:translateY(0);}35%{transform:translateY(-18px);}65%{transform:translateY(2px);}}
+    @keyframes bump-down{0%,100%{transform:translateY(0);}35%{transform:translateY(18px);}65%{transform:translateY(-2px);}}
+    @keyframes bump-left{0%,100%{transform:translateX(0);}35%{transform:translateX(-18px);}65%{transform:translateX(2px);}}
+    @keyframes bump-right{0%,100%{transform:translateX(0);}35%{transform:translateX(18px);}65%{transform:translateX(-2px);}}
+    @keyframes shake-h{0%,100%{transform:translateX(0);}20%{transform:translateX(-8px);}40%{transform:translateX(8px);}60%{transform:translateX(-6px);}80%{transform:translateX(6px);}}
     .player.bump-up{animation:bump-up 0.22s ease;}
     .player.bump-down{animation:bump-down 0.22s ease;}
     .player.bump-left{animation:bump-left 0.22s ease;}
@@ -502,29 +502,31 @@ function enemyTurn(){
     const adj=dist===1;
 
     if(e.alertTurn){
-      // 構え状態はキャンセル不可→攻撃
+      // 構え状態→攻撃（キャンセル不可）
       if(adj){
         const dmg=8+Math.floor(Math.random()*6);
         player.hp=Math.max(0,player.hp-dmg);
         totalDmg+=dmg;
-        // 敵の体当たりモーション（プレイヤーの方向に向かってbump）
-        const dx=player.x-e.x, dy=player.y-e.y;
+        const dx=player.x-e.x,dy=player.y-e.y;
         let bumpDir='down';
-        if(dx===1)bumpDir='right';else if(dx===-1)bumpDir='left';
-        else if(dy===-1)bumpDir='up';
+        if(dx===1)bumpDir='right';else if(dx===-1)bumpDir='left';else if(dy===-1)bumpDir='up';
         e.bumpDir=bumpDir;
-      } else showMsg('敵が攻撃したが外れた。');
+      } else {
+        showMsg('敵が攻撃したが外れた。');
+      }
       e.alertTurn=false;
       e.wasAdjacent=false;
-    } else if(adj && e.wasAdjacent){
-      // 前のターンから隣接したまま → 今ターンで構えに入る
-      e.alertTurn=true;newAlert=true;
-    } else if(adj && !e.wasAdjacent){
-      // 今ターン初めて隣接（プレイヤーが近づいた or 敵が移動して隣接）
-      // → まだ構えに入らない、移動もしない
-      e.wasAdjacent=true;
+    } else if(adj){
+      // 隣接中は移動しない（wasAdjacentの状態に関わらず）
+      if(e.wasAdjacent){
+        // 前のターンから隣接継続 → 構えに入る
+        e.alertTurn=true;newAlert=true;
+      } else {
+        // 今ターン初めて隣接 → wasAdjacentだけセット、移動なし
+        e.wasAdjacent=true;
+      }
     } else {
-      // 離れている
+      // 離れている → 通常移動
       e.wasAdjacent=false;
       e.alertTurn=false;
       if(dist<=SENSE_RANGE)moveToward(e);else wander(e);
@@ -647,7 +649,7 @@ function showWpnOverlay(){
     card.addEventListener('click',()=>{
       player.weapon=w;
       document.getElementById('weapon-overlay').style.display='none';
-      updWpn();showMsg(w.name+'を装備した！下の部屋へ進もう。');
+      updWpn();showMsg(w.name+'を装備した！上の部屋へ進もう。');
     });
     box.appendChild(card);
     requestAnimationFrame(()=>drawMiniRange(document.getElementById(cid),w));
