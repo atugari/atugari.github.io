@@ -55,11 +55,11 @@
     .enemy-hp-fill{height:100%;background:#4AE090;border-radius:2px;transition:width 0.2s;}
     .enemy-hp-fill.low{background:#E04A4A;}
     /* プレイヤー */
-    .player{position:absolute;width:calc(var(--cell) - 8px);height:calc(var(--cell) - 8px);background:var(--player);border-radius:5px;z-index:10;transition:left 0.18s ease-out,top 0.18s ease-out;}
+    .player{position:absolute;width:calc(var(--cell) - 6px);height:calc(var(--cell) - 6px);background:var(--player);border-radius:5px;z-index:10;transition:left 0.18s ease-out,top 0.18s ease-out;}
     .player::before,.player::after{display:none;}
     .player .dot{position:absolute;width:8px;height:8px;background:rgba(255,255,255,0.85);border-radius:50%;pointer-events:none;}
     /* 敵 */
-    .enemy-token{position:absolute;width:calc(var(--cell) - 8px);height:calc(var(--cell) - 8px);background:var(--enemy);border-radius:4px;z-index:9;transition:left 0.18s ease-out,top 0.18s ease-out;box-shadow:inset 0 0 0 2px rgba(0,0,0,0.3);}
+    .enemy-token{position:absolute;width:calc(var(--cell) - 6px);height:calc(var(--cell) - 6px);background:var(--enemy);border-radius:4px;z-index:9;transition:left 0.18s ease-out,top 0.18s ease-out;box-shadow:inset 0 0 0 2px rgba(0,0,0,0.3);}
     .enemy-token::before{display:none;}
     .enemy-token.alert{outline:2px solid #FFD700;outline-offset:2px;box-shadow:inset 0 0 0 2px rgba(0,0,0,0.3),0 0 8px rgba(255,215,0,0.5);animation:alert-shake 0.3s ease-in-out infinite;}
     @keyframes alert-shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-2px);}75%{transform:translateX(2px);}}
@@ -373,10 +373,10 @@ function render(){
     if(ia||al){
       const b=document.createElement('div');
       b.className='range-border '+(al?'alert':'atk');
-      b.style.left=(x*CELL+4)+'px';
-      b.style.top=(y*CELL+4)+'px';
-      b.style.width=(CELL-8)+'px';
-      b.style.height=(CELL-8)+'px';
+      b.style.left=(x*CELL+3)+'px';
+      b.style.top=(y*CELL+3)+'px';
+      b.style.width=(CELL-6)+'px';
+      b.style.height=(CELL-6)+'px';
       layer.appendChild(b);
     }
   }}
@@ -397,7 +397,7 @@ function render(){
       layer.appendChild(el);
     }
     el.className='enemy-token'+(e.alertTurn?' alert':'');
-    el.style.left=(e.x*CELL+4)+'px';el.style.top=(e.y*CELL+4)+'px';
+    el.style.left=(e.x*CELL+3)+'px';el.style.top=(e.y*CELL+3)+'px';
     if(ac.some(c=>c.x===e.x&&c.y===e.y)) el.style.outline='2px solid rgba(55,138,221,0.9)';
     else el.style.outline='';
     const hpf=document.getElementById('ehp'+e.id);
@@ -419,7 +419,7 @@ function render(){
     layer.appendChild(pe); // 最前面に
   }
   pe.className='player dir-'+player.dir;
-  pe.style.left=(player.x*CELL+4)+'px';pe.style.top=(player.y*CELL+4)+'px';
+  pe.style.left=(player.x*CELL+3)+'px';pe.style.top=(player.y*CELL+3)+'px';
   // 向きドット位置
   const dot=document.getElementById('player-dot')||pe.querySelector('.dot');
   if(dot){
@@ -436,12 +436,15 @@ function render(){
 
 function updVp(anim=true){
   const layer=document.getElementById('map-layer');
-  const vw=CELL*8,vh=CELL*8,mw=mapSize*CELL,mh=mapSize*CELL;
+  const vw=CELL*8,vh=CELL*8;
   let ox,oy;
-  if(mapSize<=SAFE){ox=(vw-mw)/2;oy=(vh-mh)/2;}
-  else{
-    ox=-(player.x*CELL-(vw/2-CELL/2));oy=-(player.y*CELL-(vh/2-CELL/2));
-    ox=Math.max(-(mw-vw),Math.min(0,ox));oy=Math.max(-(mh-vh),Math.min(0,oy));
+  if(mapSize<=SAFE){
+    ox=(vw-mapSize*CELL)/2;
+    oy=(vh-mapSize*CELL)/2;
+  } else {
+    // プレイヤーを常に中央に（端でも中央固定）
+    ox=vw/2-player.x*CELL-CELL/2;
+    oy=vh/2-player.y*CELL-CELL/2;
   }
   layer.style.transition=anim?'transform 0.15s ease-out':'none';
   layer.style.transform=`translate(${ox}px,${oy}px)`;
@@ -449,7 +452,7 @@ function updVp(anim=true){
 
 function updPl(){
   const el=document.getElementById('player');if(!el)return;
-  el.style.left=(player.x*CELL+4)+'px';el.style.top=(player.y*CELL+4)+'px';
+  el.style.left=(player.x*CELL+3)+'px';el.style.top=(player.y*CELL+3)+'px';
   el.className='player dir-'+player.dir;
   el.innerHTML='';
   const dot=document.createElement('div');dot.className='dot';
@@ -507,10 +510,10 @@ function doMove(dir){
   if(pe2){
     // 一旦transitionなしで前の位置にセット → 次フレームでtransitionONにして現在位置へ
     pe2.style.transition='none';
-    pe2.style.left=(fromX*CELL+4)+'px';pe2.style.top=(fromY*CELL+4)+'px';
+    pe2.style.left=(fromX*CELL+3)+'px';pe2.style.top=(fromY*CELL+3)+'px';
     requestAnimationFrame(()=>{
       pe2.style.transition='left '+MOVE_ANIM+'ms ease-out,top '+MOVE_ANIM+'ms ease-out';
-      pe2.style.left=(nx*CELL+4)+'px';pe2.style.top=(ny*CELL+4)+'px';
+      pe2.style.left=(nx*CELL+3)+'px';pe2.style.top=(ny*CELL+3)+'px';
     });
   }
   updVp(true);
@@ -560,10 +563,10 @@ function doAttack(){
       const pe=document.getElementById('player');
       if(pe){
         pe.style.transition='none';
-        pe.style.left=(fx*CELL+4)+'px'; pe.style.top=(fy*CELL+4)+'px';
+        pe.style.left=(fx*CELL+3)+'px'; pe.style.top=(fy*CELL+3)+'px';
         requestAnimationFrame(()=>{
           pe.style.transition='left 0.15s ease-out,top 0.15s ease-out';
-          pe.style.left=(rx*CELL+4)+'px'; pe.style.top=(ry*CELL+4)+'px';
+          pe.style.left=(rx*CELL+3)+'px'; pe.style.top=(ry*CELL+3)+'px';
         });
       }
       updVp(true);
@@ -814,10 +817,10 @@ function enemyTurn(playerMoved=false){
     }
     if(e.prevX===e.x&&e.prevY===e.y)return;
     el.style.transition='none';
-    el.style.left=(e.prevX*CELL+4)+'px';el.style.top=(e.prevY*CELL+4)+'px';
+    el.style.left=(e.prevX*CELL+3)+'px';el.style.top=(e.prevY*CELL+3)+'px';
     requestAnimationFrame(()=>{requestAnimationFrame(()=>{
       el.style.transition='left 0.22s ease-out,top 0.22s ease-out';
-      el.style.left=(e.x*CELL+4)+'px';el.style.top=(e.y*CELL+4)+'px';
+      el.style.left=(e.x*CELL+3)+'px';el.style.top=(e.y*CELL+3)+'px';
     });});
   });
 }
