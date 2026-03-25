@@ -46,7 +46,7 @@
     .cell.alert-range{background:rgba(255,100,0,0.28);}
     .cell.exit{background:#1a3a2a;}
     /* 攻撃範囲枠：セルと独立したオーバーレイ。z-indexを高くしてclipされない */
-    .range-border{position:absolute;pointer-events:none;z-index:20;box-sizing:border-box;}
+    .range-border{position:absolute;pointer-events:none;z-index:8;box-sizing:border-box;}
     .range-border.atk{border:2px solid rgba(55,138,221,0.95);}
     .range-border.alert{border:2px solid rgba(255,130,0,1);}
     /* プレイヤー */
@@ -276,25 +276,21 @@ function initBattle(){
   phase='battle';updHd();
 }
 
-// ===== 攻撃範囲計算（壁・柱を貫通しない） =====
+// ===== 攻撃範囲計算（壁・柱は遮断、敵は貫通） =====
 function atkCells(){
   if(!player.weapon)return[];
   const dir=player.dir, raw=player.weapon.range;
   const result=[];
-  // 方向ごとにグループ化して経路チェック
   raw.forEach(([dx,dy])=>{
-    // dir='up'が基準（rangeはup基準で定義）
     let rx=dx, ry=dy;
     if(dir==='down'){rx=-dx;ry=-dy;}
     else if(dir==='right'){rx=-dy;ry=dx;}
     else if(dir==='left'){rx=dy;ry=-dx;}
     const tx=player.x+rx, ty=player.y+ry;
     if(tx<0||tx>=mapSize||ty<0||ty>=mapSize)return;
-    // 経路上に壁・柱があれば遮断
-    // 距離1の場合はチェック不要
+    // 壁・柱のみ遮断（敵は貫通）
     const dist=Math.max(Math.abs(rx),Math.abs(ry));
     if(dist>=2){
-      // 1マス目もチェック（直線経路）
       const mx=player.x+Math.sign(rx), my=player.y+Math.sign(ry);
       if(mx>=0&&mx<mapSize&&my>=0&&my<mapSize&&(map[my][mx]===1||map[my][mx]===2))return;
     }
@@ -580,8 +576,9 @@ function enemyTurn(playerMoved=false){
     const adj=dist===1;
 
     if(e.alertTurn){
-      // 構え状態：隣接していれば攻撃、離れていたら近づいて次のターンで攻撃（構えは維持）
+      // 構え状態：移動しない（キャンセル不可）
       if(adj){
+        // 隣接していれば攻撃
         const dmg=8+Math.floor(Math.random()*6);
         player.hp=Math.max(0,player.hp-dmg);
         totalDmg+=dmg;
@@ -590,11 +587,9 @@ function enemyTurn(playerMoved=false){
         if(dx===1)bumpDir='right';else if(dx===-1)bumpDir='left';else if(dy===-1)bumpDir='up';
         e.bumpDir=bumpDir;
         e.alertTurn=false;e.wasAdjacent=false;
-      } else {
-        // 離れた場合：近づきながら構えを維持（キャンセルしない）
-        if(dist<=SENSE_RANGE) moveToward(e);
-        // alertTurnはtrueのまま維持
       }
+      // 離れていてもalertTurnのままで移動しない（構えはキャンセルされない）
+      // alertTurnは次に隣接した時に攻撃するまで維持
 
     } else if(adj){
       // 新たに隣接：即alert
