@@ -56,7 +56,8 @@
     /* 敵 */
     .enemy-token{position:absolute;width:calc(var(--cell) - 4px);height:calc(var(--cell) - 4px);background:var(--enemy);border-radius:4px;z-index:9;transition:left 0.18s ease-out,top 0.18s ease-out;box-shadow:inset 0 0 0 2px rgba(0,0,0,0.3);}
     .enemy-token::before{display:none;}
-    .enemy-token.alert{outline:2px solid #FFD700;outline-offset:2px;box-shadow:inset 0 0 0 2px rgba(0,0,0,0.3),0 0 8px rgba(255,215,0,0.5);}
+    .enemy-token.alert{outline:2px solid #FFD700;outline-offset:2px;box-shadow:inset 0 0 0 2px rgba(0,0,0,0.3),0 0 8px rgba(255,215,0,0.5);animation:alert-shake 0.3s ease-in-out infinite;}
+    @keyframes alert-shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-2px);}75%{transform:translateX(2px);}}
     .enemy-token.alert .warn{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:13px;font-weight:700;color:#FFD700;text-shadow:0 0 4px #000;white-space:nowrap;}
     @keyframes hit-flash{0%{background:#fff;}100%{background:var(--enemy);}}
     @keyframes player-flash{0%,100%{background:var(--player);}30%{background:#fff;}}
@@ -78,6 +79,7 @@
     /* メッセージログ */
     .msg-log{flex-shrink:0;background:#111;border-top:1px solid var(--border);padding:6px 10px;display:flex;align-items:center;gap:6px;min-height:34px;cursor:pointer;}
     .msg-text{flex:1;font-size:12px;color:var(--text2);line-height:1.5;}
+    @keyframes msg-flash{0%{opacity:0.3;}100%{opacity:1;}}
     .msg-log-icon{font-size:10px;color:var(--text3);flex-shrink:0;}
     /* ログパネル */
     .log-panel{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.7);display:none;flex-direction:column;justify-content:flex-end;}
@@ -585,11 +587,11 @@ function enemyTurn(playerMoved=false){
         let bumpDir='down';
         if(dx===1)bumpDir='right';else if(dx===-1)bumpDir='left';else if(dy===-1)bumpDir='up';
         e.bumpDir=bumpDir;
+        e.alertTurn=false;e.wasAdjacent=false;
       } else {
-        // 離れている→空振り（構えを解いてから通常行動に戻る）
-        showMsg('敵が攻撃したが空振りした！');
+        // 離れている→その場で構えを維持（移動せず、空振りもしない）
+        // alertTurnはtrueのまま。次のターンで隣接したら攻撃する
       }
-      e.alertTurn=false;e.wasAdjacent=false;
 
     } else if(adj){
       // 新たに隣接：即alert
@@ -695,10 +697,25 @@ function updWpn(){
 }
 
 // ===== メッセージ・ログ =====
+let msgRepeatCount=1;
+let lastMsgText='';
 function showMsg(txt){
-  document.getElementById('msg-text').textContent=txt;
-  logEntries.unshift(txt);
-  if(logEntries.length>30)logEntries.pop();
+  const el=document.getElementById('msg-text');
+  if(txt===lastMsgText){
+    msgRepeatCount++;
+    el.textContent=txt+' (×'+msgRepeatCount+')';
+    // ログの先頭も更新
+    if(logEntries.length>0) logEntries[0]=txt+' (×'+msgRepeatCount+')';
+  } else {
+    msgRepeatCount=1;
+    lastMsgText=txt;
+    el.textContent=txt;
+    logEntries.unshift(txt);
+    if(logEntries.length>30)logEntries.pop();
+  }
+  // 点滅で更新を示す
+  el.style.animation='none';
+  requestAnimationFrame(()=>{el.style.animation='msg-flash 0.25s ease';});
 }
 function toggleLogPanel(){
   const p=document.getElementById('log-panel');
