@@ -39,8 +39,8 @@
     .cell.floor2{background:var(--floor2);}
     .cell.wall{background:var(--wall);}
     .cell.pillar{background:#3a3830;box-sizing:border-box;border:2px solid #666658;box-shadow:inset 0 0 0 4px #2a2820;}
-    .cell.atk-range{background:rgba(55,138,221,0.2);outline:2px solid rgba(55,138,221,0.85);outline-offset:-2px;}
-    .cell.alert-range{background:rgba(255,100,0,0.25);outline:2px solid rgba(255,120,0,0.9);outline-offset:-2px;z-index:1;}
+    .cell.atk-range{background:rgba(55,138,221,0.2);box-shadow:inset 0 0 0 2px rgba(55,138,221,0.9);}
+    .cell.alert-range{background:rgba(255,100,0,0.25);box-shadow:inset 0 0 0 2px rgba(255,130,0,0.95);z-index:1;}
     .cell.exit{background:#1a3a2a;box-shadow:inset 0 0 0 2px #2D9E6A;}
     /* プレイヤー */
     .player{position:absolute;width:calc(var(--cell) - 4px);height:calc(var(--cell) - 4px);background:var(--player);border-radius:6px;z-index:10;transition:left 0.18s ease-out,top 0.18s ease-out;}
@@ -53,10 +53,21 @@
     .enemy-token.alert .warn{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:13px;font-weight:700;color:#FFD700;text-shadow:0 0 4px #000;white-space:nowrap;}
     @keyframes hit-flash{0%{background:#fff;}100%{background:var(--enemy);}}
     @keyframes player-flash{0%,100%{background:var(--player);}30%{background:#fff;}}
+    @keyframes bump-up{0%,100%{transform:translateY(0);}35%{transform:translateY(-10px);}65%{transform:translateY(0);}}
+    @keyframes bump-down{0%,100%{transform:translateY(0);}35%{transform:translateY(10px);}65%{transform:translateY(0);}}
+    @keyframes bump-left{0%,100%{transform:translateX(0);}35%{transform:translateX(-10px);}65%{transform:translateX(0);}}
+    @keyframes bump-right{0%,100%{transform:translateX(0);}35%{transform:translateX(10px);}65%{transform:translateX(0);}}
     @keyframes shake-h{0%,100%{transform:translateX(0);}20%{transform:translateX(-5px);}40%{transform:translateX(5px);}60%{transform:translateX(-4px);}80%{transform:translateX(4px);}}
-    @keyframes shake-v{0%,100%{transform:translateY(0);}20%{transform:translateY(-4px);}40%{transform:translateY(4px);}60%{transform:translateY(-3px);}80%{transform:translateY(3px);}}
+    .player.bump-up{animation:bump-up 0.22s ease;}
+    .player.bump-down{animation:bump-down 0.22s ease;}
+    .player.bump-left{animation:bump-left 0.22s ease;}
+    .player.bump-right{animation:bump-right 0.22s ease;}
     .player.damaged{animation:player-flash 0.35s ease,shake-h 0.3s ease;}
-    .map-layer.atk-shake{animation:shake-v 0.25s ease;}
+    .enemy-token.bump-up{animation:bump-up 0.22s ease;}
+    .enemy-token.bump-down{animation:bump-down 0.22s ease;}
+    .enemy-token.bump-left{animation:bump-left 0.22s ease;}
+    .enemy-token.bump-right{animation:bump-right 0.22s ease;}
+    .map-layer.atk-shake{animation:shake-h 0.25s ease;}
     /* メッセージログ */
     .msg-log{flex-shrink:0;background:#111;border-top:1px solid var(--border);padding:6px 10px;display:flex;align-items:center;gap:6px;min-height:34px;cursor:pointer;}
     .msg-text{flex:1;font-size:12px;color:var(--text2);line-height:1.5;}
@@ -425,12 +436,13 @@ function doAttack(){
   document.getElementById('atk-btn').style.opacity='0.4';
   setTimeout(()=>{atkCooldown=false;document.getElementById('atk-btn').style.opacity='1';},ATK_CD);
 
-  // 攻撃モーション（プレイヤーが向きに向かってスライド）
+  // 体当たりモーション（プレイヤーが攻撃方向にスライド→戻る）
   const pe=document.getElementById('player');
   if(pe){
-    pe.classList.remove('atk-up','atk-down','atk-left','atk-right');
-    requestAnimationFrame(()=>pe.classList.add('atk-'+player.dir));
-    setTimeout(()=>pe.classList.remove('atk-up','atk-down','atk-left','atk-right'),250);
+    const bc='bump-'+player.dir;
+    pe.classList.remove('bump-up','bump-down','bump-left','bump-right');
+    requestAnimationFrame(()=>pe.classList.add(bc));
+    setTimeout(()=>pe.classList.remove(bc),240);
   }
 
   targets.forEach(t=>{
@@ -491,19 +503,30 @@ function enemyTurn(){
 
     if(e.alertTurn){
       // 構え状態はキャンセル不可→攻撃
-      if(adj){const dmg=8+Math.floor(Math.random()*6);player.hp=Math.max(0,player.hp-dmg);totalDmg+=dmg;}
-      else showMsg('敵が攻撃したが外れた。');
+      if(adj){
+        const dmg=8+Math.floor(Math.random()*6);
+        player.hp=Math.max(0,player.hp-dmg);
+        totalDmg+=dmg;
+        // 敵の体当たりモーション（プレイヤーの方向に向かってbump）
+        const dx=player.x-e.x, dy=player.y-e.y;
+        let bumpDir='down';
+        if(dx===1)bumpDir='right';else if(dx===-1)bumpDir='left';
+        else if(dy===-1)bumpDir='up';
+        e.bumpDir=bumpDir;
+      } else showMsg('敵が攻撃したが外れた。');
       e.alertTurn=false;
       e.wasAdjacent=false;
     } else if(adj && e.wasAdjacent){
       // 前のターンから隣接したまま → 今ターンで構えに入る
       e.alertTurn=true;newAlert=true;
     } else if(adj && !e.wasAdjacent){
-      // 今ターン初めて隣接 → まだ構えに入らない（wasAdjacentをtrueに）
+      // 今ターン初めて隣接（プレイヤーが近づいた or 敵が移動して隣接）
+      // → まだ構えに入らない、移動もしない
       e.wasAdjacent=true;
     } else {
       // 離れている
       e.wasAdjacent=false;
+      e.alertTurn=false;
       if(dist<=SENSE_RANGE)moveToward(e);else wander(e);
     }
   });
@@ -515,10 +538,20 @@ function enemyTurn(){
     showMsg('敵の攻撃を受けた！ '+totalDmg+' ダメージ。HP: '+player.hp+' / '+player.maxHp);
     if(player.hp<=0){setTimeout(()=>gameOver(),400);return;}
   }
-  // 敵移動モーション
+  // 敵移動モーション＋体当たりモーション
   render();
   enemies.forEach(e=>{
     const el=document.getElementById('e'+e.id);if(!el)return;
+    // 体当たりモーション（攻撃した敵）
+    if(e.bumpDir){
+      const bc='bump-'+e.bumpDir;
+      el.classList.remove('bump-up','bump-down','bump-left','bump-right');
+      requestAnimationFrame(()=>el.classList.add(bc));
+      setTimeout(()=>el.classList.remove(bc),240);
+      e.bumpDir=null;
+      return;
+    }
+    // 移動モーション
     if(e.prevX===e.x&&e.prevY===e.y)return;
     el.style.transition='none';
     el.style.left=(e.prevX*CELL+2)+'px';el.style.top=(e.prevY*CELL+2)+'px';
