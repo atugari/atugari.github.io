@@ -587,11 +587,11 @@ function enemyTurn(playerMoved=false){
         let bumpDir='down';
         if(dx===1)bumpDir='right';else if(dx===-1)bumpDir='left';else if(dy===-1)bumpDir='up';
         e.bumpDir=bumpDir;
-        e.alertTurn=false;e.wasAdjacent=false;
       } else {
-        // 離れている→その場で構えを維持（移動せず、空振りもしない）
-        // alertTurnはtrueのまま。次のターンで隣接したら攻撃する
+        // 離れている→空振り
+        showMsg('敵が攻撃したが空振りした！');
       }
+      e.alertTurn=false;e.wasAdjacent=false;
 
     } else if(adj){
       // 新たに隣接：即alert
