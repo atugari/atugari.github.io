@@ -252,36 +252,42 @@
 
     <!-- 更新ログ -->
     <div id="update-log-section" style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;margin-bottom:16px;">
-      <div style="padding:11px 16px;border-bottom:1px solid var(--border2);font-size:13px;font-weight:500;display:flex;justify-content:space-between;align-items:center;">
+      <div style="padding:11px 16px;border-bottom:1px solid var(--border2);font-size:13px;font-weight:500;">
         <span>更新情報</span>
-        <button onclick="toggleUpdateLog()" id="update-log-toggle" style="font-size:11px;color:var(--text3);background:none;border:none;cursor:pointer;font-family:'Noto Sans JP',sans-serif;">▼ 過去の更新</button>
       </div>
-      <!-- 最新の更新 -->
-      <div style="padding:12px 16px;border-bottom:1px solid var(--border2);">
-        <div style="font-size:11px;color:var(--text3);margin-bottom:3px;">2026/03/26</div>
-        <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;">【バグ修正】今日のランキングにスコアが表示されない問題</div>
-        <div style="font-size:12px;color:var(--text2);line-height:1.7;">過去最高スコアより低い点数でプレイした場合、「今日」タブにスコアが表示されない不具合を修正しました。</div>
-      </div>
-      <div style="padding:12px 16px;border-bottom:1px solid var(--border2);">
-        <div style="font-size:11px;color:var(--text3);margin-bottom:3px;">2026/03/26</div>
-        <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;">【UI改善】「最初からやり直す」ボタンの誤タップ防止</div>
-        <div style="font-size:12px;color:var(--text2);line-height:1.7;">スタートボタン・答えるボタンのすぐ下にあった「最初からやり直す」ボタンを、誤って押しにくい位置に移動しました。</div>
-      </div>
-      <!-- ひとつ前の更新 -->
-      <div style="padding:12px 16px;border-bottom:1px solid var(--border2);">
-        <div style="font-size:11px;color:var(--text3);margin-bottom:3px;">2026/03/25</div>
-        <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;">新ミニゲーム 鋭意制作中</div>
-        <div style="font-size:12px;color:var(--text2);line-height:1.7;">新しいミニゲームを制作中です。公開をお楽しみに！</div>
-      </div>
-      <!-- ふたつ前の更新（折りたたみへ移動） -->
-      <div style="padding:12px 16px;border-bottom:1px solid var(--border2);">
-        <div style="font-size:11px;color:var(--text3);margin-bottom:3px;">2026/03/24</div>
-        <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;">称号大幅追加・ニュース枠・PWA対応</div>
-        <div style="font-size:12px;color:var(--text2);line-height:1.7;">称号を20種類以上新たに追加しました。また、ホームにニュース枠を追加しました。表示設定から更新情報・ニュースの表示・非表示も切り替えられるようになりました。さらにホーム画面への追加でアプリのように使えるようになりました。</div>
+      <!-- 最新2件を常時表示（新しい順） -->
+      <div id="update-log-recent">
+        <div style="padding:12px 16px;border-bottom:1px solid var(--border2);">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:3px;">2026/03/26</div>
+          <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;">【バグ修正・UI改善】更新ログの表示・動作を修正</div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.7;">更新ログの「閉じる」が機能しない不具合、同日の更新順が逆になっていた問題、「過去の更新」ボタンと「閉じる」が重なる問題を修正しました。また、最新2件のみ表示し残りは折りたたむようにしました。加えて、ホームの表示設定がページ再読み込みでリセットされることがある不具合も修正しました。</div>
+        </div>
+        <div style="padding:12px 16px;border-bottom:1px solid var(--border2);">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:3px;">2026/03/26</div>
+          <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;">【UI改善】「最初からやり直す」ボタンの誤タップ防止</div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.7;">スタートボタン・答えるボタンのすぐ下にあった「最初からやり直す」ボタンを、誤って押しにくい位置に移動しました。</div>
+        </div>
       </div>
       <!-- 過去の更新（折りたたみ） -->
       <div id="update-log-old" style="display:none;">
+        <div style="padding:12px 16px;border-bottom:1px solid var(--border2);">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:3px;">2026/03/26</div>
+          <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;">【バグ修正】今日のランキングにスコアが表示されない問題</div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.7;">過去最高スコアより低い点数でプレイした場合、「今日」タブにスコアが表示されない不具合を修正しました。</div>
+        </div>
+        <div style="padding:12px 16px;border-bottom:1px solid var(--border2);">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:3px;">2026/03/25</div>
+          <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;">新ミニゲーム 鋭意制作中</div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.7;">新しいミニゲームを制作中です。公開をお楽しみに！</div>
+        </div>
+        <div style="padding:12px 16px;border-bottom:1px solid var(--border2);">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:3px;">2026/03/24</div>
+          <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;">称号大幅追加・ニュース枠・PWA対応</div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.7;">称号を20種類以上新たに追加しました。また、ホームにニュース枠を追加しました。表示設定から更新情報・ニュースの表示・非表示も切り替えられるようになりました。さらにホーム画面への追加でアプリのように使えるようになりました。</div>
+        </div>
       </div>
+      <!-- 過去の更新トグルボタン -->
+      <button onclick="toggleUpdateLog()" id="update-log-toggle" style="display:block;width:100%;padding:10px;text-align:center;font-size:12px;color:var(--text2);background:none;border:none;border-top:1px solid var(--border2);cursor:pointer;font-family:'Noto Sans JP',sans-serif;">▼ 過去の更新を見る</button>
     </div>
 
     <!-- ゲームカード -->
@@ -1290,11 +1296,11 @@
   }
 
   function toggleUpdateLog(){
-    const old = document.getElementById('update-log-old');
+    const oldEl = document.getElementById('update-log-old');
     const btn = document.getElementById('update-log-toggle');
-    const isOpen = old.style.display !== 'none';
-    old.style.display = isOpen ? 'none' : 'block';
-    btn.textContent = isOpen ? '▼ 過去の更新' : '▲ 閉じる';
+    const isOpen = oldEl.style.display !== 'none';
+    oldEl.style.display = isOpen ? 'none' : 'block';
+    btn.textContent = isOpen ? '▼ 過去の更新を見る' : '▲ 閉じる';
   }
 
   function toggleDispPanel() {
@@ -1377,10 +1383,12 @@
     }
 
     const s = getDispSettings();
-    document.getElementById('tog-ad').checked     = s.ad;
-    document.getElementById('tog-banner').checked = s.banner;
-    document.getElementById('tog-titles').checked = s.titles;
-    document.getElementById('tog-game').checked   = s.game;
+    document.getElementById('tog-ad').checked      = s.ad;
+    document.getElementById('tog-news').checked    = s.news;
+    document.getElementById('tog-banner').checked  = s.banner;
+    document.getElementById('tog-titles').checked  = s.titles;
+    document.getElementById('tog-updates').checked = s.updates;
+    document.getElementById('tog-game').checked    = s.game;
 
     // ロック状態を復元
     if(localStorage.getItem(AD_LOCKED_KEY)==='1') lockAdToggle();
