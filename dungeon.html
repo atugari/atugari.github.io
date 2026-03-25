@@ -7,80 +7,78 @@
   <title>四角迷宮（試作版）</title>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    :root{--cell:44px;--bg:#1a1a18;--surface:#252520;--border:#333330;--floor:#2a2a26;--floor2:#242420;--wall:#111110;--player:#1D9E75;--enemy:#D85A30;--atk:#378ADD;--text:#f0efe9;--text2:#9a9a92;--text3:#5a5a54;}
-    html,body{height:100%;background:var(--bg);color:var(--text);font-family:sans-serif;overflow:hidden;touch-action:none;}
+    :root{
+      --cell:44px;
+      --bg:#1a1a18;--surface:#252520;--border:#333330;
+      --floor:#2c2c28;--floor2:#242420;--wall:#111110;
+      /* 色覚異常対応：プレイヤー=青系、敵=黄系、攻撃範囲=白系 */
+      --player:#4A9EE0;--enemy:#E0B84A;--atk:rgba(255,255,255,0.35);
+      --text:#f0efe9;--text2:#9a9a92;--text3:#5a5a54;
+    }
+    html,body{height:100%;background:var(--bg);color:var(--text);font-family:sans-serif;overflow:hidden;touch-action:none;user-select:none;}
     .game-wrap{display:flex;flex-direction:column;height:100%;max-width:420px;margin:0 auto;}
-    .dev-banner{background:#534AB7;color:#fff;text-align:center;font-size:11px;padding:5px;flex-shrink:0;}
+    .dev-banner{background:#534AB7;color:#fff;text-align:center;font-size:11px;padding:5px;flex-shrink:0;letter-spacing:.04em;}
     .hd{display:flex;align-items:center;justify-content:space-between;padding:0 12px;background:var(--surface);border-bottom:1px solid var(--border);height:44px;flex-shrink:0;}
     .hd-title{font-size:14px;font-weight:500;}
     .hd-back{font-size:13px;color:var(--text2);text-decoration:none;padding:4px 8px;}
     .hd-info{font-size:11px;color:var(--text2);}
     .demo-badge{font-size:9px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:3px;padding:1px 5px;margin-left:5px;vertical-align:middle;}
+    /* HPバー */
     .hp-bar-wrap{flex-shrink:0;padding:4px 12px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
     .hp-label{font-size:11px;color:var(--text2);width:28px;}
     .hp-track{flex:1;height:8px;background:#333;border-radius:4px;overflow:hidden;}
     .hp-fill{height:100%;background:var(--player);border-radius:4px;transition:width 0.3s;}
-    .hp-fill.low{background:#D85A30;}
+    .hp-fill.low{background:#E05A4A;}
     .hp-num{font-size:11px;color:var(--text2);min-width:56px;text-align:right;}
+    /* ビューポート */
     .viewport-outer{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--bg);}
     .viewport{width:calc(var(--cell)*7.5);height:calc(var(--cell)*7.5);overflow:hidden;position:relative;border:1px solid var(--border);}
-    .map-layer{position:absolute;transition:transform 0.12s ease-out;}
+    .map-layer{position:absolute;}
+    /* セル */
     .cell{position:absolute;width:var(--cell);height:var(--cell);border:1px solid var(--border);}
     .cell.floor{background:var(--floor);}
     .cell.floor2{background:var(--floor2);}
     .cell.wall{background:var(--wall);}
-    .cell.pillar{background:#3a3830;border:1px solid #555548;box-shadow:inset 0 0 0 3px #2a2820;}
-    .cell.atk-range{background:rgba(55,138,221,0.25);border-color:rgba(55,138,221,0.5);}
-    .cell.alert-range{background:rgba(216,90,48,0.22);border-color:rgba(216,90,48,0.5);}
-    .player{position:absolute;width:calc(var(--cell) - 10px);height:calc(var(--cell) - 10px);background:var(--player);border-radius:6px;z-index:10;transition:left 0.12s ease-out,top 0.12s ease-out;}
-    .player::after{content:'';position:absolute;width:7px;height:7px;background:rgba(255,255,255,0.7);border-radius:50%;}
-    .player.dir-up::after{top:3px;left:50%;transform:translateX(-50%);}
-    .player.dir-down::after{bottom:3px;left:50%;transform:translateX(-50%);}
-    .player.dir-left::after{left:3px;top:50%;transform:translateY(-50%);}
-    .player.dir-right::after{right:3px;top:50%;transform:translateY(-50%);}
-    .enemy-token{position:absolute;width:calc(var(--cell) - 10px);height:calc(var(--cell) - 10px);background:var(--enemy);border-radius:4px;z-index:9;transition:left 0.1s,top 0.1s;}
-    .enemy-token.alert{outline:2px solid #FFD700;box-shadow:0 0 6px rgba(255,215,0,0.6);}
-    .enemy-token.alert::after{content:'!';position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:12px;font-weight:700;color:#FFD700;text-shadow:0 0 4px #000;}
-    @keyframes hit-flash{0%{background:#fff;}100%{background:var(--enemy);}}
-    @keyframes player-flash{0%,100%{background:var(--player);}30%{background:#fff;}}
-    @keyframes shake-h{0%,100%{transform:translateX(0);}20%{transform:translateX(-5px);}40%{transform:translateX(5px);}60%{transform:translateX(-4px);}80%{transform:translateX(4px);}}
-    @keyframes shake-v{0%,100%{transform:translateY(0);}20%{transform:translateY(-4px);}40%{transform:translateY(4px);}60%{transform:translateY(-3px);}80%{transform:translateY(3px);}}
-    .player.damaged{animation:player-flash 0.35s ease,shake-h 0.3s ease;}
-    .map-layer.atk-shake{animation:shake-v 0.25s ease;}
-    .bottom-ui{flex-shrink:0;padding:6px 12px 10px;background:var(--surface);border-top:1px solid var(--border);}
-    .weapon-bar{display:flex;align-items:center;gap:6px;margin-bottom:7px;font-size:12px;flex-wrap:wrap;}
-    .weapon-name{font-weight:500;color:var(--text);}
-    .weapon-atk{color:var(--text2);font-size:11px;}
-    .rarity-badge{font-size:10px;padding:1px 6px;border-radius:3px;font-weight:500;}
-    .rarity-C{background:#333;color:#aaa;}
-    .rarity-B{background:rgba(29,158,117,0.2);color:#1D9E75;}
-    .rarity-A{background:rgba(55,138,221,0.2);color:#378ADD;}
-    .rarity-S{background:rgba(83,74,183,0.2);color:#a09af0;}
-    .atk-btn{margin-left:auto;padding:5px 14px;border-radius:6px;border:1px solid var(--atk);background:none;color:var(--atk);font-size:12px;cursor:pointer;white-space:nowrap;}
-    .atk-btn:active{background:rgba(55,138,221,0.15);}
-    .atk-btn.active{background:var(--atk);color:#fff;}
-    .dpad{display:grid;grid-template-columns:repeat(3,44px);grid-template-rows:repeat(3,44px);gap:4px;margin:0 auto;width:fit-content;}
-    .dpad-btn{width:44px;height:44px;border-radius:8px;border:1px solid var(--border);background:#2e2e2a;color:var(--text);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;-webkit-tap-highlight-color:rgba(0,0,0,0);}
-    .dpad-btn:active{background:#3e3e38;}
-    .dpad-btn.empty{background:transparent;border-color:transparent;pointer-events:none;}
-    .dpad-btn.center{background:#1a1a18;font-size:10px;color:var(--text3);}
-    .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;}
-    .overlay-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;width:100%;max-width:360px;}
-    .overlay-title{font-size:16px;font-weight:500;margin-bottom:6px;}
-    .overlay-sub{font-size:12px;color:var(--text2);margin-bottom:16px;line-height:1.7;}
-    .weapon-card{background:#1a1a18;border:1.5px solid var(--border);border-radius:8px;padding:14px;margin-bottom:10px;cursor:pointer;}
-    .weapon-card:last-child{margin-bottom:0;}
-    .weapon-card:active{border-color:var(--player);}
-    .weapon-card-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
-    .weapon-card-name{font-size:15px;font-weight:500;}
-    .weapon-card-stats{font-size:12px;color:var(--text2);line-height:1.8;}
-    .weapon-card-range{font-size:11px;color:var(--text3);margin-top:4px;}
-    .stat-base{color:var(--text);}
-    .stat-bonus{color:#1D9E75;}
-    .stat-minus{color:#D85A30;}
-    .msg-log{padding:6px 12px;font-size:12px;font-weight:500;color:#fff;background:rgba(20,20,18,0.96);min-height:32px;line-height:1.6;border-top:1px solid #444;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:8px;}
-    .msg-log-text{flex:1;}
+    .cell.pillar{background:#3a3830;border:2px solid #666658;}
+    .cell.atk-range{background:var(--atk);border-color:rgba(255,255,255,0.5);}
+    .cell.alert-range{background:rgba(224,184,74,0.2);border-color:rgba(224,184,74,0.6);}
+    .cell.exit{background:#1a3a2a;border:2px solid #2D9E6A;}
+    /* プレイヤー：青い四角＋中央に▲で向きを示す */
+    .player{position:absolute;width:calc(var(--cell)-10px);height:calc(var(--cell)-10px);background:var(--player);border-radius:5px;z-index:10;border:2px solid #7DC4F8;}
+    .player::after{content:'';position:absolute;width:0;height:0;border-style:solid;}
+    .player.dir-up::after{top:3px;left:50%;transform:translateX(-50%);border-width:0 5px 8px;border-color:transparent transparent rgba(255,255,255,0.8);}
+    .player.dir-down::after{bottom:3px;left:50%;transform:translateX(-50%);border-width:8px 5px 0;border-color:rgba(255,255,255,0.8) transparent transparent;}
+    .player.dir-left::after{left:3px;top:50%;transform:translateY(-50%);border-width:5px 8px 5px 0;border-color:transparent rgba(255,255,255,0.8) transparent transparent;}
+    .player.dir-right::after{right:3px;top:50%;transform:translateY(-50%);border-width:5px 0 5px 8px;border-color:transparent transparent transparent rgba(255,255,255,0.8);}
+    /* 敵：黄い四角＋×印 */
+    .enemy-token{position:absolute;width:calc(var(--cell)-10px);height:calc(var(--cell)-10px);background:var(--enemy);border-radius:3px;z-index:9;border:2px solid #F8D87C;}
+    .enemy-token::before,.enemy-token::after{content:'';position:absolute;top:50%;left:50%;width:60%;height:2px;background:rgba(0,0,0,0.45);transform-origin:center;}
+    .enemy-token::before{transform:translate(-50%,-50%) rotate(45deg);}
+    .enemy-token::after{transform:translate(-50%,-50%) rotate(-45deg);}
+    .enemy-token.alert{border-color:#FF4444;box-shadow:0 0 8px rgba(255,68,68,0.8);}
+    .enemy-token.alert::before,.enemy-token.alert::after{background:rgba(0,0,0,0.6);}
+    /* 敵HPゲージ */
+    .enemy-hp{position:absolute;bottom:-6px;left:0;right:0;height:3px;background:#333;border-radius:2px;z-index:11;}
+    .enemy-hp-fill{height:100%;background:#4AE090;border-radius:2px;transition:width 0.2s;}
+    .enemy-hp-fill.low{background:#E04A4A;}
+    /* 攻撃モーション */
+    @keyframes atk-up{0%,100%{transform:translateY(0);}40%{transform:translateY(-8px);}70%{transform:translateY(3px);}}
+    @keyframes atk-down{0%,100%{transform:translateY(0);}40%{transform:translateY(8px);}70%{transform:translateY(-3px);}}
+    @keyframes atk-left{0%,100%{transform:translateX(0);}40%{transform:translateX(-8px);}70%{transform:translateX(3px);}}
+    @keyframes atk-right{0%,100%{transform:translateX(0);}40%{transform:translateX(8px);}70%{transform:translateX(-3px);}}
+    @keyframes enemy-hit{0%{opacity:1;}30%{opacity:0.3;transform:scale(0.85);}100%{opacity:1;transform:scale(1);}}
+    @keyframes player-dmg{0%,100%{border-color:#7DC4F8;}30%{border-color:#FF4444;background:#C04040;}70%{background:var(--player);}}
+    .player.atk-up{animation:atk-up 0.22s ease;}
+    .player.atk-down{animation:atk-down 0.22s ease;}
+    .player.atk-left{animation:atk-left 0.22s ease;}
+    .player.atk-right{animation:atk-right 0.22s ease;}
+    .player.damaged{animation:player-dmg 0.35s ease;}
+    .enemy-token.hit{animation:enemy-hit 0.25s ease;}
+    /* メッセージログ */
+    .msg-log{flex-shrink:0;background:#111;border-top:1px solid var(--border);padding:6px 10px;display:flex;align-items:center;gap:6px;min-height:34px;cursor:pointer;}
+    .msg-text{flex:1;font-size:12px;color:var(--text2);line-height:1.5;}
     .msg-log-icon{font-size:10px;color:var(--text3);flex-shrink:0;}
+    /* ログパネル */
     .log-panel{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.7);display:none;flex-direction:column;justify-content:flex-end;}
     .log-panel.open{display:flex;}
     .log-inner{background:#1a1a18;border-top:1px solid #444;max-height:60vh;overflow-y:auto;padding:12px;}
@@ -89,7 +87,40 @@
     .log-close{font-size:18px;color:var(--text3);cursor:pointer;padding:0 4px;}
     .log-entry{font-size:12px;color:var(--text2);padding:5px 0;border-bottom:1px solid #2a2a28;line-height:1.7;}
     .log-entry:last-child{border-bottom:none;}
-    .log-entry.latest{color:#fff;}
+    /* 下部UI */
+    .bottom-ui{flex-shrink:0;padding:8px 12px 12px;background:var(--surface);border-top:1px solid var(--border);}
+    .weapon-bar{display:flex;align-items:center;gap:6px;margin-bottom:8px;font-size:12px;}
+    .weapon-name{font-weight:500;color:var(--text);flex:1;min-width:0;}
+    .weapon-atk{color:var(--text2);font-size:11px;}
+    .rarity-badge{font-size:10px;padding:1px 7px;border-radius:3px;font-weight:500;flex-shrink:0;}
+    .rarity-N{background:#333;color:#aaa;}
+    .rarity-U{background:rgba(55,138,221,0.25);color:#7DC4F8;}
+    .rarity-L{background:rgba(224,184,74,0.25);color:#E0B84A;}
+    .stat-base{color:var(--text);}
+    .stat-bonus{color:#4AE090;}
+    .stat-minus{color:#E05A4A;}
+    /* ボタン配置：攻撃ボタンを大きく、十字も少し大きく */
+    .ctrl-row{display:flex;align-items:center;gap:10px;justify-content:center;}
+    .atk-btn{width:72px;height:72px;border-radius:12px;border:2px solid #4A9EE0;background:rgba(74,158,224,0.12);color:#7DC4F8;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .atk-btn:active{background:rgba(74,158,224,0.3);}
+    .dpad{display:grid;grid-template-columns:repeat(3,52px);grid-template-rows:repeat(3,52px);gap:3px;}
+    .dpad-btn{width:52px;height:52px;border-radius:9px;border:1px solid var(--border);background:#2e2e2a;color:var(--text);font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:rgba(0,0,0,0);}
+    .dpad-btn:active{background:#3e3e38;}
+    .dpad-btn.empty{background:transparent;border-color:transparent;pointer-events:none;}
+    .dpad-btn.center{background:#1a1a18;font-size:10px;color:var(--text3);}
+    /* オーバーレイ共通 */
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;}
+    .overlay-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;width:100%;max-width:360px;max-height:90vh;overflow-y:auto;}
+    .overlay-title{font-size:16px;font-weight:500;margin-bottom:6px;}
+    .overlay-sub{font-size:12px;color:var(--text2);margin-bottom:16px;line-height:1.7;}
+    /* 武器カード */
+    .weapon-card{background:#1a1a18;border:1.5px solid var(--border);border-radius:8px;padding:14px;margin-bottom:10px;cursor:pointer;}
+    .weapon-card:last-child{margin-bottom:0;}
+    .weapon-card:active{border-color:var(--player);}
+    .weapon-card-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+    .weapon-card-name{font-size:15px;font-weight:500;}
+    .weapon-card-stats{font-size:12px;color:var(--text2);line-height:1.8;}
+    .weapon-card-range{font-size:11px;color:var(--text3);margin-top:4px;}
   </style>
 </head>
 <body>
@@ -110,61 +141,44 @@
       <div class="map-layer" id="map-layer"></div>
     </div>
   </div>
-
-  <!-- メッセージログ（ビューポート下・下部UI上） -->
+  <!-- メッセージログ（ビューポート下・UIの上） -->
   <div class="msg-log" id="msg-log" onclick="toggleLogPanel()">
-    <span class="msg-log-text" id="msg-log-text">——迷宮の扉が開かれた。</span>
+    <span class="msg-text" id="msg-text">——迷宮の扉が開かれた。</span>
     <span class="msg-log-icon">▲ ログ</span>
   </div>
-
   <div class="bottom-ui">
     <div class="weapon-bar">
-      <div style="flex:1;min-width:0;">
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">
-          <span class="weapon-name" id="weapon-name">武器未選択</span>
-        </div>
-        <div class="weapon-atk" id="weapon-atk"></div>
-      </div>
-      <!-- 攻撃範囲ミニグリッド -->
-      <canvas id="range-canvas" width="110" height="110" style="flex-shrink:0;image-rendering:pixelated;"></canvas>
+      <span class="weapon-name" id="weapon-name">武器未選択</span>
+      <span class="weapon-atk" id="weapon-atk"></span>
+    </div>
+    <div class="ctrl-row">
       <button class="atk-btn" id="atk-btn" onclick="doAttack()">攻撃</button>
-    </div>
-    <div class="dpad">
-      <div class="dpad-btn empty"></div>
-      <div class="dpad-btn" id="dbtn-up"    onmousedown="startMove('up')"    onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="startMoveT(event,'up')"    ontouchend="stopMove()" ontouchcancel="stopMove()">▲</div>
-      <div class="dpad-btn empty"></div>
-      <div class="dpad-btn" id="dbtn-left"  onmousedown="startMove('left')"  onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="startMoveT(event,'left')"  ontouchend="stopMove()" ontouchcancel="stopMove()">◀</div>
-      <div class="dpad-btn center" onclick="waitAction()">待機</div>
-      <div class="dpad-btn" id="dbtn-right" onmousedown="startMove('right')" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="startMoveT(event,'right')" ontouchend="stopMove()" ontouchcancel="stopMove()">▶</div>
-      <div class="dpad-btn empty"></div>
-      <div class="dpad-btn" id="dbtn-down"  onmousedown="startMove('down')"  onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="startMoveT(event,'down')"  ontouchend="stopMove()" ontouchcancel="stopMove()">▼</div>
-      <div class="dpad-btn empty"></div>
+      <div class="dpad">
+        <div class="dpad-btn empty"></div>
+        <div class="dpad-btn" onmousedown="startMove('up')" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="startMoveT(event,'up')" ontouchend="stopMove()" ontouchcancel="stopMove()">▲</div>
+        <div class="dpad-btn empty"></div>
+        <div class="dpad-btn" onmousedown="startMove('left')" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="startMoveT(event,'left')" ontouchend="stopMove()" ontouchcancel="stopMove()">◀</div>
+        <div class="dpad-btn center" onclick="waitAction()">待機</div>
+        <div class="dpad-btn" onmousedown="startMove('right')" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="startMoveT(event,'right')" ontouchend="stopMove()" ontouchcancel="stopMove()">▶</div>
+        <div class="dpad-btn empty"></div>
+        <div class="dpad-btn" onmousedown="startMove('down')" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="startMoveT(event,'down')" ontouchend="stopMove()" ontouchcancel="stopMove()">▼</div>
+        <div class="dpad-btn empty"></div>
+      </div>
     </div>
   </div>
 </div>
 
-<div class="log-panel" id="log-panel" onclick="toggleLogPanel()">
-  <div class="log-inner" onclick="event.stopPropagation()">
-    <div class="log-header">
-      <span class="log-title">ログ履歴</span>
-      <span class="log-close" onclick="toggleLogPanel()">✕</span>
-    </div>
-    <div id="log-entries"></div>
-  </div>
-</div>
-
+<!-- ゲームオーバー -->
 <div class="overlay" id="gameover-overlay" style="display:none;">
   <div class="overlay-box" style="text-align:center;">
     <div style="font-size:28px;margin-bottom:12px;">†</div>
     <div class="overlay-title" style="font-size:20px;margin-bottom:8px;">力尽きた</div>
-    <div style="font-size:13px;color:var(--text2);line-height:1.9;margin-bottom:20px;">
-      ——その者は迷宮の闇に呑まれた。<br>
-      されど、挑戦を諦める必要はない。
-    </div>
+    <div style="font-size:13px;color:var(--text2);line-height:1.9;margin-bottom:20px;">——その者は迷宮の闇に呑まれた。<br>されど、挑戦を諦める必要はない。</div>
     <button onclick="restartGame()" style="width:100%;padding:12px;border-radius:8px;border:1px solid var(--player);background:none;color:var(--player);font-size:14px;font-weight:500;cursor:pointer;">もう一度挑む</button>
   </div>
 </div>
 
+<!-- 武器選択 -->
 <div class="overlay" id="weapon-overlay">
   <div class="overlay-box">
     <div class="overlay-title">武器を選べ</div>
@@ -173,114 +187,158 @@
   </div>
 </div>
 
+<!-- ログパネル -->
+<div class="log-panel" id="log-panel" onclick="toggleLogPanel()">
+  <div class="log-inner" onclick="e=>e.stopPropagation()">
+    <div class="log-header">
+      <span class="log-title">戦闘ログ</span>
+      <span class="log-close" onclick="toggleLogPanel()">✕</span>
+    </div>
+    <div id="log-entries"></div>
+  </div>
+</div>
+
 <script>
 const CELL=44, SAFE=5, MAP=10;
+const MOVE_DELAY=400, MOVE_REPEAT=220, MOVE_ANIM=180;
+const SENSE_RANGE=4, ATK_CD=500;
 
+// 武器定義（レアリティ: N=ノーマル, U=ユニーク, L=レジェンド）
 const WDEFS={
-  fu:  {name:'歩',  baseAtk:28,spread:8, rarity:'B',range:[[0,1]],                                           desc:'前方1マス。攻撃力が高い。'},
-  kyo: {name:'香',  baseAtk:18,spread:10,rarity:'C',range:[[0,1],[0,2]],                                     desc:'前方2マス。攻撃力は控えめ。'},
-  kei: {name:'桂',  baseAtk:22,spread:8, rarity:'B',range:[[-1,2],[1,2]],                                    desc:'前方2マス左右1ずれ。跳び越える。'},
-  hi:  {name:'飛',  baseAtk:20,spread:6, rarity:'A',range:[[0,1],[0,2],[0,-1],[0,-2],[1,0],[2,0],[-1,0],[-2,0]], desc:'縦横2マス。汎用性の高いレア武器。'},
-  kaku:{name:'角',  baseAtk:20,spread:6, rarity:'A',range:[[1,1],[2,2],[-1,1],[-2,2],[1,-1],[2,-2],[-1,-1],[-2,-2]],desc:'斜め2マス。汎用性の高いレア武器。'},
-  gin: {name:'銀',  baseAtk:14,spread:6, rarity:'C',range:[[0,1],[1,1],[-1,1],[1,-1],[-1,-1]],               desc:'前方と斜め4方向。囲まれた時に強い。'},
+  fu:  {name:'歩', baseAtk:28,spread:8, rarity:'U',range:[[0,-1]],                                                    desc:'前方1マス。攻撃力が高い。'},
+  kyo: {name:'香', baseAtk:18,spread:10,rarity:'N',range:[[0,-1],[0,-2]],                                              desc:'前方2マス。攻撃力は控えめ。'},
+  kei: {name:'桂', baseAtk:22,spread:8, rarity:'U',range:[[-1,-2],[1,-2]],                                            desc:'前方2マス左右1ずれ。跳び越える。'},
+  hi:  {name:'飛', baseAtk:20,spread:6, rarity:'L',range:[[0,-1],[0,-2],[0,1],[0,2],[1,0],[2,0],[-1,0],[-2,0]],       desc:'縦横2マス。汎用性の高いレア武器。'},
+  kaku:{name:'角', baseAtk:20,spread:6, rarity:'L',range:[[1,-1],[2,-2],[-1,-1],[-2,-2],[1,1],[2,2],[-1,1],[-2,2]],   desc:'斜め2マス。汎用性の高いレア武器。'},
+  gin: {name:'銀', baseAtk:14,spread:6, rarity:'N',range:[[0,-1],[1,-1],[-1,-1],[1,1],[-1,1]],                        desc:'前方と斜め4方向。囲まれた時に強い。'},
 };
 
-let player={x:2,y:2,dir:'down',hp:100,maxHp:100,weapon:null};
-let enemies=[], map=[], mapSize=SAFE, phase='safe', atkMode=true, moving=false;
+const RARITY_LABEL={N:'ノーマル',U:'ユニーク',L:'レジェンド'};
 
+let player={x:2,y:4,dir:'up',hp:100,maxHp:100,weapon:null};
+let enemies=[], map=[], mapSize=SAFE, phase='safe';
+let moving=false, atkCooldown=false;
+let moveHoldTimer=null, moveRepeatTimer=null;
+let logEntries=[];
+
+// ===== 武器生成 =====
 function genWeapon(id){
   const d=WDEFS[id];
   const bonus=Math.floor(Math.random()*d.spread)-Math.floor(d.spread/2);
   return {id,name:d.name,atk:d.baseAtk+bonus,baseAtk:d.baseAtk,bonus,rarity:d.rarity,range:d.range,desc:d.desc};
 }
 function pickWeapons(){
-  const pool=Object.keys(WDEFS).sort(()=>Math.random()-0.5);
-  return [genWeapon(pool[0]),genWeapon(pool[1])];
+  return Object.keys(WDEFS).sort(()=>Math.random()-0.5).slice(0,2).map(genWeapon);
 }
 
+// ===== マップ初期化 =====
 function initSafe(){
-  mapSize=SAFE; map=Array.from({length:SAFE},()=>Array(SAFE).fill(0));
-  player.x=2;player.y=2;player.dir='down'; enemies=[]; phase='safe';
+  mapSize=SAFE;
+  map=Array.from({length:SAFE},()=>Array(SAFE).fill(0));
+  // 上端に出口
+  map[0][2]=3; // 3=出口
+  player.x=2;player.y=4;player.dir='up';
+  enemies=[];phase='safe';
 }
+
 function initBattle(){
-  mapSize=MAP; map=Array.from({length:MAP},()=>Array(MAP).fill(0));
-  player.x=1;player.y=1;player.dir='down';
+  mapSize=MAP;
+  map=Array.from({length:MAP},()=>Array(MAP).fill(0));
+  // 上端に出口（敵全滅後に有効化）
+  map[0][4]=3;
+  player.x=4;player.y=MAP-2;player.dir='up';
+
+  // 柱ランダム配置
+  const pc=4+Math.floor(Math.random()*3);
+  let placed=0,att=0;
+  while(placed<pc&&att<100){
+    att++;
+    const px=2+Math.floor(Math.random()*6),py=2+Math.floor(Math.random()*6);
+    if(Math.abs(px-player.x)<=1&&Math.abs(py-player.y)<=1)continue;
+    if(map[py][px]!==0)continue;
+    map[py][px]=2;placed++;
+  }
+
+  // 敵を上側に配置
   enemies=[];
-
-  // 柱をランダム配置（4〜6本）
-  // プレイヤー周辺・敵配置エリアを除いた場所に置く
-  const pillarCount = 4 + Math.floor(Math.random()*3);
-  let placed = 0, attempts = 0;
-  while(placed < pillarCount && attempts < 100){
-    attempts++;
-    const px = 2 + Math.floor(Math.random()*6);
-    const py = 2 + Math.floor(Math.random()*6);
-    // プレイヤー周辺3×3とすでに柱があるマスは除外
-    if(Math.abs(px-1)<=1 && Math.abs(py-1)<=1) continue;
-    if(map[py][px]!==0) continue;
-    map[py][px] = 2; // 2=柱
-    placed++;
+  const pos=[];att=0;
+  while(pos.length<3&&att<100){
+    att++;
+    const x=2+Math.floor(Math.random()*6),y=1+Math.floor(Math.random()*4);
+    if(map[y][x]!==0)continue;
+    if(!pos.find(p=>p.x===x&&p.y===y))pos.push({x,y});
   }
-
-  // 敵3体をランダム配置（柱・プレイヤーと被らない場所）
-  const pos=[];
-  attempts=0;
-  while(pos.length<3 && attempts<100){
-    attempts++;
-    const x=4+Math.floor(Math.random()*5),y=4+Math.floor(Math.random()*5);
-    if(map[y][x]!==0) continue;
-    if(!pos.find(p=>p.x===x&&p.y===y)) pos.push({x,y});
-  }
-  pos.forEach((p,i)=>enemies.push({id:i,x:p.x,y:p.y,hp:40,maxHp:40}));
-  phase='battle'; updHd();
+  pos.forEach((p,i)=>enemies.push({id:i,x:p.x,y:p.y,hp:40,maxHp:40,alertTurn:false,prevX:p.x,prevY:p.y}));
+  phase='battle';updHd();
 }
 
+// ===== 攻撃範囲計算（壁・柱を貫通しない） =====
 function atkCells(){
   if(!player.weapon)return[];
-  const dir=player.dir,raw=player.weapon.range;
-  return raw.map(([dx,dy])=>{
-    let rx,ry;
-    if(dir==='down'){rx=dx;ry=dy;}
-    else if(dir==='up'){rx=-dx;ry=-dy;}
-    else if(dir==='right'){rx=dy;ry=-dx;}
-    else{rx=-dy;ry=dx;}
-    return{x:player.x+rx,y:player.y+ry};
-  }).filter(c=>c.x>=0&&c.x<mapSize&&c.y>=0&&c.y<mapSize);
+  const dir=player.dir, raw=player.weapon.range;
+  const result=[];
+  // 方向ごとにグループ化して経路チェック
+  raw.forEach(([dx,dy])=>{
+    // dir='up'が基準（rangeはup基準で定義）
+    let rx=dx, ry=dy;
+    if(dir==='down'){rx=-dx;ry=-dy;}
+    else if(dir==='right'){rx=-dy;ry=dx;}
+    else if(dir==='left'){rx=dy;ry=-dx;}
+    const tx=player.x+rx, ty=player.y+ry;
+    if(tx<0||tx>=mapSize||ty<0||ty>=mapSize)return;
+    // 経路上に壁・柱があれば遮断
+    // 距離1の場合はチェック不要
+    const dist=Math.max(Math.abs(rx),Math.abs(ry));
+    if(dist>=2){
+      // 1マス目もチェック（直線経路）
+      const mx=player.x+Math.sign(rx), my=player.y+Math.sign(ry);
+      if(mx>=0&&mx<mapSize&&my>=0&&my<mapSize&&(map[my][mx]===1||map[my][mx]===2))return;
+    }
+    result.push({x:tx,y:ty});
+  });
+  return result;
 }
 
+// ===== マップ描画 =====
 function render(){
   const layer=document.getElementById('map-layer');
   layer.innerHTML='';
   layer.style.width=mapSize*CELL+'px';
   layer.style.height=mapSize*CELL+'px';
-  const ac=atkMode?atkCells():[];
-  const as=new Set(ac.map(c=>c.x+','+c.y));
 
-  // 構え中の敵の攻撃範囲（隣接4マス）を赤でハイライト
-  const alertRangeSet=new Set();
+  const ac=atkCells();
+  const as=new Set(ac.map(c=>c.x+','+c.y));
+  const alertSet=new Set();
   enemies.filter(e=>e.alertTurn).forEach(e=>{
-    [[0,1],[0,-1],[1,0],[-1,0]].forEach(([dx,dy])=>{
-      alertRangeSet.add((e.x+dx)+','+(e.y+dy));
-    });
+    [[0,1],[0,-1],[1,0],[-1,0]].forEach(([dx,dy])=>alertSet.add((e.x+dx)+','+(e.y+dy)));
   });
 
   for(let y=0;y<mapSize;y++){for(let x=0;x<mapSize;x++){
     const c=document.createElement('div');
+    const v=map[y][x];
     const ia=as.has(x+','+y);
-    const isAlert=alertRangeSet.has(x+','+y);
-    const isPillar = map[y][x]===2;
-    c.className='cell '+(ia?'atk-range':isAlert?'alert-range':(isPillar?'pillar':(map[y][x]?'wall':((x+y)%2===0?'floor':'floor2'))));
+    const al=alertSet.has(x+','+y);
+    if(v===3) c.className='cell exit';
+    else if(v===2) c.className='cell pillar';
+    else if(v===1) c.className='cell wall';
+    else if(ia) c.className='cell atk-range';
+    else if(al) c.className='cell alert-range';
+    else c.className='cell '+(((x+y)%2===0)?'floor':'floor2');
     c.style.left=x*CELL+'px';c.style.top=y*CELL+'px';
     layer.appendChild(c);
   }}
 
   enemies.forEach(e=>{
     const el=document.createElement('div');
-    el.className='enemy-token';el.id='e'+e.id;
+    el.className='enemy-token'+(e.alertTurn?' alert':'');
+    el.id='e'+e.id;
     el.style.left=(e.x*CELL+5)+'px';el.style.top=(e.y*CELL+5)+'px';
-    const inR=ac.some(c=>c.x===e.x&&c.y===e.y);
-    if(inR){el.style.outline='2px solid #378ADD';}
-    if(e.alertTurn) el.classList.add('alert');
+    if(ac.some(c=>c.x===e.x&&c.y===e.y))el.style.outline='2px solid rgba(255,255,255,0.6)';
+    // HPゲージ
+    const hpw=document.createElement('div');hpw.className='enemy-hp';
+    const hpf=document.createElement('div');hpf.className='enemy-hp-fill'+(e.hp/e.maxHp<0.3?' low':'');
+    hpf.style.width=(e.hp/e.maxHp*100)+'%';
+    hpw.appendChild(hpf);el.appendChild(hpw);
     layer.appendChild(el);
   });
 
@@ -300,7 +358,7 @@ function updVp(anim=true){
     ox=-(player.x*CELL-(vw/2-CELL/2));oy=-(player.y*CELL-(vh/2-CELL/2));
     ox=Math.max(-(mw-vw),Math.min(0,ox));oy=Math.max(-(mh-vh),Math.min(0,oy));
   }
-  layer.style.transition=anim?'transform 0.12s ease-out':'none';
+  layer.style.transition=anim?'transform 0.15s ease-out':'none';
   layer.style.transform=`translate(${ox}px,${oy}px)`;
 }
 
@@ -310,242 +368,154 @@ function updPl(){
   el.className='player dir-'+player.dir;
 }
 
-// ===== 長押し移動 =====
-const MOVE_DELAY  = 400;  // 長押し開始までの待機時間(ms)
-const MOVE_REPEAT = 220;  // リピート間隔(ms)
-const MOVE_ANIM   = 180;  // 移動アニメ時間(ms)
-let moveHoldTimer = null;
-let moveRepeatTimer = null;
-
-function startMoveT(e, dir){ e.preventDefault(); startMove(dir); }
+// ===== 移動（長押し対応） =====
+function startMoveT(e,dir){e.preventDefault();startMove(dir);}
 function startMove(dir){
   stopMove();
   doMove(dir);
-  moveHoldTimer = setTimeout(()=>{
-    moveRepeatTimer = setInterval(()=>doMove(dir), MOVE_REPEAT);
-  }, MOVE_DELAY);
+  moveHoldTimer=setTimeout(()=>{moveRepeatTimer=setInterval(()=>doMove(dir),MOVE_REPEAT);},MOVE_DELAY);
 }
 function stopMove(){
-  clearTimeout(moveHoldTimer);
-  clearInterval(moveRepeatTimer);
-  moveHoldTimer = null; moveRepeatTimer = null;
+  clearTimeout(moveHoldTimer);clearInterval(moveRepeatTimer);
+  moveHoldTimer=null;moveRepeatTimer=null;
 }
 
-function em(e,dir){e.preventDefault();doMove(dir);}
 function doMove(dir){
   if(moving)return;
-
-  // 今向いている方向と違う場合は向くだけで移動しない
-  if(player.dir !== dir){
-    player.dir = dir;
-    updPl();
-    render();
-    return;
-  }
-
+  if(player.dir!==dir){player.dir=dir;updPl();render();return;}
   let nx=player.x,ny=player.y;
   if(dir==='up')ny--;else if(dir==='down')ny++;else if(dir==='left')nx--;else nx++;
 
-  if(phase==='safe'&&ny>=SAFE){
-    startBattle();return;
+  // 安全部屋：上端から出る
+  if(phase==='safe'&&ny<0){startBattle();return;}
+  // 戦闘部屋：出口マスに入ったら次の部屋へ
+  if(phase==='battle'&&nx>=0&&nx<mapSize&&ny>=0&&ny<mapSize&&map[ny][nx]===3&&enemies.length===0){
+    showMsg('——道が開かれた。さらに奥へと進む。');
+    setTimeout(()=>initBattle()&&render(),400);
+    return;
   }
 
-  if(nx<0||nx>=mapSize||ny<0||ny>=mapSize||map[ny][nx]===1||map[ny][nx]===2){updPl();render();return;}
+  if(nx<0||nx>=mapSize||ny<0||ny>=mapSize)return;
+  if(map[ny][nx]===1||map[ny][nx]===2){updPl();return;}
   if(enemies.find(e=>e.x===nx&&e.y===ny)){updPl();return;}
-  moving=true;player.x=nx;player.y=ny;
 
-  const layer=document.getElementById('map-layer');
-  layer.style.transition=`transform ${MOVE_ANIM}ms ease-out`;
-  const pe=document.getElementById('player');
-  if(pe){pe.style.transition=`left ${MOVE_ANIM}ms ease-out, top ${MOVE_ANIM}ms ease-out`;}
+  moving=true;player.x=nx;player.y=ny;
   render();updVp(true);
-  setTimeout(()=>{
-    moving=false;
-    if(phase==='battle') enemyTurn();
-  }, MOVE_ANIM);
+  setTimeout(()=>{moving=false;if(phase==='battle')enemyTurn();},MOVE_ANIM);
 }
 
-// ===== 攻撃クールダウン =====
-let atkCooldown = false;
-const ATK_CD = 600; // ms
+// ===== 待機 =====
+function waitAction(){
+  stopMove();moving=false;
+  if(phase==='battle')enemyTurn();
+}
 
+// ===== 攻撃 =====
 function doAttack(){
   if(!player.weapon){showMsg('——武器を手にしていない。先に武器を選ばれよ。');return;}
-  if(atkCooldown) return;
+  if(atkCooldown)return;
   const ac=atkCells();
   const targets=enemies.filter(e=>ac.some(c=>c.x===e.x&&c.y===e.y));
   if(targets.length===0){showMsg('——攻撃範囲内に敵影なし。向きを変えよ。');return;}
 
   atkCooldown=true;
   document.getElementById('atk-btn').style.opacity='0.4';
-  setTimeout(()=>{
-    atkCooldown=false;
-    document.getElementById('atk-btn').style.opacity='1';
-  }, ATK_CD);
+  setTimeout(()=>{atkCooldown=false;document.getElementById('atk-btn').style.opacity='1';},ATK_CD);
 
-  atkShake(); // 攻撃shake演出
+  // 攻撃モーション（プレイヤーが向きに向かってスライド）
+  const pe=document.getElementById('player');
+  if(pe){
+    pe.classList.remove('atk-up','atk-down','atk-left','atk-right');
+    requestAnimationFrame(()=>pe.classList.add('atk-'+player.dir));
+    setTimeout(()=>pe.classList.remove('atk-up','atk-down','atk-left','atk-right'),250);
+  }
 
   targets.forEach(t=>{
-    const dmg=player.weapon.atk;
-    t.hp-=dmg;
+    t.hp-=player.weapon.atk;
     const el=document.getElementById('e'+t.id);
-    if(el){el.style.animation='none';requestAnimationFrame(()=>{el.style.animation='hit-flash 0.2s ease';});}
-    if(t.hp<=0){ enemies=enemies.filter(e=>e.id!==t.id); }
+    if(el){el.classList.remove('hit');requestAnimationFrame(()=>el.classList.add('hit'));setTimeout(()=>el.classList.remove('hit'),280);}
+    if(t.hp<=0)enemies=enemies.filter(e=>e.id!==t.id);
   });
 
-  const hit=targets.length;
   const dead=targets.filter(t=>t.hp<=0).length;
-  let msg='——'+player.weapon.name+'を振るった。'+hit+'体に'+player.weapon.atk+'のダメージ。';
-  if(dead>0) msg+=' '+dead+'体を討ち取った。';
+  let msg='——'+player.weapon.name+'を振るった。'+targets.length+'体に'+player.weapon.atk+'のダメージ。';
+  if(dead>0)msg+=' '+dead+'体を討ち取った。';
   showMsg(msg);
-  if(enemies.length===0) setTimeout(()=>showMsg('——全ての敵を倒した。次の部屋への道が開かれた。'),700);
-
-  setTimeout(()=>{ render(); enemyTurn(); },230);
+  if(enemies.length===0){
+    // 出口を開放
+    setTimeout(()=>{showMsg('——全ての敵を倒した。出口が開かれた。');render();},500);
+  }
+  setTimeout(()=>{render();enemyTurn();},250);
   updHd();
 }
 
-// ===== 待機 =====
-function waitAction(){
-  if(phase!=='battle') return;
-  stopMove(); // 長押し中でも強制停止
-  moving=false; // movingフラグを強制リセット
-  enemyTurn();
-}
-
+// ===== 戦闘開始 =====
 function startBattle(){initBattle();render();showMsg('——部屋に踏み込んだ。敵の気配がする。向きを合わせ、攻撃せよ。');}
 
-// ===== 敵AI・ターン処理 =====
-const SENSE_RANGE = 4;
-
-function mdist(ax,ay,bx,by){ return Math.abs(ax-bx)+Math.abs(ay-by); }
-
-function canMove(x,y){
-  if(x<0||x>=mapSize||y<0||y>=mapSize) return false;
-  if(map[y][x]===1||map[y][x]===2) return false;
-  if(enemies.find(e=>e.x===x&&e.y===y)) return false;
+// ===== 敵AI =====
+function mdist(ax,ay,bx,by){return Math.abs(ax-bx)+Math.abs(ay-by);}
+function canMoveTo(x,y){
+  if(x<0||x>=mapSize||y<0||y>=mapSize)return false;
+  if(map[y][x]===1||map[y][x]===2||map[y][x]===3)return false;
+  if(enemies.find(e=>e.x===x&&e.y===y))return false;
   return true;
 }
-
 function moveToward(e){
-  const dx=player.x-e.x, dy=player.y-e.y;
-  const moves=[];
-  if(Math.abs(dx)>=Math.abs(dy)){
-    moves.push([Math.sign(dx),0],[0,Math.sign(dy)],[0,-Math.sign(dy)],[-Math.sign(dx),0]);
-  } else {
-    moves.push([0,Math.sign(dy)],[Math.sign(dx),0],[-Math.sign(dx),0],[0,-Math.sign(dy)]);
-  }
-  for(const [mx,my] of moves){
-    const nx=e.x+mx, ny=e.y+my;
-    if(canMove(nx,ny)){
-      e.prevX=e.x; e.prevY=e.y; // 前の位置を記録
-      e.x=nx; e.y=ny; return;
-    }
+  const dx=player.x-e.x,dy=player.y-e.y;
+  const moves=Math.abs(dx)>=Math.abs(dy)?
+    [[Math.sign(dx),0],[0,Math.sign(dy)],[0,-Math.sign(dy)],[-Math.sign(dx),0]]:
+    [[0,Math.sign(dy)],[Math.sign(dx),0],[-Math.sign(dx),0],[0,-Math.sign(dy)]];
+  for(const[mx,my]of moves){
+    const nx=e.x+mx,ny=e.y+my;
+    if(canMoveTo(nx,ny)){e.prevX=e.x;e.prevY=e.y;e.x=nx;e.y=ny;return;}
   }
 }
-
 function wander(e){
   const dirs=[[0,1],[0,-1],[1,0],[-1,0]].sort(()=>Math.random()-0.5);
-  for(const [mx,my] of dirs){
-    const nx=e.x+mx, ny=e.y+my;
-    if(canMove(nx,ny)){
-      e.prevX=e.x; e.prevY=e.y;
-      e.x=nx; e.y=ny; return;
-    }
+  for(const[mx,my]of dirs){
+    const nx=e.x+mx,ny=e.y+my;
+    if(canMoveTo(nx,ny)){e.prevX=e.x;e.prevY=e.y;e.x=nx;e.y=ny;return;}
   }
 }
 
-function isAdjacentToPlayer(e){
-  return mdist(e.x,e.y,player.x,player.y)===1;
-}
-
-// 敵のターン処理
-// alertTurn=true は構え状態（キャンセル不可）→次ターンで攻撃
 function enemyTurn(){
-  if(phase!=='battle'||enemies.length===0) return;
-  let totalDmg=0;
-  let newAlert=false;
-
+  if(phase!=='battle'||enemies.length===0)return;
+  let totalDmg=0,newAlert=false;
   enemies.forEach(e=>{
-    e.prevX=e.x; e.prevY=e.y; // 移動前の位置を記録
+    e.prevX=e.x;e.prevY=e.y;
     const dist=mdist(e.x,e.y,player.x,player.y);
-    const adj=isAdjacentToPlayer(e);
-
+    const adj=dist===1;
     if(e.alertTurn){
-      // 構え状態（キャンセル不可）→ 隣接していれば攻撃、離れていても攻撃（構えはキャンセルされない）
-      if(adj){
-        const dmg=8+Math.floor(Math.random()*6);
-        player.hp=Math.max(0,player.hp-dmg);
-        totalDmg+=dmg;
-      } else {
-        // 離れた場合は攻撃空振り（構えが崩れる）
-        showMsg('——敵の攻撃が空を切った。');
-      }
+      // 構え状態はキャンセル不可→攻撃
+      if(adj){const dmg=8+Math.floor(Math.random()*6);player.hp=Math.max(0,player.hp-dmg);totalDmg+=dmg;}
+      else showMsg('——敵の攻撃が空を切った。');
       e.alertTurn=false;
     } else if(adj){
-      // 新たに隣接 → 構えに入る（移動しない）
-      e.alertTurn=true;
-      newAlert=true;
+      e.alertTurn=true;newAlert=true;
     } else {
-      // 通常移動
-      if(dist<=SENSE_RANGE) moveToward(e);
-      else wander(e);
+      if(dist<=SENSE_RANGE)moveToward(e);else wander(e);
     }
   });
-
-  if(newAlert){
-    showMsg('——敵が攻撃の構えに入った！次のターン、その位置にいると攻撃を受ける！');
-  }
-
+  if(newAlert)showMsg('——敵が攻撃の構えに入った！次のターン、その位置にいると攻撃を受ける！');
   if(totalDmg>0){
     updHpBar();
     const pe=document.getElementById('player');
-    if(pe){
-      pe.classList.remove('damaged');
-      requestAnimationFrame(()=>{ pe.classList.add('damaged'); });
-      setTimeout(()=>pe.classList.remove('damaged'), 400);
-    }
+    if(pe){pe.classList.remove('damaged');requestAnimationFrame(()=>pe.classList.add('damaged'));setTimeout(()=>pe.classList.remove('damaged'),400);}
     showMsg('——敵の一撃を受けた！ '+totalDmg+' ダメージ。HP: '+player.hp+' / '+player.maxHp);
-    if(player.hp<=0){ setTimeout(()=>gameOver(),400); return; }
+    if(player.hp<=0){setTimeout(()=>gameOver(),400);return;}
   }
-
-  // 敵の移動モーション：前の位置から現在位置にアニメ
-  renderWithEnemyMotion();
-}
-
-// 敵の移動モーションつきrender
-function renderWithEnemyMotion(){
-  // まず前の位置でrenderしてから、CSSトランジションで現在位置に移動
-  const prevPositions={};
-  enemies.forEach(e=>{ prevPositions[e.id]={x:e.prevX??e.x, y:e.prevY??e.y}; });
-
-  render(); // 現在位置でDOMを生成
-
-  // 敵トークンを一旦前の位置に戻してからアニメ
+  // 敵移動モーション
+  render();
   enemies.forEach(e=>{
-    const el=document.getElementById('e'+e.id);
-    if(!el) return;
-    const prev=prevPositions[e.id];
-    if(prev.x===e.x && prev.y===e.y) return; // 動いていない
-    // トランジションを一時的にオフにして前の位置にセット
+    const el=document.getElementById('e'+e.id);if(!el)return;
+    if(e.prevX===e.x&&e.prevY===e.y)return;
     el.style.transition='none';
-    el.style.left=(prev.x*CELL+5)+'px';
-    el.style.top=(prev.y*CELL+5)+'px';
-    // 次フレームでトランジションONにして現在位置へ
+    el.style.left=(e.prevX*CELL+5)+'px';el.style.top=(e.prevY*CELL+5)+'px';
     requestAnimationFrame(()=>{
-      el.style.transition='left 0.2s ease-out, top 0.2s ease-out';
-      el.style.left=(e.x*CELL+5)+'px';
-      el.style.top=(e.y*CELL+5)+'px';
+      el.style.transition='left 0.2s ease-out,top 0.2s ease-out';
+      el.style.left=(e.x*CELL+5)+'px';el.style.top=(e.y*CELL+5)+'px';
     });
   });
-}
-
-// 攻撃時のshake演出
-function atkShake(){
-  const layer=document.getElementById('map-layer');
-  if(!layer) return;
-  layer.classList.remove('atk-shake');
-  requestAnimationFrame(()=>{ layer.classList.add('atk-shake'); });
-  setTimeout(()=>layer.classList.remove('atk-shake'), 280);
 }
 
 // ===== ゲームオーバー =====
@@ -553,20 +523,14 @@ function gameOver(){
   stopMove();
   document.getElementById('gameover-overlay').style.display='flex';
 }
-
 function restartGame(){
-  player.hp=player.maxHp;
-  player.weapon=null;
+  player.hp=player.maxHp;player.weapon=null;
   document.getElementById('gameover-overlay').style.display='none';
-  initSafe();
-  render();
-  updHpBar();
-  updWpn();
-  updHd();
-  drawRangeCanvas();
+  initSafe();render();updHpBar();updWpn();updHd();
   setTimeout(showWpnOverlay,300);
 }
 
+// ===== UI更新 =====
 function updHpBar(){
   const pct=player.hp/player.maxHp*100;
   const f=document.getElementById('hp-fill');
@@ -576,105 +540,45 @@ function updHpBar(){
 function updHd(){
   document.getElementById('hd-info').textContent=phase==='safe'?'安全な部屋':'敵 '+enemies.length+'体';
 }
-function drawRangeCanvas(){
-  const canvas=document.getElementById('range-canvas');
-  if(!canvas)return;
-  const ctx=canvas.getContext('2d');
-  const S=110, cs=22; // 5×5 × 22px
-  canvas.width=S; canvas.height=S;
-  ctx.clearRect(0,0,S,S);
-
-  if(!player.weapon){
-    ctx.fillStyle='#222';ctx.fillRect(0,0,S,S);
-    return;
-  }
-
-  const raw=player.weapon.range;
-  const rs=new Set(raw.map(([dx,dy])=>dx+','+dy));
-  const name=player.weapon.name;
-
-  for(let gy=-2;gy<=2;gy++){for(let gx=-2;gx<=2;gx++){
-    const px=(gx+2)*cs, py=(2-gy)*cs; // 上下反転：gy正=下→画面上方向
-    const isP=gx===0&&gy===0;
-    const isA=rs.has(gx+','+gy);
-    ctx.fillStyle=isP?'#1D9E75':isA?'rgba(55,138,221,0.55)':'#252520';
-    ctx.fillRect(px+1,py+1,cs-2,cs-2);
-    ctx.strokeStyle='#333';ctx.lineWidth=1;
-    ctx.strokeRect(px+0.5,py+0.5,cs-1,cs-1);
-    // プレイヤーマスに漢字
-    if(isP){
-      ctx.fillStyle='#fff';
-      ctx.font=`bold ${cs*0.65}px sans-serif`;
-      ctx.textAlign='center';ctx.textBaseline='middle';
-      ctx.fillText(name, px+cs/2, py+cs/2);
-    }
-  }}
-}
-
 function updWpn(){
   if(!player.weapon){document.getElementById('weapon-name').textContent='武器未選択';document.getElementById('weapon-atk').textContent='';return;}
   const w=player.weapon;
   const bs=w.bonus>0?'<span class="stat-bonus">+'+w.bonus+'</span>':w.bonus<0?'<span class="stat-minus">'+w.bonus+'</span>':'';
-  document.getElementById('weapon-name').innerHTML='<span class="rarity-badge rarity-'+w.rarity+'">'+w.rarity+'</span> '+w.name;
+  document.getElementById('weapon-name').innerHTML='<span class="rarity-badge rarity-'+w.rarity+'">'+RARITY_LABEL[w.rarity]+'</span> '+w.name;
   document.getElementById('weapon-atk').innerHTML='攻撃 <span class="stat-base">'+w.baseAtk+'</span>'+bs+' = '+w.atk;
-  drawRangeCanvas();
 }
 
 // ===== メッセージ・ログ =====
-let msgLog = [];
-const MAX_LOG = 20;
-
 function showMsg(txt){
-  msgLog.unshift(txt);
-  if(msgLog.length>MAX_LOG) msgLog.pop();
-  const el=document.getElementById('msg-log-text');
-  if(el) el.textContent=txt;
-  // ログパネルが開いていれば更新
-  if(document.getElementById('log-panel').classList.contains('open')) renderLogPanel();
+  document.getElementById('msg-text').textContent=txt;
+  logEntries.unshift(txt);
+  if(logEntries.length>30)logEntries.pop();
 }
-
-function renderLogPanel(){
-  const box=document.getElementById('log-entries');
-  box.innerHTML='';
-  msgLog.forEach((t,i)=>{
-    const d=document.createElement('div');
-    d.className='log-entry'+(i===0?' latest':'');
-    d.textContent=t;
-    box.appendChild(d);
-  });
-}
-
 function toggleLogPanel(){
   const p=document.getElementById('log-panel');
-  const isOpen=p.classList.contains('open');
-  if(!isOpen){ renderLogPanel(); p.classList.add('open'); }
-  else p.classList.remove('open');
+  const open=p.classList.toggle('open');
+  if(open){
+    const el=document.getElementById('log-entries');
+    el.innerHTML=logEntries.map(e=>'<div class="log-entry">'+e+'</div>').join('');
+  }
 }
 
-function drawMiniRange(canvas, weapon){
-  if(!canvas||!weapon) return;
+// ===== 武器選択 =====
+function drawMiniRange(canvas,weapon){
+  if(!canvas||!weapon)return;
   const ctx=canvas.getContext('2d');
-  const S=110, cs=22;
-  canvas.width=S; canvas.height=S;
+  const S=110,cs=22;
+  canvas.width=S;canvas.height=S;
   ctx.clearRect(0,0,S,S);
-  const raw=weapon.range;
-  const rs=new Set(raw.map(([dx,dy])=>dx+','+dy));
-  const name=weapon.name;
-
+  const rs=new Set(weapon.range.map(([dx,dy])=>dx+','+dy));
   for(let gy=-2;gy<=2;gy++){for(let gx=-2;gx<=2;gx++){
-    const px=(gx+2)*cs, py=(2-gy)*cs; // 上下反転
+    const px=(gx+2)*cs,py=(gy+2)*cs; // up基準なのでそのまま
     const isP=gx===0&&gy===0;
     const isA=rs.has(gx+','+gy);
-    ctx.fillStyle=isP?'#1D9E75':isA?'rgba(55,138,221,0.55)':'#252520';
+    ctx.fillStyle=isP?'#4A9EE0':isA?'rgba(255,255,255,0.35)':'#252520';
     ctx.fillRect(px+1,py+1,cs-2,cs-2);
-    ctx.strokeStyle='#333';ctx.lineWidth=1;
-    ctx.strokeRect(px+0.5,py+0.5,cs-1,cs-1);
-    if(isP){
-      ctx.fillStyle='#fff';
-      ctx.font=`bold ${cs*0.65}px sans-serif`;
-      ctx.textAlign='center';ctx.textBaseline='middle';
-      ctx.fillText(name, px+cs/2, py+cs/2);
-    }
+    ctx.strokeStyle='#333';ctx.lineWidth=1;ctx.strokeRect(px+0.5,py+0.5,cs-1,cs-1);
+    if(isP){ctx.fillStyle='#fff';ctx.font='bold '+Math.floor(cs*0.65)+'px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(weapon.name,px+cs/2,py+cs/2);}
   }}
 }
 
@@ -686,112 +590,59 @@ function showWpnOverlay(){
     const card=document.createElement('div');card.className='weapon-card';
     const bs=w.bonus>0?'+'+w.bonus:w.bonus<0?''+w.bonus:'0';
     const bc=w.bonus>0?'stat-bonus':w.bonus<0?'stat-minus':'';
-    const canvasId='wc-canvas-'+idx;
+    const cid='wc-'+idx;
     card.innerHTML=
       '<div style="display:flex;gap:10px;align-items:flex-start;">'+
         '<div style="flex:1;min-width:0;">'+
-          '<div class="weapon-card-top"><span class="rarity-badge rarity-'+w.rarity+'">'+w.rarity+'</span><span class="weapon-card-name">'+w.name+'</span></div>'+
+          '<div class="weapon-card-top"><span class="rarity-badge rarity-'+w.rarity+'">'+RARITY_LABEL[w.rarity]+'</span><span class="weapon-card-name">'+w.name+'</span></div>'+
           '<div class="weapon-card-stats">攻撃力：<span class="stat-base">'+w.baseAtk+'</span> <span class="'+bc+'">('+bs+')</span> = <strong>'+w.atk+'</strong></div>'+
           '<div class="weapon-card-range">'+w.desc+'</div>'+
         '</div>'+
-        '<canvas id="'+canvasId+'" width="110" height="110" style="flex-shrink:0;image-rendering:pixelated;"></canvas>'+
+        '<canvas id="'+cid+'" width="110" height="110" style="flex-shrink:0;image-rendering:pixelated;"></canvas>'+
       '</div>';
     card.addEventListener('click',()=>{
       player.weapon=w;
       document.getElementById('weapon-overlay').style.display='none';
-      updWpn();
-      showMsg('——'+w.name+'を手に取った。さあ、進もう。');
+      updWpn();showMsg('——'+w.name+'を手に取った。さあ、進もう。');
     });
     box.appendChild(card);
-    // Canvas描画はDOM追加後に実行
-    requestAnimationFrame(()=>drawMiniRange(document.getElementById(canvasId), w));
+    requestAnimationFrame(()=>drawMiniRange(document.getElementById(cid),w));
   });
   document.getElementById('weapon-overlay').style.display='flex';
 }
 
+// ===== キーボード =====
 document.addEventListener('keydown',e=>{
   const m={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',w:'up',s:'down',a:'left',d:'right'};
   if(m[e.key]){e.preventDefault();doMove(m[e.key]);}
   if(e.key===' '){e.preventDefault();doAttack();}
+  if(e.key==='Enter'){e.preventDefault();waitAction();}
 });
 document.querySelectorAll('.dpad-btn').forEach(b=>b.addEventListener('touchstart',e=>e.preventDefault(),{passive:false}));
 
-// ===== ゲームパッド対応 =====
-// 対応ボタン（Xbox/PS/プロコン共通）
-// 十字キー上下左右: axes[0]/axes[1] または buttons[12-15]
-// Aボタン（攻撃）: buttons[0]
-// 武器選択オーバーレイ中はAで決定
-
-let gpLastBtn = {};      // ボタンの前フレーム状態
-let gpLastAxis = {};     // スティックの前フレーム状態
-let gpInterval = null;
-let gpConnected = false;
-
-// スティックの入力閾値
-const AXIS_THRESHOLD = 0.5;
-
-window.addEventListener('gamepadconnected', e=>{
-  gpConnected = true;
-  showMsg('——外なる力が宿った。コントローラーが繋がれた。');
-  if(!gpInterval) gpInterval = setInterval(pollGamepad, 100);
+// ===== ゲームパッド =====
+let gpLastBtn={},gpLastAxis={},gpConnected=false,gpInterval=null;
+window.addEventListener('gamepadconnected',()=>{
+  gpConnected=true;showMsg('——外なる力が宿った。コントローラーが繋がれた。');
+  if(!gpInterval)gpInterval=setInterval(pollGp,100);
 });
-window.addEventListener('gamepaddisconnected', e=>{
-  gpConnected = false;
-  clearInterval(gpInterval); gpInterval = null;
-});
-
-function pollGamepad(){
-  const pads = navigator.getGamepads ? navigator.getGamepads() : [];
-  const pad = Array.from(pads).find(p=>p&&p.connected);
-  if(!pad) return;
-
-  // ボタン押下判定（前フレームでOFFだった場合のみ反応）
-  function pressed(idx){
-    const cur = pad.buttons[idx]?.pressed || false;
-    const prev = gpLastBtn[idx] || false;
-    gpLastBtn[idx] = cur;
-    return cur && !prev;
-  }
-
-  // スティック・十字キーの方向判定
-  const ax = pad.axes[0] || 0;
-  const ay = pad.axes[1] || 0;
-
-  // 十字キー（buttons 12=上 13=下 14=左 15=右）
-  if(pressed(12) || (ay < -AXIS_THRESHOLD && !(gpLastAxis.up))) doMove('up');
-  if(pressed(13) || (ay >  AXIS_THRESHOLD && !(gpLastAxis.down))) doMove('down');
-  if(pressed(14) || (ax < -AXIS_THRESHOLD && !(gpLastAxis.left))) doMove('left');
-  if(pressed(15) || (ax >  AXIS_THRESHOLD && !(gpLastAxis.right))) doMove('right');
-
-  // スティックの前フレーム状態を保存
-  gpLastAxis.up    = ay < -AXIS_THRESHOLD;
-  gpLastAxis.down  = ay >  AXIS_THRESHOLD;
-  gpLastAxis.left  = ax < -AXIS_THRESHOLD;
-  gpLastAxis.right = ax >  AXIS_THRESHOLD;
-
-  // Aボタン（Xbox）/ ×ボタン（PS）/ Bボタン（Switch）= 攻撃
-  if(pressed(0)){
-    const overlay = document.getElementById('weapon-overlay');
-    if(overlay.style.display !== 'none'){
-      // 武器選択中：最初のカードを選択
-      const first = overlay.querySelector('.weapon-card');
-      if(first) first.click();
-    } else {
-      doAttack();
-    }
-  }
-
-  // Bボタン（Xbox）/ ○ボタン（PS）/ Aボタン（Switch）= 武器選択中に次のカードを選択
-  if(pressed(1)){
-    const overlay = document.getElementById('weapon-overlay');
-    if(overlay.style.display !== 'none'){
-      const cards = overlay.querySelectorAll('.weapon-card');
-      if(cards[1]) cards[1].click();
-    }
-  }
+window.addEventListener('gamepaddisconnected',()=>{gpConnected=false;clearInterval(gpInterval);gpInterval=null;});
+function pollGp(){
+  const pad=Array.from(navigator.getGamepads?navigator.getGamepads():[]).find(p=>p&&p.connected);
+  if(!pad)return;
+  function pressed(i){const c=pad.buttons[i]?.pressed||false,v=gpLastBtn[i]||false;gpLastBtn[i]=c;return c&&!v;}
+  const ax=pad.axes[0]||0,ay=pad.axes[1]||0,T=0.5;
+  if(pressed(12)||(ay<-T&&!gpLastAxis.up))doMove('up');
+  if(pressed(13)||(ay>T&&!gpLastAxis.down))doMove('down');
+  if(pressed(14)||(ax<-T&&!gpLastAxis.left))doMove('left');
+  if(pressed(15)||(ax>T&&!gpLastAxis.right))doMove('right');
+  gpLastAxis={up:ay<-T,down:ay>T,left:ax<-T,right:ax>T};
+  if(pressed(0)){const ov=document.getElementById('weapon-overlay');if(ov.style.display!=='none'){const f=ov.querySelector('.weapon-card');if(f)f.click();}else doAttack();}
+  if(pressed(1)){const ov=document.getElementById('weapon-overlay');if(ov.style.display!=='none'){const cards=ov.querySelectorAll('.weapon-card');if(cards[1])cards[1].click();}else waitAction();}
 }
 
-function init(){initSafe();render();updHpBar();updWpn();updHd();drawRangeCanvas();setTimeout(showWpnOverlay,300);}
+// ===== 初期化 =====
+function init(){initSafe();render();updHpBar();updWpn();updHd();setTimeout(showWpnOverlay,300);}
 init();
 </script>
 </body>
