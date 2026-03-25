@@ -45,6 +45,7 @@
     .cell.atk-range{background:rgba(55,138,221,0.22);}
     .cell.alert-range{background:rgba(255,100,0,0.28);}
     .cell.exit{background:#1a3a2a;}
+    .cell.chest{background:#2a2010;}
     /* 攻撃範囲枠：セルと独立したオーバーレイ。z-indexを高くしてclipされない */
     .range-border{position:absolute;pointer-events:none;z-index:8;box-sizing:border-box;}
     .range-border.atk{border:2px solid rgba(55,138,221,0.95);}
@@ -175,6 +176,14 @@
 </div>
 
 <!-- ゲームオーバー -->
+<div class="overlay" id="chest-overlay" style="display:none;">
+  <div class="overlay-box">
+    <div class="overlay-title">宝箱を発見！</div>
+    <div class="overlay-sub" id="chest-sub">武器が入っていた。どちらかを選べ。</div>
+    <div id="chest-choices"></div>
+  </div>
+</div>
+
 <div class="overlay" id="gameover-overlay" style="display:none;">
   <div class="overlay-box" style="text-align:center;">
     <div style="font-size:28px;margin-bottom:12px;">†</div>
@@ -275,6 +284,19 @@ function initBattle(){
     if(!pos.find(p=>p.x===x&&p.y===y))pos.push({x,y});
   }
   pos.forEach((p,i)=>enemies.push({id:i,x:p.x,y:p.y,hp:40,maxHp:40,alertTurn:false,prevX:p.x,prevY:p.y}));
+
+  // 宝箱配置（2〜3部屋に1個 → 約40%の確率で1個出現）
+  if(Math.random()<0.4){
+    let cPlaced=0;att=0;
+    while(cPlaced<1&&att<100){
+      att++;
+      const cx=1+Math.floor(Math.random()*8),cy=1+Math.floor(Math.random()*8);
+      if(map[cy][cx]!==0)continue;
+      if(enemies.find(e=>e.x===cx&&e.y===cy))continue;
+      if(Math.abs(cx-player.x)<=1&&Math.abs(cy-player.y)<=1)continue;
+      map[cy][cx]=4;cPlaced++;
+    }
+  }
   phase='battle';updHd();
 }
 
@@ -322,6 +344,13 @@ function render(){
     const ia=as.has(x+','+y);
     const al=alertSet.has(x+','+y);
     if(v===3) c.className='cell exit';
+    else if(v===4){
+      c.className='cell chest';
+      const ico=document.createElement('div');
+      ico.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:20px;color:#D4A017;font-weight:700;line-height:1;';
+      ico.textContent='□';
+      c.appendChild(ico);
+    }
     else if(v===2) c.className='cell pillar';
     else if(v===1) c.className='cell wall';
     else if(al) c.className='cell alert-range';
@@ -456,6 +485,9 @@ function doMove(dir){
   if(map[ny][nx]===1||map[ny][nx]===2){updPl();return;}
   if(enemies.find(e=>e.x===nx&&e.y===ny)){updPl();return;}
 
+  // 宝箱マスに入ったら開く
+  const isChest = map[ny][nx]===4;
+
   moving=true;
   const fromX=player.x, fromY=player.y; // 移動前座標を保存
   player.x=nx;player.y=ny;
@@ -475,8 +507,13 @@ function doMove(dir){
   updVp(true);
   setTimeout(()=>{
     moving=false;
+    if(isChest){
+      map[ny][nx]=0; // 宝箱を消す
+      render();
+      openChest();
+      return; // 宝箱を開けたターンは敵ターンなし
+    }
     if(phase==='battle'){
-      // 移動前に隣接していた敵（旧座標基準）をalertに
       enemies.forEach(e=>{
         if(mdist(e.x,e.y,fromX,fromY)===1 && !e.alertTurn){
           e.alertTurn=true;e.wasAdjacent=true;
@@ -540,6 +577,83 @@ function doAttack(){
 }
 
 // ===== 戦闘開始 =====
+// ===== 宝箱 =====
+function pickChestWeapon(){
+  const r=Math.random();
+  const rarity=r<0.3?'L':r<0.8?'U':'N';
+  const pool=Object.keys(WDEFS).filter(k=>WDEFS[k].rarity===rarity);
+  const id=pool[Math.floor(Math.random()*pool.length)]||Object.keys(WDEFS)[0];
+  return genWeapon(id);
+}
+
+function openChest(){
+  // 宝箱から1〜3個の武器が出る
+  const count=1+Math.floor(Math.random()*3);
+  const newWeapons=Array.from({length:count},()=>pickChestWeapon());
+
+  const overlay=document.getElementById('chest-overlay');
+  const box=document.getElementById('chest-choices');
+  const sub=document.getElementById('chest-sub');
+  box.innerHTML='';
+  box.style.overflowY='auto';
+  box.style.maxHeight='60vh';
+
+  if(!player.weapon){
+    sub.textContent='宝箱から武器が'+count+'個出てきた。1つを選べ。';
+    newWeapons.forEach(w=>{
+      box.appendChild(makeWeaponCard(w,'選ぶ',()=>{
+        player.weapon=w;
+        overlay.style.display='none';
+        updWpn();
+        showMsg(w.name+'を入手した！');
+      }));
+    });
+  } else {
+    sub.textContent='宝箱から武器が'+count+'個出てきた。今の武器と合わせてどれを持つか選べ。';
+    // 今の武器も選択肢に加える
+    const curWpn=player.weapon;
+    const allWeapons=[curWpn,...newWeapons];
+    allWeapons.forEach((w,i)=>{
+      const isCurrent=i===0;
+      box.appendChild(makeWeaponCard(w, isCurrent?'今の武器を持ち続ける':'この武器を持つ', ()=>{
+        player.weapon=w;
+        overlay.style.display='none';
+        updWpn();
+        showMsg(isCurrent?'今の武器を選んだ。':w.name+'に持ち替えた！');
+      }, isCurrent));
+    });
+  }
+  overlay.style.display='flex';
+  showMsg('宝箱を開けた！武器が入っていた。');
+}
+
+function makeWeaponCard(w, btnLabel, onClick, isCurrent=false){
+  const card=document.createElement('div');
+  card.className='weapon-card';
+  card.style.marginBottom='10px';
+  if(isCurrent) card.style.borderColor='var(--player)';
+  const bs=w.bonus>0?'+'+w.bonus:w.bonus<0?''+w.bonus:'0';
+  const bc=w.bonus>0?'stat-bonus':w.bonus<0?'stat-minus':'';
+  const cid='cw-'+Math.random().toString(36).slice(2);
+  card.innerHTML=
+    '<div style="display:flex;gap:10px;align-items:flex-start;">'+
+      '<div style="flex:1;min-width:0;">'+
+        '<div class="weapon-card-top">'+
+          (isCurrent?'<span style="font-size:10px;color:var(--player);margin-right:4px;">装備中</span>':'')+
+          '<span class="rarity-badge rarity-'+w.rarity+'">'+RARITY_LABEL[w.rarity]+'</span>'+
+          '<span class="weapon-card-name">'+w.name+'</span>'+
+        '</div>'+
+        '<div class="weapon-card-stats">攻撃力：<span class="stat-base">'+w.baseAtk+'</span> <span class="'+bc+'">('+bs+')</span> = <strong>'+w.atk+'</strong></div>'+
+        '<div class="weapon-card-range">'+w.desc+'</div>'+
+      '</div>'+
+      '<canvas id="'+cid+'" width="110" height="110" style="flex-shrink:0;image-rendering:pixelated;"></canvas>'+
+    '</div>'+
+    '<button style="width:100%;margin-top:10px;padding:8px;border-radius:6px;border:1px solid var(--player);background:none;color:var(--player);font-size:12px;cursor:pointer;">'+btnLabel+'</button>';
+  card.querySelector('button').addEventListener('click', onClick);
+  requestAnimationFrame(()=>drawMiniRange(document.getElementById(cid),w));
+  return card;
+}
+
 function startBattle(){initBattle();render();showMsg('敵の部屋に入った！向きを合わせて攻撃ボタンを押してください。');}
 
 // ===== 敵AI =====
