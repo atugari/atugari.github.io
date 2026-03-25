@@ -8,7 +8,7 @@
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     :root{
-      --cell:44px;
+      --cell:48px;
       --bg:#1a1a18;--surface:#252520;--border:#333330;
       --floor:#2c2c28;--floor2:#242420;--wall:#111110;
       /* 色覚異常対応：プレイヤー=青系、敵=黄系、攻撃範囲=白系 */
@@ -44,14 +44,14 @@
     .cell.alert-range{background:rgba(224,184,74,0.2);border-color:rgba(224,184,74,0.6);}
     .cell.exit{background:#1a3a2a;border:2px solid #2D9E6A;}
     /* プレイヤー：青い四角＋中央に▲で向きを示す */
-    .player{position:absolute;width:calc(var(--cell)-10px);height:calc(var(--cell)-10px);background:var(--player);border-radius:5px;z-index:10;border:2px solid #7DC4F8;}
+    .player{position:absolute;width:calc(var(--cell)-4px);height:calc(var(--cell)-4px);background:var(--player);border-radius:5px;z-index:10;border:2px solid #7DC4F8;}
     .player::after{content:'';position:absolute;width:0;height:0;border-style:solid;}
     .player.dir-up::after{top:3px;left:50%;transform:translateX(-50%);border-width:0 5px 8px;border-color:transparent transparent rgba(255,255,255,0.8);}
     .player.dir-down::after{bottom:3px;left:50%;transform:translateX(-50%);border-width:8px 5px 0;border-color:rgba(255,255,255,0.8) transparent transparent;}
     .player.dir-left::after{left:3px;top:50%;transform:translateY(-50%);border-width:5px 8px 5px 0;border-color:transparent rgba(255,255,255,0.8) transparent transparent;}
     .player.dir-right::after{right:3px;top:50%;transform:translateY(-50%);border-width:5px 0 5px 8px;border-color:transparent transparent transparent rgba(255,255,255,0.8);}
     /* 敵：黄い四角＋×印 */
-    .enemy-token{position:absolute;width:calc(var(--cell)-10px);height:calc(var(--cell)-10px);background:var(--enemy);border-radius:3px;z-index:9;border:2px solid #F8D87C;}
+    .enemy-token{position:absolute;width:calc(var(--cell)-4px);height:calc(var(--cell)-4px);background:var(--enemy);border-radius:3px;z-index:9;border:2px solid #F8D87C;}
     .enemy-token::before,.enemy-token::after{content:'';position:absolute;top:50%;left:50%;width:60%;height:2px;background:rgba(0,0,0,0.45);transform-origin:center;}
     .enemy-token::before{transform:translate(-50%,-50%) rotate(45deg);}
     .enemy-token::after{transform:translate(-50%,-50%) rotate(-45deg);}
@@ -158,7 +158,7 @@
         <div class="dpad-btn" onmousedown="startMove('up')" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="startMoveT(event,'up')" ontouchend="stopMove()" ontouchcancel="stopMove()">▲</div>
         <div class="dpad-btn empty"></div>
         <div class="dpad-btn" onmousedown="startMove('left')" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="startMoveT(event,'left')" ontouchend="stopMove()" ontouchcancel="stopMove()">◀</div>
-        <div class="dpad-btn center" onclick="waitAction()">待機</div>
+        <div class="dpad-btn center" onclick="waitAction()" ontouchstart="(function(e){e.preventDefault();waitAction();})(event)">待機</div>
         <div class="dpad-btn" onmousedown="startMove('right')" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="startMoveT(event,'right')" ontouchend="stopMove()" ontouchcancel="stopMove()">▶</div>
         <div class="dpad-btn empty"></div>
         <div class="dpad-btn" onmousedown="startMove('down')" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="startMoveT(event,'down')" ontouchend="stopMove()" ontouchcancel="stopMove()">▼</div>
@@ -332,7 +332,7 @@ function render(){
     const el=document.createElement('div');
     el.className='enemy-token'+(e.alertTurn?' alert':'');
     el.id='e'+e.id;
-    el.style.left=(e.x*CELL+5)+'px';el.style.top=(e.y*CELL+5)+'px';
+    el.style.left=(e.x*CELL+2)+'px';el.style.top=(e.y*CELL+2)+'px';
     if(ac.some(c=>c.x===e.x&&c.y===e.y))el.style.outline='2px solid rgba(255,255,255,0.6)';
     // HPゲージ
     const hpw=document.createElement('div');hpw.className='enemy-hp';
@@ -344,7 +344,7 @@ function render(){
 
   const pe=document.createElement('div');
   pe.className='player dir-'+player.dir;pe.id='player';
-  pe.style.left=(player.x*CELL+5)+'px';pe.style.top=(player.y*CELL+5)+'px';
+  pe.style.left=(player.x*CELL+2)+'px';pe.style.top=(player.y*CELL+2)+'px';
   layer.appendChild(pe);
   updVp(false);
 }
@@ -364,7 +364,7 @@ function updVp(anim=true){
 
 function updPl(){
   const el=document.getElementById('player');if(!el)return;
-  el.style.left=(player.x*CELL+5)+'px';el.style.top=(player.y*CELL+5)+'px';
+  el.style.left=(player.x*CELL+2)+'px';el.style.top=(player.y*CELL+2)+'px';
   el.className='player dir-'+player.dir;
 }
 
@@ -510,10 +510,10 @@ function enemyTurn(){
     const el=document.getElementById('e'+e.id);if(!el)return;
     if(e.prevX===e.x&&e.prevY===e.y)return;
     el.style.transition='none';
-    el.style.left=(e.prevX*CELL+5)+'px';el.style.top=(e.prevY*CELL+5)+'px';
+    el.style.left=(e.prevX*CELL+2)+'px';el.style.top=(e.prevY*CELL+2)+'px';
     requestAnimationFrame(()=>{
       el.style.transition='left 0.2s ease-out,top 0.2s ease-out';
-      el.style.left=(e.x*CELL+5)+'px';el.style.top=(e.y*CELL+5)+'px';
+      el.style.left=(e.x*CELL+2)+'px';el.style.top=(e.y*CELL+2)+'px';
     });
   });
 }
