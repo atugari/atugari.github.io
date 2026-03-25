@@ -439,7 +439,7 @@ function doAttack(){
   });
 
   const dead=targets.filter(t=>t.hp<=0).length;
-  let msg='+player.weapon.name+'を振るった。'+targets.length+'体に'+player.weapon.atk+'のダメージ。';
+  let msg=player.weapon.name+'を振るった。'+targets.length+'体に'+player.weapon.atk+'のダメージ。';
   if(dead>0)msg+=' '+dead+'体を討ち取った。';
   showMsg(msg);
   if(enemies.length===0){
@@ -604,7 +604,7 @@ function showWpnOverlay(){
     card.addEventListener('click',()=>{
       player.weapon=w;
       document.getElementById('weapon-overlay').style.display='none';
-      updWpn();showMsg('+w.name+'を装備した！下の部屋へ進もう。');
+      updWpn();showMsg(w.name+'を装備した！下の部屋へ進もう。');
     });
     box.appendChild(card);
     requestAnimationFrame(()=>drawMiniRange(document.getElementById(cid),w));
