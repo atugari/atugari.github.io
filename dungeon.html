@@ -34,25 +34,23 @@
     .viewport{width:calc(var(--cell)*7.5);height:calc(var(--cell)*7.5);overflow:hidden;position:relative;border:1px solid var(--border);}
     .map-layer{position:absolute;}
     /* セル */
-    .cell{position:absolute;width:var(--cell);height:var(--cell);border:1px solid var(--border);}
+    .cell{position:absolute;width:var(--cell);height:var(--cell);border:1px solid var(--border);box-sizing:border-box;}
     .cell.floor{background:var(--floor);}
     .cell.floor2{background:var(--floor2);}
     .cell.wall{background:var(--wall);}
-    .cell.pillar{background:#3a3830;border:2px solid #666658;}
-    .cell.atk-range{background:var(--atk);border-color:rgba(255,255,255,0.5);}
-    .cell.alert-range{background:rgba(224,184,74,0.2);border-color:rgba(224,184,74,0.6);}
-    .cell.exit{background:#1a3a2a;border:2px solid #2D9E6A;}
+    .cell.pillar{background:#3a3830;box-sizing:border-box;border:2px solid #666658;box-shadow:inset 0 0 0 4px #2a2820;}
+    .cell.atk-range{background:rgba(55,138,221,0.25);box-shadow:inset 0 0 0 2px rgba(55,138,221,0.8);}
+    .cell.alert-range{background:rgba(255,180,0,0.18);box-shadow:inset 0 0 0 2px rgba(255,180,0,0.7);}
+    .cell.exit{background:#1a3a2a;box-shadow:inset 0 0 0 2px #2D9E6A;}
     /* プレイヤー */
-    .player{position:absolute;width:calc(var(--cell)-2px);height:calc(var(--cell)-2px);background:var(--player);border-radius:6px;z-index:10;transition:left 0.18s ease-out,top 0.18s ease-out;}
-    .player::after{content:'';position:absolute;width:9px;height:9px;background:rgba(255,255,255,0.75);border-radius:50%;}
-    .player.dir-up::after{top:4px;left:50%;transform:translateX(-50%);}
-    .player.dir-down::after{bottom:4px;left:50%;transform:translateX(-50%);}
-    .player.dir-left::after{left:4px;top:50%;transform:translateY(-50%);}
-    .player.dir-right::after{right:4px;top:50%;transform:translateY(-50%);}
+    .player{position:absolute;width:calc(var(--cell) - 4px);height:calc(var(--cell) - 4px);background:var(--player);border-radius:6px;z-index:10;transition:left 0.18s ease-out,top 0.18s ease-out;}
+    .player::before,.player::after{display:none;}
+    .player .dot{position:absolute;width:10px;height:10px;background:rgba(255,255,255,0.85);border-radius:50%;pointer-events:none;}
     /* 敵 */
-    .enemy-token{position:absolute;width:calc(var(--cell)-2px);height:calc(var(--cell)-2px);background:var(--enemy);border-radius:4px;z-index:9;transition:left 0.18s ease-out,top 0.18s ease-out;}
+    .enemy-token{position:absolute;width:calc(var(--cell) - 4px);height:calc(var(--cell) - 4px);background:var(--enemy);border-radius:4px;z-index:9;transition:left 0.18s ease-out,top 0.18s ease-out;}
+    .enemy-token::before{display:none;}
     .enemy-token.alert{outline:2px solid #FFD700;box-shadow:0 0 6px rgba(255,215,0,0.6);}
-    .enemy-token.alert::after{content:'!';position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:13px;font-weight:700;color:#FFD700;text-shadow:0 0 4px #000;}
+    .enemy-token.alert .warn{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:13px;font-weight:700;color:#FFD700;text-shadow:0 0 4px #000;white-space:nowrap;}
     @keyframes hit-flash{0%{background:#fff;}100%{background:var(--enemy);}}
     @keyframes player-flash{0%,100%{background:var(--player);}30%{background:#fff;}}
     @keyframes shake-h{0%,100%{transform:translateX(0);}20%{transform:translateX(-5px);}40%{transform:translateX(5px);}60%{transform:translateX(-4px);}80%{transform:translateX(4px);}}
@@ -128,7 +126,7 @@
   </div>
   <!-- メッセージログ（ビューポート下・UIの上） -->
   <div class="msg-log" id="msg-log" onclick="toggleLogPanel()">
-    <span class="msg-text" id="msg-text">——迷宮の扉が開かれた。</span>
+    <span class="msg-text" id="msg-text">ゲームスタート！武器を選んでください。</span>
     <span class="msg-log-icon">▲ ログ</span>
   </div>
   <div class="bottom-ui">
@@ -158,7 +156,7 @@
   <div class="overlay-box" style="text-align:center;">
     <div style="font-size:28px;margin-bottom:12px;">†</div>
     <div class="overlay-title" style="font-size:20px;margin-bottom:8px;">力尽きた</div>
-    <div style="font-size:13px;color:var(--text2);line-height:1.9;margin-bottom:20px;">——その者は迷宮の闇に呑まれた。<br>されど、挑戦を諦める必要はない。</div>
+    <div style="font-size:13px;color:var(--text2);line-height:1.9;margin-bottom:20px;">力尽きてしまった...<br>もう一度挑戦しよう。</div>
     <button onclick="restartGame()" style="width:100%;padding:12px;border-radius:8px;border:1px solid var(--player);background:none;color:var(--player);font-size:14px;font-weight:500;cursor:pointer;">もう一度挑む</button>
   </div>
 </div>
@@ -317,8 +315,9 @@ function render(){
     const el=document.createElement('div');
     el.className='enemy-token'+(e.alertTurn?' alert':'');
     el.id='e'+e.id;
-    el.style.left=(e.x*CELL+1)+'px';el.style.top=(e.y*CELL+1)+'px';
-    if(ac.some(c=>c.x===e.x&&c.y===e.y))el.style.outline='2px solid rgba(255,255,255,0.6)';
+    el.style.left=(e.x*CELL+2)+'px';el.style.top=(e.y*CELL+2)+'px';
+    if(ac.some(c=>c.x===e.x&&c.y===e.y)) el.style.outline='2px solid rgba(55,138,221,0.9)';
+    if(e.alertTurn){const w=document.createElement('span');w.className='warn';w.textContent='次ターン攻撃!';el.appendChild(w);}
     // HPゲージ
     const hpw=document.createElement('div');hpw.className='enemy-hp';
     const hpf=document.createElement('div');hpf.className='enemy-hp-fill'+(e.hp/e.maxHp<0.3?' low':'');
@@ -329,7 +328,16 @@ function render(){
 
   const pe=document.createElement('div');
   pe.className='player dir-'+player.dir;pe.id='player';
-  pe.style.left=(player.x*CELL+1)+'px';pe.style.top=(player.y*CELL+1)+'px';
+  pe.style.left=(player.x*CELL+2)+'px';pe.style.top=(player.y*CELL+2)+'px';
+  // 向きを示す丸ドット
+  const dot=document.createElement('div');dot.className='dot';
+  const d=player.dir;
+  const half='calc(50% - 5px)';
+  if(d==='up')   {dot.style.top='4px';dot.style.left=half;}
+  if(d==='down') {dot.style.bottom='4px';dot.style.left=half;}
+  if(d==='left') {dot.style.left='4px';dot.style.top=half;}
+  if(d==='right'){dot.style.right='4px';dot.style.top=half;}
+  pe.appendChild(dot);
   layer.appendChild(pe);
   updVp(false);
 }
@@ -349,8 +357,16 @@ function updVp(anim=true){
 
 function updPl(){
   const el=document.getElementById('player');if(!el)return;
-  el.style.left=(player.x*CELL+1)+'px';el.style.top=(player.y*CELL+1)+'px';
+  el.style.left=(player.x*CELL+2)+'px';el.style.top=(player.y*CELL+2)+'px';
   el.className='player dir-'+player.dir;
+  el.innerHTML='';
+  const dot=document.createElement('div');dot.className='dot';
+  const d=player.dir, half='calc(50% - 5px)';
+  if(d==='up')   {dot.style.top='4px';dot.style.left=half;}
+  if(d==='down') {dot.style.bottom='4px';dot.style.left=half;}
+  if(d==='left') {dot.style.left='4px';dot.style.top=half;}
+  if(d==='right'){dot.style.right='4px';dot.style.top=half;}
+  el.appendChild(dot);
 }
 
 // ===== 移動（長押し対応） =====
@@ -375,7 +391,7 @@ function doMove(dir){
   if(phase==='safe'&&ny<0){startBattle();return;}
   // 戦闘部屋：出口マスに入ったら次の部屋へ
   if(phase==='battle'&&nx>=0&&nx<mapSize&&ny>=0&&ny<mapSize&&map[ny][nx]===3&&enemies.length===0){
-    showMsg('——道が開かれた。さらに奥へと進む。');
+    showMsg('出口が現れた。次の部屋へ進む。');
     setTimeout(()=>initBattle()&&render(),400);
     return;
   }
@@ -397,11 +413,11 @@ function waitAction(){
 
 // ===== 攻撃 =====
 function doAttack(){
-  if(!player.weapon){showMsg('——武器を手にしていない。先に武器を選ばれよ。');return;}
+  if(!player.weapon){showMsg('武器を選んでください。');return;}
   if(atkCooldown)return;
   const ac=atkCells();
   const targets=enemies.filter(e=>ac.some(c=>c.x===e.x&&c.y===e.y));
-  if(targets.length===0){showMsg('——攻撃範囲内に敵影なし。向きを変えよ。');return;}
+  if(targets.length===0){showMsg('攻撃範囲内に敵がいません。向きを変えてください。');return;}
 
   atkCooldown=true;
   document.getElementById('atk-btn').style.opacity='0.4';
@@ -423,19 +439,19 @@ function doAttack(){
   });
 
   const dead=targets.filter(t=>t.hp<=0).length;
-  let msg='——'+player.weapon.name+'を振るった。'+targets.length+'体に'+player.weapon.atk+'のダメージ。';
+  let msg='+player.weapon.name+'を振るった。'+targets.length+'体に'+player.weapon.atk+'のダメージ。';
   if(dead>0)msg+=' '+dead+'体を討ち取った。';
   showMsg(msg);
   if(enemies.length===0){
     // 出口を開放
-    setTimeout(()=>{showMsg('——全ての敵を倒した。出口が開かれた。');render();},500);
+    setTimeout(()=>{showMsg('全ての敵を倒した！出口が開かれた。');render();},500);
   }
   setTimeout(()=>{render();enemyTurn();},250);
   updHd();
 }
 
 // ===== 戦闘開始 =====
-function startBattle(){initBattle();render();showMsg('——部屋に踏み込んだ。敵の気配がする。向きを合わせ、攻撃せよ。');}
+function startBattle(){initBattle();render();showMsg('敵の部屋に入った！向きを合わせて攻撃ボタンを押してください。');}
 
 // ===== 敵AI =====
 function mdist(ax,ay,bx,by){return Math.abs(ax-bx)+Math.abs(ay-by);}
@@ -473,7 +489,7 @@ function enemyTurn(){
     if(e.alertTurn){
       // 構え状態はキャンセル不可→攻撃
       if(adj){const dmg=8+Math.floor(Math.random()*6);player.hp=Math.max(0,player.hp-dmg);totalDmg+=dmg;}
-      else showMsg('——敵の攻撃が空を切った。');
+      else showMsg('敵が攻撃したが外れた。');
       e.alertTurn=false;
     } else if(adj){
       e.alertTurn=true;newAlert=true;
@@ -481,12 +497,12 @@ function enemyTurn(){
       if(dist<=SENSE_RANGE)moveToward(e);else wander(e);
     }
   });
-  if(newAlert)showMsg('——敵が攻撃の構えに入った！次のターン、その位置にいると攻撃を受ける！');
+  if(newAlert)showMsg('敵が攻撃の構えに入った！次のターンに攻撃してくる！');
   if(totalDmg>0){
     updHpBar();
     const pe=document.getElementById('player');
     if(pe){pe.classList.remove('damaged');requestAnimationFrame(()=>pe.classList.add('damaged'));setTimeout(()=>pe.classList.remove('damaged'),400);}
-    showMsg('——敵の一撃を受けた！ '+totalDmg+' ダメージ。HP: '+player.hp+' / '+player.maxHp);
+    showMsg('敵の攻撃を受けた！ '+totalDmg+' ダメージ。HP: '+player.hp+' / '+player.maxHp);
     if(player.hp<=0){setTimeout(()=>gameOver(),400);return;}
   }
   // 敵移動モーション
@@ -495,10 +511,10 @@ function enemyTurn(){
     const el=document.getElementById('e'+e.id);if(!el)return;
     if(e.prevX===e.x&&e.prevY===e.y)return;
     el.style.transition='none';
-    el.style.left=(e.prevX*CELL+1)+'px';el.style.top=(e.prevY*CELL+1)+'px';
+    el.style.left=(e.prevX*CELL+2)+'px';el.style.top=(e.prevY*CELL+2)+'px';
     requestAnimationFrame(()=>{
       el.style.transition='left 0.2s ease-out,top 0.2s ease-out';
-      el.style.left=(e.x*CELL+1)+'px';el.style.top=(e.y*CELL+1)+'px';
+      el.style.left=(e.x*CELL+2)+'px';el.style.top=(e.y*CELL+2)+'px';
     });
   });
 }
@@ -588,7 +604,7 @@ function showWpnOverlay(){
     card.addEventListener('click',()=>{
       player.weapon=w;
       document.getElementById('weapon-overlay').style.display='none';
-      updWpn();showMsg('——'+w.name+'を手に取った。さあ、進もう。');
+      updWpn();showMsg('+w.name+'を装備した！下の部屋へ進もう。');
     });
     box.appendChild(card);
     requestAnimationFrame(()=>drawMiniRange(document.getElementById(cid),w));
@@ -608,7 +624,7 @@ document.querySelectorAll('.dpad-btn').forEach(b=>b.addEventListener('touchstart
 // ===== ゲームパッド =====
 let gpLastBtn={},gpLastAxis={},gpConnected=false,gpInterval=null;
 window.addEventListener('gamepadconnected',()=>{
-  gpConnected=true;showMsg('——外なる力が宿った。コントローラーが繋がれた。');
+  gpConnected=true;showMsg('コントローラーが接続されました。');
   if(!gpInterval)gpInterval=setInterval(pollGp,100);
 });
 window.addEventListener('gamepaddisconnected',()=>{gpConnected=false;clearInterval(gpInterval);gpInterval=null;});
