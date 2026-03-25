@@ -26,9 +26,9 @@
     .hp-bar-wrap{flex-shrink:0;padding:4px 12px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
     .hp-label{font-size:11px;color:var(--text2);width:28px;}
     .hp-track{flex:1;height:10px;background:#333;border-radius:4px;overflow:hidden;position:relative;}
-    .hp-fill{height:100%;background:var(--player);border-radius:4px;transition:width 0.5s ease-out;position:relative;z-index:2;}
+    .hp-fill{height:100%;background:var(--player);border-radius:4px;transition:width 0.5s ease-out;position:relative;z-index:1;}
     .hp-fill.low{background:#E05A4A;}
-    .hp-pending{position:absolute;top:0;left:0;height:100%;background:#E05A4A;border-radius:4px;z-index:1;transition:none;}
+    .hp-pending{position:absolute;top:0;left:0;height:100%;background:#E05A4A;border-radius:4px;z-index:3;transition:none;}
     @keyframes hp-blink{0%,100%{opacity:1;}30%{opacity:0.1;}60%{opacity:1;}80%{opacity:0.1;}}
     .hp-pending.blink{animation:hp-blink 0.4s ease 4;}
     .hp-num{font-size:11px;color:var(--text2);min-width:56px;text-align:right;}
@@ -46,7 +46,7 @@
     .cell.alert-range{background:rgba(255,100,0,0.28);}
     .cell.exit{background:#1a3a2a;}
     /* 攻撃範囲枠：セルと独立したオーバーレイ。z-indexを高くしてclipされない */
-    .range-border{position:absolute;pointer-events:none;z-index:20;}
+    .range-border{position:absolute;pointer-events:none;z-index:20;box-sizing:border-box;}
     .range-border.atk{border:2px solid rgba(55,138,221,0.95);}
     .range-border.alert{border:2px solid rgba(255,130,0,1);}
     /* プレイヤー */
@@ -332,16 +332,14 @@ function render(){
     c.style.left=x*CELL+'px';c.style.top=y*CELL+'px';
     layer.appendChild(c);
 
-    // 攻撃範囲の枠：セルとは独立したオーバーレイ（z-index:20）で描画
-    // これによりoverflow:hiddenによるclipの影響を受けない
+    // 攻撃範囲の枠：セルと同位置・同サイズで独立描画
     if(ia||al){
       const b=document.createElement('div');
       b.className='range-border '+(al?'alert':'atk');
-      // セルより1px内側に収めてclipされないよう調整
-      b.style.left=(x*CELL+1)+'px';
-      b.style.top=(y*CELL+1)+'px';
-      b.style.width=(CELL-2)+'px';
-      b.style.height=(CELL-2)+'px';
+      b.style.left=(x*CELL)+'px';
+      b.style.top=(y*CELL)+'px';
+      b.style.width=CELL+'px';
+      b.style.height=CELL+'px';
       layer.appendChild(b);
     }
   }}
@@ -477,7 +475,18 @@ function doMove(dir){
     });
   }
   updVp(true);
-  setTimeout(()=>{moving=false;if(phase==='battle')enemyTurn(true);},MOVE_ANIM);
+  setTimeout(()=>{
+    moving=false;
+    if(phase==='battle'){
+      // プレイヤーが移動した後、隣接中の敵は即alertTurnに入る（移動より攻撃優先）
+      enemies.forEach(e=>{
+        if(mdist(e.x,e.y,player.x,player.y)===1 && !e.alertTurn){
+          e.alertTurn=true;e.wasAdjacent=true;
+        }
+      });
+      enemyTurn(true);
+    }
+  },MOVE_ANIM);
 }
 
 // ===== 待機 =====
@@ -646,36 +655,33 @@ function updHpBar(dmg=0){
     const prevPct=(newHp+dmg)/player.maxHp*100;
     const dmgPct=dmg/player.maxHp*100;
 
-    // HPバーはまだ前のHP幅のまま
+    // hp-fillを即座にnewHp幅にセット（緑の残りHP）
     f.style.transition='none';
-    f.style.width=prevPct+'%';
+    f.style.width=pct+'%';
     f.className='hp-fill'+(pct<=30?' low':'');
 
-    // pendingをダメージ分だけ右端に配置（左から始まりdmg幅）
+    // pendingをhp-fillの右隣・ダメージ幅で赤く表示（z-index:3で上に出る）
     p.style.transition='none';
     p.style.left=pct+'%';
     p.style.width=dmgPct+'%';
+    p.style.opacity='1';
     p.classList.remove('blink');
 
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
-      // 点滅開始
       p.classList.add('blink');
-      const blinkDur=1600; // 点滅時間 (0.4s × 4回)
+      const blinkDur=1600;
       setTimeout(()=>{
-        // 点滅終了→HPバーを縮小、pendingを左から消す
-        f.style.transition='width 0.5s ease-out';
-        f.style.width=pct+'%';
+        // 点滅終了→赤い部分をフェードアウト（右から縮む）
         p.classList.remove('blink');
-        p.style.transition='width 0.5s ease-out, left 0.5s ease-out';
+        p.style.transition='width 0.5s ease-out';
         p.style.width='0%';
-        p.style.left=pct+'%';
       },blinkDur);
     }));
   } else {
     f.style.transition='width 0.3s ease-out';
     f.style.width=pct+'%';
     f.className='hp-fill'+(pct<=30?' low':'');
-    if(p){p.style.width='0%';}
+    if(p){p.style.width='0%';p.style.transition='none';}
   }
   document.getElementById('hp-num').textContent=newHp+' / '+player.maxHp;
 }
