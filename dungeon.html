@@ -273,13 +273,14 @@ function initBattle(){
   map[0][4]=3;
   player.x=4;player.y=MAP-2;player.dir='up';
 
-  // 柱ランダム配置
+  // 柱ランダム配置（マップ端1マスは除外してプレイヤー近辺も除外）
   const pc=4+Math.floor(Math.random()*3);
   let placed=0,att=0;
-  while(placed<pc&&att<100){
+  while(placed<pc&&att<200){
     att++;
-    const px=2+Math.floor(Math.random()*6),py=2+Math.floor(Math.random()*6);
-    if(Math.abs(px-player.x)<=1&&Math.abs(py-player.y)<=1)continue;
+    const px=1+Math.floor(Math.random()*(MAP-2));
+    const py=1+Math.floor(Math.random()*(MAP-2));
+    if(Math.abs(px-player.x)<=2&&Math.abs(py-player.y)<=2)continue;
     if(map[py][px]!==0)continue;
     map[py][px]=2;placed++;
   }
@@ -436,15 +437,18 @@ function render(){
 
 function updVp(anim=true){
   const layer=document.getElementById('map-layer');
-  const vw=CELL*8,vh=CELL*8;
+  const vw=CELL*8,vh=CELL*8,mw=mapSize*CELL,mh=mapSize*CELL;
   let ox,oy;
   if(mapSize<=SAFE){
-    ox=(vw-mapSize*CELL)/2;
-    oy=(vh-mapSize*CELL)/2;
+    ox=(vw-mw)/2;
+    oy=(vh-mh)/2;
   } else {
-    // プレイヤーを常に中央に（端でも中央固定）
+    // プレイヤーを中央に（端ではクランプ）
     ox=vw/2-player.x*CELL-CELL/2;
     oy=vh/2-player.y*CELL-CELL/2;
+    // マップが画面外に出ないようクランプ
+    ox=Math.max(vw-mw,Math.min(0,ox));
+    oy=Math.max(vh-mh,Math.min(0,oy));
   }
   layer.style.transition=anim?'transform 0.15s ease-out':'none';
   layer.style.transform=`translate(${ox}px,${oy}px)`;
