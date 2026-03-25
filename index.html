@@ -566,6 +566,9 @@
         return; // スコアは保存しない
       }
 
+      // 0点以下はランキングに保存しない
+      if(totalScore <= 0) return;
+
       // 署名生成
       const sig = await _sign(totalScore, stageScores[0], stageScores[1], stageScores[2], DEVICE_ID, now);
 
@@ -845,7 +848,7 @@
 
   // ランキング表示フィルタ（既存データへの互換性を考慮して緩く設定）
   function _isValidEntry(entry){
-    if(!entry || !entry.score) return false;
+    if(!entry || !entry.score || entry.score <= 0) return false;
     // 絶対にありえない値のみ弾く（理論最大の3倍を超えたら確実に不正）
     if(entry.score > MAX_TOTAL_SCORE * 3) return false;
     if(entry.score < 0) return false;
@@ -1185,8 +1188,9 @@
         const entries=Object.values(data)
           .filter(e=>_isValidEntry(e)&&(now-e.updatedAt)<=ONE_YEAR)
           .sort((a,b)=>b.score-a.score);
-        const myRank=entries.findIndex(e=>e.name===nickname&&e.deviceId===DEVICE_ID)+1;
         const total=entries.length;
+        // 今回のスコアより高いエントリの数+1が今回の順位（過去のハイスコアではなく今回分で計算）
+        const myRank=totalScore>0 ? entries.filter(e=>e.score>totalScore).length+1 : 0;
         const el=document.getElementById('my-rank-label');
         if(myRank>0){
           el.textContent='全期間ランキング '+myRank+'位 / '+total+'人中';
