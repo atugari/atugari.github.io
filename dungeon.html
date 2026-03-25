@@ -332,14 +332,14 @@ function render(){
     c.style.left=x*CELL+'px';c.style.top=y*CELL+'px';
     layer.appendChild(c);
 
-    // 攻撃範囲の枠：セルと同位置・同サイズで独立描画
+    // 攻撃範囲の枠：キャラと同じオフセット(+2)・サイズ(CELL-4)で描画してズレを防ぐ
     if(ia||al){
       const b=document.createElement('div');
       b.className='range-border '+(al?'alert':'atk');
-      b.style.left=(x*CELL)+'px';
-      b.style.top=(y*CELL)+'px';
-      b.style.width=CELL+'px';
-      b.style.height=CELL+'px';
+      b.style.left=(x*CELL+2)+'px';
+      b.style.top=(y*CELL+2)+'px';
+      b.style.width=(CELL-4)+'px';
+      b.style.height=(CELL-4)+'px';
       layer.appendChild(b);
     }
   }}
@@ -580,6 +580,7 @@ function enemyTurn(playerMoved=false){
     const adj=dist===1;
 
     if(e.alertTurn){
+      // 構え状態：隣接していれば攻撃、離れていたら近づいて次のターンで攻撃（構えは維持）
       if(adj){
         const dmg=8+Math.floor(Math.random()*6);
         player.hp=Math.max(0,player.hp-dmg);
@@ -588,13 +589,15 @@ function enemyTurn(playerMoved=false){
         let bumpDir='down';
         if(dx===1)bumpDir='right';else if(dx===-1)bumpDir='left';else if(dy===-1)bumpDir='up';
         e.bumpDir=bumpDir;
+        e.alertTurn=false;e.wasAdjacent=false;
       } else {
-        showMsg('敵が攻撃したが外れた。');
+        // 離れた場合：近づきながら構えを維持（キャンセルしない）
+        if(dist<=SENSE_RANGE) moveToward(e);
+        // alertTurnはtrueのまま維持
       }
-      e.alertTurn=false;e.wasAdjacent=false;
 
     } else if(adj){
-      // 隣接中は移動せず即alert（1ターンで構えに入る）
+      // 新たに隣接：即alert
       e.alertTurn=true;newAlert=true;e.wasAdjacent=true;
 
     } else {
