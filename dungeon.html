@@ -51,11 +51,11 @@
     .range-border.atk{border:2px solid rgba(55,138,221,0.95);}
     .range-border.alert{border:2px solid rgba(255,130,0,1);}
     /* プレイヤー */
-    .player{position:absolute;width:calc(var(--cell) - 4px);height:calc(var(--cell) - 4px);background:var(--player);border-radius:6px;z-index:10;transition:left 0.18s ease-out,top 0.18s ease-out;}
+    .player{position:absolute;width:calc(var(--cell) - 8px);height:calc(var(--cell) - 8px);background:var(--player);border-radius:5px;z-index:10;transition:left 0.18s ease-out,top 0.18s ease-out;}
     .player::before,.player::after{display:none;}
-    .player .dot{position:absolute;width:10px;height:10px;background:rgba(255,255,255,0.85);border-radius:50%;pointer-events:none;}
+    .player .dot{position:absolute;width:8px;height:8px;background:rgba(255,255,255,0.85);border-radius:50%;pointer-events:none;}
     /* 敵 */
-    .enemy-token{position:absolute;width:calc(var(--cell) - 4px);height:calc(var(--cell) - 4px);background:var(--enemy);border-radius:4px;z-index:9;transition:left 0.18s ease-out,top 0.18s ease-out;box-shadow:inset 0 0 0 2px rgba(0,0,0,0.3);}
+    .enemy-token{position:absolute;width:calc(var(--cell) - 8px);height:calc(var(--cell) - 8px);background:var(--enemy);border-radius:4px;z-index:9;transition:left 0.18s ease-out,top 0.18s ease-out;box-shadow:inset 0 0 0 2px rgba(0,0,0,0.3);}
     .enemy-token::before{display:none;}
     .enemy-token.alert{outline:2px solid #FFD700;outline-offset:2px;box-shadow:inset 0 0 0 2px rgba(0,0,0,0.3),0 0 8px rgba(255,215,0,0.5);animation:alert-shake 0.3s ease-in-out infinite;}
     @keyframes alert-shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-2px);}75%{transform:translateX(2px);}}
@@ -125,6 +125,7 @@
     .weapon-card-name{font-size:15px;font-weight:500;}
     .weapon-card-stats{font-size:12px;color:var(--text2);line-height:1.8;}
     .weapon-card-range{font-size:11px;color:var(--text3);margin-top:4px;}
+    .hd-info{font-size:11px;color:var(--text2);}
   </style>
 </head>
 <body>
@@ -204,7 +205,7 @@
 
 <!-- ログパネル -->
 <div class="log-panel" id="log-panel" onclick="toggleLogPanel()">
-  <div class="log-inner" onclick="e=>e.stopPropagation()">
+  <div class="log-inner" onclick="event.stopPropagation()">
     <div class="log-header">
       <span class="log-title">戦闘ログ</span>
       <span class="log-close" onclick="toggleLogPanel()">✕</span>
@@ -220,12 +221,12 @@ const SENSE_RANGE=4, ATK_CD=500;
 
 // 武器定義（レアリティ: N=ノーマル, U=ユニーク, L=レジェンド）
 const WDEFS={
-  fu:  {name:'歩', baseAtk:28,spread:8, rarity:'U',range:[[0,-1]],                                                    desc:'前方1マス。攻撃力が高い。'},
-  kyo: {name:'香', baseAtk:18,spread:10,rarity:'N',range:[[0,-1],[0,-2]],                                              desc:'前方2マス。攻撃力は控えめ。'},
-  kei: {name:'桂', baseAtk:22,spread:8, rarity:'U',range:[[-1,-2],[1,-2]],                                            desc:'前方2マス左右1ずれ。跳び越える。'},
-  hi:  {name:'飛', baseAtk:20,spread:6, rarity:'L',range:[[0,-1],[0,-2],[0,1],[0,2],[1,0],[2,0],[-1,0],[-2,0]],       desc:'縦横2マス。汎用性の高いレア武器。'},
-  kaku:{name:'角', baseAtk:20,spread:6, rarity:'L',range:[[1,-1],[2,-2],[-1,-1],[-2,-2],[1,1],[2,2],[-1,1],[-2,2]],   desc:'斜め2マス。汎用性の高いレア武器。'},
-  gin: {name:'銀', baseAtk:14,spread:6, rarity:'N',range:[[0,-1],[1,-1],[-1,-1],[1,1],[-1,1]],                        desc:'前方と斜め4方向。囲まれた時に強い。'},
+  fu:  {name:'歩',  baseAtk:36,spread:8, rarity:'U',range:[[0,-1]],                                                    desc:'前方1マス。攻撃力が高い。'},
+  kyo: {name:'香',  baseAtk:24,spread:10,rarity:'N',range:[[0,-1],[0,-2]],                                              desc:'前方2マス。攻撃力は控えめだが射程が長い。'},
+  kei: {name:'桂',  baseAtk:30,spread:8, rarity:'U',range:[[-1,-2],[1,-2]],                                            desc:'前方2マス左右1ずれ。攻撃時に1マス後退して距離を取る。'},
+  hi:  {name:'飛',  baseAtk:20,spread:6, rarity:'L',range:[[0,-1],[0,-2],[0,1],[0,2],[1,0],[2,0],[-1,0],[-2,0]],       desc:'縦横2マス。汎用性の高いレア武器。'},
+  kaku:{name:'角',  baseAtk:20,spread:6, rarity:'L',range:[[1,-1],[2,-2],[-1,-1],[-2,-2],[1,1],[2,2],[-1,1],[-2,2]],   desc:'斜め2マス。汎用性の高いレア武器。'},
+  gin: {name:'銀',  baseAtk:14,spread:6, rarity:'N',range:[[0,-1],[1,-1],[-1,-1],[1,1],[-1,1]],                        desc:'前方と斜め4方向。囲まれた時に強い。'},
 };
 
 const RARITY_LABEL={N:'ノーマル',U:'ユニーク',L:'レジェンド'};
@@ -235,6 +236,11 @@ let enemies=[], map=[], mapSize=SAFE, phase='safe';
 let moving=false, atkCooldown=false;
 let moveHoldTimer=null, moveRepeatTimer=null;
 let logEntries=[];
+
+// 部屋進行管理
+// roomStage: 0=safe, 1=branch(AorB), 2=merge(C), 3=boss
+let roomStage=0;
+const ROOM_LABELS=['安全な部屋','部屋 1','部屋 2','ボス部屋'];
 
 // ===== 武器生成 =====
 function genWeapon(id){
@@ -250,10 +256,10 @@ function pickWeapons(){
 function initSafe(){
   mapSize=SAFE;
   map=Array.from({length:SAFE},()=>Array(SAFE).fill(0));
-  // 上端に出口
-  map[0][2]=3; // 3=出口
+  map[0][2]=3;
   player.x=2;player.y=4;player.dir='up';
   enemies=[];phase='safe';
+  roomStage=0;
 }
 
 function initBattle(){
@@ -363,8 +369,8 @@ function render(){
     if(ia||al){
       const b=document.createElement('div');
       b.className='range-border '+(al?'alert':'atk');
-      b.style.left=(x*CELL+2)+'px';
-      b.style.top=(y*CELL+2)+'px';
+      b.style.left=(x*CELL+4)+'px';
+      b.style.top=(y*CELL+4)+'px';
       b.style.width=(CELL-4)+'px';
       b.style.height=(CELL-4)+'px';
       layer.appendChild(b);
@@ -387,7 +393,7 @@ function render(){
       layer.appendChild(el);
     }
     el.className='enemy-token'+(e.alertTurn?' alert':'');
-    el.style.left=(e.x*CELL+2)+'px';el.style.top=(e.y*CELL+2)+'px';
+    el.style.left=(e.x*CELL+4)+'px';el.style.top=(e.y*CELL+4)+'px';
     if(ac.some(c=>c.x===e.x&&c.y===e.y)) el.style.outline='2px solid rgba(55,138,221,0.9)';
     else el.style.outline='';
     const hpf=document.getElementById('ehp'+e.id);
@@ -409,7 +415,7 @@ function render(){
     layer.appendChild(pe); // 最前面に
   }
   pe.className='player dir-'+player.dir;
-  pe.style.left=(player.x*CELL+2)+'px';pe.style.top=(player.y*CELL+2)+'px';
+  pe.style.left=(player.x*CELL+4)+'px';pe.style.top=(player.y*CELL+4)+'px';
   // 向きドット位置
   const dot=document.getElementById('player-dot')||pe.querySelector('.dot');
   if(dot){
@@ -439,7 +445,7 @@ function updVp(anim=true){
 
 function updPl(){
   const el=document.getElementById('player');if(!el)return;
-  el.style.left=(player.x*CELL+2)+'px';el.style.top=(player.y*CELL+2)+'px';
+  el.style.left=(player.x*CELL+4)+'px';el.style.top=(player.y*CELL+4)+'px';
   el.className='player dir-'+player.dir;
   el.innerHTML='';
   const dot=document.createElement('div');dot.className='dot';
@@ -476,8 +482,7 @@ function doMove(dir){
   if(phase==='safe'&&ny<0){startBattle();return;}
   // 戦闘部屋：出口マスに入ったら次の部屋へ
   if(phase==='battle'&&nx>=0&&nx<mapSize&&ny>=0&&ny<mapSize&&map[ny][nx]===3&&enemies.length===0){
-    showMsg('出口が現れた。次の部屋へ進む。');
-    setTimeout(()=>initBattle()&&render(),400);
+    goNextRoom();
     return;
   }
 
@@ -498,10 +503,10 @@ function doMove(dir){
   if(pe2){
     // 一旦transitionなしで前の位置にセット → 次フレームでtransitionONにして現在位置へ
     pe2.style.transition='none';
-    pe2.style.left=(fromX*CELL+2)+'px';pe2.style.top=(fromY*CELL+2)+'px';
+    pe2.style.left=(fromX*CELL+4)+'px';pe2.style.top=(fromY*CELL+4)+'px';
     requestAnimationFrame(()=>{
       pe2.style.transition='left '+MOVE_ANIM+'ms ease-out,top '+MOVE_ANIM+'ms ease-out';
-      pe2.style.left=(nx*CELL+2)+'px';pe2.style.top=(ny*CELL+2)+'px';
+      pe2.style.left=(nx*CELL+4)+'px';pe2.style.top=(ny*CELL+4)+'px';
     });
   }
   updVp(true);
@@ -542,13 +547,45 @@ function doAttack(){
   document.getElementById('atk-btn').style.opacity='0.4';
   setTimeout(()=>{atkCooldown=false;document.getElementById('atk-btn').style.opacity='1';},ATK_CD);
 
-  // 体当たりモーション（プレイヤーが攻撃方向にスライド→戻る）
-  const pe=document.getElementById('player');
-  if(pe){
-    const bc='bump-'+player.dir;
-    pe.classList.remove('bump-up','bump-down','bump-left','bump-right');
-    requestAnimationFrame(()=>pe.classList.add(bc));
-    setTimeout(()=>pe.classList.remove(bc),240);
+  // 桂馬：後退してから攻撃
+  if(player.weapon.id==='kei'){
+    const retreatMap={up:[0,1],down:[0,-1],left:[1,0],right:[-1,0]};
+    const [rdx,rdy]=retreatMap[player.dir];
+    const rx=player.x+rdx, ry=player.y+rdy;
+    const ok=rx>=0&&rx<mapSize&&ry>=0&&ry<mapSize&&map[ry][rx]!==1&&map[ry][rx]!==2&&!enemies.find(e=>e.x===rx&&e.y===ry);
+    if(ok){
+      const fx=player.x, fy=player.y;
+      player.x=rx; player.y=ry;
+      const pe=document.getElementById('player');
+      if(pe){
+        pe.style.transition='none';
+        pe.style.left=(fx*CELL+4)+'px'; pe.style.top=(fy*CELL+4)+'px';
+        requestAnimationFrame(()=>{
+          pe.style.transition='left 0.15s ease-out,top 0.15s ease-out';
+          pe.style.left=(rx*CELL+4)+'px'; pe.style.top=(ry*CELL+4)+'px';
+        });
+      }
+      updVp(true);
+    }
+    // 桂：左右にbump
+    const pe2=document.getElementById('player');
+    if(pe2){
+      const bc=(player.dir==='up'||player.dir==='down')?'bump-left':'bump-up';
+      pe2.classList.remove('bump-up','bump-down','bump-left','bump-right');
+      requestAnimationFrame(()=>pe2.classList.add(bc));
+      setTimeout(()=>pe2.classList.remove(bc),240);
+    }
+  } else {
+    // 攻撃範囲の重心方向にbump
+    const pe=document.getElementById('player');
+    if(pe){
+      const sdx=ac.reduce((s,c)=>s+(c.x-player.x),0);
+      const sdy=ac.reduce((s,c)=>s+(c.y-player.y),0);
+      const bdir=Math.abs(sdy)>=Math.abs(sdx)?(sdy<0?'up':'down'):(sdx<0?'left':'right');
+      pe.classList.remove('bump-up','bump-down','bump-left','bump-right');
+      requestAnimationFrame(()=>pe.classList.add('bump-'+bdir));
+      setTimeout(()=>pe.classList.remove('bump-'+bdir),240);
+    }
   }
 
   targets.forEach(t=>{
@@ -559,11 +596,12 @@ function doAttack(){
   });
 
   const dead=targets.filter(t=>t.hp<=0).length;
-  let msg=player.weapon.name+'を振るった。'+targets.length+'体に'+player.weapon.atk+'のダメージ。';
+  let msg=player.weapon.id==='kei'?
+    '【桂】後退して攻撃！'+targets.length+'体に'+player.weapon.atk+'のダメージ。':
+    player.weapon.name+'を振るった。'+targets.length+'体に'+player.weapon.atk+'のダメージ。';
   if(dead>0)msg+=' '+dead+'体を討ち取った。';
   showMsg(msg);
   if(enemies.length===0){
-    // 出口を開放
     setTimeout(()=>{showMsg('全ての敵を倒した！出口が開かれた。');render();},500);
   }
   setTimeout(()=>{
@@ -654,6 +692,22 @@ function makeWeaponCard(w, btnLabel, onClick, isCurrent=false){
   return card;
 }
 
+function goNextRoom(){
+  roomStage++;
+  if(roomStage===1){
+    // 分岐：AかBかランダム（内部的には同じinitBattle、後でボス前に差別化可能）
+    const route=Math.random()<0.5?'A':'B';
+    showMsg('先へ進む。（ルート '+route+'）');
+    setTimeout(()=>{initBattle();render();},400);
+  } else if(roomStage===2){
+    showMsg('さらに奥へ進む。');
+    setTimeout(()=>{initBattle();render();},400);
+  } else if(roomStage>=3){
+    showMsg('ボスの気配がする...');
+    setTimeout(()=>{initBattle();render();},400);
+  }
+}
+
 function startBattle(){initBattle();render();showMsg('敵の部屋に入った！向きを合わせて攻撃ボタンを押してください。');}
 
 // ===== 敵AI =====
@@ -738,10 +792,10 @@ function enemyTurn(playerMoved=false){
     }
     if(e.prevX===e.x&&e.prevY===e.y)return;
     el.style.transition='none';
-    el.style.left=(e.prevX*CELL+2)+'px';el.style.top=(e.prevY*CELL+2)+'px';
+    el.style.left=(e.prevX*CELL+4)+'px';el.style.top=(e.prevY*CELL+4)+'px';
     requestAnimationFrame(()=>{requestAnimationFrame(()=>{
       el.style.transition='left 0.22s ease-out,top 0.22s ease-out';
-      el.style.left=(e.x*CELL+2)+'px';el.style.top=(e.y*CELL+2)+'px';
+      el.style.left=(e.x*CELL+4)+'px';el.style.top=(e.y*CELL+4)+'px';
     });});
   });
 }
@@ -800,7 +854,9 @@ function updHpBar(dmg=0){
   document.getElementById('hp-num').textContent=newHp+' / '+player.maxHp;
 }
 function updHd(){
-  document.getElementById('hd-info').textContent=phase==='safe'?'安全な部屋':'敵 '+enemies.length+'体';
+  const label=ROOM_LABELS[roomStage]||'部屋';
+  document.getElementById('hd-info').textContent=
+    phase==='safe'?label:label+' 敵'+enemies.length+'体';
 }
 function updWpn(){
   if(!player.weapon){document.getElementById('weapon-name').textContent='武器未選択';document.getElementById('weapon-atk').textContent='';return;}
