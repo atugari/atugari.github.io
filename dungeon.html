@@ -37,11 +37,11 @@
     .viewport{width:calc(var(--cell)*8);height:calc(var(--cell)*8);overflow:hidden;position:relative;}
     .map-layer{position:absolute;left:0;top:0;}
     /* セル */
-    .cell{position:absolute;width:var(--cell);height:var(--cell);box-sizing:border-box;}
-    .cell.floor{background:var(--floor);}
-    .cell.floor2{background:var(--floor2);}
+    .cell{position:absolute;width:var(--cell);height:var(--cell);box-sizing:border-box;font-size:0;line-height:0;}
+    .cell.floor{background:var(--floor);box-shadow:inset -1px -1px 0 rgba(255,255,255,0.04);}
+    .cell.floor2{background:var(--floor2);box-shadow:inset -1px -1px 0 rgba(0,0,0,0.15);}
     .cell.wall{background:var(--wall);}
-    .cell.pillar{background:#3a3830;outline:3px solid #555548;outline-offset:-3px;}
+    .cell.pillar{background:#3a3830;box-shadow:inset 0 0 0 3px #555548;position:relative;z-index:3;}
     .cell.atk-range{background:rgba(55,138,221,0.22);}
     .cell.alert-range{background:rgba(255,100,0,0.28);}
     .cell.exit{background:#1a3a2a;}
@@ -623,7 +623,7 @@ function doAttack(){
     }
   }
 
-  if(enemies.length===0){
+  if(phase==='battle'&&enemies.length===0){
     setTimeout(()=>{showMsg('全ての敵を倒した！出口が開かれた。');render();},500);
   }
   setTimeout(()=>{
