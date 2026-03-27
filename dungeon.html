@@ -134,18 +134,18 @@
       pointer-events:none;
     }
     #hud-score{
-      font-size:22px;font-weight:700;color:var(--gold);
+      font-size:clamp(18px,5vw,28px);font-weight:700;color:var(--gold);
       text-shadow:0 0 20px rgba(200,168,90,0.5);
       letter-spacing:0.05em;
     }
     #hud-best{
-      font-size:11px;color:var(--text3);letter-spacing:0.1em;
+      font-size:clamp(10px,2.5vw,13px);color:var(--text3);letter-spacing:0.1em;
     }
     #pause-btn{
       position:absolute;top:10px;right:16px;
       background:none;border:1px solid var(--border);
       color:var(--text2);font-family:'Noto Serif JP',serif;
-      font-size:11px;letter-spacing:0.1em;
+      font-size:clamp(10px,2.5vw,13px);letter-spacing:0.1em;
       padding:5px 12px;border-radius:6px;
       cursor:pointer;z-index:20;
       -webkit-tap-highlight-color:rgba(0,0,0,0);
@@ -196,15 +196,15 @@
       text-align:center;
     }
     .go-kanji{
-      font-size:18px;color:var(--red);letter-spacing:0.3em;
+      font-size:clamp(16px,4vw,22px);color:var(--red);letter-spacing:0.3em;
       text-shadow:0 0 30px rgba(192,88,64,0.6);
     }
-    .go-score-label{font-size:11px;color:var(--text3);letter-spacing:0.2em;}
+    .go-score-label{font-size:clamp(10px,2.5vw,13px);color:var(--text3);letter-spacing:0.2em;}
     .go-score{
-      font-size:52px;font-weight:900;color:var(--text);
+      font-size:clamp(40px,12vw,64px);font-weight:900;color:var(--text);
       line-height:1;
     }
-    .go-best-wrap{font-size:12px;color:var(--text2);letter-spacing:0.1em;}
+    .go-best-wrap{font-size:clamp(11px,2.8vw,14px);color:var(--text2);letter-spacing:0.1em;}
     .go-best-wrap span{color:var(--gold);}
     .go-new-best{
       font-size:11px;color:var(--gold);letter-spacing:0.2em;
@@ -335,10 +335,14 @@
   const ctx = canvas.getContext('2d');
 
   function resizeCanvas(){
-    canvas.width  = canvas.offsetWidth  || window.innerWidth;
-    canvas.height = canvas.offsetHeight || window.innerHeight;
+    // 100dvh を使って実際のビューポート高さを取得（アドレスバー込みの問題を回避）
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    canvas.style.width  = window.innerWidth  + 'px';
+    canvas.style.height = window.innerHeight + 'px';
   }
   window.addEventListener('resize', ()=>{ resizeCanvas(); });
+  window.addEventListener('orientationchange', ()=>{ setTimeout(resizeCanvas, 200); });
 
   // ===== ゲーム定数 =====
   const GRAVITY        = 0.38;
@@ -392,6 +396,10 @@
   }
 
   // ===== 壁生成 =====
+  function getWallInterval(){
+    // 画面幅に応じてWALL_INTERVALをスケール（基準幅360px）
+    return Math.round(WALL_INTERVAL * Math.max(canvas.width / 360, 1.0));
+  }
   function spawnWall(x){
     const H = canvas.height;
     const phase = getPhase(state ? state.score : 0);
@@ -420,11 +428,13 @@
   function drawWall(wall){
     const W = canvas.width, H = canvas.height;
     const x = wall.x - state.scrollX;
-    if(x < -WALL_WIDTH*2 || x > W + WALL_WIDTH*2) return;
+    // 壁の文字サイズ・幅を画面幅に合わせてスケール（基準幅360px）
+    const scale = Math.max(W / 360, 1.0);
+    const fontSize = Math.round(28 * scale);
+    const wallW = Math.round(38 * scale);
+    if(x < -wallW*2 || x > W + wallW*2) return;
 
     const wallColor = '#4a4840';
-    const wallBorder = '#2a2820';
-    const fontSize = 28;
     const charH = fontSize * 1.1;
 
     // 上の壁（上から下へ「壁」を積む）
@@ -443,8 +453,9 @@
       if(cy < botY - charH/2) break;
       drawKanji('壁', x, cy, fontSize, wallColor, 1);
     }
-
     // 判定線なし：「壁」漢字の端が視覚的な境界
+    // wallWをwall._wallWに保存（衝突判定で使う）
+    wall._wallW = wallW;
   }
 
   // 背景：縦の細い墨線
@@ -473,19 +484,21 @@
     const px = W * PLAYER_X_RATIO;
     const py = state.playerY;
     const rot = Math.min(Math.max(state.playerVY * 0.07, -0.6), 1.0);
+    const pScale = Math.max(W / 360, 1.0);
+    const pSize = Math.round(PLAYER_SIZE * pScale);
 
     // 軌跡（残像）
     const trailCount = 4;
     for(let i=trailCount; i>0; i--){
       const ty = py - state.playerVY * i * 1.5;
-      drawKanji('飛', px, ty, PLAYER_SIZE, '#c8a85a', 0.06 * (trailCount-i+1), rot);
+      drawKanji('飛', px, ty, pSize, '#c8a85a', 0.06 * (trailCount-i+1), rot);
     }
 
     // グロー
     ctx.save();
     ctx.shadowColor = 'rgba(200,168,90,0.5)';
     ctx.shadowBlur = 18;
-    drawKanji('飛', px, py, PLAYER_SIZE, '#e8c870', 1, rot);
+    drawKanji('飛', px, py, pSize, '#e8c870', 1, rot);
     ctx.restore();
 
     // フラッシュ（衝突時）
@@ -505,8 +518,9 @@
 
     // キャンバス中央上部にも大きくスコアを描画
     const W = canvas.width;
+    const scoreFontSize = Math.round(Math.max(W / 360, 1.0) * 48);
     ctx.save();
-    ctx.font = "700 48px 'Noto Serif JP', serif";
+    ctx.font = `700 ${scoreFontSize}px 'Noto Serif JP', serif`;
     ctx.fillStyle = 'rgba(200,168,90,0.18)';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
@@ -573,12 +587,13 @@
     const py = state.playerY;
     const r  = PLAYER_SIZE * 0.38; // 当たり判定を少し小さく
 
-    // 天井・床
-    if(py - r < 0 || py + r > H) return true;
+    // 天井・床（余裕を持たせて確実に検出）
+    if(py - r < 0 || py + r > H - 5) return true;
 
     for(const wall of state.walls){
       const wx = wall.x - state.scrollX;
-      if(Math.abs(wx - px) > WALL_WIDTH/2 + r) continue;
+      const ww = (wall._wallW || WALL_WIDTH) / 2;
+      if(Math.abs(wx - px) > ww + r) continue;
       if(py - r < wall.topH || py + r > wall.topH + wall.gap) return true;
     }
     return false;
@@ -598,8 +613,9 @@
       state.scrollX  += SCROLL_SPEED;
 
       // 壁を追加
+      const wInterval = getWallInterval();
       const lastWall = state.walls[state.walls.length-1];
-      const nextX = lastWall ? lastWall.x + WALL_INTERVAL : W + 80;
+      const nextX = lastWall ? lastWall.x + wInterval : W + 80;
       if(nextX - state.scrollX < W + 80){
         state.walls.push(spawnWall(nextX));
       }
@@ -649,8 +665,9 @@
 
     // 最初の壁をすこし先に生成
     const W = canvas.width;
+    const wi = getWallInterval();
     for(let i=0; i<5; i++){
-      state.walls.push(spawnWall(W * 0.8 + i * WALL_INTERVAL));
+      state.walls.push(spawnWall(W * 0.8 + i * wi));
     }
 
     showScreen('screen-game');
