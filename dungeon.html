@@ -315,9 +315,10 @@
 <script>
   // ===== ローカルストレージ =====
   const DB_URL       = 'https://ad-game-7b40a-default-rtdb.asia-southeast1.firebasedatabase.app';
-  const LS_KEY       = 'tobiGame_best';
-  const LS_CLEAR_KEY = 'tobiGame_clearMode';
-  const UNLOCKED_KEY = 'tobiGame_unlocked';
+  const LS_KEY        = 'tobiGame_best';       // 通常ハイスコア
+  const LS_KEY_MURIGE = 'tobiGame_best_murige'; // 無理ゲーハイスコア
+  const LS_CLEAR_KEY  = 'tobiGame_clearMode';
+  const UNLOCKED_KEY  = 'tobiGame_unlocked';
   const IDB_NAME     = 'tobiGameDB';
   const IDB_STORE    = 'gameData';
 
@@ -392,27 +393,29 @@
     DEVICE_ID = id;
   }
 
-  // ハイスコア取得（localStorage優先）
-  function getBest(){
-    return parseInt(localStorage.getItem(LS_KEY)||'0');
+  // ハイスコア取得（通常 or 無理ゲー）
+  function getBest(murige){
+    const key = murige ? LS_KEY_MURIGE : LS_KEY;
+    return parseInt(localStorage.getItem(key)||'0');
   }
 
   // ハイスコア保存（localStorage + Firebase）
-  async function saveBest(n){
-    localStorage.setItem(LS_KEY, n);
-    if(n >= 100) localStorage.setItem(UNLOCKED_KEY, '1');
-    // Firebaseに保存（ニックネームがあれば名前付きで・なければ端末IDで）
+  async function saveBest(n, murige){
+    const lsKey = murige ? LS_KEY_MURIGE : LS_KEY;
+    localStorage.setItem(lsKey, n);
+    if(!murige && n >= 100) localStorage.setItem(UNLOCKED_KEY, '1');
+    // FirebaseパスはモードでサフィックスをつけてURL衝突を防ぐ
+    const fbPath = murige ? '/tobi_scores_murige/' : '/tobi_scores/';
     const nick = getNick();
     if(!nick && !DEVICE_ID) return;
     try {
       const key = encodeURIComponent(
-        nick ? nick.replace(/[.#$[\]/]/g,'_') : DEVICE_ID
+        nick ? nick.replace(/[.#$\[\]\/]/g,'_') : DEVICE_ID
       );
-      const existing = await fetch(DB_URL+'/tobi_scores/'+key+'.json').then(r=>r.json()).catch(()=>null);
-      // 他の端末から同名で上書きされないようdeviceIdチェック
+      const existing = await fetch(DB_URL+fbPath+key+'.json').then(r=>r.json()).catch(()=>null);
       if(existing && existing.deviceId && existing.deviceId !== DEVICE_ID) return;
       if(!existing || existing.best < n){
-        await fetch(DB_URL + '/tobi_scores/' + key + '.json', {
+        await fetch(DB_URL + fbPath + key + '.json', {
           method: 'PUT',
           headers: {'Content-Type':'application/json'},
           body: JSON.stringify({
@@ -426,24 +429,32 @@
     } catch(e) {}
   }
 
-  // 起動時にFirebaseからスコアを復元
+  // 起動時にFirebaseからスコアを復元（通常・無理ゲー両方）
   async function restoreBest(){
     await initDeviceId();
-    const lsBest = parseInt(localStorage.getItem(LS_KEY)||'0');
-    let best = lsBest;
     const nick = getNick();
     const key = encodeURIComponent(
-      nick ? nick.replace(/[.#$[\]/]/g,'_') : DEVICE_ID
+      nick ? nick.replace(/[.#$\[\]\/]/g,'_') : DEVICE_ID
     );
+    // 通常スコア復元
     try {
       const res  = await fetch(DB_URL + '/tobi_scores/' + key + '.json');
       const data = await res.json();
       if(data && data.best && data.deviceId === DEVICE_ID){
-        best = Math.max(best, parseInt(data.best));
+        const best = Math.max(parseInt(localStorage.getItem(LS_KEY)||'0'), parseInt(data.best));
+        if(best > 0) localStorage.setItem(LS_KEY, best);
+        if(best >= 100) localStorage.setItem(UNLOCKED_KEY, '1');
       }
     } catch(e) {}
-    if(best > 0) localStorage.setItem(LS_KEY, best);
-    if(best >= 100) localStorage.setItem(UNLOCKED_KEY, '1');
+    // 無理ゲースコア復元
+    try {
+      const res  = await fetch(DB_URL + '/tobi_scores_murige/' + key + '.json');
+      const data = await res.json();
+      if(data && data.best && data.deviceId === DEVICE_ID){
+        const best = Math.max(parseInt(localStorage.getItem(LS_KEY_MURIGE)||'0'), parseInt(data.best));
+        if(best > 0) localStorage.setItem(LS_KEY_MURIGE, best);
+      }
+    } catch(e) {}
     updateTitleBest();
   }
 
@@ -498,9 +509,12 @@
   }
 
   function updateTitleBest(){
-    const b = getBest();
-    document.getElementById('title-best-num').textContent = b > 0 ? b + ' 壁' : '―';
-    // 無理ゲーボタンの表示制御（100壁達成 or 解放フラグあり）
+    const b  = getBest(false);
+    const bm = getBest(true);
+    let txt = b > 0 ? b + ' 壁' : '―';
+    if(bm > 0) txt += '　無理ゲー ' + bm + ' 壁';
+    document.getElementById('title-best-num').textContent = txt;
+    // 無理ゲーボタンの表示制御
     const btn = document.getElementById('btn-murige');
     if(btn) btn.style.display = (getUnlocked() || b >= 100) ? '' : 'none';
   }
@@ -747,9 +761,10 @@
   function drawHudScore(){
     const phase = getPhase(state.score);
     document.getElementById('hud-score').textContent = state.score;
-    const b = getBest();
+    const b = getBest(_murigeMode);
+    const hudBest = getBest(_murigeMode);
     document.getElementById('hud-best').textContent =
-      '【' + phase.label + '】' + (b > 0 ? '  best ' + b : '');
+      '【' + phase.label + '】' + (hudBest > 0 ? '  best ' + hudBest : '');
 
     // ゲームエリア中央上部にスコアを大きく描画
     const r2 = _gameRect;
@@ -905,13 +920,14 @@
   function gameOver(){
     cancelAnimationFrame(_raf);
     const score = state.score;
-    const best  = getBest();
+    const best  = getBest(_murigeMode);
     const isNew = score > best;
-    if(isNew) saveBest(score);
+    if(isNew) saveBest(score, _murigeMode);
 
     document.getElementById('go-score-num').textContent = score;
+    const modeLabel = _murigeMode ? '無理ゲー　' : '';
     document.getElementById('go-best-wrap').textContent =
-      'ハイスコア　' + (isNew ? score : best) + ' 壁';
+      modeLabel + 'ハイスコア　' + (isNew ? score : best) + ' 壁';
     document.getElementById('go-new-best').style.display = isNew ? 'block' : 'none';
 
     setTimeout(()=>{
