@@ -311,8 +311,43 @@
   // ===== ローカルストレージ =====
   const LS_KEY       = 'tobiGame_best';
   const LS_CLEAR_KEY = 'tobiGame_clearMode';
-  function getBest(){ return parseInt(localStorage.getItem(LS_KEY)||'0'); }
-  function saveBest(n){ localStorage.setItem(LS_KEY, n); }
+  const COOKIE_KEY   = 'tobiGame_best';
+  const UNLOCKED_KEY = 'tobiGame_unlocked'; // 無理ゲー解放フラグ
+
+  // cookie操作（キャッシュ消去でlocalStorageが消えても復元できるよう二重保存）
+  function setCookie(key, val){
+    const exp = new Date();
+    exp.setFullYear(exp.getFullYear() + 2); // 2年有効
+    document.cookie = key + '=' + val + ';expires=' + exp.toUTCString() + ';path=/;SameSite=Lax';
+  }
+  function getCookie(key){
+    const m = document.cookie.match('(?:^|;)\s*' + key + '=([^;]*)');
+    return m ? m[1] : null;
+  }
+
+  function getBest(){
+    // localStorageとcookieの両方を確認して大きい方を返す
+    const ls = parseInt(localStorage.getItem(LS_KEY)||'0');
+    const ck = parseInt(getCookie(COOKIE_KEY)||'0');
+    const val = Math.max(ls, ck);
+    // 両方に最新値を同期
+    if(val > 0){
+      localStorage.setItem(LS_KEY, val);
+      setCookie(COOKIE_KEY, val);
+    }
+    return val;
+  }
+  function saveBest(n){
+    localStorage.setItem(LS_KEY, n);
+    setCookie(COOKIE_KEY, n);
+  }
+
+  // 無理ゲー解放フラグ（100壁達成で保存）
+  function getUnlocked(){ return localStorage.getItem(UNLOCKED_KEY)==='1' || getCookie(UNLOCKED_KEY+'_u')==='1'; }
+  function saveUnlocked(){
+    localStorage.setItem(UNLOCKED_KEY, '1');
+    setCookie(UNLOCKED_KEY+'_u', '1');
+  }
 
   // ===== くっきりモード =====
   let _clearMode = localStorage.getItem(LS_CLEAR_KEY) === '1';
@@ -452,7 +487,8 @@
     } else if(score < 100){
       return { gapMin:BASE_H*0.140, gapMax:BASE_H*0.157, vertMin:0.08, vertMax:0.76, label:'達人', labelDetail:'繰り返せるか…' };
     } else {
-      // 無理ゲー：10壁いけたら凄い！隙間激狭・縦移動最大
+      // 無理ゲー：100壁達成で解放（解放フラグを保存）
+      saveUnlocked();
       return { gapMin:BASE_H*0.090, gapMax:BASE_H*0.102, vertMin:0.05, vertMax:0.82, label:'無理ゲー', labelDetail:'' };
     }
   }
@@ -949,6 +985,7 @@
   // ===== 初期化 =====
   resizeCanvas();
   _gameRect = calcGameRect();
+  getBest(); // cookie→localStorage同期
   showScreen('screen-title');
   updateTitleBest();
   applyClearModeUI();
