@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="screen-orientation" content="portrait">
   <meta name="theme-color" content="#0d0d0a">
   <title>飛べ飛 — 丸場所</title>
   <style>
@@ -32,6 +33,17 @@
       touch-action:none;
       user-select:none;
       -webkit-user-select:none;
+    }
+    /* 横向きになったら回転を促す */
+    #landscape-warn{
+      display:none;
+      position:fixed;inset:0;z-index:99999;
+      background:#0d0d0a;
+      flex-direction:column;align-items:center;justify-content:center;
+      gap:16px;text-align:center;
+    }
+    @media (orientation: landscape){
+      #landscape-warn{ display:flex; }
     }
 
     /* 和紙テクスチャ風ノイズ */
@@ -230,6 +242,13 @@
   </style>
 </head>
 <body>
+<!-- 横向き警告 -->
+<div id="landscape-warn">
+  <div style="font-size:48px;color:var(--text3);">↺</div>
+  <div style="font-size:14px;color:var(--text2);letter-spacing:0.2em;">縦向きでプレイしてください</div>
+  <div style="font-size:11px;color:var(--text3);">Please rotate your device</div>
+</div>
+
 <div id="wrapper">
 
   <!-- タイトル画面 -->
@@ -335,18 +354,16 @@
   // gap: 隙間の高さ(px)  vertRange: 縦位置の振れ幅(0〜1)  label: 表示名
   function getPhase(score){
     const H = canvas.height;
+    // 隙間は画面高さ比率で固定（どの端末でも製作者環境と同じ体感になるよう）
+    // 基準: 製作者端末 innerHeight ≒ 750px
     if(score < 10){
-      // チュートリアル：幅広・縦移動少ない・中央固定気味
-      return { gapMin: H*0.52, gapMax: H*0.58, vertMin:0.28, vertMax:0.42, label:'入門', labelDetail:'まずは感覚をつかもう' };
+      return { gapMin:H*0.267, gapMax:H*0.307, vertMin:0.20, vertMax:0.60, label:'入門', labelDetail:'まずは感覚をつかもう' };
     } else if(score < 30){
-      // ノーマル：少し狭く、縦も少し動く
-      return { gapMin: H*0.36, gapMax: H*0.42, vertMin:0.20, vertMax:0.55, label:'普通', labelDetail:'少しずつ狭くなってきた' };
+      return { gapMin:H*0.207, gapMax:H*0.233, vertMin:0.15, vertMax:0.65, label:'普通', labelDetail:'少しずつ狭くなってきた' };
     } else if(score < 50){
-      // ハード：さらに狭く、縦移動が大きい
-      return { gapMin: H*0.28, gapMax: H*0.33, vertMin:0.12, vertMax:0.65, label:'難しい', labelDetail:'大きく上下に動かそう' };
+      return { gapMin:H*0.167, gapMax:H*0.187, vertMin:0.10, vertMax:0.72, label:'難しい', labelDetail:'大きく上下に動かそう' };
     } else {
-      // エキスパート：幅狭・縦移動大・エンドレス
-      return { gapMin: H*0.22, gapMax: H*0.27, vertMin:0.10, vertMax:0.70, label:'達人', labelDetail:'繰り返せるか…' };
+      return { gapMin:H*0.140, gapMax:H*0.157, vertMin:0.08, vertMax:0.76, label:'達人', labelDetail:'繰り返せるか…' };
     }
   }
 
@@ -427,18 +444,7 @@
       drawKanji('壁', x, cy, fontSize, wallColor, 1);
     }
 
-    // 隙間の縁に細い線（和風区切り）
-    ctx.save();
-    ctx.strokeStyle = wallBorder;
-    ctx.lineWidth = 1;
-    ctx.setLineDash([3,4]);
-    ctx.beginPath();
-    ctx.moveTo(x - WALL_WIDTH/2, wall.topH);
-    ctx.lineTo(x + WALL_WIDTH/2, wall.topH);
-    ctx.moveTo(x - WALL_WIDTH/2, wall.topH + wall.gap);
-    ctx.lineTo(x + WALL_WIDTH/2, wall.topH + wall.gap);
-    ctx.stroke();
-    ctx.restore();
+    // 判定線なし：「壁」漢字の端が視覚的な境界
   }
 
   // 背景：縦の細い墨線
