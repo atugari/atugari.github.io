@@ -258,8 +258,13 @@
       画面タップ または ボタンで跳ぶ<br>
       <span style="color:var(--text3);font-size:11px;">一時停止で画面は伏せられる</span>
     </div>
+    <input id="tobi-nick-input" type="text" maxlength="12" placeholder="ニックネームを入力"
+      style="width:min(72vw,260px);font-size:min(3.8vw,14px);padding:min(2.5vw,9px) min(3.5vw,13px);border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);text-align:center;font-family:'Noto Serif JP',serif;outline:none;"
+      oninput="onNickInput()" />
+    <div id="tobi-nick-msg" style="font-size:min(3vw,11px);color:var(--text3);min-height:16px;margin-top:-8px;"></div>
     <div class="title-best" id="title-best-disp">ハイスコア　<span id="title-best-num">―</span></div>
-    <button class="btn-start" id="btn-start" onclick="startGame()">は じ め る</button>
+    <button class="btn-start" id="btn-start" onclick="startGame(false)">は じ め る</button>
+    <button class="btn-start" id="btn-murige" onclick="startGame(true)" style="display:none;font-size:min(3.8vw,14px);padding:min(2.5vw,9px) min(8vw,28px);border-color:var(--red);color:var(--red);">無 理 ゲ ー モ ー ド</button>
     <div style="display:flex;align-items:center;gap:8px;cursor:pointer;" onclick="toggleClearMode()" id="clear-mode-toggle">
       <div id="clear-mode-box" style="width:min(8vw,28px);height:min(4.5vw,16px);border-radius:min(2.5vw,8px);border:1px solid var(--text3);background:transparent;position:relative;transition:background 0.2s;">
         <div id="clear-mode-knob" style="position:absolute;top:2px;left:2px;width:min(3.5vw,12px);height:min(3.5vw,12px);border-radius:50%;background:var(--text3);transition:transform 0.2s,background 0.2s;"></div>
@@ -296,7 +301,7 @@
     <div class="go-best-wrap" id="go-best-wrap"></div>
     <div class="go-new-best" id="go-new-best" style="display:none;">★ 新記録 ★</div>
     <div class="go-divider"></div>
-    <button class="btn-retry" id="go-btn-retry" onclick="startGame()">も う 一 度</button>
+    <button class="btn-retry" id="go-btn-retry" onclick="startGame(_murigeMode)">も う 一 度</button>
     <button class="btn-home" id="go-btn-home" onclick="goTitle()">タ イ ト ル へ</button>
     <div id="go-gp-hint" style="display:none;font-size:10px;color:var(--text3);letter-spacing:0.1em;margin-top:4px;">
       ボタン0: もう一度　ボタン1: タイトルへ
@@ -350,81 +355,101 @@
     });
   }
 
-  // 端末ID（IndexedDB優先・localStorage補助）
+  // ===== ニックネーム管理 =====
+  const NICK_LS_KEY = 'tobiGame_nick';
+
+  function getNick(){
+    return localStorage.getItem(NICK_LS_KEY) || '';
+  }
+  function saveNick(nick){
+    localStorage.setItem(NICK_LS_KEY, nick);
+  }
+
+  function onNickInput(){
+    const input = document.getElementById('tobi-nick-input');
+    const msg   = document.getElementById('tobi-nick-msg');
+    const val   = input.value.trim();
+    saveNick(val);
+    if(!val){
+      msg.textContent = 'ニックネームを入力するとスコアが保存されます';
+      msg.style.color = 'var(--text3)';
+    } else {
+      msg.textContent = '';
+    }
+    updateTitleBest();
+  }
+
+  // 端末ID（localStorage→IndexedDB）
   let DEVICE_ID = '';
   async function initDeviceId(){
-    let id = await idbGet('deviceId');
-    if(!id) id = localStorage.getItem('tobiGame_deviceId');
+    let id = localStorage.getItem('tobiGame_deviceId');
+    if(!id) id = await idbGet('deviceId');
     if(!id){
       id = 'tobi_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8);
     }
-    await idbSet('deviceId', id);
     localStorage.setItem('tobiGame_deviceId', id);
+    await idbSet('deviceId', id);
     DEVICE_ID = id;
   }
 
-  // ハイスコア取得（IndexedDB → localStorage の順で確認）
+  // ハイスコア取得（localStorage優先）
   function getBest(){
     return parseInt(localStorage.getItem(LS_KEY)||'0');
   }
-  async function getBestAll(){
-    const ls  = parseInt(localStorage.getItem(LS_KEY)||'0');
-    const idb = parseInt((await idbGet('best'))||'0');
-    return Math.max(ls, idb);
-  }
 
-  // ハイスコア保存（localStorage + IndexedDB + Firebase）
+  // ハイスコア保存（localStorage + Firebase）
   async function saveBest(n){
     localStorage.setItem(LS_KEY, n);
-    await idbSet('best', n);
-    // 無理ゲー解放フラグも保存
-    if(n >= 100){ await idbSet(UNLOCKED_KEY, '1'); localStorage.setItem(UNLOCKED_KEY,'1'); }
-    // Firebaseにも保存
+    if(n >= 100) localStorage.setItem(UNLOCKED_KEY, '1');
+    // Firebaseに保存（ニックネームがあれば名前付きで・なければ端末IDで）
+    const nick = getNick();
+    if(!nick && !DEVICE_ID) return;
     try {
-      if(!DEVICE_ID) return;
-      const key = encodeURIComponent(DEVICE_ID);
-      await fetch(DB_URL + '/tobi_scores/' + key + '.json', {
-        method: 'PUT',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ best: n, updatedAt: Date.now() })
-      });
+      const key = encodeURIComponent(
+        nick ? nick.replace(/[.#$[\]/]/g,'_') : DEVICE_ID
+      );
+      const existing = await fetch(DB_URL+'/tobi_scores/'+key+'.json').then(r=>r.json()).catch(()=>null);
+      // 他の端末から同名で上書きされないようdeviceIdチェック
+      if(existing && existing.deviceId && existing.deviceId !== DEVICE_ID) return;
+      if(!existing || existing.best < n){
+        await fetch(DB_URL + '/tobi_scores/' + key + '.json', {
+          method: 'PUT',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({
+            name: nick || DEVICE_ID,
+            best: n,
+            deviceId: DEVICE_ID,
+            updatedAt: Date.now()
+          })
+        });
+      }
     } catch(e) {}
   }
 
-  // 起動時に全ストレージを確認して最大値を復元
+  // 起動時にFirebaseからスコアを復元
   async function restoreBest(){
     await initDeviceId();
-    // IndexedDB・localStorageを確認
-    const idbBest = parseInt((await idbGet('best'))||'0');
-    const lsBest  = parseInt(localStorage.getItem(LS_KEY)||'0');
-    let best = Math.max(idbBest, lsBest);
-    // Firebaseからも確認
+    const lsBest = parseInt(localStorage.getItem(LS_KEY)||'0');
+    let best = lsBest;
+    const nick = getNick();
+    const key = encodeURIComponent(
+      nick ? nick.replace(/[.#$[\]/]/g,'_') : DEVICE_ID
+    );
     try {
-      const key = encodeURIComponent(DEVICE_ID);
       const res  = await fetch(DB_URL + '/tobi_scores/' + key + '.json');
       const data = await res.json();
-      if(data && data.best) best = Math.max(best, parseInt(data.best));
+      if(data && data.best && data.deviceId === DEVICE_ID){
+        best = Math.max(best, parseInt(data.best));
+      }
     } catch(e) {}
-    // 全ストレージに同期
-    if(best > 0){
-      localStorage.setItem(LS_KEY, best);
-      await idbSet('best', best);
-    }
-    // 無理ゲー解放復元
-    const idbUnlocked = await idbGet(UNLOCKED_KEY);
-    if(best >= 100 || idbUnlocked === '1'){
-      localStorage.setItem(UNLOCKED_KEY, '1');
-      await idbSet(UNLOCKED_KEY, '1');
-    }
+    if(best > 0) localStorage.setItem(LS_KEY, best);
+    if(best >= 100) localStorage.setItem(UNLOCKED_KEY, '1');
     updateTitleBest();
   }
 
   // 無理ゲー解放フラグ
   function getUnlocked(){ return localStorage.getItem(UNLOCKED_KEY)==='1'; }
-  async function saveUnlocked(){
-    localStorage.setItem(UNLOCKED_KEY, '1');
-    await idbSet(UNLOCKED_KEY, '1');
-  }
+  function saveUnlocked(){ localStorage.setItem(UNLOCKED_KEY, '1'); }
 
   // ===== くっきりモード =====
   let _clearMode = localStorage.getItem(LS_CLEAR_KEY) === '1';
@@ -475,6 +500,9 @@
   function updateTitleBest(){
     const b = getBest();
     document.getElementById('title-best-num').textContent = b > 0 ? b + ' 壁' : '―';
+    // 無理ゲーボタンの表示制御（100壁達成 or 解放フラグあり）
+    const btn = document.getElementById('btn-murige');
+    if(btn) btn.style.display = (getUnlocked() || b >= 100) ? '' : 'none';
   }
 
   // ===== キャンバスセットアップ =====
@@ -554,6 +582,11 @@
   // score範囲ごとにパラメータを変える
   // gap: 隙間の高さ(px)  vertRange: 縦位置の振れ幅(0〜1)  label: 表示名
   function getPhase(score){
+    // 無理ゲーモードは最初から無理ゲー難易度
+    if(_murigeMode){
+      saveUnlocked();
+      return { gapMin:BASE_H*0.090, gapMax:BASE_H*0.102, vertMin:0.05, vertMax:0.82, label:'無理ゲー', labelDetail:'' };
+    }
     // 隙間は仮想座標系（BASE_H=750px）の比率で固定
     if(score < 10){
       return { gapMin:BASE_H*0.267, gapMax:BASE_H*0.307, vertMin:0.20, vertMax:0.60, label:'入門', labelDetail:'まずは感覚をつかもう' };
@@ -564,8 +597,7 @@
     } else if(score < 100){
       return { gapMin:BASE_H*0.140, gapMax:BASE_H*0.157, vertMin:0.08, vertMax:0.76, label:'達人', labelDetail:'繰り返せるか…' };
     } else {
-      // 無理ゲー：100壁達成で解放（解放フラグを保存）
-      saveUnlocked(); // 非同期だがawait不要（バックグラウンドで保存）
+      saveUnlocked();
       return { gapMin:BASE_H*0.090, gapMax:BASE_H*0.102, vertMin:0.05, vertMax:0.82, label:'無理ゲー', labelDetail:'' };
     }
   }
@@ -853,7 +885,9 @@
   }
 
   // ===== ゲーム開始・終了 =====
-  function startGame(){
+  let _murigeMode = false;
+  function startGame(murige){
+    _murigeMode = !!murige;
     cancelAnimationFrame(_raf);
     state = initState();
 
@@ -992,7 +1026,7 @@
       const b0 = _btnOn(gp.buttons[0]);
       if(b0 && !_gpPrevButtons[idx+'_0']){
         if(titleEl.style.display !== 'none'){
-          startGame();
+          startGame(false);
         } else if(goEl.style.display === 'flex'){
           if(_goCursor===0) startGame();
           else goTitle();
@@ -1062,10 +1096,14 @@
   // ===== 初期化 =====
   resizeCanvas();
   _gameRect = calcGameRect();
+  // 保存済みニックネームをinputに反映
+  const _savedNick = getNick();
+  const _nickInput = document.getElementById('tobi-nick-input');
+  if(_nickInput && _savedNick) _nickInput.value = _savedNick;
   showScreen('screen-title');
   updateTitleBest();
   applyClearModeUI();
-  restoreBest(); // IndexedDB・localStorage・Firebaseから復元（非同期・バックグラウンド）
+  restoreBest(); // Firebaseからスコア復元（非同期・バックグラウンド）
 </script>
 </body>
 </html>
