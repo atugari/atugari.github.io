@@ -514,27 +514,38 @@
 
     const sc = getScale();
     const fontSize = Math.round(28 * sc);
-    const charH    = fontSize * 1.1;
+    // charHをfontSizeと同じにする（1.1倍のギャップをなくす）
+    const charH = fontSize;
     const wallColor = getWallColor();
     const rx = r.x + vx * sc;
 
-    // 上の壁：文字の中心が隙間上端を超えない範囲で描画
-    // cy（文字中心）<= topEdgePx - charH/2 で先端文字が隙間にはみ出さない
+    // 上の壁：先端文字の下端が topEdgePx を超えない
     const topEdgePx = r.y + wall.topH * sc;
+    let topLastCy = -Infinity;
     for(let i = 0; ; i++){
       const cy = r.y + charH / 2 + i * charH;
-      if(cy > topEdgePx - charH / 2) break;
+      if(cy + charH / 2 > topEdgePx) break; // 文字下端が隙間上端を超えたら止まる
       drawKanji('壁', rx, cy, fontSize, wallColor, 1);
+      topLastCy = cy;
     }
+    // 先端文字の下端Y（判定に使う）
+    const topDrawEnd = topLastCy > -Infinity ? topLastCy + charH / 2 : r.y;
 
-    // 下の壁：文字の中心が隙間下端を超えない範囲で描画
+    // 下の壁：先端文字の上端が botEdgePx を超えない
     const botEdgePx = r.y + (wall.topH + wall.gap) * sc;
+    let botLastCy = Infinity;
     for(let i = 0; ; i++){
       const cy = r.y + r.h - charH / 2 - i * charH;
-      if(cy < botEdgePx + charH / 2) break;
+      if(cy - charH / 2 < botEdgePx) break; // 文字上端が隙間下端を超えたら止まる
       drawKanji('壁', rx, cy, fontSize, wallColor, 1);
+      botLastCy = cy;
     }
+    // 先端文字の上端Y（判定に使う）
+    const botDrawStart = botLastCy < Infinity ? botLastCy - charH / 2 : r.y + r.h;
 
+    // 描画された先端をスケール逆変換して仮想座標で保存 → checkCollisionで使う
+    wall._drawTopH  = (topDrawEnd  - r.y) / sc;
+    wall._drawBotH  = (botDrawStart - r.y) / sc;
     wall._wallW = Math.round(fontSize);
   }
 
@@ -663,8 +674,10 @@
         : 14;
       if(Math.abs(wx - px) > wallHalfW + pr * 0.6) continue;
 
-      // 縦判定：topH/gapをそのまま使う（視覚より少し小さめ）
-      if(py - pr * 0.75 < wall.topH || py + pr * 0.75 > wall.topH + wall.gap) return true;
+      // 縦判定：描画された先端文字の位置を使う（視覚と一致・少し小さめ）
+      const drawTop = wall._drawTopH !== undefined ? wall._drawTopH : wall.topH;
+      const drawBot = wall._drawBotH !== undefined ? wall._drawBotH : wall.topH + wall.gap;
+      if(py - pr * 0.75 < drawTop || py + pr * 0.75 > drawBot) return true;
     }
     return false;
   }
