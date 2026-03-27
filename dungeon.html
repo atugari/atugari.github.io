@@ -309,44 +309,72 @@
 
 <script>
   // ===== ローカルストレージ =====
+  const DB_URL       = 'https://ad-game-7b40a-default-rtdb.asia-southeast1.firebasedatabase.app';
   const LS_KEY       = 'tobiGame_best';
   const LS_CLEAR_KEY = 'tobiGame_clearMode';
-  const COOKIE_KEY   = 'tobiGame_best';
-  const UNLOCKED_KEY = 'tobiGame_unlocked'; // 無理ゲー解放フラグ
+  const LS_DEVID     = 'tobiGame_deviceId';
+  const UNLOCKED_KEY = 'tobiGame_unlocked';
 
-  // cookie操作（キャッシュ消去でlocalStorageが消えても復元できるよう二重保存）
-  function setCookie(key, val){
-    const exp = new Date();
-    exp.setFullYear(exp.getFullYear() + 2); // 2年有効
-    document.cookie = key + '=' + val + ';expires=' + exp.toUTCString() + ';path=/;SameSite=Lax';
-  }
-  function getCookie(key){
-    const m = document.cookie.match('(?:^|;)\s*' + key + '=([^;]*)');
-    return m ? m[1] : null;
-  }
-
-  function getBest(){
-    // localStorageとcookieの両方を確認して大きい方を返す
-    const ls = parseInt(localStorage.getItem(LS_KEY)||'0');
-    const ck = parseInt(getCookie(COOKIE_KEY)||'0');
-    const val = Math.max(ls, ck);
-    // 両方に最新値を同期
-    if(val > 0){
-      localStorage.setItem(LS_KEY, val);
-      setCookie(COOKIE_KEY, val);
+  // 端末ID（消えにくいよう複数箇所に保存）
+  function getDeviceId(){
+    let id = localStorage.getItem(LS_DEVID);
+    if(!id){
+      // cookieからも探す
+      const m = document.cookie.match('(?:^|;)\s*tobiGame_did=([^;]*)');
+      id = m ? m[1] : null;
     }
-    return val;
+    if(!id){
+      id = 'tobi_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8);
+    }
+    // 両方に保存
+    localStorage.setItem(LS_DEVID, id);
+    const exp = new Date(); exp.setFullYear(exp.getFullYear()+2);
+    document.cookie = 'tobiGame_did=' + id + ';expires=' + exp.toUTCString() + ';path=/;SameSite=Lax';
+    return id;
   }
-  function saveBest(n){
-    localStorage.setItem(LS_KEY, n);
-    setCookie(COOKIE_KEY, n);
+  const DEVICE_ID = getDeviceId();
+
+  // ハイスコアをlocalStorage + Firebase に保存
+  function getBest(){
+    return parseInt(localStorage.getItem(LS_KEY)||'0');
   }
 
-  // 無理ゲー解放フラグ（100壁達成で保存）
-  function getUnlocked(){ return localStorage.getItem(UNLOCKED_KEY)==='1' || getCookie(UNLOCKED_KEY+'_u')==='1'; }
+  async function saveBest(n){
+    localStorage.setItem(LS_KEY, n);
+    // Firebaseにも保存（端末IDをキーに）
+    try {
+      const key = encodeURIComponent(DEVICE_ID);
+      await fetch(DB_URL + '/tobi_scores/' + key + '.json', {
+        method: 'PUT',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ best: n, updatedAt: Date.now() })
+      });
+    } catch(e) {}
+  }
+
+  // 起動時にFirebaseからスコアを復元（localStorageが消えていた場合）
+  async function restoreBestFromFirebase(){
+    const local = parseInt(localStorage.getItem(LS_KEY)||'0');
+    try {
+      const key = encodeURIComponent(DEVICE_ID);
+      const res = await fetch(DB_URL + '/tobi_scores/' + key + '.json');
+      const data = await res.json();
+      if(data && data.best){
+        const remote = parseInt(data.best);
+        const best = Math.max(local, remote);
+        if(best > 0) localStorage.setItem(LS_KEY, best);
+        // 無理ゲー解放も復元
+        if(remote >= 100) localStorage.setItem(UNLOCKED_KEY, '1');
+        updateTitleBest();
+      }
+    } catch(e) {}
+  }
+
+  // 無理ゲー解放フラグ
+  function getUnlocked(){ return localStorage.getItem(UNLOCKED_KEY)==='1'; }
   function saveUnlocked(){
     localStorage.setItem(UNLOCKED_KEY, '1');
-    setCookie(UNLOCKED_KEY+'_u', '1');
+    // Firebaseのスコアが100以上なら自動復元されるので追加保存不要
   }
 
   // ===== くっきりモード =====
@@ -985,10 +1013,10 @@
   // ===== 初期化 =====
   resizeCanvas();
   _gameRect = calcGameRect();
-  getBest(); // cookie→localStorage同期
   showScreen('screen-title');
   updateTitleBest();
   applyClearModeUI();
+  restoreBestFromFirebase(); // Firebaseからスコア復元（非同期・バックグラウンド）
 </script>
 </body>
 </html>
