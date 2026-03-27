@@ -2,16 +2,685 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>四角迷宮</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0d0d0a">
+  <title>飛 — 丸場所</title>
   <style>
-    body{margin:0;background:#1a1a18;color:#9a9a92;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;text-align:center;}
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&display=swap');
+
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{
+      --bg:#0d0d0a;
+      --surface:#161612;
+      --border:rgba(255,255,255,0.07);
+      --text:#e8e4d8;
+      --text2:#8a8678;
+      --text3:#4a4840;
+      --gold:#c8a85a;
+      --gold2:#8a7040;
+      --red:#c05840;
+      --green:#5a9870;
+      --r:10px;
+    }
+
+    html,body{
+      height:100%;
+      background:var(--bg);
+      color:var(--text);
+      font-family:'Noto Serif JP',serif;
+      overflow:hidden;
+      touch-action:none;
+      user-select:none;
+      -webkit-user-select:none;
+    }
+
+    /* 和紙テクスチャ風ノイズ */
+    body::before{
+      content:'';
+      position:fixed;inset:0;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events:none;z-index:9999;
+    }
+
+    #wrapper{
+      display:flex;flex-direction:column;
+      align-items:center;justify-content:center;
+      height:100%;
+      gap:0;
+    }
+
+    /* ===== タイトル画面 ===== */
+    #screen-title{
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      gap:20px;text-align:center;padding:24px;
+    }
+    .title-kanji{
+      font-size:96px;font-weight:900;color:var(--gold);
+      line-height:1;
+      text-shadow:0 0 40px rgba(200,168,90,0.4), 0 2px 0 rgba(0,0,0,0.8);
+      animation:float 3s ease-in-out infinite;
+    }
+    @keyframes float{
+      0%,100%{transform:translateY(0);}
+      50%{transform:translateY(-8px);}
+    }
+    .title-sub{
+      font-size:13px;color:var(--text2);letter-spacing:0.2em;
+    }
+    .title-desc{
+      font-size:12px;color:var(--text3);line-height:2;letter-spacing:0.05em;
+      border:1px solid var(--border);border-radius:var(--r);
+      padding:12px 20px;
+      max-width:280px;
+    }
+    .title-best{
+      font-size:12px;color:var(--text2);
+      letter-spacing:0.1em;
+    }
+    .title-best span{
+      color:var(--gold);font-size:18px;font-weight:700;
+    }
+    .btn-start{
+      margin-top:8px;
+      background:none;
+      border:1px solid var(--gold2);
+      color:var(--gold);
+      font-family:'Noto Serif JP',serif;
+      font-size:16px;
+      letter-spacing:0.2em;
+      padding:12px 40px;
+      border-radius:var(--r);
+      cursor:pointer;
+      transition:background 0.2s,border-color 0.2s;
+      -webkit-tap-highlight-color:rgba(0,0,0,0);
+    }
+    .btn-start:hover,.btn-start:active{
+      background:rgba(200,168,90,0.1);
+      border-color:var(--gold);
+    }
+    .back-link{
+      font-size:11px;color:var(--text3);text-decoration:none;
+      letter-spacing:0.1em;margin-top:4px;
+    }
+    .back-link:hover{color:var(--text2);}
+
+    /* ===== ゲーム画面 ===== */
+    #screen-game{
+      display:none;
+      flex-direction:column;
+      align-items:center;
+      width:100%;height:100%;
+      position:relative;
+    }
+
+    /* HUD */
+    #hud{
+      position:absolute;top:0;left:0;right:0;
+      display:flex;justify-content:space-between;align-items:center;
+      padding:10px 16px;
+      z-index:10;
+      pointer-events:none;
+    }
+    #hud-score{
+      font-size:22px;font-weight:700;color:var(--gold);
+      text-shadow:0 0 20px rgba(200,168,90,0.5);
+      letter-spacing:0.05em;
+    }
+    #hud-best{
+      font-size:11px;color:var(--text3);letter-spacing:0.1em;
+    }
+    #pause-btn{
+      position:absolute;top:10px;right:16px;
+      background:none;border:1px solid var(--border);
+      color:var(--text2);font-family:'Noto Serif JP',serif;
+      font-size:11px;letter-spacing:0.1em;
+      padding:5px 12px;border-radius:6px;
+      cursor:pointer;z-index:20;
+      -webkit-tap-highlight-color:rgba(0,0,0,0);
+    }
+    #pause-btn:active{background:rgba(255,255,255,0.05);}
+
+    /* キャンバス */
+    #game-canvas{
+      display:block;
+      width:100%;
+      height:100%;
+      touch-action:none;
+    }
+
+    /* ===== ポーズ画面 ===== */
+    #screen-pause{
+      display:none;
+      position:fixed;inset:0;
+      background:#0d0d0a;
+      z-index:100;
+      flex-direction:column;align-items:center;justify-content:center;
+      gap:16px;
+    }
+    .pause-kanji{
+      font-size:72px;font-weight:900;color:var(--text3);
+    }
+    .pause-text{
+      font-size:13px;color:var(--text2);letter-spacing:0.2em;
+    }
+    .btn-resume{
+      background:none;border:1px solid var(--border);
+      color:var(--text2);font-family:'Noto Serif JP',serif;
+      font-size:14px;letter-spacing:0.2em;
+      padding:10px 32px;border-radius:var(--r);
+      cursor:pointer;
+      -webkit-tap-highlight-color:rgba(0,0,0,0);
+    }
+    .btn-resume:active{background:rgba(255,255,255,0.05);}
+
+    /* ===== ゲームオーバー画面 ===== */
+    #screen-gameover{
+      display:none;
+      position:fixed;inset:0;
+      background:rgba(13,13,10,0.92);
+      z-index:100;
+      flex-direction:column;align-items:center;justify-content:center;
+      gap:14px;
+      text-align:center;
+    }
+    .go-kanji{
+      font-size:18px;color:var(--red);letter-spacing:0.3em;
+      text-shadow:0 0 30px rgba(192,88,64,0.6);
+    }
+    .go-score-label{font-size:11px;color:var(--text3);letter-spacing:0.2em;}
+    .go-score{
+      font-size:52px;font-weight:900;color:var(--text);
+      line-height:1;
+    }
+    .go-best-wrap{font-size:12px;color:var(--text2);letter-spacing:0.1em;}
+    .go-best-wrap span{color:var(--gold);}
+    .go-new-best{
+      font-size:11px;color:var(--gold);letter-spacing:0.2em;
+      animation:pulse 1s ease-in-out infinite;
+    }
+    @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+    .go-divider{
+      width:60px;height:1px;background:var(--border);
+    }
+    .btn-retry{
+      background:none;border:1px solid var(--gold2);
+      color:var(--gold);font-family:'Noto Serif JP',serif;
+      font-size:14px;letter-spacing:0.2em;
+      padding:10px 32px;border-radius:var(--r);
+      cursor:pointer;
+      -webkit-tap-highlight-color:rgba(0,0,0,0);
+    }
+    .btn-retry:active{background:rgba(200,168,90,0.1);}
+    .btn-home{
+      background:none;border:none;
+      color:var(--text3);font-family:'Noto Serif JP',serif;
+      font-size:11px;letter-spacing:0.1em;
+      cursor:pointer;
+      -webkit-tap-highlight-color:rgba(0,0,0,0);
+    }
+    .btn-home:active{color:var(--text2);}
+
+    /* コントローラー接続表示 */
+    #gamepad-indicator{
+      position:fixed;bottom:12px;left:50%;transform:translateX(-50%);
+      font-size:10px;color:var(--text3);letter-spacing:0.1em;
+      z-index:50;pointer-events:none;
+      transition:opacity 0.5s;
+    }
   </style>
 </head>
 <body>
-  <div>
-    <p>このページは現在閉鎖中です。</p>
-    <a href="index.html" style="color:#5a5a54;font-size:13px;">← 戻る</a>
+<div id="wrapper">
+
+  <!-- タイトル画面 -->
+  <div id="screen-title">
+    <div class="title-kanji">飛</div>
+    <div class="title-sub">飛 — かんじフライト</div>
+    <div class="title-desc">
+      「壁」の隙間をくぐり抜けよ<br>
+      画面タップ または ボタンで跳ぶ<br>
+      <span style="color:var(--text3);font-size:11px;">一時停止で画面は伏せられる</span>
+    </div>
+    <div class="title-best" id="title-best-disp">ハイスコア　<span id="title-best-num">―</span></div>
+    <button class="btn-start" id="btn-start" onclick="startGame()">は じ め る</button>
+    <a href="index.html" class="back-link">← 丸場所へ戻る</a>
   </div>
+
+  <!-- ゲーム画面 -->
+  <div id="screen-game">
+    <div id="hud">
+      <div>
+        <div id="hud-score">0</div>
+        <div id="hud-best"></div>
+      </div>
+    </div>
+    <button id="pause-btn" onclick="togglePause()">一時停止</button>
+    <canvas id="game-canvas"></canvas>
+  </div>
+
+  <!-- ポーズ画面（画面を伏せる） -->
+  <div id="screen-pause">
+    <div class="pause-kanji">休</div>
+    <div class="pause-text">一 時 停 止 中</div>
+    <button class="btn-resume" onclick="togglePause()">再 開 す る</button>
+  </div>
+
+  <!-- ゲームオーバー画面 -->
+  <div id="screen-gameover">
+    <div class="go-kanji">墜　落</div>
+    <div class="go-score-label">通過した壁</div>
+    <div class="go-score" id="go-score-num">0</div>
+    <div class="go-best-wrap" id="go-best-wrap"></div>
+    <div class="go-new-best" id="go-new-best" style="display:none;">★ 新記録 ★</div>
+    <div class="go-divider"></div>
+    <button class="btn-retry" onclick="startGame()">も う 一 度</button>
+    <button class="btn-home" onclick="goTitle()">タイトルへ</button>
+  </div>
+
+</div>
+
+<div id="gamepad-indicator"></div>
+
+<script>
+  // ===== ローカルストレージ =====
+  const LS_KEY = 'tobiGame_best';
+  function getBest(){ return parseInt(localStorage.getItem(LS_KEY)||'0'); }
+  function saveBest(n){ localStorage.setItem(LS_KEY, n); }
+
+  // ===== 画面制御 =====
+  function showScreen(id){
+    ['screen-title','screen-game','screen-pause','screen-gameover'].forEach(s=>{
+      const el = document.getElementById(s);
+      el.style.display = 'none';
+    });
+    document.getElementById(id).style.display = 'flex';
+  }
+
+  function goTitle(){
+    cancelAnimationFrame(_raf);
+    _raf = null;
+    showScreen('screen-title');
+    updateTitleBest();
+  }
+
+  function updateTitleBest(){
+    const b = getBest();
+    document.getElementById('title-best-num').textContent = b > 0 ? b + ' 壁' : '―';
+  }
+
+  // ===== キャンバスセットアップ =====
+  const canvas = document.getElementById('game-canvas');
+  const ctx = canvas.getContext('2d');
+
+  function resizeCanvas(){
+    canvas.width  = canvas.offsetWidth  || window.innerWidth;
+    canvas.height = canvas.offsetHeight || window.innerHeight;
+  }
+  window.addEventListener('resize', ()=>{ resizeCanvas(); });
+
+  // ===== ゲーム定数 =====
+  const GRAVITY      = 0.38;
+  const FLAP_POWER   = -7.2;
+  const SCROLL_SPEED = 3.2;
+  const WALL_INTERVAL= 220;   // ピクセル間隔
+  const GAP_MIN      = 130;
+  const GAP_MAX      = 180;
+  const WALL_WIDTH   = 38;
+  const PLAYER_SIZE  = 36;
+  const PLAYER_X_RATIO = 0.22;
+
+  // ===== ゲーム状態 =====
+  let _raf = null;
+  let state = {};
+
+  function initState(){
+    resizeCanvas();
+    const W = canvas.width, H = canvas.height;
+    return {
+      playerY    : H * 0.45,
+      playerVY   : 0,
+      rotation   : 0,
+      walls      : [],
+      scrollX    : 0,
+      score      : 0,
+      frame      : 0,
+      alive      : true,
+      started    : false,   // 最初のタップ待ち
+      flashTimer : 0,
+    };
+  }
+
+  // ===== 壁生成 =====
+  function spawnWall(x){
+    const H = canvas.height;
+    const gap = GAP_MIN + Math.random()*(GAP_MAX-GAP_MIN);
+    const topMin = H * 0.15;
+    const topMax = H * 0.75 - gap;
+    const topH = topMin + Math.random()*(topMax-topMin);
+    return { x, topH, gap, passed:false };
+  }
+
+  // ===== 描画ヘルパー =====
+  function drawKanji(kanji, x, y, size, color, alpha=1, rotation=0){
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.translate(x, y);
+    if(rotation) ctx.rotate(rotation);
+    ctx.font = `900 ${size}px 'Noto Serif JP', serif`;
+    ctx.fillStyle = color;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(kanji, 0, 0);
+    ctx.restore();
+  }
+
+  // 縦書き風「壁」を上下に描画
+  function drawWall(wall){
+    const W = canvas.width, H = canvas.height;
+    const x = wall.x - state.scrollX;
+    if(x < -WALL_WIDTH*2 || x > W + WALL_WIDTH*2) return;
+
+    const wallColor = '#4a4840';
+    const wallBorder = '#2a2820';
+    const fontSize = 28;
+    const charH = fontSize * 1.1;
+
+    // 上の壁（上から下へ「壁」を積む）
+    const topCount = Math.ceil(wall.topH / charH) + 1;
+    for(let i=0; i<topCount; i++){
+      const cy = -charH/2 + i * charH;
+      if(cy > wall.topH) break;
+      const alpha = cy < wall.topH - charH ? 1 : Math.max(0, (wall.topH - cy) / charH);
+      drawKanji('壁', x, cy, fontSize, wallColor, alpha);
+    }
+
+    // 下の壁（下から上へ「壁」を積む）
+    const botY = wall.topH + wall.gap;
+    const botCount = Math.ceil((H - botY) / charH) + 1;
+    for(let i=0; i<botCount; i++){
+      const cy = H + charH/2 - i * charH;
+      if(cy < botY) break;
+      const alpha = cy > botY + charH ? 1 : Math.max(0, (cy - botY) / charH);
+      drawKanji('壁', x, cy, fontSize, wallColor, alpha);
+    }
+
+    // 隙間の縁に細い線（和風区切り）
+    ctx.save();
+    ctx.strokeStyle = wallBorder;
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3,4]);
+    ctx.beginPath();
+    ctx.moveTo(x - WALL_WIDTH/2, wall.topH);
+    ctx.lineTo(x + WALL_WIDTH/2, wall.topH);
+    ctx.moveTo(x - WALL_WIDTH/2, wall.topH + wall.gap);
+    ctx.lineTo(x + WALL_WIDTH/2, wall.topH + wall.gap);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // 背景：縦の細い墨線
+  function drawBg(){
+    const W = canvas.width, H = canvas.height;
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle = '#0d0d0a';
+    ctx.fillRect(0,0,W,H);
+
+    // 流れる横罫線（和紙の横線）
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,255,255,0.025)';
+    ctx.lineWidth = 1;
+    const lineSpacing = 28;
+    for(let y=0; y<H; y+=lineSpacing){
+      ctx.beginPath();
+      ctx.moveTo(0,y);ctx.lineTo(W,y);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  // プレイヤー描画
+  function drawPlayer(){
+    const W = canvas.width;
+    const px = W * PLAYER_X_RATIO;
+    const py = state.playerY;
+    const rot = Math.min(Math.max(state.playerVY * 0.07, -0.6), 1.0);
+
+    // 軌跡（残像）
+    const trailCount = 4;
+    for(let i=trailCount; i>0; i--){
+      const ty = py - state.playerVY * i * 1.5;
+      drawKanji('飛', px, ty, PLAYER_SIZE, '#c8a85a', 0.06 * (trailCount-i+1), rot);
+    }
+
+    // グロー
+    ctx.save();
+    ctx.shadowColor = 'rgba(200,168,90,0.5)';
+    ctx.shadowBlur = 18;
+    drawKanji('飛', px, py, PLAYER_SIZE, '#e8c870', 1, rot);
+    ctx.restore();
+
+    // フラッシュ（衝突時）
+    if(state.flashTimer > 0){
+      drawKanji('飛', px, py, PLAYER_SIZE, '#ffffff', state.flashTimer/8, rot);
+      state.flashTimer--;
+    }
+  }
+
+  // スコア表示（ゲーム中）
+  function drawHudScore(){
+    document.getElementById('hud-score').textContent = state.score;
+    const b = getBest();
+    document.getElementById('hud-best').textContent = b > 0 ? 'best ' + b : '';
+  }
+
+  // 「はじめにタップ」表示
+  function drawReadyText(){
+    const W = canvas.width, H = canvas.height;
+    ctx.save();
+    ctx.font = "400 13px 'Noto Serif JP', serif";
+    ctx.fillStyle = 'rgba(200,168,90,0.7)';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const alpha = 0.5 + 0.5*Math.sin(state.frame*0.08);
+    ctx.globalAlpha = alpha;
+    ctx.fillText('タップして飛ぶ', W/2, H*0.72);
+    ctx.restore();
+  }
+
+  // ===== 衝突判定 =====
+  function checkCollision(){
+    const W = canvas.width, H = canvas.height;
+    const px = W * PLAYER_X_RATIO;
+    const py = state.playerY;
+    const r  = PLAYER_SIZE * 0.38; // 当たり判定を少し小さく
+
+    // 天井・床
+    if(py - r < 0 || py + r > H) return true;
+
+    for(const wall of state.walls){
+      const wx = wall.x - state.scrollX;
+      if(Math.abs(wx - px) > WALL_WIDTH/2 + r) continue;
+      if(py - r < wall.topH || py + r > wall.topH + wall.gap) return true;
+    }
+    return false;
+  }
+
+  // ===== メインループ =====
+  function gameLoop(){
+    const W = canvas.width, H = canvas.height;
+    state.frame++;
+
+    if(state.started){
+      // 物理
+      state.playerVY += GRAVITY;
+      state.playerY  += state.playerVY;
+
+      // スクロール
+      state.scrollX  += SCROLL_SPEED;
+
+      // 壁を追加
+      const lastWall = state.walls[state.walls.length-1];
+      const nextX = lastWall ? lastWall.x + WALL_INTERVAL : W + 80;
+      if(nextX - state.scrollX < W + 80){
+        state.walls.push(spawnWall(nextX));
+      }
+
+      // 古い壁を削除
+      state.walls = state.walls.filter(w => w.x - state.scrollX > -WALL_WIDTH*3);
+
+      // スコア更新
+      for(const wall of state.walls){
+        if(!wall.passed && wall.x - state.scrollX < W * PLAYER_X_RATIO){
+          wall.passed = true;
+          state.score++;
+        }
+      }
+
+      // 衝突判定
+      if(checkCollision()){
+        state.alive = false;
+        gameOver();
+        return;
+      }
+    }
+
+    // 描画
+    drawBg();
+    state.walls.forEach(drawWall);
+    drawPlayer();
+    if(!state.started) drawReadyText();
+    drawHudScore();
+
+    _raf = requestAnimationFrame(gameLoop);
+  }
+
+  // ===== ゲーム開始・終了 =====
+  function startGame(){
+    cancelAnimationFrame(_raf);
+    state = initState();
+
+    // 最初の壁をすこし先に生成
+    const W = canvas.width;
+    for(let i=0; i<5; i++){
+      state.walls.push(spawnWall(W * 0.8 + i * WALL_INTERVAL));
+    }
+
+    showScreen('screen-game');
+    document.getElementById('screen-game').style.display = 'flex';
+    _raf = requestAnimationFrame(gameLoop);
+  }
+
+  function gameOver(){
+    cancelAnimationFrame(_raf);
+    const score = state.score;
+    const best  = getBest();
+    const isNew = score > best;
+    if(isNew) saveBest(score);
+
+    document.getElementById('go-score-num').textContent = score;
+    document.getElementById('go-best-wrap').textContent =
+      'ハイスコア　' + (isNew ? score : best) + ' 壁';
+    document.getElementById('go-new-best').style.display = isNew ? 'block' : 'none';
+
+    setTimeout(()=>{
+      showScreen('screen-gameover');
+    }, 300);
+  }
+
+  // ===== 一時停止 =====
+  let _paused = false;
+  function togglePause(){
+    if(!state.alive) return;
+    _paused = !_paused;
+    if(_paused){
+      cancelAnimationFrame(_raf);
+      document.getElementById('screen-pause').style.display = 'flex';
+    } else {
+      document.getElementById('screen-pause').style.display = 'none';
+      _raf = requestAnimationFrame(gameLoop);
+    }
+  }
+
+  // ===== 操作：タップ / クリック =====
+  function doFlap(){
+    if(_paused) return;
+    if(!state.alive) return;
+    if(!state.started){
+      state.started = true;
+    }
+    state.playerVY = FLAP_POWER;
+  }
+
+  canvas.addEventListener('pointerdown', e=>{
+    e.preventDefault();
+    doFlap();
+  });
+
+  // ===== 操作：キーボード =====
+  document.addEventListener('keydown', e=>{
+    if(e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyZ'){
+      e.preventDefault();
+      const goEl = document.getElementById('screen-gameover');
+      if(goEl.style.display === 'flex'){ startGame(); return; }
+      if(document.getElementById('screen-title').style.display !== 'none') return;
+      doFlap();
+    }
+    if(e.code === 'Escape' || e.code === 'KeyP'){
+      const gameEl = document.getElementById('screen-game');
+      if(gameEl.style.display === 'flex') togglePause();
+    }
+  });
+
+  // ===== 操作：ゲームパッド =====
+  const gpIndicator = document.getElementById('gamepad-indicator');
+  let _gpConnected = false;
+  let _gpPrevButtons = {};
+  let _gpPauseHeld = false;
+
+  window.addEventListener('gamepadconnected', e=>{
+    _gpConnected = true;
+    gpIndicator.textContent = 'コントローラー接続中 — ボタン0: 飛ぶ　ボタン1: 停止';
+    gpIndicator.style.opacity = '1';
+    setTimeout(()=>{ gpIndicator.style.opacity='0'; }, 3000);
+  });
+  window.addEventListener('gamepaddisconnected', ()=>{
+    _gpConnected = false;
+  });
+
+  function pollGamepad(){
+    const gps = navigator.getGamepads ? navigator.getGamepads() : [];
+    for(const gp of gps){
+      if(!gp) continue;
+      // ボタン0（A/×）: 飛ぶ
+      const b0 = gp.buttons[0]?.pressed;
+      if(b0 && !_gpPrevButtons[gp.index+'_0']){
+        const goEl = document.getElementById('screen-gameover');
+        if(goEl.style.display === 'flex'){ startGame(); }
+        else { doFlap(); }
+      }
+      _gpPrevButtons[gp.index+'_0'] = b0;
+
+      // ボタン1（B/○）: 一時停止
+      const b1 = gp.buttons[1]?.pressed;
+      if(b1 && !_gpPrevButtons[gp.index+'_1']){
+        const gameEl = document.getElementById('screen-game');
+        if(gameEl.style.display === 'flex') togglePause();
+      }
+      _gpPrevButtons[gp.index+'_1'] = b1;
+
+      // 十字キー上 / 左スティック上
+      const up = gp.buttons[12]?.pressed || (gp.axes[1] < -0.5);
+      if(up && !_gpPrevButtons[gp.index+'_up']){ doFlap(); }
+      _gpPrevButtons[gp.index+'_up'] = up;
+    }
+    requestAnimationFrame(pollGamepad);
+  }
+  requestAnimationFrame(pollGamepad);
+
+  // ===== 初期化 =====
+  showScreen('screen-title');
+  updateTitleBest();
+  resizeCanvas();
+</script>
 </body>
 </html>
