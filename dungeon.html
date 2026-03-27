@@ -488,10 +488,8 @@
     const topMin = BASE_H * phase.vertMin;
     const topMax = BASE_H * phase.vertMax - gap;
     const topH = topMin + Math.random()*Math.max(0, topMax - topMin);
-    // _wallWはdrawWall時に設定されるが、描画前の判定でも使えるよう仮値を入れておく
     const initSc = _gameRect ? _gameRect.scale : 1;
-    const initSmallSize = Math.round(14 * initSc);
-    return { x, topH, gap, passed:false, _wallW: Math.round(initSmallSize * 2) };
+    return { x, topH, gap, passed:false, _wallW: Math.round(28 * initSc) };
   }
 
   // ===== 描画ヘルパー =====
@@ -509,55 +507,37 @@
   }
 
   // 縦書き風「壁」を上下に描画（仮想座標→実座標変換）
-  // 先端2個だけ小さい壁×横2列、それ以外は大きい壁1列
   function drawWall(wall){
     const r = _gameRect;
     const vx = wall.x - state.scrollX;
     if(vx < -WALL_WIDTH*2 || vx > BASE_W + WALL_WIDTH*2) return;
 
     const sc = getScale();
-    const bigSize  = Math.round(28 * sc);
-    const bigH     = bigSize * 1.1;
-    const smallSize = Math.round(14 * sc);
-    const smallH   = smallSize * 1.1;
-    const smallW   = smallSize * 1.0;
+    const fontSize = Math.round(28 * sc);
+    const charH    = fontSize * 1.1;
     const wallColor = getWallColor();
     const rx = r.x + vx * sc;
-    // 小さい壁の横2列X
-    const slx = rx - smallW * 0.5;
-    const srx = rx + smallW * 0.5;
 
-    // 上の壁
+    // 上の壁（上から下へ「壁」を敷き詰める）
     const topPx = wall.topH * sc;
-    // 先端：小さい壁×横2個（1行）を隙間ギリギリに配置
-    const tipCy = r.y + topPx - smallH / 2;
-    drawKanji('壁', slx, tipCy, smallSize, wallColor, 1);
-    drawKanji('壁', srx, tipCy, smallSize, wallColor, 1);
-    // 先端より上：大きい壁を先端に重ならないよう bigH単位で敷き詰める
-    // 大きい壁の最後のY = tipCy - smallH/2 - bigH/2 からぴったり止める
-    const bigTopLimit = tipCy - smallH / 2; // 大きい壁が入れる上限Y（中心）
-    for(let i=0; ; i++){
-      const cy = r.y - bigH / 2 + i * bigH;
-      if(cy + bigH / 2 > bigTopLimit) break;
-      drawKanji('壁', rx, cy, bigSize, wallColor, 1);
+    const topCount = Math.ceil(topPx / charH) + 2;
+    for(let i = 0; i < topCount; i++){
+      const cy = r.y - charH / 2 + i * charH;
+      if(cy > r.y + topPx) break;
+      drawKanji('壁', rx, cy, fontSize, wallColor, 1);
     }
 
-    // 下の壁
+    // 下の壁（下から上へ「壁」を敷き詰める）
     const botPx = (wall.topH + wall.gap) * sc;
     const botY  = r.y + botPx;
-    // 先端：小さい壁×横2個（1行）を隙間ギリギリに配置
-    const botTipCy = botY + smallH / 2;
-    drawKanji('壁', slx, botTipCy, smallSize, wallColor, 1);
-    drawKanji('壁', srx, botTipCy, smallSize, wallColor, 1);
-    // 先端より下：大きい壁を先端に重ならないよう bigH単位で敷き詰める
-    const bigBotStart = botTipCy + smallH / 2; // 大きい壁が入れる下限Y（上端）
-    for(let i=0; ; i++){
-      const cy = r.y + r.h + bigH / 2 - i * bigH;
-      if(cy - bigH / 2 < bigBotStart) break;
-      drawKanji('壁', rx, cy, bigSize, wallColor, 1);
+    const botCount = Math.ceil((r.h - botPx) / charH) + 2;
+    for(let i = 0; i < botCount; i++){
+      const cy = r.y + r.h + charH / 2 - i * charH;
+      if(cy < botY) break;
+      drawKanji('壁', rx, cy, fontSize, wallColor, 1);
     }
 
-    wall._wallW = Math.round(smallW * 2);
+    wall._wallW = Math.round(fontSize * 1.0);
   }
 
   // 背景：ゲームエリア内だけ描画（黒帯外は塗りつぶすのみ）
