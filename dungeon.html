@@ -273,7 +273,7 @@
       </div>
       <span style="font-size:min(3vw,11px);color:var(--text3);letter-spacing:0.08em;">壁をくっきり表示</span>
     </div>
-    <a href="index.html" class="back-link">← 丸場所へ戻る</a>
+    <a href="index.html" class="back-link" id="title-back-link">← 丸場所へ戻る</a>
     <a href="contact.html" class="back-link" style="color:var(--text3);margin-top:-8px;">不具合・お問い合わせは丸場所記憶ゲームのお問い合わせへ</a>
   </div>
 
@@ -509,6 +509,8 @@
     _raf = null;
     showScreen('screen-title');
     updateTitleBest();
+    _titleCursor = 0;
+    updateTitleCursor();
   }
 
   function updateTitleBest(){
@@ -994,6 +996,42 @@
   // ゲームオーバー画面のカーソル: 0=もう一度, 1=タイトルへ
   let _goCursor = 0;
 
+  // タイトル画面のカーソル
+  // 項目: 0=はじめる, 1=無理ゲー（解放時のみ）, 2=くっきり表示, 3=丸場所へ戻る
+  let _titleCursor = 0;
+
+  function getTitleItems(){
+    const items = ['btn-start'];
+    const murige = document.getElementById('btn-murige');
+    if(murige && murige.style.display !== 'none') items.push('btn-murige');
+    items.push('clear-mode-toggle');
+    items.push('title-back-link');
+    return items;
+  }
+
+  function updateTitleCursor(){
+    const items = getTitleItems();
+    items.forEach((id, i) => {
+      const el = document.getElementById(id);
+      if(!el) return;
+      if(i === _titleCursor){
+        el.style.outline = '2px solid var(--gold)';
+        el.style.outlineOffset = '3px';
+      } else {
+        el.style.outline = 'none';
+      }
+    });
+  }
+
+  function titleCursorAction(){
+    const items = getTitleItems();
+    const id = items[_titleCursor];
+    if(id === 'btn-start')        startGame(false);
+    else if(id === 'btn-murige')  startGame(true);
+    else if(id === 'clear-mode-toggle') toggleClearMode();
+    else if(id === 'title-back-link')   window.location.href = 'index.html';
+  }
+
   function updateGoCursor(){
     const r = document.getElementById('go-btn-retry');
     const h = document.getElementById('go-btn-home');
@@ -1006,9 +1044,11 @@
 
   window.addEventListener('gamepadconnected', e=>{
     _gpConnected = true;
-    gpIndicator.textContent = 'コントローラー接続中 — 0:飛ぶ／スタート　1:停止／タイトルへ';
+    gpIndicator.textContent = 'コントローラー接続中 — 十字キー:カーソル移動　0:決定／飛ぶ　1:停止';
     gpIndicator.style.opacity = '1';
     document.getElementById('go-gp-hint').style.display = 'block';
+    _titleCursor = 0;
+    updateTitleCursor();
     setTimeout(()=>{ gpIndicator.style.opacity='0'; }, 4000);
   });
   window.addEventListener('gamepaddisconnected', ()=>{
@@ -1041,63 +1081,67 @@
       const goEl    = document.getElementById('screen-gameover');
       const pauseEl = document.getElementById('screen-pause');
 
-      // ボタン0（A/×）: スタート / 飛ぶ / もう一度
+      const isTitle  = titleEl.style.display !== 'none';
+      const isGO     = goEl.style.display === 'flex';
+      const isPause  = pauseEl.style.display === 'flex';
+      const isGame   = gameEl.style.display === 'flex';
+
+      // ボタン0: 決定 / 飛ぶ / もう一度
       const b0 = _btnOn(gp.buttons[0]);
       if(b0 && !_gpPrevButtons[idx+'_0']){
-        if(titleEl.style.display !== 'none'){
-          startGame(false);
-        } else if(goEl.style.display === 'flex'){
-          if(_goCursor===0) startGame();
-          else goTitle();
-        } else if(pauseEl.style.display === 'flex'){
-          togglePause();
-        } else {
-          // 入力バッファに積む（次のgameFrameで確実に処理）
-          _flapQueued = true;
-        }
+        if(isTitle)       titleCursorAction();
+        else if(isGO)     { if(_goCursor===0) startGame(_murigeMode); else goTitle(); }
+        else if(isPause)  togglePause();
+        else              _flapQueued = true;
       }
       _gpPrevButtons[idx+'_0'] = b0;
 
-      // ボタン1（B/○）: 一時停止 / タイトルへ
+      // ボタン1: 一時停止 / タイトルへ
       const b1 = _btnOn(gp.buttons[1]);
       if(b1 && !_gpPrevButtons[idx+'_1']){
-        if(goEl.style.display === 'flex'){
-          goTitle();
-        } else if(gameEl.style.display === 'flex'){
-          togglePause();
-        } else if(pauseEl.style.display === 'flex'){
-          togglePause();
-        }
+        if(isGO)         goTitle();
+        else if(isGame)  togglePause();
+        else if(isPause) togglePause();
       }
       _gpPrevButtons[idx+'_1'] = b1;
 
-      // 十字キー上 / 左スティック上: 飛ぶ
+      // 十字キー上 / 左スティック上
       const up = _btnOn(gp.buttons[12]) || (gp.axes[1] < -0.3);
       if(up && !_gpPrevButtons[idx+'_up']){
-        if(goEl.style.display !== 'flex') _flapQueued = true;
+        if(isTitle){
+          const items = getTitleItems();
+          _titleCursor = (_titleCursor - 1 + items.length) % items.length;
+          updateTitleCursor();
+        } else if(!isGO){
+          _flapQueued = true;
+        }
       }
       _gpPrevButtons[idx+'_up'] = up;
 
-      // 十字キー下 / 左スティック下: GOカーソル移動
+      // 十字キー下 / 左スティック下
       const down = _btnOn(gp.buttons[13]) || (gp.axes[1] > 0.3);
       if(down && !_gpPrevButtons[idx+'_down']){
-        if(goEl.style.display === 'flex'){
+        if(isTitle){
+          const items = getTitleItems();
+          _titleCursor = (_titleCursor + 1) % items.length;
+          updateTitleCursor();
+        } else if(isGO){
           _goCursor = _goCursor===0 ? 1 : 0;
           updateGoCursor();
         }
       }
       _gpPrevButtons[idx+'_down'] = down;
 
-      // 十字キー左右でもGOカーソル移動
+      // 十字キー左右
       const left = _btnOn(gp.buttons[14]) || (gp.axes[0] < -0.3);
       if(left && !_gpPrevButtons[idx+'_left']){
-        if(goEl.style.display === 'flex'){ _goCursor=0; updateGoCursor(); }
+        if(isGO){ _goCursor=0; updateGoCursor(); }
       }
       _gpPrevButtons[idx+'_left'] = left;
 
       const right = _btnOn(gp.buttons[15]) || (gp.axes[0] > 0.3);
       if(right && !_gpPrevButtons[idx+'_right']){
-        if(goEl.style.display === 'flex'){ _goCursor=1; updateGoCursor(); }
+        if(isGO){ _goCursor=1; updateGoCursor(); }
       }
       _gpPrevButtons[idx+'_right'] = right;
     }
