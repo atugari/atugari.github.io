@@ -518,26 +518,23 @@
     const wallColor = getWallColor();
     const rx = r.x + vx * sc;
 
-    // 上の壁（上から下へ「壁」を敷き詰める）
-    const topPx = wall.topH * sc;
-    const topCount = Math.ceil(topPx / charH) + 2;
-    for(let i = 0; i < topCount; i++){
+    // 上の壁：隙間上端(topH)より上を「壁」で埋める
+    const topEdgePx = r.y + wall.topH * sc; // 隙間上端の実Y
+    for(let i = 0; ; i++){
       const cy = r.y - charH / 2 + i * charH;
-      if(cy > r.y + topPx) break;
+      if(cy - charH / 2 > topEdgePx) break; // 隙間に入り込まない
       drawKanji('壁', rx, cy, fontSize, wallColor, 1);
     }
 
-    // 下の壁（下から上へ「壁」を敷き詰める）
-    const botPx = (wall.topH + wall.gap) * sc;
-    const botY  = r.y + botPx;
-    const botCount = Math.ceil((r.h - botPx) / charH) + 2;
-    for(let i = 0; i < botCount; i++){
+    // 下の壁：隙間下端(topH+gap)より下を「壁」で埋める
+    const botEdgePx = r.y + (wall.topH + wall.gap) * sc; // 隙間下端の実Y
+    for(let i = 0; ; i++){
       const cy = r.y + r.h + charH / 2 - i * charH;
-      if(cy < botY) break;
+      if(cy + charH / 2 < botEdgePx) break; // 隙間に入り込まない
       drawKanji('壁', rx, cy, fontSize, wallColor, 1);
     }
 
-    wall._wallW = Math.round(fontSize * 1.0);
+    wall._wallW = Math.round(fontSize);
   }
 
   // 背景：ゲームエリア内だけ描画（黒帯外は塗りつぶすのみ）
@@ -659,16 +656,13 @@
     for(const wall of state.walls){
       const wx = wall.x - state.scrollX; // 仮想X
 
-      // 横判定：実描画幅（_wallW px）を仮想座標に逆変換して使う
-      // _wallWがまだ設定されていない場合はWALL_WIDTHをフォールバック
+      // 横判定：壁の文字サイズ半分＋プレイヤー半径
       const wallHalfW = sc > 0
-        ? (wall._wallW || WALL_WIDTH * sc) / sc / 2
-        : WALL_WIDTH / 2;
+        ? (wall._wallW || Math.round(28 * sc)) / sc / 2
+        : 14;
+      if(Math.abs(wx - px) > wallHalfW + pr * 0.6) continue;
 
-      // 横方向に重なっているか（プレイヤー半径分だけ内側に詰めて判定を少し小さく）
-      if(Math.abs(wx - px) > wallHalfW + pr * 0.7) continue;
-
-      // 縦判定：視覚より少し小さめ（プレイヤー半径を0.75倍）
+      // 縦判定：topH/gapをそのまま使う（視覚より少し小さめ）
       if(py - pr * 0.75 < wall.topH || py + pr * 0.75 > wall.topH + wall.gap) return true;
     }
     return false;
