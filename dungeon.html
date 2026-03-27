@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="screen-orientation" content="portrait">
   <meta name="theme-color" content="#0d0d0a">
   <title>飛べ飛 — 丸場所</title>
   <style>
@@ -34,17 +33,13 @@
       user-select:none;
       -webkit-user-select:none;
     }
-    /* 横向きになったら回転を促す */
-    #landscape-warn{
-      display:none;
-      position:fixed;inset:0;z-index:99999;
-      background:#0d0d0a;
-      flex-direction:column;align-items:center;justify-content:center;
-      gap:16px;text-align:center;
+    /* 黒帯マスク（横向き時の左右余白） */
+    #game-mask-l, #game-mask-r {
+      position:fixed;top:0;bottom:0;width:0;
+      background:#0d0d0a;z-index:50;pointer-events:none;
     }
-    @media (orientation: landscape){
-      #landscape-warn{ display:flex; }
-    }
+    #game-mask-l{ left:0; }
+    #game-mask-r{ right:0; }
 
     /* 和紙テクスチャ風ノイズ */
     body::before{
@@ -57,7 +52,7 @@
     #wrapper{
       display:flex;flex-direction:column;
       align-items:center;justify-content:center;
-      height:100%;
+      position:fixed;inset:0;
       gap:0;
     }
 
@@ -121,8 +116,8 @@
       display:none;
       flex-direction:column;
       align-items:center;
-      width:100%;height:100%;
-      position:relative;
+      position:fixed;
+      inset:0;
     }
 
     /* HUD */
@@ -155,6 +150,8 @@
     /* キャンバス */
     #game-canvas{
       display:block;
+      position:fixed;
+      top:0;left:0;
       width:100%;
       height:100%;
       touch-action:none;
@@ -242,12 +239,9 @@
   </style>
 </head>
 <body>
-<!-- 横向き警告 -->
-<div id="landscape-warn">
-  <div style="font-size:48px;color:var(--text3);">↺</div>
-  <div style="font-size:14px;color:var(--text2);letter-spacing:0.2em;">縦向きでプレイしてください</div>
-  <div style="font-size:11px;color:var(--text3);">Please rotate your device</div>
-</div>
+<!-- 黒帯マスク（横向き時の左右余白） -->
+<div id="game-mask-l"></div>
+<div id="game-mask-r"></div>
 
 <div id="wrapper">
 
@@ -334,40 +328,88 @@
   const canvas = document.getElementById('game-canvas');
   const ctx = canvas.getContext('2d');
 
-  function resizeCanvas(){
-    // 100dvh を使って実際のビューポート高さを取得（アドレスバー込みの問題を回避）
-    canvas.width  = window.innerWidth;
-    canvas.height = window.innerHeight;
-    canvas.style.width  = window.innerWidth  + 'px';
-    canvas.style.height = window.innerHeight + 'px';
-  }
-  window.addEventListener('resize', ()=>{ resizeCanvas(); });
-  window.addEventListener('orientationchange', ()=>{ setTimeout(resizeCanvas, 200); });
-
   // ===== ゲーム定数 =====
-  const GRAVITY        = 0.38;
-  const FLAP_POWER     = -7.2;
-  const SCROLL_SPEED   = 3.2;
+  // 仮想ゲームエリア（製作者端末基準）
+  const BASE_H         = 750;
+  const BASE_W         = 360;
   const WALL_INTERVAL  = 240;
   const WALL_WIDTH     = 38;
   const PLAYER_SIZE    = 36;
   const PLAYER_X_RATIO = 0.22;
 
+  // ゲームエリア情報（横向き対応・黒帯マスク込み）
+  let _gameRect = { x:0, y:0, w:360, h:750, scale:1 };
+
+  function calcGameRect(){
+    const sw = window.innerWidth;
+    const sh = window.innerHeight;
+    // ゲームエリアの縦横比を BASE_W:BASE_H に固定
+    const aspect = BASE_W / BASE_H;
+    let gw, gh;
+    if(sw / sh < aspect){
+      // 画面が縦長 → 幅いっぱい
+      gw = sw;
+      gh = sw / aspect;
+    } else {
+      // 画面が横長 → 高さいっぱい
+      gh = sh;
+      gw = sh * aspect;
+    }
+    const gx = (sw - gw) / 2;
+    const gy = (sh - gh) / 2;
+    const scale = gh / BASE_H;
+    return { x:gx, y:gy, w:gw, h:gh, scale };
+  }
+
+  function resizeCanvas(){
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    _gameRect = calcGameRect();
+    // 黒帯マスクの幅を更新
+    const ml = document.getElementById('game-mask-l');
+    const mr = document.getElementById('game-mask-r');
+    const r = _gameRect;
+    const H = window.innerHeight;
+    if(ml){ ml.style.width = r.x + 'px'; ml.style.height = H + 'px'; }
+    if(mr){ mr.style.width = r.x + 'px'; mr.style.height = H + 'px'; }
+    // タイトル・GO・ポーズ・ゲーム画面をゲームエリアに合わせて配置
+    ['screen-title','screen-pause','screen-gameover','screen-game'].forEach(id => {
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.style.position = 'fixed';
+      el.style.left   = r.x + 'px';
+      el.style.top    = r.y + 'px';
+      el.style.width  = r.w + 'px';
+      el.style.height = r.h + 'px';
+    });
+  }
+  window.addEventListener('resize', ()=>{ resizeCanvas(); });
+  window.addEventListener('orientationchange', ()=>{ setTimeout(resizeCanvas, 200); });
+
+  // ゲームエリア内座標へ変換（仮想→実キャンバス）
+  function gx(vx){ return _gameRect.x + vx * _gameRect.scale; }
+  function gy(vy){ return _gameRect.y + vy * _gameRect.scale; }
+  function gs(v) { return v * _gameRect.scale; }
+
+  function getScale(){ return _gameRect.scale; }
+  // 物理値はスケールに比例
+  function getGravity()    { return 0.38 * getScale(); }
+  function getFlapPower()  { return -7.2 * getScale(); }
+  function getScrollSpeed(){ return 3.2  * getScale(); }
+
   // ===== 難易度フェーズ定義 =====
   // score範囲ごとにパラメータを変える
   // gap: 隙間の高さ(px)  vertRange: 縦位置の振れ幅(0〜1)  label: 表示名
   function getPhase(score){
-    const H = canvas.height;
-    // 隙間は画面高さ比率で固定（どの端末でも製作者環境と同じ体感になるよう）
-    // 基準: 製作者端末 innerHeight ≒ 750px
+    // 隙間は仮想座標系（BASE_H=750px）の比率で固定
     if(score < 10){
-      return { gapMin:H*0.267, gapMax:H*0.307, vertMin:0.20, vertMax:0.60, label:'入門', labelDetail:'まずは感覚をつかもう' };
+      return { gapMin:BASE_H*0.267, gapMax:BASE_H*0.307, vertMin:0.20, vertMax:0.60, label:'入門', labelDetail:'まずは感覚をつかもう' };
     } else if(score < 30){
-      return { gapMin:H*0.207, gapMax:H*0.233, vertMin:0.15, vertMax:0.65, label:'普通', labelDetail:'少しずつ狭くなってきた' };
+      return { gapMin:BASE_H*0.207, gapMax:BASE_H*0.233, vertMin:0.15, vertMax:0.65, label:'普通', labelDetail:'少しずつ狭くなってきた' };
     } else if(score < 50){
-      return { gapMin:H*0.167, gapMax:H*0.187, vertMin:0.10, vertMax:0.72, label:'難しい', labelDetail:'大きく上下に動かそう' };
+      return { gapMin:BASE_H*0.167, gapMax:BASE_H*0.187, vertMin:0.10, vertMax:0.72, label:'難しい', labelDetail:'大きく上下に動かそう' };
     } else {
-      return { gapMin:H*0.140, gapMax:H*0.157, vertMin:0.08, vertMax:0.76, label:'達人', labelDetail:'繰り返せるか…' };
+      return { gapMin:BASE_H*0.140, gapMax:BASE_H*0.157, vertMin:0.08, vertMax:0.76, label:'達人', labelDetail:'繰り返せるか…' };
     }
   }
 
@@ -379,7 +421,7 @@
     resizeCanvas();
     const W = canvas.width, H = canvas.height;
     return {
-      playerY      : H * 0.45,
+      playerY      : BASE_H * 0.45,
       playerVY     : 0,
       rotation     : 0,
       walls        : [],
@@ -397,15 +439,15 @@
 
   // ===== 壁生成 =====
   function getWallInterval(){
-    // 画面幅に応じてWALL_INTERVALをスケール（基準幅360px）
-    return Math.round(WALL_INTERVAL * Math.max(canvas.width / 360, 1.0));
+    // 仮想座標系では常にWALL_INTERVAL（スクロール速度がスケールされるので間隔も連動）
+    return WALL_INTERVAL;
   }
   function spawnWall(x){
-    const H = canvas.height;
+    // 仮想座標系（BASE_H基準）で生成
     const phase = getPhase(state ? state.score : 0);
     const gap = phase.gapMin + Math.random()*(phase.gapMax - phase.gapMin);
-    const topMin = H * phase.vertMin;
-    const topMax = H * phase.vertMax - gap;
+    const topMin = BASE_H * phase.vertMin;
+    const topMax = BASE_H * phase.vertMax - gap;
     const topH = topMin + Math.random()*Math.max(0, topMax - topMin);
     return { x, topH, gap, passed:false };
   }
@@ -424,86 +466,94 @@
     ctx.restore();
   }
 
-  // 縦書き風「壁」を上下に描画
+  // 縦書き風「壁」を上下に描画（仮想座標→実座標変換）
   function drawWall(wall){
-    const W = canvas.width, H = canvas.height;
-    const x = wall.x - state.scrollX;
-    // 壁の文字サイズ・幅を画面幅に合わせてスケール（基準幅360px）
-    const scale = Math.max(W / 360, 1.0);
-    const fontSize = Math.round(28 * scale);
-    const wallW = Math.round(38 * scale);
-    if(x < -wallW*2 || x > W + wallW*2) return;
+    const r = _gameRect;
+    // 仮想X座標（スクロール込み）
+    const vx = wall.x - state.scrollX;
+    if(vx < -WALL_WIDTH*2 || vx > BASE_W + WALL_WIDTH*2) return;
 
-    const wallColor = '#4a4840';
+    const sc = getScale();
+    const fontSize = Math.round(28 * sc);
     const charH = fontSize * 1.1;
+    const wallColor = '#4a4840';
+    // 実キャンバス上のX
+    const rx = r.x + vx * sc;
 
-    // 上の壁（上から下へ「壁」を積む）
-    const topCount = Math.ceil(wall.topH / charH) + 2;
+    // 上の壁（上から下へ）
+    const topPx = wall.topH * sc; // 仮想topHを実px変換
+    const topCount = Math.ceil(topPx / charH) + 2;
     for(let i=0; i<topCount; i++){
-      const cy = -charH/2 + i * charH;
-      if(cy > wall.topH + charH/2) break;
-      drawKanji('壁', x, cy, fontSize, wallColor, 1);
+      const cy = r.y - charH/2 + i * charH;
+      if(cy > r.y + topPx + charH/2) break;
+      drawKanji('壁', rx, cy, fontSize, wallColor, 1);
     }
 
-    // 下の壁（下から上へ「壁」を積む）
-    const botY = wall.topH + wall.gap;
-    const botCount = Math.ceil((H - botY) / charH) + 2;
+    // 下の壁（下から上へ）
+    const botVY = wall.topH + wall.gap;
+    const botPx = botVY * sc; // 実px上の隙間下端Y（ゲームエリア内相対）
+    const botY  = r.y + botPx;
+    const botCount = Math.ceil((r.h - botPx) / charH) + 2;
     for(let i=0; i<botCount; i++){
-      const cy = H + charH/2 - i * charH;
+      const cy = r.y + r.h + charH/2 - i * charH;
       if(cy < botY - charH/2) break;
-      drawKanji('壁', x, cy, fontSize, wallColor, 1);
+      drawKanji('壁', rx, cy, fontSize, wallColor, 1);
     }
-    // 判定線なし：「壁」漢字の端が視覚的な境界
-    // wallWをwall._wallWに保存（衝突判定で使う）
-    wall._wallW = wallW;
+    wall._wallW = Math.round(38 * sc);
   }
 
-  // 背景：縦の細い墨線
+  // 背景：ゲームエリア内だけ描画（黒帯外は塗りつぶすのみ）
   function drawBg(){
     const W = canvas.width, H = canvas.height;
+    const r = _gameRect;
     ctx.clearRect(0,0,W,H);
-    ctx.fillStyle = '#0d0d0a';
+    // 全画面を暗く
+    ctx.fillStyle = '#050504';
     ctx.fillRect(0,0,W,H);
+    // ゲームエリアを背景色で
+    ctx.fillStyle = '#0d0d0a';
+    ctx.fillRect(r.x, r.y, r.w, r.h);
 
-    // 流れる横罫線（和紙の横線）
+    // 横罫線（ゲームエリア内のみ）
     ctx.save();
     ctx.strokeStyle = 'rgba(255,255,255,0.025)';
     ctx.lineWidth = 1;
-    const lineSpacing = 28;
-    for(let y=0; y<H; y+=lineSpacing){
+    const lineSpacing = gs(28);
+    for(let y=r.y; y<r.y+r.h; y+=lineSpacing){
       ctx.beginPath();
-      ctx.moveTo(0,y);ctx.lineTo(W,y);
+      ctx.moveTo(r.x, y);ctx.lineTo(r.x+r.w, y);
       ctx.stroke();
     }
     ctx.restore();
   }
 
-  // プレイヤー描画
+  // プレイヤー描画（仮想座標→実座標変換）
   function drawPlayer(){
-    const W = canvas.width;
-    const px = W * PLAYER_X_RATIO;
-    const py = state.playerY;
+    const r = _gameRect;
+    const vpx = BASE_W * PLAYER_X_RATIO; // 仮想X
+    const vpy = state.playerY;           // 仮想Y
+    const rpx = r.x + vpx * r.scale;    // 実X
+    const rpy = r.y + vpy * r.scale;    // 実Y
     const rot = Math.min(Math.max(state.playerVY * 0.07, -0.6), 1.0);
-    const pScale = Math.max(W / 360, 1.0);
-    const pSize = Math.round(PLAYER_SIZE * pScale);
+    const pSize = Math.round(PLAYER_SIZE * r.scale);
 
     // 軌跡（残像）
     const trailCount = 4;
     for(let i=trailCount; i>0; i--){
-      const ty = py - state.playerVY * i * 1.5;
-      drawKanji('飛', px, ty, pSize, '#c8a85a', 0.06 * (trailCount-i+1), rot);
+      const try_ = rpy - state.playerVY * r.scale * i * 1.5;
+      drawKanji('飛', rpx, try_, pSize, '#c8a85a', 0.06 * (trailCount-i+1), rot);
     }
 
     // グロー
     ctx.save();
     ctx.shadowColor = 'rgba(200,168,90,0.5)';
     ctx.shadowBlur = 18;
-    drawKanji('飛', px, py, pSize, '#e8c870', 1, rot);
+    drawKanji('飛', rpx, rpy, pSize, '#e8c870', 1, rot);
     ctx.restore();
 
     // フラッシュ（衝突時）
     if(state.flashTimer > 0){
-      drawKanji('飛', px, py, PLAYER_SIZE, '#ffffff', state.flashTimer/8, rot);
+      drawKanji('飛', rpx, rpy, pSize, '#ffffff', state.flashTimer/8, rot);
       state.flashTimer--;
     }
   }
@@ -516,84 +566,82 @@
     document.getElementById('hud-best').textContent =
       '【' + phase.label + '】' + (b > 0 ? '  best ' + b : '');
 
-    // キャンバス中央上部にも大きくスコアを描画
-    const W = canvas.width;
-    const scoreFontSize = Math.round(Math.max(W / 360, 1.0) * 48);
+    // ゲームエリア中央上部にスコアを大きく描画
+    const r2 = _gameRect;
+    const scoreFontSize = Math.round(r2.scale * 48);
     ctx.save();
     ctx.font = `700 ${scoreFontSize}px 'Noto Serif JP', serif`;
     ctx.fillStyle = 'rgba(200,168,90,0.18)';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
-    ctx.fillText(state.score, W / 2, 18);
+    ctx.fillText(state.score, r2.x + r2.w/2, r2.y + 18 * r2.scale);
     ctx.restore();
   }
 
-  // 「はじめにタップ」表示
+  // 「はじめにタップ」表示（仮想座標系）
   function drawReadyText(){
-    const W = canvas.width, H = canvas.height;
+    const r = _gameRect;
+    const cx = r.x + r.w/2;
     const alpha = 0.5 + 0.5*Math.sin(state.frame*0.08);
+    const fs1 = Math.round(12 * r.scale);
+    const fs2 = Math.round(14 * r.scale);
     ctx.save();
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
-    // チュートリアル説明（常時）
     ctx.globalAlpha = 0.7;
-    ctx.font = "400 12px 'Noto Serif JP', serif";
+    ctx.font = `400 ${fs1}px 'Noto Serif JP', serif`;
     ctx.fillStyle = 'rgba(138,134,120,0.9)';
-    ctx.fillText('【 入門 】まずは感覚をつかもう', W/2, H*0.64);
-    ctx.fillText('壁と壁の隙間を通り抜けよう', W/2, H*0.69);
-    ctx.fillText('タップするたびに「飛」が上へ跳ねる', W/2, H*0.74);
+    ctx.fillText('【 入門 】まずは感覚をつかもう', cx, r.y + r.h*0.64);
+    ctx.fillText('壁と壁の隙間を通り抜けよう',     cx, r.y + r.h*0.69);
+    ctx.fillText('タップするたびに「飛」が上へ跳ねる', cx, r.y + r.h*0.74);
 
-    // 点滅テキスト
     ctx.globalAlpha = alpha;
-    ctx.font = "700 14px 'Noto Serif JP', serif";
+    ctx.font = `700 ${fs2}px 'Noto Serif JP', serif`;
     ctx.fillStyle = 'rgba(200,168,90,0.9)';
-    ctx.fillText('タップして開始', W/2, H*0.82);
+    ctx.fillText('タップして開始', cx, r.y + r.h*0.82);
     ctx.restore();
   }
 
-  // ===== フェーズアナウンス描画 =====
+  // ===== フェーズアナウンス描画（仮想座標系） =====
   function drawPhaseAnnounce(){
-    const W = canvas.width, H = canvas.height;
+    const r = _gameRect;
     const t = state.phaseTimer;
     const alpha = t > 90 ? 1 : t / 90;
-    const scale = t > 100 ? 1 + (t-100)*0.015 : 1;
+    const animScale = t > 100 ? 1 + (t-100)*0.015 : 1;
+    const boxW = 220 * r.scale, boxH = 64 * r.scale;
+    const cx = r.x + r.w/2, cy = r.y + r.h*0.38;
     ctx.save();
     ctx.globalAlpha = alpha * 0.92;
-    ctx.translate(W/2, H*0.38);
-    ctx.scale(scale, scale);
+    ctx.translate(cx, cy);
+    ctx.scale(animScale, animScale);
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    // 背景
     ctx.fillStyle = 'rgba(13,13,10,0.7)';
     ctx.beginPath();
-    ctx.roundRect(-110, -32, 220, 64, 8);
+    ctx.roundRect(-boxW/2, -boxH/2, boxW, boxH, 8 * r.scale);
     ctx.fill();
-    // フェーズ名
-    ctx.font = "700 22px 'Noto Serif JP', serif";
+    ctx.font = `700 ${Math.round(22*r.scale)}px 'Noto Serif JP', serif`;
     ctx.fillStyle = '#c8a85a';
-    ctx.fillText('【 ' + state.phaseLabel + ' 】', 0, -10);
-    // 説明
-    ctx.font = "400 12px 'Noto Serif JP', serif";
+    ctx.fillText('【 ' + state.phaseLabel + ' 】', 0, -10 * r.scale);
+    ctx.font = `400 ${Math.round(12*r.scale)}px 'Noto Serif JP', serif`;
     ctx.fillStyle = 'rgba(200,168,90,0.7)';
-    ctx.fillText(state.phaseDetail, 0, 14);
+    ctx.fillText(state.phaseDetail, 0, 14 * r.scale);
     ctx.restore();
   }
 
-  // ===== 衝突判定 =====
+  // ===== 衝突判定（仮想座標系で計算） =====
   function checkCollision(){
-    const W = canvas.width, H = canvas.height;
-    const px = W * PLAYER_X_RATIO;
-    const py = state.playerY;
-    const r  = PLAYER_SIZE * 0.38; // 当たり判定を少し小さく
+    const px = BASE_W * PLAYER_X_RATIO; // 仮想X固定
+    const py = state.playerY;           // 仮想Y
+    const r  = PLAYER_SIZE * 0.38;      // 仮想px単位
 
-    // 天井・床（余裕を持たせて確実に検出）
-    if(py - r < 0 || py + r > H - 5) return true;
+    // 天井・床
+    if(py - r < 0 || py + r > BASE_H - 5) return true;
 
     for(const wall of state.walls){
-      const wx = wall.x - state.scrollX;
-      const ww = (wall._wallW || WALL_WIDTH) / 2;
-      if(Math.abs(wx - px) > ww + r) continue;
+      const wx = wall.x - state.scrollX; // 仮想X
+      if(Math.abs(wx - px) > WALL_WIDTH/2 + r) continue;
       if(py - r < wall.topH || py + r > wall.topH + wall.gap) return true;
     }
     return false;
@@ -601,22 +649,21 @@
 
   // ===== メインループ =====
   function gameLoop(){
-    const W = canvas.width, H = canvas.height;
     state.frame++;
 
     if(state.started){
-      // 物理
-      state.playerVY += GRAVITY;
+      // 物理（画面高さ基準でスケール）
+      state.playerVY += getGravity();
       state.playerY  += state.playerVY;
 
       // スクロール
-      state.scrollX  += SCROLL_SPEED;
+      state.scrollX  += getScrollSpeed();
 
       // 壁を追加
       const wInterval = getWallInterval();
       const lastWall = state.walls[state.walls.length-1];
-      const nextX = lastWall ? lastWall.x + wInterval : W + 80;
-      if(nextX - state.scrollX < W + 80){
+      const nextX = lastWall ? lastWall.x + wInterval : BASE_W + 80;
+      if(nextX - state.scrollX < BASE_W + 80){
         state.walls.push(spawnWall(nextX));
       }
 
@@ -625,7 +672,7 @@
 
       // スコア更新
       for(const wall of state.walls){
-        if(!wall.passed && wall.x - state.scrollX < W * PLAYER_X_RATIO){
+        if(!wall.passed && wall.x - state.scrollX < BASE_W * PLAYER_X_RATIO){
           wall.passed = true;
           state.score++;
           // フェーズ切替チェック
@@ -664,10 +711,9 @@
     state = initState();
 
     // 最初の壁をすこし先に生成
-    const W = canvas.width;
     const wi = getWallInterval();
     for(let i=0; i<5; i++){
-      state.walls.push(spawnWall(W * 0.8 + i * wi));
+      state.walls.push(spawnWall(BASE_W * 0.8 + i * wi));
     }
 
     showScreen('screen-game');
@@ -715,11 +761,14 @@
     if(!state.started){
       state.started = true;
     }
-    state.playerVY = FLAP_POWER;
+    state.playerVY = getFlapPower();
   }
 
   canvas.addEventListener('pointerdown', e=>{
     e.preventDefault();
+    // ゲームエリア外（黒帯部分）のタップは無視
+    const r = _gameRect;
+    if(e.clientX < r.x || e.clientX > r.x + r.w) return;
     doFlap();
   });
 
@@ -864,9 +913,10 @@
   setInterval(pollGamepad, 8);
 
   // ===== 初期化 =====
+  resizeCanvas();
+  _gameRect = calcGameRect();
   showScreen('screen-title');
   updateTitleBest();
-  resizeCanvas();
 </script>
 </body>
 </html>
