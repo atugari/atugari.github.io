@@ -446,8 +446,11 @@
       return { gapMin:BASE_H*0.207, gapMax:BASE_H*0.233, vertMin:0.15, vertMax:0.65, label:'普通', labelDetail:'少しずつ狭くなってきた' };
     } else if(score < 50){
       return { gapMin:BASE_H*0.167, gapMax:BASE_H*0.187, vertMin:0.10, vertMax:0.72, label:'難しい', labelDetail:'大きく上下に動かそう' };
-    } else {
+    } else if(score < 100){
       return { gapMin:BASE_H*0.140, gapMax:BASE_H*0.157, vertMin:0.08, vertMax:0.76, label:'達人', labelDetail:'繰り返せるか…' };
+    } else {
+      // 無理ゲー：10壁いけたら凄い！隙間激狭・縦移動最大
+      return { gapMin:BASE_H*0.090, gapMax:BASE_H*0.102, vertMin:0.05, vertMax:0.82, label:'無理ゲー', labelDetail:'' };
     }
   }
 
@@ -469,9 +472,7 @@
       alive        : true,
       started      : false,
       flashTimer   : 0,
-      phaseLabel   : '入門',
-      phaseDetail  : 'まずは感覚をつかもう',
-      phaseTimer   : 0,
+
     };
   }
 
@@ -611,52 +612,40 @@
     const r = _gameRect;
     const cx = r.x + r.w/2;
     const alpha = 0.5 + 0.5*Math.sin(state.frame*0.08);
-    const fs1 = Math.round(12 * r.scale);
-    const fs2 = Math.round(14 * r.scale);
+    const fs1 = Math.round(13 * r.scale);
+    const fs2 = Math.round(15 * r.scale);
+    const lineH = fs1 * 1.9;
+    const lines = [
+      '【 入門 】まずは感覚をつかもう',
+      '壁と壁の隙間を通り抜けよう',
+      'タップするたびに「飛」が上へ跳ねる',
+    ];
+    const boxY  = r.y + r.h * 0.60;
+    const boxH  = lineH * lines.length + fs1 * 1.2;
+    const boxW  = r.w * 0.82;
     ctx.save();
+    // 半透明背景ボックス
+    ctx.fillStyle = 'rgba(13,13,10,0.78)';
+    ctx.beginPath();
+    ctx.roundRect(cx - boxW/2, boxY, boxW, boxH, 6 * r.scale);
+    ctx.fill();
+    // テキスト
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-
-    ctx.globalAlpha = 0.7;
+    ctx.globalAlpha = 1;
     ctx.font = `400 ${fs1}px 'Noto Serif JP', serif`;
-    ctx.fillStyle = 'rgba(138,134,120,0.9)';
-    ctx.fillText('【 入門 】まずは感覚をつかもう', cx, r.y + r.h*0.64);
-    ctx.fillText('壁と壁の隙間を通り抜けよう',     cx, r.y + r.h*0.69);
-    ctx.fillText('タップするたびに「飛」が上へ跳ねる', cx, r.y + r.h*0.74);
-
+    ctx.fillStyle = '#b0aa90';
+    lines.forEach((line, i) => {
+      ctx.fillText(line, cx, boxY + fs1 * 0.9 + i * lineH);
+    });
+    // 点滅テキスト
     ctx.globalAlpha = alpha;
     ctx.font = `700 ${fs2}px 'Noto Serif JP', serif`;
-    ctx.fillStyle = 'rgba(200,168,90,0.9)';
-    ctx.fillText('タップして開始', cx, r.y + r.h*0.82);
+    ctx.fillStyle = 'rgba(200,168,90,1)';
+    ctx.fillText('タップして開始', cx, r.y + r.h * 0.86);
     ctx.restore();
   }
 
-  // ===== フェーズアナウンス描画（仮想座標系） =====
-  function drawPhaseAnnounce(){
-    const r = _gameRect;
-    const t = state.phaseTimer;
-    const alpha = t > 90 ? 1 : t / 90;
-    const animScale = t > 100 ? 1 + (t-100)*0.015 : 1;
-    const boxW = 220 * r.scale, boxH = 64 * r.scale;
-    const cx = r.x + r.w/2, cy = r.y + r.h*0.38;
-    ctx.save();
-    ctx.globalAlpha = alpha * 0.92;
-    ctx.translate(cx, cy);
-    ctx.scale(animScale, animScale);
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillStyle = 'rgba(13,13,10,0.7)';
-    ctx.beginPath();
-    ctx.roundRect(-boxW/2, -boxH/2, boxW, boxH, 8 * r.scale);
-    ctx.fill();
-    ctx.font = `700 ${Math.round(22*r.scale)}px 'Noto Serif JP', serif`;
-    ctx.fillStyle = '#c8a85a';
-    ctx.fillText('【 ' + state.phaseLabel + ' 】', 0, -10 * r.scale);
-    ctx.font = `400 ${Math.round(12*r.scale)}px 'Noto Serif JP', serif`;
-    ctx.fillStyle = 'rgba(200,168,90,0.7)';
-    ctx.fillText(state.phaseDetail, 0, 14 * r.scale);
-    ctx.restore();
-  }
 
   // ===== 衝突判定（仮想座標系で計算） =====
   function checkCollision(){
@@ -707,12 +696,9 @@
           const newPhase = getPhase(state.score);
           if(newPhase.label !== state.phaseLabel){
             state.phaseLabel = newPhase.label;
-            state.phaseDetail = newPhase.labelDetail;
-            state.phaseTimer = 120; // 約2秒表示
           }
         }
       }
-      if(state.phaseTimer > 0) state.phaseTimer--;
 
       // 衝突判定
       if(checkCollision()){
@@ -728,7 +714,6 @@
     drawPlayer();
     if(!state.started) drawReadyText();
     drawHudScore();
-    if(state.phaseTimer > 0) drawPhaseAnnounce();
 
     _raf = requestAnimationFrame(gameLoop);
   }
