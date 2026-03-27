@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#0d0d0a">
   <title>飛べ飛 — 丸場所</title>
   <style>
@@ -32,6 +32,14 @@
       touch-action:none;
       user-select:none;
       -webkit-user-select:none;
+    }
+    /* 縦向き対応 */
+    @media (orientation: portrait) {
+      #screen-title{ padding:16px; gap:14px; }
+      .title-kanji{ font-size:72px; }
+      #hud{ padding:8px 12px; }
+      #hud-score{ font-size:18px; }
+      #pause-btn{ font-size:10px; padding:4px 10px; }
     }
 
     /* 和紙テクスチャ風ノイズ */
@@ -273,8 +281,11 @@
     <div class="go-best-wrap" id="go-best-wrap"></div>
     <div class="go-new-best" id="go-new-best" style="display:none;">★ 新記録 ★</div>
     <div class="go-divider"></div>
-    <button class="btn-retry" onclick="startGame()">も う 一 度</button>
-    <button class="btn-home" onclick="goTitle()">タイトルへ</button>
+    <button class="btn-retry" id="go-btn-retry" onclick="startGame()">も う 一 度</button>
+    <button class="btn-home" id="go-btn-home" onclick="goTitle()">タ イ ト ル へ</button>
+    <div id="go-gp-hint" style="display:none;font-size:10px;color:var(--text3);letter-spacing:0.1em;margin-top:4px;">
+      ボタン0: もう一度　ボタン1: タイトルへ
+    </div>
   </div>
 
 </div>
@@ -662,6 +673,8 @@
     document.getElementById('go-new-best').style.display = isNew ? 'block' : 'none';
 
     setTimeout(()=>{
+      _goCursor = 0;
+      updateGoCursor();
       showScreen('screen-gameover');
     }, 300);
   }
@@ -714,47 +727,126 @@
   const gpIndicator = document.getElementById('gamepad-indicator');
   let _gpConnected = false;
   let _gpPrevButtons = {};
-  let _gpPauseHeld = false;
+  // ゲームオーバー画面のカーソル: 0=もう一度, 1=タイトルへ
+  let _goCursor = 0;
+
+  function updateGoCursor(){
+    const r = document.getElementById('go-btn-retry');
+    const h = document.getElementById('go-btn-home');
+    if(!r||!h) return;
+    r.style.borderColor = _goCursor===0 ? 'var(--gold)' : 'var(--gold2)';
+    r.style.color       = _goCursor===0 ? 'var(--gold)' : 'var(--text3)';
+    h.style.borderColor = _goCursor===1 ? 'rgba(138,134,120,0.6)' : 'transparent';
+    h.style.color       = _goCursor===1 ? 'var(--text2)' : 'var(--text3)';
+  }
 
   window.addEventListener('gamepadconnected', e=>{
     _gpConnected = true;
-    gpIndicator.textContent = 'コントローラー接続中 — ボタン0: 飛ぶ　ボタン1: 停止';
+    gpIndicator.textContent = 'コントローラー接続中 — 0:飛ぶ／スタート　1:停止／タイトルへ';
     gpIndicator.style.opacity = '1';
-    setTimeout(()=>{ gpIndicator.style.opacity='0'; }, 3000);
+    document.getElementById('go-gp-hint').style.display = 'block';
+    setTimeout(()=>{ gpIndicator.style.opacity='0'; }, 4000);
   });
   window.addEventListener('gamepaddisconnected', ()=>{
     _gpConnected = false;
+    document.getElementById('go-gp-hint').style.display = 'none';
   });
+
+  // ===== ゲームパッド遅延改善 =====
+  // requestAnimationFrameは描画と同期するため約16ms固定。
+  // setIntervalで8ms間隔にしてポーリング頻度を上げる。
+  // ボタン判定も .pressed ではなく .value > 0.08 に下げて反応を早める。
+  // さらに「フラップ予約」バッファを設けて、判定タイミングのズレを吸収する。
+
+  let _flapQueued = false; // 入力バッファ：次フレームで確実に反映
+
+  function _btnOn(btn){
+    if(!btn) return false;
+    // pressedよりvalueで判定（閾値を低くして反応を早める）
+    return btn.value > 0.08 || btn.pressed;
+  }
 
   function pollGamepad(){
     const gps = navigator.getGamepads ? navigator.getGamepads() : [];
     for(const gp of gps){
       if(!gp) continue;
-      // ボタン0（A/×）: 飛ぶ
-      const b0 = gp.buttons[0]?.pressed;
-      if(b0 && !_gpPrevButtons[gp.index+'_0']){
-        const goEl = document.getElementById('screen-gameover');
-        if(goEl.style.display === 'flex'){ startGame(); }
-        else { doFlap(); }
-      }
-      _gpPrevButtons[gp.index+'_0'] = b0;
+      const idx = gp.index;
 
-      // ボタン1（B/○）: 一時停止
-      const b1 = gp.buttons[1]?.pressed;
-      if(b1 && !_gpPrevButtons[gp.index+'_1']){
-        const gameEl = document.getElementById('screen-game');
-        if(gameEl.style.display === 'flex') togglePause();
-      }
-      _gpPrevButtons[gp.index+'_1'] = b1;
+      const titleEl = document.getElementById('screen-title');
+      const gameEl  = document.getElementById('screen-game');
+      const goEl    = document.getElementById('screen-gameover');
+      const pauseEl = document.getElementById('screen-pause');
 
-      // 十字キー上 / 左スティック上
-      const up = gp.buttons[12]?.pressed || (gp.axes[1] < -0.5);
-      if(up && !_gpPrevButtons[gp.index+'_up']){ doFlap(); }
-      _gpPrevButtons[gp.index+'_up'] = up;
+      // ボタン0（A/×）: スタート / 飛ぶ / もう一度
+      const b0 = _btnOn(gp.buttons[0]);
+      if(b0 && !_gpPrevButtons[idx+'_0']){
+        if(titleEl.style.display !== 'none'){
+          startGame();
+        } else if(goEl.style.display === 'flex'){
+          if(_goCursor===0) startGame();
+          else goTitle();
+        } else if(pauseEl.style.display === 'flex'){
+          togglePause();
+        } else {
+          // 入力バッファに積む（次のgameFrameで確実に処理）
+          _flapQueued = true;
+        }
+      }
+      _gpPrevButtons[idx+'_0'] = b0;
+
+      // ボタン1（B/○）: 一時停止 / タイトルへ
+      const b1 = _btnOn(gp.buttons[1]);
+      if(b1 && !_gpPrevButtons[idx+'_1']){
+        if(goEl.style.display === 'flex'){
+          goTitle();
+        } else if(gameEl.style.display === 'flex'){
+          togglePause();
+        } else if(pauseEl.style.display === 'flex'){
+          togglePause();
+        }
+      }
+      _gpPrevButtons[idx+'_1'] = b1;
+
+      // 十字キー上 / 左スティック上: 飛ぶ
+      const up = _btnOn(gp.buttons[12]) || (gp.axes[1] < -0.3);
+      if(up && !_gpPrevButtons[idx+'_up']){
+        if(goEl.style.display !== 'flex') _flapQueued = true;
+      }
+      _gpPrevButtons[idx+'_up'] = up;
+
+      // 十字キー下 / 左スティック下: GOカーソル移動
+      const down = _btnOn(gp.buttons[13]) || (gp.axes[1] > 0.3);
+      if(down && !_gpPrevButtons[idx+'_down']){
+        if(goEl.style.display === 'flex'){
+          _goCursor = _goCursor===0 ? 1 : 0;
+          updateGoCursor();
+        }
+      }
+      _gpPrevButtons[idx+'_down'] = down;
+
+      // 十字キー左右でもGOカーソル移動
+      const left = _btnOn(gp.buttons[14]) || (gp.axes[0] < -0.3);
+      if(left && !_gpPrevButtons[idx+'_left']){
+        if(goEl.style.display === 'flex'){ _goCursor=0; updateGoCursor(); }
+      }
+      _gpPrevButtons[idx+'_left'] = left;
+
+      const right = _btnOn(gp.buttons[15]) || (gp.axes[0] > 0.3);
+      if(right && !_gpPrevButtons[idx+'_right']){
+        if(goEl.style.display === 'flex'){ _goCursor=1; updateGoCursor(); }
+      }
+      _gpPrevButtons[idx+'_right'] = right;
     }
-    requestAnimationFrame(pollGamepad);
+
+    // バッファされた入力を処理
+    if(_flapQueued){
+      doFlap();
+      _flapQueued = false;
+    }
   }
-  requestAnimationFrame(pollGamepad);
+
+  // setIntervalで8ms間隔ポーリング（rAFの約2倍の頻度）
+  setInterval(pollGamepad, 8);
 
   // ===== 初期化 =====
   showScreen('screen-title');
