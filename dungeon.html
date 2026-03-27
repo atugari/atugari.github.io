@@ -59,10 +59,11 @@
     /* ===== タイトル画面 ===== */
     #screen-title{
       display:flex;flex-direction:column;align-items:center;justify-content:center;
-      gap:20px;text-align:center;padding:24px;
+      gap:min(4vw,20px);text-align:center;padding:min(6vw,24px);
+      overflow:hidden;
     }
     .title-kanji{
-      font-size:96px;font-weight:900;color:var(--gold);
+      font-size:min(26vw,96px);font-weight:900;color:var(--gold);
       line-height:1;
       text-shadow:0 0 40px rgba(200,168,90,0.4), 0 2px 0 rgba(0,0,0,0.8);
       animation:float 3s ease-in-out infinite;
@@ -72,30 +73,30 @@
       50%{transform:translateY(-8px);}
     }
     .title-sub{
-      font-size:13px;color:var(--text2);letter-spacing:0.2em;
+      font-size:min(3.6vw,13px);color:var(--text2);letter-spacing:0.2em;
     }
     .title-desc{
-      font-size:12px;color:var(--text3);line-height:2;letter-spacing:0.05em;
+      font-size:min(3.3vw,12px);color:var(--text3);line-height:2;letter-spacing:0.05em;
       border:1px solid var(--border);border-radius:var(--r);
-      padding:12px 20px;
-      max-width:280px;
+      padding:min(3vw,12px) min(5vw,20px);
+      max-width:min(78vw,280px);
     }
     .title-best{
-      font-size:12px;color:var(--text2);
+      font-size:min(3.3vw,12px);color:var(--text2);
       letter-spacing:0.1em;
     }
     .title-best span{
-      color:var(--gold);font-size:18px;font-weight:700;
+      color:var(--gold);font-size:min(5vw,18px);font-weight:700;
     }
     .btn-start{
-      margin-top:8px;
+      margin-top:min(2vw,8px);
       background:none;
       border:1px solid var(--gold2);
       color:var(--gold);
       font-family:'Noto Serif JP',serif;
-      font-size:16px;
+      font-size:min(4.4vw,16px);
       letter-spacing:0.2em;
-      padding:12px 40px;
+      padding:min(3.3vw,12px) min(11vw,40px);
       border-radius:var(--r);
       cursor:pointer;
       transition:background 0.2s,border-color 0.2s;
@@ -106,8 +107,8 @@
       border-color:var(--gold);
     }
     .back-link{
-      font-size:11px;color:var(--text3);text-decoration:none;
-      letter-spacing:0.1em;margin-top:4px;
+      font-size:min(3vw,11px);color:var(--text3);text-decoration:none;
+      letter-spacing:0.1em;margin-top:min(1vw,4px);
     }
     .back-link:hover{color:var(--text2);}
 
@@ -129,18 +130,18 @@
       pointer-events:none;
     }
     #hud-score{
-      font-size:clamp(18px,5vw,28px);font-weight:700;color:var(--gold);
+      font-size:min(6vw,28px);font-weight:700;color:var(--gold);
       text-shadow:0 0 20px rgba(200,168,90,0.5);
       letter-spacing:0.05em;
     }
     #hud-best{
-      font-size:clamp(10px,2.5vw,13px);color:var(--text3);letter-spacing:0.1em;
+      font-size:min(3vw,13px);color:var(--text3);letter-spacing:0.1em;
     }
     #pause-btn{
       position:absolute;top:10px;right:16px;
       background:none;border:1px solid var(--border);
       color:var(--text2);font-family:'Noto Serif JP',serif;
-      font-size:clamp(10px,2.5vw,13px);letter-spacing:0.1em;
+      font-size:min(3vw,13px);letter-spacing:0.1em;
       padding:5px 12px;border-radius:6px;
       cursor:pointer;z-index:20;
       -webkit-tap-highlight-color:rgba(0,0,0,0);
@@ -167,16 +168,16 @@
       gap:16px;
     }
     .pause-kanji{
-      font-size:72px;font-weight:900;color:var(--text3);
+      font-size:min(20vw,72px);font-weight:900;color:var(--text3);
     }
     .pause-text{
-      font-size:13px;color:var(--text2);letter-spacing:0.2em;
+      font-size:min(3.6vw,13px);color:var(--text2);letter-spacing:0.2em;
     }
     .btn-resume{
       background:none;border:1px solid var(--border);
       color:var(--text2);font-family:'Noto Serif JP',serif;
-      font-size:14px;letter-spacing:0.2em;
-      padding:10px 32px;border-radius:var(--r);
+      font-size:min(3.9vw,14px);letter-spacing:0.2em;
+      padding:min(2.8vw,10px) min(8.9vw,32px);border-radius:var(--r);
       cursor:pointer;
       -webkit-tap-highlight-color:rgba(0,0,0,0);
     }
@@ -193,18 +194,18 @@
       text-align:center;
     }
     .go-kanji{
-      font-size:clamp(16px,4vw,22px);color:var(--red);letter-spacing:0.3em;
+      font-size:min(5vw,22px);color:var(--red);letter-spacing:0.3em;
       text-shadow:0 0 30px rgba(192,88,64,0.6);
     }
-    .go-score-label{font-size:clamp(10px,2.5vw,13px);color:var(--text3);letter-spacing:0.2em;}
+    .go-score-label{font-size:min(3.5vw,13px);color:var(--text3);letter-spacing:0.2em;}
     .go-score{
-      font-size:clamp(40px,12vw,64px);font-weight:900;color:var(--text);
+      font-size:min(16vw,64px);font-weight:900;color:var(--text);
       line-height:1;
     }
-    .go-best-wrap{font-size:clamp(11px,2.8vw,14px);color:var(--text2);letter-spacing:0.1em;}
+    .go-best-wrap{font-size:min(3.8vw,14px);color:var(--text2);letter-spacing:0.1em;}
     .go-best-wrap span{color:var(--gold);}
     .go-new-best{
-      font-size:11px;color:var(--gold);letter-spacing:0.2em;
+      font-size:min(3vw,11px);color:var(--gold);letter-spacing:0.2em;
       animation:pulse 1s ease-in-out infinite;
     }
     @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
@@ -214,8 +215,8 @@
     .btn-retry{
       background:none;border:1px solid var(--gold2);
       color:var(--gold);font-family:'Noto Serif JP',serif;
-      font-size:14px;letter-spacing:0.2em;
-      padding:10px 32px;border-radius:var(--r);
+      font-size:min(3.9vw,14px);letter-spacing:0.2em;
+      padding:min(2.8vw,10px) min(8.9vw,32px);border-radius:var(--r);
       cursor:pointer;
       -webkit-tap-highlight-color:rgba(0,0,0,0);
     }
@@ -223,7 +224,7 @@
     .btn-home{
       background:none;border:none;
       color:var(--text3);font-family:'Noto Serif JP',serif;
-      font-size:11px;letter-spacing:0.1em;
+      font-size:min(3vw,11px);letter-spacing:0.1em;
       cursor:pointer;
       -webkit-tap-highlight-color:rgba(0,0,0,0);
     }
