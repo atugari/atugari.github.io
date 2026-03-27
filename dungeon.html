@@ -506,39 +506,52 @@
   }
 
   // 縦書き風「壁」を上下に描画（仮想座標→実座標変換）
+  // 小さい「壁」を横2個×縦2個で元の1個と同じサイズに並べる
   function drawWall(wall){
     const r = _gameRect;
-    // 仮想X座標（スクロール込み）
     const vx = wall.x - state.scrollX;
     if(vx < -WALL_WIDTH*2 || vx > BASE_W + WALL_WIDTH*2) return;
 
     const sc = getScale();
-    const fontSize = Math.round(28 * sc);
-    const charH = fontSize * 1.1;
+    // 小さい壁：元の半分サイズ、横2個並びで元と同じ幅をカバー
+    const fontSize = Math.round(14 * sc);
+    const charW = fontSize * 1.0;  // 横2個で元の幅
+    const charH = fontSize * 1.1;  // 縦2個で元の高さ
     const wallColor = getWallColor();
-    // 実キャンバス上のX
     const rx = r.x + vx * sc;
+    // 横2個の中心X（左列・右列）
+    const lx = rx - charW * 0.5;
+    const rx2 = rx + charW * 0.5;
 
-    // 上の壁（上から下へ）
-    const topPx = wall.topH * sc; // 仮想topHを実px変換
-    const topCount = Math.ceil(topPx / charH) + 2;
-    for(let i=0; i<topCount; i++){
-      const cy = r.y - charH/2 + i * charH;
-      if(cy > r.y + topPx + charH/2) break;
-      drawKanji('壁', rx, cy, fontSize, wallColor, 1);
+    function drawColumn(cx, topLimit, fromTop){
+      if(fromTop){
+        const count = Math.ceil(topLimit / charH) + 2;
+        for(let i=0; i<count; i++){
+          const cy = r.y - charH/2 + i * charH;
+          if(cy > r.y + topLimit + charH/2) break;
+          drawKanji('壁', cx, cy, fontSize, wallColor, 1);
+        }
+      } else {
+        const count = Math.ceil((r.h - topLimit) / charH) + 2;
+        for(let i=0; i<count; i++){
+          const cy = r.y + r.h + charH/2 - i * charH;
+          if(cy < r.y + topLimit - charH/2) break;
+          drawKanji('壁', cx, cy, fontSize, wallColor, 1);
+        }
+      }
     }
 
-    // 下の壁（下から上へ）
-    const botVY = wall.topH + wall.gap;
-    const botPx = botVY * sc; // 実px上の隙間下端Y（ゲームエリア内相対）
-    const botY  = r.y + botPx;
-    const botCount = Math.ceil((r.h - botPx) / charH) + 2;
-    for(let i=0; i<botCount; i++){
-      const cy = r.y + r.h + charH/2 - i * charH;
-      if(cy < botY - charH/2) break;
-      drawKanji('壁', rx, cy, fontSize, wallColor, 1);
-    }
-    wall._wallW = Math.round(38 * sc);
+    const topPx = wall.topH * sc;
+    const botPx = (wall.topH + wall.gap) * sc;
+
+    // 上の壁（左列・右列）
+    drawColumn(lx,  topPx, true);
+    drawColumn(rx2, topPx, true);
+    // 下の壁（左列・右列）
+    drawColumn(lx,  botPx, false);
+    drawColumn(rx2, botPx, false);
+
+    wall._wallW = Math.round(charW * 2);
   }
 
   // 背景：ゲームエリア内だけ描画（黒帯外は塗りつぶすのみ）
