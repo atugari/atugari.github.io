@@ -527,7 +527,7 @@
     // 上の壁
     const topPx = wall.topH * sc;
     // 先端：小さい壁2個分（smallH*2）を小さい壁×2列で
-    const tipH = smallH * 2;
+    const tipH = smallH * 1;
     const tipTop = r.y + topPx - tipH; // 先端開始Y（実座標）
     // 先端より上：大きい壁1列
     const bigCount = Math.ceil((topPx - tipH) / bigH) + 1;
@@ -536,25 +536,20 @@
       if(cy > tipTop + bigH/2) break;
       drawKanji('壁', rx, cy, bigSize, wallColor, 1);
     }
-    // 先端2個：小さい壁×2列
-    for(let i=0; i<2; i++){
-      const cy = tipTop + smallH/2 + i * smallH;
-      if(cy > r.y + topPx + smallH/2) break;
-      drawKanji('壁', slx, cy, smallSize, wallColor, 1);
-      drawKanji('壁', srx, cy, smallSize, wallColor, 1);
-    }
+    // 先端：横2個だけ（1行のみ）
+    const tipCy = r.y + topPx - smallH/2;
+    drawKanji('壁', slx, tipCy, smallSize, wallColor, 1);
+    drawKanji('壁', srx, tipCy, smallSize, wallColor, 1);
 
     // 下の壁
     const botPx = (wall.topH + wall.gap) * sc;
     const botY  = r.y + botPx;
-    // 先端：小さい壁2個分
-    for(let i=0; i<2; i++){
-      const cy = botY + smallH/2 + i * smallH;
-      drawKanji('壁', slx, cy, smallSize, wallColor, 1);
-      drawKanji('壁', srx, cy, smallSize, wallColor, 1);
-    }
+    // 先端：横2個だけ（1行のみ）
+    const botTipCy = botY + smallH/2;
+    drawKanji('壁', slx, botTipCy, smallSize, wallColor, 1);
+    drawKanji('壁', srx, botTipCy, smallSize, wallColor, 1);
     // 先端より下：大きい壁1列
-    const botTipEnd = botY + tipH;
+    const botTipEnd = botY + smallH;
     const bigBotCount = Math.ceil((r.y + r.h - botTipEnd) / bigH) + 2;
     for(let i=0; i<bigBotCount; i++){
       const cy = r.y + r.h + bigH/2 - i * bigH;
