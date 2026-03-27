@@ -386,22 +386,20 @@
     const charH = fontSize * 1.1;
 
     // 上の壁（上から下へ「壁」を積む）
-    const topCount = Math.ceil(wall.topH / charH) + 1;
+    const topCount = Math.ceil(wall.topH / charH) + 2;
     for(let i=0; i<topCount; i++){
       const cy = -charH/2 + i * charH;
-      if(cy > wall.topH) break;
-      const alpha = cy < wall.topH - charH ? 1 : Math.max(0, (wall.topH - cy) / charH);
-      drawKanji('壁', x, cy, fontSize, wallColor, alpha);
+      if(cy > wall.topH + charH/2) break;
+      drawKanji('壁', x, cy, fontSize, wallColor, 1);
     }
 
     // 下の壁（下から上へ「壁」を積む）
     const botY = wall.topH + wall.gap;
-    const botCount = Math.ceil((H - botY) / charH) + 1;
+    const botCount = Math.ceil((H - botY) / charH) + 2;
     for(let i=0; i<botCount; i++){
       const cy = H + charH/2 - i * charH;
-      if(cy < botY) break;
-      const alpha = cy > botY + charH ? 1 : Math.max(0, (cy - botY) / charH);
-      drawKanji('壁', x, cy, fontSize, wallColor, alpha);
+      if(cy < botY - charH/2) break;
+      drawKanji('壁', x, cy, fontSize, wallColor, 1);
     }
 
     // 隙間の縁に細い線（和風区切り）
@@ -471,6 +469,16 @@
     document.getElementById('hud-score').textContent = state.score;
     const b = getBest();
     document.getElementById('hud-best').textContent = b > 0 ? 'best ' + b : '';
+
+    // キャンバス中央上部にも大きくスコアを描画
+    const W = canvas.width;
+    ctx.save();
+    ctx.font = "700 48px 'Noto Serif JP', serif";
+    ctx.fillStyle = 'rgba(200,168,90,0.18)';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText(state.score, W / 2, 18);
+    ctx.restore();
   }
 
   // 「はじめにタップ」表示
