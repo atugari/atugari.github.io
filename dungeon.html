@@ -319,15 +319,33 @@
   window.addEventListener('resize', ()=>{ resizeCanvas(); });
 
   // ===== ゲーム定数 =====
-  const GRAVITY      = 0.38;
-  const FLAP_POWER   = -7.2;
-  const SCROLL_SPEED = 3.2;
-  const WALL_INTERVAL= 220;   // ピクセル間隔
-  const GAP_MIN      = 130;
-  const GAP_MAX      = 180;
-  const WALL_WIDTH   = 38;
-  const PLAYER_SIZE  = 36;
+  const GRAVITY        = 0.38;
+  const FLAP_POWER     = -7.2;
+  const SCROLL_SPEED   = 3.2;
+  const WALL_INTERVAL  = 240;
+  const WALL_WIDTH     = 38;
+  const PLAYER_SIZE    = 36;
   const PLAYER_X_RATIO = 0.22;
+
+  // ===== 難易度フェーズ定義 =====
+  // score範囲ごとにパラメータを変える
+  // gap: 隙間の高さ(px)  vertRange: 縦位置の振れ幅(0〜1)  label: 表示名
+  function getPhase(score){
+    const H = canvas.height;
+    if(score < 10){
+      // チュートリアル：幅広・縦移動少ない・中央固定気味
+      return { gapMin: H*0.52, gapMax: H*0.58, vertMin:0.28, vertMax:0.42, label:'入門', labelDetail:'まずは感覚をつかもう' };
+    } else if(score < 30){
+      // ノーマル：少し狭く、縦も少し動く
+      return { gapMin: H*0.36, gapMax: H*0.42, vertMin:0.20, vertMax:0.55, label:'普通', labelDetail:'少しずつ狭くなってきた' };
+    } else if(score < 50){
+      // ハード：さらに狭く、縦移動が大きい
+      return { gapMin: H*0.28, gapMax: H*0.33, vertMin:0.12, vertMax:0.65, label:'難しい', labelDetail:'大きく上下に動かそう' };
+    } else {
+      // エキスパート：幅狭・縦移動大・エンドレス
+      return { gapMin: H*0.22, gapMax: H*0.27, vertMin:0.10, vertMax:0.70, label:'達人', labelDetail:'繰り返せるか…' };
+    }
+  }
 
   // ===== ゲーム状態 =====
   let _raf = null;
@@ -337,26 +355,30 @@
     resizeCanvas();
     const W = canvas.width, H = canvas.height;
     return {
-      playerY    : H * 0.45,
-      playerVY   : 0,
-      rotation   : 0,
-      walls      : [],
-      scrollX    : 0,
-      score      : 0,
-      frame      : 0,
-      alive      : true,
-      started    : false,   // 最初のタップ待ち
-      flashTimer : 0,
+      playerY      : H * 0.45,
+      playerVY     : 0,
+      rotation     : 0,
+      walls        : [],
+      scrollX      : 0,
+      score        : 0,
+      frame        : 0,
+      alive        : true,
+      started      : false,
+      flashTimer   : 0,
+      phaseLabel   : '入門',
+      phaseDetail  : 'まずは感覚をつかもう',
+      phaseTimer   : 0,
     };
   }
 
   // ===== 壁生成 =====
   function spawnWall(x){
     const H = canvas.height;
-    const gap = GAP_MIN + Math.random()*(GAP_MAX-GAP_MIN);
-    const topMin = H * 0.15;
-    const topMax = H * 0.75 - gap;
-    const topH = topMin + Math.random()*(topMax-topMin);
+    const phase = getPhase(state ? state.score : 0);
+    const gap = phase.gapMin + Math.random()*(phase.gapMax - phase.gapMin);
+    const topMin = H * phase.vertMin;
+    const topMax = H * phase.vertMax - gap;
+    const topH = topMin + Math.random()*Math.max(0, topMax - topMin);
     return { x, topH, gap, passed:false };
   }
 
@@ -466,9 +488,11 @@
 
   // スコア表示（ゲーム中）
   function drawHudScore(){
+    const phase = getPhase(state.score);
     document.getElementById('hud-score').textContent = state.score;
     const b = getBest();
-    document.getElementById('hud-best').textContent = b > 0 ? 'best ' + b : '';
+    document.getElementById('hud-best').textContent =
+      '【' + phase.label + '】' + (b > 0 ? '  best ' + b : '');
 
     // キャンバス中央上部にも大きくスコアを描画
     const W = canvas.width;
@@ -484,14 +508,52 @@
   // 「はじめにタップ」表示
   function drawReadyText(){
     const W = canvas.width, H = canvas.height;
+    const alpha = 0.5 + 0.5*Math.sin(state.frame*0.08);
     ctx.save();
-    ctx.font = "400 13px 'Noto Serif JP', serif";
-    ctx.fillStyle = 'rgba(200,168,90,0.7)';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    const alpha = 0.5 + 0.5*Math.sin(state.frame*0.08);
+
+    // チュートリアル説明（常時）
+    ctx.globalAlpha = 0.7;
+    ctx.font = "400 12px 'Noto Serif JP', serif";
+    ctx.fillStyle = 'rgba(138,134,120,0.9)';
+    ctx.fillText('【 入門 】まずは感覚をつかもう', W/2, H*0.64);
+    ctx.fillText('壁と壁の隙間を通り抜けよう', W/2, H*0.69);
+    ctx.fillText('タップするたびに「飛」が上へ跳ねる', W/2, H*0.74);
+
+    // 点滅テキスト
     ctx.globalAlpha = alpha;
-    ctx.fillText('タップして飛ぶ', W/2, H*0.72);
+    ctx.font = "700 14px 'Noto Serif JP', serif";
+    ctx.fillStyle = 'rgba(200,168,90,0.9)';
+    ctx.fillText('タップして開始', W/2, H*0.82);
+    ctx.restore();
+  }
+
+  // ===== フェーズアナウンス描画 =====
+  function drawPhaseAnnounce(){
+    const W = canvas.width, H = canvas.height;
+    const t = state.phaseTimer;
+    const alpha = t > 90 ? 1 : t / 90;
+    const scale = t > 100 ? 1 + (t-100)*0.015 : 1;
+    ctx.save();
+    ctx.globalAlpha = alpha * 0.92;
+    ctx.translate(W/2, H*0.38);
+    ctx.scale(scale, scale);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    // 背景
+    ctx.fillStyle = 'rgba(13,13,10,0.7)';
+    ctx.beginPath();
+    ctx.roundRect(-110, -32, 220, 64, 8);
+    ctx.fill();
+    // フェーズ名
+    ctx.font = "700 22px 'Noto Serif JP', serif";
+    ctx.fillStyle = '#c8a85a';
+    ctx.fillText('【 ' + state.phaseLabel + ' 】', 0, -10);
+    // 説明
+    ctx.font = "400 12px 'Noto Serif JP', serif";
+    ctx.fillStyle = 'rgba(200,168,90,0.7)';
+    ctx.fillText(state.phaseDetail, 0, 14);
     ctx.restore();
   }
 
@@ -541,8 +603,16 @@
         if(!wall.passed && wall.x - state.scrollX < W * PLAYER_X_RATIO){
           wall.passed = true;
           state.score++;
+          // フェーズ切替チェック
+          const newPhase = getPhase(state.score);
+          if(newPhase.label !== state.phaseLabel){
+            state.phaseLabel = newPhase.label;
+            state.phaseDetail = newPhase.labelDetail;
+            state.phaseTimer = 120; // 約2秒表示
+          }
         }
       }
+      if(state.phaseTimer > 0) state.phaseTimer--;
 
       // 衝突判定
       if(checkCollision()){
@@ -558,6 +628,7 @@
     drawPlayer();
     if(!state.started) drawReadyText();
     drawHudScore();
+    if(state.phaseTimer > 0) drawPhaseAnnounce();
 
     _raf = requestAnimationFrame(gameLoop);
   }
