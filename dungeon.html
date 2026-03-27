@@ -488,7 +488,10 @@
     const topMin = BASE_H * phase.vertMin;
     const topMax = BASE_H * phase.vertMax - gap;
     const topH = topMin + Math.random()*Math.max(0, topMax - topMin);
-    return { x, topH, gap, passed:false };
+    // _wallWはdrawWall時に設定されるが、描画前の判定でも使えるよう仮値を入れておく
+    const initSc = _gameRect ? _gameRect.scale : 1;
+    const initSmallSize = Math.round(14 * initSc);
+    return { x, topH, gap, passed:false, _wallW: Math.round(initSmallSize * 2) };
   }
 
   // ===== 描画ヘルパー =====
@@ -526,34 +529,31 @@
 
     // 上の壁
     const topPx = wall.topH * sc;
-    // 先端：小さい壁2個分（smallH*2）を小さい壁×2列で
-    const tipH = smallH * 1;
-    const tipTop = r.y + topPx - tipH; // 先端開始Y（実座標）
-    // 先端より上：大きい壁1列
-    const bigCount = Math.ceil((topPx - tipH) / bigH) + 1;
-    for(let i=0; i<bigCount; i++){
-      const cy = r.y - bigH/2 + i * bigH;
-      if(cy > tipTop + bigH/2) break;
-      drawKanji('壁', rx, cy, bigSize, wallColor, 1);
-    }
-    // 先端：横2個だけ（1行のみ）
-    const tipCy = r.y + topPx - smallH/2;
+    // 先端：小さい壁×横2個（1行）を隙間ギリギリに配置
+    const tipCy = r.y + topPx - smallH / 2;
     drawKanji('壁', slx, tipCy, smallSize, wallColor, 1);
     drawKanji('壁', srx, tipCy, smallSize, wallColor, 1);
+    // 先端より上：大きい壁を先端に重ならないよう bigH単位で敷き詰める
+    // 大きい壁の最後のY = tipCy - smallH/2 - bigH/2 からぴったり止める
+    const bigTopLimit = tipCy - smallH / 2; // 大きい壁が入れる上限Y（中心）
+    for(let i=0; ; i++){
+      const cy = r.y - bigH / 2 + i * bigH;
+      if(cy + bigH / 2 > bigTopLimit) break;
+      drawKanji('壁', rx, cy, bigSize, wallColor, 1);
+    }
 
     // 下の壁
     const botPx = (wall.topH + wall.gap) * sc;
     const botY  = r.y + botPx;
-    // 先端：横2個だけ（1行のみ）
-    const botTipCy = botY + smallH/2;
+    // 先端：小さい壁×横2個（1行）を隙間ギリギリに配置
+    const botTipCy = botY + smallH / 2;
     drawKanji('壁', slx, botTipCy, smallSize, wallColor, 1);
     drawKanji('壁', srx, botTipCy, smallSize, wallColor, 1);
-    // 先端より下：大きい壁1列
-    const botTipEnd = botY + smallH;
-    const bigBotCount = Math.ceil((r.y + r.h - botTipEnd) / bigH) + 2;
-    for(let i=0; i<bigBotCount; i++){
-      const cy = r.y + r.h + bigH/2 - i * bigH;
-      if(cy < botTipEnd - bigH/2) break;
+    // 先端より下：大きい壁を先端に重ならないよう bigH単位で敷き詰める
+    const bigBotStart = botTipCy + smallH / 2; // 大きい壁が入れる下限Y（上端）
+    for(let i=0; ; i++){
+      const cy = r.y + r.h + bigH / 2 - i * bigH;
+      if(cy - bigH / 2 < bigBotStart) break;
       drawKanji('壁', rx, cy, bigSize, wallColor, 1);
     }
 
@@ -670,15 +670,26 @@
   function checkCollision(){
     const px = BASE_W * PLAYER_X_RATIO; // 仮想X固定
     const py = state.playerY;           // 仮想Y
-    const r  = PLAYER_SIZE * 0.38;      // 仮想px単位
+    const pr = PLAYER_SIZE * 0.38;      // プレイヤーの当たり判定半径（仮想px）
 
     // 天井・床
-    if(py - r < 0 || py + r > BASE_H - 5) return true;
+    if(py - pr < 0 || py + pr > BASE_H - 5) return true;
 
+    const sc = getScale();
     for(const wall of state.walls){
       const wx = wall.x - state.scrollX; // 仮想X
-      if(Math.abs(wx - px) > WALL_WIDTH/2 + r) continue;
-      if(py - r < wall.topH || py + r > wall.topH + wall.gap) return true;
+
+      // 横判定：実描画幅（_wallW px）を仮想座標に逆変換して使う
+      // _wallWがまだ設定されていない場合はWALL_WIDTHをフォールバック
+      const wallHalfW = sc > 0
+        ? (wall._wallW || WALL_WIDTH * sc) / sc / 2
+        : WALL_WIDTH / 2;
+
+      // 横方向に重なっているか（プレイヤー半径分だけ内側に詰めて判定を少し小さく）
+      if(Math.abs(wx - px) > wallHalfW + pr * 0.7) continue;
+
+      // 縦判定：視覚より少し小さめ（プレイヤー半径を0.75倍）
+      if(py - pr * 0.75 < wall.topH || py + pr * 0.75 > wall.topH + wall.gap) return true;
     }
     return false;
   }
