@@ -518,19 +518,20 @@
     const wallColor = getWallColor();
     const rx = r.x + vx * sc;
 
-    // 上の壁：隙間上端(topH)より上を「壁」で埋める
-    const topEdgePx = r.y + wall.topH * sc; // 隙間上端の実Y
+    // 上の壁：文字の中心が隙間上端を超えない範囲で描画
+    // cy（文字中心）<= topEdgePx - charH/2 で先端文字が隙間にはみ出さない
+    const topEdgePx = r.y + wall.topH * sc;
     for(let i = 0; ; i++){
-      const cy = r.y - charH / 2 + i * charH;
-      if(cy - charH / 2 > topEdgePx) break; // 隙間に入り込まない
+      const cy = r.y + charH / 2 + i * charH;
+      if(cy > topEdgePx - charH / 2) break;
       drawKanji('壁', rx, cy, fontSize, wallColor, 1);
     }
 
-    // 下の壁：隙間下端(topH+gap)より下を「壁」で埋める
-    const botEdgePx = r.y + (wall.topH + wall.gap) * sc; // 隙間下端の実Y
+    // 下の壁：文字の中心が隙間下端を超えない範囲で描画
+    const botEdgePx = r.y + (wall.topH + wall.gap) * sc;
     for(let i = 0; ; i++){
-      const cy = r.y + r.h + charH / 2 - i * charH;
-      if(cy + charH / 2 < botEdgePx) break; // 隙間に入り込まない
+      const cy = r.y + r.h - charH / 2 - i * charH;
+      if(cy < botEdgePx + charH / 2) break;
       drawKanji('壁', rx, cy, fontSize, wallColor, 1);
     }
 
