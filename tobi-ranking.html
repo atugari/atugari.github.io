@@ -406,8 +406,10 @@
   loadRanking();
 
   // ===== コントローラー操作 =====
-  // レイアウト: [普通モード][無理ゲーモード] / [飛べ飛へ戻る][丸場所記憶ゲーム] / [ガイドバナー]
-  let _rankPrevButtons = {};
+  // ブラウザ0=Bボタン（戻る）/ ブラウザ1=Aボタン（決定）← dungeon.htmlとA/Bの役割が逆
+  let _gpConnected = false;
+  let _gpPrevButtons = {};
+  let _inputReady = false; // 入力ブリード防止: 起動直後は入力を無視
 
   const RANK_LAYOUT = [
     ['tab-normal',       'tab-murige'    ], // row 0: タブ
@@ -419,19 +421,19 @@
   function updateRankCursor(){
     RANK_LAYOUT.flat().filter(Boolean).forEach(id => {
       const el = document.getElementById(id);
-      if(el){ el.style.outline='none'; el.classList.remove('gp-focused'); }
+      if(el){ el.style.outline='none'; el.style.outlineOffset=''; }
     });
     const id = RANK_LAYOUT[_rankRow][_rankCol];
     if(!id) return;
     const el = document.getElementById(id);
-    if(el){ el.style.outline='2px solid #c8a85a'; el.style.outlineOffset='3px'; el.classList.add('gp-focused'); }
+    if(el){ el.style.outline='2px solid #c8a85a'; el.style.outlineOffset='3px'; }
   }
 
   function rankCursorAction(){
     const id = RANK_LAYOUT[_rankRow][_rankCol];
     if(!id) return;
-    if(id==='tab-normal')        switchTab('normal');
-    else if(id==='tab-murige')   switchTab('murige');
+    if(id==='tab-normal')           switchTab('normal');
+    else if(id==='tab-murige')      switchTab('murige');
     else if(id==='rank-back-link')  window.location.href='dungeon.html';
     else if(id==='rank-home-link')  window.location.href='index.html';
     else if(id==='gp-guide-toggle') toggleGpGuide();
@@ -443,96 +445,109 @@
   let _gpGuideOpen = false;
   function toggleGpGuide(){
     _gpGuideOpen = !_gpGuideOpen;
-    const toggle = document.getElementById('gp-guide-toggle');
+    const toggle  = document.getElementById('gp-guide-toggle');
     const content = document.getElementById('gp-guide-content');
-    if(toggle) toggle.classList.toggle('open', _gpGuideOpen);
+    if(toggle)  toggle.classList.toggle('open', _gpGuideOpen);
     if(content) content.style.display = _gpGuideOpen ? 'block' : 'none';
   }
   function closeGpGuide(){
     _gpGuideOpen = false;
-    const toggle = document.getElementById('gp-guide-toggle');
+    const toggle  = document.getElementById('gp-guide-toggle');
     const content = document.getElementById('gp-guide-content');
-    if(toggle) toggle.classList.remove('open');
+    if(toggle)  toggle.classList.remove('open');
     if(content) content.style.display = 'none';
   }
 
-  let _gpDetected = false;
+  function _onRankGamepadConnected(){
+    if(_gpConnected) return;
+    _gpConnected = true;
+    updateRankCursor();
+    const banner = document.getElementById('gp-guide-banner');
+    if(banner) banner.style.display = 'block';
+  }
+
   function pollRankGamepad(){
     const gps = navigator.getGamepads ? navigator.getGamepads() : [];
     for(const gp of gps){
       if(!gp) continue;
-
-      // コントローラー初検出時にバナーを表示
-      if(!_gpDetected){ _gpDetected = true; _onRankGamepadConnected(); }
-
+      _onRankGamepadConnected();
       const idx = gp.index;
 
-      // Aボタン（ブラウザ1）: 決定／ガイド開閉
+      if(!_inputReady){
+        // 入力ブリード防止: 初回フレームは現在の状態を記録するだけで処理しない
+        gp.buttons.forEach((b, i) => { _gpPrevButtons[idx+'_'+i] = _btnOn(b); });
+        continue;
+      }
+
+      // Aボタン（ブラウザ1）: 決定
       const bA = _btnOn(gp.buttons[1]);
-      if(bA && !_rankPrevButtons[idx+'_A']){ rankCursorAction(); }
-      _rankPrevButtons[idx+'_A'] = bA;
+      if(bA && !_gpPrevButtons[idx+'_1']){ rankCursorAction(); }
+      _gpPrevButtons[idx+'_1'] = bA;
 
       // Bボタン（ブラウザ0）: ガイドが開いていれば閉じる、それ以外は飛べ飛へ戻る
       const bB = _btnOn(gp.buttons[0]);
-      if(bB && !_rankPrevButtons[idx+'_B']){
+      if(bB && !_gpPrevButtons[idx+'_0']){
         if(_gpGuideOpen) closeGpGuide();
         else window.location.href='dungeon.html';
       }
-      _rankPrevButtons[idx+'_B'] = bB;
+      _gpPrevButtons[idx+'_0'] = bB;
 
-      // 左右: 列移動
+      // 十字左右: 列移動
       const lt = _btnOn(gp.buttons[14]) || (gp.axes[0] < -0.3);
-      if(lt && !_rankPrevButtons[idx+'_lt']){
+      if(lt && !_gpPrevButtons[idx+'_lt']){
         _rankCol = Math.max(0, _rankCol-1); updateRankCursor();
       }
-      _rankPrevButtons[idx+'_lt'] = lt;
+      _gpPrevButtons[idx+'_lt'] = lt;
 
       const rt = _btnOn(gp.buttons[15]) || (gp.axes[0] > 0.3);
-      if(rt && !_rankPrevButtons[idx+'_rt']){
+      if(rt && !_gpPrevButtons[idx+'_rt']){
         const maxCol = RANK_LAYOUT[_rankRow].filter(Boolean).length - 1;
         _rankCol = Math.min(maxCol, _rankCol+1); updateRankCursor();
       }
-      _rankPrevButtons[idx+'_rt'] = rt;
+      _gpPrevButtons[idx+'_rt'] = rt;
 
-      // 上下: 行移動
+      // 十字上下: 行移動
       const up = _btnOn(gp.buttons[12]) || (gp.axes[1] < -0.3);
-      if(up && !_rankPrevButtons[idx+'_up']){
+      if(up && !_gpPrevButtons[idx+'_up']){
         _rankRow = Math.max(0, _rankRow-1);
         if(!RANK_LAYOUT[_rankRow][_rankCol]) _rankCol = 0;
         updateRankCursor();
       }
-      _rankPrevButtons[idx+'_up'] = up;
+      _gpPrevButtons[idx+'_up'] = up;
 
       const dn = _btnOn(gp.buttons[13]) || (gp.axes[1] > 0.3);
-      if(dn && !_rankPrevButtons[idx+'_dn']){
+      if(dn && !_gpPrevButtons[idx+'_dn']){
         _rankRow = Math.min(RANK_LAYOUT.length-1, _rankRow+1);
         if(!RANK_LAYOUT[_rankRow][_rankCol]) _rankCol = 0;
         updateRankCursor();
       }
-      _rankPrevButtons[idx+'_dn'] = dn;
+      _gpPrevButtons[idx+'_dn'] = dn;
 
       // 右スティックでスクロール
       if(gp.axes[3] < -0.3) window.scrollBy(0,-12);
       if(gp.axes[3] >  0.3) window.scrollBy(0, 12);
     }
-    requestAnimationFrame(pollRankGamepad);
   }
 
-  function _onRankGamepadConnected(){
-    updateRankCursor();
+  // dungeon.htmlと同じく8ms間隔ポーリング
+  setInterval(pollRankGamepad, 8);
+
+  // 500ms後に入力を有効化（前ページからの入力ブリード防止）
+  setTimeout(() => { _inputReady = true; }, 500);
+
+  window.addEventListener('gamepadconnected', () => { _onRankGamepadConnected(); });
+  window.addEventListener('gamepaddisconnected', () => {
+    _gpConnected = false;
     const banner = document.getElementById('gp-guide-banner');
-    if(banner && banner.style.display === 'none') banner.style.display = 'block';
-  }
-  window.addEventListener('gamepadconnected', ()=>{ _onRankGamepadConnected(); });
+    if(banner) banner.style.display = 'none';
+    closeGpGuide();
+  });
 
-  // ページ読み込み時に既存のコントローラーを検出（500ms・1000msの2段階）
-  function _detectExistingGamepad(){
+  // 遷移後も確実に検出できるよう定期チェック（dungeon.htmlと同じ方式）
+  setInterval(() => {
     const gps = navigator.getGamepads ? navigator.getGamepads() : [];
-    if([...gps].some(g => g)) _onRankGamepadConnected();
-  }
-  setTimeout(_detectExistingGamepad, 500);
-  setTimeout(_detectExistingGamepad, 1000);
-  requestAnimationFrame(pollRankGamepad);
+    if([...gps].some(g => g) && !_gpConnected) _onRankGamepadConnected();
+  }, 500);
 </script>
 </body>
 </html>
