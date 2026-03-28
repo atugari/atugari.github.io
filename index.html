@@ -28,7 +28,7 @@
     .nick-card h1{font-size:20px;font-weight:500;margin-bottom:6px;}
     .nick-card p{font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.8;}
     .nick-input{width:100%;font-size:15px;padding:10px 14px;border-radius:var(--rs);border:1px solid var(--border2);background:var(--surface);color:var(--text);margin-bottom:8px;text-align:center;font-family:'Noto Sans JP',sans-serif;}
-    .nick-input:focus{outline:none;border-color:var(--blue);}
+    .nick-input:focus{border-color:var(--blue);}
     .nick-msg{font-size:12px;margin-bottom:10px;min-height:16px;text-align:center;}
     .rank-tabs{display:flex;gap:4px;border-bottom:1px solid var(--border2);}
     .rank-tab{flex:1;padding:8px 4px;font-size:12px;text-align:center;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;font-family:'Noto Sans JP',sans-serif;background:none;border-top:none;border-left:none;border-right:none;}
@@ -1710,9 +1710,22 @@
 
   function gpUpdateHome(){
     const inp = document.getElementById('nick-input');
-    const btn = document.querySelector('#nick-card-wrap .btn.primary');
-    if(inp){ inp.style.outline = GP.hc===0?'3px solid #378ADD':'none'; inp.style.outlineOffset='2px'; }
-    if(btn){ btn.style.outline = GP.hc===1?'3px solid rgba(255,255,255,0.8)':'none'; btn.style.outlineOffset='2px'; }
+    // nick-card-wrap直下のbtnを確実に取得
+    const wrap = document.getElementById('nick-card-wrap');
+    const btn = wrap ? wrap.querySelector('.btn.primary') : null;
+    if(inp){
+      // !important相当の強さでスタイルを設定
+      inp.setAttribute('style',
+        GP.hc===0
+          ? 'outline:3px solid #378ADD !important;outline-offset:2px;border-color:#378ADD;'
+          : ''
+      );
+    }
+    if(btn){
+      btn.style.outline       = GP.hc===1 ? '3px solid rgba(255,255,255,0.8)' : 'none';
+      btn.style.outlineOffset = GP.hc===1 ? '2px' : '';
+      btn.style.boxShadow     = GP.hc===1 ? '0 0 12px rgba(255,255,255,0.3)' : '';
+    }
   }
 
   function gpUpdateGrid(){
@@ -1750,10 +1763,11 @@
       active = true;
       if(dbg){
         dbg.style.display='block';
-        const b0=gpB(gp.buttons[0]),b1=gpB(gp.buttons[1]);
+        const bA=gpB(gp.buttons[0]),bB=gpB(gp.buttons[1]);
         const ax=gp.axes[0]?.toFixed(1),ay=gp.axes[1]?.toFixed(1);
         const scr=document.querySelector('.screen.active')?.id||'?';
-        dbg.textContent='GP接続 idx:'+gp.index+' screen:'+scr+' hc:'+GP.hc+' gc:'+GP.gc+' A:'+b0+' B:'+b1+' ax:'+ax+' ay:'+ay;
+        const inp=document.getElementById('nick-input');
+        dbg.textContent='GP idx:'+gp.index+' scr:'+scr+' hc:'+GP.hc+' A:'+bA+' B:'+bB+' ax:'+ax+' ay:'+ay+' nick:['+inp?.value+']';
       }
       const i = gp.index;
       const p = GP.prev;
