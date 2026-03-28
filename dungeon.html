@@ -276,6 +276,7 @@
     <a href="tobi-ranking.html" class="back-link" style="color:var(--gold2);margin-top:-4px;">🏆 ランキングを見る</a>
     <a href="index.html" class="back-link" id="title-back-link">← 丸場所へ戻る</a>
     <a href="contact.html" class="back-link" style="color:var(--text3);margin-top:-8px;">不具合・お問い合わせは丸場所記憶ゲームのお問い合わせへ</a>
+    <div style="font-size:min(2.5vw,9px);color:var(--text3);opacity:0.4;letter-spacing:0.05em;margin-top:4px;">v2026.03.28</div>
   </div>
 
   <!-- ゲーム画面 -->
@@ -313,6 +314,8 @@
     <div id="go-nick-hint" style="display:none;font-size:10px;color:var(--gold2);letter-spacing:0.05em;margin-top:8px;text-align:center;">
       ニックネームを入力するとランキングに載ります
     </div>
+    <div id="go-debug" style="position:fixed;bottom:4px;left:4px;right:4px;background:rgba(0,0,0,0.85);color:#0f0;font-size:9px;padding:6px;border-radius:4px;white-space:pre-wrap;word-break:break-all;max-height:160px;overflow-y:auto;display:none;z-index:9999;font-family:monospace;"></div>
+    <div id="go-debug" style="position:fixed;bottom:4px;left:4px;right:4px;background:rgba(0,0,0,0.85);color:#0f0;font-size:9px;padding:6px;border-radius:4px;white-space:pre-wrap;word-break:break-all;display:none;z-index:9999;max-height:40vh;overflow-y:auto;font-family:monospace;"></div>
     <div id="go-debug" style="display:none;font-size:9px;color:var(--text3);letter-spacing:0.03em;margin-top:8px;text-align:left;padding:8px;background:rgba(0,0,0,0.4);border-radius:6px;max-width:90%;word-break:break-all;"></div>
   </div>
 
@@ -426,6 +429,15 @@
     return parseInt(localStorage.getItem(key)||'0');
   }
 
+  // デバッグログ表示
+  function dbg(msg){
+    const el = document.getElementById('go-debug');
+    if(!el) return;
+    el.style.display = 'block';
+    el.textContent += msg + '\n';
+    el.scrollTop = el.scrollHeight;
+  }
+
   // ハイスコア保存（localStorage + Firebase）
   async function saveBest(n, murige){
     const lsKey = murige ? LS_KEY_MURIGE : LS_KEY;
@@ -434,26 +446,33 @@
 
     // DEVICE_IDがまだ初期化されていない場合は先に初期化
     if(!DEVICE_ID) await initDeviceId();
-    if(!DEVICE_ID) return;
+    dbg('DEVICE_ID:' + (DEVICE_ID||'なし'));
+
+    if(!DEVICE_ID){ dbg('→DIDなし終了'); return; }
 
     const nick = getNick().trim();
-    if(!nick) return; // ニックネームなしは保存しない
+    dbg('nick:[' + nick + '] score:' + n);
+    if(!nick){ dbg('→nick未入力終了'); return; }
 
     const fbPath = murige ? '/rankings_tobi_murige/' : '/rankings_tobi/';
-    // Firebase禁止文字を_に置換
-    const safeNick = nick.replace(/[\.#\$\[\]\/]/g, '_');
+    const safeNick = nick.replace(/[.#$[\]\/]/g, '_');
     const key = encodeURIComponent(safeNick);
+    dbg('key:' + key + ' path:' + fbPath);
 
     try {
       const existing = await fetch(DB_URL + fbPath + key + '.json')
-        .then(r => r.json()).catch(() => null);
+        .then(r => r.json()).catch(err => { dbg('fetch既存エラー:'+err); return null; });
+      dbg('existing:' + JSON.stringify(existing));
 
       // 他端末の同名エントリは上書きしない
-      if(existing && existing.deviceId && existing.deviceId !== DEVICE_ID) return;
+      if(existing && existing.deviceId && existing.deviceId !== DEVICE_ID){
+        dbg('→他端末の同名のためスキップ');
+        return;
+      }
 
       // 初回 or ベスト更新時のみ保存
       if(!existing || !existing.best || existing.best < n){
-        await fetch(DB_URL + fbPath + key + '.json', {
+        const res = await fetch(DB_URL + fbPath + key + '.json', {
           method: 'PUT',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({
@@ -463,8 +482,13 @@
             updatedAt: Date.now()
           })
         });
+        dbg('→PUT status:' + res.status);
+      } else {
+        dbg('→既存best:' + existing.best + ' >= ' + n + ' スキップ');
       }
-    } catch(e) {}
+    } catch(e) {
+      dbg('→catch エラー:' + e.message);
+    }
   }
 
   // 起動時にFirebaseからスコアを復元（通常・無理ゲー両方）
@@ -959,6 +983,9 @@
 
   function gameOver(){
     cancelAnimationFrame(_raf);
+    // デバッグエリアリセット
+    const dbgEl = document.getElementById('go-debug');
+    if(dbgEl){ dbgEl.textContent=''; dbgEl.style.display='none'; }
     const score = state.score;
     const best  = getBest(_murigeMode);
     const isNew = score > best;
