@@ -307,7 +307,7 @@
     </div>
     <!-- 飛べ飛バナー -->
     <div id="tobi-banner" style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;margin-bottom:16px;">
-      <a href="dungeon.html" style="display:block;text-decoration:none;" onclick="localStorage.setItem('from_gp','1')">
+      <a href="dungeon.html" style="display:block;text-decoration:none;" >
         <div style="background:linear-gradient(135deg,#3a3020,#1a1810);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;">
           <div style="display:flex;align-items:center;gap:10px;">
             <span style="font-size:28px;font-weight:900;color:#c8a85a;font-family:'Noto Serif JP',serif;line-height:1;text-shadow:0 0 20px rgba(200,168,90,0.4);">飛べ飛</span>
@@ -1700,146 +1700,114 @@
   }
 
   // ===== 外部コントローラー対応 =====
-  let _gp = { prev:{}, homeCursor:0, gridCursor:-1 };
+  // プロコン対応: A=ボタン0, B=ボタン1, X=ボタン2, Y=ボタン3
+  // 十字キー: up=12, dn=13, lt=14, rt=15
 
-  function _B(b){ return !!(b && (b.value > 0.08 || b.pressed)); }
-  function _screen(){ return document.querySelector('.screen.active')?.id || ''; }
+  let GP = { prev:{}, hc:0, gc:-1, connected:false };
 
-  // ホームカーソル表示（0=nick入力欄, 1=チャレンジ開始ボタン）
-  function _updateHomeCursor(){
+  function gpB(b){ return !!(b && (b.value>0.08 || b.pressed)); }
+
+  function gpUpdateHome(){
     const inp = document.getElementById('nick-input');
     const btn = document.querySelector('#nick-card-wrap .btn.primary');
-    if(inp){
-      inp.style.borderColor = _gp.homeCursor===0 ? '#378ADD' : '';
-      inp.style.outline     = _gp.homeCursor===0 ? '2px solid #378ADD' : '';
-      inp.style.outlineOffset = '2px';
-    }
-    if(btn){
-      btn.style.outline       = _gp.homeCursor===1 ? '3px solid #fff' : '';
-      btn.style.outlineOffset = _gp.homeCursor===1 ? '2px' : '';
-    }
+    if(inp){ inp.style.outline = GP.hc===0?'3px solid #378ADD':'none'; inp.style.outlineOffset='2px'; }
+    if(btn){ btn.style.outline = GP.hc===1?'3px solid rgba(255,255,255,0.8)':'none'; btn.style.outlineOffset='2px'; }
   }
 
-  // グリッドカーソル表示
-  function _updateGridCursor(){
+  function gpUpdateGrid(){
     document.querySelectorAll('#grid .cell').forEach((c,i)=>{
-      const on = i === _gp.gridCursor;
-      c.style.outline       = on ? '3px solid #378ADD' : '';
-      c.style.outlineOffset = on ? '2px' : '';
-      c.style.boxShadow     = on ? '0 0 10px rgba(55,138,221,0.6)' : '';
+      const on = i===GP.gc;
+      c.style.outline     = on?'3px solid #378ADD':'';
+      c.style.outlineOffset = on?'2px':'';
+      c.style.boxShadow   = on?'0 0 10px rgba(55,138,221,0.6)':'';
     });
   }
 
-  // コントローラー接続時の初期化
-  function _gpInit(){
-    _gp.homeCursor = 0;
-    _updateHomeCursor();
+  function gpConnect(){
+    if(GP.connected) return;
+    GP.connected = true;
+    GP.hc = 0;
+    gpUpdateHome();
     const gb = document.getElementById('gp-guide-btn');
-    if(gb) gb.style.display = 'flex';
+    if(gb) gb.style.display='flex';
   }
 
-  window.addEventListener('gamepadconnected', _gpInit);
-  window.addEventListener('gamepaddisconnected', ()=>{
-    const inp = document.getElementById('nick-input');
-    if(inp){ inp.style.borderColor=''; inp.style.outline=''; }
-    const gb = document.getElementById('gp-guide-btn');
-    if(gb) gb.style.display = 'none';
-  });
+  window.addEventListener('gamepadconnected', gpConnect);
 
-  // ページ読み込み時・他ページから遷移してきた場合の検出
-  // 複数回試行して確実に検出する
-  [100, 300, 600, 1000].forEach(ms => {
-    setTimeout(()=>{
-      const gps = navigator.getGamepads ? navigator.getGamepads() : [];
-      if([...gps].some(g => g)) _gpInit();
-    }, ms);
-  });
-
-  function pollIndexGamepad(){
+  // 遷移後も検出できるよう定期的にチェック
+  setInterval(()=>{
     const gps = navigator.getGamepads ? navigator.getGamepads() : [];
-    const scr = _screen();
+    if([...gps].some(g=>g)) gpConnect();
+  }, 500);
 
+  setInterval(()=>{
+    const gps = navigator.getGamepads ? navigator.getGamepads() : [];
+    let active = false;
     for(const gp of gps){
       if(!gp) continue;
+      active = true;
       const i = gp.index;
-      const p = _gp.prev;
+      const p = GP.prev;
 
-      const bA  = _B(gp.buttons[0]); // Aボタン
-      const bB  = _B(gp.buttons[1]); // Bボタン
-      const bX  = _B(gp.buttons[2]); // Xボタン
-      const bY  = _B(gp.buttons[3]); // Yボタン
-      const up  = _B(gp.buttons[12]) || gp.axes[1] < -0.3 || gp.axes[3] < -0.3;
-      const dn  = _B(gp.buttons[13]) || gp.axes[1] >  0.3 || gp.axes[3] >  0.3;
-      const lt  = _B(gp.buttons[14]) || gp.axes[0] < -0.3;
-      const rt  = _B(gp.buttons[15]) || gp.axes[0] >  0.3;
+      const bA = gpB(gp.buttons[0]);
+      const bB = gpB(gp.buttons[1]);
+      const bX = gpB(gp.buttons[2]);
+      const bY = gpB(gp.buttons[3]);
+      const up = gpB(gp.buttons[12]) || gp.axes[1]<-0.3;
+      const dn = gpB(gp.buttons[13]) || gp.axes[1]>0.3;
+      const lt = gpB(gp.buttons[14]) || gp.axes[0]<-0.3;
+      const rt = gpB(gp.buttons[15]) || gp.axes[0]>0.3;
 
-      // 左右スティックY軸でスクロール
-      const lsY = gp.axes[1];
-      const rsY = gp.axes[3];
-      if(Math.abs(lsY) > 0.3) window.scrollBy(0, lsY * 14);
-      if(Math.abs(rsY) > 0.3) window.scrollBy(0, rsY * 14);
+      // スクロール（左右スティックY軸）
+      if(Math.abs(gp.axes[1])>0.3) window.scrollBy(0, gp.axes[1]*14);
+      if(Math.abs(gp.axes[3])>0.3) window.scrollBy(0, gp.axes[3]*14);
 
-      // ===== ホーム画面 =====
-      if(scr === 'screen-nick'){
-        if(up && !p[i+'_up']){
-          _gp.homeCursor = Math.max(0, _gp.homeCursor - 1);
-          _updateHomeCursor();
-        }
-        if(dn && !p[i+'_dn']){
-          _gp.homeCursor = Math.min(1, _gp.homeCursor + 1);
-          _updateHomeCursor();
-        }
-        if(bA && !p[i+'_bA']){
-          if(_gp.homeCursor === 0) document.getElementById('nick-input')?.focus();
-          else startChallenge();
-        }
-        if(bB && !p[i+'_bB']) startChallenge();
+      const scr = document.querySelector('.screen.active')?.id||'';
+
+      if(scr==='screen-nick'){
+        if(up&&!p[i+'u']){ GP.hc=Math.max(0,GP.hc-1); gpUpdateHome(); }
+        if(dn&&!p[i+'d']){ GP.hc=Math.min(1,GP.hc+1); gpUpdateHome(); }
+        if(bA&&!p[i+'A']){ GP.hc===0 ? document.getElementById('nick-input')?.focus() : startChallenge(); }
+        if(bB&&!p[i+'B']){ startChallenge(); }
       }
 
-      // ===== ゲーム画面 =====
-      if(scr === 'screen-game'){
-        const startBtn = document.getElementById('start-btn');
-        const ansBtn   = document.getElementById('answer-btn');
-        const cells    = document.querySelectorAll('#grid .cell');
-        const isLocked = document.getElementById('grid')?.classList.contains('locked');
+      if(scr==='screen-game'){
+        const sBtn = document.getElementById('start-btn');
+        const aBtn = document.getElementById('answer-btn');
+        const cells = [...document.querySelectorAll('#grid .cell')];
+        const locked = document.getElementById('grid')?.classList.contains('locked');
 
-        if(bA && !p[i+'_bA']){
-          if(startBtn && !startBtn.disabled) startBtn.click();
-          else if(ansBtn && !ansBtn.disabled) ansBtn.click();
+        if(bA&&!p[i+'A']){
+          if(sBtn&&!sBtn.disabled) sBtn.click();
+          else if(aBtn&&!aBtn.disabled) aBtn.click();
         }
 
-        if(!isLocked && cells.length > 0){
-          if(_gp.gridCursor < 0){ _gp.gridCursor = 0; _updateGridCursor(); }
-          const cols = 4;
-          let nc = _gp.gridCursor;
-          if(up && !p[i+'_up'])  nc = Math.max(0, nc - cols);
-          if(dn && !p[i+'_dn'])  nc = Math.min(cells.length-1, nc + cols);
-          if(lt && !p[i+'_lt'])  nc = nc % cols > 0 ? nc-1 : nc;
-          if(rt && !p[i+'_rt'])  nc = nc % cols < cols-1 && nc < cells.length-1 ? nc+1 : nc;
-          if(nc !== _gp.gridCursor){ _gp.gridCursor = nc; _updateGridCursor(); }
-
-          if((bB||bX||bY) && !(p[i+'_bB']||p[i+'_bX']||p[i+'_bY'])){
-            cells[_gp.gridCursor]?.click();
-          }
+        if(!locked && cells.length>0){
+          if(GP.gc<0){ GP.gc=0; gpUpdateGrid(); }
+          const cols=4; let nc=GP.gc;
+          if(up&&!p[i+'u']) nc=Math.max(0,nc-cols);
+          if(dn&&!p[i+'d']) nc=Math.min(cells.length-1,nc+cols);
+          if(lt&&!p[i+'l']) nc=nc%cols>0?nc-1:nc;
+          if(rt&&!p[i+'r']) nc=nc%cols<cols-1&&nc<cells.length-1?nc+1:nc;
+          if(nc!==GP.gc){ GP.gc=nc; gpUpdateGrid(); }
+          if((bB||bX||bY)&&!(p[i+'B']||p[i+'X']||p[i+'Y'])) cells[GP.gc]?.click();
         } else {
-          if(_gp.gridCursor >= 0){ _gp.gridCursor = -1; _updateGridCursor(); }
+          if(GP.gc>=0){ GP.gc=-1; gpUpdateGrid(); }
         }
       }
 
-      // ===== 結果画面 =====
-      if(scr === 'screen-result'){
-        if((bA||bB) && !(p[i+'_bA']||p[i+'_bB'])) goToNick();
+      if(scr==='screen-result'){
+        if((bA||bB)&&!(p[i+'A']||p[i+'B'])) goToNick();
       }
 
-      p[i+'_bA']=bA; p[i+'_bB']=bB; p[i+'_bX']=bX; p[i+'_bY']=bY;
-      p[i+'_up']=up; p[i+'_dn']=dn; p[i+'_lt']=lt; p[i+'_rt']=rt;
+      p[i+'A']=bA; p[i+'B']=bB; p[i+'X']=bX; p[i+'Y']=bY;
+      p[i+'u']=up; p[i+'d']=dn; p[i+'l']=lt; p[i+'r']=rt;
     }
-  }
-  setInterval(pollIndexGamepad, 8);
+  }, 16);
 
   function toggleGpGuide(){
     const p = document.getElementById('gp-guide-panel');
-    if(p) p.style.display = p.style.display==='block' ? 'none' : 'block';
+    if(p) p.style.display=p.style.display==='block'?'none':'block';
   }
 </script>
 
