@@ -915,10 +915,10 @@
     // 既に認証済みならスキップ
     if(_isOwnerAuthed()) return true;
 
-    // ハッシュ未設定の場合（初期状態）は認証をスキップ
-    if(_OWNER_HASH === 'YOUR_HASH_HERE'){
-      sessionStorage.setItem(_AUTH_SESSION_KEY, '1');
-      return true;
+    // ハッシュ未設定・不正な場合は使用不可（64文字の16進数でなければ無効）
+    if(_OWNER_HASH === 'YOUR_HASH_HERE' || !/^[0-9a-f]{64}$/.test(_OWNER_HASH)){
+      alert('「' + purpose + '」は現在使用できません。');
+      return false;
     }
 
     const pw = prompt('「' + purpose + '」には製作者パスワードが必要です。\nパスワードを入力してください：');
@@ -1692,39 +1692,51 @@
 
   // ===== 外部コントローラー対応 =====
   let _idxPrevButtons = {};
-  let _gpConnectedIdx = false;
-  let _gridCursor = -1; // グリッドのカーソル位置（-1=未選択）
+  let _gridCursor = -1;
+  // ホーム画面カーソル項目: 0=ニックネーム入力, 1=チャレンジ開始ボタン
+  let _homeCursor = 0;
 
-  function btnOn(b){ return b && (b.value > 0.08 || b.pressed); }
-
+  function _btnOn(b){ return b && (b.value > 0.08 || b.pressed); }
   function isScreen(id){ return document.getElementById(id)?.classList.contains('active'); }
 
-  // グリッドカーソルを更新
+  // ===== グリッドカーソル =====
   function updateGridCursor(){
-    const cells = document.querySelectorAll('#grid .cell:not(.locked)');
+    const cells = document.querySelectorAll('#grid .cell');
     cells.forEach((c,i)=>{
-      c.style.outline = (i === _gridCursor) ? '3px solid var(--blue)' : '';
-      c.style.outlineOffset = (i === _gridCursor) ? '-1px' : '';
+      if(i === _gridCursor){
+        c.style.outline = '3px solid var(--blue)';
+        c.style.outlineOffset = '2px';
+        c.style.boxShadow = '0 0 8px rgba(55,138,221,0.5)';
+      } else {
+        c.style.outline = '';
+        c.style.outlineOffset = '';
+        c.style.boxShadow = '';
+      }
     });
   }
 
-  // ホーム画面のカーソル（ニックネーム入力欄にフォーカス）
-  function showHomeCursor(){
+  // ===== ホームカーソル =====
+  // 項目: 0=ニックネーム入力欄, 1=チャレンジ開始ボタン
+  function updateHomeCursor(){
     const inp = document.getElementById('nick-input');
-    if(inp) inp.style.borderColor = 'var(--blue)';
-  }
-  function hideHomeCursor(){
-    const inp = document.getElementById('nick-input');
-    if(inp) inp.style.borderColor = '';
+    const btn = document.querySelector('#nick-card-wrap .btn.primary');
+    if(inp){
+      inp.style.borderColor = _homeCursor===0 ? 'var(--blue)' : '';
+      inp.style.boxShadow   = _homeCursor===0 ? '0 0 8px rgba(55,138,221,0.4)' : '';
+    }
+    if(btn){
+      btn.style.outline = _homeCursor===1 ? '3px solid #fff' : '';
+      btn.style.outlineOffset = _homeCursor===1 ? '2px' : '';
+    }
   }
 
   window.addEventListener('gamepadconnected', ()=>{
-    _gpConnectedIdx = true;
-    showHomeCursor();
+    _homeCursor = 0;
+    updateHomeCursor();
   });
   window.addEventListener('gamepaddisconnected', ()=>{
-    _gpConnectedIdx = false;
-    hideHomeCursor();
+    const inp = document.getElementById('nick-input');
+    if(inp){ inp.style.borderColor=''; inp.style.boxShadow=''; }
   });
 
   function pollIndexGamepad(){
@@ -1733,22 +1745,44 @@
       if(!gp) continue;
       const idx = gp.index;
 
-      const b0  = btnOn(gp.buttons[0]);
-      const b1  = btnOn(gp.buttons[1]);
-      const b2  = btnOn(gp.buttons[2]);
-      const up  = btnOn(gp.buttons[12]) || (gp.axes[1] < -0.3);
-      const dn  = btnOn(gp.buttons[13]) || (gp.axes[1] > 0.3);
-      const lt  = btnOn(gp.buttons[14]) || (gp.axes[0] < -0.3);
-      const rt  = btnOn(gp.buttons[15]) || (gp.axes[0] > 0.3);
+      const b0 = _btnOn(gp.buttons[0]);
+      const b1 = _btnOn(gp.buttons[1]);
+      const b2 = _btnOn(gp.buttons[2]);
+      const b3 = _btnOn(gp.buttons[3]);
+      const up = _btnOn(gp.buttons[12]) || (gp.axes[1] < -0.3);
+      const dn = _btnOn(gp.buttons[13]) || (gp.axes[1] > 0.3);
+      const lt = _btnOn(gp.buttons[14]) || (gp.axes[0] < -0.3);
+      const rt = _btnOn(gp.buttons[15]) || (gp.axes[0] > 0.3);
+      // 右スティックでスクロール
+      const rsUp = gp.axes[3] < -0.3;
+      const rsDn = gp.axes[3] > 0.3;
+
+      // ===== スクロール（右スティック or L2/R2） =====
+      if(rsUp) window.scrollBy(0, -12);
+      if(rsDn) window.scrollBy(0, 12);
 
       // ===== ホーム画面 =====
       if(isScreen('screen-nick')){
-        if(b0 && !_idxPrevButtons[idx+'_0']){
-          startChallenge();
+        // 上下でカーソル移動
+        if(up && !_idxPrevButtons[idx+'_up']){
+          _homeCursor = Math.max(0, _homeCursor - 1);
+          updateHomeCursor();
         }
-        // 十字上下: ニックネーム入力欄をフォーカス
-        if((up||dn) && !_idxPrevButtons[idx+'_up']){
-          document.getElementById('nick-input')?.focus();
+        if(dn && !_idxPrevButtons[idx+'_down']){
+          _homeCursor = Math.min(1, _homeCursor + 1);
+          updateHomeCursor();
+        }
+        // ボタン0: 決定
+        if(b0 && !_idxPrevButtons[idx+'_0']){
+          if(_homeCursor === 0){
+            document.getElementById('nick-input')?.focus();
+          } else {
+            startChallenge();
+          }
+        }
+        // ボタン1: チャレンジ開始（ショートカット）
+        if(b1 && !_idxPrevButtons[idx+'_1']){
+          startChallenge();
         }
       }
 
@@ -1757,7 +1791,6 @@
         const startBtn = document.getElementById('start-btn');
         const ansBtn   = document.getElementById('answer-btn');
         const cells    = document.querySelectorAll('#grid .cell');
-        const activeCells = document.querySelectorAll('#grid .cell:not(.locked *), #grid:not(.locked) .cell');
         const gridEl   = document.getElementById('grid');
         const isLocked = gridEl?.classList.contains('locked');
 
@@ -1767,56 +1800,38 @@
           else if(ansBtn && !ansBtn.disabled) ansBtn.click();
         }
 
-        // グリッドが操作可能な時はカーソル移動・選択
+        // 答える段階（グリッドが操作可能）
         if(!isLocked && cells.length > 0){
-          const cols = 4; // グリッドは4列固定
-          const rows = Math.ceil(cells.length / cols);
+          const cols = 4;
+          if(_gridCursor < 0){ _gridCursor = 0; updateGridCursor(); }
 
-          if(_gridCursor < 0) _gridCursor = 0;
+          let nc = _gridCursor;
+          if(up && !_idxPrevButtons[idx+'_up'])   nc = Math.max(0, nc - cols);
+          if(dn && !_idxPrevButtons[idx+'_down'])  nc = Math.min(cells.length-1, nc + cols);
+          if(lt && !_idxPrevButtons[idx+'_left'])  nc = nc % cols > 0 ? nc-1 : nc;
+          if(rt && !_idxPrevButtons[idx+'_right']) nc = nc % cols < cols-1 && nc < cells.length-1 ? nc+1 : nc;
 
-          const curRow = Math.floor(_gridCursor / cols);
-          const curCol = _gridCursor % cols;
+          if(nc !== _gridCursor){ _gridCursor = nc; updateGridCursor(); }
 
-          let newCursor = _gridCursor;
-          if(up && !_idxPrevButtons[idx+'_up']){
-            newCursor = Math.max(0, _gridCursor - cols);
-          }
-          if(dn && !_idxPrevButtons[idx+'_down']){
-            newCursor = Math.min(cells.length-1, _gridCursor + cols);
-          }
-          if(lt && !_idxPrevButtons[idx+'_left']){
-            newCursor = _gridCursor % cols > 0 ? _gridCursor - 1 : _gridCursor;
-          }
-          if(rt && !_idxPrevButtons[idx+'_right']){
-            newCursor = _gridCursor % cols < cols-1 && _gridCursor < cells.length-1 ? _gridCursor + 1 : _gridCursor;
-          }
-
-          if(newCursor !== _gridCursor){
-            _gridCursor = newCursor;
-            updateGridCursor();
-          }
-
-          // ボタン2(X/□) or 十字中央: セル選択
-          if(b2 && !_idxPrevButtons[idx+'_2']){
+          // ボタン1・2・3: セル選択
+          if((b1||b2||b3) && !(_idxPrevButtons[idx+'_1']||_idxPrevButtons[idx+'_2']||_idxPrevButtons[idx+'_3'])){
             cells[_gridCursor]?.click();
           }
         } else {
-          _gridCursor = -1;
-          updateGridCursor();
+          if(_gridCursor >= 0){ _gridCursor = -1; updateGridCursor(); }
         }
       }
 
       // ===== 結果画面 =====
       if(isScreen('screen-result')){
-        if(b0 && !_idxPrevButtons[idx+'_0']){
-          goToNick();
-        }
+        if(b0 && !_idxPrevButtons[idx+'_0']) goToNick();
+        if(b1 && !_idxPrevButtons[idx+'_1']) goToNick();
       }
 
-      // 前フレームの状態を保存
       _idxPrevButtons[idx+'_0']     = b0;
       _idxPrevButtons[idx+'_1']     = b1;
       _idxPrevButtons[idx+'_2']     = b2;
+      _idxPrevButtons[idx+'_3']     = b3;
       _idxPrevButtons[idx+'_up']    = up;
       _idxPrevButtons[idx+'_down']  = dn;
       _idxPrevButtons[idx+'_left']  = lt;

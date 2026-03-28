@@ -1124,7 +1124,7 @@
 
   window.addEventListener('gamepadconnected', e=>{
     _gpConnected = true;
-    gpIndicator.textContent = 'コントローラー接続中 — 十字キー:カーソル移動　0:決定／飛ぶ　1:停止';
+    gpIndicator.textContent = 'コントローラー接続中 — 十字キー:カーソル移動　1:決定／飛ぶ　0:停止';
     gpIndicator.style.opacity = '1';
     document.getElementById('go-gp-hint').style.display = 'block';
     _titleCursor = 0;
@@ -1166,24 +1166,24 @@
       const isPause  = pauseEl.style.display === 'flex';
       const isGame   = gameEl.style.display === 'flex';
 
-      // ボタン0: 決定 / 飛ぶ / もう一度
-      const b0 = _btnOn(gp.buttons[0]);
-      if(b0 && !_gpPrevButtons[idx+'_0']){
+      // ボタン1: 決定 / 飛ぶ / もう一度（ジャンプ）
+      const b1 = _btnOn(gp.buttons[1]);
+      if(b1 && !_gpPrevButtons[idx+'_1']){
         if(isTitle)       titleCursorAction();
         else if(isGO)     { if(_goCursor===0) startGame(_murigeMode); else goTitle(); }
         else if(isPause)  togglePause();
         else              _flapQueued = true;
       }
-      _gpPrevButtons[idx+'_0'] = b0;
+      _gpPrevButtons[idx+'_1'] = b1;
 
-      // ボタン1: 一時停止 / タイトルへ
-      const b1 = _btnOn(gp.buttons[1]);
-      if(b1 && !_gpPrevButtons[idx+'_1']){
+      // ボタン0: 一時停止 / タイトルへ（戻る）
+      const b0 = _btnOn(gp.buttons[0]);
+      if(b0 && !_gpPrevButtons[idx+'_0']){
         if(isGO)         goTitle();
         else if(isGame)  togglePause();
         else if(isPause) togglePause();
       }
-      _gpPrevButtons[idx+'_1'] = b1;
+      _gpPrevButtons[idx+'_0'] = b0;
 
       // 十字キー上 / 左スティック上
       const up = _btnOn(gp.buttons[12]) || (gp.axes[1] < -0.3);
