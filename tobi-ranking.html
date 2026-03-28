@@ -269,8 +269,8 @@
     </button>
     <div id="gp-guide-content">
       <div class="gp-guide-title">操 作 方 法</div>
-      <div class="gp-guide-row"><span class="gp-guide-btn">Bボタン</span><span class="gp-guide-act">決定／タブ切替／ガイド開閉</span></div>
-      <div class="gp-guide-row"><span class="gp-guide-btn">Aボタン</span><span class="gp-guide-act">飛べ飛へ戻る（ガイドが開いている時は閉じる）</span></div>
+      <div class="gp-guide-row"><span class="gp-guide-btn">Aボタン</span><span class="gp-guide-act">決定／タブ切替／ガイド開閉</span></div>
+      <div class="gp-guide-row"><span class="gp-guide-btn">Bボタン</span><span class="gp-guide-act">飛べ飛へ戻る（ガイドが開いている時は閉じる）</span></div>
       <div class="gp-guide-row"><span class="gp-guide-btn">十字 ← →</span><span class="gp-guide-act">タブ切り替え</span></div>
       <div class="gp-guide-row"><span class="gp-guide-btn">十字 ↑ ↓</span><span class="gp-guide-act">カーソル移動</span></div>
       <div class="gp-guide-row"><span class="gp-guide-btn">右スティック</span><span class="gp-guide-act">スクロール</span></div>
@@ -456,24 +456,29 @@
     if(content) content.style.display = 'none';
   }
 
+  let _gpDetected = false;
   function pollRankGamepad(){
     const gps = navigator.getGamepads ? navigator.getGamepads() : [];
     for(const gp of gps){
       if(!gp) continue;
+
+      // コントローラー初検出時にバナーを表示
+      if(!_gpDetected){ _gpDetected = true; _onRankGamepadConnected(); }
+
       const idx = gp.index;
 
-      // Bボタン（ブラウザ0）: 決定／ガイド開閉
-      const bB = _btnOn(gp.buttons[0]);
-      if(bB && !_rankPrevButtons[idx+'_B']){ rankCursorAction(); }
-      _rankPrevButtons[idx+'_B'] = bB;
-
-      // Aボタン（ブラウザ1）: ガイドが開いていれば閉じる、それ以外は飛べ飛へ戻る
+      // Aボタン（ブラウザ1）: 決定／ガイド開閉
       const bA = _btnOn(gp.buttons[1]);
-      if(bA && !_rankPrevButtons[idx+'_A']){
+      if(bA && !_rankPrevButtons[idx+'_A']){ rankCursorAction(); }
+      _rankPrevButtons[idx+'_A'] = bA;
+
+      // Bボタン（ブラウザ0）: ガイドが開いていれば閉じる、それ以外は飛べ飛へ戻る
+      const bB = _btnOn(gp.buttons[0]);
+      if(bB && !_rankPrevButtons[idx+'_B']){
         if(_gpGuideOpen) closeGpGuide();
         else window.location.href='dungeon.html';
       }
-      _rankPrevButtons[idx+'_A'] = bA;
+      _rankPrevButtons[idx+'_B'] = bB;
 
       // 左右: 列移動
       const lt = _btnOn(gp.buttons[14]) || (gp.axes[0] < -0.3);
@@ -516,15 +521,17 @@
   function _onRankGamepadConnected(){
     updateRankCursor();
     const banner = document.getElementById('gp-guide-banner');
-    if(banner) banner.style.display = 'block';
+    if(banner && banner.style.display === 'none') banner.style.display = 'block';
   }
   window.addEventListener('gamepadconnected', ()=>{ _onRankGamepadConnected(); });
 
-  // ページ読み込み時に既存のコントローラーを検出
-  setTimeout(()=>{
+  // ページ読み込み時に既存のコントローラーを検出（500ms・1000msの2段階）
+  function _detectExistingGamepad(){
     const gps = navigator.getGamepads ? navigator.getGamepads() : [];
     if([...gps].some(g => g)) _onRankGamepadConnected();
-  }, 200);
+  }
+  setTimeout(_detectExistingGamepad, 500);
+  setTimeout(_detectExistingGamepad, 1000);
   requestAnimationFrame(pollRankGamepad);
 </script>
 </body>
