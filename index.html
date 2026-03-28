@@ -307,6 +307,8 @@
       <div class="nick-msg" id="nick-msg"></div>
       <button class="btn primary" onclick="startChallenge()" style="width:100%">チャレンジ開始！</button>
       <p style="font-size:11px;color:var(--text3);margin-top:10px;line-height:1.7;">※ このゲームはこの端末からのみスコアを更新できます。別の端末からは同じニックネームで上書きできません。</p>
+      <button id="gp-connect-btn" onclick="tryConnectGamepad()" style="display:none;margin-top:10px;width:100%;padding:8px;font-size:12px;color:var(--text2);background:none;border:1px solid var(--border2);border-radius:var(--rs);cursor:pointer;font-family:'Noto Sans JP',sans-serif;">🎮 コントローラーを認識させる</button>
+      <div id="gp-connect-msg" style="display:none;font-size:11px;color:var(--text3);text-align:center;margin-top:6px;line-height:1.7;">ボタンを押すと表示されます↑<br>接続後にコントローラーのいずれかのボタンを押してください</div>
     </div>
     </div>
     <!-- 飛べ飛バナー -->
@@ -1732,6 +1734,20 @@
     });
   }
 
+  function tryConnectGamepad(){
+    // タップ後にコントローラーボタンを押してもらう
+    const btn = document.getElementById('gp-connect-btn');
+    const msg = document.getElementById('gp-connect-msg');
+    if(btn) btn.style.display = 'none';
+    if(msg) msg.style.display = 'block';
+    // この時点でgetGamepads()を試みる
+    const gps = navigator.getGamepads ? navigator.getGamepads() : [];
+    if([...gps].some(g=>g)){
+      gpConnect();
+      if(msg) msg.style.display = 'none';
+    }
+  }
+
   function gpConnect(){
     GP.connected = true;
     GP.hc = 0;
@@ -1742,33 +1758,35 @@
 
   window.addEventListener('gamepadconnected', gpConnect);
 
+  // コントローラー接続ボタンを表示（Bluetoothで繋がっていてもChromeが未認識の場合のため）
+  setTimeout(()=>{
+    const gps = navigator.getGamepads ? navigator.getGamepads() : [];
+    if(![...gps].some(g=>g)){
+      // 未認識の場合は接続ボタンを表示
+      const btn = document.getElementById('gp-connect-btn');
+      if(btn) btn.style.display = 'block';
+    }
+  }, 1000);
+
   // ページ更新後・遷移後も検出できるよう定期チェック
-  // Chromeはボタンを押すまでgetGamepads()が空を返すことがある
-  // → 検出できたらGP.connectedをリセットして毎回カーソルを初期化
   setInterval(()=>{
     const gps = navigator.getGamepads ? navigator.getGamepads() : [];
     if([...gps].some(g=>g)){
+      // 接続ボタンを非表示
+      const btn = document.getElementById('gp-connect-btn');
+      const msg = document.getElementById('gp-connect-msg');
+      if(btn) btn.style.display = 'none';
+      if(msg) msg.style.display = 'none';
       if(!GP.connected) gpConnect();
     } else {
-      GP.connected = false; // 未検出ならリセット（次回検出時に再初期化）
+      GP.connected = false;
     }
   }, 500);
 
   setInterval(()=>{
     const gps = navigator.getGamepads ? navigator.getGamepads() : [];
-    const dbg = document.getElementById('gp-debug-bar');
-    let active = false;
     for(const gp of gps){
       if(!gp) continue;
-      active = true;
-      if(dbg){
-        dbg.style.display='block';
-        // 押されているボタン番号を全部列挙
-        const pressed = gp.buttons.map((b,i)=>gpB(b)?i:null).filter(i=>i!==null);
-        const axes = [...gp.axes].map((a,i)=>Math.abs(a)>0.1?i+'='+a.toFixed(1):null).filter(Boolean);
-        const scr=document.querySelector('.screen.active')?.id||'?';
-        dbg.textContent='scr:'+scr+' BTN:['+pressed.join(',')+'] AXES:['+axes.join(',')+'] hc:'+GP.hc+' up:'+up+' dn:'+dn+' pu:'+p[i+'u']+' pd:'+p[i+'d'];
-      }
       const i = gp.index;
       const p = GP.prev;
 
