@@ -187,6 +187,14 @@
       line-height:2.2;
     }
     .footer a{color:var(--text3);text-decoration:underline;}
+
+    #gp-guide-btn{position:fixed;bottom:16px;right:16px;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.5);font-size:16px;cursor:pointer;z-index:8000;display:none;align-items:center;justify-content:center;font-family:sans-serif;line-height:1;}
+    #gp-guide-panel{position:fixed;bottom:60px;right:16px;background:rgba(20,20,18,0.96);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px 16px;font-size:11px;color:rgba(220,215,200,0.85);z-index:8001;display:none;min-width:200px;line-height:2;font-family:'Noto Serif JP',serif;box-shadow:0 4px 20px rgba(0,0,0,0.5);}
+    #gp-guide-panel .gp-title{font-size:10px;color:rgba(200,168,90,0.7);letter-spacing:0.1em;margin-bottom:8px;}
+    #gp-guide-panel .gp-row{display:flex;justify-content:space-between;gap:16px;border-bottom:1px solid rgba(255,255,255,0.06);padding:2px 0;}
+    #gp-guide-panel .gp-row:last-child{border-bottom:none;}
+    #gp-guide-panel .gp-btn{color:rgba(200,168,90,0.9);font-weight:700;flex-shrink:0;}
+    #gp-guide-panel .gp-act{color:rgba(200,210,220,0.8);}
   </style>
 </head>
 <body>
@@ -228,6 +236,16 @@
     <a href="index.html" id="rank-home-link" style="font-size:14px;color:var(--text2);text-decoration:none;">丸場所記憶ゲーム</a>
   </div>
 
+
+<button id="gp-guide-btn" onclick="toggleGpGuide()">🎮</button>
+<div id="gp-guide-panel">
+  <div class="gp-title">🎮 コントローラー操作（プロコン）</div>
+  <div class="gp-row"><span class="gp-btn">Bボタン</span><span class="gp-act">決定（タブ切替／移動）</span></div>
+  <div class="gp-row"><span class="gp-btn">Aボタン</span><span class="gp-act">飛べ飛へ戻る</span></div>
+  <div class="gp-row"><span class="gp-btn">十字←→</span><span class="gp-act">タブ切り替え</span></div>
+  <div class="gp-row"><span class="gp-btn">十字↑↓</span><span class="gp-act">リンク移動</span></div>
+  <div class="gp-row"><span class="gp-btn">右スティック</span><span class="gp-act">スクロール</span></div>
+</div>
 </div>
 <script>
   const DB_URL  = 'https://ad-game-7b40a-default-rtdb.asia-southeast1.firebasedatabase.app';
@@ -351,72 +369,93 @@
   loadRanking();
 
   // ===== コントローラー操作 =====
-  // 項目: 0=普通モードタブ, 1=無理ゲーモードタブ, 2=飛べ飛へ戻る, 3=丸場所記憶ゲーム
-  let _rankCursor = 0;
+  // レイアウト: [普通モード][無理ゲーモード] ... [飛べ飛へ戻る][丸場所記憶ゲーム]
+  // 左右: タブ切り替え / 上下: リンク切り替え / Bボタン: 決定
+  let _rankCursor = 0; // 0=普通, 1=無理ゲー, 2=飛べ飛へ戻る, 3=丸場所記憶ゲーム
   let _rankPrevButtons = {};
 
-  function getRankItems(){
-    return ['tab-normal','tab-murige','rank-back-link','rank-home-link'];
-  }
+  // カーソル位置の定義（row: 0=タブ行, 1=リンク行 / col: 0=左, 1=右）
+  const RANK_LAYOUT = [
+    ['tab-normal',     'tab-murige'    ], // row 0
+    ['rank-back-link', 'rank-home-link'], // row 1
+  ];
+  let _rankRow = 0, _rankCol = 0;
 
   function updateRankCursor(){
-    const items = getRankItems();
-    items.forEach((id, i) => {
+    RANK_LAYOUT.flat().forEach(id => {
       const el = document.getElementById(id);
-      if(!el) return;
-      if(i === _rankCursor){
-        el.style.outline = '2px solid #c8a85a';
-        el.style.outlineOffset = '3px';
-      } else {
-        el.style.outline = 'none';
-      }
+      if(el){ el.style.outline='none'; el.style.outlineOffset=''; }
     });
+    const id = RANK_LAYOUT[_rankRow][_rankCol];
+    const el = document.getElementById(id);
+    if(el){ el.style.outline='2px solid #c8a85a'; el.style.outlineOffset='3px'; }
   }
 
   function rankCursorAction(){
-    const items = getRankItems();
-    const id = items[_rankCursor];
-    if(id === 'tab-normal')      switchTab('normal');
-    else if(id === 'tab-murige') switchTab('murige');
-    else if(id === 'rank-back-link') window.location.href = 'dungeon.html';
-    else if(id === 'rank-home-link') window.location.href = 'index.html';
+    const id = RANK_LAYOUT[_rankRow][_rankCol];
+    if(id==='tab-normal')       switchTab('normal');
+    else if(id==='tab-murige')  switchTab('murige');
+    else if(id==='rank-back-link')  window.location.href='dungeon.html';
+    else if(id==='rank-home-link')  window.location.href='index.html';
   }
+
+  function _btnOn(b){ return b && (b.value > 0.08 || b.pressed); }
 
   function pollRankGamepad(){
     const gps = navigator.getGamepads ? navigator.getGamepads() : [];
     for(const gp of gps){
       if(!gp) continue;
       const idx = gp.index;
-      function btnOn(b){ return b && (b.value > 0.08 || b.pressed); }
 
-      const b0 = btnOn(gp.buttons[0]);
-      if(b0 && !_rankPrevButtons[idx+'_0']){ rankCursorAction(); }
-      _rankPrevButtons[idx+'_0'] = b0;
+      // Bボタン（ボタン1）: 決定
+      const bB = _btnOn(gp.buttons[1]);
+      if(bB && !_rankPrevButtons[idx+'_B']){ rankCursorAction(); }
+      _rankPrevButtons[idx+'_B'] = bB;
 
-      const b1 = btnOn(gp.buttons[1]);
-      if(b1 && !_rankPrevButtons[idx+'_1']){ window.location.href = 'dungeon.html'; }
-      _rankPrevButtons[idx+'_1'] = b1;
+      // Aボタン（ボタン0）: 飛べ飛へ戻る
+      const bA = _btnOn(gp.buttons[0]);
+      if(bA && !_rankPrevButtons[idx+'_A']){ window.location.href='dungeon.html'; }
+      _rankPrevButtons[idx+'_A'] = bA;
 
-      const up = btnOn(gp.buttons[12]) || (gp.axes[1] < -0.3);
+      // 左右: 列移動
+      const lt = _btnOn(gp.buttons[14]) || (gp.axes[0] < -0.3);
+      if(lt && !_rankPrevButtons[idx+'_lt']){
+        _rankCol = Math.max(0, _rankCol-1); updateRankCursor();
+      }
+      _rankPrevButtons[idx+'_lt'] = lt;
+
+      const rt = _btnOn(gp.buttons[15]) || (gp.axes[0] > 0.3);
+      if(rt && !_rankPrevButtons[idx+'_rt']){
+        _rankCol = Math.min(RANK_LAYOUT[_rankRow].length-1, _rankCol+1); updateRankCursor();
+      }
+      _rankPrevButtons[idx+'_rt'] = rt;
+
+      // 上下: 行移動
+      const up = _btnOn(gp.buttons[12]) || (gp.axes[1] < -0.3);
       if(up && !_rankPrevButtons[idx+'_up']){
-        const items = getRankItems();
-        _rankCursor = (_rankCursor - 1 + items.length) % items.length;
-        updateRankCursor();
+        _rankRow = Math.max(0, _rankRow-1); updateRankCursor();
       }
       _rankPrevButtons[idx+'_up'] = up;
 
-      const down = btnOn(gp.buttons[13]) || (gp.axes[1] > 0.3);
-      if(down && !_rankPrevButtons[idx+'_down']){
-        const items = getRankItems();
-        _rankCursor = (_rankCursor + 1) % items.length;
-        updateRankCursor();
+      const dn = _btnOn(gp.buttons[13]) || (gp.axes[1] > 0.3);
+      if(dn && !_rankPrevButtons[idx+'_dn']){
+        _rankRow = Math.min(RANK_LAYOUT.length-1, _rankRow+1); updateRankCursor();
       }
-      _rankPrevButtons[idx+'_down'] = down;
+      _rankPrevButtons[idx+'_dn'] = dn;
+
+      // 右スティックでスクロール
+      if(gp.axes[3] < -0.3) window.scrollBy(0,-12);
+      if(gp.axes[3] >  0.3) window.scrollBy(0, 12);
     }
     requestAnimationFrame(pollRankGamepad);
   }
 
-  window.addEventListener('gamepadconnected', ()=>{ updateRankCursor(); });
+
+  function toggleGpGuide(){
+    const p = document.getElementById('gp-guide-panel');
+    p.style.display = p.style.display==='block' ? 'none' : 'block';
+  }
+  window.addEventListener('gamepadconnected', ()=>{ updateRankCursor(); const gb=document.getElementById('gp-guide-btn'); if(gb) gb.style.display='flex'; });
   requestAnimationFrame(pollRankGamepad);
 </script>
 </body>

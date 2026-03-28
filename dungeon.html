@@ -243,6 +243,15 @@
       z-index:50;pointer-events:none;
       transition:opacity 0.5s;
     }
+
+    /* コントローラー操作一覧 */
+    #gp-guide-btn{position:fixed;bottom:16px;right:16px;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.5);font-size:16px;cursor:pointer;z-index:8000;display:none;align-items:center;justify-content:center;font-family:sans-serif;line-height:1;}
+    #gp-guide-panel{position:fixed;bottom:60px;right:16px;background:rgba(20,20,18,0.96);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px 16px;font-size:11px;color:rgba(220,215,200,0.85);z-index:8001;display:none;min-width:200px;line-height:2;font-family:'Noto Serif JP',serif;box-shadow:0 4px 20px rgba(0,0,0,0.5);}
+    #gp-guide-panel .gp-title{font-size:10px;color:rgba(200,168,90,0.7);letter-spacing:0.1em;margin-bottom:8px;}
+    #gp-guide-panel .gp-row{display:flex;justify-content:space-between;gap:16px;border-bottom:1px solid rgba(255,255,255,0.06);padding:2px 0;}
+    #gp-guide-panel .gp-row:last-child{border-bottom:none;}
+    #gp-guide-panel .gp-btn{color:rgba(200,168,90,0.9);font-weight:700;flex-shrink:0;}
+    #gp-guide-panel .gp-act{color:rgba(200,210,220,0.8);}
   </style>
 </head>
 <body>
@@ -324,6 +333,16 @@
 </div>
 <!-- デバッグログ（常に最前面・ゲームオーバー画面に依存しない） -->
 <div id="go-debug" style="display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(0,0,0,0.92);color:#0f0;font-size:10px;padding:8px;white-space:pre-wrap;word-break:break-all;max-height:50vh;overflow-y:auto;font-family:monospace;text-align:left;z-index:99999;pointer-events:none;"></div>
+
+<!-- コントローラー操作ガイド -->
+<button id="gp-guide-btn" onclick="toggleGpGuide()">🎮</button>
+<div id="gp-guide-panel">
+  <div class="gp-title">🎮 コントローラー操作（プロコン）</div>
+  <div class="gp-row"><span class="gp-btn">Bボタン</span><span class="gp-act">飛ぶ／決定</span></div>
+  <div class="gp-row"><span class="gp-btn">Aボタン</span><span class="gp-act">一時停止／戻る</span></div>
+  <div class="gp-row"><span class="gp-btn">十字↑↓←→</span><span class="gp-act">カーソル移動</span></div>
+  <div class="gp-row"><span class="gp-btn">右スティック</span><span class="gp-act">スクロール</span></div>
+</div>
 
 <div id="gamepad-indicator"></div>
 
@@ -1125,6 +1144,7 @@
   window.addEventListener('gamepadconnected', e=>{
     _gpConnected = true;
     gpIndicator.textContent = 'コントローラー接続中 — 十字キー:カーソル移動　1:決定／飛ぶ　0:停止';
+    const gb = document.getElementById('gp-guide-btn'); if(gb) gb.style.display='flex';
     gpIndicator.style.opacity = '1';
     document.getElementById('go-gp-hint').style.display = 'block';
     _titleCursor = 0;
@@ -1235,6 +1255,11 @@
 
   // setIntervalで8ms間隔ポーリング（rAFの約2倍の頻度）
   setInterval(pollGamepad, 8);
+
+  function toggleGpGuide(){
+    const p = document.getElementById('gp-guide-panel');
+    p.style.display = p.style.display==='block' ? 'none' : 'block';
+  }
 
   // ===== 初期化 =====
   resizeCanvas();
