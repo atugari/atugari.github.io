@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0d0d0a">
+  <title>ランキング — 飛べ飛</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&display=swap');
+
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{
+      --bg:#0d0d0a;
+      --surface:#161612;
+      --surface2:#1e1e1a;
+      --border:rgba(255,255,255,0.07);
+      --text:#e8e4d8;
+      --text2:#8a8678;
+      --text3:#4a4840;
+      --gold:#c8a85a;
+      --gold2:#8a7040;
+      --red:#c05840;
+      --r:10px;
+    }
+
+    html,body{
+      background:var(--bg);
+      color:var(--text);
+      font-family:'Noto Serif JP',serif;
+      min-height:100dvh;
+      overflow-x:hidden;
+    }
+
+    /* 和紙テクスチャ */
+    body::before{
+      content:'';
+      position:fixed;inset:0;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events:none;z-index:0;
+    }
+
+    .app{
+      max-width:480px;
+      margin:0 auto;
+      padding:24px 16px 56px;
+      position:relative;z-index:1;
+    }
+
+    /* ヘッダー */
+    .page-header{
+      text-align:center;
+      margin-bottom:28px;
+    }
+    .page-header .kanji{
+      font-size:48px;font-weight:900;color:var(--gold);
+      text-shadow:0 0 30px rgba(200,168,90,0.35);
+      line-height:1;
+      margin-bottom:6px;
+    }
+    .page-header h1{
+      font-size:15px;font-weight:500;
+      color:var(--text2);letter-spacing:0.2em;
+      margin-bottom:4px;
+    }
+    .page-header .sub{
+      font-size:11px;color:var(--text3);letter-spacing:0.1em;
+    }
+
+    /* タブ */
+    .tabs{
+      display:flex;gap:4px;
+      border-bottom:1px solid var(--border);
+      margin-bottom:20px;
+    }
+    .tab{
+      flex:1;padding:9px 4px;
+      font-size:12px;text-align:center;
+      cursor:pointer;color:var(--text2);
+      border-bottom:2px solid transparent;
+      font-family:'Noto Serif JP',serif;
+      background:none;border-top:none;border-left:none;border-right:none;
+      letter-spacing:0.05em;
+      transition:color 0.15s,border-color 0.15s;
+    }
+    .tab.active{
+      color:var(--gold);
+      border-bottom:2px solid var(--gold);
+      font-weight:700;
+    }
+
+    /* ランキングカード */
+    .ranking-card{
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:var(--r);
+      overflow:hidden;
+      margin-bottom:16px;
+    }
+    .ranking-header{
+      padding:12px 16px;
+      border-bottom:1px solid var(--border);
+      font-size:13px;font-weight:700;
+      display:flex;justify-content:space-between;align-items:center;
+      letter-spacing:0.1em;
+    }
+    .ranking-header .refresh-btn{
+      font-size:11px;color:var(--text3);
+      background:none;border:none;cursor:pointer;
+      font-family:'Noto Serif JP',serif;
+    }
+    .ranking-header .refresh-btn:active{color:var(--text2);}
+
+    .rank-row{
+      padding:10px 16px;
+      border-bottom:1px solid var(--border);
+      display:flex;align-items:center;gap:10px;
+      font-size:13px;
+      transition:background 0.1s;
+    }
+    .rank-row:last-child{border-bottom:none;}
+    .rank-row.me{background:rgba(200,168,90,0.05);}
+
+    .rank-num{
+      font-size:13px;font-weight:700;
+      color:var(--text3);
+      width:32px;flex-shrink:0;text-align:center;
+    }
+    .rank-num.gold{color:#D4A017;font-size:16px;}
+    .rank-num.silver{color:#888;}
+    .rank-num.bronze{color:#CD7F32;}
+
+    .rank-info{flex:1;overflow:hidden;}
+    .rank-name{
+      color:var(--text);font-weight:500;
+      overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    }
+    .rank-name.me-name{color:var(--gold);}
+    .rank-sub{font-size:10px;color:var(--text3);margin-top:2px;}
+
+    .rank-score{
+      font-family:'Noto Serif JP',serif;
+      font-weight:700;
+      color:var(--text);
+      flex-shrink:0;text-align:right;
+      font-size:14px;
+    }
+    .rank-pct{
+      font-size:10px;color:var(--text3);
+      text-align:right;margin-top:2px;
+    }
+
+    .rank-loading,.rank-empty{
+      padding:24px 16px;
+      font-size:12px;color:var(--text3);
+      text-align:center;letter-spacing:0.1em;
+    }
+
+    /* 自分の順位バナー */
+    .my-rank-banner{
+      background:var(--surface2);
+      border:1px solid var(--gold2);
+      border-radius:var(--r);
+      padding:14px 16px;
+      margin-bottom:16px;
+      display:none;
+    }
+    .my-rank-banner .label{
+      font-size:11px;color:var(--text3);
+      letter-spacing:0.1em;margin-bottom:4px;
+    }
+    .my-rank-banner .value{
+      font-size:18px;font-weight:700;color:var(--gold);
+      letter-spacing:0.05em;
+    }
+    .my-rank-banner .pct{
+      font-size:11px;color:var(--text2);margin-top:2px;
+    }
+
+    /* フッター */
+    .footer{
+      text-align:center;
+      margin-top:24px;
+      font-size:11px;color:var(--text3);
+      line-height:2.2;
+    }
+    .footer a{color:var(--text3);text-decoration:underline;}
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <div class="page-header">
+    <div class="kanji">飛</div>
+    <h1>ランキング</h1>
+    <div class="sub">飛べ飛 / 感じるな漢字ろ！</div>
+  </div>
+
+  <!-- タブ -->
+  <div class="tabs">
+    <button class="tab active" id="tab-normal" onclick="switchTab('normal')">普 通 モ ー ド</button>
+    <button class="tab" id="tab-murige" onclick="switchTab('murige')">無 理 ゲ ー</button>
+  </div>
+
+  <!-- 自分の順位バナー -->
+  <div class="my-rank-banner" id="my-rank-banner">
+    <div class="label">あなたの順位</div>
+    <div class="value" id="my-rank-value">―</div>
+    <div class="pct" id="my-rank-pct"></div>
+  </div>
+
+  <!-- ランキングカード -->
+  <div class="ranking-card">
+    <div class="ranking-header">
+      <span id="rank-header-label">歴代ランキング</span>
+      <button class="refresh-btn" onclick="loadRanking()">更新</button>
+    </div>
+    <div id="rank-list">
+      <div class="rank-loading">読み込み中...</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <a href="dungeon.html">← 飛べ飛へ戻る</a>　|　
+    <a href="index.html">丸場所記憶ゲーム</a>
+  </div>
+
+</div>
+<script>
+  const DB_URL  = 'https://ad-game-7b40a-default-rtdb.asia-southeast1.firebasedatabase.app';
+  const LS_NICK = 'tobiGame_nick';
+  const LS_DID  = 'tobiGame_deviceId';
+  const LS_BEST        = 'tobiGame_best';
+  const LS_BEST_MURIGE = 'tobiGame_best_murige';
+
+  let _currentTab = 'normal';
+
+  const myNick = localStorage.getItem(LS_NICK) || '';
+  const myDid  = localStorage.getItem(LS_DID)  || '';
+
+  function switchTab(tab){
+    _currentTab = tab;
+    document.getElementById('tab-normal').classList.toggle('active', tab==='normal');
+    document.getElementById('tab-murige').classList.toggle('active', tab==='murige');
+    loadRanking();
+  }
+
+  async function loadRanking(){
+    const el = document.getElementById('rank-list');
+    el.innerHTML = '<div class="rank-loading">読み込み中...</div>';
+
+    const path = _currentTab === 'murige' ? '/tobi_scores_murige' : '/tobi_scores';
+    document.getElementById('rank-header-label').textContent =
+      _currentTab === 'murige' ? '歴代ランキング（無理ゲー）' : '歴代ランキング（普通モード）';
+
+    try {
+      const res  = await fetch(DB_URL + path + '.json');
+      const data = await res.json();
+
+      if(!data){
+        el.innerHTML = '<div class="rank-empty">まだ記録がありません</div>';
+        document.getElementById('my-rank-banner').style.display = 'none';
+        return;
+      }
+
+      // 有効エントリのみ・スコア降順
+      let entries = Object.values(data)
+        .filter(e => e && e.best > 0 && e.name)
+        .sort((a,b) => b.best - a.best);
+
+      const total = entries.length;
+      if(total === 0){
+        el.innerHTML = '<div class="rank-empty">まだ記録がありません</div>';
+        document.getElementById('my-rank-banner').style.display = 'none';
+        return;
+      }
+
+      // 自分のエントリを探す
+      const myEntry = entries.find(e =>
+        (myNick && e.name === myNick && e.deviceId === myDid) ||
+        (!myNick && e.deviceId === myDid)
+      );
+      const myRank = myEntry ? entries.indexOf(myEntry) + 1 : 0;
+
+      // 自分の順位バナー
+      const banner = document.getElementById('my-rank-banner');
+      if(myRank > 0){
+        const pct = ((myRank / total) * 100).toFixed(1);
+        const topPct = (100 - parseFloat(pct)).toFixed(1);
+        document.getElementById('my-rank-value').textContent =
+          myRank + '位 / ' + total + '人中　' + myEntry.best + '壁';
+        document.getElementById('my-rank-pct').textContent =
+          '上位 ' + topPct + '% のプレイヤー';
+        banner.style.display = 'block';
+      } else {
+        banner.style.display = 'none';
+      }
+
+      // ランキング表示（最大100件）
+      el.innerHTML = '';
+      entries.slice(0, 100).forEach((entry, i) => {
+        const rank = i + 1;
+        const isMe = myRank > 0 && rank === myRank;
+        const pct  = ((rank / total) * 100).toFixed(1);
+        const topPct = (100 - parseFloat(pct)).toFixed(1);
+
+        const row = document.createElement('div');
+        row.className = 'rank-row' + (isMe ? ' me' : '');
+
+        const rc = rank===1?'gold':rank===2?'silver':rank===3?'bronze':'';
+        const medal = rank===1?'1位':rank===2?'2位':rank===3?'3位':rank+'位';
+
+        row.innerHTML =
+          '<span class="rank-num ' + rc + '">' + medal + '</span>' +
+          '<div class="rank-info">' +
+            '<div class="rank-name' + (isMe?' me-name':'') + '">' +
+              entry.name + (isMe ? ' ◀ あなた' : '') +
+            '</div>' +
+            '<div class="rank-sub">上位 ' + topPct + '%</div>' +
+          '</div>' +
+          '<div>' +
+            '<div class="rank-score">' + entry.best + ' 壁</div>' +
+          '</div>';
+
+        el.appendChild(row);
+      });
+
+      if(entries.length > 100){
+        const note = document.createElement('div');
+        note.className = 'rank-empty';
+        note.textContent = '上位100件を表示中（全' + total + '件）';
+        el.appendChild(note);
+      }
+
+    } catch(e){
+      el.innerHTML = '<div class="rank-empty">読み込みに失敗しました</div>';
+    }
+  }
+
+  // 初期読み込み
+  loadRanking();
+</script>
+</body>
+</html>
