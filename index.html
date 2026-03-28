@@ -893,7 +893,7 @@
   // パスワードをPBKDF2(100,000回)でストレッチングしたハッシュ。
   // gen_hash.html でパスワードを入力して生成した値をここに貼る。
   // ハッシュからパスワードを逆算するのは現実的に不可能。
-  const _OWNER_HASH = 'aa774ac51d1ddc98a5b325605ce19c848114f7d82959b88385cf654466405b5b'; // ← gen_hash.html で生成した値に差し替える
+  const _OWNER_HASH = 'YOUR_HASH_HERE'; // ← gen_hash.html で生成した値に差し替える
   const _OWNER_SALT = '丸場所記憶ゲーム_製作者専用_2026_SALT_v1';
   const _AUTH_SESSION_KEY = 'adgame_owner_auth'; // sessionStorage（タブを閉じると消える）
 
@@ -1763,11 +1763,11 @@
       active = true;
       if(dbg){
         dbg.style.display='block';
-        const bA=gpB(gp.buttons[0]),bB=gpB(gp.buttons[1]);
-        const ax=gp.axes[0]?.toFixed(1),ay=gp.axes[1]?.toFixed(1);
+        // 押されているボタン番号を全部列挙
+        const pressed = gp.buttons.map((b,i)=>gpB(b)?i:null).filter(i=>i!==null);
+        const axes = [...gp.axes].map((a,i)=>Math.abs(a)>0.1?i+'='+a.toFixed(1):null).filter(Boolean);
         const scr=document.querySelector('.screen.active')?.id||'?';
-        const inp=document.getElementById('nick-input');
-        dbg.textContent='GP idx:'+gp.index+' scr:'+scr+' hc:'+GP.hc+' A:'+bA+' B:'+bB+' ax:'+ax+' ay:'+ay+' nick:['+inp?.value+']';
+        dbg.textContent='scr:'+scr+' BTN:['+pressed.join(',')+'] AXES:['+axes.join(',')+'] hc:'+GP.hc+' gc:'+GP.gc;
       }
       const i = gp.index;
       const p = GP.prev;
