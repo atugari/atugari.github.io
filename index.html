@@ -307,7 +307,7 @@
     </div>
     <!-- 飛べ飛バナー -->
     <div id="tobi-banner" style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;margin-bottom:16px;">
-      <a href="dungeon.html" style="display:block;text-decoration:none;">
+      <a href="dungeon.html" style="display:block;text-decoration:none;" onclick="localStorage.setItem('from_gp','1')">
         <div style="background:linear-gradient(135deg,#3a3020,#1a1810);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;">
           <div style="display:flex;align-items:center;gap:10px;">
             <span style="font-size:28px;font-weight:900;color:#c8a85a;font-family:'Noto Serif JP',serif;line-height:1;text-shadow:0 0 20px rgba(200,168,90,0.4);">飛べ飛</span>
@@ -1700,175 +1700,147 @@
   }
 
   // ===== 外部コントローラー対応 =====
-  let _idxPrevButtons = {};
-  let _gridCursor = -1;
-  // ホーム画面カーソル項目: 0=ニックネーム入力, 1=チャレンジ開始ボタン
-  let _homeCursor = 0;
+  let _gp = { prev:{}, homeCursor:0, gridCursor:-1 };
 
-  function _btnOn(b){ return b && (b.value > 0.08 || b.pressed); }
-  function isScreen(id){ return document.getElementById(id)?.classList.contains('active'); }
+  function _B(b){ return !!(b && (b.value > 0.08 || b.pressed)); }
+  function _screen(){ return document.querySelector('.screen.active')?.id || ''; }
 
-  // ===== グリッドカーソル =====
-  function updateGridCursor(){
-    const cells = document.querySelectorAll('#grid .cell');
-    cells.forEach((c,i)=>{
-      if(i === _gridCursor){
-        c.style.outline = '3px solid var(--blue)';
-        c.style.outlineOffset = '2px';
-        c.style.boxShadow = '0 0 8px rgba(55,138,221,0.5)';
-      } else {
-        c.style.outline = '';
-        c.style.outlineOffset = '';
-        c.style.boxShadow = '';
-      }
-    });
-  }
-
-  // ===== ホームカーソル =====
-  // 項目: 0=ニックネーム入力欄, 1=チャレンジ開始ボタン
-  function updateHomeCursor(){
+  // ホームカーソル表示（0=nick入力欄, 1=チャレンジ開始ボタン）
+  function _updateHomeCursor(){
     const inp = document.getElementById('nick-input');
     const btn = document.querySelector('#nick-card-wrap .btn.primary');
     if(inp){
-      inp.style.borderColor = _homeCursor===0 ? 'var(--blue)' : '';
-      inp.style.boxShadow   = _homeCursor===0 ? '0 0 8px rgba(55,138,221,0.4)' : '';
+      inp.style.borderColor = _gp.homeCursor===0 ? '#378ADD' : '';
+      inp.style.outline     = _gp.homeCursor===0 ? '2px solid #378ADD' : '';
+      inp.style.outlineOffset = '2px';
     }
     if(btn){
-      btn.style.outline = _homeCursor===1 ? '3px solid #fff' : '';
-      btn.style.outlineOffset = _homeCursor===1 ? '2px' : '';
+      btn.style.outline       = _gp.homeCursor===1 ? '3px solid #fff' : '';
+      btn.style.outlineOffset = _gp.homeCursor===1 ? '2px' : '';
     }
   }
 
-  function _onIdxGamepadConnected(){
-    _homeCursor = 0;
-    updateHomeCursor();
+  // グリッドカーソル表示
+  function _updateGridCursor(){
+    document.querySelectorAll('#grid .cell').forEach((c,i)=>{
+      const on = i === _gp.gridCursor;
+      c.style.outline       = on ? '3px solid #378ADD' : '';
+      c.style.outlineOffset = on ? '2px' : '';
+      c.style.boxShadow     = on ? '0 0 10px rgba(55,138,221,0.6)' : '';
+    });
+  }
+
+  // コントローラー接続時の初期化
+  function _gpInit(){
+    _gp.homeCursor = 0;
+    _updateHomeCursor();
     const gb = document.getElementById('gp-guide-btn');
     if(gb) gb.style.display = 'flex';
   }
 
-  window.addEventListener('gamepadconnected', ()=>{
-    _onIdxGamepadConnected();
-  });
-
-  // ページ読み込み時に既存のコントローラーを検出（他ページから遷移してきた場合）
-  setTimeout(()=>{
-    const gps = navigator.getGamepads ? navigator.getGamepads() : [];
-    if([...gps].some(g => g)){
-      _onIdxGamepadConnected();
-    }
-  }, 200);
+  window.addEventListener('gamepadconnected', _gpInit);
   window.addEventListener('gamepaddisconnected', ()=>{
     const inp = document.getElementById('nick-input');
-    if(inp){ inp.style.borderColor=''; inp.style.boxShadow=''; }
+    if(inp){ inp.style.borderColor=''; inp.style.outline=''; }
+    const gb = document.getElementById('gp-guide-btn');
+    if(gb) gb.style.display = 'none';
+  });
+
+  // ページ読み込み時・他ページから遷移してきた場合の検出
+  // 複数回試行して確実に検出する
+  [100, 300, 600, 1000].forEach(ms => {
+    setTimeout(()=>{
+      const gps = navigator.getGamepads ? navigator.getGamepads() : [];
+      if([...gps].some(g => g)) _gpInit();
+    }, ms);
   });
 
   function pollIndexGamepad(){
     const gps = navigator.getGamepads ? navigator.getGamepads() : [];
+    const scr = _screen();
+
     for(const gp of gps){
       if(!gp) continue;
-      const idx = gp.index;
+      const i = gp.index;
+      const p = _gp.prev;
 
-      const b0 = _btnOn(gp.buttons[0]);
-      const b1 = _btnOn(gp.buttons[1]);
-      const b2 = _btnOn(gp.buttons[2]);
-      const b3 = _btnOn(gp.buttons[3]);
-      const up = _btnOn(gp.buttons[12]) || (gp.axes[1] < -0.3);
-      const dn = _btnOn(gp.buttons[13]) || (gp.axes[1] > 0.3);
-      const lt = _btnOn(gp.buttons[14]) || (gp.axes[0] < -0.3);
-      const rt = _btnOn(gp.buttons[15]) || (gp.axes[0] > 0.3);
-      // 右スティックでスクロール
-      const rsUp = gp.axes[3] < -0.3;
-      const rsDn = gp.axes[3] > 0.3;
+      const bA  = _B(gp.buttons[0]); // Aボタン
+      const bB  = _B(gp.buttons[1]); // Bボタン
+      const bX  = _B(gp.buttons[2]); // Xボタン
+      const bY  = _B(gp.buttons[3]); // Yボタン
+      const up  = _B(gp.buttons[12]) || gp.axes[1] < -0.3 || gp.axes[3] < -0.3;
+      const dn  = _B(gp.buttons[13]) || gp.axes[1] >  0.3 || gp.axes[3] >  0.3;
+      const lt  = _B(gp.buttons[14]) || gp.axes[0] < -0.3;
+      const rt  = _B(gp.buttons[15]) || gp.axes[0] >  0.3;
 
-      // ===== スクロール（右スティック or L2/R2） =====
-      if(rsUp) window.scrollBy(0, -12);
-      if(rsDn) window.scrollBy(0, 12);
+      // 左右スティックY軸でスクロール
+      const lsY = gp.axes[1];
+      const rsY = gp.axes[3];
+      if(Math.abs(lsY) > 0.3) window.scrollBy(0, lsY * 14);
+      if(Math.abs(rsY) > 0.3) window.scrollBy(0, rsY * 14);
 
       // ===== ホーム画面 =====
-      if(isScreen('screen-nick')){
-        // 上下でカーソル移動
-        if(up && !_idxPrevButtons[idx+'_up']){
-          _homeCursor = Math.max(0, _homeCursor - 1);
-          updateHomeCursor();
+      if(scr === 'screen-nick'){
+        if(up && !p[i+'_up']){
+          _gp.homeCursor = Math.max(0, _gp.homeCursor - 1);
+          _updateHomeCursor();
         }
-        if(dn && !_idxPrevButtons[idx+'_down']){
-          _homeCursor = Math.min(1, _homeCursor + 1);
-          updateHomeCursor();
+        if(dn && !p[i+'_dn']){
+          _gp.homeCursor = Math.min(1, _gp.homeCursor + 1);
+          _updateHomeCursor();
         }
-        // ボタン0: 決定
-        if(b0 && !_idxPrevButtons[idx+'_0']){
-          if(_homeCursor === 0){
-            document.getElementById('nick-input')?.focus();
-          } else {
-            startChallenge();
-          }
+        if(bA && !p[i+'_bA']){
+          if(_gp.homeCursor === 0) document.getElementById('nick-input')?.focus();
+          else startChallenge();
         }
-        // ボタン1: チャレンジ開始（ショートカット）
-        if(b1 && !_idxPrevButtons[idx+'_1']){
-          startChallenge();
-        }
+        if(bB && !p[i+'_bB']) startChallenge();
       }
 
       // ===== ゲーム画面 =====
-      if(isScreen('screen-game')){
+      if(scr === 'screen-game'){
         const startBtn = document.getElementById('start-btn');
         const ansBtn   = document.getElementById('answer-btn');
         const cells    = document.querySelectorAll('#grid .cell');
-        const gridEl   = document.getElementById('grid');
-        const isLocked = gridEl?.classList.contains('locked');
+        const isLocked = document.getElementById('grid')?.classList.contains('locked');
 
-        // ボタン0: スタート or 答える
-        if(b0 && !_idxPrevButtons[idx+'_0']){
+        if(bA && !p[i+'_bA']){
           if(startBtn && !startBtn.disabled) startBtn.click();
           else if(ansBtn && !ansBtn.disabled) ansBtn.click();
         }
 
-        // 答える段階（グリッドが操作可能）
         if(!isLocked && cells.length > 0){
+          if(_gp.gridCursor < 0){ _gp.gridCursor = 0; _updateGridCursor(); }
           const cols = 4;
-          if(_gridCursor < 0){ _gridCursor = 0; updateGridCursor(); }
+          let nc = _gp.gridCursor;
+          if(up && !p[i+'_up'])  nc = Math.max(0, nc - cols);
+          if(dn && !p[i+'_dn'])  nc = Math.min(cells.length-1, nc + cols);
+          if(lt && !p[i+'_lt'])  nc = nc % cols > 0 ? nc-1 : nc;
+          if(rt && !p[i+'_rt'])  nc = nc % cols < cols-1 && nc < cells.length-1 ? nc+1 : nc;
+          if(nc !== _gp.gridCursor){ _gp.gridCursor = nc; _updateGridCursor(); }
 
-          let nc = _gridCursor;
-          if(up && !_idxPrevButtons[idx+'_up'])   nc = Math.max(0, nc - cols);
-          if(dn && !_idxPrevButtons[idx+'_down'])  nc = Math.min(cells.length-1, nc + cols);
-          if(lt && !_idxPrevButtons[idx+'_left'])  nc = nc % cols > 0 ? nc-1 : nc;
-          if(rt && !_idxPrevButtons[idx+'_right']) nc = nc % cols < cols-1 && nc < cells.length-1 ? nc+1 : nc;
-
-          if(nc !== _gridCursor){ _gridCursor = nc; updateGridCursor(); }
-
-          // ボタン1・2・3: セル選択
-          if((b1||b2||b3) && !(_idxPrevButtons[idx+'_1']||_idxPrevButtons[idx+'_2']||_idxPrevButtons[idx+'_3'])){
-            cells[_gridCursor]?.click();
+          if((bB||bX||bY) && !(p[i+'_bB']||p[i+'_bX']||p[i+'_bY'])){
+            cells[_gp.gridCursor]?.click();
           }
         } else {
-          if(_gridCursor >= 0){ _gridCursor = -1; updateGridCursor(); }
+          if(_gp.gridCursor >= 0){ _gp.gridCursor = -1; _updateGridCursor(); }
         }
       }
 
       // ===== 結果画面 =====
-      if(isScreen('screen-result')){
-        if(b0 && !_idxPrevButtons[idx+'_0']) goToNick();
-        if(b1 && !_idxPrevButtons[idx+'_1']) goToNick();
+      if(scr === 'screen-result'){
+        if((bA||bB) && !(p[i+'_bA']||p[i+'_bB'])) goToNick();
       }
 
-      _idxPrevButtons[idx+'_0']     = b0;
-      _idxPrevButtons[idx+'_1']     = b1;
-      _idxPrevButtons[idx+'_2']     = b2;
-      _idxPrevButtons[idx+'_3']     = b3;
-      _idxPrevButtons[idx+'_up']    = up;
-      _idxPrevButtons[idx+'_down']  = dn;
-      _idxPrevButtons[idx+'_left']  = lt;
-      _idxPrevButtons[idx+'_right'] = rt;
+      p[i+'_bA']=bA; p[i+'_bB']=bB; p[i+'_bX']=bX; p[i+'_bY']=bY;
+      p[i+'_up']=up; p[i+'_dn']=dn; p[i+'_lt']=lt; p[i+'_rt']=rt;
     }
   }
-  // setIntervalで8ms間隔ポーリング
   setInterval(pollIndexGamepad, 8);
 
   function toggleGpGuide(){
     const p = document.getElementById('gp-guide-panel');
     if(p) p.style.display = p.style.display==='block' ? 'none' : 'block';
   }
-
 </script>
 
 <!-- コントローラー操作ガイド -->

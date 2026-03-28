@@ -1156,13 +1156,21 @@
     setTimeout(()=>{ gpIndicator.style.opacity='0'; }, 4000);
   });
 
-  // ページ読み込み時に既存のコントローラーを検出（他ページから遷移してきた場合）
-  setTimeout(()=>{
-    const gps = navigator.getGamepads ? navigator.getGamepads() : [];
-    if([...gps].some(g => g)){
-      _onGamepadConnected();
-    }
-  }, 200);
+  // ページ読み込み時・他ページから遷移してきた場合の検出（複数回試行）
+  [100, 300, 600, 1000].forEach(ms => {
+    setTimeout(()=>{
+      const gps = navigator.getGamepads ? navigator.getGamepads() : [];
+      if([...gps].some(g => g)) _onGamepadConnected();
+    }, ms);
+  });
+  // 前ページからのgpフラグがあれば確実に初期化
+  if(localStorage.getItem('from_gp') === '1'){
+    localStorage.removeItem('from_gp');
+    [50,150,400].forEach(ms=>setTimeout(()=>{
+      const gps = navigator.getGamepads ? navigator.getGamepads() : [];
+      if([...gps].some(g=>g)) _onGamepadConnected();
+    }, ms));
+  }
   window.addEventListener('gamepaddisconnected', ()=>{
     _gpConnected = false;
     document.getElementById('go-gp-hint').style.display = 'none';
