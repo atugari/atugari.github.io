@@ -1141,16 +1141,28 @@
     h.style.color       = _goCursor===1 ? 'var(--text2)' : 'var(--text3)';
   }
 
-  window.addEventListener('gamepadconnected', e=>{
+  function _onGamepadConnected(){
     _gpConnected = true;
-    gpIndicator.textContent = 'コントローラー接続中 — 十字キー:カーソル移動　1:決定／飛ぶ　0:停止';
     const gb = document.getElementById('gp-guide-btn'); if(gb) gb.style.display='flex';
-    gpIndicator.style.opacity = '1';
     document.getElementById('go-gp-hint').style.display = 'block';
     _titleCursor = 0;
     updateTitleCursor();
+  }
+
+  window.addEventListener('gamepadconnected', e=>{
+    _onGamepadConnected();
+    gpIndicator.textContent = 'コントローラー接続中 — 十字キー:カーソル移動　1:決定／飛ぶ　0:停止';
+    gpIndicator.style.opacity = '1';
     setTimeout(()=>{ gpIndicator.style.opacity='0'; }, 4000);
   });
+
+  // ページ読み込み時に既存のコントローラーを検出（他ページから遷移してきた場合）
+  setTimeout(()=>{
+    const gps = navigator.getGamepads ? navigator.getGamepads() : [];
+    if([...gps].some(g => g)){
+      _onGamepadConnected();
+    }
+  }, 200);
   window.addEventListener('gamepaddisconnected', ()=>{
     _gpConnected = false;
     document.getElementById('go-gp-hint').style.display = 'none';

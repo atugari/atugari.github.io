@@ -455,7 +455,18 @@
     const p = document.getElementById('gp-guide-panel');
     p.style.display = p.style.display==='block' ? 'none' : 'block';
   }
-  window.addEventListener('gamepadconnected', ()=>{ updateRankCursor(); const gb=document.getElementById('gp-guide-btn'); if(gb) gb.style.display='flex'; });
+  function _onRankGamepadConnected(){
+    updateRankCursor();
+    const gb = document.getElementById('gp-guide-btn');
+    if(gb) gb.style.display = 'flex';
+  }
+  window.addEventListener('gamepadconnected', ()=>{ _onRankGamepadConnected(); });
+
+  // ページ読み込み時に既存のコントローラーを検出
+  setTimeout(()=>{
+    const gps = navigator.getGamepads ? navigator.getGamepads() : [];
+    if([...gps].some(g => g)) _onRankGamepadConnected();
+  }, 200);
   requestAnimationFrame(pollRankGamepad);
 </script>
 </body>

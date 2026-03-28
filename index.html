@@ -1739,12 +1739,24 @@
     }
   }
 
-  window.addEventListener('gamepadconnected', ()=>{
+  function _onIdxGamepadConnected(){
     _homeCursor = 0;
     updateHomeCursor();
     const gb = document.getElementById('gp-guide-btn');
     if(gb) gb.style.display = 'flex';
+  }
+
+  window.addEventListener('gamepadconnected', ()=>{
+    _onIdxGamepadConnected();
   });
+
+  // ページ読み込み時に既存のコントローラーを検出（他ページから遷移してきた場合）
+  setTimeout(()=>{
+    const gps = navigator.getGamepads ? navigator.getGamepads() : [];
+    if([...gps].some(g => g)){
+      _onIdxGamepadConnected();
+    }
+  }, 200);
   window.addEventListener('gamepaddisconnected', ()=>{
     const inp = document.getElementById('nick-input');
     if(inp){ inp.style.borderColor=''; inp.style.boxShadow=''; }
