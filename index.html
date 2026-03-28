@@ -896,7 +896,7 @@
   // パスワードをPBKDF2(100,000回)でストレッチングしたハッシュ。
   // gen_hash.html でパスワードを入力して生成した値をここに貼る。
   // ハッシュからパスワードを逆算するのは現実的に不可能。
-  const _OWNER_HASH = 'aa774ac51d1ddc98a5b325605ce19c848114f7d82959b88385cf654466405b5b'; // ← gen_hash.html で生成した値に差し替える
+  const _OWNER_HASH = 'YOUR_HASH_HERE'; // ← gen_hash.html で生成した値に差し替える
   const _OWNER_SALT = '丸場所記憶ゲーム_製作者専用_2026_SALT_v1';
   const _AUTH_SESSION_KEY = 'adgame_owner_auth'; // sessionStorage（タブを閉じると消える）
 
@@ -1712,14 +1712,17 @@
   function gpB(b){ return !!(b && (b.value>0.08 || b.pressed)); }
 
   function gpUpdateHome(){
-    const inp  = document.getElementById('nick-input');
-    const wrap = document.getElementById('nick-card-wrap');
-    const btn  = wrap ? wrap.querySelector('.btn.primary') : null;
-    if(inp){
-      inp.classList.toggle('gp-cursor-nick', GP.hc===0);
-    }
-    if(btn){
-      btn.classList.toggle('gp-cursor-btn', GP.hc===1);
+    const inp    = document.getElementById('nick-input');
+    const wrap   = document.getElementById('nick-card-wrap');
+    const btn    = wrap ? wrap.querySelector('.btn.primary') : null;
+    const banner = document.getElementById('tobi-banner');
+
+    if(inp)    inp.classList.toggle('gp-cursor-nick', GP.hc===0);
+    if(btn)    btn.classList.toggle('gp-cursor-btn',  GP.hc===1);
+    if(banner){
+      banner.style.outline       = GP.hc===2 ? '3px solid #c8a85a' : '';
+      banner.style.outlineOffset = GP.hc===2 ? '2px' : '';
+      banner.style.borderRadius  = GP.hc===2 ? 'var(--r)' : '';
     }
   }
 
@@ -1768,21 +1771,27 @@
       const bB = gpB(gp.buttons[0]);
       const bX = gpB(gp.buttons[3]);
       const bY = gpB(gp.buttons[2]);
-      const up = gpB(gp.buttons[12]) || gp.axes[1]<-0.3;
-      const dn = gpB(gp.buttons[13]) || gp.axes[1]>0.3;
-      const lt = gpB(gp.buttons[14]) || gp.axes[0]<-0.3;
-      const rt = gpB(gp.buttons[15]) || gp.axes[0]>0.3;
+      // 十字キー＋左スティック: カーソル移動
+      const up = gpB(gp.buttons[12]) || gp.axes[1]<-0.5;
+      const dn = gpB(gp.buttons[13]) || gp.axes[1]>0.5;
+      const lt = gpB(gp.buttons[14]) || gp.axes[0]<-0.5;
+      const rt = gpB(gp.buttons[15]) || gp.axes[0]>0.5;
 
-      // スクロール（左右スティックY軸）
-      if(Math.abs(gp.axes[1])>0.3) window.scrollBy(0, gp.axes[1]*14);
+      // 右スティック（axes[2]/axes[3]）のみスクロール
+      if(Math.abs(gp.axes[2])>0.3) window.scrollBy(gp.axes[2]*10, 0);
       if(Math.abs(gp.axes[3])>0.3) window.scrollBy(0, gp.axes[3]*14);
 
       const scr = document.querySelector('.screen.active')?.id||'';
 
       if(scr==='screen-nick'){
+        // 項目: 0=ニックネーム入力, 1=チャレンジ開始, 2=飛べ飛バナー
         if(up&&!p[i+'u']){ GP.hc=Math.max(0,GP.hc-1); gpUpdateHome(); }
-        if(dn&&!p[i+'d']){ GP.hc=Math.min(1,GP.hc+1); gpUpdateHome(); }
-        if(bA&&!p[i+'A']){ GP.hc===0 ? document.getElementById('nick-input')?.focus() : startChallenge(); }
+        if(dn&&!p[i+'d']){ GP.hc=Math.min(2,GP.hc+1); gpUpdateHome(); }
+        if(bA&&!p[i+'A']){
+          if(GP.hc===0) document.getElementById('nick-input')?.focus();
+          else if(GP.hc===1) startChallenge();
+          else if(GP.hc===2) window.location.href='dungeon.html';
+        }
         if(bB&&!p[i+'B']){ startChallenge(); }
       }
 
