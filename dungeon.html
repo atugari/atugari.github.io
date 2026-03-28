@@ -247,11 +247,12 @@
     /* コントローラー操作一覧 */
     /* コントローラーガイド：タイトル画面のバナー形式 */
     #gp-ctrl-guide{
-      display:none;
+      display:block;
       background:rgba(20,20,18,0.88);
       border:1px solid rgba(200,168,90,0.22);
       border-radius:8px;
-      width:min(80vw,300px);
+      width:min(72vw,280px);
+      align-self:center;
       cursor:pointer;
       overflow:hidden;
     }
@@ -1131,7 +1132,6 @@
     const items = ['btn-start'];
     const murige = document.getElementById('btn-murige');
     if(murige && murige.style.display !== 'none') items.push('btn-murige');
-    items.push('gp-ctrl-guide');
     items.push('clear-mode-toggle');
     items.push('title-ranking-link');
     items.push('title-back-link');
@@ -1174,7 +1174,6 @@
     const id = items[_titleCursor];
     if(id === 'btn-start')               startGame(false);
     else if(id === 'btn-murige')         startGame(true);
-    else if(id === 'gp-ctrl-guide')      toggleGpGuide();
     else if(id === 'clear-mode-toggle')  toggleClearMode();
     else if(id === 'title-ranking-link') window.location.href = 'tobi-ranking.html';
     else if(id === 'title-back-link')    window.location.href = 'index.html';
@@ -1192,8 +1191,6 @@
 
   function _onGamepadConnected(){
     _gpConnected = true;
-    const guide = document.getElementById('gp-ctrl-guide');
-    if(guide) guide.style.display = 'block';
     document.getElementById('go-gp-hint').style.display = 'block';
     _titleCursor = 0;
     updateTitleCursor();
