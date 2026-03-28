@@ -313,14 +313,34 @@
     <div id="go-nick-hint" style="display:none;font-size:10px;color:var(--gold2);letter-spacing:0.05em;margin-top:8px;text-align:center;">
       ニックネームを入力するとランキングに載ります
     </div>
+    <div id="go-debug" style="display:none;font-size:9px;color:var(--text3);letter-spacing:0.03em;margin-top:8px;text-align:left;padding:8px;background:rgba(0,0,0,0.4);border-radius:6px;max-width:90%;word-break:break-all;"></div>
   </div>
 
 </div>
 
 <div id="gamepad-indicator"></div>
+<div id="debug-panel" style="display:none;position:fixed;bottom:0;left:0;right:0;max-height:40vh;overflow-y:auto;background:rgba(0,0,0,0.92);color:#0f0;font-size:11px;font-family:monospace;padding:8px;z-index:99999;border-top:1px solid #333;"></div>
+<button onclick="document.getElementById('debug-panel').style.display=document.getElementById('debug-panel').style.display==='none'?'block':'none'" style="position:fixed;bottom:4px;right:4px;z-index:99999;font-size:9px;padding:3px 6px;background:#222;color:#888;border:1px solid #444;border-radius:4px;font-family:monospace;">LOG</button>
 
 <script>
   // ===== ローカルストレージ =====
+  // デバッグログをパネルにも表示
+  const _origLog = console.log.bind(console);
+  const _origErr = console.error.bind(console);
+  function _dbgLog(...args){
+    _origLog(...args);
+    const panel = document.getElementById('debug-panel');
+    if(!panel) return;
+    const line = document.createElement('div');
+    line.style.borderBottom = '1px solid #222';
+    line.style.padding = '2px 0';
+    line.textContent = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
+    panel.appendChild(line);
+    panel.scrollTop = panel.scrollHeight;
+  }
+  console.log   = _dbgLog;
+  console.error = (...args) => { _origErr(...args); _dbgLog('ERROR:', ...args); };
+
   const DB_URL       = 'https://ad-game-7b40a-default-rtdb.asia-southeast1.firebasedatabase.app';
   const LS_KEY        = 'tobiGame_best';       // 通常ハイスコア
   const LS_KEY_MURIGE = 'tobiGame_best_murige'; // 無理ゲーハイスコア
@@ -416,27 +436,26 @@
     if(!DEVICE_ID) await initDeviceId();
     if(!DEVICE_ID) return;
 
-    const fbPath = murige ? '/tobi_scores_murige/' : '/tobi_scores/';
     const nick = getNick().trim();
+    if(!nick) return; // ニックネームなしは保存しない
 
-    // ニックネームなしは保存しない（名無しだとランキングに表示できない）
-    if(!nick) return;
+    const fbPath = murige ? '/tobi_scores_murige/' : '/tobi_scores/';
+    // Firebase禁止文字を_に置換
+    const safeNick = nick.replace(/[\.#\$\[\]\/]/g, '_');
+    const key = encodeURIComponent(safeNick);
 
     try {
-      const key = encodeURIComponent(nick.replace(/[.#$[\]\/]/g,'_'));
-      console.log('[飛べ飛] saveBest key:', key, 'n:', n, 'path:', fbPath);
-      const existing = await fetch(DB_URL+fbPath+key+'.json').then(r=>r.json()).catch(()=>null);
-      console.log('[飛べ飛] existing:', existing);
-      // 他の端末の同名エントリは上書きしない
-      if(existing && existing.deviceId && existing.deviceId !== DEVICE_ID){
-        console.log('[飛べ飛] 他端末の同名エントリのためスキップ');
-        return;
-      }
-      // 新記録 or 初回 の場合のみ保存
+      const existing = await fetch(DB_URL + fbPath + key + '.json')
+        .then(r => r.json()).catch(() => null);
+
+      // 他端末の同名エントリは上書きしない
+      if(existing && existing.deviceId && existing.deviceId !== DEVICE_ID) return;
+
+      // 初回 or ベスト更新時のみ保存
       if(!existing || !existing.best || existing.best < n){
-        const res = await fetch(DB_URL + fbPath + key + '.json', {
+        await fetch(DB_URL + fbPath + key + '.json', {
           method: 'PUT',
-          headers: {'Content-Type':'application/json'},
+          headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({
             name: nick,
             best: n,
@@ -444,13 +463,8 @@
             updatedAt: Date.now()
           })
         });
-        console.log('[飛べ飛] Firebase保存完了 status:', res.status);
-      } else {
-        console.log('[飛べ飛] 既存スコアの方が高いためスキップ existing.best:', existing.best);
       }
-    } catch(e) {
-      console.error('[飛べ飛] saveBest エラー:', e);
-    }
+    } catch(e) {}
   }
 
   // 起動時にFirebaseからスコアを復元（通常・無理ゲー両方）
@@ -458,7 +472,7 @@
     await initDeviceId();
     const nick = getNick();
     const key = encodeURIComponent(
-      nick ? nick.replace(/[.#$\[\]\/]/g,'_') : DEVICE_ID
+      nick ? nick.replace(/[\.#\$\[\]\/]/g,'_') : DEVICE_ID
     );
     // 通常スコア復元
     try {
