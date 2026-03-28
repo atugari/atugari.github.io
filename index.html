@@ -1742,10 +1742,16 @@
 
   window.addEventListener('gamepadconnected', gpConnect);
 
-  // 遷移後も検出できるよう定期的にチェック
+  // ページ更新後・遷移後も検出できるよう定期チェック
+  // Chromeはボタンを押すまでgetGamepads()が空を返すことがある
+  // → 検出できたらGP.connectedをリセットして毎回カーソルを初期化
   setInterval(()=>{
     const gps = navigator.getGamepads ? navigator.getGamepads() : [];
-    if([...gps].some(g=>g)) gpConnect();
+    if([...gps].some(g=>g)){
+      if(!GP.connected) gpConnect();
+    } else {
+      GP.connected = false; // 未検出ならリセット（次回検出時に再初期化）
+    }
   }, 500);
 
   setInterval(()=>{
