@@ -188,35 +188,25 @@
     }
     .footer a{color:var(--text3);text-decoration:underline;}
 
-    /* コントローラーガイドバナー */
-    #gp-guide-banner{display:none;margin-bottom:20px;}
-    #gp-guide-toggle{
-      width:100%;padding:11px 16px;
-      background:var(--surface);
-      border:1px solid rgba(200,168,90,0.25);
-      border-radius:var(--r);
-      cursor:pointer;
-      display:flex;justify-content:space-between;align-items:center;
-      color:var(--text2);font-size:12px;
-      font-family:'Noto Serif JP',serif;
-      letter-spacing:0.1em;
-      transition:border-color 0.15s;
-    }
-    #gp-guide-toggle:hover,#gp-guide-toggle.gp-focused{
-      border-color:rgba(200,168,90,0.6);
-      outline:2px solid var(--gold);outline-offset:2px;
-    }
-    #gp-guide-toggle .gp-toggle-icon{font-size:13px;color:var(--text3);transition:transform 0.2s;}
-    #gp-guide-toggle.open .gp-toggle-icon{transform:rotate(180deg);}
-    #gp-guide-content{
-      background:var(--surface);
-      border:1px solid rgba(200,168,90,0.25);
-      border-top:none;
-      border-radius:0 0 var(--r) var(--r);
-      padding:10px 16px 14px;
+    /* コントローラーガイドバナー（dungeon.htmlと同じ構造） */
+    #gp-guide-banner{
       display:none;
+      margin-bottom:20px;
+      background:rgba(20,20,18,0.9);
+      border:1px solid rgba(200,168,90,0.2);
+      border-radius:var(--r);overflow:hidden;cursor:pointer;
     }
-    .gp-guide-title{font-size:10px;color:rgba(200,168,90,0.7);letter-spacing:0.1em;margin-bottom:8px;}
+    #gp-guide-banner-header{
+      padding:10px 16px;
+      display:flex;align-items:center;justify-content:space-between;
+      font-size:12px;color:rgba(200,168,90,0.7);letter-spacing:0.1em;
+    }
+    #gp-guide-arrow{font-size:11px;color:var(--text3);}
+    #gp-guide-banner-body{
+      display:none;
+      padding:10px 16px 14px;
+      border-top:1px solid rgba(255,255,255,0.06);
+    }
     .gp-guide-row{
       display:flex;justify-content:space-between;gap:16px;
       border-bottom:1px solid var(--border);padding:4px 0;
@@ -261,15 +251,14 @@
   </div>
 
   <div style="text-align:center;font-size:9px;color:rgba(74,72,64,0.5);letter-spacing:0.05em;margin-bottom:8px;">v2026.03.28</div>
-  <!-- コントローラーガイドバナー -->
-  <div id="gp-guide-banner">
-    <button id="gp-guide-toggle" onclick="toggleGpGuide()">
+  <!-- コントローラーガイドバナー（dungeon.htmlと同じ構造） -->
+  <div id="gp-guide-banner" onclick="toggleGpGuide()">
+    <div id="gp-guide-banner-header">
       <span>🎮 コントローラー操作ガイド（プロコン）</span>
-      <span class="gp-toggle-icon">▼</span>
-    </button>
-    <div id="gp-guide-content">
-      <div class="gp-guide-title">操 作 方 法</div>
-      <div class="gp-guide-row"><span class="gp-guide-btn">Aボタン</span><span class="gp-guide-act">決定／タブ切替／ガイド開閉</span></div>
+      <span id="gp-guide-arrow">▼</span>
+    </div>
+    <div id="gp-guide-banner-body">
+      <div class="gp-guide-row"><span class="gp-guide-btn">Aボタン</span><span class="gp-guide-act">決定 / ガイドを閉じる</span></div>
       <div class="gp-guide-row"><span class="gp-guide-btn">Bボタン</span><span class="gp-guide-act">飛べ飛へ戻る（ガイドが開いている時は閉じる）</span></div>
       <div class="gp-guide-row"><span class="gp-guide-btn">十字 ← →</span><span class="gp-guide-act">タブ切り替え</span></div>
       <div class="gp-guide-row"><span class="gp-guide-btn">十字 ↑ ↓</span><span class="gp-guide-act">カーソル移動</span></div>
@@ -406,56 +395,51 @@
   loadRanking();
 
   // ===== コントローラー操作 =====
-  // ブラウザ0=Bボタン（戻る）/ ブラウザ1=Aボタン（決定）← dungeon.htmlとA/Bの役割が逆
+  // ブラウザ0=Bボタン / ブラウザ1=Aボタン（dungeon.htmlと同じマッピング）
+  // ランキングページ: Aボタン=決定, Bボタン=戻る（dungeon.htmlとは役割が逆）
   let _gpConnected = false;
   let _gpPrevButtons = {};
-  let _inputReady = false; // 入力ブリード防止: 起動直後は入力を無視
 
+  // カーソルレイアウト（タブ行 / リンク行）
   const RANK_LAYOUT = [
-    ['tab-normal',       'tab-murige'    ], // row 0: タブ
-    ['rank-back-link',   'rank-home-link'], // row 1: リンク
-    ['gp-guide-toggle',  null            ], // row 2: ガイドバナー
+    ['tab-normal', 'tab-murige'    ], // row 0: タブ
+    ['rank-back-link', 'rank-home-link'], // row 1: リンク
   ];
   let _rankRow = 0, _rankCol = 0;
 
   function updateRankCursor(){
-    RANK_LAYOUT.flat().filter(Boolean).forEach(id => {
+    RANK_LAYOUT.flat().forEach(id => {
       const el = document.getElementById(id);
       if(el){ el.style.outline='none'; el.style.outlineOffset=''; }
     });
     const id = RANK_LAYOUT[_rankRow][_rankCol];
-    if(!id) return;
     const el = document.getElementById(id);
     if(el){ el.style.outline='2px solid #c8a85a'; el.style.outlineOffset='3px'; }
   }
 
   function rankCursorAction(){
     const id = RANK_LAYOUT[_rankRow][_rankCol];
-    if(!id) return;
     if(id==='tab-normal')           switchTab('normal');
     else if(id==='tab-murige')      switchTab('murige');
     else if(id==='rank-back-link')  window.location.href='dungeon.html';
     else if(id==='rank-home-link')  window.location.href='index.html';
-    else if(id==='gp-guide-toggle') toggleGpGuide();
   }
 
   function _btnOn(b){ return b && (b.value > 0.08 || b.pressed); }
 
-  // ガイド開閉
-  let _gpGuideOpen = false;
+  // dungeon.htmlと同じtoggleGpGuide実装
   function toggleGpGuide(){
-    _gpGuideOpen = !_gpGuideOpen;
-    const toggle  = document.getElementById('gp-guide-toggle');
-    const content = document.getElementById('gp-guide-content');
-    if(toggle)  toggle.classList.toggle('open', _gpGuideOpen);
-    if(content) content.style.display = _gpGuideOpen ? 'block' : 'none';
+    const body  = document.getElementById('gp-guide-banner-body');
+    const arrow = document.getElementById('gp-guide-arrow');
+    if(!body) return;
+    const open = body.style.display === 'block';
+    body.style.display = open ? 'none' : 'block';
+    if(arrow) arrow.textContent = open ? '▼' : '▲';
   }
-  function closeGpGuide(){
-    _gpGuideOpen = false;
-    const toggle  = document.getElementById('gp-guide-toggle');
-    const content = document.getElementById('gp-guide-content');
-    if(toggle)  toggle.classList.remove('open');
-    if(content) content.style.display = 'none';
+
+  function _isGuideOpen(){
+    const body = document.getElementById('gp-guide-banner-body');
+    return body && body.style.display === 'block';
   }
 
   function _onRankGamepadConnected(){
@@ -473,36 +457,36 @@
       _onRankGamepadConnected();
       const idx = gp.index;
 
-      if(!_inputReady){
-        // 入力ブリード防止: 初回フレームは現在の状態を記録するだけで処理しない
-        gp.buttons.forEach((b, i) => { _gpPrevButtons[idx+'_'+i] = _btnOn(b); });
-        continue;
-      }
-
-      // Aボタン（ブラウザ1）: 決定
+      // Aボタン（ブラウザ1）: 決定 / ガイドが開いていれば閉じる
       const bA = _btnOn(gp.buttons[1]);
-      if(bA && !_gpPrevButtons[idx+'_1']){ rankCursorAction(); }
-      _gpPrevButtons[idx+'_1'] = bA;
+      if(bA && !_gpPrevButtons[idx+'_A']){
+        if(_isGuideOpen()) toggleGpGuide();
+        else rankCursorAction();
+      }
+      _gpPrevButtons[idx+'_A'] = bA;
 
-      // Bボタン（ブラウザ0）: ガイドが開いていれば閉じる、それ以外は飛べ飛へ戻る
+      // Bボタン（ブラウザ0）: 飛べ飛へ戻る / ガイドが開いていれば閉じる
       const bB = _btnOn(gp.buttons[0]);
-      if(bB && !_gpPrevButtons[idx+'_0']){
-        if(_gpGuideOpen) closeGpGuide();
+      if(bB && !_gpPrevButtons[idx+'_B']){
+        if(_isGuideOpen()) toggleGpGuide();
         else window.location.href='dungeon.html';
       }
-      _gpPrevButtons[idx+'_0'] = bB;
+      _gpPrevButtons[idx+'_B'] = bB;
 
-      // 十字左右: 列移動
+      // 十字左右: タブ直接切り替え（row0のみ）
       const lt = _btnOn(gp.buttons[14]) || (gp.axes[0] < -0.3);
       if(lt && !_gpPrevButtons[idx+'_lt']){
-        _rankCol = Math.max(0, _rankCol-1); updateRankCursor();
+        if(_rankRow===0){ _rankCol=0; switchTab('normal'); }
+        else { _rankCol=Math.max(0,_rankCol-1); }
+        updateRankCursor();
       }
       _gpPrevButtons[idx+'_lt'] = lt;
 
       const rt = _btnOn(gp.buttons[15]) || (gp.axes[0] > 0.3);
       if(rt && !_gpPrevButtons[idx+'_rt']){
-        const maxCol = RANK_LAYOUT[_rankRow].filter(Boolean).length - 1;
-        _rankCol = Math.min(maxCol, _rankCol+1); updateRankCursor();
+        if(_rankRow===0){ _rankCol=1; switchTab('murige'); }
+        else { _rankCol=Math.min(RANK_LAYOUT[_rankRow].length-1,_rankCol+1); }
+        updateRankCursor();
       }
       _gpPrevButtons[idx+'_rt'] = rt;
 
@@ -510,7 +494,6 @@
       const up = _btnOn(gp.buttons[12]) || (gp.axes[1] < -0.3);
       if(up && !_gpPrevButtons[idx+'_up']){
         _rankRow = Math.max(0, _rankRow-1);
-        if(!RANK_LAYOUT[_rankRow][_rankCol]) _rankCol = 0;
         updateRankCursor();
       }
       _gpPrevButtons[idx+'_up'] = up;
@@ -518,7 +501,6 @@
       const dn = _btnOn(gp.buttons[13]) || (gp.axes[1] > 0.3);
       if(dn && !_gpPrevButtons[idx+'_dn']){
         _rankRow = Math.min(RANK_LAYOUT.length-1, _rankRow+1);
-        if(!RANK_LAYOUT[_rankRow][_rankCol]) _rankCol = 0;
         updateRankCursor();
       }
       _gpPrevButtons[idx+'_dn'] = dn;
@@ -532,18 +514,14 @@
   // dungeon.htmlと同じく8ms間隔ポーリング
   setInterval(pollRankGamepad, 8);
 
-  // 500ms後に入力を有効化（前ページからの入力ブリード防止）
-  setTimeout(() => { _inputReady = true; }, 500);
-
   window.addEventListener('gamepadconnected', () => { _onRankGamepadConnected(); });
   window.addEventListener('gamepaddisconnected', () => {
     _gpConnected = false;
     const banner = document.getElementById('gp-guide-banner');
     if(banner) banner.style.display = 'none';
-    closeGpGuide();
   });
 
-  // 遷移後も確実に検出できるよう定期チェック（dungeon.htmlと同じ方式）
+  // 遷移後も確実に検出（dungeon.htmlと同じ方式）
   setInterval(() => {
     const gps = navigator.getGamepads ? navigator.getGamepads() : [];
     if([...gps].some(g => g) && !_gpConnected) _onRankGamepadConnected();
