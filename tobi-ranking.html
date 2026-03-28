@@ -222,6 +222,7 @@
     </div>
   </div>
 
+  <div style="text-align:center;font-size:9px;color:rgba(74,72,64,0.5);letter-spacing:0.05em;margin-bottom:8px;">v2026.03.28</div>
   <div class="footer">
     <a href="dungeon.html">← 飛べ飛へ戻る</a>　|　
     <a href="index.html">丸場所記憶ゲーム</a>
@@ -251,7 +252,7 @@
     const el = document.getElementById('rank-list');
     el.innerHTML = '<div class="rank-loading">読み込み中...</div>';
 
-    const path = _currentTab === 'murige' ? '/rankings_tobi_murige' : '/rankings_tobi';
+    const path = '/rankings';
     document.getElementById('rank-header-label').textContent =
       _currentTab === 'murige' ? '歴代ランキング（無理ゲー）' : '歴代ランキング（普通モード）';
 
@@ -265,9 +266,16 @@
         return;
       }
 
-      // 有効エントリのみ・スコア降順
-      let entries = Object.values(data)
-        .filter(e => e && e.best > 0 && e.name)
+      // tobifly_プレフィックスのキーのみ（丸場所スコアと混ざらないよう）
+      // 無理ゲーは _murige サフィックス付きキー
+      const isMurige = _currentTab === 'murige';
+      let entries = Object.entries(data)
+        .filter(([k, e]) => {
+          if(!e || !e.best || !e.name) return false;
+          if(isMurige) return k.startsWith('tobifly_') && k.endsWith('_murige');
+          return k.startsWith('tobifly_') && !k.endsWith('_murige');
+        })
+        .map(([k, e]) => e)
         .sort((a,b) => b.best - a.best);
 
       const total = entries.length;

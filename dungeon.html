@@ -61,9 +61,12 @@
 
     /* ===== タイトル画面 ===== */
     #screen-title{
-      display:flex;flex-direction:column;align-items:center;justify-content:center;
-      gap:min(4vw,20px);text-align:center;padding:min(6vw,24px);
-      overflow:hidden;
+      display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+      gap:min(4vw,20px);text-align:center;
+      padding:min(6vw,24px) min(6vw,24px) 40px;
+      overflow-y:auto;overflow-x:hidden;
+      -webkit-overflow-scrolling:touch;
+      position:fixed;inset:0;
     }
     .title-kanji{
       font-size:min(26vw,96px);font-weight:900;color:var(--gold);
@@ -318,7 +321,7 @@
 
 </div>
 <!-- デバッグログ（常に最前面・ゲームオーバー画面に依存しない） -->
-<div id="go-debug" style="position:fixed;bottom:0;left:0;right:0;background:rgba(0,0,0,0.92);color:#0f0;font-size:10px;padding:8px;white-space:pre-wrap;word-break:break-all;display:none;max-height:50vh;overflow-y:auto;font-family:monospace;text-align:left;z-index:99999;pointer-events:none;"></div>
+<div id="go-debug" style="display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(0,0,0,0.92);color:#0f0;font-size:10px;padding:8px;white-space:pre-wrap;word-break:break-all;max-height:50vh;overflow-y:auto;font-family:monospace;text-align:left;z-index:99999;pointer-events:none;visibility:hidden;"></div>
 
 <div id="gamepad-indicator"></div>
 
@@ -430,9 +433,9 @@
   function dbg(msg){
     const el = document.getElementById('go-debug');
     if(!el) return;
-    el.style.display = 'block';
+
     el.textContent += msg + '\n';
-    el.scrollTop = el.scrollHeight;
+
   }
 
   // ハイスコア保存（localStorage + Firebase）
@@ -451,8 +454,8 @@
     dbg('nick:[' + nick + '] score:' + n);
     if(!nick){ dbg('→nick未入力終了'); return; }
 
-    const fbPath = murige ? '/rankings_tobi_murige/' : '/rankings_tobi/';
-    const safeNick = nick.replace(/[.#$[\]\/]/g, '_');
+    const fbPath = '/rankings/';
+    const safeNick = 'tobifly_' + nick.replace(/[.#$[\]\/]/g, '_') + (murige ? '_murige' : '');
     const key = encodeURIComponent(safeNick);
     dbg('key:' + key + ' path:' + fbPath);
 
@@ -493,11 +496,11 @@
     await initDeviceId();
     const nick = getNick();
     const key = encodeURIComponent(
-      nick ? nick.replace(/[\.#\$\[\]\/]/g,'_') : DEVICE_ID
+      nick ? 'tobifly_' + nick.replace(/[\.#\$\[\]\/]/g,'_') : DEVICE_ID
     );
     // 通常スコア復元
     try {
-      const res  = await fetch(DB_URL + '/rankings_tobi/' + key + '.json');
+      const res  = await fetch(DB_URL + '/rankings/' + key + '.json');
       const data = await res.json();
       if(data && data.best && data.deviceId === DEVICE_ID){
         const best = Math.max(parseInt(localStorage.getItem(LS_KEY)||'0'), parseInt(data.best));
@@ -507,7 +510,7 @@
     } catch(e) {}
     // 無理ゲースコア復元
     try {
-      const res  = await fetch(DB_URL + '/rankings_tobi_murige/' + key + '.json');
+      const res  = await fetch(DB_URL + '/rankings/' + key + '_murige.json');
       const data = await res.json();
       if(data && data.best && data.deviceId === DEVICE_ID){
         const best = Math.max(parseInt(localStorage.getItem(LS_KEY_MURIGE)||'0'), parseInt(data.best));
@@ -515,6 +518,16 @@
       }
     } catch(e) {}
     updateTitleBest();
+
+    // 過去プレイヤーのスコアをFirebaseに初回アップロード
+    // （ランキング追加前にプレイしていたユーザーのスコアを救済）
+    const localBest = parseInt(localStorage.getItem(LS_KEY)||'0');
+    const localBestM = parseInt(localStorage.getItem(LS_KEY_MURIGE)||'0');
+    const currentNick = getNick().trim();
+    if(currentNick && DEVICE_ID){
+      if(localBest > 0) await saveBest(localBest, false);
+      if(localBestM > 0) await saveBest(localBestM, true);
+    }
   }
 
   // 無理ゲー解放フラグ
@@ -982,7 +995,7 @@
     cancelAnimationFrame(_raf);
     // デバッグエリアリセット（テキストのみクリア・表示は維持）
     const dbgEl = document.getElementById('go-debug');
-    if(dbgEl){ dbgEl.textContent='--- DB保存ログ ---\n'; dbgEl.style.display='block'; }
+    if(dbgEl){ dbgEl.textContent='--- DB保存ログ ---\n'; }
     const score = state.score;
     const best  = getBest(_murigeMode);
     const isNew = score > best;
