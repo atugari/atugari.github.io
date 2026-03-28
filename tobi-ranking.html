@@ -251,7 +251,7 @@
     const el = document.getElementById('rank-list');
     el.innerHTML = '<div class="rank-loading">読み込み中...</div>';
 
-    const path = _currentTab === 'murige' ? '/tobi_scores_murige' : '/tobi_scores';
+    const path = _currentTab === 'murige' ? '/rankings_tobi_murige' : '/rankings_tobi';
     document.getElementById('rank-header-label').textContent =
       _currentTab === 'murige' ? '歴代ランキング（無理ゲー）' : '歴代ランキング（普通モード）';
 

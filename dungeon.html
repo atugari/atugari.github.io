@@ -439,7 +439,7 @@
     const nick = getNick().trim();
     if(!nick) return; // ニックネームなしは保存しない
 
-    const fbPath = murige ? '/tobi_scores_murige/' : '/tobi_scores/';
+    const fbPath = murige ? '/rankings_tobi_murige/' : '/rankings_tobi/';
     // Firebase禁止文字を_に置換
     const safeNick = nick.replace(/[\.#\$\[\]\/]/g, '_');
     const key = encodeURIComponent(safeNick);
@@ -476,7 +476,7 @@
     );
     // 通常スコア復元
     try {
-      const res  = await fetch(DB_URL + '/tobi_scores/' + key + '.json');
+      const res  = await fetch(DB_URL + '/rankings_tobi/' + key + '.json');
       const data = await res.json();
       if(data && data.best && data.deviceId === DEVICE_ID){
         const best = Math.max(parseInt(localStorage.getItem(LS_KEY)||'0'), parseInt(data.best));
@@ -486,7 +486,7 @@
     } catch(e) {}
     // 無理ゲースコア復元
     try {
-      const res  = await fetch(DB_URL + '/tobi_scores_murige/' + key + '.json');
+      const res  = await fetch(DB_URL + '/rankings_tobi_murige/' + key + '.json');
       const data = await res.json();
       if(data && data.best && data.deviceId === DEVICE_ID){
         const best = Math.max(parseInt(localStorage.getItem(LS_KEY_MURIGE)||'0'), parseInt(data.best));
