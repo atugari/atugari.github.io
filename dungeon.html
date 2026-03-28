@@ -424,12 +424,17 @@
 
     try {
       const key = encodeURIComponent(nick.replace(/[.#$[\]\/]/g,'_'));
+      console.log('[飛べ飛] saveBest key:', key, 'n:', n, 'path:', fbPath);
       const existing = await fetch(DB_URL+fbPath+key+'.json').then(r=>r.json()).catch(()=>null);
+      console.log('[飛べ飛] existing:', existing);
       // 他の端末の同名エントリは上書きしない
-      if(existing && existing.deviceId && existing.deviceId !== DEVICE_ID) return;
+      if(existing && existing.deviceId && existing.deviceId !== DEVICE_ID){
+        console.log('[飛べ飛] 他端末の同名エントリのためスキップ');
+        return;
+      }
       // 新記録 or 初回 の場合のみ保存
       if(!existing || !existing.best || existing.best < n){
-        await fetch(DB_URL + fbPath + key + '.json', {
+        const res = await fetch(DB_URL + fbPath + key + '.json', {
           method: 'PUT',
           headers: {'Content-Type':'application/json'},
           body: JSON.stringify({
@@ -439,8 +444,13 @@
             updatedAt: Date.now()
           })
         });
+        console.log('[飛べ飛] Firebase保存完了 status:', res.status);
+      } else {
+        console.log('[飛べ飛] 既存スコアの方が高いためスキップ existing.best:', existing.best);
       }
-    } catch(e) {}
+    } catch(e) {
+      console.error('[飛べ飛] saveBest エラー:', e);
+    }
   }
 
   // 起動時にFirebaseからスコアを復元（通常・無理ゲー両方）
