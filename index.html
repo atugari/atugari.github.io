@@ -883,7 +883,7 @@
   // パスワードをPBKDF2(100,000回)でストレッチングしたハッシュ。
   // gen_hash.html でパスワードを入力して生成した値をここに貼る。
   // ハッシュからパスワードを逆算するのは現実的に不可能。
-  const _OWNER_HASH = 'aa774ac51d1ddc98a5b325605ce19c848114f7d82959b88385cf654466405b5b'; // ← gen_hash.html で生成した値に差し替える
+  const _OWNER_HASH = 'YOUR_HASH_HERE'; // ← gen_hash.html で生成した値に差し替える
   const _OWNER_SALT = '丸場所記憶ゲーム_製作者専用_2026_SALT_v1';
   const _AUTH_SESSION_KEY = 'adgame_owner_auth'; // sessionStorage（タブを閉じると消える）
 
@@ -1692,36 +1692,135 @@
 
   // ===== 外部コントローラー対応 =====
   let _idxPrevButtons = {};
+  let _gpConnectedIdx = false;
+  let _gridCursor = -1; // グリッドのカーソル位置（-1=未選択）
+
+  function btnOn(b){ return b && (b.value > 0.08 || b.pressed); }
+
+  function isScreen(id){ return document.getElementById(id)?.classList.contains('active'); }
+
+  // グリッドカーソルを更新
+  function updateGridCursor(){
+    const cells = document.querySelectorAll('#grid .cell:not(.locked)');
+    cells.forEach((c,i)=>{
+      c.style.outline = (i === _gridCursor) ? '3px solid var(--blue)' : '';
+      c.style.outlineOffset = (i === _gridCursor) ? '-1px' : '';
+    });
+  }
+
+  // ホーム画面のカーソル（ニックネーム入力欄にフォーカス）
+  function showHomeCursor(){
+    const inp = document.getElementById('nick-input');
+    if(inp) inp.style.borderColor = 'var(--blue)';
+  }
+  function hideHomeCursor(){
+    const inp = document.getElementById('nick-input');
+    if(inp) inp.style.borderColor = '';
+  }
+
+  window.addEventListener('gamepadconnected', ()=>{
+    _gpConnectedIdx = true;
+    showHomeCursor();
+  });
+  window.addEventListener('gamepaddisconnected', ()=>{
+    _gpConnectedIdx = false;
+    hideHomeCursor();
+  });
+
   function pollIndexGamepad(){
     const gps = navigator.getGamepads ? navigator.getGamepads() : [];
     for(const gp of gps){
       if(!gp) continue;
       const idx = gp.index;
-      function btnOn(b){ return b && (b.value > 0.08 || b.pressed); }
 
-      // ボタン0: チャレンジ開始
-      const b0 = btnOn(gp.buttons[0]);
-      if(b0 && !_idxPrevButtons[idx+'_0']){
-        const gameEl = document.getElementById('screen-game');
-        if(gameEl && gameEl.classList.contains('active')){
-          // ゲーム中: スタート/答える
-          const startBtn = document.getElementById('start-btn');
-          const ansBtn   = document.getElementById('answer-btn');
-          if(startBtn && !startBtn.disabled) startBtn.click();
-          else if(ansBtn && !ansBtn.disabled) ansBtn.click();
-        } else {
-          // ホーム: チャレンジ開始
+      const b0  = btnOn(gp.buttons[0]);
+      const b1  = btnOn(gp.buttons[1]);
+      const b2  = btnOn(gp.buttons[2]);
+      const up  = btnOn(gp.buttons[12]) || (gp.axes[1] < -0.3);
+      const dn  = btnOn(gp.buttons[13]) || (gp.axes[1] > 0.3);
+      const lt  = btnOn(gp.buttons[14]) || (gp.axes[0] < -0.3);
+      const rt  = btnOn(gp.buttons[15]) || (gp.axes[0] > 0.3);
+
+      // ===== ホーム画面 =====
+      if(isScreen('screen-nick')){
+        if(b0 && !_idxPrevButtons[idx+'_0']){
           startChallenge();
         }
+        // 十字上下: ニックネーム入力欄をフォーカス
+        if((up||dn) && !_idxPrevButtons[idx+'_up']){
+          document.getElementById('nick-input')?.focus();
+        }
       }
-      _idxPrevButtons[idx+'_0'] = b0;
 
-      // ボタン1: 飛べ飛へ移動
-      const b1 = btnOn(gp.buttons[1]);
-      if(b1 && !_idxPrevButtons[idx+'_1']){
-        window.location.href = 'dungeon.html';
+      // ===== ゲーム画面 =====
+      if(isScreen('screen-game')){
+        const startBtn = document.getElementById('start-btn');
+        const ansBtn   = document.getElementById('answer-btn');
+        const cells    = document.querySelectorAll('#grid .cell');
+        const activeCells = document.querySelectorAll('#grid .cell:not(.locked *), #grid:not(.locked) .cell');
+        const gridEl   = document.getElementById('grid');
+        const isLocked = gridEl?.classList.contains('locked');
+
+        // ボタン0: スタート or 答える
+        if(b0 && !_idxPrevButtons[idx+'_0']){
+          if(startBtn && !startBtn.disabled) startBtn.click();
+          else if(ansBtn && !ansBtn.disabled) ansBtn.click();
+        }
+
+        // グリッドが操作可能な時はカーソル移動・選択
+        if(!isLocked && cells.length > 0){
+          const cols = 4; // グリッドは4列固定
+          const rows = Math.ceil(cells.length / cols);
+
+          if(_gridCursor < 0) _gridCursor = 0;
+
+          const curRow = Math.floor(_gridCursor / cols);
+          const curCol = _gridCursor % cols;
+
+          let newCursor = _gridCursor;
+          if(up && !_idxPrevButtons[idx+'_up']){
+            newCursor = Math.max(0, _gridCursor - cols);
+          }
+          if(dn && !_idxPrevButtons[idx+'_down']){
+            newCursor = Math.min(cells.length-1, _gridCursor + cols);
+          }
+          if(lt && !_idxPrevButtons[idx+'_left']){
+            newCursor = _gridCursor % cols > 0 ? _gridCursor - 1 : _gridCursor;
+          }
+          if(rt && !_idxPrevButtons[idx+'_right']){
+            newCursor = _gridCursor % cols < cols-1 && _gridCursor < cells.length-1 ? _gridCursor + 1 : _gridCursor;
+          }
+
+          if(newCursor !== _gridCursor){
+            _gridCursor = newCursor;
+            updateGridCursor();
+          }
+
+          // ボタン2(X/□) or 十字中央: セル選択
+          if(b2 && !_idxPrevButtons[idx+'_2']){
+            cells[_gridCursor]?.click();
+          }
+        } else {
+          _gridCursor = -1;
+          updateGridCursor();
+        }
       }
-      _idxPrevButtons[idx+'_1'] = b1;
+
+      // ===== 結果画面 =====
+      if(isScreen('screen-result')){
+        if(b0 && !_idxPrevButtons[idx+'_0']){
+          goToNick();
+        }
+      }
+
+      // 前フレームの状態を保存
+      _idxPrevButtons[idx+'_0']     = b0;
+      _idxPrevButtons[idx+'_1']     = b1;
+      _idxPrevButtons[idx+'_2']     = b2;
+      _idxPrevButtons[idx+'_up']    = up;
+      _idxPrevButtons[idx+'_down']  = dn;
+      _idxPrevButtons[idx+'_left']  = lt;
+      _idxPrevButtons[idx+'_right'] = rt;
     }
     requestAnimationFrame(pollIndexGamepad);
   }
