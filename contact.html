@@ -115,7 +115,7 @@
       const nick = localStorage.getItem('adgame_nick') || '（未登録）';
       const deviceId = localStorage.getItem('adgame_device_id') || '不明';
 
-      await fetch(DB_URL + '/contacts/' + key + '.json', {
+      const res = await fetch(DB_URL + '/contacts/' + key + '.json', {
         method: 'PUT',
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify({
@@ -129,13 +129,19 @@
         })
       });
 
+      // レスポンス確認
+      const resData = await res.json();
+      if(res.status !== 200 || (resData && resData.error)){
+        throw new Error('status:' + res.status + ' ' + JSON.stringify(resData));
+      }
+
       btn.style.display = 'none';
       document.getElementById('success-msg').style.display = 'block';
 
     } catch(e) {
       btn.disabled = false;
       btn.textContent = '送信する';
-      alert('送信に失敗しました。ネットワーク接続を確認してください。');
+      alert('送信に失敗しました。\n' + e.message + '\n\nネットワーク接続を確認してください。');
     }
   }
 </script>
