@@ -310,6 +310,9 @@
     <div id="go-gp-hint" style="display:none;font-size:10px;color:var(--text3);letter-spacing:0.1em;margin-top:4px;">
       ボタン0: もう一度　ボタン1: タイトルへ
     </div>
+    <div id="go-nick-hint" style="display:none;font-size:10px;color:var(--gold2);letter-spacing:0.05em;margin-top:8px;text-align:center;">
+      ニックネームを入力するとランキングに載ります
+    </div>
   </div>
 
 </div>
@@ -408,22 +411,29 @@
     const lsKey = murige ? LS_KEY_MURIGE : LS_KEY;
     localStorage.setItem(lsKey, n);
     if(!murige && n >= 100) localStorage.setItem(UNLOCKED_KEY, '1');
-    // FirebaseパスはモードでサフィックスをつけてURL衝突を防ぐ
+
+    // DEVICE_IDがまだ初期化されていない場合は先に初期化
+    if(!DEVICE_ID) await initDeviceId();
+    if(!DEVICE_ID) return;
+
     const fbPath = murige ? '/tobi_scores_murige/' : '/tobi_scores/';
-    const nick = getNick();
-    if(!nick && !DEVICE_ID) return;
+    const nick = getNick().trim();
+
+    // ニックネームなしは保存しない（名無しだとランキングに表示できない）
+    if(!nick) return;
+
     try {
-      const key = encodeURIComponent(
-        nick ? nick.replace(/[.#$\[\]\/]/g,'_') : DEVICE_ID
-      );
+      const key = encodeURIComponent(nick.replace(/[.#$[\]\/]/g,'_'));
       const existing = await fetch(DB_URL+fbPath+key+'.json').then(r=>r.json()).catch(()=>null);
+      // 他の端末の同名エントリは上書きしない
       if(existing && existing.deviceId && existing.deviceId !== DEVICE_ID) return;
-      if(!existing || existing.best < n){
+      // 新記録 or 初回 の場合のみ保存
+      if(!existing || !existing.best || existing.best < n){
         await fetch(DB_URL + fbPath + key + '.json', {
           method: 'PUT',
           headers: {'Content-Type':'application/json'},
           body: JSON.stringify({
-            name: nick || DEVICE_ID,
+            name: nick,
             best: n,
             deviceId: DEVICE_ID,
             updatedAt: Date.now()
@@ -928,7 +938,8 @@
     const score = state.score;
     const best  = getBest(_murigeMode);
     const isNew = score > best;
-    if(isNew) saveBest(score, _murigeMode);
+    // 新記録でなくても初回Firebase保存のために毎回試みる（saveBest内で重複チェック済み）
+    if(score > 0) saveBest(Math.max(score, best), _murigeMode);
 
     document.getElementById('go-score-num').textContent = score;
     const modeLabel = _murigeMode ? '無理ゲー　' : '';
@@ -939,6 +950,9 @@
     setTimeout(()=>{
       _goCursor = 0;
       updateGoCursor();
+      // ニックネームなし時に案内表示
+      const nickHint = document.getElementById('go-nick-hint');
+      if(nickHint) nickHint.style.display = getNick().trim() ? 'none' : 'block';
       showScreen('screen-gameover');
     }, 300);
   }
