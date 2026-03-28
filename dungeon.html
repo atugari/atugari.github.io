@@ -62,7 +62,7 @@
     /* ===== タイトル画面 ===== */
     #screen-title{
       display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
-      gap:min(4vw,20px);text-align:center;
+      gap:min(2.5vw,10px);text-align:center;
       padding:min(6vw,24px) min(6vw,24px) 40px;
       overflow-y:auto;overflow-x:hidden;
       -webkit-overflow-scrolling:touch;
@@ -270,16 +270,18 @@
     <div class="title-best" id="title-best-disp">ハイスコア　<span id="title-best-num">―</span></div>
     <button class="btn-start" id="btn-start" onclick="startGame(false)">普 通 モ ー ド / 始 め る</button>
     <button class="btn-start" id="btn-murige" onclick="startGame(true)" style="display:none;font-size:min(3.8vw,14px);padding:min(2.5vw,9px) min(8vw,28px);border-color:var(--red);color:var(--red);">無 理 ゲ ー モ ー ド / 始 め る</button>
-    <div style="display:flex;align-items:center;gap:8px;cursor:pointer;" onclick="toggleClearMode()" id="clear-mode-toggle">
-      <div id="clear-mode-box" style="width:min(8vw,28px);height:min(4.5vw,16px);border-radius:min(2.5vw,8px);border:1px solid var(--text3);background:transparent;position:relative;transition:background 0.2s;">
-        <div id="clear-mode-knob" style="position:absolute;top:2px;left:2px;width:min(3.5vw,12px);height:min(3.5vw,12px);border-radius:50%;background:var(--text3);transition:transform 0.2s,background 0.2s;"></div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:min(2vw,8px);width:100%;margin-top:min(1vw,4px);">
+      <div style="display:flex;align-items:center;gap:8px;cursor:pointer;" onclick="toggleClearMode()" id="clear-mode-toggle">
+        <div id="clear-mode-box" style="width:min(8vw,28px);height:min(4.5vw,16px);border-radius:min(2.5vw,8px);border:1px solid var(--text3);background:transparent;position:relative;transition:background 0.2s;">
+          <div id="clear-mode-knob" style="position:absolute;top:2px;left:2px;width:min(3.5vw,12px);height:min(3.5vw,12px);border-radius:50%;background:var(--text3);transition:transform 0.2s,background 0.2s;"></div>
+        </div>
+        <span style="font-size:min(3.8vw,14px);color:var(--text3);letter-spacing:0.08em;">壁をくっきり表示</span>
       </div>
-      <span style="font-size:min(3vw,11px);color:var(--text3);letter-spacing:0.08em;">壁をくっきり表示</span>
+      <a href="tobi-ranking.html" id="title-ranking-link" style="font-size:min(3.8vw,14px);color:var(--gold2);text-decoration:none;letter-spacing:0.1em;">🏆 ランキングを見る</a>
+      <a href="index.html" id="title-back-link" style="font-size:min(3.8vw,14px);color:var(--text3);text-decoration:none;letter-spacing:0.1em;">丸場所記憶ゲーム</a>
+      <a href="contact.html" style="font-size:min(3vw,11px);color:var(--text3);text-decoration:none;letter-spacing:0.05em;">不具合・お問い合わせは丸場所記憶ゲームのお問い合わせへ</a>
     </div>
-    <a href="tobi-ranking.html" class="back-link" style="color:var(--gold2);margin-top:-4px;">🏆 ランキングを見る</a>
-    <a href="index.html" class="back-link" id="title-back-link">← 丸場所へ戻る</a>
-    <a href="contact.html" class="back-link" style="color:var(--text3);margin-top:-8px;">不具合・お問い合わせは丸場所記憶ゲームのお問い合わせへ</a>
-    <div style="font-size:min(2.5vw,9px);color:var(--text3);opacity:0.4;letter-spacing:0.05em;margin-top:4px;">v2026.03.28</div>
+    <div style="font-size:min(2.5vw,9px);color:var(--text3);opacity:0.4;letter-spacing:0.05em;">v2026.03.28</div>
   </div>
 
   <!-- ゲーム画面 -->
@@ -1081,6 +1083,7 @@
     const murige = document.getElementById('btn-murige');
     if(murige && murige.style.display !== 'none') items.push('btn-murige');
     items.push('clear-mode-toggle');
+    items.push('title-ranking-link');
     items.push('title-back-link');
     return items;
   }
@@ -1102,9 +1105,10 @@
   function titleCursorAction(){
     const items = getTitleItems();
     const id = items[_titleCursor];
-    if(id === 'btn-start')        startGame(false);
-    else if(id === 'btn-murige')  startGame(true);
+    if(id === 'btn-start')              startGame(false);
+    else if(id === 'btn-murige')        startGame(true);
     else if(id === 'clear-mode-toggle') toggleClearMode();
+    else if(id === 'title-ranking-link') window.location.href = 'tobi-ranking.html';
     else if(id === 'title-back-link')   window.location.href = 'index.html';
   }
 

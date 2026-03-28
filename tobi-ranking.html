@@ -201,7 +201,7 @@
   <!-- タブ -->
   <div class="tabs">
     <button class="tab active" id="tab-normal" onclick="switchTab('normal')">普 通 モ ー ド</button>
-    <button class="tab" id="tab-murige" onclick="switchTab('murige')">無 理 ゲ ー</button>
+    <button class="tab" id="tab-murige" onclick="switchTab('murige')">無 理 ゲ ー モ ー ド</button>
   </div>
 
   <!-- 自分の順位バナー -->
@@ -223,9 +223,9 @@
   </div>
 
   <div style="text-align:center;font-size:9px;color:rgba(74,72,64,0.5);letter-spacing:0.05em;margin-bottom:8px;">v2026.03.28</div>
-  <div class="footer">
-    <a href="dungeon.html">← 飛べ飛へ戻る</a>　|　
-    <a href="index.html">丸場所記憶ゲーム</a>
+  <div class="footer" style="font-size:14px;line-height:3;">
+    <a href="dungeon.html" id="rank-back-link" style="font-size:14px;color:var(--text2);text-decoration:none;">飛べ飛へ戻る</a>　|　
+    <a href="index.html" id="rank-home-link" style="font-size:14px;color:var(--text2);text-decoration:none;">丸場所記憶ゲーム</a>
   </div>
 
 </div>
@@ -349,6 +349,75 @@
 
   // 初期読み込み
   loadRanking();
+
+  // ===== コントローラー操作 =====
+  // 項目: 0=普通モードタブ, 1=無理ゲーモードタブ, 2=飛べ飛へ戻る, 3=丸場所記憶ゲーム
+  let _rankCursor = 0;
+  let _rankPrevButtons = {};
+
+  function getRankItems(){
+    return ['tab-normal','tab-murige','rank-back-link','rank-home-link'];
+  }
+
+  function updateRankCursor(){
+    const items = getRankItems();
+    items.forEach((id, i) => {
+      const el = document.getElementById(id);
+      if(!el) return;
+      if(i === _rankCursor){
+        el.style.outline = '2px solid #c8a85a';
+        el.style.outlineOffset = '3px';
+      } else {
+        el.style.outline = 'none';
+      }
+    });
+  }
+
+  function rankCursorAction(){
+    const items = getRankItems();
+    const id = items[_rankCursor];
+    if(id === 'tab-normal')      switchTab('normal');
+    else if(id === 'tab-murige') switchTab('murige');
+    else if(id === 'rank-back-link') window.location.href = 'dungeon.html';
+    else if(id === 'rank-home-link') window.location.href = 'index.html';
+  }
+
+  function pollRankGamepad(){
+    const gps = navigator.getGamepads ? navigator.getGamepads() : [];
+    for(const gp of gps){
+      if(!gp) continue;
+      const idx = gp.index;
+      function btnOn(b){ return b && (b.value > 0.08 || b.pressed); }
+
+      const b0 = btnOn(gp.buttons[0]);
+      if(b0 && !_rankPrevButtons[idx+'_0']){ rankCursorAction(); }
+      _rankPrevButtons[idx+'_0'] = b0;
+
+      const b1 = btnOn(gp.buttons[1]);
+      if(b1 && !_rankPrevButtons[idx+'_1']){ window.location.href = 'dungeon.html'; }
+      _rankPrevButtons[idx+'_1'] = b1;
+
+      const up = btnOn(gp.buttons[12]) || (gp.axes[1] < -0.3);
+      if(up && !_rankPrevButtons[idx+'_up']){
+        const items = getRankItems();
+        _rankCursor = (_rankCursor - 1 + items.length) % items.length;
+        updateRankCursor();
+      }
+      _rankPrevButtons[idx+'_up'] = up;
+
+      const down = btnOn(gp.buttons[13]) || (gp.axes[1] > 0.3);
+      if(down && !_rankPrevButtons[idx+'_down']){
+        const items = getRankItems();
+        _rankCursor = (_rankCursor + 1) % items.length;
+        updateRankCursor();
+      }
+      _rankPrevButtons[idx+'_down'] = down;
+    }
+    requestAnimationFrame(pollRankGamepad);
+  }
+
+  window.addEventListener('gamepadconnected', ()=>{ updateRankCursor(); });
+  requestAnimationFrame(pollRankGamepad);
 </script>
 </body>
 </html>

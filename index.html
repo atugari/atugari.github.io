@@ -296,6 +296,22 @@
       <p style="font-size:11px;color:var(--text3);margin-top:10px;line-height:1.7;">※ このゲームはこの端末からのみスコアを更新できます。別の端末からは同じニックネームで上書きできません。</p>
     </div>
     </div>
+    <!-- 飛べ飛バナー -->
+    <div id="tobi-banner" style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;margin-bottom:16px;">
+      <a href="dungeon.html" style="display:block;text-decoration:none;">
+        <div style="background:linear-gradient(135deg,#3a3020,#1a1810);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:28px;font-weight:900;color:#c8a85a;font-family:'Noto Serif JP',serif;line-height:1;text-shadow:0 0 20px rgba(200,168,90,0.4);">飛べ飛</span>
+            <div>
+              <div style="font-size:11px;color:rgba(200,168,90,0.8);letter-spacing:0.1em;">感じるな漢字ろ！</div>
+              <div style="font-size:10px;color:rgba(138,130,100,0.8);letter-spacing:0.05em;margin-top:2px;">ミニゲーム公開中</div>
+            </div>
+          </div>
+          <span style="font-size:12px;color:rgba(200,168,90,0.6);letter-spacing:0.05em;">プレイ →</span>
+        </div>
+      </a>
+    </div>
+
     <footer>
       <span class="disabled-link">殿堂入り</span>　|　
       <a href="privacy.html">プライバシーポリシー</a>　|　
@@ -303,8 +319,7 @@
       <a href="faq.html">よくある質問</a>　|　
       <a href="contact.html">お問い合わせ</a>　|　
       <a href="settings.html">設定</a>　|　
-      <a href="share.html">自慢する</a>　|　
-      <a href="dungeon.html">飛ゲーム</a><br>
+      <a href="share.html">自慢する</a><br>
       &copy; 2026 丸場所記憶ゲーム
     </footer>
   </div>
@@ -868,7 +883,7 @@
   // パスワードをPBKDF2(100,000回)でストレッチングしたハッシュ。
   // gen_hash.html でパスワードを入力して生成した値をここに貼る。
   // ハッシュからパスワードを逆算するのは現実的に不可能。
-  const _OWNER_HASH = 'aa774ac51d1ddc98a5b325605ce19c848114f7d82959b88385cf654466405b5b'; // ← gen_hash.html で生成した値に差し替える
+  const _OWNER_HASH = 'YOUR_HASH_HERE'; // ← gen_hash.html で生成した値に差し替える
   const _OWNER_SALT = '丸場所記憶ゲーム_製作者専用_2026_SALT_v1';
   const _AUTH_SESSION_KEY = 'adgame_owner_auth'; // sessionStorage（タブを閉じると消える）
 
@@ -1674,6 +1689,43 @@
   if('serviceWorker' in navigator){
     navigator.serviceWorker.register('/ad-tracker/sw.js').catch(()=>{});
   }
+
+  // ===== 外部コントローラー対応 =====
+  let _idxPrevButtons = {};
+  function pollIndexGamepad(){
+    const gps = navigator.getGamepads ? navigator.getGamepads() : [];
+    for(const gp of gps){
+      if(!gp) continue;
+      const idx = gp.index;
+      function btnOn(b){ return b && (b.value > 0.08 || b.pressed); }
+
+      // ボタン0: チャレンジ開始
+      const b0 = btnOn(gp.buttons[0]);
+      if(b0 && !_idxPrevButtons[idx+'_0']){
+        const gameEl = document.getElementById('screen-game');
+        if(gameEl && gameEl.classList.contains('active')){
+          // ゲーム中: スタート/答える
+          const startBtn = document.getElementById('start-btn');
+          const ansBtn   = document.getElementById('answer-btn');
+          if(startBtn && !startBtn.disabled) startBtn.click();
+          else if(ansBtn && !ansBtn.disabled) ansBtn.click();
+        } else {
+          // ホーム: チャレンジ開始
+          startChallenge();
+        }
+      }
+      _idxPrevButtons[idx+'_0'] = b0;
+
+      // ボタン1: 飛べ飛へ移動
+      const b1 = btnOn(gp.buttons[1]);
+      if(b1 && !_idxPrevButtons[idx+'_1']){
+        window.location.href = 'dungeon.html';
+      }
+      _idxPrevButtons[idx+'_1'] = b1;
+    }
+    requestAnimationFrame(pollIndexGamepad);
+  }
+  requestAnimationFrame(pollIndexGamepad);
 
 </script>
 </body>
