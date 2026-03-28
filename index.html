@@ -574,9 +574,11 @@
       const existing=await res.json();
       const isExpired=existing&&(now-existing.updatedAt)>ONE_YEAR;
 
-      // 他の端末のデータは絶対に上書きしない
+      // 他の端末のデータは上書きしない（製作者認証済みの予約ニックは除く）
       if(existing&&existing.deviceId&&existing.deviceId!==DEVICE_ID){
-        return;
+        if(!(_isOwnerAuthed() && RESERVED_NICKS.includes(nick.trim()))){
+          return;
+        }
       }
 
       // 今日のベストスコアを計算（日付が変わったらリセット）
@@ -866,7 +868,7 @@
   // パスワードをPBKDF2(100,000回)でストレッチングしたハッシュ。
   // gen_hash.html でパスワードを入力して生成した値をここに貼る。
   // ハッシュからパスワードを逆算するのは現実的に不可能。
-  const _OWNER_HASH = 'aa774ac51d1ddc98a5b325605ce19c848114f7d82959b88385cf654466405b5b'; // ← gen_hash.html で生成した値に差し替える
+  const _OWNER_HASH = 'YOUR_HASH_HERE'; // ← gen_hash.html で生成した値に差し替える
   const _OWNER_SALT = '丸場所記憶ゲーム_製作者専用_2026_SALT_v1';
   const _AUTH_SESSION_KEY = 'adgame_owner_auth'; // sessionStorage（タブを閉じると消える）
 
@@ -961,9 +963,12 @@
       const now=Date.now();
       const isExpired=existing&&(now-existing.updatedAt)>ONE_YEAR;
       if(existing&&!isExpired&&existing.deviceId&&existing.deviceId!==DEVICE_ID){
-        msgEl.textContent='このニックネームは別の端末で使用中です。別の名前を使ってください。';
-        msgEl.style.color='var(--accent)';
-        return;
+        // 製作者認証済みの場合は端末IDチェックをスキップ
+        if(!_isOwnerAuthed() || !RESERVED_NICKS.includes(val)){
+          msgEl.textContent='このニックネームは別の端末で使用中です。別の名前を使ってください。';
+          msgEl.style.color='var(--accent)';
+          return;
+        }
       }
       msgEl.textContent=existing&&!isExpired?'ようこそ！スコアを更新しよう！':'新規登録します';
       msgEl.style.color='var(--green)';
