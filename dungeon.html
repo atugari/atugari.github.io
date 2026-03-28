@@ -251,33 +251,47 @@
       background:rgba(20,20,18,0.88);
       border:1px solid rgba(200,168,90,0.22);
       border-radius:8px;
-      width:min(72vw,280px);
-      align-self:center;
       cursor:pointer;
-      overflow:hidden;
+      box-sizing:border-box;
     }
     #gp-guide-header{
-      display:flex;align-items:center;justify-content:space-between;
-      padding:7px 14px;
-      font-size:min(3vw,11px);color:rgba(200,168,90,0.75);letter-spacing:0.1em;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:9px 14px;
+      font-size:12px;
+      color:rgba(200,168,90,0.85);
+      letter-spacing:0.08em;
+      line-height:1.4;
     }
-    #gp-guide-arrow{font-size:min(2.5vw,9px);color:rgba(200,168,90,0.5);}
+    #gp-guide-arrow{
+      font-size:10px;
+      color:rgba(200,168,90,0.6);
+      margin-left:8px;
+      flex-shrink:0;
+    }
     #gp-guide-body{
       display:none;
-      padding:8px 14px 10px;
-      border-top:1px solid rgba(255,255,255,0.06);
+      padding:8px 14px 12px;
+      border-top:1px solid rgba(255,255,255,0.08);
     }
     .gp-guide-note{
-      font-size:min(2.6vw,9px);color:rgba(140,134,120,0.7);
-      margin-bottom:6px;line-height:1.6;
+      font-size:10px;
+      color:rgba(140,134,120,0.75);
+      margin-bottom:8px;
+      line-height:1.6;
     }
     .gp-guide-row{
-      display:flex;justify-content:space-between;gap:12px;padding:3px 0;
-      border-bottom:1px solid rgba(255,255,255,0.05);font-size:min(3vw,11px);
+      display:flex;
+      justify-content:space-between;
+      gap:8px;
+      padding:4px 0;
+      border-bottom:1px solid rgba(255,255,255,0.05);
+      font-size:12px;
     }
     .gp-guide-row:last-child{border-bottom:none;}
-    .gp-guide-key{color:rgba(200,168,90,0.9);font-weight:700;flex-shrink:0;}
-    .gp-guide-act{color:rgba(200,210,220,0.8);}
+    .gp-guide-key{color:rgba(200,168,90,0.95);font-weight:700;flex-shrink:0;}
+    .gp-guide-act{color:rgba(200,210,220,0.85);}
   </style>
 </head>
 <body>
@@ -303,7 +317,7 @@
       oninput="onNickInput()" />
     <div id="tobi-nick-msg" style="font-size:min(3vw,11px);color:var(--text3);min-height:16px;margin-top:-8px;"></div>
     <!-- コントローラー操作ガイド（接続時のみ表示） -->
-    <div id="gp-ctrl-guide" onclick="toggleGpGuide()">
+    <div id="gp-ctrl-guide" onclick="toggleGpGuide()" style="width:min(80vw,300px);">
       <div id="gp-guide-header">
         <span>🎮 操作ガイド</span>
         <span id="gp-guide-arrow">▼</span>
