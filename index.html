@@ -1761,7 +1761,7 @@
         const pressed = gp.buttons.map((b,i)=>gpB(b)?i:null).filter(i=>i!==null);
         const axes = [...gp.axes].map((a,i)=>Math.abs(a)>0.1?i+'='+a.toFixed(1):null).filter(Boolean);
         const scr=document.querySelector('.screen.active')?.id||'?';
-        dbg.textContent='scr:'+scr+' BTN:['+pressed.join(',')+'] AXES:['+axes.join(',')+'] hc:'+GP.hc+' gc:'+GP.gc;
+        dbg.textContent='scr:'+scr+' BTN:['+pressed.join(',')+'] AXES:['+axes.join(',')+'] hc:'+GP.hc+' up:'+up+' dn:'+dn+' pu:'+p[i+'u']+' pd:'+p[i+'d'];
       }
       const i = gp.index;
       const p = GP.prev;
