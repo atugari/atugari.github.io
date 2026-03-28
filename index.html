@@ -158,6 +158,12 @@
   <div class="toast-name" id="toast-name"></div>
   <div class="toast-desc" id="toast-desc"></div>
 </div>
+<div id="gp-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:var(--surface,#fff);border-radius:14px;padding:24px 20px;max-width:280px;width:90%;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,0.3);">
+    <div id="gp-modal-msg" style="font-size:14px;line-height:1.8;margin-bottom:18px;color:var(--text,#1a1a18);font-family:'Noto Sans JP',sans-serif;"></div>
+    <button id="gp-modal-ok" onclick="gpModalClose()" style="padding:9px 32px;border-radius:8px;border:none;background:#378ADD;color:#fff;font-size:14px;font-weight:500;cursor:pointer;font-family:'Noto Sans JP',sans-serif;">OK</button>
+  </div>
+</div>
 <div id="gp-debug-bar" style="position:fixed;top:0;left:0;right:0;background:rgba(0,0,0,0.85);color:#0f0;font-size:10px;padding:4px 8px;z-index:99999;font-family:monospace;display:none;">コントローラー未検出</div>
 <div class="app">
 
@@ -307,8 +313,7 @@
       <div class="nick-msg" id="nick-msg"></div>
       <button class="btn primary" onclick="startChallenge()" style="width:100%">チャレンジ開始！</button>
       <p style="font-size:11px;color:var(--text3);margin-top:10px;line-height:1.7;">※ このゲームはこの端末からのみスコアを更新できます。別の端末からは同じニックネームで上書きできません。</p>
-      <button id="gp-connect-btn" onclick="tryConnectGamepad()" style="display:none;margin-top:10px;width:100%;padding:8px;font-size:12px;color:var(--text2);background:none;border:1px solid var(--border2);border-radius:var(--rs);cursor:pointer;font-family:'Noto Sans JP',sans-serif;">🎮 コントローラーを認識させる</button>
-      <div id="gp-connect-msg" style="display:none;font-size:11px;color:var(--text3);text-align:center;margin-top:6px;line-height:1.7;">ボタンを押すと表示されます↑<br>接続後にコントローラーのいずれかのボタンを押してください</div>
+
     </div>
     </div>
     <!-- 飛べ飛バナー -->
@@ -932,7 +937,7 @@
 
     // ハッシュ未設定・不正な場合は使用不可（64文字の16進数でなければ無効）
     if(_OWNER_HASH === 'YOUR_HASH_HERE' || !/^[0-9a-f]{64}$/.test(_OWNER_HASH)){
-      alert('「' + purpose + '」は現在使用できません。');
+      gpModalShow('ニックネーム「' + purpose + '」は現在使用できません。'); return false;
       return false;
     }
 
@@ -940,13 +945,13 @@
     if(!pw) return false;
 
     const hash = await _hashPassword(pw);
-    if(!hash){ alert('認証エラーが発生しました。'); return false; }
+    if(!hash){ gpModalShow('認証エラーが発生しました。'); return false; }
 
     if(hash === _OWNER_HASH){
       sessionStorage.setItem(_AUTH_SESSION_KEY, '1');
       return true;
     } else {
-      alert('パスワードが違います。');
+      gpModalShow('パスワードが違います。');
       return false;
     }
   }
@@ -1801,8 +1806,13 @@
       const lt = gpB(gp.buttons[14]) || gp.axes[0]<-0.5;
       const rt = gpB(gp.buttons[15]) || gp.axes[0]>0.5;
 
-      // 右スティック（axes[2]/axes[3]）のみスクロール
-      if(Math.abs(gp.axes[2])>0.3) window.scrollBy(gp.axes[2]*10, 0);
+      // 左スティック（axes[1]）・右スティック（axes[3]）でスクロール
+      // ただしカーソル移動中（画面がscreen-nickでない）はスクロールのみ
+      const scrId = document.querySelector('.screen.active')?.id||'';
+      if(scrId !== 'screen-game'){
+        // 左スティックY（カーソル移動と兼用なので閾値高め）
+        if(Math.abs(gp.axes[1])>0.7) window.scrollBy(0, gp.axes[1]*14);
+      }
       if(Math.abs(gp.axes[3])>0.3) window.scrollBy(0, gp.axes[3]*14);
 
       const scr = document.querySelector('.screen.active')?.id||'';
@@ -1812,7 +1822,8 @@
         if(up&&!p[i+'u']){ GP.hc=Math.max(0,GP.hc-1); gpUpdateHome(); }
         if(dn&&!p[i+'d']){ GP.hc=Math.min(2,GP.hc+1); gpUpdateHome(); }
         if(bA&&!p[i+'A']){
-          if(GP.hc===0) document.getElementById('nick-input')?.focus();
+          if(isModalOpen()){ gpModalClose(); }
+          else if(GP.hc===0) document.getElementById('nick-input')?.focus();
           else if(GP.hc===1) startChallenge();
           else if(GP.hc===2) window.location.href='dungeon.html';
         }
@@ -1856,12 +1867,32 @@
     }
   }, 16);
 
+  function gpModalShow(msg){
+    const m = document.getElementById('gp-modal');
+    const t = document.getElementById('gp-modal-msg');
+    if(m && t){ t.textContent = msg; m.style.display='flex'; }
+  }
+  function gpModalClose(){
+    const m = document.getElementById('gp-modal');
+    if(m) m.style.display='none';
+    // ④ フォーカスをbodyに戻してボタンが黒くなるのを防ぐ
+    document.activeElement?.blur();
+  }
+  // ③ Aボタンでモーダルを閉じる（ポーリング内で処理）
+  function isModalOpen(){ return document.getElementById('gp-modal')?.style.display==='flex'; }
+
   function toggleGpGuide(){
     const p = document.getElementById('gp-guide-panel');
     if(p) p.style.display=p.style.display==='block'?'none':'block';
   }
 </script>
 
+<div id="gp-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:var(--surface,#fff);border-radius:14px;padding:24px 20px;max-width:280px;width:90%;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,0.3);">
+    <div id="gp-modal-msg" style="font-size:14px;line-height:1.8;margin-bottom:18px;color:var(--text,#1a1a18);font-family:'Noto Sans JP',sans-serif;"></div>
+    <button id="gp-modal-ok" onclick="gpModalClose()" style="padding:9px 32px;border-radius:8px;border:none;background:#378ADD;color:#fff;font-size:14px;font-weight:500;cursor:pointer;font-family:'Noto Sans JP',sans-serif;">OK</button>
+  </div>
+</div>
 <div id="gp-debug-bar" style="position:fixed;top:0;left:0;right:0;background:rgba(0,0,0,0.9);color:#0f0;font-size:10px;padding:4px 8px;z-index:99999;font-family:monospace;display:none;pointer-events:none;"></div>
 <!-- コントローラー操作ガイド -->
 <button id="gp-guide-btn" onclick="toggleGpGuide()">🎮</button>

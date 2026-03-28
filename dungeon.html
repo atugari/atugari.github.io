@@ -245,13 +245,26 @@
     }
 
     /* コントローラー操作一覧 */
-    #gp-guide-btn{position:fixed;bottom:16px;right:16px;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.5);font-size:16px;cursor:pointer;z-index:8000;display:none;align-items:center;justify-content:center;font-family:sans-serif;line-height:1;}
-    #gp-guide-panel{position:fixed;bottom:60px;right:16px;background:rgba(20,20,18,0.96);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px 16px;font-size:11px;color:rgba(220,215,200,0.85);z-index:8001;display:none;min-width:200px;line-height:2;font-family:'Noto Serif JP',serif;box-shadow:0 4px 20px rgba(0,0,0,0.5);}
-    #gp-guide-panel .gp-title{font-size:10px;color:rgba(200,168,90,0.7);letter-spacing:0.1em;margin-bottom:8px;}
-    #gp-guide-panel .gp-row{display:flex;justify-content:space-between;gap:16px;border-bottom:1px solid rgba(255,255,255,0.06);padding:2px 0;}
-    #gp-guide-panel .gp-row:last-child{border-bottom:none;}
-    #gp-guide-panel .gp-btn{color:rgba(200,168,90,0.9);font-weight:700;flex-shrink:0;}
-    #gp-guide-panel .gp-act{color:rgba(200,210,220,0.8);}
+    /* コントローラーガイド：タイトル画面のバナー形式 */
+    #gp-guide-banner{
+      display:none;
+      background:rgba(20,20,18,0.9);border:1px solid rgba(200,168,90,0.2);
+      border-radius:var(--r);overflow:hidden;cursor:pointer;width:min(80vw,300px);
+    }
+    #gp-guide-banner-header{
+      padding:8px 14px;display:flex;align-items:center;justify-content:space-between;
+      font-size:min(3vw,11px);color:rgba(200,168,90,0.7);letter-spacing:0.1em;
+    }
+    #gp-guide-banner-body{
+      display:none;padding:10px 14px;border-top:1px solid rgba(255,255,255,0.06);
+    }
+    .gp-guide-row{
+      display:flex;justify-content:space-between;gap:12px;padding:3px 0;
+      border-bottom:1px solid rgba(255,255,255,0.05);font-size:min(3vw,11px);
+    }
+    .gp-guide-row:last-child{border-bottom:none;}
+    .gp-guide-key{color:rgba(200,168,90,0.9);font-weight:700;flex-shrink:0;}
+    .gp-guide-act{color:rgba(200,210,220,0.8);}
   </style>
 </head>
 <body>
@@ -279,6 +292,19 @@
     <div class="title-best" id="title-best-disp">ハイスコア　<span id="title-best-num">―</span></div>
     <button class="btn-start" id="btn-start" onclick="startGame(false)">普 通 モ ー ド / 始 め る</button>
     <button class="btn-start" id="btn-murige" onclick="startGame(true)" style="display:none;font-size:min(3.8vw,14px);padding:min(2.5vw,9px) min(8vw,28px);border-color:var(--red);color:var(--red);">無 理 ゲ ー モ ー ド / 始 め る</button>
+    <!-- コントローラー操作ガイドバナー（接続時のみ表示） -->
+    <div id="gp-guide-banner" onclick="toggleGpGuide()">
+      <div id="gp-guide-banner-header">
+        <span>🎮 コントローラー操作ガイド</span>
+        <span id="gp-guide-arrow">▼</span>
+      </div>
+      <div id="gp-guide-banner-body">
+        <div class="gp-guide-row"><span class="gp-guide-key">Bボタン</span><span class="gp-guide-act">飛ぶ／決定</span></div>
+        <div class="gp-guide-row"><span class="gp-guide-key">Aボタン</span><span class="gp-guide-act">一時停止／戻る／ガイドを閉じる</span></div>
+        <div class="gp-guide-row"><span class="gp-guide-key">十字↑↓←→</span><span class="gp-guide-act">カーソル移動</span></div>
+        <div class="gp-guide-row"><span class="gp-guide-key">右スティック</span><span class="gp-guide-act">スクロール</span></div>
+      </div>
+    </div>
     <div style="display:flex;flex-direction:column;align-items:center;gap:min(2vw,8px);width:100%;margin-top:min(1vw,4px);">
       <div style="display:flex;align-items:center;gap:8px;cursor:pointer;" onclick="toggleClearMode()" id="clear-mode-toggle">
         <div id="clear-mode-box" style="width:min(8vw,28px);height:min(4.5vw,16px);border-radius:min(2.5vw,8px);border:1px solid var(--text3);background:transparent;position:relative;transition:background 0.2s;">
@@ -334,15 +360,6 @@
 <!-- デバッグログ（常に最前面・ゲームオーバー画面に依存しない） -->
 <div id="go-debug" style="display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(0,0,0,0.92);color:#0f0;font-size:10px;padding:8px;white-space:pre-wrap;word-break:break-all;max-height:50vh;overflow-y:auto;font-family:monospace;text-align:left;z-index:99999;pointer-events:none;"></div>
 
-<!-- コントローラー操作ガイド -->
-<button id="gp-guide-btn" onclick="toggleGpGuide()">🎮</button>
-<div id="gp-guide-panel">
-  <div class="gp-title">🎮 コントローラー操作（プロコン）</div>
-  <div class="gp-row"><span class="gp-btn">Bボタン</span><span class="gp-act">飛ぶ／決定</span></div>
-  <div class="gp-row"><span class="gp-btn">Aボタン</span><span class="gp-act">一時停止／戻る</span></div>
-  <div class="gp-row"><span class="gp-btn">十字↑↓←→</span><span class="gp-act">カーソル移動</span></div>
-  <div class="gp-row"><span class="gp-btn">右スティック</span><span class="gp-act">スクロール</span></div>
-</div>
 
 <div id="gamepad-indicator"></div>
 
@@ -1143,7 +1160,9 @@
 
   function _onGamepadConnected(){
     _gpConnected = true;
-    const gb = document.getElementById('gp-guide-btn'); if(gb) gb.style.display='flex';
+    // バナーを表示（タイトル画面のみ）
+    const banner = document.getElementById('gp-guide-banner');
+    if(banner) banner.style.display = 'block';
     document.getElementById('go-gp-hint').style.display = 'block';
     _titleCursor = 0;
     updateTitleCursor();
@@ -1196,8 +1215,9 @@
       const isPause  = pauseEl.style.display === 'flex';
       const isGame   = gameEl.style.display === 'flex';
 
-      // ボタン1: 決定 / 飛ぶ / もう一度（ジャンプ）
-      const b1 = _btnOn(gp.buttons[1]);
+      // プロコン対応: ブラウザ番号 0=B, 1=A
+      // Bボタン（ブラウザ0）: 飛ぶ／決定
+      const b1 = _btnOn(gp.buttons[0]);
       if(b1 && !_gpPrevButtons[idx+'_1']){
         if(isTitle)       titleCursorAction();
         else if(isGO)     { if(_goCursor===0) startGame(_murigeMode); else goTitle(); }
@@ -1206,12 +1226,16 @@
       }
       _gpPrevButtons[idx+'_1'] = b1;
 
-      // ボタン0: 一時停止 / タイトルへ（戻る）
-      const b0 = _btnOn(gp.buttons[0]);
+      // Aボタン（ブラウザ1）: 一時停止 / タイトルへ（戻る）/ ガイド開閉
+      const b0 = _btnOn(gp.buttons[1]);
       if(b0 && !_gpPrevButtons[idx+'_0']){
-        if(isGO)         goTitle();
-        else if(isGame)  togglePause();
-        else if(isPause) togglePause();
+        if(isTitle){
+          // タイトル画面ではガイドの開閉
+          const body = document.getElementById('gp-guide-banner-body');
+          if(body && body.style.display==='block') toggleGpGuide();
+        } else if(isGO)   goTitle();
+        else if(isGame)   togglePause();
+        else if(isPause)  togglePause();
       }
       _gpPrevButtons[idx+'_0'] = b0;
 
@@ -1267,8 +1291,12 @@
   setInterval(pollGamepad, 8);
 
   function toggleGpGuide(){
-    const p = document.getElementById('gp-guide-panel');
-    p.style.display = p.style.display==='block' ? 'none' : 'block';
+    const body  = document.getElementById('gp-guide-banner-body');
+    const arrow = document.getElementById('gp-guide-arrow');
+    if(!body) return;
+    const open = body.style.display === 'block';
+    body.style.display  = open ? 'none' : 'block';
+    if(arrow) arrow.textContent = open ? '▼' : '▲';
   }
 
   // ===== 初期化 =====
