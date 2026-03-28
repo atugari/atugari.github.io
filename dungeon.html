@@ -995,7 +995,7 @@
     cancelAnimationFrame(_raf);
     // デバッグエリアリセット（テキストのみクリア・表示は維持）
     const dbgEl = document.getElementById('go-debug');
-    if(dbgEl){ dbgEl.textContent='--- DB保存ログ ---\n'; dbgEl.style.display='block'; }
+    if(dbgEl){ dbgEl.textContent=''; dbgEl.style.display='none'; }
     const score = state.score;
     const best  = getBest(_murigeMode);
     const isNew = score > best;

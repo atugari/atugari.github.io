@@ -260,10 +260,6 @@
       const res  = await fetch(DB_URL + path + '.json');
       const data = await res.json();
 
-      // デバッグ：取得したキー一覧を表示
-      const dbgKeys = data ? Object.keys(data).filter(k=>k.startsWith('tobifly_')).join(', ') : 'データなし';
-      el.innerHTML = '<div class="rank-loading" style="color:#c8a85a;font-size:10px;">tobifly_キー: ' + (dbgKeys||'なし') + '</div>';
-
       if(!data){
         el.innerHTML = '<div class="rank-empty">まだ記録がありません</div>';
         document.getElementById('my-rank-banner').style.display = 'none';
