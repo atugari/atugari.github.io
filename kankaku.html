@@ -132,6 +132,9 @@
       border: 1.5px solid #c0c0c0;
       cursor: default;
     }
+    .cell.gray.valid {
+      cursor: pointer;
+    }
     .cell.black {
       background: #1c1c1c;
       border: 1.5px solid #1c1c1c;
@@ -140,6 +143,10 @@
     /* 有効なタップ対象をほんのりハイライト（デスクトップ） */
     .cell.valid:hover {
       background: #f5f0e8;
+      border-color: #c8a85a;
+    }
+    .cell.gray.valid:hover {
+      background: #c0c0b8;
       border-color: #c8a85a;
     }
 
@@ -417,7 +424,7 @@
 
   // ===== タップ判定 =====
   function isValidTap(r, c){
-    if(grid[r][c] !== 'w') return false; // 白のみ
+    if(grid[r][c] !== 'w' && grid[r][c] !== 'g') return false; // 白・灰色のみ（黒・移動先外は無効）
     const [br, bc] = black;
     if(r !== br && c !== bc) return false; // 同行/列のみ
     const dist = Math.abs(r-br) + Math.abs(c-bc);
