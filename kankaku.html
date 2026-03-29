@@ -246,6 +246,12 @@
       outline: 2px solid #555;
       outline-offset: 2px;
     }
+    #stage-plaza-btn.gp-focus {
+      outline: 2px solid #888;
+      outline-offset: 2px;
+      border-color: #888;
+      color: #222;
+    }
     /* ゲーム中グリッドカーソル */
     .cell.gp-focus {
       outline: 2px solid #555;
@@ -294,9 +300,9 @@
     <button class="pw-key" onclick="pwInput(7)">7</button>
     <button class="pw-key" onclick="pwInput(8)">8</button>
     <button class="pw-key" onclick="pwInput(9)">9</button>
-    <button class="pw-key empty"></button>
     <button class="pw-key" onclick="pwInput(0)">0</button>
-    <button class="pw-key wide" onclick="pwDelete()">削除</button>
+    <button class="pw-key" onclick="pwDelete()">削除</button>
+    <button class="pw-key empty"></button>
   </div>
 </div>
 
@@ -304,7 +310,7 @@
 <div id="stage-screen">
   <div class="stage-title">ステージを選択</div>
   <div class="stage-grid" id="stage-grid"></div>
-  <a href="plaza.html" style="display:inline-block;margin-top:8px;padding:12px 32px;border:1.5px solid #ccc;border-radius:24px;font-size:14px;color:#555;text-decoration:none;font-family:'Noto Serif JP',serif;letter-spacing:0.1em;-webkit-tap-highlight-color:transparent;">ミニゲーム広場へ戻る</a>
+  <a id="stage-plaza-btn" href="plaza.html" style="display:inline-block;margin-top:8px;padding:12px 32px;border:1.5px solid #ccc;border-radius:24px;font-size:14px;color:#555;text-decoration:none;font-family:'Noto Serif JP',serif;letter-spacing:0.1em;-webkit-tap-highlight-color:transparent;">ミニゲーム広場へ戻る</a>
 </div>
 
 <!-- ===== メインゲーム ===== -->
@@ -466,10 +472,13 @@
       cell.textContent = i + 1;
       cell.dataset.idx = i;
       // タッチ・クリック両対応（コントローラーからも呼べるようdataset経由）
-      cell.addEventListener('pointerup', (e) => {
+      const _doStart = (e) => {
         e.preventDefault();
+        e.stopPropagation();
         if(unlocked) startFromStage(i);
-      });
+      };
+      cell.addEventListener('click', _doStart);
+      cell.addEventListener('touchend', _doStart, {passive:false});
       grid_el.appendChild(cell);
     });
     document.getElementById('stage-screen').style.display = 'flex';
@@ -602,7 +611,7 @@
 
   // テンキーのグリッド定義（行,列 → 数字）
   // 配列: [1,2,3,4,5,6,7,8,9,null,0,'del']
-  const PW_KEYS = [1,2,3,4,5,6,7,8,9,null,0,'del']; // index9=null=空欄(スキップ)
+  const PW_KEYS = [1,2,3,4,5,6,7,8,9,0,'del',null]; // index9=0, index10=del, index11=空欄
   // グリッド3列 → row=Math.floor(i/3), col=i%3
   let _pwCursor = 0; // 0〜11
 
@@ -616,10 +625,11 @@
   function _btnOn(b){ return b && (b.value > 0.08 || b.pressed); }
 
   function _currentScreen(){
-    if(!document.getElementById('pw-screen').classList.contains('hidden')) return 'pw';
-    if(document.getElementById('stage-screen').classList.contains('visible')) return 'stage';
-    if(document.getElementById('game-screen').classList.contains('visible')) return 'game';
-    if(document.getElementById('clear-screen').classList.contains('visible')) return 'clear';
+    const pw = document.getElementById('pw-screen');
+    if(pw && pw.style.display !== 'none' && !pw.classList.contains('hidden')) return 'pw';
+    if(document.getElementById('stage-screen')?.classList.contains('visible')) return 'stage';
+    if(document.getElementById('game-screen')?.classList.contains('visible')) return 'game';
+    if(document.getElementById('clear-screen')?.classList.contains('visible')) return 'clear';
     return 'none';
   }
 
@@ -638,19 +648,24 @@
 
   // ---- ステージ選択画面 ----
   function _stageUpdateCursor(){
-    document.querySelectorAll('.stage-cell').forEach((c,i) => {
+    const cells = document.querySelectorAll('.stage-cell');
+    const stageCount = cells.length;
+    cells.forEach((c,i) => {
       c.classList.toggle('gp-focus', i === _stageCursor);
     });
+    // ミニゲーム広場ボタン（最後の項目）
+    const plazaBtn = document.getElementById('stage-plaza-btn');
+    if(plazaBtn){
+      plazaBtn.classList.toggle('gp-focus', _stageCursor === stageCount);
+    }
   }
   function _stageAction(){
     const cells = document.querySelectorAll('.stage-cell');
     const cell = cells[_stageCursor];
     if(!cell) return;
+    // cleared クラスがあれば（unlock済み）即実行
     if(cell.classList.contains('cleared')){
-      // startFromStage を直接呼ぶ（clickイベントが失われていても動作する）
-      const idx = _stageCursor;
-      const maxC = getMaxCleared();
-      if(idx <= maxC + 1) startFromStage(idx);
+      startFromStage(_stageCursor);
     }
   }
 
@@ -699,31 +714,45 @@
 
       if(scr === 'pw'){
         // 上下左右でテンキーカーソル移動（3列グリッド）
-        // null(index9=empty)はスキップして次の有効セルへ
+        // PW_KEYS=[1,2,3,4,5,6,7,8,9,0,'del',null]
+        // nullはスキップ、範囲外は移動しない
         if(up && !p[idx+'u']){
           let nc = _pwCursor - 3;
-          if(nc >= 0){ if(PW_KEYS[nc] === null) nc = nc - 3; }
+          while(nc >= 0 && PW_KEYS[nc] === null) nc -= 3;
           if(nc >= 0){ _pwCursor = nc; _pwUpdateCursor(); }
         }
         if(dn && !p[idx+'d']){
           let nc = _pwCursor + 3;
-          if(nc <= 11){ if(PW_KEYS[nc] === null) nc = nc + 3; }
+          while(nc <= 11 && PW_KEYS[nc] === null) nc += 3;
           if(nc <= 11){ _pwCursor = nc; _pwUpdateCursor(); }
         }
-        if(lt && !p[idx+'l']){ if(_pwCursor%3>0){ _pwCursor--; _pwUpdateCursor(); } }
-        if(rt && !p[idx+'r']){ if(_pwCursor%3<2 && _pwCursor<11){ _pwCursor++; _pwUpdateCursor(); } }
+        if(lt && !p[idx+'l']){
+          let nc = _pwCursor - 1;
+          while(nc >= 0 && PW_KEYS[nc] === null) nc--;
+          if(nc >= 0 && Math.floor(nc/3) === Math.floor(_pwCursor/3)){ _pwCursor = nc; _pwUpdateCursor(); }
+        }
+        if(rt && !p[idx+'r']){
+          let nc = _pwCursor + 1;
+          while(nc <= 11 && PW_KEYS[nc] === null) nc++;
+          if(nc <= 11 && Math.floor(nc/3) === Math.floor(_pwCursor/3)){ _pwCursor = nc; _pwUpdateCursor(); }
+        }
         if(bA && !p[idx+'A']){ _pwAction(); }
         if(bB && !p[idx+'B']){ window.location.href = 'plaza.html'; }
       }
 
       if(scr === 'stage'){
         const cells = document.querySelectorAll('.stage-cell');
-        const count = cells.length;
+        const stageCount = cells.length;
+        // stageCount = ステージ数、stageCount番目 = ミニゲーム広場ボタン
+        const total = stageCount + 1;
         if(lt && !p[idx+'l']){ _stageCursor=Math.max(0,_stageCursor-1); _stageUpdateCursor(); }
-        if(rt && !p[idx+'r']){ _stageCursor=Math.min(count-1,_stageCursor+1); _stageUpdateCursor(); }
+        if(rt && !p[idx+'r']){ _stageCursor=Math.min(total-1,_stageCursor+1); _stageUpdateCursor(); }
         if(up && !p[idx+'u']){ _stageCursor=Math.max(0,_stageCursor-3); _stageUpdateCursor(); }
-        if(dn && !p[idx+'d']){ _stageCursor=Math.min(count-1,_stageCursor+3); _stageUpdateCursor(); }
-        if(bA && !p[idx+'A']){ _stageAction(); }
+        if(dn && !p[idx+'d']){ _stageCursor=Math.min(total-1,_stageCursor+3); _stageUpdateCursor(); }
+        if(bA && !p[idx+'A']){
+          if(_stageCursor < stageCount) _stageAction();
+          else window.location.href='plaza.html'; // ミニゲーム広場ボタン
+        }
         if(bB && !p[idx+'B']){ window.location.href='plaza.html'; }
       }
 
