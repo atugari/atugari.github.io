@@ -36,41 +36,43 @@
     }
 
     /* ===== 斜めタイトル ===== */
+    /* タイトルブロック全体 */
     .title-wrap {
-      position: relative;
+      display: grid;
+      grid-template-rows: auto auto auto;
       width: 100%;
-      height: clamp(180px, 48vw, 230px);
       margin-bottom: 40px;
+      row-gap: 6px;
     }
 
     .title-label {
-      position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
+      text-align: center;
       font-size: clamp(9px, 2.2vw, 11px);
       font-weight: 700;
       color: #bbb;
       letter-spacing: 0.45em;
       white-space: nowrap;
+      margin-bottom: 6px;
     }
 
-    /* 幻実世界 — 左上 */
+    /* 上段: 幻実世界（左寄せ） */
     .title-left {
-      position: absolute;
-      left: 4%;
-      top: clamp(22px, 6vw, 32px);
       text-align: left;
+      padding-left: 4%;
     }
+
+    /* フリガナ共通 */
     .title-ruby {
       display: block;
       font-size: clamp(9px, 2.4vw, 11px);
       color: #aaa;
       letter-spacing: 0.18em;
-      margin-bottom: 2px;
+      margin-bottom: 1px;
       font-weight: 400;
       text-align: center;
     }
+
+    /* 漢字共通 */
     .title-kanji {
       display: block;
       font-size: clamp(26px, 7.5vw, 36px);
@@ -80,12 +82,9 @@
       line-height: 1;
     }
 
-    /* の — 中央 */
+    /* 中段: の（中央） */
     .title-no {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
+      text-align: center;
       font-size: clamp(26px, 7.5vw, 36px);
       font-weight: 900;
       color: #1a1a1a;
@@ -93,12 +92,10 @@
       line-height: 1;
     }
 
-    /* 電子遊戯 — 右下 */
+    /* 下段: 電子遊戯（右寄せ） */
     .title-right {
-      position: absolute;
-      right: 4%;
-      bottom: clamp(4px, 2vw, 10px);
       text-align: right;
+      padding-right: 4%;
     }
 
     /* ===== カードリスト ===== */
