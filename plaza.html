@@ -9,13 +9,11 @@
   <meta name="keywords" content="現電,幻実世界,電子遊戯,現実世界の電子遊戯,ゲーム,ブラウザゲーム,無料ゲーム,ミニゲーム,丸場所記憶ゲーム,飛べ飛,感覚謎解き">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://atugari.github.io/ad-tracker/plaza.html">
-  <!-- OGP -->
   <meta property="og:title" content="幻実世界の電子遊戯 | 現電">
   <meta property="og:description" content="現電 — 幻実世界（インターネット）の電子遊戯（ゲームソフト）。無料ブラウザゲーム3本収録。">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://atugari.github.io/ad-tracker/plaza.html">
   <meta property="og:locale" content="ja_JP">
-  <!-- Twitter Card -->
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="幻実世界の電子遊戯 | 現電">
   <meta name="twitter:description" content="現電 — 幻実世界（インターネット）の電子遊戯（ゲームソフト）。無料ブラウザゲーム3本収録。">
@@ -34,35 +32,74 @@
     .app {
       max-width: 480px;
       margin: 0 auto;
-      padding: 52px 20px 64px;
+      padding: 48px 24px 64px;
     }
 
-    .page-header {
-      text-align: center;
+    /* ===== 斜めタイトル ===== */
+    .title-wrap {
+      position: relative;
+      width: 100%;
+      height: clamp(130px, 34vw, 170px);
       margin-bottom: 40px;
     }
-    .page-header .label {
-      font-size: 11px;
+
+    .title-label {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: clamp(9px, 2.2vw, 11px);
       font-weight: 700;
       color: #bbb;
       letter-spacing: 0.45em;
-      margin-bottom: 12px;
+      white-space: nowrap;
     }
-    .page-header h1 {
-      font-size: 24px;
+
+    /* 幻実世界 — 左上 */
+    .title-left {
+      position: absolute;
+      left: 0;
+      top: clamp(20px, 5vw, 28px);
+      text-align: left;
+    }
+    .title-ruby {
+      display: block;
+      font-size: clamp(9px, 2.4vw, 11px);
+      color: #aaa;
+      letter-spacing: 0.18em;
+      margin-bottom: 2px;
+      font-weight: 400;
+    }
+    .title-kanji {
+      display: block;
+      font-size: clamp(26px, 7.5vw, 36px);
       font-weight: 900;
       color: #1a1a1a;
-      letter-spacing: 0.2em;
+      letter-spacing: 0.05em;
+      line-height: 1;
     }
 
-    .page-header h1 ruby { display: inline; }
-    .page-header h1 rt {
-      font-size: 11px;
+    /* の — 中央 */
+    .title-no {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      font-size: clamp(14px, 3.8vw, 19px);
       font-weight: 400;
-      letter-spacing: 0.1em;
-      color: #aaa;
+      color: #888;
+      letter-spacing: 0;
     }
 
+    /* 電子遊戯 — 右下 */
+    .title-right {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      text-align: right;
+    }
+
+    /* ===== カードリスト ===== */
     .game-list {
       display: flex;
       flex-direction: column;
@@ -74,7 +111,7 @@
       background: #fff;
       border: 1.5px solid #e8e8e8;
       border-radius: 12px;
-      padding: 20px 44px 20px 20px;
+      padding: 18px 44px 18px 20px;
       text-decoration: none;
       color: #1a1a1a;
       transition: background 0.12s, border-color 0.12s;
@@ -84,6 +121,11 @@
     .game-card:active {
       background: #f8f8f8;
       border-color: #ccc;
+    }
+    .game-card.gp-focus {
+      outline: 2px solid #888;
+      outline-offset: 2px;
+      border-color: #aaa;
     }
     .game-card::after {
       content: '›';
@@ -109,7 +151,7 @@
       font-weight: 700;
       color: #1a1a1a;
       letter-spacing: 0.08em;
-      margin-bottom: 6px;
+      margin-bottom: 5px;
     }
     .card-desc {
       font-size: 12px;
@@ -126,7 +168,6 @@
       border-radius: 4px;
       padding: 1px 7px;
       letter-spacing: 0.06em;
-      vertical-align: middle;
     }
 
     .section-label {
@@ -134,7 +175,7 @@
       color: #ccc;
       letter-spacing: 0.25em;
       text-align: center;
-      margin: 24px 0 12px;
+      margin: 20px 0 10px;
     }
 
     .footer {
@@ -144,30 +185,43 @@
       color: #bbb;
       line-height: 2.5;
     }
-    .footer a {
-      color: #999;
-      text-decoration: none;
-    }
+    .footer a { color: #999; text-decoration: none; }
     .footer a:active { color: #555; }
   </style>
 </head>
 <body>
 <div class="app">
 
-  <div class="page-header">
-    <div class="label">MINI GAME</div>
-    <h1><ruby>幻実世界<rt>インターネット</rt></ruby>の<ruby>電子遊戯<rt>ゲームソフト</rt></ruby></h1>
+  <!-- ===== 斜めタイトル ===== -->
+  <div class="title-wrap">
+    <div class="title-label">MINI GAME</div>
+
+    <!-- 幻実世界（左上） -->
+    <div class="title-left">
+      <span class="title-ruby">インターネット</span>
+      <span class="title-kanji">幻実世界</span>
+    </div>
+
+    <!-- の（中央） -->
+    <div class="title-no">の</div>
+
+    <!-- 電子遊戯（右下） -->
+    <div class="title-right">
+      <span class="title-ruby">ゲームソフト</span>
+      <span class="title-kanji">電子遊戯</span>
+    </div>
   </div>
 
+  <!-- ===== ゲームカード ===== -->
   <div class="game-list">
 
-    <a class="game-card" href="index.html">
+    <a class="game-card" href="index.html" id="card-0">
       <div class="card-tag">MEMORY</div>
       <div class="card-title">丸場所記憶ゲーム</div>
       <div class="card-desc">丸の場所を記憶して答える<br>金・銀・赤のメダルを目指せ</div>
     </a>
 
-    <a class="game-card" href="dungeon.html">
+    <a class="game-card" href="dungeon.html" id="card-1">
       <div class="card-tag">ACTION</div>
       <div class="card-title">飛べ飛</div>
       <div class="card-desc">漢字「飛」が「壁」の隙間をくぐる<br>100壁達成で無理ゲーモード解放</div>
@@ -175,7 +229,7 @@
 
     <div class="section-label">— 新着 —</div>
 
-    <a class="game-card" href="kankaku.html">
+    <a class="game-card" href="kankaku.html" id="card-2">
       <div class="card-tag">PUZZLE <span class="badge">メンテナンス中</span></div>
       <div class="card-title">感覚謎解き</div>
       <div class="card-desc">言葉のない謎解き<br>現在準備中です</div>
@@ -190,5 +244,87 @@
   </div>
 
 </div>
+
+<script>
+  // ===== コントローラー操作 =====
+  // Aボタン（buttons[1]）: 決定  Bボタン（buttons[0]）: 丸場所へ戻る
+  const CARDS = ['card-0', 'card-1', 'card-2'];
+  let _cur = 0;
+  let _gpConnected = false;
+  let _prev = {};
+
+  function _btnOn(b){ return b && (b.value > 0.08 || b.pressed); }
+
+  function updateCursor(){
+    CARDS.forEach((id, i) => {
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.classList.toggle('gp-focus', i === _cur);
+    });
+    // 画面外に出たらスクロール
+    const el = document.getElementById(CARDS[_cur]);
+    if(el){
+      const rect = el.getBoundingClientRect();
+      if(rect.bottom > window.innerHeight - 40) window.scrollBy(0, rect.bottom - window.innerHeight + 60);
+      else if(rect.top < 40) window.scrollBy(0, rect.top - 60);
+    }
+  }
+
+  function _onConnected(){
+    if(_gpConnected) return;
+    _gpConnected = true;
+    updateCursor();
+  }
+
+  function pollGamepad(){
+    const gps = navigator.getGamepads ? navigator.getGamepads() : [];
+    for(const gp of gps){
+      if(!gp) continue;
+      _onConnected();
+      const idx = gp.index;
+
+      // Aボタン（buttons[1]）: 決定
+      const bA = _btnOn(gp.buttons[1]);
+      if(bA && !_prev[idx+'_A']){
+        const el = document.getElementById(CARDS[_cur]);
+        if(el) window.location.href = el.getAttribute('href');
+      }
+      _prev[idx+'_A'] = bA;
+
+      // Bボタン（buttons[0]）: 丸場所へ戻る
+      const bB = _btnOn(gp.buttons[0]);
+      if(bB && !_prev[idx+'_B']) window.location.href = 'index.html';
+      _prev[idx+'_B'] = bB;
+
+      // 上: カーソル上
+      const up = _btnOn(gp.buttons[12]) || (gp.axes[1] < -0.3);
+      if(up && !_prev[idx+'_up']){
+        _cur = Math.max(0, _cur - 1);
+        updateCursor();
+      }
+      _prev[idx+'_up'] = up;
+
+      // 下: カーソル下
+      const dn = _btnOn(gp.buttons[13]) || (gp.axes[1] > 0.3);
+      if(dn && !_prev[idx+'_dn']){
+        _cur = Math.min(CARDS.length - 1, _cur + 1);
+        updateCursor();
+      }
+      _prev[idx+'_dn'] = dn;
+
+      // 右スティック・左スティック: スクロール
+      const ly = gp.axes[1], ry = gp.axes[3];
+      const sy = Math.abs(ry) > 0.15 ? ry : (Math.abs(ly) > 0.15 ? ly : 0);
+      if(sy !== 0) window.scrollBy(0, sy * 12);
+    }
+  }
+
+  setInterval(pollGamepad, 8);
+  window.addEventListener('gamepadconnected', _onConnected);
+
+  // 接続済み検出
+  function _detect(){ const g = navigator.getGamepads?.(); if(g && [...g].some(x=>x)) _onConnected(); }
+  setTimeout(_detect, 0); setTimeout(_detect, 200); setTimeout(_detect, 600);
+</script>
 </body>
 </html>
