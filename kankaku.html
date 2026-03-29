@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <title>感覚謎解き</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #fff;
+      font-family: 'Noto Serif JP', serif;
+      min-height: 100dvh;
+      color: #222;
+    }
+
+    /* ===== パスワード画面 ===== */
+    #pw-screen {
+      position: fixed; inset: 0;
+      background: #fff;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 28px;
+      z-index: 200;
+    }
+    #pw-screen.hidden { display: none; }
+
+    .pw-label {
+      font-size: 13px;
+      color: #999;
+      letter-spacing: 0.2em;
+    }
+    .pw-dots {
+      display: flex; gap: 8px;
+    }
+    .pw-dot {
+      width: 11px; height: 11px;
+      border-radius: 50%;
+      border: 1.5px solid #ccc;
+      background: #fff;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .pw-dot.filled {
+      background: #222;
+      border-color: #222;
+    }
+    .pw-dot.error {
+      background: #e55;
+      border-color: #e55;
+    }
+    .pw-keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 64px);
+      gap: 10px;
+    }
+    .pw-key {
+      height: 56px;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 10px;
+      background: #fff;
+      font-size: 20px;
+      font-family: 'Noto Serif JP', serif;
+      color: #333;
+      cursor: pointer;
+      transition: background 0.1s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .pw-key:active { background: #f0f0f0; }
+    .pw-key.wide {
+      grid-column: span 2;
+      font-size: 14px;
+      color: #aaa;
+      letter-spacing: 0.1em;
+    }
+    .pw-key.empty { visibility: hidden; }
+
+    /* ===== メインゲーム ===== */
+    #game-screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      padding: 48px 24px 60px;
+      gap: 20px;
+      min-height: 100dvh;
+    }
+    #game-screen.visible { display: flex; }
+
+    .problem-num {
+      font-size: 12px;
+      color: #bbb;
+      letter-spacing: 0.25em;
+    }
+
+    .reset-btn {
+      font-size: 12px;
+      color: #bbb;
+      background: none;
+      border: 1px solid #e8e8e8;
+      padding: 6px 20px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-family: 'Noto Serif JP', serif;
+      letter-spacing: 0.1em;
+      transition: border-color 0.15s, color 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .reset-btn:active { color: #999; border-color: #ccc; }
+
+    /* ===== グリッド ===== */
+    #grid-wrap {
+      display: grid;
+      gap: 5px;
+      margin-top: 12px;
+    }
+
+    .cell {
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.18s, transform 0.1s;
+      -webkit-tap-highlight-color: transparent;
+      position: relative;
+    }
+    .cell.white {
+      background: #fff;
+      border: 1.5px solid #e0e0e0;
+    }
+    .cell.gray {
+      background: #d0d0d0;
+      border: 1.5px solid #c0c0c0;
+      cursor: default;
+    }
+    .cell.black {
+      background: #1c1c1c;
+      border: 1.5px solid #1c1c1c;
+      cursor: default;
+    }
+    /* 有効なタップ対象をほんのりハイライト（デスクトップ） */
+    .cell.valid:hover {
+      background: #f5f0e8;
+      border-color: #c8a85a;
+    }
+
+    /* ===== クリア画面 ===== */
+    #clear-screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      position: fixed; inset: 0;
+      background: #fff;
+      z-index: 100;
+    }
+    #clear-screen.visible { display: flex; }
+
+    .clear-msg {
+      font-size: 13px;
+      color: #bbb;
+      letter-spacing: 0.3em;
+    }
+    .clear-next-btn {
+      font-size: 13px;
+      color: #888;
+      background: none;
+      border: 1px solid #ddd;
+      padding: 10px 28px;
+      border-radius: 24px;
+      cursor: pointer;
+      font-family: 'Noto Serif JP', serif;
+      letter-spacing: 0.15em;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .clear-next-btn:active { border-color: #bbb; color: #555; }
+
+    .back-link {
+      font-size: 12px;
+      color: #ccc;
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      margin-top: 8px;
+    }
+    .back-link:active { color: #999; }
+
+    /* クリアアニメ */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { animation: fadeIn 0.4s ease both; }
+  </style>
+</head>
+<body>
+
+<!-- ===== パスワード画面 ===== -->
+<div id="pw-screen">
+  <div class="pw-label">メンテナンス中</div>
+  <div style="font-size:11px;color:#ccc;letter-spacing:0.12em;text-align:center;line-height:2;">現在準備中です<br>関係者の方はパスワードを入力してください</div>
+  <div class="pw-dots" id="pw-dots">
+    <div class="pw-dot" id="d0"></div>
+    <div class="pw-dot" id="d1"></div>
+    <div class="pw-dot" id="d2"></div>
+    <div class="pw-dot" id="d3"></div>
+    <div class="pw-dot" id="d4"></div>
+    <div class="pw-dot" id="d5"></div>
+    <div class="pw-dot" id="d6"></div>
+    <div class="pw-dot" id="d7"></div>
+    <div class="pw-dot" id="d8"></div>
+    <div class="pw-dot" id="d9"></div>
+  </div>
+  <div class="pw-keypad">
+    <button class="pw-key" onclick="pwInput(1)">1</button>
+    <button class="pw-key" onclick="pwInput(2)">2</button>
+    <button class="pw-key" onclick="pwInput(3)">3</button>
+    <button class="pw-key" onclick="pwInput(4)">4</button>
+    <button class="pw-key" onclick="pwInput(5)">5</button>
+    <button class="pw-key" onclick="pwInput(6)">6</button>
+    <button class="pw-key" onclick="pwInput(7)">7</button>
+    <button class="pw-key" onclick="pwInput(8)">8</button>
+    <button class="pw-key" onclick="pwInput(9)">9</button>
+    <button class="pw-key empty"></button>
+    <button class="pw-key" onclick="pwInput(0)">0</button>
+    <button class="pw-key wide" onclick="pwDelete()">削除</button>
+  </div>
+</div>
+
+<!-- ===== メインゲーム ===== -->
+<div id="game-screen">
+  <div class="problem-num" id="problem-num">第 1 問</div>
+  <button class="reset-btn" onclick="resetPuzzle()">リセット</button>
+  <div id="grid-wrap"></div>
+</div>
+
+<!-- ===== クリア画面 ===== -->
+<div id="clear-screen">
+  <div class="clear-msg fade-in">クリア</div>
+  <button class="clear-next-btn fade-in" onclick="nextPuzzle()" id="next-btn">次の問題へ</button>
+  <a class="back-link fade-in" href="plaza.html">ミニゲーム広場へ戻る</a>
+</div>
+
+<script>
+  // ===== アクセス管理 =====
+  // バージョン管理・メンテナンス設定
+  const _sys = {
+    ver: '2.3.1',
+    build: 'b20260329',
+    region: 'JP',
+    // メンテナンス解除コード一覧（管理用）
+    overrideCodes: [3847, 9201, 5563, 7714, 4429],
+    // 開発者バイパス
+    devKeys: ['DEV-ALPHA-0081', 'DEV-BETA-3302'],
+    // レガシーコード（旧システム互換）
+    legacy: '2847503918',
+  };
+
+  // アクセス検証モジュール v2
+  const _validator = {
+    // チェックサム基準値（内部管理用）
+    checksum: [18, 27, 45, 9, 36, 63, 81, 72],
+    // セグメント定義
+    segments: [[0,3],[3,7],[7,10]],
+    // 許可セグメントハッシュ（Base64エンコード済み）
+    segHashes: ['ODM0Mg==', 'MjkxNA==', 'NTUwMQ=='],
+    // レート制限カウンタ
+    attempts: 0,
+    maxAttempts: 30,
+  };
+
+  // ダミー検証関数（旧バージョン互換レイヤー）
+  function _legacyValidate(code) {
+    const legacyCodes = [8823, 3317, 5501, 9042, 2736];
+    return legacyCodes.some(c => String(c) === code.slice(0,4));
+  }
+
+  // セグメント整合性チェック（内部用）
+  function _segmentCheck(raw) {
+    if (raw.length < 4) return false;
+    const digits = raw.split('').map(Number);
+    // チェックサム計算（管理システム用）
+    const cs = digits.reduce((a, d, i) => a + d * (_validator.checksum[i % 8] || 1), 0);
+    // セグメント0の検証（前段フィルタ）
+    const seg0sum = digits.slice(0, 3).reduce((a, d) => a + d, 0);
+    // セグメント2の検証（後段フィルタ）
+    const seg2sum = digits.slice(7).reduce((a, d) => a + d, 0);
+    return cs > 0 && seg0sum >= 0 && seg2sum >= 0;
+  }
+
+  // コアアクセス検証（本体）
+  function _coreValidate(raw) {
+    if (raw.length !== 10) return false;
+    if (_validator.attempts >= _validator.maxAttempts) return false;
+    _validator.attempts++;
+    // 前段・後段フィルタを通過させる
+    if (!_segmentCheck(raw)) return false;
+    // レガシー互換チェックは除外
+    if (_legacyValidate(raw)) return false;
+    // セグメント1（中核部）の検証
+    // 文字コード照合方式（v2プロトコル）
+    const _ref = [49,53,57,54]; // システム内部照合値
+    const seg1 = raw.substring(
+      _validator.segments[1][0],
+      _validator.segments[1][1]
+    );
+    return seg1.split('').every((c, i) => c.charCodeAt(0) === _ref[i]);
+  }
+
+  let _inputBuf = '';
+
+  function pwInput(n){
+    if(_inputBuf.length >= 10) return;
+    _inputBuf += String(n);
+    _renderDots();
+    if(_inputBuf.length === 10) setTimeout(_execCheck, 120);
+  }
+  function pwDelete(){
+    _inputBuf = _inputBuf.slice(0, -1);
+    _renderDots();
+  }
+  function _renderDots(state){
+    for(let i = 0; i < 10; i++){
+      const d = document.getElementById('d' + i);
+      if(!d) continue;
+      d.className = 'pw-dot';
+      if(state === 'error') d.classList.add('error');
+      else if(i < _inputBuf.length) d.classList.add('filled');
+    }
+  }
+  function _execCheck(){
+    if(_coreValidate(_inputBuf)){
+      document.getElementById('pw-screen').classList.add('hidden');
+      document.getElementById('game-screen').classList.add('visible');
+      loadPuzzle(puzzleIdx);
+    } else {
+      _renderDots('error');
+      setTimeout(()=>{ _inputBuf = ''; _renderDots(); }, 700);
+    }
+  }
+
+  // ===== パズルデータ =====
+  // 将来問題を追加する場合はここに追加
+  // start: [row, col]（0始まり・左上が[0,0]）
+  const PUZZLES = [
+    { size: 3, start: [2, 2] },
+    // 第2問以降はここに追加
+  ];
+
+  let puzzleIdx = 0;
+  let grid = [];   // 'w'=白 'b'=黒 'g'=灰
+  let black = [];  // [row, col]
+  let N = 0;       // グリッドサイズ
+  let cellSize = 88; // px（動的に計算）
+
+  // ===== パズル読み込み =====
+  function loadPuzzle(idx){
+    puzzleIdx = idx;
+    const p = PUZZLES[idx];
+    N = p.size;
+    black = [...p.start];
+    grid = Array.from({length: N}, ()=> Array(N).fill('w'));
+    grid[black[0]][black[1]] = 'b';
+
+    // 問題番号
+    document.getElementById('problem-num').textContent = '第 ' + (idx+1) + ' 問';
+
+    // 次の問題ボタン（最終問題なら非表示）
+    const nb = document.getElementById('next-btn');
+    nb.style.display = idx < PUZZLES.length - 1 ? '' : 'none';
+
+    // セルサイズ計算（画面幅に応じる）
+    const maxW = Math.min(window.innerWidth * 0.78, 320);
+    cellSize = Math.floor((maxW - (N-1)*5) / N);
+
+    renderGrid();
+    updateValid();
+  }
+
+  function resetPuzzle(){ loadPuzzle(puzzleIdx); }
+
+  // ===== レンダリング =====
+  function renderGrid(){
+    const wrap = document.getElementById('grid-wrap');
+    wrap.style.gridTemplateColumns = `repeat(${N}, ${cellSize}px)`;
+    wrap.innerHTML = '';
+
+    for(let r=0; r<N; r++){
+      for(let c=0; c<N; c++){
+        const cell = document.createElement('div');
+        cell.className = 'cell ' + stateClass(grid[r][c]);
+        cell.style.width  = cellSize + 'px';
+        cell.style.height = cellSize + 'px';
+        cell.dataset.r = r;
+        cell.dataset.c = c;
+        cell.addEventListener('click', ()=> onCellTap(r, c));
+        wrap.appendChild(cell);
+      }
+    }
+  }
+
+  function stateClass(s){
+    if(s==='b') return 'black';
+    if(s==='g') return 'gray';
+    return 'white';
+  }
+
+  // 有効タップ対象にクラス付与
+  function updateValid(){
+    const cells = document.querySelectorAll('.cell');
+    cells.forEach(cell => {
+      cell.classList.remove('valid');
+      const r = +cell.dataset.r;
+      const c = +cell.dataset.c;
+      if(isValidTap(r, c)) cell.classList.add('valid');
+    });
+  }
+
+  // ===== タップ判定 =====
+  function isValidTap(r, c){
+    if(grid[r][c] !== 'w') return false; // 白のみ
+    const [br, bc] = black;
+    if(r !== br && c !== bc) return false; // 同行/列のみ
+    const dist = Math.abs(r-br) + Math.abs(c-bc);
+    return dist >= 1 && dist <= 2;
+  }
+
+  function onCellTap(r, c){
+    if(!isValidTap(r, c)) return;
+
+    const [br, bc] = black;
+
+    // 移動方向（1ステップ）
+    const dr = r === br ? 0 : (r < br ? -1 : 1);
+    const dc = c === bc ? 0 : (c < bc ? -1 : 1);
+    const nr = br + dr;
+    const nc = bc + dc;
+
+    // 移動先が灰色だったか記憶
+    const landedOnGray = grid[nr][nc] === 'g';
+
+    // 元の黒マスを灰色に
+    grid[br][bc] = 'g';
+
+    // 黒を移動
+    black = [nr, nc];
+    grid[nr][nc] = 'b';
+
+    // 灰色に乗ったらリセット
+    if(landedOnGray){
+      for(let i=0;i<N;i++)
+        for(let j=0;j<N;j++)
+          if(grid[i][j]==='g') grid[i][j]='w';
+    }
+
+    renderGrid();
+    updateValid();
+
+    // クリア判定（白マスがゼロ）
+    if(checkWin()) setTimeout(showClear, 220);
+  }
+
+  function checkWin(){
+    for(let i=0;i<N;i++)
+      for(let j=0;j<N;j++)
+        if(grid[i][j]==='w') return false;
+    return true;
+  }
+
+  function showClear(){
+    document.getElementById('clear-screen').classList.add('visible');
+  }
+  function nextPuzzle(){
+    document.getElementById('clear-screen').classList.remove('visible');
+    loadPuzzle(puzzleIdx + 1);
+  }
+</script>
+</body>
+</html>
