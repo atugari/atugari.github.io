@@ -300,7 +300,10 @@
     <button class="pw-key" onclick="pwInput(7)">7</button>
     <button class="pw-key" onclick="pwInput(8)">8</button>
     <button class="pw-key" onclick="pwInput(9)">9</button>
+    <button class="pw-key empty"></button>
     <button class="pw-key" onclick="pwInput(0)">0</button>
+    <button class="pw-key empty"></button>
+    <button class="pw-key empty"></button>
     <button class="pw-key" onclick="pwDelete()">削除</button>
     <button class="pw-key empty"></button>
   </div>
@@ -494,7 +497,10 @@
     document.getElementById('stage-screen').classList.remove('visible');
     document.getElementById('game-screen').style.display = 'flex';
     document.getElementById('game-screen').classList.add('visible');
+    _gcActive = false;
     loadPuzzle(idx);
+    // コントローラー接続済みならグリッドカーソルを初期化
+    setTimeout(() => { if(_gp && _gp.connected) _gcInit(); }, 50);
   }
 
   // ===== パズル読み込み =====
@@ -611,9 +617,9 @@
 
   // テンキーのグリッド定義（行,列 → 数字）
   // 配列: [1,2,3,4,5,6,7,8,9,null,0,'del']
-  const PW_KEYS = [1,2,3,4,5,6,7,8,9,0,'del',null]; // index9=0, index10=del, index11=空欄
+  const PW_KEYS = [1,2,3,4,5,6,7,8,9,null,0,null,null,'del',null]; // 5行3列 8の下=0 0の下=del
   // グリッド3列 → row=Math.floor(i/3), col=i%3
-  let _pwCursor = 0; // 0〜11
+  let _pwCursor = 0; // 0〜14（5行×3列）
 
   // ステージカーソル
   let _stageCursor = 0;
@@ -723,8 +729,8 @@
         }
         if(dn && !p[idx+'d']){
           let nc = _pwCursor + 3;
-          while(nc <= 11 && PW_KEYS[nc] === null) nc += 3;
-          if(nc <= 11){ _pwCursor = nc; _pwUpdateCursor(); }
+          while(nc <= 14 && PW_KEYS[nc] === null) nc += 3;
+          if(nc <= 14){ _pwCursor = nc; _pwUpdateCursor(); }
         }
         if(lt && !p[idx+'l']){
           let nc = _pwCursor - 1;
@@ -733,8 +739,8 @@
         }
         if(rt && !p[idx+'r']){
           let nc = _pwCursor + 1;
-          while(nc <= 11 && PW_KEYS[nc] === null) nc++;
-          if(nc <= 11 && Math.floor(nc/3) === Math.floor(_pwCursor/3)){ _pwCursor = nc; _pwUpdateCursor(); }
+          while(nc <= 14 && PW_KEYS[nc] === null) nc++;
+          if(nc <= 14 && Math.floor(nc/3) === Math.floor(_pwCursor/3)){ _pwCursor = nc; _pwUpdateCursor(); }
         }
         if(bA && !p[idx+'A']){ _pwAction(); }
         if(bB && !p[idx+'B']){ window.location.href = 'plaza.html'; }
@@ -784,14 +790,7 @@
 
   setInterval(pollKankaku, 16);
 
-  // ゲーム画面に切り替わったらカーソルを初期化
-  const _origStartFromStage = startFromStage;
-  function startFromStage(idx){
-    _gcActive = false;
-    _origStartFromStage(idx);
-    // グリッド描画後にカーソルを初期化
-    setTimeout(() => { if(_gp.connected) _gcInit(); }, 50);
-  }
+  // ゲーム画面切り替え時のカーソル初期化はshowClear/startFromStage内で処理済み
 
   window.addEventListener('gamepadconnected', ()=>{ _gp.connected=true; _pwUpdateCursor(); });
   setInterval(()=>{
