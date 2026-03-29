@@ -304,7 +304,7 @@
 <div id="stage-screen">
   <div class="stage-title">ステージを選択</div>
   <div class="stage-grid" id="stage-grid"></div>
-  <a class="back-link" href="plaza.html">ミニゲーム広場へ戻る</a>
+  <a href="plaza.html" style="display:inline-block;margin-top:8px;padding:12px 32px;border:1.5px solid #ccc;border-radius:24px;font-size:14px;color:#555;text-decoration:none;font-family:'Noto Serif JP',serif;letter-spacing:0.1em;-webkit-tap-highlight-color:transparent;">ミニゲーム広場へ戻る</a>
 </div>
 
 <!-- ===== メインゲーム ===== -->
@@ -462,13 +462,14 @@
       const cell = document.createElement('div');
       const unlocked = i <= maxC + 1; // クリア済み+1まで選択可
       const cleared = i <= maxC;
-      cell.className = 'stage-cell' + (cleared ? ' cleared' : ' locked');
+      cell.className = 'stage-cell' + (unlocked ? ' cleared' : ' locked');
       cell.textContent = i + 1;
-      if(unlocked){
-        cell.classList.remove('locked');
-        cell.classList.add('cleared');
-        cell.addEventListener('click', () => startFromStage(i));
-      }
+      cell.dataset.idx = i;
+      // タッチ・クリック両対応（コントローラーからも呼べるようdataset経由）
+      cell.addEventListener('pointerup', (e) => {
+        e.preventDefault();
+        if(unlocked) startFromStage(i);
+      });
       grid_el.appendChild(cell);
     });
     document.getElementById('stage-screen').style.display = 'flex';
@@ -601,7 +602,7 @@
 
   // テンキーのグリッド定義（行,列 → 数字）
   // 配列: [1,2,3,4,5,6,7,8,9,null,0,'del']
-  const PW_KEYS = [1,2,3,4,5,6,7,8,9,null,0,'del'];
+  const PW_KEYS = [1,2,3,4,5,6,7,8,9,null,0,'del']; // index9=null=空欄(スキップ)
   // グリッド3列 → row=Math.floor(i/3), col=i%3
   let _pwCursor = 0; // 0〜11
 
@@ -644,7 +645,13 @@
   function _stageAction(){
     const cells = document.querySelectorAll('.stage-cell');
     const cell = cells[_stageCursor];
-    if(cell && cell.classList.contains('cleared')) cell.click();
+    if(!cell) return;
+    if(cell.classList.contains('cleared')){
+      // startFromStage を直接呼ぶ（clickイベントが失われていても動作する）
+      const idx = _stageCursor;
+      const maxC = getMaxCleared();
+      if(idx <= maxC + 1) startFromStage(idx);
+    }
   }
 
   // ---- ゲーム画面 ----
@@ -692,18 +699,21 @@
 
       if(scr === 'pw'){
         // 上下左右でテンキーカーソル移動（3列グリッド）
-        if(up  && !p[idx+'u']){ _pwCursor = Math.max(0, _pwCursor-3); _pwUpdateCursor(); }
-        if(dn  && !p[idx+'d']){ _pwCursor = Math.min(11, _pwCursor+3); _pwUpdateCursor(); }
-        if(lt  && !p[idx+'l']){ if(_pwCursor%3>0){ _pwCursor--; _pwUpdateCursor(); } }
-        if(rt  && !p[idx+'r']){ if(_pwCursor%3<2){ _pwCursor++; _pwUpdateCursor(); } }
-        if(bA  && !p[idx+'A']){ _pwAction(); }
-        if(bB  && !p[idx+'B']){ // Bボタン=削除
-          pwDelete();
+        // null(index9=empty)はスキップして次の有効セルへ
+        if(up && !p[idx+'u']){
+          let nc = _pwCursor - 3;
+          if(nc >= 0){ if(PW_KEYS[nc] === null) nc = nc - 3; }
+          if(nc >= 0){ _pwCursor = nc; _pwUpdateCursor(); }
         }
-        // Yボタン（buttons[2]）= plaza.htmlへ戻る
-        const bY = _btnOn(gp.buttons[2]);
-        if(bY && !p[idx+'Y']) window.location.href = 'plaza.html';
-        p[idx+'Y'] = bY;
+        if(dn && !p[idx+'d']){
+          let nc = _pwCursor + 3;
+          if(nc <= 11){ if(PW_KEYS[nc] === null) nc = nc + 3; }
+          if(nc <= 11){ _pwCursor = nc; _pwUpdateCursor(); }
+        }
+        if(lt && !p[idx+'l']){ if(_pwCursor%3>0){ _pwCursor--; _pwUpdateCursor(); } }
+        if(rt && !p[idx+'r']){ if(_pwCursor%3<2 && _pwCursor<11){ _pwCursor++; _pwUpdateCursor(); } }
+        if(bA && !p[idx+'A']){ _pwAction(); }
+        if(bB && !p[idx+'B']){ window.location.href = 'plaza.html'; }
       }
 
       if(scr === 'stage'){
