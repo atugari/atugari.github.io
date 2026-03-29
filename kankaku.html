@@ -191,7 +191,59 @@
     }
     .back-link:active { color: #999; }
 
-    /* クリアアニメ */
+    /* ===== ステージ選択画面 ===== */
+    #stage-screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      padding: 56px 24px 60px;
+      gap: 32px;
+      min-height: 100dvh;
+      background: #fff;
+    }
+    #stage-screen.visible { display: flex; }
+
+    .stage-title {
+      font-size: 11px;
+      color: #ccc;
+      letter-spacing: 0.3em;
+    }
+    .stage-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      max-width: 320px;
+    }
+    .stage-cell {
+      width: 72px;
+      height: 72px;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-family: 'Noto Serif JP', serif;
+      color: #bbb;
+      background: #fff;
+      cursor: default;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .stage-cell.cleared {
+      border-color: #c8c8c8;
+      color: #555;
+      cursor: pointer;
+    }
+    .stage-cell.cleared:active {
+      background: #f5f5f5;
+    }
+    .stage-cell.locked {
+      opacity: 0.35;
+    }
+
+    /* ===== クリアアニメ ===== */
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(8px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -233,6 +285,13 @@
   </div>
 </div>
 
+<!-- ===== ステージ選択画面 ===== -->
+<div id="stage-screen">
+  <div class="stage-title">ステージを選択</div>
+  <div class="stage-grid" id="stage-grid"></div>
+  <a class="back-link" href="plaza.html">ミニゲーム広場へ戻る</a>
+</div>
+
 <!-- ===== メインゲーム ===== -->
 <div id="game-screen">
   <div class="problem-num" id="problem-num">第 1 問</div>
@@ -243,8 +302,7 @@
 <!-- ===== クリア画面 ===== -->
 <div id="clear-screen">
   <div class="clear-msg fade-in">クリア</div>
-  <button class="clear-next-btn fade-in" onclick="nextPuzzle()" id="next-btn">次の問題へ</button>
-  <a class="back-link fade-in" href="plaza.html">ミニゲーム広場へ戻る</a>
+  <a class="back-link fade-in" href="plaza.html" style="margin-top:8px;">ミニゲーム広場へ戻る</a>
 </div>
 
 <script>
@@ -337,8 +395,7 @@
   function _execCheck(){
     if(_coreValidate(_inputBuf)){
       document.getElementById('pw-screen').classList.add('hidden');
-      document.getElementById('game-screen').classList.add('visible');
-      loadPuzzle(puzzleIdx);
+      showStageSelect();
     } else {
       _renderDots('error');
       setTimeout(()=>{ _inputBuf = ''; _renderDots(); }, 700);
@@ -346,18 +403,74 @@
   }
 
   // ===== パズルデータ =====
-  // 将来問題を追加する場合はここに追加
-  // start: [row, col]（0始まり・左上が[0,0]）
   const PUZZLES = [
-    { size: 3, start: [2, 2] },
-    // 第2問以降はここに追加
+    { size: 3, start: [2, 2] }, // 第1問: 右下スタート
+    { size: 3, start: [2, 1] }, // 第2問: 下の真ん中スタート
   ];
 
+  // クリア済み管理（最大クリア済みインデックスをlocalStorageで保持）
+  const LS_KEY = 'kankaku_cleared';
+  function getMaxCleared(){
+    return parseInt(localStorage.getItem(LS_KEY) ?? '-1');
+  }
+  function saveCleared(idx){
+    if(idx > getMaxCleared()) localStorage.setItem(LS_KEY, String(idx));
+  }
+
   let puzzleIdx = 0;
-  let grid = [];   // 'w'=白 'b'=黒 'g'=灰
-  let black = [];  // [row, col]
-  let N = 0;       // グリッドサイズ
-  let cellSize = 88; // px（動的に計算）
+  let grid = [];
+  let black = [];
+  let N = 0;
+  let cellSize = 88;
+
+  // ===== 画面切り替え =====
+  function showScreen(id){
+    ['pw-screen','stage-screen','game-screen','clear-screen'].forEach(s => {
+      const el = document.getElementById(s);
+      if(s === 'pw-screen'){
+        el.classList.toggle('hidden', s !== id);
+      } else {
+        el.classList.toggle('visible', s === id);
+        el.style.display = s === id
+          ? (s === 'stage-screen' || s === 'game-screen' ? 'flex' : 'flex')
+          : 'none';
+      }
+    });
+  }
+
+  // ===== ステージ選択画面 =====
+  function showStageSelect(){
+    const maxC = getMaxCleared();
+    const grid_el = document.getElementById('stage-grid');
+    grid_el.innerHTML = '';
+    PUZZLES.forEach((_, i) => {
+      const cell = document.createElement('div');
+      const unlocked = i <= maxC + 1; // クリア済み+1まで選択可
+      const cleared = i <= maxC;
+      cell.className = 'stage-cell' + (cleared ? ' cleared' : ' locked');
+      cell.textContent = i + 1;
+      if(unlocked){
+        cell.classList.remove('locked');
+        cell.classList.add('cleared');
+        cell.addEventListener('click', () => startFromStage(i));
+      }
+      grid_el.appendChild(cell);
+    });
+    document.getElementById('stage-screen').style.display = 'flex';
+    document.getElementById('stage-screen').classList.add('visible');
+    document.getElementById('game-screen').style.display = 'none';
+    document.getElementById('game-screen').classList.remove('visible');
+    document.getElementById('clear-screen').style.display = 'none';
+    document.getElementById('clear-screen').classList.remove('visible');
+  }
+
+  function startFromStage(idx){
+    document.getElementById('stage-screen').style.display = 'none';
+    document.getElementById('stage-screen').classList.remove('visible');
+    document.getElementById('game-screen').style.display = 'flex';
+    document.getElementById('game-screen').classList.add('visible');
+    loadPuzzle(idx);
+  }
 
   // ===== パズル読み込み =====
   function loadPuzzle(idx){
@@ -368,14 +481,8 @@
     grid = Array.from({length: N}, ()=> Array(N).fill('w'));
     grid[black[0]][black[1]] = 'b';
 
-    // 問題番号
     document.getElementById('problem-num').textContent = '第 ' + (idx+1) + ' 問';
 
-    // 次の問題ボタン（最終問題なら非表示）
-    const nb = document.getElementById('next-btn');
-    nb.style.display = idx < PUZZLES.length - 1 ? '' : 'none';
-
-    // セルサイズ計算（画面幅に応じる）
     const maxW = Math.min(window.innerWidth * 0.78, 320);
     cellSize = Math.floor((maxW - (N-1)*5) / N);
 
@@ -474,11 +581,28 @@
   }
 
   function showClear(){
-    document.getElementById('clear-screen').classList.add('visible');
-  }
-  function nextPuzzle(){
-    document.getElementById('clear-screen').classList.remove('visible');
-    loadPuzzle(puzzleIdx + 1);
+    // クリア済みを保存
+    saveCleared(puzzleIdx);
+
+    // クリア画面を表示
+    document.getElementById('game-screen').style.display = 'none';
+    document.getElementById('game-screen').classList.remove('visible');
+    const cs = document.getElementById('clear-screen');
+    cs.style.display = 'flex';
+    cs.classList.add('visible');
+
+    const isLast = puzzleIdx >= PUZZLES.length - 1;
+    if(!isLast){
+      // 次の問題が存在: 2秒後に自動で次へ
+      setTimeout(() => {
+        cs.style.display = 'none';
+        cs.classList.remove('visible');
+        document.getElementById('game-screen').style.display = 'flex';
+        document.getElementById('game-screen').classList.add('visible');
+        loadPuzzle(puzzleIdx + 1);
+      }, 2000);
+    }
+    // 最終問題の場合はそのままクリア画面に留まる
   }
 </script>
 </body>
