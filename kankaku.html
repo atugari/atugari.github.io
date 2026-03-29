@@ -242,6 +242,21 @@
     .stage-cell.locked {
       opacity: 0.35;
     }
+    .stage-cell.gp-focus {
+      outline: 2px solid #555;
+      outline-offset: 2px;
+    }
+    /* ゲーム中グリッドカーソル */
+    .cell.gp-focus {
+      outline: 2px solid #555;
+      outline-offset: -2px;
+    }
+    /* パスワードキーカーソル */
+    .pw-key.gp-focus {
+      outline: 2px solid #888;
+      outline-offset: 1px;
+      background: #f0f0f0;
+    }
 
     /* ===== クリアアニメ ===== */
     @keyframes fadeIn {
@@ -269,7 +284,7 @@
     <div class="pw-dot" id="d8"></div>
     <div class="pw-dot" id="d9"></div>
   </div>
-  <div class="pw-keypad">
+  <div class="pw-keypad" id="pw-keypad">
     <button class="pw-key" onclick="pwInput(1)">1</button>
     <button class="pw-key" onclick="pwInput(2)">2</button>
     <button class="pw-key" onclick="pwInput(3)">3</button>
@@ -579,6 +594,171 @@
         if(grid[i][j]==='w') return false;
     return true;
   }
+
+  // ===== コントローラー対応 =====
+  // A=buttons[1]=決定, B=buttons[0]=戻る/削除
+  let _gp = { prev:{}, connected:false };
+
+  // テンキーのグリッド定義（行,列 → 数字）
+  // 配列: [1,2,3,4,5,6,7,8,9,null,0,'del']
+  const PW_KEYS = [1,2,3,4,5,6,7,8,9,null,0,'del'];
+  // グリッド3列 → row=Math.floor(i/3), col=i%3
+  let _pwCursor = 0; // 0〜11
+
+  // ステージカーソル
+  let _stageCursor = 0;
+
+  // ゲームグリッドカーソル
+  let _gcRow = 0, _gcCol = 0;
+  let _gcActive = false;
+
+  function _btnOn(b){ return b && (b.value > 0.08 || b.pressed); }
+
+  function _currentScreen(){
+    if(!document.getElementById('pw-screen').classList.contains('hidden')) return 'pw';
+    if(document.getElementById('stage-screen').classList.contains('visible')) return 'stage';
+    if(document.getElementById('game-screen').classList.contains('visible')) return 'game';
+    if(document.getElementById('clear-screen').classList.contains('visible')) return 'clear';
+    return 'none';
+  }
+
+  // ---- パスワード画面 ----
+  function _pwUpdateCursor(){
+    document.querySelectorAll('.pw-key').forEach((k,i) => {
+      k.classList.toggle('gp-focus', i === _pwCursor);
+    });
+  }
+  function _pwAction(){
+    const val = PW_KEYS[_pwCursor];
+    if(val === null) return; // emptyセル
+    if(val === 'del') pwDelete();
+    else pwInput(val);
+  }
+
+  // ---- ステージ選択画面 ----
+  function _stageUpdateCursor(){
+    document.querySelectorAll('.stage-cell').forEach((c,i) => {
+      c.classList.toggle('gp-focus', i === _stageCursor);
+    });
+  }
+  function _stageAction(){
+    const cells = document.querySelectorAll('.stage-cell');
+    const cell = cells[_stageCursor];
+    if(cell && cell.classList.contains('cleared')) cell.click();
+  }
+
+  // ---- ゲーム画面 ----
+  function _gcUpdateCursor(){
+    document.querySelectorAll('.cell').forEach((c,i) => {
+      const r = +c.dataset.r, col = +c.dataset.c;
+      c.classList.toggle('gp-focus', r === _gcRow && col === _gcCol);
+    });
+  }
+  function _gcTap(){
+    // 現在カーソル位置のセルをクリック
+    const cells = document.querySelectorAll('.cell');
+    cells.forEach(c => {
+      if(+c.dataset.r === _gcRow && +c.dataset.c === _gcCol) c.click();
+    });
+  }
+  function _gcInit(){
+    // 有効なセルの初期位置（黒の上下左右で最初に有効なもの）
+    const cells = document.querySelectorAll('.cell');
+    for(const c of cells){
+      if(c.classList.contains('valid')){
+        _gcRow = +c.dataset.r; _gcCol = +c.dataset.c; break;
+      }
+    }
+    _gcActive = true;
+    _gcUpdateCursor();
+  }
+
+  function pollKankaku(){
+    const gps = navigator.getGamepads ? navigator.getGamepads() : [];
+    for(const gp of gps){
+      if(!gp) continue;
+      if(!_gp.connected){ _gp.connected = true; _pwUpdateCursor(); }
+      const idx = gp.index;
+      const p = _gp.prev;
+
+      const bA  = _btnOn(gp.buttons[1]); // 決定
+      const bB  = _btnOn(gp.buttons[0]); // 戻る/削除
+      const up  = _btnOn(gp.buttons[12]) || (gp.axes[1] < -0.3);
+      const dn  = _btnOn(gp.buttons[13]) || (gp.axes[1] >  0.3);
+      const lt  = _btnOn(gp.buttons[14]) || (gp.axes[0] < -0.3);
+      const rt  = _btnOn(gp.buttons[15]) || (gp.axes[0] >  0.3);
+
+      const scr = _currentScreen();
+
+      if(scr === 'pw'){
+        // 上下左右でテンキーカーソル移動（3列グリッド）
+        if(up  && !p[idx+'u']){ _pwCursor = Math.max(0, _pwCursor-3); _pwUpdateCursor(); }
+        if(dn  && !p[idx+'d']){ _pwCursor = Math.min(11, _pwCursor+3); _pwUpdateCursor(); }
+        if(lt  && !p[idx+'l']){ if(_pwCursor%3>0){ _pwCursor--; _pwUpdateCursor(); } }
+        if(rt  && !p[idx+'r']){ if(_pwCursor%3<2){ _pwCursor++; _pwUpdateCursor(); } }
+        if(bA  && !p[idx+'A']){ _pwAction(); }
+        if(bB  && !p[idx+'B']){ // Bボタン=削除
+          pwDelete();
+        }
+        // Yボタン（buttons[2]）= plaza.htmlへ戻る
+        const bY = _btnOn(gp.buttons[2]);
+        if(bY && !p[idx+'Y']) window.location.href = 'plaza.html';
+        p[idx+'Y'] = bY;
+      }
+
+      if(scr === 'stage'){
+        const cells = document.querySelectorAll('.stage-cell');
+        const count = cells.length;
+        if(lt && !p[idx+'l']){ _stageCursor=Math.max(0,_stageCursor-1); _stageUpdateCursor(); }
+        if(rt && !p[idx+'r']){ _stageCursor=Math.min(count-1,_stageCursor+1); _stageUpdateCursor(); }
+        if(up && !p[idx+'u']){ _stageCursor=Math.max(0,_stageCursor-3); _stageUpdateCursor(); }
+        if(dn && !p[idx+'d']){ _stageCursor=Math.min(count-1,_stageCursor+3); _stageUpdateCursor(); }
+        if(bA && !p[idx+'A']){ _stageAction(); }
+        if(bB && !p[idx+'B']){ window.location.href='plaza.html'; }
+      }
+
+      if(scr === 'game'){
+        if(!_gcActive) _gcInit();
+        const prevRow=_gcRow, prevCol=_gcCol;
+        if(up && !p[idx+'u'] && _gcRow>0){ _gcRow--; }
+        if(dn && !p[idx+'d'] && _gcRow<N-1){ _gcRow++; }
+        if(lt && !p[idx+'l'] && _gcCol>0){ _gcCol--; }
+        if(rt && !p[idx+'r'] && _gcCol<N-1){ _gcCol++; }
+        if(_gcRow!==prevRow || _gcCol!==prevCol) _gcUpdateCursor();
+        if(bA && !p[idx+'A']){ _gcTap(); }
+        if(bB && !p[idx+'B']){
+          // Bボタン=ステージ選択へ戻る
+          _gcActive = false;
+          document.querySelectorAll('.cell').forEach(c=>c.classList.remove('gp-focus'));
+          showStageSelect();
+        }
+      }
+
+      if(scr === 'clear'){
+        if(bB && !p[idx+'B']){ window.location.href='plaza.html'; }
+      }
+
+      p[idx+'A']=bA; p[idx+'B']=bB;
+      p[idx+'u']=up; p[idx+'d']=dn; p[idx+'l']=lt; p[idx+'r']=rt;
+    }
+  }
+
+  setInterval(pollKankaku, 16);
+
+  // ゲーム画面に切り替わったらカーソルを初期化
+  const _origStartFromStage = startFromStage;
+  function startFromStage(idx){
+    _gcActive = false;
+    _origStartFromStage(idx);
+    // グリッド描画後にカーソルを初期化
+    setTimeout(() => { if(_gp.connected) _gcInit(); }, 50);
+  }
+
+  window.addEventListener('gamepadconnected', ()=>{ _gp.connected=true; _pwUpdateCursor(); });
+  setInterval(()=>{
+    const gs = navigator.getGamepads?.();
+    if(gs && [...gs].some(g=>g) && !_gp.connected){ _gp.connected=true; _pwUpdateCursor(); }
+  }, 500);
 
   function showClear(){
     // クリア済みを保存

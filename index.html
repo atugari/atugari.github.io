@@ -324,26 +324,10 @@
             <span style="font-size:28px;font-weight:900;color:#c8a85a;font-family:'Noto Serif JP',serif;line-height:1;text-shadow:0 0 20px rgba(200,168,90,0.4);">飛べ飛</span>
             <div>
               <div style="font-size:11px;color:rgba(200,168,90,0.8);letter-spacing:0.1em;">感じるな漢字ろ！</div>
-              <div style="font-size:10px;color:rgba(138,130,100,0.8);letter-spacing:0.05em;margin-top:2px;">ミニゲーム公開中</div>
+              <div style="font-size:10px;color:rgba(138,130,100,0.8);letter-spacing:0.05em;margin-top:2px;">幻実世界の電子遊戯</div>
             </div>
           </div>
           <span style="font-size:12px;color:rgba(200,168,90,0.6);letter-spacing:0.05em;">プレイ →</span>
-        </div>
-      </a>
-    </div>
-
-    <!-- ミニゲーム広場バナー -->
-    <div style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;margin-bottom:16px;">
-      <a href="plaza.html" style="display:block;text-decoration:none;">
-        <div style="padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;">
-          <div style="display:flex;align-items:center;gap:10px;">
-            <span style="font-size:22px;line-height:1;">🎮</span>
-            <div>
-              <div style="font-size:11px;color:rgba(200,168,90,0.8);letter-spacing:0.1em;">MINI GAME</div>
-              <div style="font-size:13px;font-weight:700;color:rgba(220,210,180,0.9);letter-spacing:0.15em;margin-top:2px;">ミニゲーム広場</div>
-            </div>
-          </div>
-          <span style="font-size:12px;color:rgba(200,168,90,0.6);letter-spacing:0.05em;">入場 →</span>
         </div>
       </a>
     </div>
@@ -1735,17 +1719,38 @@
   function gpB(b){ return !!(b && (b.value>0.08 || b.pressed)); }
 
   function gpUpdateHome(){
-    const inp    = document.getElementById('nick-input');
-    const wrap   = document.getElementById('nick-card-wrap');
-    const btn    = wrap ? wrap.querySelector('.btn.primary') : null;
-    const banner = document.getElementById('tobi-banner');
+    const inp        = document.getElementById('nick-input');
+    const wrap       = document.getElementById('nick-card-wrap');
+    const btn        = wrap ? wrap.querySelector('.btn.primary') : null;
+    const banner     = document.getElementById('tobi-banner');
+    const plazaBanner = document.getElementById('plaza-banner');
 
-    if(inp)    inp.classList.toggle('gp-cursor-nick', GP.hc===0);
-    if(btn)    btn.classList.toggle('gp-cursor-btn',  GP.hc===1);
+    if(inp) inp.classList.toggle('gp-cursor-nick', GP.hc===0);
+    if(btn) btn.classList.toggle('gp-cursor-btn',  GP.hc===1);
+
+    // 飛べ飛バナー
     if(banner){
       banner.style.outline       = GP.hc===2 ? '3px solid #c8a85a' : '';
       banner.style.outlineOffset = GP.hc===2 ? '2px' : '';
       banner.style.borderRadius  = GP.hc===2 ? 'var(--r)' : '';
+    }
+    // 幻実世界バナー
+    if(plazaBanner){
+      plazaBanner.style.outline       = GP.hc===3 ? '3px solid #c8a85a' : '';
+      plazaBanner.style.outlineOffset = GP.hc===3 ? '2px' : '';
+      plazaBanner.style.borderRadius  = GP.hc===3 ? 'var(--r)' : '';
+    }
+
+    // カーソルが画面外ならスクロール追尾
+    const targets = [inp, btn, banner, plazaBanner];
+    const el = targets[GP.hc];
+    if(el){
+      const rect = el.getBoundingClientRect();
+      const margin = 60;
+      if(rect.bottom > window.innerHeight - margin)
+        window.scrollBy(0, rect.bottom - window.innerHeight + margin + 10);
+      else if(rect.top < margin)
+        window.scrollBy(0, rect.top - margin - 10);
     }
   }
 
@@ -1834,14 +1839,15 @@
       const scr = document.querySelector('.screen.active')?.id||'';
 
       if(scr==='screen-nick'){
-        // 項目: 0=ニックネーム入力, 1=チャレンジ開始, 2=飛べ飛バナー
+        // 項目: 0=ニックネーム入力, 1=チャレンジ開始, 2=飛べ飛バナー, 3=幻実世界バナー
         if(up&&!p[i+'u']){ GP.hc=Math.max(0,GP.hc-1); gpUpdateHome(); }
-        if(dn&&!p[i+'d']){ GP.hc=Math.min(2,GP.hc+1); gpUpdateHome(); }
+        if(dn&&!p[i+'d']){ GP.hc=Math.min(3,GP.hc+1); gpUpdateHome(); }
         if(bA&&!p[i+'A']){
           if(isModalOpen()){ gpModalClose(); }
           else if(GP.hc===0) document.getElementById('nick-input')?.focus();
           else if(GP.hc===1) startChallenge();
           else if(GP.hc===2) window.location.href='dungeon.html';
+          else if(GP.hc===3) window.location.href='plaza.html';
         }
         if(bB&&!p[i+'B']){ startChallenge(); }
       }
