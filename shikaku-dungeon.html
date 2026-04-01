@@ -151,7 +151,17 @@
     .pw-key:active{background:#333330;}
     .pw-key.empty{visibility:hidden;}
     .pw-back{font-size:12px;color:#5a5a54;text-decoration:none;letter-spacing:0.1em;margin-top:4px;}
-  </style>
+  
+    /* ===== AdSense 広告 ===== */
+    .ad-wrap{
+      width:100%;max-width:480px;margin:0 auto;
+      text-align:center;
+      min-height:50px;
+      overflow:hidden;
+    }
+    .ad-wrap ins{ display:block; }
+</style>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=YOUR_PUBLISHER_ID" crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -189,7 +199,18 @@
 </div>
 
 <div class="game-wrap">
-  <div class="dev-banner">現在開発中のゲームです。内容は変更される場合があります</div>
+  
+<!-- 広告:上部 -->
+<div class="ad-wrap">
+  <ins class="adsbygoogle"
+       style="display:block;text-align:center;"
+       data-ad-client="YOUR_PUBLISHER_ID"
+       data-ad-slot="YOUR_SLOT_ID_TOP"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+<div class="dev-banner">現在開発中のゲームです。内容は変更される場合があります</div>
   <div class="hd">
     <a class="hd-back" href="index.html">← 戻る</a>
     <span class="hd-title">四角迷宮<span class="demo-badge">試作版</span></span>
@@ -244,6 +265,17 @@
   </div>
 </div>
 
+
+<!-- 広告:リザルト -->
+<div class="ad-wrap">
+  <ins class="adsbygoogle"
+       style="display:block;text-align:center;"
+       data-ad-client="YOUR_PUBLISHER_ID"
+       data-ad-slot="YOUR_SLOT_ID_RESULT"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
 <div class="overlay" id="gameover-overlay" style="display:none;">
   <div class="overlay-box" style="text-align:center;">
     <div style="font-size:28px;margin-bottom:12px;">†</div>

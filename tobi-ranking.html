@@ -215,9 +215,30 @@
     .gp-guide-row:last-child{border-bottom:none;}
     .gp-guide-btn{color:var(--gold);font-weight:700;flex-shrink:0;}
     .gp-guide-act{color:var(--text2);}
-  </style>
+  
+    /* ===== AdSense 広告 ===== */
+    .ad-wrap{
+      width:100%;max-width:480px;margin:0 auto;
+      text-align:center;
+      min-height:50px;
+      overflow:hidden;
+    }
+    .ad-wrap ins{ display:block; }
+</style>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=YOUR_PUBLISHER_ID" crossorigin="anonymous"></script>
 </head>
 <body>
+
+<!-- 広告:上部 -->
+<div class="ad-wrap">
+  <ins class="adsbygoogle"
+       style="display:block;text-align:center;"
+       data-ad-client="YOUR_PUBLISHER_ID"
+       data-ad-slot="YOUR_SLOT_ID_TOP"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
 <div class="app">
 
   <div class="page-header">
@@ -273,6 +294,17 @@
 
 
 
+
+<!-- 広告:下部 -->
+<div class="ad-wrap">
+  <ins class="adsbygoogle"
+       style="display:block;text-align:center;"
+       data-ad-client="YOUR_PUBLISHER_ID"
+       data-ad-slot="YOUR_SLOT_ID_BOTTOM"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
 </div>
 <script>
   const DB_URL  = 'https://ad-game-7b40a-default-rtdb.asia-southeast1.firebasedatabase.app';

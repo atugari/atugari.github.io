@@ -292,7 +292,17 @@
     .gp-guide-row:last-child{border-bottom:none;}
     .gp-guide-key{color:rgba(200,168,90,0.95);font-weight:700;flex-shrink:0;}
     .gp-guide-act{color:rgba(200,210,220,0.85);}
-  </style>
+  
+    /* ===== AdSense 広告 ===== */
+    .ad-wrap{
+      width:100%;max-width:480px;margin:0 auto;
+      text-align:center;
+      min-height:50px;
+      overflow:hidden;
+    }
+    .ad-wrap ins{ display:block; }
+</style>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=YOUR_PUBLISHER_ID" crossorigin="anonymous"></script>
 </head>
 <body>
 <!-- 黒帯マスク（横向き時の左右余白） -->
@@ -1352,5 +1362,16 @@
   applyClearModeUI();
   restoreBest(); // Firebaseからスコア復元（非同期・バックグラウンド）
 </script>
+
+<!-- 広告:下部 -->
+<div class="ad-wrap">
+  <ins class="adsbygoogle"
+       style="display:block;text-align:center;"
+       data-ad-client="YOUR_PUBLISHER_ID"
+       data-ad-slot="YOUR_SLOT_ID_BOTTOM"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
 </body>
 </html>

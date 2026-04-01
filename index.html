@@ -149,6 +149,7 @@
     #gp-guide-panel .gp-btn{color:rgba(55,138,221,0.9);font-weight:700;flex-shrink:0;}
     #gp-guide-panel .gp-act{color:rgba(220,215,200,0.8);}
   </style>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=YOUR_PUBLISHER_ID" crossorigin="anonymous"></script>
 </head>
 <body>
 <!-- 称号入手トースト -->
@@ -357,7 +358,18 @@
       <a href="settings.html">設定</a>　|　
       <a href="share.html">自慢する</a><br>
       &copy; 2026 丸場所記憶ゲーム
-    </footer>
+    
+<!-- 広告:下部 -->
+<div class="ad-wrap">
+  <ins class="adsbygoogle"
+       style="display:block;text-align:center;"
+       data-ad-client="YOUR_PUBLISHER_ID"
+       data-ad-slot="YOUR_SLOT_ID_BOTTOM"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+</footer>
   </div>
 
   <!-- ゲーム画面 -->
@@ -394,7 +406,18 @@
   </div>
 
   <!-- 結果画面 -->
-  <div class="screen" id="screen-result">
+  
+<!-- 広告:リザルト -->
+<div class="ad-wrap">
+  <ins class="adsbygoogle"
+       style="display:block;text-align:center;"
+       data-ad-client="YOUR_PUBLISHER_ID"
+       data-ad-slot="YOUR_SLOT_ID_RESULT"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+<div class="screen" id="screen-result">
     <div class="result-card">
       <h2>チャレンジ完了！</h2>
       <div class="stage-scores">
@@ -1723,7 +1746,7 @@
 
   // PWA: Service Worker 登録
   if('serviceWorker' in navigator){
-    navigator.serviceWorker.register('/ad-tracker/sw.js').catch(()=>{});
+    navigator.serviceWorker.register('/sw.js').catch(()=>{});
   }
 
   // ===== 外部コントローラー対応 =====

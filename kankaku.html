@@ -270,7 +270,17 @@
       to   { opacity: 1; transform: translateY(0); }
     }
     .fade-in { animation: fadeIn 0.4s ease both; }
+
+    /* ===== AdSense 広告 ===== */
+    .ad-wrap{
+      width:100%;max-width:480px;margin:0 auto;
+      text-align:center;
+      min-height:50px;
+      overflow:hidden;
+    }
+    .ad-wrap ins{ display:block; }
   </style>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=YOUR_PUBLISHER_ID" crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -314,6 +324,17 @@
 </div>
 
 <!-- ===== メインゲーム ===== -->
+
+<!-- 広告:上部 -->
+<div class="ad-wrap">
+  <ins class="adsbygoogle"
+       style="display:block;text-align:center;"
+       data-ad-client="YOUR_PUBLISHER_ID"
+       data-ad-slot="YOUR_SLOT_ID_TOP"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
 <div id="game-screen">
   <div class="problem-num" id="problem-num">第 1 問</div>
   <button class="reset-btn" onclick="resetPuzzle()">リセット</button>
@@ -321,6 +342,28 @@
 </div>
 
 <!-- ===== クリア画面 ===== -->
+
+<!-- 広告:下部 -->
+<div class="ad-wrap">
+  <ins class="adsbygoogle"
+       style="display:block;text-align:center;"
+       data-ad-client="YOUR_PUBLISHER_ID"
+       data-ad-slot="YOUR_SLOT_ID_BOTTOM"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+
+<!-- 広告:リザルト -->
+<div class="ad-wrap">
+  <ins class="adsbygoogle"
+       style="display:block;text-align:center;"
+       data-ad-client="YOUR_PUBLISHER_ID"
+       data-ad-slot="YOUR_SLOT_ID_RESULT"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
 <div id="clear-screen">
   <div class="clear-msg fade-in">クリア</div>
   <a class="back-link fade-in" href="plaza.html" style="margin-top:8px;">ミニゲーム広場へ戻る</a>
