@@ -41,7 +41,7 @@
     .cell.floor{background:var(--floor);box-shadow:inset -1px -1px 0 rgba(255,255,255,0.04);}
     .cell.floor2{background:var(--floor2);box-shadow:inset -1px -1px 0 rgba(0,0,0,0.15);}
     .cell.wall{background:var(--wall);}
-    .cell.pillar{background:#3a3830;box-shadow:inset 0 0 0 3px #555548;position:relative;z-index:3;}
+    .cell.pillar{background:#3a3830;box-shadow:inset 0 0 0 3px #555548;position:absolute;z-index:13;}
     .cell.atk-range{background:rgba(55,138,221,0.22);}
     .cell.alert-range{background:rgba(255,100,0,0.28);}
     .cell.exit{background:#1a3a2a;}
@@ -328,16 +328,24 @@ function initBattle(){
   map[0][4]=3;
   player.x=4;player.y=MAP-2;player.dir='up';
 
-  // 柱ランダム配置
-  const pc=4+Math.floor(Math.random()*3);
-  let placed=0,att=0;
-  while(placed<pc&&att<100){
-    att++;
-    const px=2+Math.floor(Math.random()*6),py=2+Math.floor(Math.random()*6);
-    if(Math.abs(px-player.x)<=1&&Math.abs(py-player.y)<=1)continue;
-    if(map[py][px]!==0)continue;
-    map[py][px]=2;placed++;
-  }
+  // 柱配置（固定パターンからランダム選択）
+  // マップ内部(2〜7)に収め、プレイヤー周辺・出口周辺は除外
+  // 必ず通り道が確保された対称パターン
+  const pillarPatterns = [
+    [[2,3],[7,3],[2,6],[7,6]],          // 左右対称・中央通路あり
+    [[3,2],[6,2],[3,7],[6,7]],          // 上下対称・中央通路あり
+    [[2,2],[7,2],[2,7],[7,7]],          // 四隅・中央完全開放
+    [[3,3],[6,3],[3,6],[6,6]],          // 内側四角・外周通路あり
+    [[2,4],[7,4],[4,2],[4,7]],          // 十字型補助
+  ];
+  const pat = pillarPatterns[Math.floor(Math.random()*pillarPatterns.length)];
+  pat.forEach(([px,py])=>{
+    // プレイヤー周辺・出口周辺・範囲外は除外
+    if(px<0||px>=mapSize||py<0||py>=mapSize) return;
+    if(Math.abs(px-player.x)<=1&&Math.abs(py-player.y)<=1) return;
+    if(Math.abs(px-4)<=1&&py<=1) return; // 出口周辺
+    if(map[py][px]===0) map[py][px]=2;
+  });
 
   // 敵を上側に配置
   enemies=[];
