@@ -140,6 +140,25 @@
     .ctrl-row{display:flex;align-items:center;gap:10px;justify-content:center;}
     .atk-btn{width:72px;height:72px;border-radius:12px;border:2px solid #4A9EE0;background:rgba(74,158,224,0.12);color:#9DD8FF;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
     .atk-btn:active{background:rgba(74,158,224,0.3);}
+    /* タイマーユニット */
+    #timer-unit{display:flex;flex-direction:column;align-items:center;gap:5px;}
+    #timer-unit.pos-left{order:0;}
+    #timer-unit.pos-right{order:3;}
+    .dpad{order:1;}
+    .atk-col{order:2;}
+    /* アクションインジケータ */
+    #action-indicator{font-size:18px;font-weight:700;min-width:32px;text-align:center;line-height:1;padding:2px 4px;border-radius:5px;transition:color 0.1s,background 0.1s;}
+    #action-indicator.action-none{color:#444;background:transparent;}
+    #action-indicator.action-move{color:#f0efe9;background:rgba(29,158,117,0.25);}
+    #action-indicator.action-atk{color:#9DD8FF;background:rgba(74,158,224,0.2);}
+    #action-indicator.action-wait{color:#9a9a92;background:rgba(80,80,80,0.2);}
+    /* オプション選択行 */
+    .opt-sel-row{}
+    .opt-sel-btn{padding:4px 10px;background:#2e2e2a;border:1px solid #444;border-radius:6px;font-size:12px;font-weight:600;color:#c0c0b8;cursor:pointer;min-width:52px;text-align:center;transition:background 0.1s;}
+    .opt-sel-btn:active{background:#3e3e38;}
+    /* オプション行のGPフォーカス */
+    .opt-row.gp-focus{background:rgba(200,168,90,0.08);border-radius:6px;padding-left:6px;padding-right:6px;}
+
     .pause-btn{width:48px;height:48px;border-radius:10px;border:1px solid #444;background:#2e2e2a;color:var(--text2);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
     .pause-btn:active{background:#3e3e38;}
     /* 一時停止オーバーレイ */
@@ -354,8 +373,11 @@
       <span class="weapon-name" id="weapon-name">武器未選択</span>
       <span class="weapon-atk" id="weapon-atk"></span>
     </div>
-    <div class="ctrl-row">
-      <canvas id="turn-timer-canvas" width="88" height="88"></canvas>
+    <div class="ctrl-row" id="ctrl-row">
+      <div id="timer-unit" class="pos-left">
+        <canvas id="turn-timer-canvas" width="88" height="88"></canvas>
+        <div id="action-indicator" class="action-none">—</div>
+      </div>
       <div class="dpad">
         <div class="dpad-btn empty"></div>
         <div class="dpad-btn" onmousedown="heldDir='up';queueAction({type:'move',dir:'up'})" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="(function(e){e.preventDefault();heldDir='up';queueAction({type:'move',dir:'up'});})(event)" ontouchend="stopMove()" ontouchcancel="stopMove()">▲</div>
@@ -367,7 +389,7 @@
         <div class="dpad-btn" onmousedown="heldDir='down';queueAction({type:'move',dir:'down'})" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="(function(e){e.preventDefault();heldDir='down';queueAction({type:'move',dir:'down'});})(event)" ontouchend="stopMove()" ontouchcancel="stopMove()">▼</div>
         <div class="dpad-btn empty"></div>
       </div>
-      <div style="display:flex;flex-direction:column;gap:6px;align-items:center;">
+      <div class="atk-col" style="display:flex;flex-direction:column;gap:6px;align-items:center;">
         <button class="atk-btn" id="atk-btn" onclick="queueAction({type:'attack'})">攻撃</button>
         <button class="pause-btn" id="pause-btn" onclick="pauseGame()">⏸</button>
       </div>
@@ -399,14 +421,26 @@
       <div class="tog" id="tog-skip-turn" onclick="toggleOpt('skip_turn')"><div class="tog-knob"></div></div>
     </div>
     <!-- タイマー -->
-    <div class="opt-section">タイマー表示</div>
-    <div class="opt-row">
+    <div class="opt-section">タイマー</div>
+    <div class="opt-row opt-sel-row" id="opt-row-style">
+      <div class="opt-label">スタイル
+        <span class="opt-sub">円形 / バー / 双線</span>
+      </div>
+      <button class="opt-sel-btn" id="timer-style-btn" onclick="cycleTimerStyle()">円形</button>
+    </div>
+    <div class="opt-row opt-sel-row" id="opt-row-pos">
+      <div class="opt-label">位置
+        <span class="opt-sub">タイマーの表示位置</span>
+      </div>
+      <button class="opt-sel-btn" id="timer-pos-btn" onclick="cycleTimerPos()">左</button>
+    </div>
+    <div class="opt-row" id="opt-row-beat">
       <div class="opt-label">青いトンガリ（裏拍）
-        <span class="opt-sub">0.5秒位置に青い目印を表示</span>
+        <span class="opt-sub">45°・135°・225°に青い目印</span>
       </div>
       <div class="tog" id="tog-beat" onclick="toggleOpt('beat')"><div class="tog-knob"></div></div>
     </div>
-    <div class="opt-row">
+    <div class="opt-row" id="opt-row-4beat">
       <div class="opt-label">赤い四拍子
         <span class="opt-sub">下・左・右の3拍位置に赤い目印</span>
       </div>
@@ -565,6 +599,12 @@ let _deathTimer=null; // gameOver遅延タイマー
 let weaponRotateTimer=null, wpnRotateIdx=0, wpnRotateList=[];
 // オプション設定
 let opt_skip_turn=false, opt_timer_beat=false, opt_4beat=false, opt_colorblind=false;
+let opt_timer_style='circle'; // 'circle' | 'bar' | 'twin'
+let opt_timer_pos='left';     // 'left' | 'right'
+const TIMER_STYLES=['circle','bar','twin'];
+const TIMER_STYLE_LABELS=['円形','バー','双線'];
+const TIMER_POSITIONS=['left','right'];
+const TIMER_POS_LABELS=['左','右'];
 let heldDir=null; // 現在長押し中の方向
 
 // 部屋進行管理
@@ -1513,99 +1553,107 @@ function drawTurnTimer(){
   const canvas=document.getElementById('turn-timer-canvas');
   if(!canvas) return;
   const ctx=canvas.getContext('2d');
-  const W=88,H=88,cx=W/2,cy=H/2,R=40,r=28;
+  const W=88,H=88;
   ctx.clearRect(0,0,W,H);
 
-  // 経過割合を計算（0〜1）
   let prog=0;
-  if(turnTimer&&_turnStartMs>0){
-    prog=Math.min(1,(Date.now()-_turnStartMs)/1000);
-  }
+  if(turnTimer&&_turnStartMs>0) prog=Math.min(1,(Date.now()-_turnStartMs)/1000);
+  const eColor=opt_colorblind?'rgba(200,160,0,0.9)':'rgba(200,60,40,0.85)';
 
-  // 背景円（黒）
-  ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);
-  ctx.fillStyle='#1a1a18';ctx.fill();
-  ctx.strokeStyle='#333';ctx.lineWidth=1.5;ctx.stroke();
-
-  if(prog>0){
-    // 経過した部分（赤）: 12時方向から時計回り
-    const startAngle=-Math.PI/2;
-    const endAngle=startAngle+prog*Math.PI*2;
-    ctx.beginPath();
-    ctx.moveTo(cx,cy);
-    ctx.arc(cx,cy,R,startAngle,endAngle);
-    ctx.closePath();
-    ctx.fillStyle=opt_colorblind?'rgba(200,160,0,0.9)':'rgba(200,60,40,0.85)';ctx.fill();
-  }
-
-  // 攻撃範囲グリッド（小さな正方形）
-  if(player.weapon){
-    const gs=10; // マスのサイズ(px)
-    const raw=player.weapon.range;
-    const dir=player.dir||'up';
-    const rset=new Set();
-    raw.forEach(([dx,dy])=>{
-      let rx=dx,ry=dy;
-      if(dir==='down'){rx=-dx;ry=-dy;}
-      else if(dir==='right'){rx=-dy;ry=dx;}
-      else if(dir==='left'){rx=dy;ry=-dx;}
-      rset.add(rx+','+ry);
-    });
-    for(let gy=-2;gy<=2;gy++){for(let gx=-2;gx<=2;gx++){
-      const px=cx+gx*gs-gs/2, py=cy+gy*gs-gs/2;
-      const isP=gx===0&&gy===0;
-      const isA=rset.has(gx+','+gy);
-      if(isP){
-        ctx.fillStyle='#1D9E75';
-        ctx.fillRect(px+1,py+1,gs-2,gs-2);
-      } else if(isA){
-        ctx.fillStyle='rgba(74,158,224,0.75)';
-        ctx.fillRect(px+1,py+1,gs-2,gs-2);
-      } else {
-        ctx.fillStyle='rgba(255,255,255,0.06)';
-        ctx.fillRect(px+1,py+1,gs-2,gs-2);
-      }
-    }}
-  }
-
-  // 内側マスク（中央クリア）
-  ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);
-  ctx.fillStyle='#1a1a18';ctx.fill();
-
-  // 赤い四拍子: 3, 6, 9時方向（π/2, π, 3π/2）
-  if(opt_4beat){
-    [Math.PI/2, Math.PI, 3*Math.PI/2].forEach(ang=>{
-      _drawTimerMark(ctx,cx,cy,R,r,ang,'rgba(200,60,40,0.95)',6);
-    });
-  }
-  // 青いトンガリ: 6時方向（裏拍 = 0.5秒）
-  if(opt_timer_beat){
-    // 赤(90°・180°・270°)の間: 45°・135°・225°
-    [Math.PI/4, 3*Math.PI/4, 5*Math.PI/4].forEach(ang=>{
-      _drawTimerMark(ctx,cx,cy,R,r,ang,'rgba(74,158,224,0.95)',7);
-    });
-  }
-
-  // 12時方向のノッチ
-  ctx.beginPath();ctx.moveTo(cx,cy-r+1);ctx.lineTo(cx,cy-R+1);
-  ctx.strokeStyle='rgba(255,255,255,0.25)';ctx.lineWidth=2;ctx.stroke();
+  if(opt_timer_style==='bar') _drawTimerBar(ctx,W,H,prog,eColor);
+  else if(opt_timer_style==='twin') _drawTimerTwin(ctx,W,H,prog,eColor);
+  else _drawTimerCircle(ctx,W,H,prog,eColor);
 
   _timerRafId=requestAnimationFrame(drawTurnTimer);
 }
 
-// タイマーの目印（内向きトンガリ）を描画
-function _drawTimerMark(ctx,cx,cy,R,r,ang,color,size){
-  // 外周の点
-  const ox=cx+R*Math.sin(ang), oy=cy-R*Math.cos(ang);
-  // 内側の左右2点
-  const span=0.18;
-  const lx=cx+(r+3)*Math.sin(ang-span), ly=cy-(r+3)*Math.cos(ang-span);
-  const rx=cx+(r+3)*Math.sin(ang+span), ry=cy-(r+3)*Math.cos(ang+span);
-  ctx.beginPath();
-  ctx.moveTo(ox,oy);ctx.lineTo(lx,ly);ctx.lineTo(rx,ry);
-  ctx.closePath();
-  ctx.fillStyle=color;ctx.fill();
+function _drawTimerCircle(ctx,W,H,prog,eColor){
+  const cx=W/2,cy=H/2,R=40,r=28;
+  ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);
+  ctx.fillStyle='#1a1a18';ctx.fill();
+  ctx.strokeStyle='#333';ctx.lineWidth=1.5;ctx.stroke();
+  if(prog>0){
+    const sa=-Math.PI/2,ea=sa+prog*Math.PI*2;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,R,sa,ea);ctx.closePath();
+    ctx.fillStyle=eColor;ctx.fill();
+  }
+  if(player.weapon){
+    const gs=10,raw=player.weapon.range,dir=player.dir||'up';
+    const rset=new Set();
+    raw.forEach(([dx,dy])=>{
+      let rx=dx,ry=dy;
+      if(dir==='down'){rx=-dx;ry=-dy;}else if(dir==='right'){rx=-dy;ry=dx;}else if(dir==='left'){rx=dy;ry=-dx;}
+      rset.add(rx+','+ry);
+    });
+    for(let gy=-2;gy<=2;gy++)for(let gx=-2;gx<=2;gx++){
+      const px=cx+gx*gs-gs/2,py=cy+gy*gs-gs/2;
+      const isP=gx===0&&gy===0,isA=rset.has(gx+','+gy);
+      ctx.fillStyle=isP?'#1D9E75':isA?'rgba(74,158,224,0.75)':'rgba(255,255,255,0.06)';
+      ctx.fillRect(px+1,py+1,gs-2,gs-2);
+    }
+  }
+  ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fillStyle='#1a1a18';ctx.fill();
+  if(opt_4beat){[Math.PI/2,Math.PI,3*Math.PI/2].forEach(a=>_drawTimerMark(ctx,cx,cy,R,r,a,'rgba(200,60,40,0.95)',6));}
+  if(opt_timer_beat){[Math.PI/4,3*Math.PI/4,5*Math.PI/4].forEach(a=>_drawTimerMark(ctx,cx,cy,R,r,a,'rgba(74,158,224,0.95)',7));}
+  ctx.beginPath();ctx.moveTo(cx,cy-r+1);ctx.lineTo(cx,cy-R+1);
+  ctx.strokeStyle='rgba(255,255,255,0.25)';ctx.lineWidth=2;ctx.stroke();
 }
+
+function _drawTimerBar(ctx,W,H,prog,eColor){
+  const bh=16,by=(H-bh)/2,bx=6,bw=W-12;
+  ctx.fillStyle='#1a1a18';ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='#333';ctx.lineWidth=1.5;ctx.strokeRect(bx,by,bw,bh);
+  if(prog>0){ctx.fillStyle=eColor;ctx.fillRect(bx+1,by+1,Math.max(0,(bw-2)*prog),bh-2);}
+  if(player.weapon){
+    const gs=7,raw=player.weapon.range,dir=player.dir||'up';
+    const rset=new Set();
+    raw.forEach(([dx,dy])=>{let rx=dx,ry=dy;if(dir==='down'){rx=-dx;ry=-dy;}else if(dir==='right'){rx=-dy;ry=dx;}else if(dir==='left'){rx=dy;ry=-dx;}rset.add(rx+','+ry);});
+    const ocx=W/2,ocy=H-20;
+    for(let gy=-2;gy<=2;gy++)for(let gx=-2;gx<=2;gx++){
+      const px=ocx+gx*gs-gs/2,py=ocy+gy*gs-gs/2;
+      const isP=gx===0&&gy===0,isA=rset.has(gx+','+gy);
+      ctx.fillStyle=isP?'#1D9E75':isA?'rgba(74,158,224,0.75)':'rgba(255,255,255,0.05)';
+      ctx.fillRect(px+1,py+1,gs-2,gs-2);
+    }
+  }
+  if(opt_4beat){[0.25,0.5,0.75].forEach(p=>{const x=bx+bw*p;ctx.beginPath();ctx.moveTo(x,by-3);ctx.lineTo(x,by+bh+3);ctx.strokeStyle='rgba(200,60,40,0.7)';ctx.lineWidth=1.5;ctx.stroke();});}
+  if(opt_timer_beat){[0.125,0.375,0.625].forEach(p=>{const x=bx+bw*p;ctx.beginPath();ctx.moveTo(x,by-3);ctx.lineTo(x,by+bh+3);ctx.strokeStyle='rgba(74,158,224,0.7)';ctx.lineWidth=1.5;ctx.stroke();});}
+}
+
+function _drawTimerTwin(ctx,W,H,prog,eColor){
+  ctx.fillStyle='#1a1a18';ctx.fillRect(0,0,W,H);
+  for(let x=8;x<W;x+=8)for(let y=8;y<H;y+=8){ctx.fillStyle='rgba(255,255,255,0.04)';ctx.fillRect(x,y,1,1);}
+  if(player.weapon){
+    const gs=10,raw=player.weapon.range,dir=player.dir||'up';
+    const rset=new Set();
+    raw.forEach(([dx,dy])=>{let rx=dx,ry=dy;if(dir==='down'){rx=-dx;ry=-dy;}else if(dir==='right'){rx=-dy;ry=dx;}else if(dir==='left'){rx=dy;ry=-dx;}rset.add(rx+','+ry);});
+    const cx=W/2,cy=H/2;
+    for(let gy=-2;gy<=2;gy++)for(let gx=-2;gx<=2;gx++){
+      const px=cx+gx*gs-gs/2,py=cy+gy*gs-gs/2;
+      const isP=gx===0&&gy===0,isA=rset.has(gx+','+gy);
+      ctx.fillStyle=isP?'#1D9E75':isA?'rgba(74,158,224,0.6)':'rgba(255,255,255,0.05)';
+      ctx.fillRect(px+1,py+1,gs-2,gs-2);
+    }
+  }
+  const lx=4+(W/2-4)*prog;
+  const rx=W-4-(W/2-4)*prog;
+  const lineH=52,lineY=(H-lineH)/2,lw=5;
+  if(prog<1){
+    ctx.fillStyle='rgba(100,30,20,0.3)';
+    ctx.fillRect(4,lineY,Math.max(0,lx-4),lineH);
+    ctx.fillRect(rx,lineY,Math.max(0,W-4-rx),lineH);
+  }
+  ctx.fillStyle=eColor;
+  ctx.fillRect(lx-lw/2,lineY-2,lw,lineH+4);
+  ctx.fillRect(rx-lw/2,lineY-2,lw,lineH+4);
+  if(prog>0.95){
+    const alpha=(prog-0.95)/0.05;
+    ctx.fillStyle=`rgba(255,255,255,${alpha*0.5})`;
+    ctx.fillRect(W/2-lw*3,lineY-2,lw*6,lineH+4);
+  }
+}
+
+
 function startTimerDraw(){
   if(_timerRafId) cancelAnimationFrame(_timerRafId);
   _timerRafId=requestAnimationFrame(drawTurnTimer);
@@ -1628,6 +1676,7 @@ function startTurnTimer(){
     if(pendingAction){
       // プレイヤーの行動を実行
       const a=pendingAction; pendingAction=null;
+    _updActionDisp(null);
       if(a.type==='move') doMove(a.dir);
       else if(a.type==='attack') doAttack();
       else if(a.type==='wait') waitAction();
@@ -1635,6 +1684,7 @@ function startTurnTimer(){
       // 何も入力がなければ敵だけ動く
       if(phase==='battle') enemyTurn(false);
     }
+    _updActionDisp(null);
     turnPhase='idle';
     if(phase==='battle'&&enemies.length>0) startTurnTimer();
     else stopTimerDraw();
@@ -1643,21 +1693,33 @@ function startTurnTimer(){
 function queueAction(a){
   if(a.type==='move'){
     if(moving) return;
-    if(a.dir) heldDir=a.dir; // 長押し追跡
-    // 振り向き省略OFFかつ方向違い → 即座に振り向くだけ（ターン消費なし）
+    if(a.dir) heldDir=a.dir;
     if(!opt_skip_turn && player.dir!==a.dir){
       player.dir=a.dir; updPl(); render();
       return;
     }
   }
   if(a.type==='attack'){
-    // 方向長押し中 → その方向に向いてから攻撃
     if(heldDir && heldDir!==player.dir){
       player.dir=heldDir; updPl(); render();
     }
   }
   pendingAction=a;
+  _updActionDisp(a); // 入力表示更新
   if(!turnTimer) startTurnTimer();
+}
+function _updActionDisp(a){
+  const el=document.getElementById('action-indicator');
+  if(!el) return;
+  if(!a){ el.textContent='—'; el.className='action-none'; return; }
+  if(a.type==='move'){
+    const arr={up:'↑',down:'↓',left:'←',right:'→'};
+    el.textContent=arr[a.dir]||'↑'; el.className='action-move';
+  } else if(a.type==='attack'){
+    el.textContent='攻'; el.className='action-atk';
+  } else if(a.type==='wait'){
+    el.textContent='機'; el.className='action-wait';
+  }
 }
 
 // ===== キーボード =====
@@ -1795,9 +1857,27 @@ function pollGp(){
 
   // ===== オプション =====
   if(scr==='options'){
-    if(bB||bA)toggleOptions(); // 閉じる
+    const OPT_ROWS=['skip_turn','style','pos','beat','4beat','colorblind'];
+    const rowEls=['opt-row-0','opt-row-1','opt-row-style','opt-row-pos','opt-row-beat','opt-row-4beat','opt-row-cb'];
+    // カーソル初期化
+    if(!_gpOptCursor)_gpOptCursor={idx:0};
+    const rows=document.querySelectorAll('.opt-row');
+    if(dir.up){_gpOptCursor.idx=Math.max(0,_gpOptCursor.idx-1);}
+    if(dir.down){_gpOptCursor.idx=Math.min(rows.length-1,_gpOptCursor.idx+1);}
+    rows.forEach((r,i)=>r.classList.toggle('gp-focus',i===_gpOptCursor.idx));
+    if(bA||dir.right){
+      const row=rows[_gpOptCursor.idx];
+      if(row){
+        const tog=row.querySelector('.tog');
+        const sel=row.querySelector('.opt-sel-btn');
+        if(tog)tog.click();
+        else if(sel)sel.click();
+      }
+    }
+    if(bB)toggleOptions();
     return;
   }
+  let _gpOptCursor=null;
 
   // ===== ゲームオーバー =====
   if(scr==='gameover'){
@@ -1947,6 +2027,20 @@ init();
       _updTog('tog-colorblind',opt_colorblind);
       document.body.classList.toggle('colorblind',opt_colorblind);
     }
+  }
+  function cycleTimerStyle(){
+    const i=(TIMER_STYLES.indexOf(opt_timer_style)+1)%TIMER_STYLES.length;
+    opt_timer_style=TIMER_STYLES[i];
+    const btn=document.getElementById('timer-style-btn');
+    if(btn)btn.textContent=TIMER_STYLE_LABELS[i];
+  }
+  function cycleTimerPos(){
+    const i=(TIMER_POSITIONS.indexOf(opt_timer_pos)+1)%TIMER_POSITIONS.length;
+    opt_timer_pos=TIMER_POSITIONS[i];
+    const unit=document.getElementById('timer-unit');
+    if(unit){unit.className='pos-'+opt_timer_pos;}
+    const btn=document.getElementById('timer-pos-btn');
+    if(btn)btn.textContent=TIMER_POS_LABELS[i];
   }
   function _updTog(id,val){
     const el=document.getElementById(id);
