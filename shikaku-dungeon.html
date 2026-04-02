@@ -19,8 +19,8 @@
     .dev-banner{background:#534AB7;color:#fff;text-align:center;font-size:11px;padding:5px;flex-shrink:0;letter-spacing:.04em;}
     .hd{display:flex;align-items:center;justify-content:space-between;padding:0 12px;background:var(--surface);border-bottom:1px solid var(--border);height:44px;flex-shrink:0;}
     .hd-title{font-size:14px;font-weight:500;}
-    .hd-back{font-size:13px;color:var(--text2);text-decoration:none;padding:4px 8px;}
-    .hd-info{font-size:11px;color:var(--text2);}
+    .hd-back{font-size:13px;font-weight:600;color:#b0b0a8;text-decoration:none;padding:4px 8px;}
+    .hd-info{font-size:12px;font-weight:600;color:#b0b0a8;}
     .opt-btn{background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer;padding:4px 6px;line-height:1;}
     /* オプションオーバーレイ */
     #options-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:300;display:none;align-items:center;justify-content:center;padding:16px;}
@@ -29,11 +29,11 @@
     .opt-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
     .opt-title{font-size:15px;font-weight:500;}
     .opt-close{font-size:18px;color:var(--text3);cursor:pointer;padding:0 4px;}
-    .opt-section{font-size:10px;color:var(--text3);letter-spacing:0.2em;margin:12px 0 6px;border-top:1px solid var(--border);padding-top:10px;}
+    .opt-section{font-size:11px;font-weight:700;color:#8a8a80;letter-spacing:0.2em;margin:12px 0 6px;border-top:1px solid var(--border);padding-top:10px;}
     .opt-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
     .opt-row:last-child{border-bottom:none;}
-    .opt-label{font-size:12px;color:var(--text2);line-height:1.5;}
-    .opt-sub{font-size:10px;color:var(--text3);display:block;margin-top:2px;}
+    .opt-label{font-size:13px;font-weight:600;color:#c0c0b8;line-height:1.5;}
+    .opt-sub{font-size:11px;font-weight:500;color:#8a8a80;display:block;margin-top:2px;}
     /* トグルスイッチ */
     .tog{width:40px;height:22px;border-radius:11px;background:#333;position:relative;cursor:pointer;transition:background 0.2s;flex-shrink:0;}
     .tog.on{background:var(--player);}
@@ -46,14 +46,14 @@
     .demo-badge{font-size:9px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:3px;padding:1px 5px;margin-left:5px;vertical-align:middle;}
     /* HPバー */
     .hp-bar-wrap{flex-shrink:0;padding:4px 12px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
-    .hp-label{font-size:11px;color:var(--text2);width:28px;}
+    .hp-label{font-size:12px;font-weight:600;color:#b0b0a8;width:28px;}
     .hp-track{flex:1;height:10px;background:#333;border-radius:4px;overflow:hidden;position:relative;}
     .hp-fill{height:100%;background:var(--player);border-radius:4px;transition:width 0.5s ease-out;position:relative;z-index:1;}
     .hp-fill.low{background:#E05A4A;}
     .hp-pending{position:absolute;top:0;left:0;height:100%;background:#E05A4A;border-radius:4px;z-index:3;transition:none;}
     @keyframes hp-blink{0%,100%{opacity:1;}30%{opacity:0.1;}60%{opacity:1;}80%{opacity:0.1;}}
     .hp-pending.blink{animation:hp-blink 0.4s ease 4;}
-    .hp-num{font-size:11px;color:var(--text2);min-width:56px;text-align:right;}
+    .hp-num{font-size:12px;font-weight:600;color:#b0b0a8;min-width:56px;text-align:right;}
     /* ビューポート */
     .viewport-outer{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--bg);}
     .viewport{width:calc(var(--cell)*8);height:calc(var(--cell)*8);overflow:hidden;position:relative;}
@@ -112,9 +112,9 @@
     .map-layer.atk-shake{animation:shake-h 0.25s ease;}
     /* メッセージログ */
     .msg-log{flex-shrink:0;background:#111;border-top:1px solid var(--border);padding:6px 10px;display:flex;align-items:center;gap:6px;min-height:34px;cursor:pointer;}
-    .msg-text{flex:1;font-size:12px;color:var(--text2);line-height:1.5;}
+    .msg-text{flex:1;font-size:13px;font-weight:500;color:#b8b8b0;line-height:1.5;}
     @keyframes msg-flash{0%{opacity:0.3;}100%{opacity:1;}}
-    .msg-log-icon{font-size:10px;color:var(--text3);flex-shrink:0;}
+    .msg-log-icon{font-size:11px;font-weight:600;color:#8a8a80;flex-shrink:0;}
     /* ログパネル */
     .log-panel{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.7);display:none;flex-direction:column;justify-content:flex-end;}
     .log-panel.open{display:flex;}
@@ -122,14 +122,14 @@
     .log-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
     .log-title{font-size:13px;font-weight:500;color:var(--text2);}
     .log-close{font-size:18px;color:var(--text3);cursor:pointer;padding:0 4px;}
-    .log-entry{font-size:12px;color:var(--text2);padding:5px 0;border-bottom:1px solid #2a2a28;line-height:1.7;}
+    .log-entry{font-size:13px;font-weight:500;color:#b8b8b0;padding:5px 0;border-bottom:1px solid #2a2a28;line-height:1.8;}
     .log-entry:last-child{border-bottom:none;}
     /* 下部UI */
     .bottom-ui{flex-shrink:0;padding:8px 12px 12px;background:var(--surface);border-top:1px solid var(--border);}
     .weapon-bar{display:flex;align-items:center;gap:6px;margin-bottom:8px;font-size:12px;}
-    .weapon-name{font-weight:500;color:var(--text);flex:1;min-width:0;}
-    .weapon-atk{color:var(--text2);font-size:11px;}
-    .rarity-badge{font-size:10px;padding:1px 7px;border-radius:3px;font-weight:500;flex-shrink:0;}
+    .weapon-name{font-size:13px;font-weight:700;color:#e8e4d8;flex:1;min-width:0;}
+    .weapon-atk{color:#b0b0a8;font-size:12px;font-weight:500;}
+    .rarity-badge{font-size:11px;padding:2px 8px;border-radius:3px;font-weight:700;flex-shrink:0;}
     .rarity-N{background:#333;color:#aaa;}
     .rarity-U{background:rgba(55,138,221,0.25);color:#7DC4F8;}
     .rarity-L{background:rgba(224,184,74,0.25);color:#E0B84A;}
@@ -138,7 +138,7 @@
     .stat-minus{color:#E05A4A;}
     /* ボタン配置：攻撃ボタンを大きく、十字も少し大きく */
     .ctrl-row{display:flex;align-items:center;gap:10px;justify-content:center;}
-    .atk-btn{width:72px;height:72px;border-radius:12px;border:2px solid #4A9EE0;background:rgba(74,158,224,0.12);color:#7DC4F8;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .atk-btn{width:72px;height:72px;border-radius:12px;border:2px solid #4A9EE0;background:rgba(74,158,224,0.12);color:#9DD8FF;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
     .atk-btn:active{background:rgba(74,158,224,0.3);}
     .pause-btn{width:48px;height:48px;border-radius:10px;border:1px solid #444;background:#2e2e2a;color:var(--text2);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
     .pause-btn:active{background:#3e3e38;}
@@ -153,21 +153,21 @@
     .dpad-btn{width:52px;height:52px;border-radius:9px;border:1px solid var(--border);background:#2e2e2a;color:var(--text);font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:rgba(0,0,0,0);}
     .dpad-btn:active{background:#3e3e38;}
     .dpad-btn.empty{background:transparent;border-color:transparent;pointer-events:none;}
-    .dpad-btn.center{background:#1a1a18;font-size:10px;color:var(--text3);}
+    .dpad-btn.center{background:#1a1a18;font-size:11px;font-weight:600;color:#8a8a80;}
     /* オーバーレイ共通 */
     .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;}
     .overlay-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;width:100%;max-width:360px;max-height:90vh;overflow-y:auto;}
     .overlay-title{font-size:16px;font-weight:500;margin-bottom:6px;}
-    .overlay-sub{font-size:12px;color:var(--text2);margin-bottom:16px;line-height:1.7;}
+    .overlay-sub{font-size:13px;font-weight:500;color:#b0b0a8;margin-bottom:16px;line-height:1.85;}
     /* 武器カード */
     .weapon-card{background:#1a1a18;border:1.5px solid var(--border);border-radius:8px;padding:14px;margin-bottom:10px;cursor:pointer;}
     .weapon-card:last-child{margin-bottom:0;}
     .weapon-card:active{border-color:var(--player);}
     .weapon-card-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
-    .weapon-card-name{font-size:15px;font-weight:500;}
-    .weapon-card-stats{font-size:12px;color:var(--text2);line-height:1.8;}
-    .weapon-card-range{font-size:11px;color:var(--text3);margin-top:4px;}
-    .hd-info{font-size:11px;color:var(--text2);}
+    .weapon-card-name{font-size:16px;font-weight:700;color:#f0efe9;}
+    .weapon-card-stats{font-size:13px;font-weight:500;color:#b8b8b0;line-height:1.9;}
+    .weapon-card-range{font-size:12px;font-weight:500;color:#8a8a80;margin-top:4px;}
+    .hd-info{font-size:12px;font-weight:600;color:#b0b0a8;}
     .opt-btn{background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer;padding:4px 6px;line-height:1;}
     /* オプションオーバーレイ */
     #options-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:300;display:none;align-items:center;justify-content:center;padding:16px;}
@@ -176,11 +176,11 @@
     .opt-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
     .opt-title{font-size:15px;font-weight:500;}
     .opt-close{font-size:18px;color:var(--text3);cursor:pointer;padding:0 4px;}
-    .opt-section{font-size:10px;color:var(--text3);letter-spacing:0.2em;margin:12px 0 6px;border-top:1px solid var(--border);padding-top:10px;}
+    .opt-section{font-size:11px;font-weight:700;color:#8a8a80;letter-spacing:0.2em;margin:12px 0 6px;border-top:1px solid var(--border);padding-top:10px;}
     .opt-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
     .opt-row:last-child{border-bottom:none;}
-    .opt-label{font-size:12px;color:var(--text2);line-height:1.5;}
-    .opt-sub{font-size:10px;color:var(--text3);display:block;margin-top:2px;}
+    .opt-label{font-size:13px;font-weight:600;color:#c0c0b8;line-height:1.5;}
+    .opt-sub{font-size:11px;font-weight:500;color:#8a8a80;display:block;margin-top:2px;}
     /* トグルスイッチ */
     .tog{width:40px;height:22px;border-radius:11px;background:#333;position:relative;cursor:pointer;transition:background 0.2s;flex-shrink:0;}
     .tog.on{background:var(--player);}
@@ -194,7 +194,7 @@
     .wpn-stock-area{margin-top:10px;padding:10px 12px;background:#111;border:2px dashed #333;border-radius:8px;min-height:54px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:border-color 0.15s;}
     .wpn-stock-area.has-stock{border-style:solid;border-color:var(--player);}
     .wpn-stock-area.has-stock:active{background:#1a2a1a;}
-    .wpn-stock-empty{font-size:11px;color:var(--text3);letter-spacing:0.1em;}
+    .wpn-stock-empty{font-size:13px;font-weight:500;color:#8a8a80;letter-spacing:0.1em;}
     .wpn-stock-info{flex:1;min-width:0;}
     .wpn-stock-label{font-size:9px;color:var(--player);letter-spacing:0.15em;margin-bottom:3px;}
     .wpn-stock-name{font-size:14px;font-weight:500;color:var(--text);}
@@ -207,12 +207,12 @@
     #wpn-confirm{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:200;align-items:center;justify-content:center;}
     #wpn-confirm.open{display:flex;}
     .wpn-confirm-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px 18px;width:90%;max-width:320px;text-align:center;}
-    .wpn-confirm-title{font-size:13px;color:var(--text2);letter-spacing:0.1em;margin-bottom:6px;}
+    .wpn-confirm-title{font-size:14px;font-weight:600;color:#c8c8c0;letter-spacing:0.1em;margin-bottom:6px;}
     .wpn-confirm-name{font-size:20px;font-weight:700;color:var(--text);margin-bottom:4px;}
-    .wpn-confirm-atk{font-size:12px;color:var(--text3);margin-bottom:18px;}
+    .wpn-confirm-atk{font-size:13px;font-weight:500;color:#8a8a80;margin-bottom:18px;}
     .wpn-confirm-btns{display:flex;gap:10px;}
-    .wpn-confirm-yes{flex:1;padding:11px;border-radius:8px;border:1px solid var(--player);background:none;color:var(--player);font-size:14px;font-weight:500;cursor:pointer;}
-    .wpn-confirm-no{flex:1;padding:11px;border-radius:8px;border:1px solid var(--border);background:none;color:var(--text2);font-size:13px;cursor:pointer;}
+    .wpn-confirm-yes{flex:1;padding:11px;border-radius:8px;border:1px solid var(--player);background:none;color:var(--player);font-size:15px;font-weight:700;cursor:pointer;}
+    .wpn-confirm-no{flex:1;padding:11px;border-radius:8px;border:1px solid #555;background:none;color:#b0b0a8;font-size:14px;font-weight:600;cursor:pointer;}
     /* ターンタイマーcanvas */
     #turn-timer-canvas{flex-shrink:0;display:block;}
 
@@ -239,14 +239,14 @@
     /* ダンジョン選択 */
     #dungeon-select{position:fixed;inset:0;background:#1a1a18;display:none;flex-direction:column;align-items:center;justify-content:center;gap:20px;z-index:9998;padding:24px;}
     #dungeon-select.open{display:flex;}
-    .dungeon-select-title{font-size:14px;color:#9a9a92;letter-spacing:0.3em;}
+    .dungeon-select-title{font-size:16px;font-weight:700;color:#d0d0c8;letter-spacing:0.3em;}
     .dungeon-card{width:100%;max-width:320px;background:#252520;border:1.5px solid #333;border-radius:12px;padding:18px;cursor:pointer;transition:border-color 0.15s,background 0.15s;}
     .dungeon-card:active{background:#2e2e28;border-color:var(--player);}
     .dungeon-card-name{font-size:18px;font-weight:600;color:#f0efe9;margin-bottom:4px;}
     .dungeon-card-diff{font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;display:inline-block;margin-bottom:8px;}
     .diff-normal{background:rgba(29,158,117,0.2);color:#1D9E75;}
     .diff-hard{background:rgba(200,60,40,0.25);color:#E05A3A;}
-    .dungeon-card-desc{font-size:12px;color:#5a5a54;line-height:1.7;}
+    .dungeon-card-desc{font-size:13px;font-weight:500;color:#8a8a80;line-height:1.85;}
   
     /* ===== AdSense 広告 ===== */
     .ad-wrap{
@@ -703,7 +703,25 @@ function render(){
   const as=new Set(ac.map(c=>c.x+','+c.y));
   const alertSet=new Set();
   enemies.filter(e=>e.alertTurn).forEach(e=>{
-    [[0,1],[0,-1],[1,0],[-1,0]].forEach(([dx,dy])=>alertSet.add((e.x+dx)+','+(e.y+dy)));
+    const etd=ENEMY_TYPES[e.type||'axe'];
+    if(etd.style==='aoe8'){
+      // 星: 周囲8マス（斜め含む）
+      for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){
+        if(dx===0&&dy===0)continue;
+        alertSet.add((e.x+dx)+','+(e.y+dy));
+      }
+    }else if(etd.style==='ranged'){
+      // 弓: 同行・同列 range マス
+      for(let d=1;d<=etd.range;d++){
+        alertSet.add((e.x+d)+','+e.y);
+        alertSet.add((e.x-d)+','+e.y);
+        alertSet.add(e.x+','+(e.y+d));
+        alertSet.add(e.x+','+(e.y-d));
+      }
+    }else{
+      // 斧: 上下左右1マス
+      [[0,1],[0,-1],[1,0],[-1,0]].forEach(([dx,dy])=>alertSet.add((e.x+dx)+','+(e.y+dy)));
+    }
   });
 
   for(let y=0;y<mapSize;y++){for(let x=0;x<mapSize;x++){
@@ -1261,7 +1279,16 @@ function gameOver(){
   document.getElementById('gameover-overlay').style.display='flex';
 }
 function restartGame(){
+  // タイマー・状態を完全クリア
+  if(turnTimer){clearTimeout(turnTimer);turnTimer=null;}
+  pendingAction=null;turnPhase='idle';
+  stopTimerDraw();
+  gamePaused=false;
   player.hp=player.maxHp;player.weapon=null;player.burnTurns=0;
+  logEntries=[];
+  lastMsgText='';msgRepeatCount=1;
+  const el=document.getElementById('msg-text');
+  if(el)el.textContent='ダンジョンを選択してください。';
   document.getElementById('gameover-overlay').style.display='none';
   document.getElementById('dungeon-select').classList.add('open');
 }
@@ -1702,8 +1729,37 @@ init();
 
   // ===== オプション操作 =====
   function toggleOptions(){
-    document.getElementById('options-overlay').classList.toggle('open');
+    const overlay=document.getElementById('options-overlay');
+    const isOpen=overlay.classList.contains('open');
+    if(isOpen){
+      // 閉じる → バトル中ならタイマー再開
+      overlay.classList.remove('open');
+      if(phase==='battle'&&enemies.length>0&&!gamePaused){
+        _turnStartMs=Date.now()-Math.max(0,1000-_optPauseRemainingMs);
+        startTimerDraw();
+        turnPhase='waiting';
+        turnTimer=setTimeout(()=>{
+          turnTimer=null;stopTimerDraw();
+          if(pendingAction){const a=pendingAction;pendingAction=null;
+            if(a.type==='move')doMove(a.dir);
+            else if(a.type==='attack')doAttack();
+            else if(a.type==='wait')waitAction();
+          }else{if(phase==='battle')enemyTurn(false);}
+          turnPhase='idle';
+          if(phase==='battle'&&enemies.length>0)startTurnTimer();else stopTimerDraw();
+        },_optPauseRemainingMs||1000);
+      }
+    } else {
+      // 開く → タイマーを止める
+      overlay.classList.add('open');
+      if(turnTimer){
+        _optPauseRemainingMs=Math.max(0,1000-(Date.now()-_turnStartMs));
+        clearTimeout(turnTimer);turnTimer=null;
+      }else{_optPauseRemainingMs=1000;}
+      stopTimerDraw();
+    }
   }
+  let _optPauseRemainingMs=1000;
   function toggleOpt(key){
     if(key==='skip_turn'){ opt_skip_turn=!opt_skip_turn; _updTog('tog-skip-turn',opt_skip_turn); }
     else if(key==='beat'){ opt_timer_beat=!opt_timer_beat; _updTog('tog-beat',opt_timer_beat); }
