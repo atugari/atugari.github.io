@@ -183,6 +183,17 @@
     .pw-key:active{background:#333330;}
     .pw-key.empty{visibility:hidden;}
     .pw-back{font-size:12px;color:#5a5a54;text-decoration:none;letter-spacing:0.1em;margin-top:4px;}
+    /* ダンジョン選択 */
+    #dungeon-select{position:fixed;inset:0;background:#1a1a18;display:none;flex-direction:column;align-items:center;justify-content:center;gap:20px;z-index:9998;padding:24px;}
+    #dungeon-select.open{display:flex;}
+    .dungeon-select-title{font-size:14px;color:#9a9a92;letter-spacing:0.3em;}
+    .dungeon-card{width:100%;max-width:320px;background:#252520;border:1.5px solid #333;border-radius:12px;padding:18px;cursor:pointer;transition:border-color 0.15s,background 0.15s;}
+    .dungeon-card:active{background:#2e2e28;border-color:var(--player);}
+    .dungeon-card-name{font-size:18px;font-weight:600;color:#f0efe9;margin-bottom:4px;}
+    .dungeon-card-diff{font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;display:inline-block;margin-bottom:8px;}
+    .diff-normal{background:rgba(29,158,117,0.2);color:#1D9E75;}
+    .diff-hard{background:rgba(200,60,40,0.25);color:#E05A3A;}
+    .dungeon-card-desc{font-size:12px;color:#5a5a54;line-height:1.7;}
   
     /* ===== AdSense 広告 ===== */
     .ad-wrap{
@@ -229,6 +240,21 @@
     <button class="pw-key" onclick="pwDelete()">削除</button>
   </div>
   <a class="pw-back" href="plaza.html">← 幻実世界の電子遊戯へ戻る</a>
+</div>
+
+<!-- ===== ダンジョン選択画面 ===== -->
+<div id="dungeon-select">
+  <div class="dungeon-select-title">ダンジョン選択</div>
+  <div class="dungeon-card" onclick="selectDungeon('normal')">
+    <div class="dungeon-card-name">仮ダンジョン</div>
+    <span class="dungeon-card-diff diff-normal">難易度：普通</span>
+    <div class="dungeon-card-desc">10×10の広い迷宮。<br>敵の配置はランダム。<br>冒険に慣れるための入門ダンジョン。</div>
+  </div>
+  <div class="dungeon-card" onclick="selectDungeon('hard')">
+    <div class="dungeon-card-name">煉獄迷宮</div>
+    <span class="dungeon-card-diff diff-hard">難易度：鬼</span>
+    <div class="dungeon-card-desc">7×7の密閉迷宮。<br>敵の配置は固定、逃げ場はない。<br>生還者僅少。覚悟を決めよ。</div>
+  </div>
 </div>
 
 <div class="game-wrap">
@@ -363,9 +389,42 @@
 </div>
 
 <script>
-const CELL=44, SAFE=5, MAP=10;
+const CELL=44, SAFE=5, MAP=10, MAP_HARD=7;
 const MOVE_DELAY=400, MOVE_REPEAT=220, MOVE_ANIM=180;
 const SENSE_RANGE=4, ATK_CD=500;
+
+// ===== 煉獄迷宮: 固定部屋データ =====
+// 7x7マップ: プレイヤー(3,5)スタート, 出口(3,0)
+const HARD_ROOMS=[
+  { // 奇襲の間: 星×2+弓×1 中央を分断
+    name:'奇襲の間',
+    pillars:[[1,2],[5,2],[2,4],[4,4]],
+    enemies:[
+      {type:'star',x:2,y:2},{type:'star',x:4,y:2},
+      {type:'bow', x:3,y:1}
+    ]
+  },
+  { // 鉄壁の間: 弓×2+星×1+斧×2 左右を封鎖
+    name:'鉄壁の間',
+    pillars:[[2,2],[4,2],[1,4],[5,4]],
+    enemies:[
+      {type:'bow', x:1,y:1},{type:'bow', x:5,y:1},
+      {type:'star',x:3,y:2},
+      {type:'axe', x:2,y:4},{type:'axe', x:4,y:4}
+    ]
+  },
+  { // 最終試練: 星×2+弓×2+斧×2 全方位殲滅陣
+    name:'最終試練',
+    pillars:[[2,1],[4,1],[1,3],[5,3],[3,4]],
+    enemies:[
+      {type:'star',x:1,y:2},{type:'star',x:5,y:2},
+      {type:'bow', x:3,y:1},{type:'bow', x:0,y:3},
+      {type:'axe', x:2,y:4},{type:'axe', x:4,y:4}
+    ]
+  }
+];
+let dungeonType='normal';
+let hardRoomOrder=[],hardRoomIdx=0;
 
 // 武器定義（レアリティ: N=ノーマル, U=ユニーク, L=レジェンド）
 const WDEFS={
@@ -401,6 +460,7 @@ let weaponRotateTimer=null, wpnRotateIdx=0, wpnRotateList=[];
 // roomStage: 0=safe, 1=branch(AorB), 2=merge(C), 3=boss
 let roomStage=0;
 const ROOM_LABELS=['安全な部屋','部屋 1','部屋 2','ボス部屋'];
+const HARD_ROOM_LABELS=['安全な部屋','の間 1','の間 2','最終試練'];
 
 // ===== 武器生成 =====
 function genWeapon(id){
@@ -423,50 +483,47 @@ function initSafe(){
 }
 
 function initBattle(){
+  if(dungeonType==='hard'){
+    _initHardBattle();
+  } else {
+    _initNormalBattle();
+  }
+}
+
+function _initNormalBattle(){
   mapSize=MAP;
   map=Array.from({length:MAP},()=>Array(MAP).fill(0));
-  // 上端に出口（敵全滅後に有効化）
   map[0][4]=3;
   player.x=4;player.y=MAP-2;player.dir='up';
-
-  // 柱配置（固定パターンからランダム選択）
-  // マップ内部(2〜7)に収め、プレイヤー周辺・出口周辺は除外
-  // 必ず通り道が確保された対称パターン
-  const pillarPatterns = [
-    [[2,3],[7,3],[2,6],[7,6]],          // 左右対称・中央通路あり
-    [[3,2],[6,2],[3,7],[6,7]],          // 上下対称・中央通路あり
-    [[2,2],[7,2],[2,7],[7,7]],          // 四隅・中央完全開放
-    [[3,3],[6,3],[3,6],[6,6]],          // 内側四角・外周通路あり
-    [[2,4],[7,4],[4,2],[4,7]],          // 十字型補助
+  const pillarPatterns=[
+    [[2,3],[7,3],[2,6],[7,6]],
+    [[3,2],[6,2],[3,7],[6,7]],
+    [[2,2],[7,2],[2,7],[7,7]],
+    [[3,3],[6,3],[3,6],[6,6]],
+    [[2,4],[7,4],[4,2],[4,7]],
   ];
-  const pat = pillarPatterns[Math.floor(Math.random()*pillarPatterns.length)];
+  const pat=pillarPatterns[Math.floor(Math.random()*pillarPatterns.length)];
   pat.forEach(([px,py])=>{
-    // プレイヤー周辺・出口周辺・範囲外は除外
-    if(px<0||px>=mapSize||py<0||py>=mapSize) return;
-    if(Math.abs(px-player.x)<=1&&Math.abs(py-player.y)<=1) return;
-    if(Math.abs(px-4)<=1&&py<=1) return; // 出口周辺
-    if(map[py][px]===0) map[py][px]=2;
+    if(px<0||px>=mapSize||py<0||py>=mapSize)return;
+    if(Math.abs(px-player.x)<=1&&Math.abs(py-player.y)<=1)return;
+    if(Math.abs(px-4)<=1&&py<=1)return;
+    if(map[py][px]===0)map[py][px]=2;
   });
-
-  // 敵を上側に配置
   enemies=[];
-  const pos=[];att=0;
+  const pos=[];let att=0;
   while(pos.length<3&&att<100){
     att++;
     const x=2+Math.floor(Math.random()*6),y=1+Math.floor(Math.random()*4);
     if(map[y][x]!==0)continue;
     if(!pos.find(p=>p.x===x&&p.y===y))pos.push({x,y});
   }
-  // 敵タイプをランダムに割り当て
-  const typePool = ['axe','axe','bow','star'];
+  const typePool=['axe','axe','bow','star'];
   pos.forEach((p,i)=>{
-    const tkey = typePool[Math.floor(Math.random()*typePool.length)];
-    const td = ENEMY_TYPES[tkey];
+    const tkey=typePool[Math.floor(Math.random()*typePool.length)];
+    const td=ENEMY_TYPES[tkey];
     enemies.push({id:i,x:p.x,y:p.y,hp:td.hp,maxHp:td.hp,alertTurn:false,prevX:p.x,prevY:p.y,type:tkey,bowCharging:false});
   });
   fireTiles={};trapTiles={};
-
-  // 宝箱配置（2〜3部屋に1個 → 約40%の確率で1個出現）
   if(Math.random()<0.4){
     let cPlaced=0;att=0;
     while(cPlaced<1&&att<100){
@@ -478,6 +535,26 @@ function initBattle(){
       map[cy][cx]=4;cPlaced++;
     }
   }
+  phase='battle';updHd();
+}
+
+function _initHardBattle(){
+  mapSize=MAP_HARD;
+  map=Array.from({length:MAP_HARD},()=>Array(MAP_HARD).fill(0));
+  map[0][3]=3;
+  player.x=3;player.y=MAP_HARD-2;player.dir='up';
+  const room=HARD_ROOMS[hardRoomOrder[hardRoomIdx]];
+  // 固定柱配置
+  room.pillars.forEach(([px,py])=>{
+    if(map[py][px]===0)map[py][px]=2;
+  });
+  // 固定敵配置
+  enemies=[];
+  room.enemies.forEach((ed,i)=>{
+    const td=ENEMY_TYPES[ed.type];
+    enemies.push({id:i,x:ed.x,y:ed.y,hp:td.hp,maxHp:td.hp,alertTurn:false,prevX:ed.x,prevY:ed.y,type:ed.type,bowCharging:false});
+  });
+  fireTiles={};trapTiles={};
   phase='battle';updHd();
 }
 
@@ -907,21 +984,32 @@ function makeWeaponCard(w, btnLabel, onClick, isCurrent=false){
 
 function goNextRoom(){
   roomStage++;
-  if(roomStage===1){
-    // 分岐：AかBかランダム（内部的には同じinitBattle、後でボス前に差別化可能）
-    const route=Math.random()<0.5?'A':'B';
-    showMsg('先へ進む。（ルート '+route+'）');
-    setTimeout(()=>{initBattle();render();},400);
-  } else if(roomStage===2){
-    showMsg('さらに奥へ進む。');
-    setTimeout(()=>{initBattle();render();},400);
-  } else if(roomStage>=3){
-    showMsg('ボスの気配がする...');
-    setTimeout(()=>{initBattle();render();},400);
+  if(dungeonType==='hard'){
+    hardRoomIdx++;
+    if(hardRoomIdx>=HARD_ROOMS.length){
+      // 全部屋クリア
+      showMsg('全ての試練を乗り越えた！煉獄迷宮を制覇した！！');
+      return;
+    }
+    const room=HARD_ROOMS[hardRoomOrder[hardRoomIdx]];
+    showMsg('次の間へ…「'+room.name+'」');
+    setTimeout(()=>{initBattle();render();startTurnTimer();},400);
+  } else {
+    if(roomStage===1){
+      const route=Math.random()<0.5?'A':'B';
+      showMsg('先へ進む。（ルート '+route+'）');
+      setTimeout(()=>{initBattle();render();},400);
+    } else if(roomStage===2){
+      showMsg('さらに奥へ進む。');
+      setTimeout(()=>{initBattle();render();},400);
+    } else if(roomStage>=3){
+      showMsg('ボスの気配がする...');
+      setTimeout(()=>{initBattle();render();},400);
+    }
   }
 }
 
-function startBattle(){initBattle();render();showMsg('敵の部屋に入った！1秒毎にターンが進む。素早く行動しよう！');startTurnTimer();}
+function startBattle(){initBattle();render();showMsg(dungeonType==='hard'?'煉獄へようこそ。生き延びろ。':'敵の部屋に入った！1秒毎にターンが進む。素早く行動しよう！');startTurnTimer();}
 
 // ===== 敵AI =====
 function mdist(ax,ay,bx,by){return Math.abs(ax-bx)+Math.abs(ay-by);}
@@ -1062,10 +1150,9 @@ function gameOver(){
   document.getElementById('gameover-overlay').style.display='flex';
 }
 function restartGame(){
-  player.hp=player.maxHp;player.weapon=null;
+  player.hp=player.maxHp;player.weapon=null;player.burnTurns=0;
   document.getElementById('gameover-overlay').style.display='none';
-  initSafe();render();updHpBar();updWpn();updHd();
-  setTimeout(showWpnOverlay,300);
+  document.getElementById('dungeon-select').classList.add('open');
 }
 
 // ===== UI更新 =====
@@ -1110,9 +1197,15 @@ function updHpBar(dmg=0){
   document.getElementById('hp-num').textContent=newHp+' / '+player.maxHp;
 }
 function updHd(){
-  const label=ROOM_LABELS[roomStage]||'部屋';
-  document.getElementById('hd-info').textContent=
-    phase==='safe'?label:label+' 敵'+enemies.length+'体';
+  let label;
+  if(dungeonType==='hard'&&phase==='battle'){
+    const room=HARD_ROOMS[hardRoomOrder[hardRoomIdx]||0];
+    label=room?room.name:'の間';
+    document.getElementById('hd-info').textContent=label+' 敵'+enemies.length+'体';
+  } else {
+    label=ROOM_LABELS[roomStage]||'部屋';
+    document.getElementById('hd-info').textContent=phase==='safe'?label:label+' 敵'+enemies.length+'体';
+  }
 }
 function updWpn(){
   if(!player.weapon){document.getElementById('weapon-name').textContent='武器未選択';document.getElementById('weapon-atk').textContent='';return;}
@@ -1467,10 +1560,24 @@ init();
   function _pwExecCheck(){
     if(_pCoreValidate(_pwBuf)){
       document.getElementById('pw-screen').classList.add('hidden');
+      document.getElementById('dungeon-select').classList.add('open');
     } else {
       _pwRenderDots('error');
       setTimeout(()=>{ _pwBuf=''; _pwRenderDots(); },700);
     }
+  }
+
+  function selectDungeon(type){
+    dungeonType=type;
+    document.getElementById('dungeon-select').classList.remove('open');
+    if(type==='hard'){
+      // 煉獄迷宮: 部屋順をシャッフル
+      hardRoomOrder=[0,1,2].sort(()=>Math.random()-0.5);
+      hardRoomIdx=0;
+    }
+    player.hp=player.maxHp;player.weapon=null;player.burnTurns=0;
+    initSafe();render();updHpBar();updWpn();updHd();
+    setTimeout(showWpnOverlay,300);
   }
 
 </script>
