@@ -266,6 +266,24 @@
     .diff-normal{background:rgba(29,158,117,0.2);color:#1D9E75;}
     .diff-hard{background:rgba(200,60,40,0.25);color:#E05A3A;}
     .dungeon-card-desc{font-size:13px;font-weight:500;color:#8a8a80;line-height:1.85;}
+    /* ダンジョン選択スクロール */
+    #dungeon-select{overflow-y:auto;}
+    #dungeon-list{width:100%;max-width:360px;display:flex;flex-direction:column;gap:10px;}
+    .dungeon-card.locked{opacity:0.35;pointer-events:none;}
+    .dungeon-card.locked::after{content:'🔒';position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:18px;}
+    .dungeon-card{position:relative;}
+    .diff-1{background:rgba(29,158,117,0.15);color:#4AE0A0;}
+    .diff-2{background:rgba(60,160,80,0.15);color:#4AE080;}
+    .diff-3{background:rgba(120,180,40,0.15);color:#A0D840;}
+    .diff-4{background:rgba(200,160,20,0.15);color:#E0B820;}
+    .diff-5{background:rgba(220,100,20,0.15);color:#E07020;}
+    .diff-6{background:rgba(200,40,40,0.2);color:#E04040;}
+    .diff-7{background:rgba(160,0,200,0.2);color:#C040E0;}
+    /* チュートリアル */
+    .diff-tutorial{background:rgba(74,158,224,0.2);color:#7DC4F8;}
+    /* ダンジョン選択タイトル行 */
+    .dungeon-select-header{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:360px;}
+    .dungeon-select-close{font-size:14px;color:#5a5a54;cursor:pointer;padding:4px 8px;border:1px solid #333;border-radius:6px;}
   
     /* ===== AdSense 広告 ===== */
     .ad-wrap{
@@ -316,17 +334,10 @@
 
 <!-- ===== ダンジョン選択画面 ===== -->
 <div id="dungeon-select">
-  <div class="dungeon-select-title">ダンジョン選択</div>
-  <div class="dungeon-card" onclick="selectDungeon('normal')">
-    <div class="dungeon-card-name">仮ダンジョン</div>
-    <span class="dungeon-card-diff diff-normal">難易度：普通</span>
-    <div class="dungeon-card-desc">10×10の広い迷宮。<br>敵の配置はランダム。<br>冒険に慣れるための入門ダンジョン。</div>
+  <div class="dungeon-select-header">
+    <div class="dungeon-select-title">ダンジョン選択</div>
   </div>
-  <div class="dungeon-card" onclick="selectDungeon('hard')">
-    <div class="dungeon-card-name">煉獄迷宮</div>
-    <span class="dungeon-card-diff diff-hard">難易度：鬼</span>
-    <div class="dungeon-card-desc">7×7の密閉迷宮。<br>敵の配置は固定、逃げ場はない。<br>生還者僅少。覚悟を決めよ。</div>
-  </div>
+  <div id="dungeon-list"></div>
 </div>
 
 <div class="game-wrap">
@@ -564,8 +575,206 @@ const HARD_ROOMS=[
     ]
   }
 ];
+// ===== チュートリアルダンジョン =====
+const TUTORIAL_ROOMS=[
+  {name:"第一歩",size:5,playerStart:[2,4],exit:[2,0],pillars:[],
+   enemies:[{type:"axe",x:2,y:1,hp:20,maxHp:20}],
+   hint:"敵に近づいて攻撃しよう。隣接すると敵が構えをとる（!マーク）。次のターンに攻撃ボタン！"},
+  {name:"柱と攻撃",size:5,playerStart:[2,4],exit:[2,0],pillars:[[1,2],[3,2]],
+   enemies:[{type:"axe",x:1,y:1,hp:20,maxHp:20},{type:"axe",x:3,y:1,hp:20,maxHp:20}],
+   hint:"柱は攻撃を遮断する。柱を避けて射線を作ろう。向きが重要！"},
+  {name:"弓の脅威",size:5,playerStart:[2,4],exit:[2,0],pillars:[[2,2]],
+   enemies:[{type:"bow",x:2,y:1,hp:20,maxHp:20}],
+   hint:"弓は遠距離攻撃！同じ行・列に入ると狙われる。柱に隠れて近づけ。"},
+];
+
+// ===== 全難易度ダンジョン定義 =====
+// r(name,pillars,enemies,size=7,px=3,py=5) / e(type,x,y,hp)
+function _e(t,x,y,hp){const b={axe:40,bow:25,star:55};return {type:t,x,y,hp:hp||(b[t]||40),maxHp:hp||(b[t]||40)};}
+function _r(name,pillars,enemies,size=7,px=3,py=5){return {name,size,playerStart:[px,py],exit:[3,0],pillars,enemies};}
+function _r9(name,pillars,enemies){return {name,size:9,playerStart:[4,7],exit:[4,0],pillars,enemies};}
+function _e9(t,x,y,b=0){const bs={axe:60,bow:40,star:80};return {type:t,x,y,hp:(bs[t]||60)+b,maxHp:(bs[t]||60)+b};}
+
+const DUNGEON_ALL=[
+  // --- チュートリアル (dungeon_id:'tutorial') ---
+  {id:'tutorial',diff:0,name:'チュートリアル',desc:'操作を覚えよう。武器の使い方から敵の種類まで。',mapSize:5,roomCount:3,senseRange:2,
+   diffLabel:'入門',diffClass:'diff-tutorial',rooms:TUTORIAL_ROOMS},
+
+  // --- D1 (id:'d1') ---
+  {id:'d1',diff:1,name:'一歩の迷宮',desc:'最初の試練。\n斧の敵のみ。動きを覚えよう。',mapSize:5,roomCount:3,senseRange:3,
+   diffLabel:'★☆☆☆☆☆☆',diffClass:'diff-1',
+   rooms:[
+    _r("入門の間",[],[_e("axe",2,1)],5,2,3),
+    _r("慣れの間",[],[_e("axe",1,1),_e("axe",3,1)],5,2,3),
+    _r("第一関門",[],[_e("axe",2,1),_e("axe",1,2)],5,2,3),
+    _r("突破口",[],[_e("axe",1,1),_e("axe",3,1),_e("axe",2,2)],5,2,3),
+    _r("卒業試験",[],[_e("axe",1,1),_e("axe",2,1),_e("axe",3,1)],5,2,3),
+   ]},
+
+  // --- D5 ---
+  {id:'d5',diff:5,name:'慣れの迷宮',desc:'柱が増えてきた。\n射線を意識しよう。',mapSize:5,roomCount:3,senseRange:3,
+   diffLabel:'★★☆☆☆☆☆',diffClass:'diff-1',
+   rooms:[
+    _r("柱道",[],[_e("axe",2,1),_e("axe",3,2)],5,2,3),
+    _r("十字路",[[2,2]],[_e("axe",1,1),_e("axe",3,1)],5,2,3),
+    _r("迷路入口",[[1,2],[3,2]],[_e("axe",2,1),_e("axe",1,1)],5,2,3),
+    _r("挟撃",[[2,2]],[_e("axe",0,2),_e("axe",4,2),_e("axe",2,1)],5,2,3),
+    _r("突破",[[1,2],[3,2]],[_e("axe",1,1),_e("axe",2,1),_e("axe",3,2)],5,2,3),
+   ]},
+
+  // --- D10 ---
+  {id:'d10',diff:10,name:'遠射の迷宮',desc:'弓を持つ敵が現れる。\n射線を断て。',mapSize:5,roomCount:3,senseRange:4,
+   diffLabel:'★★★☆☆☆☆',diffClass:'diff-2',
+   rooms:[
+    _r("狙われる",[[2,2]],[_e("bow",2,1)],5,2,3),
+    _r("射線の先",[[2,1]],[_e("bow",2,0),_e("axe",1,2)],5,2,3),
+    _r("遮蔽物",[[1,2],[3,2]],[_e("bow",2,1),_e("axe",0,2)],5,2,3),
+    _r("十字砲火",[],[_e("bow",1,1),_e("bow",3,1)],5,2,3),
+    _r("突破",[[2,2]],[_e("bow",2,1),_e("axe",1,2),_e("axe",3,2)],5,2,3),
+   ]},
+
+  // --- D20 ---
+  {id:'d20',diff:20,name:'拡張の迷宮',desc:'7×7の広い迷宮。\n斥候範囲が広がった。',mapSize:7,roomCount:3,senseRange:4,
+   diffLabel:'★★★★☆☆☆',diffClass:'diff-2',
+   rooms:[
+    _r("広間",[],[_e("axe",3,2),_e("axe",1,2),_e("axe",5,2)]),
+    _r("柱道",[[2,3],[4,3]],[_e("bow",3,1),_e("axe",1,2)]),
+    _r("包囲",[[1,3],[5,3]],[_e("axe",2,1),_e("axe",4,1),_e("axe",3,3)]),
+    _r("弓×2",[[3,3]],[_e("bow",1,1),_e("bow",5,1),_e("axe",3,2)]),
+    _r("乱戦",[[2,2],[4,4]],[_e("axe",1,1),_e("axe",5,1),_e("axe",2,3),_e("bow",3,1)]),
+   ]},
+
+  // --- D30 ---
+  {id:'d30',diff:30,name:'全方位の迷宮',desc:'周囲8マス攻撃の敵が現れる。\n近づかれたら終わり。',mapSize:7,roomCount:3,senseRange:4,
+   diffLabel:'★★★★★☆☆',diffClass:'diff-3',
+   rooms:[
+    _r("初星",[[2,3],[4,3]],[_e("star",3,2)]),
+    _r("星+斧",[[1,3],[5,3]],[_e("star",3,2),_e("axe",1,2),_e("axe",5,2)]),
+    _r("星+弓",[[2,2],[4,2]],[_e("star",3,1),_e("bow",1,3),_e("bow",5,3)]),
+    _r("双星",[],[_e("star",2,2),_e("star",4,2)]),
+    _r("三叉",[[3,2]],[_e("star",3,1),_e("axe",1,2),_e("axe",5,2),_e("bow",0,1)]),
+   ]},
+
+  // --- D40 ---
+  {id:'d40',diff:40,name:'複合の迷宮',desc:'斧・弓・星の複合部屋。\n単純な正面突破は通じない。',mapSize:7,roomCount:4,senseRange:5,
+   diffLabel:'★★★★★★☆',diffClass:'diff-4',
+   rooms:[
+    _r("三種揃い",[[2,3],[4,3]],[_e("axe",1,2),_e("bow",3,1),_e("star",5,2)]),
+    _r("鋏撃",[[2,2],[4,2]],[_e("star",3,1),_e("bow",0,2),_e("bow",6,2)]),
+    _r("迷路",[[1,2],[5,2],[3,4]],[_e("axe",2,1),_e("axe",4,1),_e("star",3,3)]),
+    _r("十字封鎖",[[3,2],[2,3],[4,3]],[_e("bow",3,1),_e("axe",1,3),_e("axe",5,3),_e("star",3,4)]),
+    _r("混沌",[[1,2],[5,2],[3,3]],[_e("star",2,1),_e("star",4,1),_e("bow",3,2),_e("axe",0,3),_e("axe",6,3)]),
+   ]},
+
+  // --- D50 ---
+  {id:'d50',diff:50,name:'均衡の迷宮',desc:'全ての敵が連携して動く。\n一手一手が命取り。',mapSize:7,roomCount:4,senseRange:5,
+   diffLabel:'★★★★★★★',diffClass:'diff-4',
+   rooms:[
+    _r("連鎖",[[2,3],[4,3],[1,1],[5,1]],[_e("bow",3,1),_e("axe",1,2),_e("axe",5,2),_e("star",3,3)]),
+    _r("鎧陣",[[3,3],[1,2],[5,2]],[_e("axe",2,1),_e("axe",4,1),_e("bow",0,2),_e("bow",6,2)]),
+    _r("封鎖陣",[[2,2],[4,2],[3,4]],[_e("star",1,1),_e("star",5,1),_e("bow",3,1),_e("axe",2,3)]),
+    _r("閉鎖空間",[[1,1],[5,1],[1,5],[5,5]],[_e("star",3,2),_e("axe",2,3),_e("axe",4,3),_e("bow",3,1)]),
+    _r("殲滅",[[2,3],[4,3],[3,2]],[_e("star",1,2),_e("star",5,2),_e("bow",3,1),_e("axe",2,4),_e("axe",4,4)]),
+    _r("要塞",[[1,2],[5,2],[3,1],[3,5]],[_e("bow",1,1),_e("bow",5,1),_e("star",3,3),_e("axe",0,3),_e("axe",6,3)]),
+   ]},
+
+  // --- D60 ---
+  {id:'d60',diff:60,name:'圧迫の迷宮',desc:'逃げ場が狭くなる。\n煉獄の手前。',mapSize:7,roomCount:4,senseRange:5,
+   diffLabel:'☠☠☠☠☠☠☆',diffClass:'diff-5',
+   rooms:[
+    _r("圧迫",[[1,2],[5,2],[3,1]],[_e("star",2,1),_e("star",4,1),_e("bow",3,2),_e("axe",1,3),_e("axe",5,3)]),
+    _r("封印",[[2,2],[4,2],[2,4],[4,4]],[_e("bow",1,1),_e("bow",5,1),_e("star",3,3)]),
+    _r("挟み撃ち",[[3,2],[1,3],[5,3]],[_e("axe",2,1),_e("axe",4,1),_e("bow",0,2),_e("bow",6,2),_e("star",3,1)]),
+    _r("要害",[[2,1],[4,1],[2,5],[4,5]],[_e("star",1,3),_e("star",5,3),_e("bow",3,1),_e("axe",3,4)]),
+    _r("絶壁",[[1,2],[5,2],[3,2],[1,4],[5,4]],[_e("star",2,1),_e("star",4,1),_e("bow",3,3),_e("axe",0,4),_e("axe",6,4)]),
+    _r("地獄門",[[2,3],[4,3],[1,1],[5,1]],[_e("bow",2,1),_e("bow",4,1),_e("star",1,3),_e("star",5,3),_e("axe",3,5)]),
+   ]},
+
+  // --- D70: 煉獄迷宮（既存HARD_ROOMSを流用） ---
+  {id:'hard',diff:70,name:'煉獄迷宮',desc:'7×7の密閉迷宮。\n敵の配置は固定、逃げ場はない。\n生還者僅少。覚悟を決めよ。',mapSize:7,roomCount:3,senseRange:5,
+   diffLabel:'☠☠☠☠☠☠☠',diffClass:'diff-hard',rooms:[]},
+
+  // --- D75 ---
+  {id:'d75',diff:75,name:'深淵の入り口',desc:'9×9の広大な迷宮。\n敵の数が増える。',mapSize:9,roomCount:4,senseRange:6,
+   diffLabel:'👁👁👁👁☆☆☆',diffClass:'diff-6',
+   rooms:[
+    _r9("九宮格",[[2,2],[6,2],[2,6],[6,6]],[_e9("star",4,2),_e9("axe",2,4),_e9("axe",6,4),_e9("bow",1,1),_e9("bow",7,1)]),
+    _r9("蜘蛛陣",[[3,3],[5,3],[3,5],[5,5]],[_e9("bow",1,1),_e9("bow",7,1),_e9("star",4,4),_e9("axe",2,2),_e9("axe",6,2)]),
+    _r9("螺旋",[[2,2],[6,2],[4,4],[2,6],[6,6]],[_e9("star",1,3),_e9("star",7,3),_e9("bow",4,1),_e9("axe",3,5),_e9("axe",5,5)]),
+    _r9("崩壊",[[1,2],[7,2],[4,3],[1,6],[7,6]],[_e9("bow",2,1),_e9("bow",6,1),_e9("star",4,2),_e9("star",1,5),_e9("star",7,5)]),
+    _r9("終末",[[2,3],[6,3],[4,2],[2,6],[6,6],[4,5]],[_e9("star",1,2),_e9("star",7,2),_e9("bow",3,1),_e9("bow",5,1),_e9("axe",4,4),_e9("axe",2,5),_e9("axe",6,5)]),
+   ]},
+
+  // --- D80 ---
+  {id:'d80',diff:80,name:'深淵',desc:'敵の斥候が広範囲に及ぶ。\nほぼ逃げ場なし。',mapSize:9,roomCount:4,senseRange:6,
+   diffLabel:'👁👁👁👁👁☆☆',diffClass:'diff-6',
+   rooms:[
+    _r9("業炎",[[2,2],[6,2],[4,4],[2,6],[6,6]],[_e9("star",1,1,20),_e9("star",7,1,20),_e9("bow",4,1),_e9("bow",0,4),_e9("bow",8,4)]),
+    _r9("絶命",[[3,2],[5,2],[3,6],[5,6],[4,4]],[_e9("star",2,3,20),_e9("star",6,3,20),_e9("bow",4,1),_e9("axe",1,2),_e9("axe",7,2),_e9("axe",4,5)]),
+    _r9("万死",[[1,2],[7,2],[1,6],[7,6],[4,3]],[_e9("star",2,1,20),_e9("star",6,1,20),_e9("bow",1,4),_e9("bow",7,4),_e9("star",4,5,20)]),
+    _r9("奈落",[[2,2],[6,2],[4,4],[2,6],[6,6]],[_e9("bow",3,1),_e9("bow",5,1),_e9("star",1,3,20),_e9("star",7,3,20),_e9("star",4,2,20),_e9("axe",4,6)]),
+    _r9("冥府",[[3,3],[5,3],[3,5],[5,5],[1,1],[7,1],[1,7],[7,7]],[_e9("star",2,2,30),_e9("star",6,2,30),_e9("star",2,6,30),_e9("star",6,6,30),_e9("bow",4,1),_e9("bow",4,7)]),
+   ]},
+
+  // --- D90 ---
+  {id:'d90',diff:90,name:'絶望の迷宮',desc:'生存率極低。\n全ての手を尽くせ。',mapSize:9,roomCount:5,senseRange:7,
+   diffLabel:'👁👁👁👁👁👁☆',diffClass:'diff-7',
+   rooms:[
+    _r9("絶望の入口",[[2,2],[6,2],[4,4],[2,6],[6,6],[0,2],[8,2]],[_e9("star",1,1,40),_e9("star",7,1,40),_e9("bow",3,1),_e9("bow",5,1),_e9("star",4,3,40),_e9("axe",0,5),_e9("axe",8,5)]),
+    _r9("万策尽きる",[[3,2],[5,2],[3,6],[5,6],[1,4],[7,4],[4,1]],[_e9("bow",2,1),_e9("bow",6,1),_e9("star",1,3,40),_e9("star",7,3,40),_e9("star",4,5,40),_e9("axe",3,7),_e9("axe",5,7)]),
+    _r9("阿鼻叫喚",[[2,2],[6,2],[4,3],[2,6],[6,6],[0,4],[8,4]],[_e9("star",1,1,40),_e9("star",7,1,40),_e9("bow",1,4),_e9("bow",7,4),_e9("bow",4,1),_e9("star",4,6,40),_e9("axe",3,5),_e9("axe",5,5)]),
+   ]},
+
+  // --- D100 ---
+  {id:'d100',diff:100,name:'真・煉獄',desc:'全てを凌ぐ最終試練。\nここを制する者は殿堂入り。',mapSize:9,roomCount:5,senseRange:8,
+   diffLabel:'💀💀💀💀💀💀💀',diffClass:'diff-hard',
+   rooms:[
+    _r9("絶対絶命",[[1,1],[7,1],[1,7],[7,7],[4,2],[4,6],[2,4],[6,4]],[_e9("star",2,2,60),_e9("star",6,2,60),_e9("bow",4,1),_e9("bow",0,4),_e9("bow",8,4),_e9("star",2,6,60),_e9("star",6,6,60)]),
+    _r9("神の試練",[[2,1],[6,1],[2,7],[6,7],[4,4]],[_e9("bow",3,1),_e9("bow",5,1),_e9("star",1,3,60),_e9("star",7,3,60),_e9("star",1,5,60),_e9("star",7,5,60),_e9("axe",4,3)]),
+    _r9("最後の審判",[[2,2],[6,2],[4,4],[2,6],[6,6],[0,2],[8,2],[0,6],[8,6]],[_e9("star",1,1,80),_e9("star",7,1,80),_e9("star",1,7,80),_e9("star",7,7,80),_e9("bow",4,1),_e9("bow",0,4),_e9("bow",8,4),_e9("axe",4,6)]),
+   ]},
+];
+
+// ===== 解放状態管理 =====
+function getUnlocked(){
+  try{return JSON.parse(localStorage.getItem('sq_unlocked')||'["tutorial","d1"]');}
+  catch{return ['tutorial','d1'];}
+}
+function saveUnlocked(ids){localStorage.setItem('sq_unlocked',JSON.stringify([...new Set(ids)]));}
+function unlockNext(clearedId){
+  const unlocked=getUnlocked();
+  const idx=DUNGEON_ALL.findIndex(d=>d.id===clearedId);
+  if(idx>=0&&idx<DUNGEON_ALL.length-1){
+    const nextId=DUNGEON_ALL[idx+1].id;
+    if(!unlocked.includes(nextId)){
+      unlocked.push(nextId);
+      saveUnlocked(unlocked);
+    }
+  }
+}
+
+// ===== ダンジョン選択リスト描画 =====
+function renderDungeonList(){
+  const list=document.getElementById('dungeon-list');
+  if(!list)return;
+  const unlocked=getUnlocked();
+  list.innerHTML='';
+  DUNGEON_ALL.forEach(d=>{
+    const isLocked=!unlocked.includes(d.id);
+    const card=document.createElement('div');
+    card.className='dungeon-card'+(isLocked?' locked':'');
+    card.innerHTML=
+      '<div class="dungeon-card-name">'+d.name+'</div>'+
+      '<span class="dungeon-card-diff '+d.diffClass+'">'+d.diffLabel+'</span>'+
+      '<div class="dungeon-card-desc">'+d.desc.replace(/\n/g,'<br>')+'</div>';
+    if(!isLocked) card.onclick=()=>selectDungeon(d.id);
+    list.appendChild(card);
+  });
+}
+
 let dungeonType='normal';
 let hardRoomOrder=[],hardRoomIdx=0;
+let currentDungeon=null;
 
 // 武器定義（レアリティ: N=ノーマル, U=ユニーク, L=レジェンド）
 const WDEFS={
@@ -634,11 +843,38 @@ function initSafe(){
 }
 
 function initBattle(){
-  if(dungeonType==='hard'){
-    _initHardBattle();
-  } else {
-    _initNormalBattle();
-  }
+  if(dungeonType==='hard') _initHardBattle();
+  else if(dungeonType==='tutorial'||dungeonType==='ranked') _initRankedBattle();
+  else _initNormalBattle();
+}
+function _initRankedBattle(){
+  const dng=currentDungeon;
+  if(!dng||!dng.rooms||dng.rooms.length===0){_initNormalBattle();return;}
+  const roomIdx=hardRoomOrder[hardRoomIdx];
+  const room=dng.rooms[roomIdx];
+  if(!room){_initNormalBattle();return;}
+  const ms=room.size||dng.mapSize||7;
+  mapSize=ms;
+  map=Array.from({length:ms},()=>Array(ms).fill(0));
+  // 出口
+  const ex=room.exit||[Math.floor(ms/2),0];
+  map[ex[1]][ex[0]]=3;
+  // プレイヤー
+  const ps=room.playerStart||[Math.floor(ms/2),ms-2];
+  player.x=ps[0];player.y=ps[1];player.dir='up';
+  // 柱
+  (room.pillars||[]).forEach(([px,py])=>{if(map[py]&&map[py][px]===0)map[py][px]=2;});
+  // 敵
+  enemies=[];
+  const sense=dng.senseRange||4;
+  (room.enemies||[]).forEach((ed,i)=>{
+    enemies.push({id:i,x:ed.x,y:ed.y,hp:ed.hp,maxHp:ed.maxHp,alertTurn:false,prevX:ed.x,prevY:ed.y,type:ed.type||'axe',bowCharging:false,senseRange:sense});
+  });
+  fireTiles={};trapTiles={};
+  phase='battle';
+  // ヒントメッセージ（チュートリアルのみ）
+  if(room.hint)setTimeout(()=>showMsg(room.hint),400);
+  updHd();
 }
 
 function _initNormalBattle(){
@@ -1157,17 +1393,33 @@ function goNextRoom(){
   if(dungeonType==='hard'){
     hardRoomIdx++;
     if(hardRoomIdx>=HARD_ROOMS.length){
-      // 全部屋クリア
+      unlockNext('hard');
       showMsg('全ての試練を乗り越えた！煉獄迷宮を制覇した！！');
       return;
     }
     const room=HARD_ROOMS[hardRoomOrder[hardRoomIdx]];
     showMsg('次の間へ…「'+room.name+'」');
     setTimeout(()=>{initBattle();render();startTurnTimer();},400);
+  } else if(dungeonType==='tutorial'||dungeonType==='ranked'){
+    hardRoomIdx++;
+    const dng=currentDungeon;
+    if(!dng||hardRoomIdx>=hardRoomOrder.length){
+      // クリア
+      unlockNext(dng?dng.id:'d1');
+      const msg=dungeonType==='tutorial'?'チュートリアル完了！冒険の準備ができた！':dng.name+'をクリア！次のダンジョンが解放された！';
+      showMsg(msg);
+      setTimeout(()=>{
+        document.getElementById('dungeon-select').classList.add('open');
+        renderDungeonList();
+      },1500);
+      return;
+    }
+    const room=dng.rooms[hardRoomOrder[hardRoomIdx]];
+    showMsg('次の間へ…「'+room.name+'」');
+    setTimeout(()=>{initBattle();render();startTurnTimer();},400);
   } else {
     if(roomStage===1){
-      const route=Math.random()<0.5?'A':'B';
-      showMsg('先へ進む。（ルート '+route+'）');
+      showMsg('先へ進む。');
       setTimeout(()=>{initBattle();render();},400);
     } else if(roomStage===2){
       showMsg('さらに奥へ進む。');
@@ -1214,6 +1466,7 @@ function enemyTurn(playerMoved=false){
   enemies.forEach(e=>{
     e.prevX=e.x;e.prevY=e.y;
     const dist=mdist(e.x,e.y,player.x,player.y);
+    const eSense=e.senseRange||SENSE_RANGE;
     const adj=dist===1;
 
     const td=ENEMY_TYPES[e.type||'axe'];
@@ -1247,7 +1500,7 @@ function enemyTurn(playerMoved=false){
 
     } else {
       e.wasAdjacent=false;e.alertTurn=false;
-      if(dist<=SENSE_RANGE)moveToward(e);else wander(e);
+      if(dist<=eSense)moveToward(e);else wander(e);
     }
   });
 
@@ -1339,6 +1592,7 @@ function restartGame(){
   const el=document.getElementById('msg-text');
   if(el)el.textContent='ダンジョンを選択してください。';
   document.getElementById('gameover-overlay').style.display='none';
+  renderDungeonList();
   document.getElementById('dungeon-select').classList.add('open');
 }
 
@@ -1384,13 +1638,18 @@ function updHpBar(dmg=0){
   document.getElementById('hp-num').textContent=newHp+' / '+player.maxHp;
 }
 function updHd(){
-  let label;
-  if(dungeonType==='hard'&&phase==='battle'){
+  if(phase==='safe'){
+    const dname=currentDungeon?currentDungeon.name:'安全な部屋';
+    document.getElementById('hd-info').textContent=dname;
+  } else if(dungeonType==='hard'){
     const room=HARD_ROOMS[hardRoomOrder[hardRoomIdx]||0];
-    label=room?room.name:'の間';
-    document.getElementById('hd-info').textContent=label+' 敵'+enemies.length+'体';
+    document.getElementById('hd-info').textContent=(room?room.name:'の間')+' 敵'+enemies.length+'体';
+  } else if(currentDungeon&&(dungeonType==='tutorial'||dungeonType==='ranked')){
+    const ri=hardRoomOrder[hardRoomIdx];
+    const room=currentDungeon.rooms[ri];
+    document.getElementById('hd-info').textContent=(room?room.name:'部屋')+' 敵'+enemies.length+'体';
   } else {
-    label=ROOM_LABELS[roomStage]||'部屋';
+    const label=ROOM_LABELS[roomStage]||'部屋';
     document.getElementById('hd-info').textContent=phase==='safe'?label:label+' 敵'+enemies.length+'体';
   }
 }
@@ -2103,6 +2362,7 @@ init();
   function _pwExecCheck(){
     if(_pCoreValidate(_pwBuf)){
       document.getElementById('pw-screen').classList.add('hidden');
+      renderDungeonList();
       document.getElementById('dungeon-select').classList.add('open');
     } else {
       _pwRenderDots('error');
@@ -2110,12 +2370,20 @@ init();
     }
   }
 
-  function selectDungeon(type){
-    dungeonType=type;
+  function selectDungeon(id){
+    const dng=DUNGEON_ALL.find(d=>d.id===id);
+    if(!dng)return;
+    currentDungeon=dng;
+    dungeonType=id==='hard'?'hard':(id==='tutorial'?'tutorial':'ranked');
     document.getElementById('dungeon-select').classList.remove('open');
-    if(type==='hard'){
-      // 煉獄迷宮: 部屋順をシャッフル
+    if(id==='hard'){
       hardRoomOrder=[0,1,2].sort(()=>Math.random()-0.5);
+      hardRoomIdx=0;
+    } else if(dng.rooms&&dng.rooms.length>0){
+      // プールからroomCount個をランダム選出
+      const pool=[...dng.rooms.keys()];
+      pool.sort(()=>Math.random()-0.5);
+      hardRoomOrder=pool.slice(0,Math.min(dng.roomCount,pool.length));
       hardRoomIdx=0;
     }
     player.hp=player.maxHp;player.weapon=null;player.burnTurns=0;
