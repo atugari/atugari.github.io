@@ -23,8 +23,9 @@
     .hd-info{font-size:12px;font-weight:600;color:#b0b0a8;}
     .opt-btn{background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer;padding:4px 6px;line-height:1;}
     /* オプションオーバーレイ */
-    #options-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:300;display:none;align-items:center;justify-content:center;padding:16px;}
+    #options-overlay{position:fixed;top:0;left:0;right:0;bottom:45%;background:rgba(0,0,0,0.88);z-index:300;display:none;align-items:flex-end;justify-content:center;padding:8px 16px;overflow-y:auto;}
     #options-overlay.open{display:flex;}
+    .opt-box{width:100%;max-width:480px;max-height:100%;overflow-y:auto;}
     .opt-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;width:100%;max-width:320px;}
     .opt-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
     .opt-title{font-size:15px;font-weight:500;}
@@ -147,7 +148,7 @@
     .dpad{order:1;}
     .atk-col{order:2;}
     /* アクションインジケータ */
-    #action-indicator{font-size:18px;font-weight:700;min-width:32px;text-align:center;line-height:1;padding:2px 4px;border-radius:5px;transition:color 0.1s,background 0.1s;}
+    #action-indicator{font-size:32px;font-weight:900;min-width:44px;text-align:center;line-height:1;padding:4px 6px;border-radius:8px;transition:color 0.15s,background 0.15s;letter-spacing:0;}
     #action-indicator.action-none{color:#444;background:transparent;}
     #action-indicator.action-move{color:#f0efe9;background:rgba(29,158,117,0.25);}
     #action-indicator.action-atk{color:#9DD8FF;background:rgba(74,158,224,0.2);}
@@ -162,10 +163,10 @@
     .pause-btn{width:48px;height:48px;border-radius:10px;border:1px solid #444;background:#2e2e2a;color:var(--text2);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
     .pause-btn:active{background:#3e3e38;}
     /* 一時停止オーバーレイ */
-    #pause-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:400;display:none;align-items:center;justify-content:center;}
+    #pause-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.97);z-index:400;display:none;align-items:center;justify-content:center;}
     #pause-overlay.open{display:flex;}
-    .pause-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:30px 24px;text-align:center;width:80%;max-width:260px;}
-    .pause-title{font-size:18px;font-weight:600;color:var(--text);margin-bottom:20px;letter-spacing:0.1em;}
+    .pause-box{background:rgba(10,10,8,0.97);text-align:center;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;}
+    .pause-title{font-size:32px;font-weight:900;color:var(--text);letter-spacing:0.3em;}
     .pause-resume{width:100%;padding:12px;border-radius:8px;border:1px solid var(--player);background:none;color:var(--player);font-size:14px;font-weight:500;cursor:pointer;margin-bottom:10px;}
     .pause-resume:active{background:rgba(29,158,117,0.15);}
     .dpad{display:grid;grid-template-columns:repeat(3,52px);grid-template-rows:repeat(3,52px);gap:3px;}
@@ -189,8 +190,9 @@
     .hd-info{font-size:12px;font-weight:600;color:#b0b0a8;}
     .opt-btn{background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer;padding:4px 6px;line-height:1;}
     /* オプションオーバーレイ */
-    #options-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:300;display:none;align-items:center;justify-content:center;padding:16px;}
+    #options-overlay{position:fixed;top:0;left:0;right:0;bottom:45%;background:rgba(0,0,0,0.88);z-index:300;display:none;align-items:flex-end;justify-content:center;padding:8px 16px;overflow-y:auto;}
     #options-overlay.open{display:flex;}
+    .opt-box{width:100%;max-width:480px;max-height:100%;overflow-y:auto;}
     .opt-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;width:100%;max-width:320px;}
     .opt-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
     .opt-title{font-size:15px;font-weight:500;}
@@ -221,6 +223,10 @@
     .wpn-stock-hint{font-size:10px;color:var(--text3);margin-top:2px;}
     /* ローテーション武器カード */
     .weapon-card.rotating{border-style:dashed;opacity:0.85;}
+    .weapon-card.gp-sel{border-color:var(--player);border-style:solid;opacity:1;}
+    .weapon-card.gp-sel::before{content:'▶';position:absolute;left:-18px;top:50%;transform:translateY(-50%);color:var(--player);font-size:14px;}
+    .wpn-stock-area.gp-sel{border-color:var(--player) !important;border-style:solid !important;}
+    .wpn-stock-area.gp-sel::before{content:'▶';position:absolute;left:-18px;top:50%;transform:translateY(-50%);color:var(--player);font-size:14px;}
     .weapon-card.rotating:active{border-color:rgba(200,168,90,0.6);}
     /* 確認ダイアログ */
     #wpn-confirm{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:200;align-items:center;justify-content:center;}
@@ -255,6 +261,27 @@
     .pw-key:active{background:#333330;}
     .pw-key.empty{visibility:hidden;}
     .pw-back{font-size:12px;color:#5a5a54;text-decoration:none;letter-spacing:0.1em;margin-top:4px;}
+    /* ニックネーム入力 */
+    #nick-screen{position:fixed;inset:0;background:#1a1a18;display:none;flex-direction:column;align-items:center;justify-content:center;gap:20px;z-index:9997;padding:24px;}
+    #nick-screen.open{display:flex;}
+    .nick-title{font-size:15px;font-weight:700;color:#c8c8c0;letter-spacing:0.2em;}
+    .nick-sub{font-size:12px;color:#5a5a54;letter-spacing:0.1em;text-align:center;line-height:1.9;}
+    .nick-input{width:240px;max-width:80vw;padding:12px 16px;background:#252520;border:1.5px solid #444;border-radius:10px;color:#f0efe9;font-size:18px;font-family:sans-serif;text-align:center;outline:none;}
+    .nick-input:focus{border-color:#c8a85a;}
+    .nick-btn{padding:12px 36px;border-radius:10px;border:1px solid var(--player);background:none;color:var(--player);font-size:14px;font-weight:700;cursor:pointer;letter-spacing:0.1em;}
+    .nick-btn:active{background:rgba(29,158,117,0.15);}
+    /* 殿堂入りモーダル */
+    #halloffame-modal{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9996;display:none;align-items:center;justify-content:center;padding:16px;}
+    #halloffame-modal.open{display:flex;}
+    .hof-box{background:#1a1a18;border:1px solid #444;border-radius:14px;padding:22px 18px;width:100%;max-width:360px;max-height:85vh;overflow-y:auto;}
+    .hof-title{font-size:18px;font-weight:900;color:#c8a85a;letter-spacing:0.2em;text-align:center;margin-bottom:16px;}
+    .hof-entry{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid #2a2a28;font-size:13px;}
+    .hof-entry:last-child{border-bottom:none;}
+    .hof-rank{width:28px;font-weight:700;color:#8a8a80;flex-shrink:0;text-align:center;}
+    .hof-name{flex:1;color:#e8e4d8;font-weight:500;}
+    .hof-date{font-size:10px;color:#5a5a54;}
+    .hof-empty{text-align:center;color:#5a5a54;font-size:12px;padding:20px;}
+    .hof-close{display:block;margin:16px auto 0;padding:9px 28px;border-radius:8px;border:1px solid #444;background:none;color:#8a8a80;font-size:13px;cursor:pointer;}
     /* ダンジョン選択 */
     #dungeon-select{position:fixed;inset:0;background:#1a1a18;display:none;flex-direction:column;align-items:center;justify-content:center;gap:20px;z-index:9998;padding:24px;}
     #dungeon-select.open{display:flex;}
@@ -332,10 +359,31 @@
   <a class="pw-back" href="plaza.html">← 幻実世界の電子遊戯へ戻る</a>
 </div>
 
+<!-- ===== ニックネーム入力画面 ===== -->
+<div id="nick-screen">
+  <div class="nick-title">ようこそ、四角迷宮へ</div>
+  <div class="nick-sub">あなたの名前を教えてください。<br>殿堂入り・ランキングに使用されます。</div>
+  <input type="text" id="nick-input-field" class="nick-input" maxlength="12" placeholder="ニックネーム（12文字以内）">
+  <button class="nick-btn" onclick="submitNick()">冒険を始める</button>
+</div>
+
+<!-- ===== 殿堂入りモーダル ===== -->
+<div id="halloffame-modal">
+  <div class="hof-box">
+    <div class="hof-title">🏆 殿堂入り</div>
+    <div id="hof-list"></div>
+    <button class="hof-close" onclick="closeHof()">閉じる</button>
+  </div>
+</div>
+
 <!-- ===== ダンジョン選択画面 ===== -->
 <div id="dungeon-select">
   <div class="dungeon-select-header">
     <div class="dungeon-select-title">ダンジョン選択</div>
+    <button onclick="showHof()" style="background:none;border:1px solid #444;color:#8a8a80;font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:sans-serif;">🏆 殿堂</button>
+  </div>
+  <div style="text-align:right;width:100%;max-width:360px;margin-bottom:4px;">
+    <a href="dungeon-ranking.html" style="font-size:11px;color:#8a7040;text-decoration:none;letter-spacing:0.05em;">📊 ランキングを見る →</a>
   </div>
   <div id="dungeon-list"></div>
 </div>
@@ -354,8 +402,8 @@
 </div>
 <div class="dev-banner">現在開発中のゲームです。内容は変更される場合があります</div>
   <div class="hd">
-    <a class="hd-back" href="index.html">← 戻る</a>
-    <span class="hd-title">四角迷宮<span class="demo-badge">試作版</span></span>
+    <a class="hd-back" href="#" onclick="giveUp();return false;">諦める</a>
+    <span class="hd-title" id="hd-title">四角迷宮</span>
     <span style="display:flex;align-items:center;gap:4px;">
       <span class="hd-info" id="hd-info">安全な部屋</span>
       <button class="opt-btn" onclick="toggleOptions()">⚙</button>
@@ -446,16 +494,24 @@
       <button class="opt-sel-btn" id="timer-pos-btn" onclick="cycleTimerPos()">左</button>
     </div>
     <div class="opt-row" id="opt-row-beat">
-      <div class="opt-label">青いトンガリ（裏拍）
-        <span class="opt-sub">45°・135°・225°に青い目印</span>
+      <div class="opt-label">裏拍マーカー（青）
+        <span class="opt-sub">45°・135°・225°・315°の4か所に青い目印</span>
       </div>
       <div class="tog" id="tog-beat" onclick="toggleOpt('beat')"><div class="tog-knob"></div></div>
     </div>
     <div class="opt-row" id="opt-row-4beat">
-      <div class="opt-label">赤い四拍子
-        <span class="opt-sub">下・左・右の3拍位置に赤い目印</span>
+      <div class="opt-label">拍子マーカー（赤）
+        <span class="opt-sub">3時・6時・9時の3か所に赤い目印</span>
       </div>
       <div class="tog" id="tog-4beat" onclick="toggleOpt('4beat')"><div class="tog-knob"></div></div>
+    </div>
+    <!-- ボタン設定 -->
+    <div class="opt-section">ボタン設定（コントローラー）</div>
+    <div class="opt-row">
+      <div class="opt-label">Aボタン（攻撃）とBボタン（待機）を入れ替え
+        <span class="opt-sub">入れ替えるとA=待機、B=攻撃になる</span>
+      </div>
+      <div class="tog" id="tog-swap-ab" onclick="toggleOpt('swap_ab')"><div class="tog-knob"></div></div>
     </div>
     <!-- アクセシビリティ -->
     <div class="opt-section">アクセシビリティ</div>
@@ -736,14 +792,68 @@ const DUNGEON_ALL=[
 ];
 
 // ===== 解放状態管理 =====
-function getUnlocked(){
+// ===== Firebase設定 =====
+const DB_URL='https://ad-game-7b40a-default-rtdb.asia-southeast1.firebasedatabase.app';
+
+function _dbGet(path){
+  return fetch(DB_URL+path+'.json').then(r=>r.json()).catch(()=>null);
+}
+function _dbSet(path,data){
+  return fetch(DB_URL+path+'.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).catch(()=>{});
+}
+function _dbPush(path,data){
+  return fetch(DB_URL+path+'.json',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).catch(()=>{});
+}
+
+// ===== デバイスID =====
+function getDeviceId(){
+  let id=localStorage.getItem('sq_device_id');
+  if(!id){id='sq_'+Math.random().toString(36).slice(2)+Date.now().toString(36);localStorage.setItem('sq_device_id',id);}
+  return id;
+}
+
+// ===== ニックネーム =====
+function getNick(){ return localStorage.getItem('sq_nick')||''; }
+function saveNick(n){ localStorage.setItem('sq_nick',n); }
+
+function submitNick(){
+  const input=document.getElementById('nick-input-field');
+  const val=(input?input.value:'').trim();
+  if(!val){ if(input)input.style.borderColor='#E05A3A'; return; }
+  saveNick(val);
+  document.getElementById('nick-screen').classList.remove('open');
+  // ランキングに初回登録
+  _saveRanking(0);
+  // パスワード画面を表示
+  document.getElementById('pw-screen').classList.remove('hidden');
+}
+
+// ===== 解放状態（Firebase + localStorage） =====
+async function loadUnlockedFromDB(){
+  const did=getDeviceId();
+  const data=await _dbGet('/dungeon/progress/'+did);
+  if(data&&data.unlocked){
+    const merged=[...new Set([...getUnlockedLocal(),...data.unlocked])];
+    localStorage.setItem('sq_unlocked',JSON.stringify(merged));
+  }
+}
+function getUnlockedLocal(){
   try{return JSON.parse(localStorage.getItem('sq_unlocked')||'["tutorial","d1"]');}
   catch{return ['tutorial','d1'];}
 }
-function saveUnlocked(ids){localStorage.setItem('sq_unlocked',JSON.stringify([...new Set(ids)]));}
+function getUnlocked(){ return getUnlockedLocal(); }
+
+function saveUnlocked(ids){
+  const u=[...new Set(ids)];
+  localStorage.setItem('sq_unlocked',JSON.stringify(u));
+  // Firebaseにも保存（ブラウザデータ消去後も復元可能）
+  const did=getDeviceId();
+  _dbSet('/dungeon/progress/'+did,{unlocked:u,nick:getNick(),updatedAt:Date.now()});
+}
 function unlockNext(clearedId){
   const unlocked=getUnlocked();
   const idx=DUNGEON_ALL.findIndex(d=>d.id===clearedId);
+  // 解放
   if(idx>=0&&idx<DUNGEON_ALL.length-1){
     const nextId=DUNGEON_ALL[idx+1].id;
     if(!unlocked.includes(nextId)){
@@ -751,6 +861,47 @@ function unlockNext(clearedId){
       saveUnlocked(unlocked);
     }
   }
+  // ランキング更新: 到達数(tutorialとnormal=仮除く)
+  const rankCount=unlocked.filter(id=>id!=='tutorial'&&id!=='normal').length;
+  _saveRanking(rankCount);
+  // D100クリアで殿堂入り
+  if(clearedId==='d100') _registerHallOfFame();
+}
+
+// ===== ランキング保存 =====
+function _saveRanking(count){
+  const did=getDeviceId();
+  const nick=getNick()||'名無し';
+  _dbSet('/dungeon/ranking/'+did,{nick,count,updatedAt:Date.now()});
+}
+
+// ===== 殿堂入り登録 =====
+function _registerHallOfFame(){
+  const nick=getNick()||'名無し';
+  _dbPush('/dungeon/halloffame',{nick,date:new Date().toLocaleDateString('ja-JP'),ts:Date.now()});
+  setTimeout(()=>showHof(),800);
+}
+
+// ===== 殿堂入り表示 =====
+async function showHof(){
+  const modal=document.getElementById('halloffame-modal');
+  const list=document.getElementById('hof-list');
+  if(!modal||!list)return;
+  modal.classList.add('open');
+  list.innerHTML='<div class="hof-empty">読み込み中...</div>';
+  const data=await _dbGet('/dungeon/halloffame');
+  if(!data){list.innerHTML='<div class="hof-empty">まだ殿堂入りはいません</div>';return;}
+  const entries=Object.values(data).sort((a,b)=>a.ts-b.ts);
+  list.innerHTML=entries.map((e,i)=>
+    '<div class="hof-entry">'+
+      '<div class="hof-rank">'+(i+1)+'</div>'+
+      '<div class="hof-name">'+e.nick+'</div>'+
+      '<div class="hof-date">'+e.date+'</div>'+
+    '</div>'
+  ).join('');
+}
+function closeHof(){
+  document.getElementById('halloffame-modal').classList.remove('open');
 }
 
 // ===== ダンジョン選択リスト描画 =====
@@ -815,6 +966,10 @@ const TIMER_STYLE_LABELS=['円形','バー','双線'];
 const TIMER_POSITIONS=['left','right'];
 const TIMER_POS_LABELS=['左','右'];
 let heldDir=null; // 現在長押し中の方向
+// キーマップ（変更可能）
+let KEY_MAP={up:['ArrowUp','w'],down:['ArrowDown','s'],left:['ArrowLeft','a'],right:['ArrowRight','d'],attack:[' '],wait:['Enter']};
+// GPボタンマップ（変更可能）: attack,wait,pause,options
+let GP_BTN={attack:1,wait:0,pause:3,options_toggle:[8,9]};
 
 // 部屋進行管理
 // roomStage: 0=safe, 1=branch(AorB), 2=merge(C), 3=boss
@@ -1298,7 +1453,11 @@ function doAttack(){
   }
 
   if(phase==='battle'&&enemies.length===0){
-    setTimeout(()=>{showMsg('全ての敵を倒した！出口が開かれた。');render();},500);
+    setTimeout(()=>{
+      showMsg('全ての敵を倒した！出口へ向かう…');render();
+      // 出口へ自動ダッシュ
+      _autoMoveToExit();
+    },500);
   }
   setTimeout(()=>{
     render();
@@ -1568,6 +1727,31 @@ function enemyTurn(playerMoved=false){
 }
 
 // ===== ゲームオーバー =====
+function _autoMoveToExit(){
+  // 出口の座標を検索
+  let ex=-1,ey=-1;
+  for(let y=0;y<mapSize;y++)for(let x=0;x<mapSize;x++){if(map[y][x]===3){ex=x;ey=y;break;}}
+  if(ex<0)return;
+  // プレイヤーが出口に到達するまで100ms間隔で1歩ずつ移動
+  let steps=0;
+  const maxSteps=(mapSize*2)+4;
+  function step(){
+    if(player.x===ex&&player.y===ey){goNextRoom();return;}
+    if(steps++>maxSteps){goNextRoom();return;}
+    const dx=ex-player.x,dy=ey-player.y;
+    let dir='up';
+    if(Math.abs(dy)>=Math.abs(dx)) dir=dy<0?'up':'down';
+    else dir=dx<0?'left':'right';
+    let nx=player.x,ny=player.y;
+    if(dir==='up')ny--;else if(dir==='down')ny++;else if(dir==='left')nx--;else nx++;
+    if(nx>=0&&nx<mapSize&&ny>=0&&ny<mapSize&&map[ny][nx]!==1&&map[ny][nx]!==2){
+      player.x=nx;player.y=ny;
+    }
+    render();
+    setTimeout(step,90);
+  }
+  step();
+}
 function gameOver(){
   // オプション中・一時停止中・セーフルームでは発火しない
   if(phase!=='battle') return;
@@ -1577,6 +1761,17 @@ function gameOver(){
   pendingAction=null;
   stopTimerDraw();
   document.getElementById('gameover-overlay').style.display='flex';
+}
+function giveUp(){
+  if(turnTimer){clearTimeout(turnTimer);turnTimer=null;}
+  if(_deathTimer){clearTimeout(_deathTimer);_deathTimer=null;}
+  stopTimerDraw();
+  gamePaused=false;
+  phase='safe';
+  player.hp=player.maxHp;player.weapon=null;player.burnTurns=0;
+  enemies=[];fireTiles={};trapTiles={};
+  renderDungeonList();
+  document.getElementById('dungeon-select').classList.add('open');
 }
 function restartGame(){
   // タイマー・遅延処理を全て即座にキャンセル
@@ -1639,8 +1834,10 @@ function updHpBar(dmg=0){
 }
 function updHd(){
   if(phase==='safe'){
-    const dname=currentDungeon?currentDungeon.name:'安全な部屋';
-    document.getElementById('hd-info').textContent=dname;
+    const dname=currentDungeon?currentDungeon.name:'四角迷宮';
+    document.getElementById('hd-info').textContent=currentDungeon?'安全な部屋':'';
+    const ht=document.getElementById('hd-title');
+    if(ht)ht.textContent='四角迷宮　'+dname;
   } else if(dungeonType==='hard'){
     const room=HARD_ROOMS[hardRoomOrder[hardRoomIdx]||0];
     document.getElementById('hd-info').textContent=(room?room.name:'の間')+' 敵'+enemies.length+'体';
@@ -1762,6 +1959,11 @@ function onStockTap(){
   const ca=document.getElementById('wpn-confirm-atk');
   if(cn) cn.textContent=wpnStocked.name+' ('+RARITY_LABEL[wpnStocked.rarity]+')';
   if(ca) ca.textContent='\u653b\u6483\u529b '+wpnStocked.atk+' ('+bs+')';
+  _gpCursor.confirm=0;
+  const yes=document.querySelector('.wpn-confirm-yes');
+  const no=document.querySelector('.wpn-confirm-no');
+  if(yes)yes.style.outline='2px solid var(--player)';
+  if(no)no.style.outline='';
   document.getElementById('wpn-confirm').classList.add('open');
 }
 function confirmWeapon(){
@@ -1802,6 +2004,17 @@ function _renderWpnOverlay(weapons){
     box.appendChild(card);
     requestAnimationFrame(()=>drawMiniRange(document.getElementById(cid),w));
   });
+  // GPカーソルを再適用
+  _gpApplyWpnCursor();
+}
+function _gpApplyWpnCursor(){
+  const cards=document.querySelectorAll('#weapon-choices .weapon-card');
+  const stock=document.getElementById('wpn-stock-area');
+  const total=cards.length+1; // +1 for stock
+  cards.forEach((c,i)=>{
+    c.classList.toggle('gp-sel', i===_gpCursor.wpn&&!_gpCursor.stockFocus);
+  });
+  if(stock) stock.classList.toggle('gp-sel', _gpCursor.stockFocus||false);
 }
 
 // ===== ターンタイマーcanvas描画 =====
@@ -1836,24 +2049,9 @@ function _drawTimerCircle(ctx,W,H,prog,eColor){
     ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,R,sa,ea);ctx.closePath();
     ctx.fillStyle=eColor;ctx.fill();
   }
-  if(player.weapon){
-    const gs=10,raw=player.weapon.range,dir=player.dir||'up';
-    const rset=new Set();
-    raw.forEach(([dx,dy])=>{
-      let rx=dx,ry=dy;
-      if(dir==='down'){rx=-dx;ry=-dy;}else if(dir==='right'){rx=-dy;ry=dx;}else if(dir==='left'){rx=dy;ry=-dx;}
-      rset.add(rx+','+ry);
-    });
-    for(let gy=-2;gy<=2;gy++)for(let gx=-2;gx<=2;gx++){
-      const px=cx+gx*gs-gs/2,py=cy+gy*gs-gs/2;
-      const isP=gx===0&&gy===0,isA=rset.has(gx+','+gy);
-      ctx.fillStyle=isP?'#1D9E75':isA?'rgba(74,158,224,0.75)':'rgba(255,255,255,0.06)';
-      ctx.fillRect(px+1,py+1,gs-2,gs-2);
-    }
-  }
   ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fillStyle='#1a1a18';ctx.fill();
   if(opt_4beat){[Math.PI/2,Math.PI,3*Math.PI/2].forEach(a=>_drawTimerMark(ctx,cx,cy,R,r,a,'rgba(200,60,40,0.95)',6));}
-  if(opt_timer_beat){[Math.PI/4,3*Math.PI/4,5*Math.PI/4].forEach(a=>_drawTimerMark(ctx,cx,cy,R,r,a,'rgba(74,158,224,0.95)',7));}
+  if(opt_timer_beat){[Math.PI/4,3*Math.PI/4,5*Math.PI/4,7*Math.PI/4].forEach(a=>_drawTimerMark(ctx,cx,cy,R,r,a,'rgba(74,158,224,0.95)',7));}
   ctx.beginPath();ctx.moveTo(cx,cy-r+1);ctx.lineTo(cx,cy-R+1);
   ctx.strokeStyle='rgba(255,255,255,0.25)';ctx.lineWidth=2;ctx.stroke();
 }
@@ -1863,18 +2061,6 @@ function _drawTimerBar(ctx,W,H,prog,eColor){
   ctx.fillStyle='#1a1a18';ctx.fillRect(0,0,W,H);
   ctx.strokeStyle='#333';ctx.lineWidth=1.5;ctx.strokeRect(bx,by,bw,bh);
   if(prog>0){ctx.fillStyle=eColor;ctx.fillRect(bx+1,by+1,Math.max(0,(bw-2)*prog),bh-2);}
-  if(player.weapon){
-    const gs=7,raw=player.weapon.range,dir=player.dir||'up';
-    const rset=new Set();
-    raw.forEach(([dx,dy])=>{let rx=dx,ry=dy;if(dir==='down'){rx=-dx;ry=-dy;}else if(dir==='right'){rx=-dy;ry=dx;}else if(dir==='left'){rx=dy;ry=-dx;}rset.add(rx+','+ry);});
-    const ocx=W/2,ocy=H-20;
-    for(let gy=-2;gy<=2;gy++)for(let gx=-2;gx<=2;gx++){
-      const px=ocx+gx*gs-gs/2,py=ocy+gy*gs-gs/2;
-      const isP=gx===0&&gy===0,isA=rset.has(gx+','+gy);
-      ctx.fillStyle=isP?'#1D9E75':isA?'rgba(74,158,224,0.75)':'rgba(255,255,255,0.05)';
-      ctx.fillRect(px+1,py+1,gs-2,gs-2);
-    }
-  }
   if(opt_4beat){[0.25,0.5,0.75].forEach(p=>{const x=bx+bw*p;ctx.beginPath();ctx.moveTo(x,by-3);ctx.lineTo(x,by+bh+3);ctx.strokeStyle='rgba(200,60,40,0.7)';ctx.lineWidth=1.5;ctx.stroke();});}
   if(opt_timer_beat){[0.125,0.375,0.625].forEach(p=>{const x=bx+bw*p;ctx.beginPath();ctx.moveTo(x,by-3);ctx.lineTo(x,by+bh+3);ctx.strokeStyle='rgba(74,158,224,0.7)';ctx.lineWidth=1.5;ctx.stroke();});}
 }
@@ -1983,10 +2169,17 @@ function _updActionDisp(a){
 
 // ===== キーボード =====
 document.addEventListener('keydown',e=>{
-  const m={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',w:'up',s:'down',a:'left',d:'right'};
-  if(m[e.key]){e.preventDefault();queueAction({type:'move',dir:m[e.key]});}
-  if(e.key===' '){e.preventDefault();queueAction({type:'attack'});}
-  if(e.key==='Enter'){e.preventDefault();queueAction({type:'wait'});}
+  const _km=(k,arr)=>arr.includes(k);
+  if(_km(e.key,KEY_MAP.up)){e.preventDefault();heldDir='up';queueAction({type:'move',dir:'up'});}
+  else if(_km(e.key,KEY_MAP.down)){e.preventDefault();heldDir='down';queueAction({type:'move',dir:'down'});}
+  else if(_km(e.key,KEY_MAP.left)){e.preventDefault();heldDir='left';queueAction({type:'move',dir:'left'});}
+  else if(_km(e.key,KEY_MAP.right)){e.preventDefault();heldDir='right';queueAction({type:'move',dir:'right'});}
+  else if(_km(e.key,KEY_MAP.attack)){e.preventDefault();queueAction({type:'attack'});}
+  else if(_km(e.key,KEY_MAP.wait)){e.preventDefault();queueAction({type:'wait'});}
+});
+document.addEventListener('keyup',e=>{
+  const _km=(k,arr)=>arr.includes(k);
+  if(_km(e.key,KEY_MAP.up)||_km(e.key,KEY_MAP.down)||_km(e.key,KEY_MAP.left)||_km(e.key,KEY_MAP.right)) heldDir=null;
 });
 document.querySelectorAll('.dpad-btn').forEach(b=>b.addEventListener('touchstart',e=>e.preventDefault(),{passive:false}));
 
@@ -1994,7 +2187,7 @@ document.querySelectorAll('.dpad-btn').forEach(b=>b.addEventListener('touchstart
 // ===== コントローラー全画面対応 =====
 // ブラウザ: 0=Bボタン(プロコン), 1=Aボタン
 // このゲーム: Aボタン=決定/攻撃, Bボタン=戻る/キャンセル
-let _gpPrev={},_gpAxis={},gpConnected=false,_gpCursor={pw:4,dungeon:0,wpn:0,stock:false};
+let _gpPrev={},_gpAxis={},gpConnected=false,_gpCursor={pw:4,dungeon:0,wpn:0,stock:false,stockFocus:false,confirm:0};
 
 function _gpOn(pad,i){
   const c=pad.buttons[i]?.value>0.08||pad.buttons[i]?.pressed||false;
@@ -2084,26 +2277,42 @@ function pollGp(){
   // ===== 武器選択 =====
   if(scr==='weapon'){
     const cards=document.querySelectorAll('#weapon-choices .weapon-card');
-    if(dir.up||dir.down||dir.left||dir.right){
-      if(cards.length>0){
-        _gpCursor.wpn=(_gpCursor.wpn+(dir.down||dir.right?1:-1)+cards.length)%cards.length;
-        cards.forEach((c,i)=>c.style.outline=i===_gpCursor.wpn?'2px solid var(--player)':'');
-      }
+    const total=cards.length+1; // +1=ストック
+    if(dir.down||dir.right){
+      const next=(_gpCursor.stockFocus?cards.length:_gpCursor.wpn)+1;
+      if(next>=total){ _gpCursor.stockFocus=true; }
+      else { _gpCursor.wpn=next%cards.length; _gpCursor.stockFocus=false; }
+      _gpApplyWpnCursor();
+    }
+    if(dir.up||dir.left){
+      if(_gpCursor.stockFocus){ _gpCursor.stockFocus=false; _gpCursor.wpn=Math.max(0,cards.length-1); }
+      else { _gpCursor.wpn=Math.max(0,_gpCursor.wpn-1); }
+      _gpApplyWpnCursor();
     }
     if(bA){
-      const card=cards[_gpCursor.wpn];
-      if(card)card.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));
-    }
-    if(bB){
-      // ストックエリアをAで決定
-      onStockTap();
+      if(_gpCursor.stockFocus){ onStockTap(); }
+      else {
+        const card=cards[_gpCursor.wpn];
+        if(card)card.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));
+      }
     }
     return;
   }
 
   // ===== 確認ダイアログ =====
   if(scr==='confirm'){
-    if(bA)confirmWeapon();
+    // 左右でカーソル（0=はい, 1=いいえ）
+    if(dir.left||dir.right){
+      _gpCursor.confirm=_gpCursor.confirm===0?1:0;
+      const yes=document.querySelector('.wpn-confirm-yes');
+      const no=document.querySelector('.wpn-confirm-no');
+      if(yes)yes.style.outline=_gpCursor.confirm===0?'2px solid var(--player)':'';
+      if(no)no.style.outline=_gpCursor.confirm===1?'2px solid #888':'';
+    }
+    if(bA){
+      if(_gpCursor.confirm===0)confirmWeapon();
+      else cancelWeapon();
+    }
     if(bB)cancelWeapon();
     return;
   }
@@ -2170,10 +2379,10 @@ function pollGp(){
     if(dir.right){heldDir='right';queueAction({type:'move',dir:'right'});}
     if(!dir.up&&!dir.down&&!dir.left&&!dir.right)heldDir=null;
 
-    if(bA)queueAction({type:'attack'});   // Aボタン=攻撃
-    if(bB)queueAction({type:'wait'});     // Bボタン=待機
-    if(bX)pauseGame();                    // Xボタン=一時停止
-    if(_gpOn(pad,8)||_gpOn(pad,9))toggleOptions(); // セレクト/スタート=オプション
+    if(_gpOn(pad,GP_BTN.attack))queueAction({type:'attack'});
+    if(_gpOn(pad,GP_BTN.wait))queueAction({type:'wait'});
+    if(_gpOn(pad,GP_BTN.pause))pauseGame();
+    if(GP_BTN.options_toggle.some(i=>_gpOn(pad,i)))toggleOptions();
     return;
   }
 }
@@ -2199,7 +2408,16 @@ setInterval(()=>{
 },500);
 
 // ===== 初期化 =====
-function init(){initSafe();render();updHpBar();updWpn();updHd();setTimeout(showWpnOverlay,300);}
+function init(){
+  initSafe();render();updHpBar();updWpn();updHd();
+  // ニックネーム未設定なら先にニックネーム画面
+  if(!getNick()){
+    document.getElementById('pw-screen').classList.add('hidden');
+    document.getElementById('nick-screen').classList.add('open');
+  }
+  // Firebaseから解放状態を復元（非同期）
+  loadUnlockedFromDB();
+}
 init();
 
   // ===== 一時停止 =====
@@ -2286,12 +2504,15 @@ init();
       _updTog('tog-colorblind',opt_colorblind);
       document.body.classList.toggle('colorblind',opt_colorblind);
     }
+    // タイマー描画を確実に継続
+    if(!_timerRafId && (turnTimer||phase==='battle')) startTimerDraw();
   }
   function cycleTimerStyle(){
     const i=(TIMER_STYLES.indexOf(opt_timer_style)+1)%TIMER_STYLES.length;
     opt_timer_style=TIMER_STYLES[i];
     const btn=document.getElementById('timer-style-btn');
     if(btn)btn.textContent=TIMER_STYLE_LABELS[i];
+    if(!_timerRafId&&(turnTimer||phase==='battle'))startTimerDraw();
   }
   function cycleTimerPos(){
     const i=(TIMER_POSITIONS.indexOf(opt_timer_pos)+1)%TIMER_POSITIONS.length;

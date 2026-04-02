@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#1a1a18">
+  <title>ランキング — 四角迷宮</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&display=swap');
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{
+      --bg:#1a1a18;--surface:#252520;--surface2:#2e2e2a;
+      --border:rgba(255,255,255,0.07);
+      --text:#e8e4d8;--text2:#8a8678;--text3:#4a4840;
+      --gold:#c8a85a;--gold2:#8a7040;
+      --player:#1D9E75;--r:10px;
+    }
+    html,body{background:var(--bg);color:var(--text);font-family:'Noto Serif JP',serif;min-height:100vh;}
+    body{max-width:480px;margin:0 auto;padding:0 0 40px;}
+
+    /* ヘッダー */
+    .page-header{padding:16px 16px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+    .back-btn{font-size:13px;font-weight:600;color:var(--text2);text-decoration:none;padding:4px 8px;border:1px solid var(--border);border-radius:6px;}
+    .back-btn:active{background:var(--surface2);}
+    .page-title{flex:1;font-size:16px;font-weight:700;letter-spacing:0.15em;color:var(--text);}
+    .refresh-btn{font-size:13px;color:var(--text3);cursor:pointer;padding:4px 8px;}
+    .refresh-btn:active{color:var(--text2);}
+
+    /* 自分バナー */
+    .my-rank-banner{margin:14px 16px;background:var(--surface);border:1px solid var(--gold2);border-radius:var(--r);padding:14px 16px;display:none;}
+    .my-rank-banner .label{font-size:10px;color:var(--gold2);letter-spacing:0.15em;margin-bottom:4px;}
+    .my-rank-banner .value{font-size:18px;font-weight:700;color:var(--gold);}
+    .my-rank-banner .pct{font-size:11px;color:var(--text2);margin-top:4px;}
+
+    /* ランキングカード */
+    .ranking-card{margin:0 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+    .ranking-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+    .ranking-header-title{font-size:12px;font-weight:700;color:var(--text2);letter-spacing:0.1em;}
+    .ranking-header-count{font-size:11px;color:var(--text3);}
+
+    /* 行 */
+    .rank-row{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);transition:background 0.1s;}
+    .rank-row:last-child{border-bottom:none;}
+    .rank-row.me{background:rgba(200,168,90,0.06);}
+    .rank-num{width:32px;font-size:13px;font-weight:700;color:var(--text3);flex-shrink:0;text-align:center;}
+    .rank-num.gold{color:#D4A017;font-size:16px;}
+    .rank-num.silver{color:#9090a0;}
+    .rank-num.bronze{color:#CD7F32;}
+    .rank-info{flex:1;overflow:hidden;}
+    .rank-name{font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .rank-name.me-name{color:var(--gold);}
+    .rank-sub{font-size:10px;color:var(--text3);margin-top:2px;}
+    .rank-score{font-size:15px;font-weight:700;color:var(--player);white-space:nowrap;}
+    .rank-score-unit{font-size:10px;color:var(--text3);font-weight:400;}
+
+    /* 殿堂入り */
+    .hof-section{margin:16px 16px 0;background:var(--surface);border:1px solid rgba(200,168,90,0.3);border-radius:var(--r);overflow:hidden;}
+    .hof-section-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+    .hof-section-title{font-size:12px;font-weight:700;color:var(--gold);letter-spacing:0.15em;}
+    .hof-row{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);font-size:13px;}
+    .hof-row:last-child{border-bottom:none;}
+    .hof-order{width:28px;color:var(--gold2);font-weight:700;text-align:center;flex-shrink:0;}
+    .hof-name{flex:1;color:var(--text);font-weight:500;}
+    .hof-date{font-size:10px;color:var(--text3);}
+
+    .rank-loading,.rank-empty{padding:24px;text-align:center;font-size:12px;color:var(--text3);}
+
+    /* フッターリンク */
+    .footer-links{margin:20px 16px 0;display:flex;gap:8px;justify-content:center;}
+    .footer-link{font-size:11px;color:var(--text3);text-decoration:none;padding:6px 12px;border:1px solid var(--border);border-radius:6px;}
+    .footer-link:active{background:var(--surface);}
+  </style>
+</head>
+<body>
+
+<div class="page-header">
+  <a class="back-btn" id="rank-back-link" href="shikaku-dungeon.html">← 戻る</a>
+  <span class="page-title">四角迷宮 ランキング</span>
+  <span class="refresh-btn" onclick="loadAll()">↺</span>
+</div>
+
+<!-- 自分の順位バナー -->
+<div class="my-rank-banner" id="my-rank-banner">
+  <div class="label">あなたの順位</div>
+  <div class="value" id="my-rank-value">—</div>
+  <div class="pct" id="my-rank-pct"></div>
+</div>
+
+<!-- ランキング -->
+<div class="ranking-card">
+  <div class="ranking-header">
+    <span class="ranking-header-title">📊 到達ダンジョン数ランキング</span>
+    <span class="ranking-header-count" id="total-count"></span>
+  </div>
+  <div id="rank-list"><div class="rank-loading">読み込み中...</div></div>
+</div>
+
+<!-- 殿堂入り -->
+<div class="hof-section">
+  <div class="hof-section-header">
+    <span class="hof-section-title">🏆 殿堂入り（真・煉獄クリア）</span>
+  </div>
+  <div id="hof-list"><div class="rank-loading">読み込み中...</div></div>
+</div>
+
+<div class="footer-links">
+  <a class="footer-link" id="rank-home-link" href="plaza.html">幻実世界の電子遊戯</a>
+  <a class="footer-link" href="shikaku-dungeon.html">四角迷宮に戻る</a>
+</div>
+
+<script>
+const DB_URL='https://ad-game-7b40a-default-rtdb.asia-southeast1.firebasedatabase.app';
+
+function getDeviceId(){
+  let id=localStorage.getItem('sq_device_id');
+  if(!id){id='sq_'+Math.random().toString(36).slice(2)+Date.now().toString(36);localStorage.setItem('sq_device_id',id);}
+  return id;
+}
+function getNick(){ return localStorage.getItem('sq_nick')||''; }
+
+async function _dbGet(path){
+  try{ const r=await fetch(DB_URL+path+'.json'); return await r.json(); }
+  catch{ return null; }
+}
+
+async function loadRanking(){
+  const el=document.getElementById('rank-list');
+  const countEl=document.getElementById('total-count');
+  const myDid=getDeviceId();
+  const myNick=getNick();
+
+  try{
+    const data=await _dbGet('/dungeon/ranking');
+    if(!data){el.innerHTML='<div class="rank-empty">まだ記録がありません</div>';return;}
+
+    // エントリ整理・ソート（count降順、同率は更新日時昇順）
+    const entries=Object.entries(data)
+      .filter(([k,e])=>e&&e.nick&&typeof e.count==='number')
+      .map(([k,e])=>({...e,deviceId:k}))
+      .sort((a,b)=>b.count-a.count||(a.updatedAt||0)-(b.updatedAt||0));
+
+    const total=entries.length;
+    countEl.textContent=total+'人参加中';
+
+    if(total===0){
+      el.innerHTML='<div class="rank-empty">まだ記録がありません</div>';
+      document.getElementById('my-rank-banner').style.display='none';
+      return;
+    }
+
+    // 自分のエントリ
+    const myEntry=entries.find(e=>e.deviceId===myDid);
+    const myRank=myEntry?entries.indexOf(myEntry)+1:0;
+
+    // 自分バナー
+    const banner=document.getElementById('my-rank-banner');
+    if(myRank>0){
+      const pct=((myRank/total)*100).toFixed(1);
+      document.getElementById('my-rank-value').textContent=
+        myRank+'位 / '+total+'人中　'+myEntry.count+' ダンジョン到達';
+      document.getElementById('my-rank-pct').textContent=
+        '上位 '+pct+'% 以内のプレイヤー';
+      banner.style.display='block';
+    } else {
+      banner.style.display='none';
+    }
+
+    // 一覧（最大100件）
+    el.innerHTML='';
+    entries.slice(0,100).forEach((entry,i)=>{
+      const rank=i+1;
+      const isMe=rank===myRank;
+      const pct=((rank/total)*100).toFixed(1);
+      const row=document.createElement('div');
+      row.className='rank-row'+(isMe?' me':'');
+      const rc=rank===1?'gold':rank===2?'silver':rank===3?'bronze':'';
+      const medal=rank===1?'🥇':rank===2?'🥈':rank===3?'🥉':rank+'位';
+      row.innerHTML=
+        '<span class="rank-num '+rc+'">'+medal+'</span>'+
+        '<div class="rank-info">'+
+          '<div class="rank-name'+(isMe?' me-name':'')+'">'+
+            entry.nick+(isMe?' ◀ あなた':'')+
+          '</div>'+
+          '<div class="rank-sub">上位 '+pct+'%　全'+total+'人中</div>'+
+        '</div>'+
+        '<div>'+
+          '<div class="rank-score">'+entry.count+'<span class="rank-score-unit"> 到達</span></div>'+
+        '</div>';
+      el.appendChild(row);
+    });
+
+    if(entries.length>100){
+      const note=document.createElement('div');
+      note.className='rank-empty';
+      note.textContent='上位100件を表示中（全'+total+'件）';
+      el.appendChild(note);
+    }
+  }catch(e){
+    el.innerHTML='<div class="rank-empty">読み込みに失敗しました</div>';
+  }
+}
+
+async function loadHallOfFame(){
+  const el=document.getElementById('hof-list');
+  try{
+    const data=await _dbGet('/dungeon/halloffame');
+    if(!data){el.innerHTML='<div class="rank-empty">まだ殿堂入りはいません</div>';return;}
+    const entries=Object.values(data).sort((a,b)=>a.ts-b.ts);
+    if(entries.length===0){el.innerHTML='<div class="rank-empty">まだ殿堂入りはいません</div>';return;}
+    el.innerHTML=entries.map((e,i)=>
+      '<div class="hof-row">'+
+        '<div class="hof-order">'+(i+1)+'</div>'+
+        '<div class="hof-name">'+e.nick+'</div>'+
+        '<div class="hof-date">'+e.date+'</div>'+
+      '</div>'
+    ).join('');
+  }catch(e){
+    el.innerHTML='<div class="rank-empty">読み込みに失敗しました</div>';
+  }
+}
+
+function loadAll(){
+  document.getElementById('rank-list').innerHTML='<div class="rank-loading">読み込み中...</div>';
+  document.getElementById('hof-list').innerHTML='<div class="rank-loading">読み込み中...</div>';
+  loadRanking();
+  loadHallOfFame();
+}
+
+loadAll();
+
+// ===== コントローラー対応 =====
+let _gp={prev:{},axis:{},connected:false};
+const LAYOUT=[['rank-back-link'],['rank-home-link']];
+let _row=0;
+
+function _updCursor(){
+  ['rank-back-link','rank-home-link'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.style.outline='';
+  });
+  const id=LAYOUT[_row]?.[0];
+  const el=document.getElementById(id);
+  if(el){el.style.outline='2px solid var(--gold)';el.style.outlineOffset='3px';}
+}
+
+function pollGp(){
+  const pad=[...(navigator.getGamepads?.())||[]].find(p=>p);
+  if(!pad)return;
+  if(!_gp.connected){_gp.connected=true;_updCursor();}
+  const btn=(i)=>{const c=pad.buttons[i]?.pressed||false,v=_gp.prev[i]||false;_gp.prev[i]=c;return c&&!v;};
+  const ay=pad.axes[1]||0,T=0.4;
+  const up=btn(12)||(ay<-T&&!_gp.axis.up);
+  const dn=btn(13)||(ay>T&&!_gp.axis.down);
+  _gp.axis={up:ay<-T,down:ay>T};
+  if(up){_row=Math.max(0,_row-1);_updCursor();}
+  if(dn){_row=Math.min(LAYOUT.length-1,_row+1);_updCursor();}
+  if(btn(1)){ // A=決定
+    const id=LAYOUT[_row]?.[0];
+    const el=document.getElementById(id);
+    if(el)el.click();
+  }
+  if(btn(0))window.location.href='shikaku-dungeon.html'; // B=戻る
+}
+
+window.addEventListener('gamepadconnected',()=>{
+  if(!window._gpInt)window._gpInt=setInterval(pollGp,16);
+  _updCursor();
+});
+setInterval(()=>{
+  const g=navigator.getGamepads?.();
+  if(g&&[...g].some(p=>p)&&!window._gpInt){window._gpInt=setInterval(pollGp,16);_updCursor();}
+},500);
+</script>
+</body>
+</html>
