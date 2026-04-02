@@ -140,6 +140,15 @@
     .ctrl-row{display:flex;align-items:center;gap:10px;justify-content:center;}
     .atk-btn{width:72px;height:72px;border-radius:12px;border:2px solid #4A9EE0;background:rgba(74,158,224,0.12);color:#7DC4F8;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
     .atk-btn:active{background:rgba(74,158,224,0.3);}
+    .pause-btn{width:48px;height:48px;border-radius:10px;border:1px solid #444;background:#2e2e2a;color:var(--text2);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+    .pause-btn:active{background:#3e3e38;}
+    /* 一時停止オーバーレイ */
+    #pause-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:400;display:none;align-items:center;justify-content:center;}
+    #pause-overlay.open{display:flex;}
+    .pause-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:30px 24px;text-align:center;width:80%;max-width:260px;}
+    .pause-title{font-size:18px;font-weight:600;color:var(--text);margin-bottom:20px;letter-spacing:0.1em;}
+    .pause-resume{width:100%;padding:12px;border-radius:8px;border:1px solid var(--player);background:none;color:var(--player);font-size:14px;font-weight:500;cursor:pointer;margin-bottom:10px;}
+    .pause-resume:active{background:rgba(29,158,117,0.15);}
     .dpad{display:grid;grid-template-columns:repeat(3,52px);grid-template-rows:repeat(3,52px);gap:3px;}
     .dpad-btn{width:52px;height:52px;border-radius:9px;border:1px solid var(--border);background:#2e2e2a;color:var(--text);font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:rgba(0,0,0,0);}
     .dpad-btn:active{background:#3e3e38;}
@@ -217,7 +226,7 @@
     }
     #pw-screen.hidden{display:none;}
     .pw-label{font-size:13px;color:#9a9a92;letter-spacing:0.2em;}
-    .pw-sub{font-size:11px;color:#5a5a54;letter-spacing:0.12em;text-align:center;line-height:2;}
+    .pw-sub{font-size:13px;font-weight:500;color:#8a8a82;letter-spacing:0.1em;text-align:center;line-height:2.0;}
     .pw-dots{display:flex;gap:8px;}
     .pw-dot{width:11px;height:11px;border-radius:50%;border:1.5px solid #444;background:#1a1a18;transition:background 0.15s,border-color 0.15s;}
     .pw-dot.filled{background:#9a9a92;border-color:#9a9a92;}
@@ -349,17 +358,28 @@
       <canvas id="turn-timer-canvas" width="88" height="88"></canvas>
       <div class="dpad">
         <div class="dpad-btn empty"></div>
-        <div class="dpad-btn" onmousedown="queueAction({type:'move',dir:'up'})" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="(function(e){e.preventDefault();queueAction({type:'move',dir:'up'});})(event)" ontouchend="stopMove()" ontouchcancel="stopMove()">▲</div>
+        <div class="dpad-btn" onmousedown="heldDir='up';queueAction({type:'move',dir:'up'})" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="(function(e){e.preventDefault();heldDir='up';queueAction({type:'move',dir:'up'});})(event)" ontouchend="stopMove()" ontouchcancel="stopMove()">▲</div>
         <div class="dpad-btn empty"></div>
-        <div class="dpad-btn" onmousedown="queueAction({type:'move',dir:'left'})" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="(function(e){e.preventDefault();queueAction({type:'move',dir:'left'});})(event)" ontouchend="stopMove()" ontouchcancel="stopMove()">◀</div>
+        <div class="dpad-btn" onmousedown="heldDir='left';queueAction({type:'move',dir:'left'})" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="(function(e){e.preventDefault();heldDir='left';queueAction({type:'move',dir:'left'});})(event)" ontouchend="stopMove()" ontouchcancel="stopMove()">◀</div>
         <div class="dpad-btn center" onclick="queueAction({type:'wait'})" ontouchstart="(function(e){e.preventDefault();queueAction({type:'wait'});})(event)">待機</div>
-        <div class="dpad-btn" onmousedown="queueAction({type:'move',dir:'right'})" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="(function(e){e.preventDefault();queueAction({type:'move',dir:'right'});})(event)" ontouchend="stopMove()" ontouchcancel="stopMove()">▶</div>
+        <div class="dpad-btn" onmousedown="heldDir='right';queueAction({type:'move',dir:'right'})" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="(function(e){e.preventDefault();heldDir='right';queueAction({type:'move',dir:'right'});})(event)" ontouchend="stopMove()" ontouchcancel="stopMove()">▶</div>
         <div class="dpad-btn empty"></div>
-        <div class="dpad-btn" onmousedown="queueAction({type:'move',dir:'down'})" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="(function(e){e.preventDefault();queueAction({type:'move',dir:'down'});})(event)" ontouchend="stopMove()" ontouchcancel="stopMove()">▼</div>
+        <div class="dpad-btn" onmousedown="heldDir='down';queueAction({type:'move',dir:'down'})" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="(function(e){e.preventDefault();heldDir='down';queueAction({type:'move',dir:'down'});})(event)" ontouchend="stopMove()" ontouchcancel="stopMove()">▼</div>
         <div class="dpad-btn empty"></div>
       </div>
-      <button class="atk-btn" id="atk-btn" onclick="queueAction({type:'attack'})">攻撃</button>
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:center;">
+        <button class="atk-btn" id="atk-btn" onclick="queueAction({type:'attack'})">攻撃</button>
+        <button class="pause-btn" id="pause-btn" onclick="pauseGame()">⏸</button>
+      </div>
     </div>
+  </div>
+</div>
+
+<!-- 一時停止 -->
+<div id="pause-overlay">
+  <div class="pause-box">
+    <div class="pause-title">一時停止</div>
+    <button class="pause-resume" onclick="resumeGame()">▶  再開</button>
   </div>
 </div>
 
@@ -544,6 +564,7 @@ let turnTimer=null, pendingAction=null, turnPhase='idle'; // idle/waiting
 let weaponRotateTimer=null, wpnRotateIdx=0, wpnRotateList=[];
 // オプション設定
 let opt_skip_turn=false, opt_timer_beat=false, opt_4beat=false, opt_colorblind=false;
+let heldDir=null; // 現在長押し中の方向
 
 // 部屋進行管理
 // roomStage: 0=safe, 1=branch(AorB), 2=merge(C), 3=boss
@@ -826,6 +847,7 @@ function startMove(dir){
   moveHoldTimer=setTimeout(()=>{moveRepeatTimer=setInterval(()=>doMove(dir),MOVE_REPEAT);},MOVE_DELAY);
 }
 function stopMove(){
+  heldDir=null;
   clearTimeout(moveHoldTimer);clearInterval(moveRepeatTimer);
   moveHoldTimer=null;moveRepeatTimer=null;
 }
@@ -1522,7 +1544,10 @@ function drawTurnTimer(){
   }
   // 青いトンガリ: 6時方向（裏拍 = 0.5秒）
   if(opt_timer_beat){
-    _drawTimerMark(ctx,cx,cy,R,r,Math.PI,'rgba(74,158,224,0.95)',8);
+    // 赤(90°・180°・270°)の間: 45°・135°・225°
+    [Math.PI/4, 3*Math.PI/4, 5*Math.PI/4].forEach(ang=>{
+      _drawTimerMark(ctx,cx,cy,R,r,ang,'rgba(74,158,224,0.95)',7);
+    });
   }
 
   // 12時方向のノッチ
@@ -1582,10 +1607,17 @@ function startTurnTimer(){
 function queueAction(a){
   if(a.type==='move'){
     if(moving) return;
+    if(a.dir) heldDir=a.dir; // 長押し追跡
     // 振り向き省略OFFかつ方向違い → 即座に振り向くだけ（ターン消費なし）
     if(!opt_skip_turn && player.dir!==a.dir){
       player.dir=a.dir; updPl(); render();
       return;
+    }
+  }
+  if(a.type==='attack'){
+    // 方向長押し中 → その方向に向いてから攻撃
+    if(heldDir && heldDir!==player.dir){
+      player.dir=heldDir; updPl(); render();
     }
   }
   pendingAction=a;
@@ -1625,6 +1657,48 @@ function pollGp(){
 // ===== 初期化 =====
 function init(){initSafe();render();updHpBar();updWpn();updHd();setTimeout(showWpnOverlay,300);}
 init();
+
+  // ===== 一時停止 =====
+  let gamePaused=false;
+  let pauseRemainingMs=0; // 一時停止時の残り時間
+
+  function pauseGame(){
+    if(phase!=='battle'||gamePaused) return;
+    gamePaused=true;
+    // タイマーの残り時間を記録して停止
+    if(turnTimer){
+      pauseRemainingMs=Math.max(0, 1000-(Date.now()-_turnStartMs));
+      clearTimeout(turnTimer);
+      turnTimer=null;
+    }
+    stopTimerDraw();
+    document.getElementById('pause-overlay').classList.add('open');
+  }
+  function resumeGame(){
+    gamePaused=false;
+    document.getElementById('pause-overlay').classList.remove('open');
+    if(phase==='battle'&&enemies.length>0){
+      // 残り時間から再開
+      _turnStartMs=Date.now()-Math.max(0,1000-pauseRemainingMs);
+      startTimerDraw();
+      turnPhase='waiting';
+      turnTimer=setTimeout(()=>{
+        turnTimer=null;
+        stopTimerDraw();
+        if(pendingAction){
+          const a=pendingAction;pendingAction=null;
+          if(a.type==='move') doMove(a.dir);
+          else if(a.type==='attack') doAttack();
+          else if(a.type==='wait') waitAction();
+        } else {
+          if(phase==='battle') enemyTurn(false);
+        }
+        turnPhase='idle';
+        if(phase==='battle'&&enemies.length>0) startTurnTimer();
+        else stopTimerDraw();
+      }, pauseRemainingMs||1000);
+    }
+  }
 
   // ===== オプション操作 =====
   function toggleOptions(){
