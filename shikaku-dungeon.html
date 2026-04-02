@@ -59,7 +59,14 @@
     .player::before,.player::after{display:none;}
     .player .dot{position:absolute;width:8px;height:8px;background:rgba(255,255,255,0.85);border-radius:50%;pointer-events:none;}
     /* 敵 */
-    .enemy-token{position:absolute;width:calc(var(--cell) - 6px);height:calc(var(--cell) - 6px);background:var(--enemy);border-radius:4px;z-index:9;transition:left 0.18s ease-out,top 0.18s ease-out;box-shadow:inset 0 0 0 2px rgba(0,0,0,0.3);}
+    .enemy-token{position:absolute;width:calc(var(--cell) - 6px);height:calc(var(--cell) - 6px);background:var(--enemy);border-radius:4px;z-index:9;transition:left 0.18s ease-out,top 0.18s ease-out;box-shadow:inset 0 0 0 2px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;}
+    .enemy-token .ename{position:absolute;font-size:16px;font-weight:700;color:rgba(255,255,255,0.9);text-shadow:0 1px 3px rgba(0,0,0,0.8);pointer-events:none;z-index:11;line-height:1;}
+    .enemy-token.type-bow{background:#8B4513;}
+    .enemy-token.type-star{background:#6B2FB0;}
+    .cell.fire{background:rgba(220,80,20,0.55);box-shadow:inset 0 0 8px rgba(255,120,0,0.6);}
+    .cell.trap{background:#2a1a0a;box-shadow:inset 0 0 0 2px #8B6914;}
+    .player.burning{box-shadow:0 0 10px 3px rgba(255,80,0,0.7);animation:burn-pulse 0.6s ease infinite;}
+    @keyframes burn-pulse{0%,100%{box-shadow:0 0 10px 3px rgba(255,80,0,0.7);}50%{box-shadow:0 0 18px 6px rgba(255,140,0,0.9);}}
     .enemy-token::before{display:none;}
     .enemy-token.alert{outline:2px solid #FFD700;outline-offset:2px;box-shadow:inset 0 0 0 2px rgba(0,0,0,0.3),0 0 8px rgba(255,215,0,0.5);animation:alert-shake 0.3s ease-in-out infinite;}
     @keyframes alert-shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-2px);}75%{transform:translateX(2px);}}
@@ -243,16 +250,16 @@
     <div class="ctrl-row">
       <div class="dpad">
         <div class="dpad-btn empty"></div>
-        <div class="dpad-btn" onmousedown="startMove('up')" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="startMoveT(event,'up')" ontouchend="stopMove()" ontouchcancel="stopMove()">▲</div>
+        <div class="dpad-btn" onmousedown="queueAction({type:'move',dir:'up'})" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="(function(e){e.preventDefault();queueAction({type:'move',dir:'up'});})(event)" ontouchend="stopMove()" ontouchcancel="stopMove()">▲</div>
         <div class="dpad-btn empty"></div>
-        <div class="dpad-btn" onmousedown="startMove('left')" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="startMoveT(event,'left')" ontouchend="stopMove()" ontouchcancel="stopMove()">◀</div>
-        <div class="dpad-btn center" onclick="waitAction()" ontouchstart="(function(e){e.preventDefault();waitAction();})(event)">待機</div>
-        <div class="dpad-btn" onmousedown="startMove('right')" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="startMoveT(event,'right')" ontouchend="stopMove()" ontouchcancel="stopMove()">▶</div>
+        <div class="dpad-btn" onmousedown="queueAction({type:'move',dir:'left'})" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="(function(e){e.preventDefault();queueAction({type:'move',dir:'left'});})(event)" ontouchend="stopMove()" ontouchcancel="stopMove()">◀</div>
+        <div class="dpad-btn center" onclick="queueAction({type:'wait'})" ontouchstart="(function(e){e.preventDefault();queueAction({type:'wait'});})(event)">待機</div>
+        <div class="dpad-btn" onmousedown="queueAction({type:'move',dir:'right'})" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="(function(e){e.preventDefault();queueAction({type:'move',dir:'right'});})(event)" ontouchend="stopMove()" ontouchcancel="stopMove()">▶</div>
         <div class="dpad-btn empty"></div>
-        <div class="dpad-btn" onmousedown="startMove('down')" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="startMoveT(event,'down')" ontouchend="stopMove()" ontouchcancel="stopMove()">▼</div>
+        <div class="dpad-btn" onmousedown="queueAction({type:'move',dir:'down'})" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="(function(e){e.preventDefault();queueAction({type:'move',dir:'down'});})(event)" ontouchend="stopMove()" ontouchcancel="stopMove()">▼</div>
         <div class="dpad-btn empty"></div>
       </div>
-      <button class="atk-btn" id="atk-btn" onclick="doAttack()">攻撃</button>
+      <button class="atk-btn" id="atk-btn" onclick="queueAction({type:'attack'})">攻撃</button>
     </div>
   </div>
 </div>
@@ -323,11 +330,23 @@ const WDEFS={
 
 const RARITY_LABEL={N:'ノーマル',U:'ユニーク',L:'レジェンド'};
 
-let player={x:2,y:4,dir:'up',hp:100,maxHp:100,weapon:null};
+// 敵タイプ定義
+const ENEMY_TYPES = {
+  axe:  { name:'斧', color:null,  hp:40, atk:8,  atkSpread:6,  range:1, style:'melee' },   // 前方1マス
+  bow:  { name:'弓', color:'#8B4513', hp:25, atk:5, atkSpread:4, range:3, style:'ranged' }, // 前方3マス
+  star: { name:'星', color:'#6B2FB0', hp:55, atk:10, atkSpread:5, range:1, style:'aoe8' }, // 周囲8マス
+};
+
+let player={x:2,y:4,dir:'up',hp:100,maxHp:100,weapon:null,burnTurns:0};
 let enemies=[], map=[], mapSize=SAFE, phase='safe';
+let fireTiles={};  // key:"x,y" val:残りターン数(1-5)
+let trapTiles={};  // key:"x,y" val:true
 let moving=false, atkCooldown=false;
 let moveHoldTimer=null, moveRepeatTimer=null;
 let logEntries=[];
+// 1秒ターンタイマー
+let turnTimer=null, pendingAction=null, turnPhase='idle'; // idle/waiting
+let weaponRotateTimer=null, wpnRotateIdx=0, wpnRotateList=[];
 
 // 部屋進行管理
 // roomStage: 0=safe, 1=branch(AorB), 2=merge(C), 3=boss
@@ -389,7 +408,14 @@ function initBattle(){
     if(map[y][x]!==0)continue;
     if(!pos.find(p=>p.x===x&&p.y===y))pos.push({x,y});
   }
-  pos.forEach((p,i)=>enemies.push({id:i,x:p.x,y:p.y,hp:40,maxHp:40,alertTurn:false,prevX:p.x,prevY:p.y}));
+  // 敵タイプをランダムに割り当て
+  const typePool = ['axe','axe','bow','star'];
+  pos.forEach((p,i)=>{
+    const tkey = typePool[Math.floor(Math.random()*typePool.length)];
+    const td = ENEMY_TYPES[tkey];
+    enemies.push({id:i,x:p.x,y:p.y,hp:td.hp,maxHp:td.hp,alertTurn:false,prevX:p.x,prevY:p.y,type:tkey,bowCharging:false});
+  });
+  fireTiles={};trapTiles={};
 
   // 宝箱配置（2〜3部屋に1個 → 約40%の確率で1個出現）
   if(Math.random()<0.4){
@@ -459,9 +485,16 @@ function render(){
     }
     else if(v===2) c.className='cell pillar';
     else if(v===1) c.className='cell wall';
-    else if(al) c.className='cell alert-range';
-    else if(ia) c.className='cell atk-range';
-    else c.className='cell '+(((x+y)%2===0)?'floor':'floor2');
+    else {
+      const key=x+','+y;
+      const isFire=fireTiles[key]>0;
+      const isTrap=trapTiles[key];
+      if(al) c.className='cell alert-range'+(isFire?' fire':'');
+      else if(ia) c.className='cell atk-range'+(isFire?' fire':'');
+      else if(isFire) c.className='cell fire';
+      else if(isTrap) c.className='cell trap';
+      else c.className='cell '+(((x+y)%2===0)?'floor':'floor2');
+    }
     c.style.left=x*CELL+'px';c.style.top=y*CELL+'px';
     layer.appendChild(c);
 
@@ -492,8 +525,18 @@ function render(){
       // 既存要素をlayerに移動（セル再生成で後ろに回るのを防ぐ）
       layer.appendChild(el);
     }
-    el.className='enemy-token'+(e.alertTurn?' alert':'');
+    const td2=ENEMY_TYPES[e.type||'axe'];
+    el.className='enemy-token'+(e.alertTurn?' alert':'')+(e.type?' type-'+e.type:'');
+    if(td2&&td2.color) el.style.background=td2.color;
     el.style.left=(e.x*CELL+3)+'px';el.style.top=(e.y*CELL+3)+'px';
+    // 漢字ラベル
+    let lbl=el.querySelector('.ename');
+    if(!lbl){lbl=document.createElement('span');lbl.className='ename';el.appendChild(lbl);}
+    lbl.textContent=td2?td2.name:'斧';
+    // alertの!マーク
+    let warn=el.querySelector('.warn');
+    if(e.alertTurn){if(!warn){warn=document.createElement('div');warn.className='warn';warn.textContent='!';el.appendChild(warn);}}
+    else {if(warn)warn.remove();}
     if(ac.some(c=>c.x===e.x&&c.y===e.y)) el.style.outline='2px solid rgba(55,138,221,0.9)';
     else el.style.outline='';
     const hpf=document.getElementById('ehp'+e.id);
@@ -829,7 +872,7 @@ function goNextRoom(){
   }
 }
 
-function startBattle(){initBattle();render();showMsg('敵の部屋に入った！向きを合わせて攻撃ボタンを押してください。');}
+function startBattle(){initBattle();render();showMsg('敵の部屋に入った！1秒毎にターンが進む。素早く行動しよう！');startTurnTimer();}
 
 // ===== 敵AI =====
 function mdist(ax,ay,bx,by){return Math.abs(ax-bx)+Math.abs(ay-by);}
@@ -866,24 +909,33 @@ function enemyTurn(playerMoved=false){
     const dist=mdist(e.x,e.y,player.x,player.y);
     const adj=dist===1;
 
+    const td=ENEMY_TYPES[e.type||'axe'];
+    const atkRange=td.range||1;
+    const inRange = td.style==='aoe8'
+      ? (dist<=1)
+      : (td.style==='ranged'
+          ? (e.x===player.x||e.y===player.y)&&dist<=atkRange
+          : dist===1);
+
     if(e.alertTurn){
-      if(adj){
-        // 隣接→攻撃命中
-        const dmg=8+Math.floor(Math.random()*6);
+      if(inRange){
+        // 攻撃命中
+        const dmg=td.atk+Math.floor(Math.random()*td.atkSpread);
         player.hp=Math.max(0,player.hp-dmg);
         totalDmg+=dmg;
         const dx=player.x-e.x,dy=player.y-e.y;
         let bumpDir='down';
-        if(dx===1)bumpDir='right';else if(dx===-1)bumpDir='left';else if(dy===-1)bumpDir='up';
+        if(Math.abs(dx)>Math.abs(dy)){bumpDir=dx>0?'right':'left';}
+        else{bumpDir=dy>0?'down':'up';}
         e.bumpDir=bumpDir;
+        showMsg('【'+td.name+'】の攻撃が命中！ '+dmg+' ダメージ。');
       } else {
-        // 離れている→空振り
-        showMsg('敵が攻撃したが空振りした！');
+        showMsg('【'+td.name+'】が攻撃したが空振りした！');
       }
       e.alertTurn=false;e.wasAdjacent=false;
 
-    } else if(adj){
-      // 新たに隣接：即alert
+    } else if(inRange){
+      // 射程内：alert構え
       e.alertTurn=true;newAlert=true;e.wasAdjacent=true;
 
     } else {
@@ -900,6 +952,40 @@ function enemyTurn(playerMoved=false){
     showMsg('敵の攻撃を受けた！ '+totalDmg+' ダメージ。HP: '+player.hp+' / '+player.maxHp);
     if(player.hp<=0){setTimeout(()=>gameOver(),400);return;}
   }
+
+  // 炎タイル: プレイヤーが炎の上に居たらダメージ＋延焼
+  const pk=player.x+','+player.y;
+  if(fireTiles[pk]>0){
+    const fdmg=5+Math.floor(Math.random()*4);
+    player.hp=Math.max(0,player.hp-fdmg);
+    totalDmg+=fdmg;
+    if(player.burnTurns===0) showMsg('炎を踏んだ！'+fdmg+'ダメージ。3ターン延焼する！');
+    player.burnTurns=3;
+  }
+  // 延焼ダメージ
+  if(player.burnTurns>0){
+    const bdmg=3+Math.floor(Math.random()*2);
+    player.hp=Math.max(0,player.hp-bdmg);
+    totalDmg+=bdmg;
+    player.burnTurns--;
+    showMsg('延焼！'+bdmg+'ダメージ。残り'+player.burnTurns+'ターン。');
+  }
+  // 炎タイル経過ターン
+  Object.keys(fireTiles).forEach(k=>{
+    fireTiles[k]--;
+    if(fireTiles[k]<=0) delete fireTiles[k];
+  });
+  // HP更新
+  if(totalDmg>0){
+    updHpBar(totalDmg);
+    const pe=document.getElementById('player');
+    if(pe){pe.classList.remove('damaged');requestAnimationFrame(()=>pe.classList.add('damaged'));setTimeout(()=>pe.classList.remove('damaged'),400);}
+    showMsg('合計 '+totalDmg+' ダメージ。HP: '+player.hp+' / '+player.maxHp);
+    if(player.hp<=0){setTimeout(()=>gameOver(),400);return;}
+  }
+  // プレイヤー延焼エフェクト
+  const pEl=document.getElementById('player');
+  if(pEl) pEl.classList.toggle('burning', player.burnTurns>0);
 
   render();
   enemies.forEach(e=>{
@@ -1037,7 +1123,18 @@ function drawMiniRange(canvas,weapon){
 }
 
 function showWpnOverlay(){
-  const weapons=pickWeapons();
+  wpnRotateList=pickWeapons();
+  wpnRotateIdx=0;
+  _renderWpnOverlay(wpnRotateList);
+  // 1秒毎に選択肢をローテーション
+  if(weaponRotateTimer) clearInterval(weaponRotateTimer);
+  weaponRotateTimer=setInterval(()=>{
+    wpnRotateList=pickWeapons();
+    _renderWpnOverlay(wpnRotateList);
+  },1000);
+  document.getElementById('weapon-overlay').style.display='flex';
+}
+function _renderWpnOverlay(weapons){
   const box=document.getElementById('weapon-choices');
   box.innerHTML='';
   weapons.forEach((w,idx)=>{
@@ -1062,15 +1159,40 @@ function showWpnOverlay(){
     box.appendChild(card);
     requestAnimationFrame(()=>drawMiniRange(document.getElementById(cid),w));
   });
-  document.getElementById('weapon-overlay').style.display='flex';
+}
+
+// ===== 1秒ターンタイマー =====
+function startTurnTimer(){
+  if(turnTimer) return;
+  turnPhase='waiting';
+  turnTimer=setTimeout(()=>{
+    turnTimer=null;
+    if(pendingAction){
+      // プレイヤーの行動を実行
+      const a=pendingAction; pendingAction=null;
+      if(a.type==='move') doMove(a.dir);
+      else if(a.type==='attack') doAttack();
+      else if(a.type==='wait') waitAction();
+    } else {
+      // 何も入力がなければ敵だけ動く
+      if(phase==='battle') enemyTurn(false);
+    }
+    turnPhase='idle';
+    if(phase==='battle'&&enemies.length>0) startTurnTimer();
+  },1000);
+}
+function queueAction(a){
+  pendingAction=a;
+  // 既にタイマーが動いていれば待つ、なければすぐ開始
+  if(!turnTimer) startTurnTimer();
 }
 
 // ===== キーボード =====
 document.addEventListener('keydown',e=>{
   const m={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',w:'up',s:'down',a:'left',d:'right'};
-  if(m[e.key]){e.preventDefault();doMove(m[e.key]);}
-  if(e.key===' '){e.preventDefault();doAttack();}
-  if(e.key==='Enter'){e.preventDefault();waitAction();}
+  if(m[e.key]){e.preventDefault();queueAction({type:'move',dir:m[e.key]});}
+  if(e.key===' '){e.preventDefault();queueAction({type:'attack'});}
+  if(e.key==='Enter'){e.preventDefault();queueAction({type:'wait'});}
 });
 document.querySelectorAll('.dpad-btn').forEach(b=>b.addEventListener('touchstart',e=>e.preventDefault(),{passive:false}));
 
