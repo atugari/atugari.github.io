@@ -561,6 +561,7 @@ let moveHoldTimer=null, moveRepeatTimer=null;
 let logEntries=[];
 // 1秒ターンタイマー
 let turnTimer=null, pendingAction=null, turnPhase='idle'; // idle/waiting
+let _deathTimer=null; // gameOver遅延タイマー
 let weaponRotateTimer=null, wpnRotateIdx=0, wpnRotateList=[];
 // オプション設定
 let opt_skip_turn=false, opt_timer_beat=false, opt_4beat=false, opt_colorblind=false;
@@ -1216,7 +1217,7 @@ function enemyTurn(playerMoved=false){
     const pe=document.getElementById('player');
     if(pe){pe.classList.remove('damaged');requestAnimationFrame(()=>pe.classList.add('damaged'));setTimeout(()=>pe.classList.remove('damaged'),400);}
     showMsg('敵の攻撃を受けた！ '+totalDmg+' ダメージ。HP: '+player.hp+' / '+player.maxHp);
-    if(player.hp<=0){setTimeout(()=>gameOver(),400);return;}
+    if(player.hp<=0){_deathTimer=setTimeout(()=>gameOver(),400);return;}
   }
 
   // 炎タイル: プレイヤーが炎の上に居たらダメージ＋延焼
@@ -1247,7 +1248,7 @@ function enemyTurn(playerMoved=false){
     const pe=document.getElementById('player');
     if(pe){pe.classList.remove('damaged');requestAnimationFrame(()=>pe.classList.add('damaged'));setTimeout(()=>pe.classList.remove('damaged'),400);}
     showMsg('合計 '+totalDmg+' ダメージ。HP: '+player.hp+' / '+player.maxHp);
-    if(player.hp<=0){setTimeout(()=>gameOver(),400);return;}
+    if(player.hp<=0){_deathTimer=setTimeout(()=>gameOver(),400);return;}
   }
   // プレイヤー延焼エフェクト
   const pEl=document.getElementById('player');
@@ -1275,18 +1276,26 @@ function enemyTurn(playerMoved=false){
 
 // ===== ゲームオーバー =====
 function gameOver(){
+  // オプション中・一時停止中・セーフルームでは発火しない
+  if(phase!=='battle') return;
+  if(document.getElementById('options-overlay').classList.contains('open')) return;
   stopMove();
+  if(turnTimer){clearTimeout(turnTimer);turnTimer=null;}
+  pendingAction=null;
+  stopTimerDraw();
   document.getElementById('gameover-overlay').style.display='flex';
 }
 function restartGame(){
-  // タイマー・状態を完全クリア
+  // タイマー・遅延処理を全て即座にキャンセル
   if(turnTimer){clearTimeout(turnTimer);turnTimer=null;}
+  if(_deathTimer){clearTimeout(_deathTimer);_deathTimer=null;}
   pendingAction=null;turnPhase='idle';
   stopTimerDraw();
   gamePaused=false;
+  phase='safe'; // safe にしてgameOver判定を無効化
   player.hp=player.maxHp;player.weapon=null;player.burnTurns=0;
-  logEntries=[];
-  lastMsgText='';msgRepeatCount=1;
+  enemies=[];fireTiles={};trapTiles={};
+  logEntries=[];lastMsgText='';msgRepeatCount=1;
   const el=document.getElementById('msg-text');
   if(el)el.textContent='ダンジョンを選択してください。';
   document.getElementById('gameover-overlay').style.display='none';
@@ -1661,25 +1670,194 @@ document.addEventListener('keydown',e=>{
 document.querySelectorAll('.dpad-btn').forEach(b=>b.addEventListener('touchstart',e=>e.preventDefault(),{passive:false}));
 
 // ===== ゲームパッド =====
-let gpLastBtn={},gpLastAxis={},gpConnected=false,gpInterval=null;
-window.addEventListener('gamepadconnected',()=>{
-  gpConnected=true;showMsg('コントローラーが接続されました。');
-  if(!gpInterval)gpInterval=setInterval(pollGp,100);
-});
-window.addEventListener('gamepaddisconnected',()=>{gpConnected=false;clearInterval(gpInterval);gpInterval=null;});
+// ===== コントローラー全画面対応 =====
+// ブラウザ: 0=Bボタン(プロコン), 1=Aボタン
+// このゲーム: Aボタン=決定/攻撃, Bボタン=戻る/キャンセル
+let _gpPrev={},_gpAxis={},gpConnected=false,_gpCursor={pw:4,dungeon:0,wpn:0,stock:false};
+
+function _gpOn(pad,i){
+  const c=pad.buttons[i]?.value>0.08||pad.buttons[i]?.pressed||false;
+  const v=_gpPrev[i]||false;_gpPrev[i]=c;return c&&!v;
+}
+function _gpDir(pad){
+  const ax=pad.axes[0]||0,ay=pad.axes[1]||0,T=0.4;
+  const r={up:false,down:false,left:false,right:false};
+  if(_gpOn(pad,12)||(ay<-T&&!_gpAxis.up)) r.up=true;
+  if(_gpOn(pad,13)||(ay>T&&!_gpAxis.down)) r.down=true;
+  if(_gpOn(pad,14)||(ax<-T&&!_gpAxis.left)) r.left=true;
+  if(_gpOn(pad,15)||(ax>T&&!_gpAxis.right)) r.right=true;
+  _gpAxis={up:ay<-T,down:ay>T,left:ax<-T,right:ax>T};
+  return r;
+}
+
+function _gpCurrentScreen(){
+  const pw=document.getElementById('pw-screen');
+  if(pw&&!pw.classList.contains('hidden')) return 'pw';
+  if(document.getElementById('dungeon-select').classList.contains('open')) return 'dungeon';
+  if(document.getElementById('weapon-overlay').style.display==='flex') return 'weapon';
+  if(document.getElementById('wpn-confirm').classList.contains('open')) return 'confirm';
+  if(document.getElementById('pause-overlay').classList.contains('open')) return 'pause';
+  if(document.getElementById('options-overlay').classList.contains('open')) return 'options';
+  if(document.getElementById('gameover-overlay').style.display==='flex') return 'gameover';
+  if(document.getElementById('chest-overlay').style.display==='flex') return 'chest';
+  return 'game';
+}
+
+function _gpUpdatePwCursor(){
+  document.querySelectorAll('.pw-key').forEach((k,i)=>{
+    k.style.outline=i===_gpCursor.pw?'2px solid #9a9a92':'';
+  });
+}
+const _PW_KEYS=[1,2,3,4,5,6,7,8,9,0,'del',null];
+
 function pollGp(){
   const pad=Array.from(navigator.getGamepads?navigator.getGamepads():[]).find(p=>p&&p.connected);
   if(!pad)return;
-  function pressed(i){const c=pad.buttons[i]?.pressed||false,v=gpLastBtn[i]||false;gpLastBtn[i]=c;return c&&!v;}
-  const ax=pad.axes[0]||0,ay=pad.axes[1]||0,T=0.5;
-  if(pressed(12)||(ay<-T&&!gpLastAxis.up))doMove('up');
-  if(pressed(13)||(ay>T&&!gpLastAxis.down))doMove('down');
-  if(pressed(14)||(ax<-T&&!gpLastAxis.left))doMove('left');
-  if(pressed(15)||(ax>T&&!gpLastAxis.right))doMove('right');
-  gpLastAxis={up:ay<-T,down:ay>T,left:ax<-T,right:ax>T};
-  if(pressed(0)){const ov=document.getElementById('weapon-overlay');if(ov.style.display!=='none'){const f=ov.querySelector('.weapon-card');if(f)f.click();}else doAttack();}
-  if(pressed(1)){const ov=document.getElementById('weapon-overlay');if(ov.style.display!=='none'){const cards=ov.querySelectorAll('.weapon-card');if(cards[1])cards[1].click();}else waitAction();}
+  const bA=_gpOn(pad,1); // Aボタン=決定
+  const bB=_gpOn(pad,0); // Bボタン=戻る
+  const bX=_gpOn(pad,3);
+  const dir=_gpDir(pad);
+
+  const scr=_gpCurrentScreen();
+
+  // ===== パスワード画面 =====
+  if(scr==='pw'){
+    // 上下左右でカーソル移動（3列グリッド、0〜11）
+    if(dir.up){
+      let nc=_gpCursor.pw-3;
+      while(nc>=0&&_PW_KEYS[nc]===null)nc-=3;
+      if(nc>=0)_gpCursor.pw=nc;
+    }
+    if(dir.down){
+      let nc=_gpCursor.pw+3;
+      while(nc<=11&&_PW_KEYS[nc]===null)nc+=3;
+      if(nc<=11)_gpCursor.pw=nc;
+    }
+    if(dir.left&&_gpCursor.pw%3>0)_gpCursor.pw--;
+    if(dir.right&&_gpCursor.pw%3<2&&_gpCursor.pw<11)_gpCursor.pw++;
+    _gpUpdatePwCursor();
+    if(bA){
+      const v=_PW_KEYS[_gpCursor.pw];
+      if(v===null){}
+      else if(v==='del')pwDelete();
+      else pwInput(v);
+    }
+    if(bB){pwDelete();}
+    return;
+  }
+
+  // ===== ダンジョン選択 =====
+  if(scr==='dungeon'){
+    const cards=document.querySelectorAll('.dungeon-card');
+    if(dir.up||dir.down){
+      _gpCursor.dungeon=_gpCursor.dungeon===0?1:0;
+      cards.forEach((c,i)=>c.style.outline=i===_gpCursor.dungeon?'2px solid var(--player)':'');
+    }
+    if(bA){
+      const sel=cards[_gpCursor.dungeon];
+      if(sel)sel.click();
+    }
+    return;
+  }
+
+  // ===== 武器選択 =====
+  if(scr==='weapon'){
+    const cards=document.querySelectorAll('#weapon-choices .weapon-card');
+    if(dir.up||dir.down||dir.left||dir.right){
+      if(cards.length>0){
+        _gpCursor.wpn=(_gpCursor.wpn+(dir.down||dir.right?1:-1)+cards.length)%cards.length;
+        cards.forEach((c,i)=>c.style.outline=i===_gpCursor.wpn?'2px solid var(--player)':'');
+      }
+    }
+    if(bA){
+      const card=cards[_gpCursor.wpn];
+      if(card)card.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));
+    }
+    if(bB){
+      // ストックエリアをAで決定
+      onStockTap();
+    }
+    return;
+  }
+
+  // ===== 確認ダイアログ =====
+  if(scr==='confirm'){
+    if(bA)confirmWeapon();
+    if(bB)cancelWeapon();
+    return;
+  }
+
+  // ===== 一時停止 =====
+  if(scr==='pause'){
+    if(bA||bB)resumeGame();
+    return;
+  }
+
+  // ===== オプション =====
+  if(scr==='options'){
+    if(bB||bA)toggleOptions(); // 閉じる
+    return;
+  }
+
+  // ===== ゲームオーバー =====
+  if(scr==='gameover'){
+    if(bA||bB)restartGame();
+    return;
+  }
+
+  // ===== 宝箱 =====
+  if(scr==='chest'){
+    const cards=document.querySelectorAll('#chest-choices .weapon-card');
+    if(dir.up||dir.down){
+      if(cards.length>0){
+        _gpCursor.wpn=(_gpCursor.wpn+(dir.down?1:-1)+cards.length)%cards.length;
+        cards.forEach((c,i)=>c.style.outline=i===_gpCursor.wpn?'2px solid var(--player)':'');
+      }
+    }
+    if(bA){const c=cards[_gpCursor.wpn];if(c)c.querySelector('button')?.click();}
+    return;
+  }
+
+  // ===== ゲーム中 =====
+  if(scr==='game'){
+    // 右スティックでスクロール（メッセージ表示中）
+    const ry=pad.axes[3]||0;
+    if(Math.abs(ry)>0.3)window.scrollBy(0,ry*12);
+
+    // 方向
+    if(dir.up)   {heldDir='up';   queueAction({type:'move',dir:'up'});}
+    if(dir.down) {heldDir='down'; queueAction({type:'move',dir:'down'});}
+    if(dir.left) {heldDir='left'; queueAction({type:'move',dir:'left'});}
+    if(dir.right){heldDir='right';queueAction({type:'move',dir:'right'});}
+    if(!dir.up&&!dir.down&&!dir.left&&!dir.right)heldDir=null;
+
+    if(bA)queueAction({type:'attack'});   // Aボタン=攻撃
+    if(bB)queueAction({type:'wait'});     // Bボタン=待機
+    if(bX)pauseGame();                    // Xボタン=一時停止
+    if(_gpOn(pad,8)||_gpOn(pad,9))toggleOptions(); // セレクト/スタート=オプション
+    return;
+  }
 }
+
+window.addEventListener('gamepadconnected',e=>{
+  gpConnected=true;
+  if(!_gpInterval)_gpInterval=setInterval(pollGp,16);
+  // ダンジョン選択のカーソルを初期化
+  const cards=document.querySelectorAll('.dungeon-card');
+  if(cards.length>0)cards[0].style.outline='2px solid var(--player)';
+  // PWカーソル初期化
+  _gpUpdatePwCursor();
+});
+window.addEventListener('gamepaddisconnected',()=>{gpConnected=false;});
+// 遷移後検出
+let _gpInterval=null;
+setInterval(()=>{
+  const g=navigator.getGamepads?.();
+  if(g&&[...g].some(p=>p)&&!_gpInterval){
+    _gpInterval=setInterval(pollGp,16);
+    _gpUpdatePwCursor();
+  }
+},500);
 
 // ===== 初期化 =====
 function init(){initSafe();render();updHpBar();updWpn();updHd();setTimeout(showWpnOverlay,300);}
