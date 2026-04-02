@@ -137,6 +137,31 @@
     .weapon-card-stats{font-size:12px;color:var(--text2);line-height:1.8;}
     .weapon-card-range{font-size:11px;color:var(--text3);margin-top:4px;}
     .hd-info{font-size:11px;color:var(--text2);}
+    /* 武器ストックエリア */
+    .wpn-stock-area{margin-top:10px;padding:10px 12px;background:#111;border:2px dashed #333;border-radius:8px;min-height:54px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:border-color 0.15s;}
+    .wpn-stock-area.has-stock{border-style:solid;border-color:var(--player);}
+    .wpn-stock-area.has-stock:active{background:#1a2a1a;}
+    .wpn-stock-empty{font-size:11px;color:var(--text3);letter-spacing:0.1em;}
+    .wpn-stock-info{flex:1;min-width:0;}
+    .wpn-stock-label{font-size:9px;color:var(--player);letter-spacing:0.15em;margin-bottom:3px;}
+    .wpn-stock-name{font-size:14px;font-weight:500;color:var(--text);}
+    .wpn-stock-atk{font-size:11px;color:var(--text2);}
+    .wpn-stock-hint{font-size:10px;color:var(--text3);margin-top:2px;}
+    /* ローテーション武器カード */
+    .weapon-card.rotating{border-style:dashed;opacity:0.85;}
+    .weapon-card.rotating:active{border-color:rgba(200,168,90,0.6);}
+    /* 確認ダイアログ */
+    #wpn-confirm{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:200;align-items:center;justify-content:center;}
+    #wpn-confirm.open{display:flex;}
+    .wpn-confirm-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px 18px;width:90%;max-width:320px;text-align:center;}
+    .wpn-confirm-title{font-size:13px;color:var(--text2);letter-spacing:0.1em;margin-bottom:6px;}
+    .wpn-confirm-name{font-size:20px;font-weight:700;color:var(--text);margin-bottom:4px;}
+    .wpn-confirm-atk{font-size:12px;color:var(--text3);margin-bottom:18px;}
+    .wpn-confirm-btns{display:flex;gap:10px;}
+    .wpn-confirm-yes{flex:1;padding:11px;border-radius:8px;border:1px solid var(--player);background:none;color:var(--player);font-size:14px;font-weight:500;cursor:pointer;}
+    .wpn-confirm-no{flex:1;padding:11px;border-radius:8px;border:1px solid var(--border);background:none;color:var(--text2);font-size:13px;cursor:pointer;}
+    /* ターンタイマーcanvas */
+    #turn-timer-canvas{flex-shrink:0;display:block;}
 
     /* ===== パスワード画面 ===== */
     #pw-screen{
@@ -248,6 +273,7 @@
       <span class="weapon-atk" id="weapon-atk"></span>
     </div>
     <div class="ctrl-row">
+      <canvas id="turn-timer-canvas" width="88" height="88"></canvas>
       <div class="dpad">
         <div class="dpad-btn empty"></div>
         <div class="dpad-btn" onmousedown="queueAction({type:'move',dir:'up'})" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="(function(e){e.preventDefault();queueAction({type:'move',dir:'up'});})(event)" ontouchend="stopMove()" ontouchcancel="stopMove()">▲</div>
@@ -297,8 +323,31 @@
 <div class="overlay" id="weapon-overlay">
   <div class="overlay-box">
     <div class="overlay-title">武器を選べ</div>
-    <div class="overlay-sub">安全な部屋に2つの武器が残されていた。<br>どちらかを手に取り、迷宮へ踏み込め。</div>
+    <div class="overlay-sub">武器をタップしてストック。<br>ストックした武器を再びタップすると冒険を開始。</div>
     <div id="weapon-choices"></div>
+    <!-- ストックエリア -->
+    <div class="wpn-stock-area" id="wpn-stock-area" onclick="onStockTap()">
+      <div class="wpn-stock-empty" id="wpn-stock-empty">ここに武器をストック</div>
+      <div class="wpn-stock-info" id="wpn-stock-info" style="display:none;">
+        <div class="wpn-stock-label">ストック中</div>
+        <div class="wpn-stock-name" id="wpn-stock-name"></div>
+        <div class="wpn-stock-atk" id="wpn-stock-atk"></div>
+        <div class="wpn-stock-hint">もう一度タップ → 冒険を始める</div>
+      </div>
+      <canvas id="wpn-stock-canvas" width="70" height="70" style="display:none;flex-shrink:0;image-rendering:pixelated;"></canvas>
+    </div>
+  </div>
+</div>
+<!-- 武器確認ダイアログ -->
+<div id="wpn-confirm">
+  <div class="wpn-confirm-box">
+    <div class="wpn-confirm-title">この武器で挑みますか？</div>
+    <div class="wpn-confirm-name" id="wpn-confirm-name"></div>
+    <div class="wpn-confirm-atk" id="wpn-confirm-atk"></div>
+    <div class="wpn-confirm-btns">
+      <button class="wpn-confirm-yes" onclick="confirmWeapon()">はい</button>
+      <button class="wpn-confirm-no" onclick="cancelWeapon()">いいえ</button>
+    </div>
   </div>
 </div>
 
@@ -1123,10 +1172,10 @@ function drawMiniRange(canvas,weapon){
 }
 
 function showWpnOverlay(){
+  wpnStocked=null;
+  _clearStock();
   wpnRotateList=pickWeapons();
-  wpnRotateIdx=0;
   _renderWpnOverlay(wpnRotateList);
-  // 1秒毎に選択肢をローテーション
   if(weaponRotateTimer) clearInterval(weaponRotateTimer);
   weaponRotateTimer=setInterval(()=>{
     wpnRotateList=pickWeapons();
@@ -1134,11 +1183,69 @@ function showWpnOverlay(){
   },1000);
   document.getElementById('weapon-overlay').style.display='flex';
 }
+
+let wpnStocked=null;
+
+function _stockWeapon(w){
+  wpnStocked=w;
+  const area=document.getElementById('wpn-stock-area');
+  const empty=document.getElementById('wpn-stock-empty');
+  const info=document.getElementById('wpn-stock-info');
+  const sc=document.getElementById('wpn-stock-canvas');
+  const bs=w.bonus>0?'+'+w.bonus:w.bonus<0?''+w.bonus:'\xb10';
+  if(area) area.classList.add('has-stock');
+  if(empty) empty.style.display='none';
+  if(info) info.style.display='block';
+  if(sc) sc.style.display='block';
+  const sn=document.getElementById('wpn-stock-name');
+  const sa=document.getElementById('wpn-stock-atk');
+  if(sn) sn.textContent=w.name+' ('+RARITY_LABEL[w.rarity]+')';
+  if(sa) sa.textContent='\u653b\u6483\u529b '+w.atk+' ('+bs+')';
+  if(sc) requestAnimationFrame(()=>drawMiniRange(sc,w));
+}
+
+function _clearStock(){
+  wpnStocked=null;
+  const area=document.getElementById('wpn-stock-area');
+  if(area) area.classList.remove('has-stock');
+  const empty=document.getElementById('wpn-stock-empty');
+  if(empty) empty.style.display='';
+  const info=document.getElementById('wpn-stock-info');
+  if(info) info.style.display='none';
+  const sc=document.getElementById('wpn-stock-canvas');
+  if(sc) sc.style.display='none';
+}
+
+function onStockTap(){
+  if(!wpnStocked) return;
+  const bs=wpnStocked.bonus>0?'+'+wpnStocked.bonus:wpnStocked.bonus<0?''+wpnStocked.bonus:'\xb10';
+  const cn=document.getElementById('wpn-confirm-name');
+  const ca=document.getElementById('wpn-confirm-atk');
+  if(cn) cn.textContent=wpnStocked.name+' ('+RARITY_LABEL[wpnStocked.rarity]+')';
+  if(ca) ca.textContent='\u653b\u6483\u529b '+wpnStocked.atk+' ('+bs+')';
+  document.getElementById('wpn-confirm').classList.add('open');
+}
+function confirmWeapon(){
+  if(!wpnStocked) return;
+  player.weapon=wpnStocked;
+  document.getElementById('wpn-confirm').classList.remove('open');
+  if(weaponRotateTimer){clearInterval(weaponRotateTimer);weaponRotateTimer=null;}
+  document.getElementById('weapon-overlay').style.display='none';
+  const w=wpnStocked;
+  _clearStock();
+  updWpn();
+  showMsg(w.name+'\u3092\u88c5\u5099\u3057\u305f\uff01\u4e0a\u306e\u90e8\u5c4b\u3078\u9032\u3082\u3046\u3002');
+}
+function cancelWeapon(){
+  document.getElementById('wpn-confirm').classList.remove('open');
+}
+
 function _renderWpnOverlay(weapons){
   const box=document.getElementById('weapon-choices');
   box.innerHTML='';
   weapons.forEach((w,idx)=>{
-    const card=document.createElement('div');card.className='weapon-card';
+    const card=document.createElement('div');
+    card.className='weapon-card rotating';
     const bs=w.bonus>0?'+'+w.bonus:w.bonus<0?''+w.bonus:'0';
     const bc=w.bonus>0?'stat-bonus':w.bonus<0?'stat-minus':'';
     const cid='wc-'+idx;
@@ -1151,22 +1258,104 @@ function _renderWpnOverlay(weapons){
         '</div>'+
         '<canvas id="'+cid+'" width="110" height="110" style="flex-shrink:0;image-rendering:pixelated;"></canvas>'+
       '</div>';
-    card.addEventListener('click',()=>{
-      player.weapon=w;
-      document.getElementById('weapon-overlay').style.display='none';
-      updWpn();showMsg(w.name+'を装備した！上の部屋へ進もう。');
-    });
+    card.addEventListener('click',()=>{ _stockWeapon(w); });
     box.appendChild(card);
     requestAnimationFrame(()=>drawMiniRange(document.getElementById(cid),w));
   });
+}
+
+// ===== ターンタイマーcanvas描画 =====
+let _turnStartMs=0;
+let _timerRafId=null;
+
+function drawTurnTimer(){
+  const canvas=document.getElementById('turn-timer-canvas');
+  if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  const W=88,H=88,cx=W/2,cy=H/2,R=40,r=28;
+  ctx.clearRect(0,0,W,H);
+
+  // 経過割合を計算（0〜1）
+  let prog=0;
+  if(turnTimer&&_turnStartMs>0){
+    prog=Math.min(1,(Date.now()-_turnStartMs)/1000);
+  }
+
+  // 背景円（黒）
+  ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);
+  ctx.fillStyle='#1a1a18';ctx.fill();
+  ctx.strokeStyle='#333';ctx.lineWidth=1.5;ctx.stroke();
+
+  if(prog>0){
+    // 経過した部分（赤）: 12時方向から時計回り
+    const startAngle=-Math.PI/2;
+    const endAngle=startAngle+prog*Math.PI*2;
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,R,startAngle,endAngle);
+    ctx.closePath();
+    ctx.fillStyle='rgba(200,60,40,0.85)';ctx.fill();
+  }
+
+  // 攻撃範囲グリッド（小さな正方形）
+  if(player.weapon){
+    const gs=10; // マスのサイズ(px)
+    const raw=player.weapon.range;
+    const dir=player.dir||'up';
+    const rset=new Set();
+    raw.forEach(([dx,dy])=>{
+      let rx=dx,ry=dy;
+      if(dir==='down'){rx=-dx;ry=-dy;}
+      else if(dir==='right'){rx=-dy;ry=dx;}
+      else if(dir==='left'){rx=dy;ry=-dx;}
+      rset.add(rx+','+ry);
+    });
+    for(let gy=-2;gy<=2;gy++){for(let gx=-2;gx<=2;gx++){
+      const px=cx+gx*gs-gs/2, py=cy+gy*gs-gs/2;
+      const isP=gx===0&&gy===0;
+      const isA=rset.has(gx+','+gy);
+      if(isP){
+        ctx.fillStyle='#1D9E75';
+        ctx.fillRect(px+1,py+1,gs-2,gs-2);
+      } else if(isA){
+        ctx.fillStyle='rgba(74,158,224,0.75)';
+        ctx.fillRect(px+1,py+1,gs-2,gs-2);
+      } else {
+        ctx.fillStyle='rgba(255,255,255,0.06)';
+        ctx.fillRect(px+1,py+1,gs-2,gs-2);
+      }
+    }}
+  }
+
+  // 内側マスク（中央クリア）
+  ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);
+  ctx.fillStyle='#1a1a18';ctx.fill();
+
+  // 12時方向のノッチ
+  ctx.beginPath();ctx.moveTo(cx,cy-r+1);ctx.lineTo(cx,cy-R+1);
+  ctx.strokeStyle='rgba(255,255,255,0.2)';ctx.lineWidth=1.5;ctx.stroke();
+
+  _timerRafId=requestAnimationFrame(drawTurnTimer);
+}
+function startTimerDraw(){
+  if(_timerRafId) cancelAnimationFrame(_timerRafId);
+  _timerRafId=requestAnimationFrame(drawTurnTimer);
+}
+function stopTimerDraw(){
+  if(_timerRafId){cancelAnimationFrame(_timerRafId);_timerRafId=null;}
+  const canvas=document.getElementById('turn-timer-canvas');
+  if(canvas){const ctx=canvas.getContext('2d');ctx.clearRect(0,0,88,88);}
 }
 
 // ===== 1秒ターンタイマー =====
 function startTurnTimer(){
   if(turnTimer) return;
   turnPhase='waiting';
+  _turnStartMs=Date.now();
+  startTimerDraw();
   turnTimer=setTimeout(()=>{
     turnTimer=null;
+    stopTimerDraw();
     if(pendingAction){
       // プレイヤーの行動を実行
       const a=pendingAction; pendingAction=null;
@@ -1179,6 +1368,7 @@ function startTurnTimer(){
     }
     turnPhase='idle';
     if(phase==='battle'&&enemies.length>0) startTurnTimer();
+    else stopTimerDraw();
   },1000);
 }
 function queueAction(a){
