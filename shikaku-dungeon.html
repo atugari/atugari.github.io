@@ -59,6 +59,20 @@
     .viewport-outer{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--bg);}
     .viewport{width:calc(var(--cell)*8);height:calc(var(--cell)*8);overflow:hidden;position:relative;}
     .map-layer{position:absolute;left:0;top:0;}
+    /* ダメージポップアップ */
+    .dmg-popup{position:absolute;pointer-events:none;z-index:50;font-weight:900;font-family:sans-serif;
+      text-shadow:0 1px 4px rgba(0,0,0,0.9),0 0 8px rgba(0,0,0,0.7);
+      animation:dmg-float 0.9s ease-out forwards;white-space:nowrap;}
+    @keyframes dmg-float{
+      0%{transform:translateY(0) scale(1);opacity:1;}
+      30%{transform:translateY(-18px) scale(1.15);opacity:1;}
+      100%{transform:translateY(-48px) scale(0.85);opacity:0;}
+    }
+    .dmg-popup.player-hit{color:#FF4444;font-size:20px;}
+    .dmg-popup.enemy-hit{color:#FFDD00;font-size:18px;}
+    .dmg-popup.crit{color:#FF8800;font-size:24px;}
+    .dmg-popup.miss{color:#aaaaaa;font-size:14px;}
+    .dmg-popup.heal{color:#44FF88;font-size:16px;}
     /* セル */
     .cell{position:absolute;width:var(--cell);height:var(--cell);box-sizing:border-box;font-size:0;line-height:0;}
     .cell.floor{background:var(--floor);box-shadow:inset -1px -1px 0 rgba(255,255,255,0.04);}
@@ -485,7 +499,7 @@
   <div class="enh-row" id="enh-row-hp">
     <div class="enh-row-info">
       <div class="enh-row-name">最大HP強化</div>
-      <div class="enh-row-desc">最大HPを+20増加</div>
+      <div class="enh-row-desc">Lv1-50: +20/Lv  Lv51+: ×1.01複利</div>
       <div class="enh-row-lv" id="enh-lv-hp">Lv.0 (HP: 100)</div>
     </div>
     <button class="enh-btn" id="enh-btn-hp" onclick="enhance('hp')">20 EXP</button>
@@ -494,7 +508,7 @@
   <div class="enh-row" id="enh-row-atk">
     <div class="enh-row-info">
       <div class="enh-row-name">攻撃力強化</div>
-      <div class="enh-row-desc">全武器の基礎攻撃力を+3増加</div>
+      <div class="enh-row-desc">Lv1-50: +3/Lv  Lv51+: ×1.01複利</div>
       <div class="enh-row-lv" id="enh-lv-atk">Lv.0 (+0)</div>
     </div>
     <button class="enh-btn" id="enh-btn-atk" onclick="enhance('atk')">15 EXP</button>
@@ -502,7 +516,7 @@
   <div class="enh-row" id="enh-row-spread">
     <div class="enh-row-info">
       <div class="enh-row-name">ブレ低減</div>
-      <div class="enh-row-desc">攻撃力のブレ幅を-1縮小（安定性↑）</div>
+      <div class="enh-row-desc">Lv1-50: -1/Lv  Lv51+: ×1.01複利</div>
       <div class="enh-row-lv" id="enh-lv-spread">Lv.0</div>
     </div>
     <button class="enh-btn" id="enh-btn-spread" onclick="enhance('spread')">10 EXP</button>
@@ -511,7 +525,7 @@
   <div class="enh-row" id="enh-row-regen">
     <div class="enh-row-info">
       <div class="enh-row-name">戦闘後HP回復</div>
-      <div class="enh-row-desc">部屋クリア後にHP5回復</div>
+      <div class="enh-row-desc">Lv1-50: +5/Lv  Lv51+: ×1.02複利</div>
       <div class="enh-row-lv" id="enh-lv-regen">Lv.0</div>
     </div>
     <button class="enh-btn" id="enh-btn-regen" onclick="enhance('regen')">30 EXP</button>
@@ -772,6 +786,25 @@
 
 <script>
 const CELL=44, SAFE=5, MAP=10, MAP_HARD=7;
+
+// ===== ダメージポップアップ =====
+function showDmgPopup(x, y, text, type='enemy-hit'){
+  const layer=document.getElementById('map-layer');
+  if(!layer) return;
+  const pop=document.createElement('div');
+  pop.className='dmg-popup '+type;
+  pop.textContent=text;
+  // マップ座標→DOM座標（layer内）
+  // x,y はマップグリッド座標
+  const lx=x*CELL+CELL/2-16;
+  const ly=y*CELL-8;
+  pop.style.left=lx+'px';
+  pop.style.top=ly+'px';
+  // ランダムにわずかにずらす（重なりを防ぐ）
+  pop.style.transform='translateX('+(Math.random()*16-8)+'px)';
+  layer.appendChild(pop);
+  setTimeout(()=>pop.remove(), 950);
+}
 const MOVE_DELAY=400, MOVE_REPEAT=220, MOVE_ANIM=180;
 const SENSE_RANGE=4, ATK_CD=500;
 
@@ -1991,37 +2024,72 @@ function saveEnhLv(key,v){ localStorage.setItem('sq_enh_'+key,v.toString()); }
 
 // 強化コスト定義
 const ENH_DEF={
-  hp:   {cost:20, maxLv:20, label:'最大HP強化', apply:()=>{ player.maxHp=100+getEnhLv('hp')*20; player.hp=Math.min(player.hp,player.maxHp); updHpBar(); }},
-  atk:  {cost:15, maxLv:30, label:'攻撃力強化', apply:()=>{}},
-  spread:{cost:10, maxLv:8,  label:'ブレ低減',   apply:()=>{}},
-  regen:{cost:30, maxLv:5,  label:'戦闘後HP回復',apply:()=>{}},
+  // HP: Lv1-50は+20/Lv、Lv51-999は×1.01/Lv複利
+  hp:    {cost:20, maxLv:999, label:'最大HP強化',
+    apply:()=>{ player.maxHp=_enhHpVal(); player.hp=Math.min(player.hp,player.maxHp); updHpBar(); }},
+  // ATK: Lv1-50は+3/Lv、Lv51-999は×1.01複利
+  atk:   {cost:15, maxLv:999, label:'攻撃力強化', apply:()=>{}},
+  // ブレ低減: Lv1-50は-1/Lv、Lv51-999は×0.99複利（ブレが縮む）
+  spread:{cost:10, maxLv:999, label:'ブレ低減',   apply:()=>{}},
+  // 回復: Lv1-50は+5/Lv、Lv51-999は×1.02複利
+  regen: {cost:30, maxLv:999, label:'戦闘後HP回復',apply:()=>{}},
 };
+
+// 強化値計算（前半は加算、後半は乗算複利）
+function _enhHpVal(){
+  const lv=getEnhLv('hp');
+  if(lv<=50) return 100+lv*20;
+  return Math.round((100+50*20)*Math.pow(1.01,lv-50));
+}
+function _enhAtkFlat(){
+  const lv=getEnhLv('atk');
+  if(lv<=50) return lv*3;
+  return Math.round(50*3*Math.pow(1.01,lv-50));
+}
+function _enhSpreadFlat(){
+  const lv=getEnhLv('spread');
+  if(lv<=50) return lv;
+  return Math.round(50*Math.pow(1.01,lv-50));
+}
+function _enhRegenVal(){
+  const lv=getEnhLv('regen');
+  if(lv<=50) return lv*5;
+  return Math.round(50*5*Math.pow(1.02,lv-50));
+}
 
 function enhance(key){
   const def=ENH_DEF[key];
   if(!def)return;
   const lv=getEnhLv(key);
   if(lv>=def.maxLv){ showMsg('これ以上強化できません。'); return; }
-  const cost=def.cost+lv*Math.floor(def.cost*0.5); // 段階的コスト増加
+  // コスト: Lv50まで線形増加、Lv51以降は×1.1複利（高Lvは高コスト）
+  const cost=lv<=50
+    ? def.cost+lv*Math.floor(def.cost*0.3)
+    : Math.round((def.cost+50*Math.floor(def.cost*0.3))*Math.pow(1.1,lv-50));
   const exp=getExp();
   if(exp<cost){ showMsg('EXPが足りません。（必要: '+cost+' EXP）'); return; }
   saveExp(exp-cost);
   saveEnhLv(key,lv+1);
   if(def.apply)def.apply();
   renderEnhance();
-  showMsg(def.label+' Lv.'+(lv+1)+'に強化！（残りEXP: '+getExp()+'）');
+  const newLv=lv+1;
+  let valueStr='';
+  if(key==='hp')valueStr=' → HP上限: '+_enhHpVal();
+  else if(key==='atk')valueStr=' → 攻撃力: +'+_enhAtkFlat();
+  else if(key==='spread')valueStr=' → ブレ: -'+_enhSpreadFlat();
+  else if(key==='regen')valueStr=' → 回復: +'+_enhRegenVal();
+  showMsg(def.label+' Lv.'+newLv+'に強化！'+valueStr+'（残りEXP: '+getExp()+'）');
 }
 
 // 強化ボーナスをプレイヤーに適用
 function applyEnhancements(){
-  // HP
-  player.maxHp=100+getEnhLv('hp')*20;
+  player.maxHp=_enhHpVal();
   player.hp=Math.min(player.hp,player.maxHp);
 }
 
 // genWeapon に強化ボーナス適用
-function getAtkBonus(){ return getEnhLv('atk')*3; }
-function getSpreadReduction(){ return getEnhLv('spread'); }
+function getAtkBonus(){ return _enhAtkFlat(); }
+function getSpreadReduction(){ return _enhSpreadFlat(); }
 
 function renderEnhance(){
   const exp=getExp();
@@ -2030,23 +2098,25 @@ function renderEnhance(){
 
   const items=[
     {key:'hp', lvEl:'enh-lv-hp', btnEl:'enh-btn-hp',
-     lvText:()=>'Lv.'+getEnhLv('hp')+' (HP: '+(100+getEnhLv('hp')*20)+')'},
+     lvText:()=>{const lv=getEnhLv('hp');const v=_enhHpVal();return 'Lv.'+lv+(lv>50?'（×1.01複利）':'')+' → HP: '+v;}},
     {key:'atk', lvEl:'enh-lv-atk', btnEl:'enh-btn-atk',
-     lvText:()=>'Lv.'+getEnhLv('atk')+' (+'+getEnhLv('atk')*3+')'},
+     lvText:()=>{const lv=getEnhLv('atk');const v=_enhAtkFlat();return 'Lv.'+lv+(lv>50?'（×1.01複利）':'')+' → +'+v;}},
     {key:'spread', lvEl:'enh-lv-spread', btnEl:'enh-btn-spread',
-     lvText:()=>'Lv.'+getEnhLv('spread')+' (ブレ-'+getEnhLv('spread')+')'},
+     lvText:()=>{const lv=getEnhLv('spread');const v=_enhSpreadFlat();return 'Lv.'+lv+(lv>50?'（×1.01複利）':'')+' → ブレ-'+v;}},
     {key:'regen', lvEl:'enh-lv-regen', btnEl:'enh-btn-regen',
-     lvText:()=>'Lv.'+getEnhLv('regen')+' (回復+'+(getEnhLv('regen')*5)+')'},
+     lvText:()=>{const lv=getEnhLv('regen');const v=_enhRegenVal();return 'Lv.'+lv+(lv>50?'（×1.02複利）':'')+' → 回復+'+v;}},
   ];
   items.forEach(item=>{
     const def=ENH_DEF[item.key];
     const lv=getEnhLv(item.key);
-    const cost=def.cost+lv*Math.floor(def.cost*0.5);
+    const cost=lv<=50
+      ? def.cost+lv*Math.floor(def.cost*0.3)
+      : Math.round((def.cost+50*Math.floor(def.cost*0.3))*Math.pow(1.1,lv-50));
     const lEl=document.getElementById(item.lvEl);
     const bEl=document.getElementById(item.btnEl);
     if(lEl)lEl.textContent=item.lvText();
     if(bEl){
-      if(lv>=def.maxLv){ bEl.textContent='MAX'; bEl.disabled=true; }
+      if(lv>=def.maxLv){ bEl.textContent='Lv.MAX(999)'; bEl.disabled=true; }
       else { bEl.textContent=cost+' EXP'; bEl.disabled=(exp<cost); }
     }
   });
@@ -2583,9 +2653,11 @@ function doAttack(){
     const ac=atkCells();
     const targets=enemies.filter(e=>ac.some(c=>c.x===e.x&&c.y===e.y));
     targets.forEach(t=>{
-      t.hp-=player.weapon.atk;
+      const dmgVal=player.weapon.atk;
+      t.hp-=dmgVal;
       const el=document.getElementById('e'+t.id);
       if(el){el.classList.remove('hit');requestAnimationFrame(()=>el.classList.add('hit'));setTimeout(()=>el.classList.remove('hit'),280);}
+      showDmgPopup(t.x, t.y, '-'+dmgVal, 'enemy-hit');
       if(t.hp<=0)enemies=enemies.filter(e=>e.id!==t.id);
     });
     const dead=targets.filter(t=>t.hp<=0).length;
@@ -2611,9 +2683,11 @@ function doAttack(){
     }
     const targets=enemies.filter(e=>ac.some(c=>c.x===e.x&&c.y===e.y));
     targets.forEach(t=>{
-      t.hp-=player.weapon.atk;
+      const dmgVal=player.weapon.atk;
+      t.hp-=dmgVal;
       const el=document.getElementById('e'+t.id);
       if(el){el.classList.remove('hit');requestAnimationFrame(()=>el.classList.add('hit'));setTimeout(()=>el.classList.remove('hit'),280);}
+      showDmgPopup(t.x, t.y, '-'+dmgVal, 'enemy-hit');
       if(t.hp<=0)enemies=enemies.filter(e=>e.id!==t.id);
     });
     const dead=targets.filter(t=>t.hp<=0).length;
@@ -2751,7 +2825,7 @@ function goNextRoom(){
       // 経験値付与
       _addExp(dng ? Math.max(5, dng.diff) : 5);
       // regen強化
-      const regenHp=getEnhLv('regen')*5;
+      const regenHp=_enhRegenVal();
       if(regenHp>0){player.hp=Math.min(player.maxHp,player.hp+regenHp);updHpBar();}
       const msg=dungeonType==='tutorial'?'チュートリアル完了！冒険の準備ができた！':
         (dng?dng.name:'ダンジョン')+'をクリア！次のダンジョンが解放された！';
@@ -2846,6 +2920,7 @@ function enemyTurn(playerMoved=false){
         if(Math.abs(dx)>Math.abs(dy)){bumpDir=dx>0?'right':'left';}
         else{bumpDir=dy>0?'down':'up';}
         e.bumpDir=bumpDir;
+        showDmgPopup(player.x, player.y, '-'+dmg, 'player-hit');
         showMsg('【'+td.name+'】の攻撃が命中！ '+dmg+' ダメージ。');
       } else {
         showMsg('【'+td.name+'】が攻撃したが空振りした！');
@@ -2877,6 +2952,7 @@ function enemyTurn(playerMoved=false){
     const fdmg=5+Math.floor(Math.random()*4);
     player.hp=Math.max(0,player.hp-fdmg);
     totalDmg+=fdmg;
+    showDmgPopup(player.x,player.y,'-'+fdmg,'player-hit');
     if(player.burnTurns===0) showMsg('炎を踏んだ！'+fdmg+'ダメージ。3ターン延焼する！');
     player.burnTurns=3;
   }
@@ -2886,6 +2962,7 @@ function enemyTurn(playerMoved=false){
     player.hp=Math.max(0,player.hp-bdmg);
     totalDmg+=bdmg;
     player.burnTurns--;
+    showDmgPopup(player.x,player.y,'-'+bdmg,'player-hit');
     showMsg('延焼！'+bdmg+'ダメージ。残り'+player.burnTurns+'ターン。');
   }
   // 炎タイル経過ターン
