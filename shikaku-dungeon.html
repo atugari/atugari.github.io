@@ -2885,14 +2885,34 @@ function canMoveTo(x,y){
   return true;
 }
 function moveToward(e){
-  const dx=player.x-e.x,dy=player.y-e.y;
-  const moves=Math.abs(dx)>=Math.abs(dy)?
-    [[Math.sign(dx),0],[0,Math.sign(dy)],[0,-Math.sign(dy)],[-Math.sign(dx),0]]:
-    [[0,Math.sign(dy)],[Math.sign(dx),0],[-Math.sign(dx),0],[0,-Math.sign(dy)]];
-  for(const[mx,my]of moves){
-    const nx=e.x+mx,ny=e.y+my;
-    if(canMoveTo(nx,ny)){e.prevX=e.x;e.prevY=e.y;e.x=nx;e.y=ny;return;}
+  // BFS で最短経路の最初の1歩を求める
+  const goal={x:player.x,y:player.y};
+  const visited=new Set([e.x+','+e.y]);
+  const queue=[{x:e.x,y:e.y,first:null}];
+  const DIRS=[[0,-1],[0,1],[-1,0],[1,0]];
+  while(queue.length>0){
+    const cur=queue.shift();
+    for(const[dx,dy]of DIRS){
+      const nx=cur.x+dx,ny=cur.y+dy;
+      const key=nx+','+ny;
+      if(visited.has(key))continue;
+      // プレイヤー位置は通過可能（ゴール）
+      const isGoal=nx===goal.x&&ny===goal.y;
+      if(!isGoal&&!canMoveTo(nx,ny))continue;
+      visited.add(key);
+      const first=cur.first||{x:nx,y:ny};
+      if(isGoal){
+        // 最短経路の最初の1歩へ移動
+        if(canMoveTo(first.x,first.y)){
+          e.prevX=e.x;e.prevY=e.y;e.x=first.x;e.y=first.y;
+        }
+        return;
+      }
+      queue.push({x:nx,y:ny,first});
+    }
   }
+  // BFSで経路なし→wander
+  wander(e);
 }
 function wander(e){
   const dirs=[[0,1],[0,-1],[1,0],[-1,0]].sort(()=>Math.random()-0.5);
