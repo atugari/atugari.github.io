@@ -23,7 +23,7 @@
     .hd-info{font-size:12px;font-weight:600;color:#b0b0a8;}
     .opt-btn{background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer;padding:4px 6px;line-height:1;}
     /* オプションオーバーレイ */
-    #options-overlay{position:fixed;top:0;left:0;right:0;bottom:45%;background:rgba(0,0,0,0.88);z-index:300;display:none;align-items:flex-end;justify-content:center;padding:8px 16px;overflow-y:auto;}
+    #options-overlay{position:fixed;top:0;left:0;right:0;bottom:45%;background:rgba(0,0,0,0.88);z-index:10000;display:none;align-items:flex-end;justify-content:center;padding:8px 16px;overflow-y:auto;}
     #options-overlay.open{display:flex;}
     .opt-box{width:100%;max-width:480px;max-height:100%;overflow-y:auto;}
     .opt-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;width:100%;max-width:320px;}
@@ -201,7 +201,7 @@
     .hd-info{font-size:12px;font-weight:600;color:#b0b0a8;}
     .opt-btn{background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer;padding:4px 6px;line-height:1;}
     /* オプションオーバーレイ */
-    #options-overlay{position:fixed;top:0;left:0;right:0;bottom:45%;background:rgba(0,0,0,0.88);z-index:300;display:none;align-items:flex-end;justify-content:center;padding:8px 16px;overflow-y:auto;}
+    #options-overlay{position:fixed;top:0;left:0;right:0;bottom:45%;background:rgba(0,0,0,0.88);z-index:10000;display:none;align-items:flex-end;justify-content:center;padding:8px 16px;overflow-y:auto;}
     #options-overlay.open{display:flex;}
     .opt-box{width:100%;max-width:480px;max-height:100%;overflow-y:auto;}
     .opt-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;width:100%;max-width:320px;}
@@ -327,6 +327,22 @@
     .dungeon-card.locked{display:none;}
     .dungeon-card{position:relative;}
     .dungeon-card-num{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:0.1em;margin-bottom:2px;}
+    /* 経験値・強化 */
+    #enhance-screen{position:fixed;inset:0;background:#1a1a18;display:none;flex-direction:column;align-items:center;gap:0;z-index:9998;overflow-y:auto;padding:16px;}
+    #enhance-screen.open{display:flex;}
+    .enh-header{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:360px;padding-bottom:10px;border-bottom:1px solid #333;margin-bottom:12px;}
+    .enh-title{font-size:16px;font-weight:700;color:#d0d0c8;letter-spacing:0.2em;}
+    .enh-exp-badge{font-size:13px;font-weight:700;color:#c8a85a;background:rgba(200,168,90,0.1);border:1px solid rgba(200,168,90,0.3);border-radius:20px;padding:4px 14px;}
+    .enh-section{font-size:10px;font-weight:700;color:#5a5a54;letter-spacing:0.2em;width:100%;max-width:360px;margin:12px 0 6px;}
+    .enh-row{width:100%;max-width:360px;background:#252520;border:1px solid #333;border-radius:10px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px;}
+    .enh-row-info{flex:1;}
+    .enh-row-name{font-size:13px;font-weight:600;color:#e8e4d8;margin-bottom:3px;}
+    .enh-row-desc{font-size:11px;color:#8a8a80;}
+    .enh-row-lv{font-size:11px;font-weight:700;color:#c8a85a;margin-top:2px;}
+    .enh-btn{padding:6px 14px;border-radius:7px;border:1px solid var(--player);background:none;color:var(--player);font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;}
+    .enh-btn:active{background:rgba(29,158,117,0.15);}
+    .enh-btn:disabled{border-color:#333;color:#444;pointer-events:none;}
+    .enh-back{margin-top:8px;font-size:12px;color:#5a5a54;cursor:pointer;text-decoration:underline;}
     /* ページネーション */
     .dungeon-page-btns{display:flex;gap:8px;align-items:center;width:100%;max-width:360px;justify-content:center;flex-wrap:wrap;margin-bottom:4px;}
     .dungeon-page-btn{padding:5px 10px;border-radius:6px;border:1px solid #333;background:#252520;color:#8a8a80;font-size:12px;font-weight:600;cursor:pointer;transition:background 0.1s;}
@@ -459,15 +475,61 @@
 </div>
 
 <!-- ===== ダンジョン選択画面 ===== -->
+<!-- 強化画面 -->
+<div id="enhance-screen">
+  <div class="enh-header">
+    <span class="enh-title">強 化</span>
+    <span class="enh-exp-badge" id="enh-exp-disp">EXP: 0</span>
+  </div>
+  <div class="enh-section">プレイヤー強化</div>
+  <div class="enh-row" id="enh-row-hp">
+    <div class="enh-row-info">
+      <div class="enh-row-name">最大HP強化</div>
+      <div class="enh-row-desc">最大HPを+20増加</div>
+      <div class="enh-row-lv" id="enh-lv-hp">Lv.0 (HP: 100)</div>
+    </div>
+    <button class="enh-btn" id="enh-btn-hp" onclick="enhance('hp')">20 EXP</button>
+  </div>
+  <div class="enh-section">武器強化（全武器の基礎攻撃力に影響）</div>
+  <div class="enh-row" id="enh-row-atk">
+    <div class="enh-row-info">
+      <div class="enh-row-name">攻撃力強化</div>
+      <div class="enh-row-desc">全武器の基礎攻撃力を+3増加</div>
+      <div class="enh-row-lv" id="enh-lv-atk">Lv.0 (+0)</div>
+    </div>
+    <button class="enh-btn" id="enh-btn-atk" onclick="enhance('atk')">15 EXP</button>
+  </div>
+  <div class="enh-row" id="enh-row-spread">
+    <div class="enh-row-info">
+      <div class="enh-row-name">ブレ低減</div>
+      <div class="enh-row-desc">攻撃力のブレ幅を-1縮小（安定性↑）</div>
+      <div class="enh-row-lv" id="enh-lv-spread">Lv.0</div>
+    </div>
+    <button class="enh-btn" id="enh-btn-spread" onclick="enhance('spread')">10 EXP</button>
+  </div>
+  <div class="enh-section">特殊強化</div>
+  <div class="enh-row" id="enh-row-regen">
+    <div class="enh-row-info">
+      <div class="enh-row-name">戦闘後HP回復</div>
+      <div class="enh-row-desc">部屋クリア後にHP5回復</div>
+      <div class="enh-row-lv" id="enh-lv-regen">Lv.0</div>
+    </div>
+    <button class="enh-btn" id="enh-btn-regen" onclick="enhance('regen')">30 EXP</button>
+  </div>
+  <div style="height:8px;"></div>
+  <button class="enh-back" onclick="closeEnhance()">← ダンジョン選択に戻る</button>
+</div>
+
 <div id="dungeon-select">
   <div class="dungeon-select-header">
     <div class="dungeon-select-title">ダンジョン選択</div>
     <div style="display:flex;gap:6px;align-items:center;">
-      <button onclick="toggleOptions()" id="dungeon-opt-btn" style="background:none;border:1px solid #444;color:#8a8a80;font-size:14px;padding:4px 8px;border-radius:6px;cursor:pointer;">⚙</button>
+      <button onclick="toggleOptions()" id="dungeon-opt-btn" style="background:none;border:1px solid #444;color:#8a8a80;font-size:13px;font-weight:600;padding:4px 10px;border-radius:6px;cursor:pointer;">⚙ 設定</button>
       <button onclick="showHof()" style="background:none;border:1px solid #444;color:#8a8a80;font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:sans-serif;">🏆 殿堂</button>
     </div>
   </div>
-  <div style="text-align:right;width:100%;max-width:360px;margin-bottom:4px;">
+  <div style="display:flex;align-items:center;justify-content:space-between;width:100%;max-width:360px;margin-bottom:4px;">
+    <button onclick="openEnhance()" style="background:none;border:1px solid rgba(200,168,90,0.4);color:#c8a85a;font-size:12px;font-weight:700;padding:4px 12px;border-radius:6px;cursor:pointer;">⚡ 強化</button>
     <a href="dungeon-ranking.html" style="font-size:11px;color:#8a7040;text-decoration:none;letter-spacing:0.05em;">📊 ランキングを見る →</a>
   </div>
   <div id="dungeon-page-btns" class="dungeon-page-btns"></div>
@@ -504,7 +566,7 @@
     <span class="hd-title" id="hd-title">四角迷宮</span>
     <span style="display:flex;align-items:center;gap:4px;">
       <span class="hd-info" id="hd-info">安全な部屋</span>
-      <button class="opt-btn" onclick="toggleOptions()">⚙</button>
+      <button class="opt-btn" onclick="toggleOptions()" style="font-size:13px;font-weight:600;">⚙ 設定</button>
     </span>
   </div>
   <div class="hp-bar-wrap">
@@ -578,7 +640,7 @@
       <div class="tog" id="tog-skip-turn" onclick="toggleOpt('skip_turn')"><div class="tog-knob"></div></div>
     </div>
     <!-- タイマー -->
-    <div class="opt-section">タイマー</div>
+    <div class="opt-section" id="opt-sec-timer">タイマー</div>
     <div class="opt-row opt-sel-row" id="opt-row-style">
       <div class="opt-label">スタイル
         <span class="opt-sub">円形 / バー / 双線</span>
@@ -612,7 +674,7 @@
       <div class="tog" id="tog-swap-ab" onclick="toggleOpt('swap_ab')"><div class="tog-knob"></div></div>
     </div>
     <!-- プレビュー -->
-    <div class="opt-section">プレビュー</div>
+    <div class="opt-section" id="opt-sec-preview">プレビュー</div>
     <div class="opt-row">
       <div class="opt-label">タイマープレビュー
         <span class="opt-sub">オプションを開いたままタイマーの動きを確認</span>
@@ -624,24 +686,6 @@
         <span class="opt-sub">コントローラー入力が行動表示に反映される</span>
       </div>
       <div class="tog" id="tog-gp-preview" onclick="toggleOpt('gp_preview')"><div class="tog-knob"></div></div>
-    </div>
-    <!-- BGM -->
-    <div class="opt-section">BGM</div>
-    <div class="opt-row opt-sel-row" id="opt-row-bgm">
-      <div class="opt-label">BGM選択
-        <span class="opt-sub">なし / 戦闘曲1 / 戦闘曲2 / 神秘的</span>
-      </div>
-      <button class="opt-sel-btn" id="bgm-sel-btn" onclick="cycleBgm()">なし</button>
-    </div>
-    <div class="opt-row">
-      <div class="opt-label">BGM音量
-        <span class="opt-sub">←左右→で調整</span>
-      </div>
-      <div style="display:flex;align-items:center;gap:6px;">
-        <button class="opt-sel-btn" onclick="changeBgmVol(-0.1)" style="min-width:28px;">－</button>
-        <span id="bgm-vol-disp" style="font-size:12px;color:#c0c0b8;min-width:28px;text-align:center;">70%</span>
-        <button class="opt-sel-btn" onclick="changeBgmVol(0.1)" style="min-width:28px;">＋</button>
-      </div>
     </div>
     <!-- アクセシビリティ -->
     <div class="opt-section">アクセシビリティ</div>
@@ -1932,6 +1976,92 @@ function _gpApplyDungeonCursor(){
   pageBtns.forEach((b,i)=>b.classList.toggle('gp-focus',!_gpCursor.dungeonInPage&&i===_gpCursor.dungeon));
 }
 
+// ===== 経験値・強化 =====
+function getExp(){ return parseInt(localStorage.getItem('sq_exp')||'0'); }
+function saveExp(v){ localStorage.setItem('sq_exp',Math.max(0,v).toString()); }
+function _addExp(amount){
+  const newExp=getExp()+amount;
+  saveExp(newExp);
+  showMsg('EXP +'+amount+'！（合計: '+newExp+' EXP）');
+}
+
+// 強化レベル管理
+function getEnhLv(key){ return parseInt(localStorage.getItem('sq_enh_'+key)||'0'); }
+function saveEnhLv(key,v){ localStorage.setItem('sq_enh_'+key,v.toString()); }
+
+// 強化コスト定義
+const ENH_DEF={
+  hp:   {cost:20, maxLv:20, label:'最大HP強化', apply:()=>{ player.maxHp=100+getEnhLv('hp')*20; player.hp=Math.min(player.hp,player.maxHp); updHpBar(); }},
+  atk:  {cost:15, maxLv:30, label:'攻撃力強化', apply:()=>{}},
+  spread:{cost:10, maxLv:8,  label:'ブレ低減',   apply:()=>{}},
+  regen:{cost:30, maxLv:5,  label:'戦闘後HP回復',apply:()=>{}},
+};
+
+function enhance(key){
+  const def=ENH_DEF[key];
+  if(!def)return;
+  const lv=getEnhLv(key);
+  if(lv>=def.maxLv){ showMsg('これ以上強化できません。'); return; }
+  const cost=def.cost+lv*Math.floor(def.cost*0.5); // 段階的コスト増加
+  const exp=getExp();
+  if(exp<cost){ showMsg('EXPが足りません。（必要: '+cost+' EXP）'); return; }
+  saveExp(exp-cost);
+  saveEnhLv(key,lv+1);
+  if(def.apply)def.apply();
+  renderEnhance();
+  showMsg(def.label+' Lv.'+(lv+1)+'に強化！（残りEXP: '+getExp()+'）');
+}
+
+// 強化ボーナスをプレイヤーに適用
+function applyEnhancements(){
+  // HP
+  player.maxHp=100+getEnhLv('hp')*20;
+  player.hp=Math.min(player.hp,player.maxHp);
+}
+
+// genWeapon に強化ボーナス適用
+function getAtkBonus(){ return getEnhLv('atk')*3; }
+function getSpreadReduction(){ return getEnhLv('spread'); }
+
+function renderEnhance(){
+  const exp=getExp();
+  const disp=document.getElementById('enh-exp-disp');
+  if(disp)disp.textContent='EXP: '+exp;
+
+  const items=[
+    {key:'hp', lvEl:'enh-lv-hp', btnEl:'enh-btn-hp',
+     lvText:()=>'Lv.'+getEnhLv('hp')+' (HP: '+(100+getEnhLv('hp')*20)+')'},
+    {key:'atk', lvEl:'enh-lv-atk', btnEl:'enh-btn-atk',
+     lvText:()=>'Lv.'+getEnhLv('atk')+' (+'+getEnhLv('atk')*3+')'},
+    {key:'spread', lvEl:'enh-lv-spread', btnEl:'enh-btn-spread',
+     lvText:()=>'Lv.'+getEnhLv('spread')+' (ブレ-'+getEnhLv('spread')+')'},
+    {key:'regen', lvEl:'enh-lv-regen', btnEl:'enh-btn-regen',
+     lvText:()=>'Lv.'+getEnhLv('regen')+' (回復+'+(getEnhLv('regen')*5)+')'},
+  ];
+  items.forEach(item=>{
+    const def=ENH_DEF[item.key];
+    const lv=getEnhLv(item.key);
+    const cost=def.cost+lv*Math.floor(def.cost*0.5);
+    const lEl=document.getElementById(item.lvEl);
+    const bEl=document.getElementById(item.btnEl);
+    if(lEl)lEl.textContent=item.lvText();
+    if(bEl){
+      if(lv>=def.maxLv){ bEl.textContent='MAX'; bEl.disabled=true; }
+      else { bEl.textContent=cost+' EXP'; bEl.disabled=(exp<cost); }
+    }
+  });
+}
+
+function openEnhance(){
+  document.getElementById('dungeon-select').classList.remove('open');
+  document.getElementById('enhance-screen').classList.add('open');
+  renderEnhance();
+}
+function closeEnhance(){
+  document.getElementById('enhance-screen').classList.remove('open');
+  document.getElementById('dungeon-select').classList.add('open');
+}
+
 let dungeonType='normal';
 let hardRoomOrder=[],hardRoomIdx=0;
 let currentDungeon=null;
@@ -2019,8 +2149,12 @@ const HARD_ROOM_LABELS=['安全な部屋','の間 1','の間 2','最終試練'];
 // ===== 武器生成 =====
 function genWeapon(id){
   const d=WDEFS[id];
-  const bonus=Math.floor(Math.random()*d.spread)-Math.floor(d.spread/2);
-  return {id,name:d.name,atk:d.baseAtk+bonus,baseAtk:d.baseAtk,bonus,rarity:d.rarity,range:d.range,desc:d.desc};
+  const atkBonus=getAtkBonus();
+  const spreadRed=Math.min(getSpreadReduction(), Math.floor(d.spread/2));
+  const effectiveSpread=Math.max(1,d.spread-spreadRed);
+  const bonus=Math.floor(Math.random()*effectiveSpread)-Math.floor(effectiveSpread/2);
+  const effectiveBase=d.baseAtk+atkBonus;
+  return {id,name:d.name,atk:effectiveBase+bonus,baseAtk:effectiveBase,bonus,rarity:d.rarity,range:d.range,desc:d.desc};
 }
 function pickWeapons(){
   return Object.keys(WDEFS).sort(()=>Math.random()-0.5).slice(0,2).map(genWeapon);
@@ -2031,6 +2165,7 @@ function initSafe(){
   mapSize=SAFE;
   map=Array.from({length:SAFE},()=>Array(SAFE).fill(0));
   map[0][2]=3;
+  applyEnhancements();
   player.x=2;player.y=4;player.dir='up';
   enemies=[];phase='safe';
   roomStage=0;
@@ -2607,10 +2742,19 @@ function goNextRoom(){
   } else if(dungeonType==='tutorial'||dungeonType==='ranked'){
     hardRoomIdx++;
     const dng=currentDungeon;
-    if(!dng||hardRoomIdx>=hardRoomOrder.length){
-      // クリア
-      unlockNext(dng?dng.id:'d1');
-      const msg=dungeonType==='tutorial'?'チュートリアル完了！冒険の準備ができた！':dng.name+'をクリア！次のダンジョンが解放された！';
+    const roomsDone = !dng || hardRoomIdx >= hardRoomOrder.length ||
+                      hardRoomIdx >= (dng.roomCount || dng.rooms.length);
+    if(roomsDone){
+      // クリア → 必ず解放
+      const clearedId = dng ? dng.id : 'd1';
+      unlockNext(clearedId);
+      // 経験値付与
+      _addExp(dng ? Math.max(5, dng.diff) : 5);
+      // regen強化
+      const regenHp=getEnhLv('regen')*5;
+      if(regenHp>0){player.hp=Math.min(player.maxHp,player.hp+regenHp);updHpBar();}
+      const msg=dungeonType==='tutorial'?'チュートリアル完了！冒険の準備ができた！':
+        (dng?dng.name:'ダンジョン')+'をクリア！次のダンジョンが解放された！';
       showMsg(msg);
       setTimeout(()=>{
         document.getElementById('dungeon-select').classList.add('open');
@@ -2618,7 +2762,17 @@ function goNextRoom(){
       },1500);
       return;
     }
-    const room=dng.rooms[hardRoomOrder[hardRoomIdx]];
+    const roomIdx = hardRoomOrder[hardRoomIdx];
+    const room = dng.rooms[roomIdx];
+    if(!room){
+      // 念のため: roomが見つからなければクリア扱い
+      const clearedId = dng ? dng.id : 'd1';
+      unlockNext(clearedId);
+      _addExp(dng ? Math.max(5, dng.diff) : 5);
+      showMsg((dng?dng.name:'ダンジョン')+'をクリア！');
+      setTimeout(()=>{document.getElementById('dungeon-select').classList.add('open');renderDungeonList();},1500);
+      return;
+    }
     showMsg('次の間へ…「'+room.name+'」');
     setTimeout(()=>{initBattle();render();startTurnTimer();},400);
   } else {
@@ -3628,6 +3782,20 @@ init();
   function toggleOptions(){
     const overlay=document.getElementById('options-overlay');
     const isOpen=overlay.classList.contains('open');
+    // タイマー/プレビュー行の表示制御（非インポッシブルは非表示）
+    const showTimer=gameDiff==='impossible';
+    ['opt-sec-timer','opt-row-style','opt-row-pos','opt-row-beat','opt-row-4beat',
+     'opt-sec-preview'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el)el.style.display=showTimer?'':'none';
+    });
+    // tog-preview・tog-gp-preview行
+    document.querySelectorAll('#options-overlay .opt-row').forEach(row=>{
+      const label=row.querySelector('.opt-label');
+      if(label&&(label.textContent.includes('タイマープレビュー')||label.textContent.includes('コントローラープレビュー'))){
+        row.style.display=showTimer?'':'none';
+      }
+    });
     if(isOpen){
       // 閉じる → バトル中ならタイマー再開
       overlay.classList.remove('open');
