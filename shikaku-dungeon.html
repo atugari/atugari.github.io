@@ -500,7 +500,7 @@
     <div class="enh-row-info">
       <div class="enh-row-name">最大HP強化</div>
       <div class="enh-row-desc">Lv1-50: +20/Lv  Lv51+: ×1.01複利</div>
-      <div class="enh-row-lv" id="enh-lv-hp">Lv.0 (HP: 100)</div>
+      <div class="enh-row-lv" id="enh-lv-hp">読み込み中...</div>
     </div>
     <button class="enh-btn" id="enh-btn-hp" onclick="enhance('hp')">20 EXP</button>
   </div>
@@ -509,7 +509,7 @@
     <div class="enh-row-info">
       <div class="enh-row-name">攻撃力強化</div>
       <div class="enh-row-desc">Lv1-50: +3/Lv  Lv51+: ×1.01複利</div>
-      <div class="enh-row-lv" id="enh-lv-atk">Lv.0 (+0)</div>
+      <div class="enh-row-lv" id="enh-lv-atk">読み込み中...</div>
     </div>
     <button class="enh-btn" id="enh-btn-atk" onclick="enhance('atk')">15 EXP</button>
   </div>
@@ -517,7 +517,7 @@
     <div class="enh-row-info">
       <div class="enh-row-name">ブレ低減</div>
       <div class="enh-row-desc">Lv1-50: -1/Lv  Lv51+: ×1.01複利</div>
-      <div class="enh-row-lv" id="enh-lv-spread">Lv.0</div>
+      <div class="enh-row-lv" id="enh-lv-spread">読み込み中...</div>
     </div>
     <button class="enh-btn" id="enh-btn-spread" onclick="enhance('spread')">10 EXP</button>
   </div>
@@ -526,7 +526,7 @@
     <div class="enh-row-info">
       <div class="enh-row-name">戦闘後HP回復</div>
       <div class="enh-row-desc">Lv1-50: +5/Lv  Lv51+: ×1.02複利</div>
-      <div class="enh-row-lv" id="enh-lv-regen">Lv.0</div>
+      <div class="enh-row-lv" id="enh-lv-regen">読み込み中...</div>
     </div>
     <button class="enh-btn" id="enh-btn-regen" onclick="enhance('regen')">30 EXP</button>
   </div>
@@ -2096,15 +2096,25 @@ function renderEnhance(){
   const disp=document.getElementById('enh-exp-disp');
   if(disp)disp.textContent='EXP: '+exp;
 
+  // 各強化の「現在値 / 次レベルの値」を計算するヘルパー
+  function _nextEnhHp(lv){ const n=lv+1; return n<=50?(100+n*20):Math.round((100+50*20)*Math.pow(1.01,n-50)); }
+  function _nextEnhAtk(lv){ const n=lv+1; return n<=50?n*3:Math.round(50*3*Math.pow(1.01,n-50)); }
+  function _nextEnhSpread(lv){ const n=lv+1; return n<=50?n:Math.round(50*Math.pow(1.01,n-50)); }
+  function _nextEnhRegen(lv){ const n=lv+1; return n<=50?n*5:Math.round(50*5*Math.pow(1.02,n-50)); }
+
   const items=[
     {key:'hp', lvEl:'enh-lv-hp', btnEl:'enh-btn-hp',
-     lvText:()=>{const lv=getEnhLv('hp');const v=_enhHpVal();return 'Lv.'+lv+(lv>50?'（×1.01複利）':'')+' → HP: '+v;}},
+     lvText:()=>{const lv=getEnhLv('hp');const cur=_enhHpVal();const nxt=_nextEnhHp(lv);
+       return 'Lv.'+lv+' ｜ 現在HP上限: '+cur+(lv<999?' → 次: '+nxt:'')+(lv>50?' [×1.01複利]':'');}},
     {key:'atk', lvEl:'enh-lv-atk', btnEl:'enh-btn-atk',
-     lvText:()=>{const lv=getEnhLv('atk');const v=_enhAtkFlat();return 'Lv.'+lv+(lv>50?'（×1.01複利）':'')+' → +'+v;}},
+     lvText:()=>{const lv=getEnhLv('atk');const cur=_enhAtkFlat();const nxt=_nextEnhAtk(lv);
+       return 'Lv.'+lv+' ｜ 現在ボーナス: +'+cur+(lv<999?' → 次: +'+nxt:'')+(lv>50?' [×1.01複利]':'');}},
     {key:'spread', lvEl:'enh-lv-spread', btnEl:'enh-btn-spread',
-     lvText:()=>{const lv=getEnhLv('spread');const v=_enhSpreadFlat();return 'Lv.'+lv+(lv>50?'（×1.01複利）':'')+' → ブレ-'+v;}},
+     lvText:()=>{const lv=getEnhLv('spread');const cur=_enhSpreadFlat();const nxt=_nextEnhSpread(lv);
+       return 'Lv.'+lv+' ｜ 現在ブレ低減: -'+cur+(lv<999?' → 次: -'+nxt:'')+(lv>50?' [×1.01複利]':'');}},
     {key:'regen', lvEl:'enh-lv-regen', btnEl:'enh-btn-regen',
-     lvText:()=>{const lv=getEnhLv('regen');const v=_enhRegenVal();return 'Lv.'+lv+(lv>50?'（×1.02複利）':'')+' → 回復+'+v;}},
+     lvText:()=>{const lv=getEnhLv('regen');const cur=_enhRegenVal();const nxt=_nextEnhRegen(lv);
+       return 'Lv.'+lv+' ｜ 現在回復量: +'+cur+(lv<999?' → 次: +'+nxt:'')+(lv>50?' [×1.02複利]':'');}},
   ];
   items.forEach(item=>{
     const def=ENH_DEF[item.key];
@@ -2702,9 +2712,10 @@ function doAttack(){
 
   if(phase==='battle'&&enemies.length===0){
     setTimeout(()=>{
-      showMsg('全ての敵を倒した！出口へ向かう…');render();
-      // 出口へ自動ダッシュ
-      _autoMoveToExit();
+      showMsg('全ての敵を倒した！出口へ進め。');
+      // 出口を緑に光らせる
+      render();
+      _flashExit();
     },500);
   }
   setTimeout(()=>{
@@ -3003,30 +3014,21 @@ function enemyTurn(playerMoved=false){
 }
 
 // ===== ゲームオーバー =====
-function _autoMoveToExit(){
-  // 出口の座標を検索
+function _flashExit(){
+  // 出口セルを点滅させてプレイヤーに知らせる
   let ex=-1,ey=-1;
   for(let y=0;y<mapSize;y++)for(let x=0;x<mapSize;x++){if(map[y][x]===3){ex=x;ey=y;break;}}
   if(ex<0)return;
-  // プレイヤーが出口に到達するまで100ms間隔で1歩ずつ移動
-  let steps=0;
-  const maxSteps=(mapSize*2)+4;
-  function step(){
-    if(player.x===ex&&player.y===ey){goNextRoom();return;}
-    if(steps++>maxSteps){goNextRoom();return;}
-    const dx=ex-player.x,dy=ey-player.y;
-    let dir='up';
-    if(Math.abs(dy)>=Math.abs(dx)) dir=dy<0?'up':'down';
-    else dir=dx<0?'left':'right';
-    let nx=player.x,ny=player.y;
-    if(dir==='up')ny--;else if(dir==='down')ny++;else if(dir==='left')nx--;else nx++;
-    if(nx>=0&&nx<mapSize&&ny>=0&&ny<mapSize&&map[ny][nx]!==1&&map[ny][nx]!==2){
-      player.x=nx;player.y=ny;
-    }
-    render();
-    setTimeout(step,90);
-  }
-  step();
+  let count=0;
+  const flash=setInterval(()=>{
+    const cells=document.querySelectorAll('.cell.exit');
+    cells.forEach(c=>{
+      c.style.background=count%2===0?'#4AE090':'#1a3a2a';
+      c.style.boxShadow=count%2===0?'0 0 12px rgba(74,224,144,0.8)':'';
+    });
+    count++;
+    if(count>6)clearInterval(flash);
+  },300);
 }
 function gameOver(){
   // オプション中・一時停止中・セーフルームでは発火しない
