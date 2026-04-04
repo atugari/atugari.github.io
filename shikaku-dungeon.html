@@ -510,7 +510,10 @@
   <div id="dungeon-list"></div>
   <!-- フッター -->
   <div style="display:flex;align-items:center;justify-content:space-between;width:100%;max-width:360px;margin-top:8px;">
-    <button onclick="openEnhance()" style="background:none;border:1px solid rgba(200,168,90,0.4);color:#c8a85a;font-size:12px;font-weight:700;padding:4px 12px;border-radius:6px;cursor:pointer;">⚡ 強化</button>
+    <div style="display:flex;gap:6px;">
+      <button onclick="openEnhance()" style="background:none;border:1px solid rgba(200,168,90,0.4);color:#c8a85a;font-size:12px;font-weight:700;padding:4px 12px;border-radius:6px;cursor:pointer;">⚡ 強化</button>
+      <a href="buki-log.html" style="background:none;border:1px solid rgba(74,158,224,0.4);color:#7DC4F8;font-size:12px;font-weight:700;padding:4px 12px;border-radius:6px;text-decoration:none;">⚔ 武器庫</a>
+    </div>
     <a href="dungeon-ranking.html" style="font-size:11px;color:#8a7040;text-decoration:none;letter-spacing:0.05em;">📊 ランキング →</a>
   </div>
 </div>
@@ -1797,6 +1800,7 @@ function submitNick(){
   saveNick(val);
   document.getElementById('nick-screen').classList.remove('open');
   _saveRanking(0);
+  // ニックネーム登録完了→パスワード画面へ
   document.getElementById('pw-screen').classList.remove('hidden');
 }
 
@@ -3900,11 +3904,13 @@ setInterval(()=>{
 // ===== 初期化 =====
 function init(){
   initSafe();render();updHpBar();updWpn();updHd();
-  // ニックネーム未設定なら先にニックネーム画面
+  // ニックネーム未設定→ニックネーム画面（PW不要）
+  // ニックネーム設定済み→パスワード画面を表示
   if(!getNick()){
     document.getElementById('pw-screen').classList.add('hidden');
     document.getElementById('nick-screen').classList.add('open');
   }
+  // ニックネームあり→pw-screenはそのまま表示（デフォルト表示）
   loadUnlockedFromDB();
 }
 init();
