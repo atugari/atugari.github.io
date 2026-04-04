@@ -2206,17 +2206,24 @@ function renderEnhance(){
     const lv=getWpnEnhLv(_enhSelWpn,def.key);
     const cost=Math.max(1,Math.round(def.base+lv*def.inc));
     const nextVal=(def.key==='atk'?(lv+1)*3:def.key==='spread'?(lv+1):def.key==='regen'?(lv+1)*5:(lv+1));
+    const isMax=lv>=def.maxLv;
+    const canAfford=exp>=cost;
     const row=document.createElement('div');
     row.className='enh-row';
-    row.innerHTML=
-      '<div class="enh-row-info">'+
-        '<div class="enh-row-name">'+def.label+'</div>'+
-        '<div class="enh-row-desc">'+def.desc+'</div>'+
-        '<div class="enh-row-lv">Lv.'+lv+(lv<def.maxLv?' → 次: '+def.unit+nextVal:'')+'　(MAX: '+def.maxLv+')</div>'+
-      '</div>'+
-      '<button class="enh-btn"'+(lv>=def.maxLv?' disabled':exp<cost?' disabled':'')+' onclick="enhanceWpn(''+_enhSelWpn+'',''+def.key+'')">'+
-        (lv>=def.maxLv?'MAX':cost+' EXP')+
-      '</button>';
+    const info=document.createElement('div');
+    info.className='enh-row-info';
+    info.innerHTML=
+      '<div class="enh-row-name">'+def.label+'</div>'+
+      '<div class="enh-row-desc">'+def.desc+'</div>'+
+      '<div class="enh-row-lv">Lv.'+lv+(lv<def.maxLv?' → 次: '+def.unit+nextVal:'')+'　(MAX: '+def.maxLv+')</div>';
+    const btn=document.createElement('button');
+    btn.className='enh-btn';
+    btn.textContent=isMax?'MAX':cost+' EXP';
+    btn.disabled=isMax||!canAfford;
+    const wpnId=_enhSelWpn, statKey=def.key;
+    btn.addEventListener('click',()=>enhanceWpn(wpnId, statKey));
+    row.appendChild(info);
+    row.appendChild(btn);
     rows.appendChild(row);
   });
 }
