@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1a2035">
+<title>武器庫 — 幻実世界の電子遊戯</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;700;900&display=swap');
+
+  :root {
+    --bg: #1a2035;
+    --card: #232d47;
+    --card2: #2a3555;
+    --border: #3a4a6a;
+    --accent: #4af0c8;
+    --accent2: #ff6b8a;
+    --gold: #ffd166;
+    --text: #d0ddf0;
+    --text-dim: #6a7a9a;
+    --N: #78c8ff;
+    --U: #c890ff;
+    --L: #ffd166;
+    --red: #ff6b8a;
+    --green: #4af0c8;
+  }
+
+  *,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 80px;
+    background-image: radial-gradient(circle at 50% 0%, #2a3a6040 0%, transparent 60%);
+  }
+
+  /* ===== ヘッダー ===== */
+  .header {
+    background: var(--card);
+    border-bottom: 2px solid var(--accent);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .header-left { display: flex; align-items: center; gap: 12px; }
+  .header-icon {
+    width: 38px; height: 38px;
+    background: linear-gradient(135deg, var(--accent), #20b890);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    clip-path: polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+    flex-shrink: 0;
+  }
+  .header-title { font-size: 20px; font-weight: 900; color: var(--accent); }
+  .header-sub { font-size: 11px; color: var(--text-dim); margin-top: 1px; }
+  .back-btn {
+    background: none; border: 1px solid var(--border);
+    color: var(--text-dim); padding: 6px 12px;
+    font-family: inherit; font-size: 12px; border-radius: 4px; cursor: pointer;
+    text-decoration: none; display: inline-block;
+  }
+  .back-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ===== EXPバー ===== */
+  .exp-area {
+    background: var(--card2); padding: 10px 16px;
+    display: flex; align-items: center; gap: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .exp-label { font-size: 11px; color: var(--text-dim); width: 30px; }
+  .exp-track {
+    flex: 1; height: 8px; background: #1a2035;
+    border-radius: 4px; overflow: hidden; position: relative;
+  }
+  .exp-fill {
+    height: 100%; border-radius: 4px;
+    background: linear-gradient(90deg, var(--accent), #20b890);
+    transition: width 0.4s ease;
+    position: relative;
+  }
+  .exp-fill::after {
+    content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 20px;
+    background: linear-gradient(90deg, transparent, #ffffff40);
+    animation: shine 1.5s ease-in-out infinite;
+  }
+  @keyframes shine { 0%,100%{opacity:0} 50%{opacity:1} }
+  .exp-num { font-size: 11px; color: var(--accent); white-space: nowrap; min-width: 60px; text-align: right; }
+
+  /* ===== タブ ===== */
+  .tabs {
+    display: flex; background: var(--card);
+    padding: 8px 16px 0; gap: 4px;
+    border-bottom: 1px solid var(--border);
+  }
+  .tab {
+    padding: 8px 16px; font-size: 13px; font-weight: 700;
+    color: var(--text-dim); cursor: pointer;
+    border: 1px solid transparent; border-bottom: none;
+    border-radius: 6px 6px 0 0;
+    font-family: inherit; background: none; transition: all 0.15s;
+  }
+  .tab.active { color: var(--accent); background: var(--bg); border-color: var(--border); border-bottom-color: var(--bg); }
+
+  /* ===== コンテンツ ===== */
+  .content { padding: 14px; }
+
+  /* ===== フィルター ===== */
+  .filter-row { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+  .filter-chip {
+    padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;
+    border: 1px solid var(--border); color: var(--text-dim); cursor: pointer;
+    font-family: inherit; background: none; transition: all 0.15s;
+  }
+  .filter-chip.active { background: var(--accent); border-color: var(--accent); color: #1a2035; }
+
+  /* ===== 武器カード（リスト形式） ===== */
+  .weapon-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .weapon-row {
+    background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px 14px; display: flex; align-items: center; gap: 12px;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .weapon-row:hover { border-color: var(--accent); background: var(--card2); }
+  .weapon-row.selected { border-color: var(--accent); background: var(--card2); box-shadow: 0 0 0 1px #4af0c840, 0 4px 12px #4af0c830; }
+
+  .weapon-row-icon {
+    width: 48px; height: 48px; background: #1a2035; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; flex-shrink: 0; border: 1px solid var(--border);
+  }
+  .weapon-row-main { flex: 1; min-width: 0; }
+  .weapon-row-top { display: flex; align-items: center; gap: 6px; margin-bottom: 3px; }
+  .weapon-row-name { font-size: 15px; font-weight: 700; color: var(--text); }
+  .rarity-badge {
+    font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 3px; letter-spacing: 0.05em;
+  }
+  .badge-N { background: #1a3050; color: var(--N); }
+  .badge-U { background: #2a1a50; color: var(--U); }
+  .badge-L { background: #3a2a00; color: var(--L); }
+
+  .weapon-row-ability { font-size: 11px; color: var(--gold); margin-bottom: 4px; min-height: 16px; }
+  .weapon-row-bar { display: flex; align-items: center; gap: 6px; }
+  .mini-bar { flex: 1; height: 3px; background: #1a2035; border-radius: 2px; overflow: hidden; }
+  .mini-fill { height: 100%; border-radius: 2px; background: var(--accent); }
+  .mini-label { font-size: 10px; color: var(--text-dim); white-space: nowrap; }
+
+  .weapon-row-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+  .weapon-count-badge {
+    background: var(--card2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 2px 8px; font-size: 11px; color: var(--text-dim);
+  }
+  .weapon-atk-big { font-size: 20px; font-weight: 900; color: var(--accent2); }
+  .weapon-atk-label { font-size: 9px; color: var(--text-dim); text-align: right; }
+
+  /* ===== 詳細パネル ===== */
+  .detail-panel {
+    background: var(--card2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 14px; margin-bottom: 14px;
+    animation: pop 0.2s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes pop { from{transform:scale(0.97);opacity:0} to{transform:scale(1);opacity:1} }
+  .detail-title { font-size: 11px; color: var(--text-dim); margin-bottom: 10px; letter-spacing: 0.1em; }
+  .detail-stats {
+    display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; margin-bottom: 12px;
+  }
+  .dstat { background: #1a2035; border-radius: 6px; padding: 8px 6px; text-align: center; }
+  .dstat-label { font-size: 10px; color: var(--text-dim); margin-bottom: 2px; }
+  .dstat-val { font-size: 16px; font-weight: 900; }
+  .synth-progress {
+    background: #1a2035; border-radius: 6px; padding: 10px 12px; margin-bottom: 12px;
+  }
+  .synth-top { display: flex; justify-content: space-between; margin-bottom: 6px; }
+  .synth-name { font-size: 12px; font-weight: 700; color: var(--U); }
+  .synth-num { font-size: 12px; color: var(--U); }
+  .synth-track { height: 6px; background: #0d1225; border-radius: 3px; overflow: hidden; }
+  .synth-bar { height: 100%; background: linear-gradient(90deg,var(--U),#e8b8ff); border-radius: 3px; transition: width 0.3s; }
+  .synth-hint { font-size: 10px; color: var(--text-dim); margin-top: 4px; }
+  .detail-btns { display: flex; gap: 8px; }
+  .btn {
+    flex: 1; padding: 10px; border-radius: 6px; font-family: inherit;
+    font-size: 13px; font-weight: 700; cursor: pointer; border: none; transition: all 0.15s;
+  }
+  .btn-accent { background: var(--accent); color: #1a2035; }
+  .btn-accent:hover { filter: brightness(1.1); }
+  .btn-outline { background: none; border: 1px solid var(--border); color: var(--text-dim); }
+  .btn-outline:hover { border-color: var(--text); color: var(--text); }
+  .btn-danger { background: none; border: 1px solid var(--red); color: var(--red); }
+
+  /* ===== 強化タブ ===== */
+  .upgrade-list { display: flex; flex-direction: column; gap: 10px; }
+  .upgrade-block { background: var(--card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .upgrade-block-header {
+    padding: 12px 14px; background: var(--card2);
+    display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border);
+  }
+  .upgrade-block-icon { font-size: 24px; }
+  .upgrade-block-name { font-size: 15px; font-weight: 700; }
+  .upgrade-block-sub { font-size: 11px; color: var(--text-dim); }
+  .upgrade-row {
+    padding: 10px 14px; display: flex; align-items: center; gap: 10px;
+    border-bottom: 1px solid #1a2035;
+  }
+  .upgrade-row:last-child { border-bottom: none; }
+  .upgrade-row-info { flex: 1; }
+  .upgrade-row-label { font-size: 13px; font-weight: 700; }
+  .upgrade-row-desc { font-size: 10px; color: var(--text-dim); margin-top: 1px; }
+  .upgrade-row-lv {
+    font-size: 11px; color: var(--text-dim); background: #1a2035;
+    padding: 2px 8px; border-radius: 10px; white-space: nowrap;
+  }
+  .upgrade-row-cost { font-size: 11px; color: var(--gold); white-space: nowrap; }
+  .upgrade-btn {
+    background: var(--accent); color: #1a2035; border: none;
+    padding: 6px 14px; border-radius: 4px; font-family: inherit;
+    font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap;
+    transition: filter 0.15s;
+  }
+  .upgrade-btn:hover { filter: brightness(1.1); }
+  .upgrade-btn:disabled { background: #2a3555; color: #4a5a7a; cursor: not-allowed; filter: none; }
+
+  /* 武器タブ（強化画面） */
+  .wpn-tab-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+  .wpn-tab {
+    padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 700;
+    border: 1px solid var(--border); color: var(--text-dim);
+    font-family: inherit; background: none; cursor: pointer; transition: all 0.15s;
+  }
+  .wpn-tab.active { background: rgba(74,240,200,0.12); border-color: var(--accent); color: var(--accent); }
+
+  /* ===== 合成タブ ===== */
+  .synth-info-box {
+    background: var(--card2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 14px; margin-bottom: 12px;
+    font-size: 12px; color: var(--text-dim); line-height: 2;
+  }
+  .synth-block { background: var(--card); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; overflow: hidden; }
+  .synth-block-header {
+    padding: 12px 14px; background: var(--card2);
+    display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border);
+  }
+  .synth-progress-row {
+    padding: 10px 14px; display: flex; align-items: center; gap: 10px;
+  }
+  .synth-progress-bar { flex: 1; height: 4px; background: #1a2035; border-radius: 2px; overflow: hidden; }
+  .synth-progress-fill { height: 100%; background: var(--U); border-radius: 2px; transition: width 0.3s; }
+  .synth-count { font-size: 12px; color: var(--U); white-space: nowrap; }
+  .synth-merge-btn {
+    width: calc(100% - 28px); margin: 0 14px 14px;
+    padding: 10px; border-radius: 6px;
+    background: none; border: 1px solid var(--U); color: var(--U);
+    font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .synth-merge-btn:hover { background: rgba(200,144,255,0.15); }
+  .synth-merge-btn:disabled { border-color: #3a4a6a; color: #4a5a7a; cursor: not-allowed; }
+
+  /* ===== フッター ===== */
+  .footer {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--card); border-top: 1px solid var(--border);
+    padding: 10px 14px; display: flex; align-items: center; gap: 10px;
+    z-index: 100;
+  }
+  .footer-equipped {
+    flex: 1; background: #1a2035; border: 1px solid var(--accent);
+    border-radius: 6px; padding: 6px 12px; min-width: 0;
+  }
+  .footer-equipped-label { font-size: 10px; color: var(--accent); margin-bottom: 1px; }
+  .footer-equipped-name { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .footer-go {
+    background: linear-gradient(135deg, var(--accent2), #ff4466);
+    color: white; border: none; padding: 12px 20px;
+    border-radius: 6px; font-family: inherit; font-size: 14px; font-weight: 700;
+    cursor: pointer; white-space: nowrap; text-decoration: none;
+    display: flex; align-items: center;
+  }
+
+  /* ===== トースト ===== */
+  #toast {
+    position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--card); border: 1px solid var(--accent); border-radius: 8px;
+    padding: 10px 18px; font-size: 13px; color: var(--accent);
+    white-space: nowrap; opacity: 0; pointer-events: none;
+    transition: all 0.3s; z-index: 200;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ===== 空状態 ===== */
+  .empty-state {
+    text-align: center; padding: 48px 20px;
+    color: var(--text-dim); font-size: 13px; line-height: 2;
+  }
+  .empty-icon { font-size: 40px; margin-bottom: 12px; opacity: 0.5; }
+
+  .color-N { color: var(--N); }
+  .color-U { color: var(--U); }
+  .color-L { color: var(--L); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="header-icon">⚔</div>
+    <div>
+      <div class="header-title">武器庫</div>
+      <div class="header-sub">所持武器・強化・合成</div>
+    </div>
+  </div>
+  <a class="back-btn" href="shikaku-dungeon.html">← 戻る</a>
+</div>
+
+<div class="exp-area">
+  <div class="exp-label">EXP</div>
+  <div class="exp-track"><div class="exp-fill" id="exp-fill" style="width:0%"></div></div>
+  <div class="exp-num" id="exp-num">0 EXP</div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('list')">所持武器</button>
+  <button class="tab" onclick="switchTab('upgrade')">武器強化</button>
+  <button class="tab" onclick="switchTab('synth')">合成</button>
+</div>
+
+<div class="content">
+
+  <!-- ===== 所持武器タブ ===== -->
+  <div id="tab-list">
+    <div class="filter-row" id="filter-row">
+      <button class="filter-chip active" onclick="setFilter('all',this)">全て</button>
+      <button class="filter-chip" onclick="setFilter('L',this)">LEGEND</button>
+      <button class="filter-chip" onclick="setFilter('U',this)">UNIQUE</button>
+      <button class="filter-chip" onclick="setFilter('N',this)">NORMAL</button>
+      <button class="filter-chip" onclick="setFilter('ability',this)">能力あり</button>
+    </div>
+    <div id="detail-panel-wrap"></div>
+    <div class="weapon-list" id="weapon-list"></div>
+  </div>
+
+  <!-- ===== 武器強化タブ ===== -->
+  <div id="tab-upgrade" style="display:none">
+    <div class="wpn-tab-row" id="upgrade-wpn-tabs"></div>
+    <div class="upgrade-list" id="upgrade-list"></div>
+  </div>
+
+  <!-- ===== 合成タブ ===== -->
+  <div id="tab-synth" style="display:none">
+    <div class="synth-info-box">
+      同じ武器を合成することで能力が解放されます。<br>
+      <span style="color:var(--gold);font-weight:700">能力のない武器はレアリティを問わず合成可能です。</span>
+    </div>
+    <div id="synth-list"></div>
+  </div>
+
+</div>
+
+<!-- フッター -->
+<div class="footer">
+  <div class="footer-equipped">
+    <div class="footer-equipped-label">▶ 次回装備候補</div>
+    <div class="footer-equipped-name" id="footer-wpn">未選択</div>
+  </div>
+  <a class="footer-go" href="shikaku-dungeon.html">ダンジョンへ →</a>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ===== 定数定義（shikaku-dungeon.htmlと同期） =====
+const WDEFS = {
+  fu:  {name:'歩',  baseAtk:36, spread:8,  rarity:'U', desc:'前方1マス。攻撃力が高い。'},
+  kyo: {name:'香',  baseAtk:24, spread:10, rarity:'N', desc:'前方2マス。射程が長い。'},
+  kei: {name:'桂',  baseAtk:30, spread:8,  rarity:'U', desc:'前方2マス左右1ずれ。攻撃後退。'},
+  hi:  {name:'飛',  baseAtk:20, spread:6,  rarity:'L', desc:'縦横2マス。汎用性が高い。'},
+  kaku:{name:'角',  baseAtk:20, spread:6,  rarity:'L', desc:'斜め2マス。汎用性が高い。'},
+  gin: {name:'銀',  baseAtk:14, spread:6,  rarity:'N', desc:'前方と斜め4方向。囲まれた時に強い。'},
+};
+
+const RARITY_LABEL = {N:'ノーマル', U:'ユニーク', L:'レジェンド'};
+
+const WEAPON_ENH_DEF = {
+  fu:  [
+    {key:'atk',    label:'攻撃力',     desc:'前方1マスの威力を上げる',    base:2,   inc:0.04, maxLv:99, unit:'ATK+', perLv:3},
+    {key:'spread', label:'ブレ低減',   desc:'攻撃力のばらつきを減らす',   base:1,   inc:0.02, maxLv:99, unit:'ブレ-', perLv:1},
+    {key:'regen',  label:'戦闘後回復', desc:'部屋クリア後にHPを回復する', base:3,   inc:0.06, maxLv:99, unit:'回復+', perLv:5},
+  ],
+  kyo: [
+    {key:'atk',    label:'攻撃力',     desc:'前方2マスの威力を上げる',    base:1.5, inc:0.03, maxLv:99, unit:'ATK+', perLv:3},
+    {key:'range',  label:'射程延長',   desc:'射程を1マス延長する',         base:5,   inc:0.10, maxLv:5,  unit:'射程+', perLv:1},
+    {key:'spread', label:'ブレ低減',   desc:'攻撃力のばらつきを減らす',   base:1,   inc:0.02, maxLv:99, unit:'ブレ-', perLv:1},
+  ],
+  kei: [
+    {key:'atk',    label:'攻撃力',     desc:'跳び攻撃の威力を上げる',     base:2,   inc:0.04, maxLv:99, unit:'ATK+', perLv:3},
+    {key:'spread', label:'ブレ低減',   desc:'攻撃力のばらつきを減らす',   base:1,   inc:0.02, maxLv:99, unit:'ブレ-', perLv:1},
+    {key:'regen',  label:'戦闘後回復', desc:'部屋クリア後にHPを回復する', base:3,   inc:0.06, maxLv:99, unit:'回復+', perLv:5},
+  ],
+  hi:  [
+    {key:'atk',    label:'攻撃力',     desc:'縦横攻撃の威力を上げる',     base:1.5, inc:0.03, maxLv:99, unit:'ATK+', perLv:3},
+    {key:'range',  label:'射程延長',   desc:'射程を1マス延長する',         base:5,   inc:0.10, maxLv:3,  unit:'射程+', perLv:1},
+    {key:'spread', label:'ブレ低減',   desc:'攻撃力のばらつきを減らす',   base:1,   inc:0.02, maxLv:99, unit:'ブレ-', perLv:1},
+  ],
+  kaku:[
+    {key:'atk',    label:'攻撃力',     desc:'斜め攻撃の威力を上げる',     base:1.5, inc:0.03, maxLv:99, unit:'ATK+', perLv:3},
+    {key:'range',  label:'射程延長',   desc:'射程を1マス延長する',         base:5,   inc:0.10, maxLv:3,  unit:'射程+', perLv:1},
+    {key:'spread', label:'ブレ低減',   desc:'攻撃力のばらつきを減らす',   base:1,   inc:0.02, maxLv:99, unit:'ブレ-', perLv:1},
+  ],
+  gin: [
+    {key:'atk',    label:'攻撃力',     desc:'多方向攻撃の威力を上げる',   base:1,   inc:0.02, maxLv:99, unit:'ATK+', perLv:3},
+    {key:'spread', label:'ブレ低減',   desc:'攻撃力のばらつきを減らす',   base:1,   inc:0.02, maxLv:99, unit:'ブレ-', perLv:1},
+    {key:'regen',  label:'戦闘後回復', desc:'部屋クリア後にHPを回復する', base:3,   inc:0.06, maxLv:99, unit:'回復+', perLv:5},
+  ],
+};
+
+// 合成進捗の閾値（合成数→解放される能力の説明）
+const SYNTH_MILESTONES = {
+  fu:   [{at:3,label:'ATK+3解放'},{at:10,label:'ブレ低減解放'},{at:30,label:'戦闘後回復解放'},{at:50,label:'全能力MAX解放'}],
+  kyo:  [{at:3,label:'ATK+3解放'},{at:10,label:'射程+1解放'},{at:30,label:'ブレ低減解放'},{at:50,label:'全能力MAX解放'}],
+  kei:  [{at:3,label:'ATK+3解放'},{at:10,label:'ブレ低減解放'},{at:30,label:'戦闘後回復解放'},{at:50,label:'全能力MAX解放'}],
+  hi:   [{at:3,label:'ATK+3解放'},{at:10,label:'射程+1解放'},{at:30,label:'ブレ低減解放'},{at:50,label:'全能力MAX解放'}],
+  kaku: [{at:3,label:'ATK+3解放'},{at:10,label:'射程+1解放'},{at:30,label:'ブレ低減解放'},{at:50,label:'全能力MAX解放'}],
+  gin:  [{at:3,label:'ATK+3解放'},{at:10,label:'ブレ低減解放'},{at:30,label:'戦闘後回復解放'},{at:50,label:'全能力MAX解放'}],
+};
+
+// ===== ストレージ操作 =====
+function getExp(){ return parseInt(localStorage.getItem('sq_exp')||'0'); }
+function saveExp(v){ localStorage.setItem('sq_exp',Math.max(0,v).toString()); }
+
+function getWpnCount(id){ return parseInt(localStorage.getItem('sq_wpn_'+id)||'0'); }
+function saveWpnCount(id,v){ localStorage.setItem('sq_wpn_'+id,Math.max(0,v).toString()); }
+
+function getWpnSynth(id){ return parseInt(localStorage.getItem('sq_synth_'+id)||'0'); }
+function saveWpnSynth(id,v){ localStorage.setItem('sq_synth_'+id,Math.max(0,v).toString()); }
+
+function getWpnEnhLv(id,key){ return parseInt(localStorage.getItem('sq_wpnenh_'+id+'_'+key)||'0'); }
+function saveWpnEnhLv(id,key,v){ localStorage.setItem('sq_wpnenh_'+id+'_'+key,v.toString()); }
+
+function getEquipped(){ return localStorage.getItem('sq_equipped_wpn')||''; }
+function saveEquipped(id){ localStorage.setItem('sq_equipped_wpn',id); }
+
+// ===== 武器のATK計算 =====
+function calcAtk(id){
+  const d=WDEFS[id];
+  const atkLv=getWpnEnhLv(id,'atk');
+  return d.baseAtk + atkLv*3;
+}
+
+// 能力テキスト取得
+function getAbilityText(id){
+  const synthCount=getWpnSynth(id);
+  const ms=SYNTH_MILESTONES[id]||[];
+  const reached=ms.filter(m=>synthCount>=m.at);
+  const defs=WEAPON_ENH_DEF[id]||[];
+  const bits=[];
+  defs.forEach(def=>{
+    const lv=getWpnEnhLv(id,def.key);
+    if(lv>0) bits.push(def.label+' Lv'+lv);
+  });
+  return bits.length>0 ? bits.join('・') : '';
+}
+
+// ===== 状態 =====
+let _currentTab='list';
+let _selectedWpn=null;
+let _filter='all';
+let _upgradeWpn=Object.keys(WDEFS)[0];
+
+// ===== タブ切り替え =====
+function switchTab(name){
+  _currentTab=name;
+  document.querySelectorAll('.tab').forEach((t,i)=>{
+    t.classList.toggle('active',['list','upgrade','synth'][i]===name);
+  });
+  document.getElementById('tab-list').style.display=name==='list'?'block':'none';
+  document.getElementById('tab-upgrade').style.display=name==='upgrade'?'block':'none';
+  document.getElementById('tab-synth').style.display=name==='synth'?'block':'none';
+  if(name==='list') renderList();
+  if(name==='upgrade') renderUpgrade();
+  if(name==='synth') renderSynth();
+}
+
+// ===== フィルター =====
+function setFilter(f,btn){
+  _filter=f;
+  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  renderList();
+}
+
+// ===== EXP表示 =====
+function renderExp(){
+  const exp=getExp();
+  // 次の区切りを1000単位で表示
+  const base=Math.floor(exp/1000)*1000;
+  const next=base+1000;
+  const pct=Math.min(100,((exp-base)/(next-base))*100);
+  const fill=document.getElementById('exp-fill');
+  const num=document.getElementById('exp-num');
+  if(fill) fill.style.width=pct+'%';
+  if(num) num.textContent=exp.toLocaleString()+' EXP';
+}
+
+// ===== フッター更新 =====
+function renderFooter(){
+  const eq=getEquipped();
+  const el=document.getElementById('footer-wpn');
+  if(el){
+    if(eq && WDEFS[eq]){
+      const atk=calcAtk(eq);
+      el.textContent=WDEFS[eq].name+' (ATK '+atk+')';
+    } else {
+      el.textContent='未選択';
+    }
+  }
+}
+
+// ===== 所持武器タブ =====
+function renderList(){
+  const list=document.getElementById('weapon-list');
+  const detailWrap=document.getElementById('detail-panel-wrap');
+  list.innerHTML='';
+  detailWrap.innerHTML='';
+
+  const weapons=Object.keys(WDEFS).filter(id=>{
+    const count=getWpnCount(id);
+    if(count<=0) return false;
+    if(_filter==='L') return WDEFS[id].rarity==='L';
+    if(_filter==='U') return WDEFS[id].rarity==='U';
+    if(_filter==='N') return WDEFS[id].rarity==='N';
+    if(_filter==='ability') return getAbilityText(id)!=='';
+    return true;
+  });
+
+  if(weapons.length===0){
+    list.innerHTML='<div class="empty-state"><div class="empty-icon">⚔</div>条件に合う武器がありません。<br>ダンジョンで武器を入手しよう！</div>';
+    return;
+  }
+
+  // 選択中の詳細パネル
+  if(_selectedWpn && getWpnCount(_selectedWpn)>0){
+    detailWrap.appendChild(makeDetailPanel(_selectedWpn));
+  }
+
+  weapons.forEach(id=>{
+    const d=WDEFS[id];
+    const count=getWpnCount(id);
+    const atk=calcAtk(id);
+    const ability=getAbilityText(id);
+    const maxAtk=d.baseAtk+99*3;
+    const pct=Math.min(100,(atk/maxAtk)*100);
+
+    const row=document.createElement('div');
+    row.className='weapon-row'+(id===_selectedWpn?' selected':'');
+    row.innerHTML=
+      '<div class="weapon-row-icon">'+d.name+'</div>'+
+      '<div class="weapon-row-main">'+
+        '<div class="weapon-row-top">'+
+          '<div class="weapon-row-name">'+d.name+'</div>'+
+          '<span class="rarity-badge badge-'+d.rarity+'">'+RARITY_LABEL[d.rarity]+'</span>'+
+        '</div>'+
+        '<div class="weapon-row-ability">'+（ability||'<span style="color:var(--text-dim)">能力なし</span>'）+'</div>'+
+        '<div class="weapon-row-bar">'+
+          '<div class="mini-bar"><div class="mini-fill" style="width:'+pct+'%"></div></div>'+
+          '<div class="mini-label">ATK '+atk+'</div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="weapon-row-right">'+
+        '<div class="weapon-count-badge">×'+count+'</div>'+
+        '<div class="weapon-atk-big">'+atk+'</div>'+
+        '<div class="weapon-atk-label">ATK</div>'+
+      '</div>';
+    row.onclick=()=>{
+      _selectedWpn=(_selectedWpn===id?null:id);
+      renderList();
+    };
+    list.appendChild(row);
+  });
+}
+
+function makeDetailPanel(id){
+  const d=WDEFS[id];
+  const count=getWpnCount(id);
+  const synth=getWpnSynth(id);
+  const atk=calcAtk(id);
+  const ability=getAbilityText(id);
+  const ms=SYNTH_MILESTONES[id]||[];
+  const next=ms.find(m=>synth<m.at);
+
+  const div=document.createElement('div');
+  div.className='detail-panel';
+
+  // 合成進捗
+  let synthHtml='';
+  if(next){
+    const prev=ms[ms.indexOf(next)-1];
+    const prevAt=prev?prev.at:0;
+    const pct=Math.min(100,((synth-prevAt)/(next.at-prevAt))*100);
+    synthHtml=
+      '<div class="synth-progress">'+
+        '<div class="synth-top">'+
+          '<div class="synth-name">次：'+next.label+'</div>'+
+          '<div class="synth-num">'+synth+' / '+next.at+'</div>'+
+        '</div>'+
+        '<div class="synth-track"><div class="synth-bar" style="width:'+pct+'%"></div></div>'+
+        '<div class="synth-hint">あと'+(next.at-synth)+'枚合成で解放</div>'+
+      '</div>';
+  } else {
+    synthHtml='<div class="synth-progress" style="text-align:center;color:var(--gold);font-size:12px;padding:8px;">✨ 全能力解放済み</div>';
+  }
+
+  div.innerHTML=
+    '<div class="detail-title">▶ '+d.name+'　詳細</div>'+
+    '<div class="detail-stats">'+
+      '<div class="dstat"><div class="dstat-label">攻撃力</div><div class="dstat-val color-'+d.rarity+'">'+atk+'</div></div>'+
+      '<div class="dstat"><div class="dstat-label">合成数</div><div class="dstat-val" style="color:var(--U)">'+synth+'</div></div>'+
+      '<div class="dstat"><div class="dstat-label">所持数</div><div class="dstat-val">'+count+'</div></div>'+
+    '</div>'+
+    synthHtml+
+    '<div class="detail-btns">'+
+      '<button class="btn btn-accent" onclick="equipWeapon(\''+id+'\')">装備候補にする</button>'+
+      '<button class="btn btn-outline" onclick="switchToUpgrade(\''+id+'\')">強化する</button>'+
+    '</div>';
+
+  return div;
+}
+
+function equipWeapon(id){
+  saveEquipped(id);
+  renderFooter();
+  showToast(WDEFS[id].name+'を装備候補に設定しました');
+}
+
+function switchToUpgrade(id){
+  _upgradeWpn=id;
+  switchTab('upgrade');
+}
+
+// ===== 武器強化タブ =====
+function renderUpgrade(){
+  renderExp();
+  const exp=getExp();
+
+  // 武器タブ
+  const tabRow=document.getElementById('upgrade-wpn-tabs');
+  tabRow.innerHTML='';
+  Object.keys(WDEFS).forEach(id=>{
+    const count=getWpnCount(id);
+    const btn=document.createElement('button');
+    btn.className='wpn-tab'+(id===_upgradeWpn?' active':'');
+    btn.textContent=WDEFS[id].name+(count>0?' ×'+count:'');
+    btn.style.opacity=count>0?'1':'0.4';
+    btn.onclick=()=>{_upgradeWpn=id;renderUpgrade();};
+    tabRow.appendChild(btn);
+  });
+
+  const list=document.getElementById('upgrade-list');
+  list.innerHTML='';
+
+  const d=WDEFS[_upgradeWpn];
+  const count=getWpnCount(_upgradeWpn);
+
+  if(count<=0){
+    list.innerHTML='<div class="empty-state"><div class="empty-icon">🔒</div>'+d.name+'はまだ入手していません。<br>ダンジョンで入手してから強化できます。</div>';
+    return;
+  }
+
+  const block=document.createElement('div');
+  block.className='upgrade-block';
+  block.innerHTML=
+    '<div class="upgrade-block-header">'+
+      '<div class="upgrade-block-icon">'+d.name+'</div>'+
+      '<div>'+
+        '<div class="upgrade-block-name">'+d.name+'</div>'+
+        '<div class="upgrade-block-sub">'+RARITY_LABEL[d.rarity]+'　所持 ×'+count+'</div>'+
+      '</div>'+
+    '</div>';
+
+  const defs=WEAPON_ENH_DEF[_upgradeWpn]||[];
+  defs.forEach(def=>{
+    const lv=getWpnEnhLv(_upgradeWpn,def.key);
+    const cost=Math.max(1,Math.round(def.base+lv*def.inc));
+    const curVal=lv*def.perLv;
+    const nextVal=(lv+1)*def.perLv;
+    const isMax=lv>=def.maxLv;
+    const canAfford=exp>=cost;
+
+    const row=document.createElement('div');
+    row.className='upgrade-row';
+    row.innerHTML=
+      '<div class="upgrade-row-info">'+
+        '<div class="upgrade-row-label">'+def.label+'</div>'+
+        '<div class="upgrade-row-desc">'+def.desc+'</div>'+
+      '</div>'+
+      '<div class="upgrade-row-lv">Lv '+lv+(isMax?' （MAX）':'')+'</div>'+
+      '<div class="upgrade-row-cost">'+(isMax?'':cost+' EXP')+'</div>'+
+      '<button class="upgrade-btn" '+(isMax||!canAfford?'disabled':'')+' onclick="doUpgrade(\''+_upgradeWpn+'\',\''+def.key+'\')">'+
+        (isMax?'MAX':!canAfford?'EXP不足':'強化')+
+      '</button>';
+    block.appendChild(row);
+  });
+
+  list.appendChild(block);
+}
+
+function doUpgrade(wpnId, statKey){
+  const defs=WEAPON_ENH_DEF[wpnId]||[];
+  const def=defs.find(d=>d.key===statKey);
+  if(!def)return;
+  const lv=getWpnEnhLv(wpnId,statKey);
+  if(lv>=def.maxLv){showToast('これ以上強化できません');return;}
+  const cost=Math.max(1,Math.round(def.base+lv*def.inc));
+  const exp=getExp();
+  if(exp<cost){showToast('EXPが足りません（必要: '+cost+' EXP）');return;}
+  saveExp(exp-cost);
+  saveWpnEnhLv(wpnId,statKey,lv+1);
+  showToast(WDEFS[wpnId].name+' '+def.label+' Lv.'+(lv+1)+'に強化！');
+  renderUpgrade();
+  renderExp();
+}
+
+// ===== 合成タブ =====
+function renderSynth(){
+  const list=document.getElementById('synth-list');
+  list.innerHTML='';
+
+  const owned=Object.keys(WDEFS).filter(id=>getWpnCount(id)>0);
+
+  if(owned.length===0){
+    list.innerHTML='<div class="empty-state"><div class="empty-icon">⚗️</div>所持武器がありません。<br>ダンジョンで武器を入手しよう！</div>';
+    return;
+  }
+
+  owned.forEach(id=>{
+    const d=WDEFS[id];
+    const count=getWpnCount(id);
+    const synth=getWpnSynth(id);
+    const ms=SYNTH_MILESTONES[id]||[];
+    const next=ms.find(m=>synth<m.at);
+    const prev=next?ms[ms.indexOf(next)-1]:ms[ms.length-1];
+    const prevAt=prev&&next?prev.at:0;
+    const nextAt=next?next.at:(ms[ms.length-1]?.at||1);
+    const pct=next?Math.min(100,((synth-prevAt)/(nextAt-prevAt))*100):100;
+
+    // 合成可能かどうか（所持2枚以上 or 能力なし武器を1枚使う）
+    const hasAbility=getAbilityText(id)!=='';
+    const canMerge=count>=2||(count>=1&&!hasAbility);
+
+    const block=document.createElement('div');
+    block.className='synth-block';
+    block.innerHTML=
+      '<div class="synth-block-header">'+
+        '<div class="upgrade-block-icon">'+d.name+'</div>'+
+        '<div>'+
+          '<div class="upgrade-block-name">'+d.name+'</div>'+
+          '<div class="upgrade-block-sub">'+RARITY_LABEL[d.rarity]+'　所持 ×'+count+'　合成数: '+synth+'</div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="synth-progress-row">'+
+        '<div style="flex:1;min-width:0;">'+
+          '<div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;">'+
+            '<span style="color:var(--U)">'+(next?'次：'+next.label:'全能力解放済み ✨')+'</span>'+
+            '<span style="color:var(--text-dim)">'+synth+(next?' / '+nextAt:'')+'</span>'+
+          '</div>'+
+          '<div class="synth-progress-bar"><div class="synth-progress-fill" style="width:'+pct+'%"></div></div>'+
+        '</div>'+
+      '</div>'+
+      '<button class="synth-merge-btn" '+(canMerge&&count>=2?'':'disabled')+' onclick="doSynth(\''+id+'\')">'+
+        (count>=2?d.name+'を合成する（1枚消費）':count===1?'所持1枚（合成には2枚以上必要）':'所持なし')+
+      '</button>';
+    list.appendChild(block);
+  });
+}
+
+function doSynth(id){
+  const count=getWpnCount(id);
+  if(count<2){showToast('合成には同じ武器が2枚以上必要です');return;}
+  saveWpnCount(id,count-1);
+  const synth=getWpnSynth(id);
+  saveWpnSynth(id,synth+1);
+  showToast(WDEFS[id].name+'を合成！（合成数: '+(synth+1)+'）');
+  renderSynth();
+}
+
+// ===== トースト =====
+let _toastTimer=null;
+function showToast(msg){
+  const el=document.getElementById('toast');
+  if(!el)return;
+  el.textContent=msg;
+  el.classList.add('show');
+  if(_toastTimer)clearTimeout(_toastTimer);
+  _toastTimer=setTimeout(()=>el.classList.remove('show'),2200);
+}
+
+// ===== 初期化 =====
+function init(){
+  // ※ 武器はshikaku-dungeon.htmlでダンジョンをクリアすると追加されます
+  renderExp();
+  renderFooter();
+  renderList();
+}
+
+init();
+</script>
+</body>
+</html>

@@ -363,6 +363,11 @@
     .dungeon-page-btn:active{background:#3e3e38;}
     .dungeon-page-btn.active{border-color:var(--player);color:var(--player);background:rgba(29,158,117,0.1);}
     .dungeon-page-btn.gp-focus{outline:2px solid var(--player);outline-offset:2px;}
+    /* ダンジョンタブ */
+    .dungeon-tab{flex:1;padding:7px 4px;border-radius:8px;border:1px solid #333;background:#252520;color:#8a8a80;font-size:12px;font-weight:600;cursor:pointer;transition:background 0.1s,border-color 0.1s;text-align:center;}
+    .dungeon-tab:active{background:#3e3e38;}
+    .dungeon-tab.active{background:rgba(29,158,117,0.12);border-color:var(--player);color:var(--player);}
+    .dungeon-tab.gp-focus{outline:2px solid var(--player);outline-offset:2px;}
     .dungeon-card.gp-focus{outline:2px solid var(--player);outline-offset:2px;}
     .diff-1{background:rgba(29,158,117,0.15);color:#4AE0A0;}
     .diff-2{background:rgba(60,160,80,0.15);color:#4AE080;}
@@ -428,27 +433,7 @@
 <div id="nick-screen">
   <div class="nick-title">ようこそ、四角迷宮へ</div>
   <div class="nick-sub">あなたの名前を教えてください。</div>
-  <input type="text" id="nick-input-field" class="nick-input" maxlength="12" placeholder="ニックネーム（12文字以内）">
-  <div style="font-size:12px;font-weight:600;color:#c0c0b8;letter-spacing:0.1em;width:100%;max-width:320px;">ゲーム難易度を選んでください</div>
-  <div style="font-size:10px;color:#5a5a54;width:100%;max-width:320px;margin-top:-8px;">※ 難易度は後から変更できません</div>
-  <div class="diff-select-grid" id="diff-select-grid">
-    <div class="diff-card diff-easy" data-diff="easy" onclick="selectDiff('easy')">
-      <div class="diff-card-name">🌿 イージー</div>
-      <div class="diff-card-desc">タイマーなし・宝箱報酬多め。のんびりプレイしたい方向け。</div>
-    </div>
-    <div class="diff-card diff-normal" data-diff="normal" onclick="selectDiff('normal')">
-      <div class="diff-card-name">⚔ ノーマル</div>
-      <div class="diff-card-desc">タイマーなし・通常報酬。ある程度の刺激を求めるプレイヤーへ。</div>
-    </div>
-    <div class="diff-card diff-hard" data-diff="hard" onclick="selectDiff('hard')">
-      <div class="diff-card-name">🔥 ハード</div>
-      <div class="diff-card-desc">タイマーなし・強化なし。純粋な戦略力が試される。</div>
-    </div>
-    <div class="diff-card diff-impossible" data-diff="impossible" onclick="selectDiff('impossible')">
-      <div class="diff-card-name">💀 インポッシブル</div>
-      <div class="diff-card-desc">1秒ターン制。時間内に行動しないと敵が動く。真の挑戦者のみ。</div>
-    </div>
-  </div>
+  <input type="text" id="nick-input-field" class="nick-input" maxlength="12" placeholder="ニックネーム（12文字以内）" oninput="onNickInput()">
   <button class="nick-btn" id="nick-submit-btn" onclick="submitNick()" style="opacity:0.4;pointer-events:none;">冒険を始める</button>
   <div style="margin-top:8px;text-align:center;">
     <button onclick="openResetConfirm()" style="background:none;border:none;color:#4a4840;font-size:11px;cursor:pointer;text-decoration:underline;">データを初期化して最初から</button>
@@ -459,7 +444,7 @@
 <div id="reset-confirm">
   <div class="reset-box">
     <div class="reset-title">⚠ データを初期化しますか？</div>
-    <div class="reset-sub">ニックネーム・難易度・解放済みダンジョンが全て消えます。<br>この操作は取り消せません。</div>
+    <div class="reset-sub">ニックネーム・解放済みダンジョンが全て消えます。<br>この操作は取り消せません。</div>
     <div style="display:flex;gap:10px;">
       <button onclick="closeResetConfirm()" style="flex:1;padding:10px;border-radius:8px;border:1px solid #444;background:none;color:#8a8a80;font-size:13px;cursor:pointer;">キャンセル</button>
       <button onclick="resetConfirm2Open()" style="flex:1;padding:10px;border-radius:8px;border:1px solid #E05A3A;background:none;color:#E05A3A;font-size:13px;font-weight:700;cursor:pointer;">初期化する</button>
@@ -489,65 +474,45 @@
 </div>
 
 <!-- ===== ダンジョン選択画面 ===== -->
-<!-- 強化画面 -->
+<!-- 強化画面（武器強化） -->
 <div id="enhance-screen">
   <div class="enh-header">
-    <span class="enh-title">強 化</span>
+    <span class="enh-title">武器強化</span>
     <span class="enh-exp-badge" id="enh-exp-disp">EXP: 0</span>
   </div>
-  <div class="enh-section">プレイヤー強化</div>
-  <div class="enh-row" id="enh-row-hp">
-    <div class="enh-row-info">
-      <div class="enh-row-name">最大HP強化</div>
-      <div class="enh-row-desc">Lv1-50: +20/Lv  Lv51+: ×1.01複利</div>
-      <div class="enh-row-lv" id="enh-lv-hp">読み込み中...</div>
-    </div>
-    <button class="enh-btn" id="enh-btn-hp" onclick="enhance('hp')">20 EXP</button>
-  </div>
-  <div class="enh-section">武器強化（全武器の基礎攻撃力に影響）</div>
-  <div class="enh-row" id="enh-row-atk">
-    <div class="enh-row-info">
-      <div class="enh-row-name">攻撃力強化</div>
-      <div class="enh-row-desc">Lv1-50: +3/Lv  Lv51+: ×1.01複利</div>
-      <div class="enh-row-lv" id="enh-lv-atk">読み込み中...</div>
-    </div>
-    <button class="enh-btn" id="enh-btn-atk" onclick="enhance('atk')">15 EXP</button>
-  </div>
-  <div class="enh-row" id="enh-row-spread">
-    <div class="enh-row-info">
-      <div class="enh-row-name">ブレ低減</div>
-      <div class="enh-row-desc">Lv1-50: -1/Lv  Lv51+: ×1.01複利</div>
-      <div class="enh-row-lv" id="enh-lv-spread">読み込み中...</div>
-    </div>
-    <button class="enh-btn" id="enh-btn-spread" onclick="enhance('spread')">10 EXP</button>
-  </div>
-  <div class="enh-section">特殊強化</div>
-  <div class="enh-row" id="enh-row-regen">
-    <div class="enh-row-info">
-      <div class="enh-row-name">戦闘後HP回復</div>
-      <div class="enh-row-desc">Lv1-50: +5/Lv  Lv51+: ×1.02複利</div>
-      <div class="enh-row-lv" id="enh-lv-regen">読み込み中...</div>
-    </div>
-    <button class="enh-btn" id="enh-btn-regen" onclick="enhance('regen')">30 EXP</button>
-  </div>
+  <div class="enh-section">武器を選んで強化する</div>
+  <div id="enh-wpn-selector" style="display:flex;gap:8px;width:100%;max-width:360px;flex-wrap:wrap;margin-bottom:4px;"></div>
+  <div id="enh-wpn-rows" style="width:100%;max-width:360px;"></div>
   <div style="height:8px;"></div>
   <button class="enh-back" onclick="closeEnhance()">← ダンジョン選択に戻る</button>
 </div>
 
 <div id="dungeon-select">
+  <!-- ヘッダー -->
   <div class="dungeon-select-header">
-    <div class="dungeon-select-title">ダンジョン選択</div>
+    <div class="dungeon-select-title" id="dungeon-tab-title">メインダンジョン</div>
     <div style="display:flex;gap:6px;align-items:center;">
       <button onclick="toggleOptions()" id="dungeon-opt-btn" style="background:none;border:1px solid #444;color:#8a8a80;font-size:13px;font-weight:600;padding:4px 10px;border-radius:6px;cursor:pointer;">⚙ 設定</button>
-      <button onclick="showHof()" style="background:none;border:1px solid #444;color:#8a8a80;font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:sans-serif;">🏆 殿堂</button>
+      <button onclick="showHof()" style="background:none;border:1px solid #444;color:#8a8a80;font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:sans-serif;">🏆</button>
     </div>
   </div>
-  <div style="display:flex;align-items:center;justify-content:space-between;width:100%;max-width:360px;margin-bottom:4px;">
-    <button onclick="openEnhance()" style="background:none;border:1px solid rgba(200,168,90,0.4);color:#c8a85a;font-size:12px;font-weight:700;padding:4px 12px;border-radius:6px;cursor:pointer;">⚡ 強化</button>
-    <a href="dungeon-ranking.html" style="font-size:11px;color:#8a7040;text-decoration:none;letter-spacing:0.05em;">📊 ランキングを見る →</a>
+  <!-- タブ -->
+  <div style="display:flex;gap:6px;width:100%;max-width:360px;margin-bottom:8px;">
+    <button class="dungeon-tab active" id="tab-main" onclick="switchDungeonTab('main')">⚔ メイン</button>
+    <button class="dungeon-tab" id="tab-exp" onclick="switchDungeonTab('exp')">✨ 経験値</button>
+    <button class="dungeon-tab" id="tab-week" onclick="switchDungeonTab('week')">📅 曜日</button>
   </div>
+  <!-- サブヘッダー（経験値/曜日の説明） -->
+  <div id="dungeon-tab-desc" style="font-size:11px;color:#8a8a80;width:100%;max-width:360px;margin-bottom:6px;line-height:1.7;display:none;"></div>
+  <!-- ページネーション -->
   <div id="dungeon-page-btns" class="dungeon-page-btns"></div>
+  <!-- リスト -->
   <div id="dungeon-list"></div>
+  <!-- フッター -->
+  <div style="display:flex;align-items:center;justify-content:space-between;width:100%;max-width:360px;margin-top:8px;">
+    <button onclick="openEnhance()" style="background:none;border:1px solid rgba(200,168,90,0.4);color:#c8a85a;font-size:12px;font-weight:700;padding:4px 12px;border-radius:6px;cursor:pointer;">⚡ 強化</button>
+    <a href="dungeon-ranking.html" style="font-size:11px;color:#8a7040;text-decoration:none;letter-spacing:0.05em;">📊 ランキング →</a>
+  </div>
 </div>
 
 <!-- 製作者パネル -->
@@ -741,37 +706,15 @@
   </div>
 </div>
 
-<!-- 武器選択 -->
+<!-- 武器選択（3択から1本選ぶ） -->
 <div class="overlay" id="weapon-overlay">
   <div class="overlay-box">
     <div class="overlay-title">武器を選べ</div>
-    <div class="overlay-sub">武器をタップしてストック。<br>ストックした武器を再びタップすると冒険を開始。</div>
+    <div class="overlay-sub" id="wpn-overlay-sub">3つの武器から1つを選んで冒険を始める。</div>
     <div id="weapon-choices"></div>
-    <!-- ストックエリア -->
-    <div class="wpn-stock-area" id="wpn-stock-area" onclick="onStockTap()">
-      <div class="wpn-stock-empty" id="wpn-stock-empty">ここに武器をストック</div>
-      <div class="wpn-stock-info" id="wpn-stock-info" style="display:none;">
-        <div class="wpn-stock-label">ストック中</div>
-        <div class="wpn-stock-name" id="wpn-stock-name"></div>
-        <div class="wpn-stock-atk" id="wpn-stock-atk"></div>
-        <div class="wpn-stock-hint">もう一度タップ → 冒険を始める</div>
-      </div>
-      <canvas id="wpn-stock-canvas" width="70" height="70" style="display:none;flex-shrink:0;image-rendering:pixelated;"></canvas>
-    </div>
   </div>
 </div>
-<!-- 武器確認ダイアログ -->
-<div id="wpn-confirm">
-  <div class="wpn-confirm-box">
-    <div class="wpn-confirm-title">この武器で挑みますか？</div>
-    <div class="wpn-confirm-name" id="wpn-confirm-name"></div>
-    <div class="wpn-confirm-atk" id="wpn-confirm-atk"></div>
-    <div class="wpn-confirm-btns">
-      <button class="wpn-confirm-yes" onclick="confirmWeapon()">はい</button>
-      <button class="wpn-confirm-no" onclick="cancelWeapon()">いいえ</button>
-    </div>
-  </div>
-</div>
+
 
 <!-- ログパネル -->
 <div class="log-panel" id="log-panel" onclick="toggleLogPanel()">
@@ -859,9 +802,9 @@ function _r9(name,pillars,enemies){return {name,size:9,playerStart:[4,7],exit:[4
 function _e9(t,x,y,b=0){const bs={axe:60,bow:40,star:80};return {type:t,x,y,hp:(bs[t]||60)+b,maxHp:(bs[t]||60)+b};}
 
 const DUNGEON_ALL=[
-  {id:'tutorial',diff:0,name:'チュートリアル',desc:'操作を覚えよう。武器の使い方から敵の種類まで。',mapSize:5,roomCount:3,senseRange:2,
+  {id:'tutorial',category:'main',diff:0,name:'チュートリアル　はじまりの間',desc:'操作を覚えよう。武器の使い方から敵の種類まで。',mapSize:5,roomCount:3,senseRange:2,
    diffLabel:'入門',diffClass:'diff-tutorial',rooms:TUTORIAL_ROOMS},
-  {id:'d1',diff:1,name:'一歩の迷宮',desc:'最初の試練。斧の敵のみ。動きを覚えよう。',mapSize:5,roomCount:3,senseRange:3,
+  {id:'d1',category:'main',diff:1,name:'第1番　斧の迷宮',desc:'最初の試練。斧の敵のみ。動きを覚えよう。',mapSize:5,roomCount:3,senseRange:3,
    diffLabel:'★☆☆☆☆☆☆',diffClass:'diff-1',
    rooms:[
     {name:'入門の間',size:5,playerStart:[2,3],exit:[2,0],pillars:[],enemies:[{type:'axe',x:2,y:1,hp:40,maxHp:40}]},
@@ -870,7 +813,7 @@ const DUNGEON_ALL=[
     {name:'突破口',size:5,playerStart:[2,3],exit:[2,0],pillars:[],enemies:[{type:'axe',x:1,y:1,hp:40,maxHp:40},{type:'axe',x:3,y:1,hp:40,maxHp:40},{type:'axe',x:2,y:2,hp:40,maxHp:40}]},
     {name:'卒業試験',size:5,playerStart:[2,3],exit:[2,0],pillars:[],enemies:[{type:'axe',x:1,y:1,hp:40,maxHp:40},{type:'axe',x:2,y:1,hp:40,maxHp:40},{type:'axe',x:3,y:1,hp:40,maxHp:40}]},
    ]},
-  {id:'d2',diff:2,name:'踏み出しの迷宮',desc:'斧のみ。数が少し増えた。',mapSize:5,roomCount:3,senseRange:3,
+  {id:'d2',category:'exp',diff:2,name:'踏み出しの迷宮',desc:'斧のみ。数が少し増えた。',mapSize:5,roomCount:3,senseRange:3,
    diffLabel:'★★☆☆☆☆☆',diffClass:'diff-1',
    rooms:[
     {name:'慣らし',size:5,playerStart:[2,3],exit:[2,0],pillars:[],enemies:[{type:'axe',x:2,y:1,hp:40,maxHp:40},{type:'axe',x:1,y:2,hp:40,maxHp:40}]},
@@ -879,7 +822,7 @@ const DUNGEON_ALL=[
     {name:'壁際',size:5,playerStart:[2,3],exit:[2,0],pillars:[[0,2],[4,2]],enemies:[{type:'axe',x:2,y:1,hp:40,maxHp:40},{type:'axe',x:2,y:2,hp:40,maxHp:40}]},
     {name:'突破',size:5,playerStart:[2,3],exit:[2,0],pillars:[],enemies:[{type:'axe',x:1,y:1,hp:40,maxHp:40},{type:'axe',x:2,y:1,hp:40,maxHp:40},{type:'axe',x:3,y:1,hp:40,maxHp:40}]},
    ]},
-  {id:'d3',diff:3,name:'三歩の迷宮',desc:'柱が少し加わる。',mapSize:5,roomCount:3,senseRange:3,
+  {id:'d3',category:'exp',diff:3,name:'三歩の迷宮',desc:'柱が少し加わる。',mapSize:5,roomCount:3,senseRange:3,
    diffLabel:'★★★☆☆☆☆',diffClass:'diff-1',
    rooms:[
     {name:'一柱',size:5,playerStart:[2,3],exit:[2,0],pillars:[[2,2]],enemies:[{type:'axe',x:2,y:1,hp:40,maxHp:40},{type:'axe',x:1,y:2,hp:40,maxHp:40}]},
@@ -888,7 +831,7 @@ const DUNGEON_ALL=[
     {name:'壁と柱',size:5,playerStart:[2,3],exit:[2,0],pillars:[[1,2],[3,2]],enemies:[{type:'axe',x:2,y:1,hp:40,maxHp:40},{type:'axe',x:0,y:1,hp:40,maxHp:40}]},
     {name:'四方',size:5,playerStart:[2,3],exit:[2,0],pillars:[[2,2]],enemies:[{type:'axe',x:1,y:1,hp:40,maxHp:40},{type:'axe',x:3,y:1,hp:40,maxHp:40},{type:'axe',x:1,y:3,hp:40,maxHp:40},{type:'axe',x:3,y:3,hp:40,maxHp:40}]},
    ]},
-  {id:'d4',diff:4,name:'四歩の迷宮',desc:'斧が増え始める。',mapSize:5,roomCount:3,senseRange:3,
+  {id:'d4',category:'exp',diff:4,name:'四歩の迷宮',desc:'斧が増え始める。',mapSize:5,roomCount:3,senseRange:3,
    diffLabel:'★★★★☆☆☆',diffClass:'diff-1',
    rooms:[
     {name:'鋭角',size:5,playerStart:[2,3],exit:[2,0],pillars:[[2,1]],enemies:[{type:'axe',x:1,y:2,hp:40,maxHp:40},{type:'axe',x:3,y:2,hp:40,maxHp:40}]},
@@ -897,7 +840,7 @@ const DUNGEON_ALL=[
     {name:'奥の間',size:5,playerStart:[2,3],exit:[2,0],pillars:[[1,2],[3,2]],enemies:[{type:'axe',x:1,y:1,hp:40,maxHp:40},{type:'axe',x:2,y:1,hp:40,maxHp:40},{type:'axe',x:3,y:1,hp:40,maxHp:40}]},
     {name:'難所',size:5,playerStart:[2,3],exit:[2,0],pillars:[[2,2]],enemies:[{type:'axe',x:0,y:1,hp:40,maxHp:40},{type:'axe',x:4,y:1,hp:40,maxHp:40},{type:'axe',x:2,y:1,hp:40,maxHp:40},{type:'axe',x:1,y:3,hp:40,maxHp:40}]},
    ]},
-  {id:'d5',diff:5,name:'慣れの迷宮',desc:'柱が増えてきた。射線を意識しよう。',mapSize:5,roomCount:3,senseRange:3,
+  {id:'d5',category:'main',diff:5,name:'第2番　柱の迷宮',desc:'柱が増えてきた。射線を意識しよう。',mapSize:5,roomCount:3,senseRange:3,
    diffLabel:'★★★☆☆☆☆',diffClass:'diff-1',
    rooms:[
     {name:'柱道',size:5,playerStart:[2,3],exit:[2,0],pillars:[],enemies:[{type:'axe',x:2,y:1,hp:40,maxHp:40},{type:'axe',x:3,y:2,hp:40,maxHp:40}]},
@@ -906,7 +849,7 @@ const DUNGEON_ALL=[
     {name:'挟撃',size:5,playerStart:[2,3],exit:[2,0],pillars:[[2,2]],enemies:[{type:'axe',x:0,y:2,hp:40,maxHp:40},{type:'axe',x:4,y:2,hp:40,maxHp:40},{type:'axe',x:2,y:1,hp:40,maxHp:40}]},
     {name:'突破',size:5,playerStart:[2,3],exit:[2,0],pillars:[[1,2],[3,2]],enemies:[{type:'axe',x:1,y:1,hp:40,maxHp:40},{type:'axe',x:2,y:1,hp:40,maxHp:40},{type:'axe',x:3,y:2,hp:40,maxHp:40}]},
    ]},
-  {id:'d6',diff:6,name:'追いつめの迷宮',desc:'壁際に詰められる。',mapSize:5,roomCount:3,senseRange:3,
+  {id:'d6',category:'exp',diff:6,name:'追いつめの迷宮',desc:'壁際に詰められる。',mapSize:5,roomCount:3,senseRange:3,
    diffLabel:'★★★☆☆☆☆',diffClass:'diff-2',
    rooms:[
     {name:'壁際追い',size:5,playerStart:[2,3],exit:[2,0],pillars:[[2,2]],enemies:[{type:'axe',x:1,y:1,hp:40,maxHp:40},{type:'axe',x:3,y:1,hp:40,maxHp:40},{type:'axe',x:2,y:2,hp:40,maxHp:40}]},
@@ -915,7 +858,7 @@ const DUNGEON_ALL=[
     {name:'十字',size:5,playerStart:[2,3],exit:[2,0],pillars:[[2,1],[2,3],[1,2],[3,2]],enemies:[{type:'axe',x:2,y:0,hp:40,maxHp:40},{type:'axe',x:0,y:2,hp:40,maxHp:40},{type:'axe',x:4,y:2,hp:40,maxHp:40}]},
     {name:'三体詰め',size:5,playerStart:[2,3],exit:[2,0],pillars:[[1,2],[3,2]],enemies:[{type:'axe',x:1,y:1,hp:40,maxHp:40},{type:'axe',x:2,y:1,hp:40,maxHp:40},{type:'axe',x:3,y:1,hp:40,maxHp:40},{type:'axe',x:2,y:2,hp:40,maxHp:40}]},
    ]},
-  {id:'d7',diff:7,name:'七難の迷宮',desc:'斧5体と柱の複合。',mapSize:5,roomCount:3,senseRange:3,
+  {id:'d7',category:'exp',diff:7,name:'七難の迷宮',desc:'斧5体と柱の複合。',mapSize:5,roomCount:3,senseRange:3,
    diffLabel:'★★★★☆☆☆',diffClass:'diff-2',
    rooms:[
     {name:'密集',size:5,playerStart:[2,3],exit:[2,0],pillars:[],enemies:[{type:'axe',x:1,y:1,hp:40,maxHp:40},{type:'axe',x:2,y:1,hp:40,maxHp:40},{type:'axe',x:3,y:1,hp:40,maxHp:40},{type:'axe',x:1,y:2,hp:40,maxHp:40},{type:'axe',x:3,y:2,hp:40,maxHp:40}]},
@@ -924,7 +867,7 @@ const DUNGEON_ALL=[
     {name:'四体',size:5,playerStart:[2,3],exit:[2,0],pillars:[[2,2]],enemies:[{type:'axe',x:1,y:1,hp:40,maxHp:40},{type:'axe',x:3,y:1,hp:40,maxHp:40},{type:'axe',x:1,y:2,hp:40,maxHp:40},{type:'axe',x:3,y:2,hp:40,maxHp:40}]},
     {name:'制圧',size:5,playerStart:[2,3],exit:[2,0],pillars:[[1,1],[3,1]],enemies:[{type:'axe',x:0,y:2,hp:40,maxHp:40},{type:'axe',x:2,y:2,hp:40,maxHp:40},{type:'axe',x:4,y:2,hp:40,maxHp:40},{type:'axe',x:2,y:1,hp:40,maxHp:40}]},
    ]},
-  {id:'d8',diff:8,name:'狭間の迷宮',desc:'5x5の最終局面。',mapSize:5,roomCount:3,senseRange:3,
+  {id:'d8',category:'exp',diff:8,name:'狭間の迷宮',desc:'5x5の最終局面。',mapSize:5,roomCount:3,senseRange:3,
    diffLabel:'★★★★★☆☆',diffClass:'diff-2',
    rooms:[
     {name:'最終盤',size:5,playerStart:[2,3],exit:[2,0],pillars:[[2,2]],enemies:[{type:'axe',x:1,y:1,hp:40,maxHp:40},{type:'axe',x:3,y:1,hp:40,maxHp:40},{type:'axe',x:1,y:2,hp:40,maxHp:40},{type:'axe',x:3,y:2,hp:40,maxHp:40},{type:'axe',x:2,y:1,hp:40,maxHp:40}]},
@@ -933,7 +876,7 @@ const DUNGEON_ALL=[
     {name:'壁際詰め',size:5,playerStart:[2,3],exit:[2,0],pillars:[[2,1],[2,3]],enemies:[{type:'axe',x:0,y:2,hp:40,maxHp:40},{type:'axe',x:4,y:2,hp:40,maxHp:40},{type:'axe',x:2,y:2,hp:40,maxHp:40}]},
     {name:'全包囲',size:5,playerStart:[2,3],exit:[2,0],pillars:[],enemies:[{type:'axe',x:1,y:1,hp:40,maxHp:40},{type:'axe',x:2,y:1,hp:40,maxHp:40},{type:'axe',x:3,y:1,hp:40,maxHp:40},{type:'axe',x:0,y:2,hp:40,maxHp:40},{type:'axe',x:4,y:2,hp:40,maxHp:40}]},
    ]},
-  {id:'d9',diff:9,name:'壁と斧の迷宮',desc:'5x5の総まとめ。斧と柱の最終形。',mapSize:5,roomCount:3,senseRange:3,
+  {id:'d9',category:'stock',diff:9,name:'壁と斧の迷宮',desc:'5x5の総まとめ。斧と柱の最終形。',mapSize:5,roomCount:3,senseRange:3,
    diffLabel:'★★★★★★☆',diffClass:'diff-2',
    rooms:[
     {name:'総まとめ',size:5,playerStart:[2,3],exit:[2,0],pillars:[[2,2]],enemies:[{type:'axe',x:1,y:1,hp:40,maxHp:40},{type:'axe',x:3,y:1,hp:40,maxHp:40},{type:'axe',x:1,y:2,hp:40,maxHp:40},{type:'axe',x:3,y:2,hp:40,maxHp:40}]},
@@ -942,7 +885,7 @@ const DUNGEON_ALL=[
     {name:'封鎖',size:5,playerStart:[2,3],exit:[2,0],pillars:[[1,1],[3,1],[1,3],[3,3]],enemies:[{type:'axe',x:2,y:1,hp:40,maxHp:40},{type:'axe',x:1,y:2,hp:40,maxHp:40},{type:'axe',x:3,y:2,hp:40,maxHp:40},{type:'axe',x:2,y:3,hp:40,maxHp:40}]},
     {name:'脱出不能',size:5,playerStart:[2,3],exit:[2,0],pillars:[[2,2]],enemies:[{type:'axe',x:0,y:1,hp:40,maxHp:40},{type:'axe',x:4,y:1,hp:40,maxHp:40},{type:'axe',x:1,y:2,hp:40,maxHp:40},{type:'axe',x:3,y:2,hp:40,maxHp:40},{type:'axe',x:2,y:1,hp:40,maxHp:40}]},
    ]},
-  {id:'d10',diff:10,name:'遠射の迷宮',desc:'弓を持つ敵が現れる。射線を断て。',mapSize:5,roomCount:3,senseRange:4,
+  {id:'d10',category:'main',diff:10,name:'第3番　遠射の迷宮',desc:'弓を持つ敵が現れる。射線を断て。',mapSize:5,roomCount:3,senseRange:4,
    diffLabel:'★★★☆☆☆☆',diffClass:'diff-2',
    rooms:[
     {name:'狙われる',size:5,playerStart:[2,3],exit:[2,0],pillars:[[2,2]],enemies:[{type:'bow',x:2,y:1,hp:25,maxHp:25}]},
@@ -951,7 +894,7 @@ const DUNGEON_ALL=[
     {name:'十字砲火',size:5,playerStart:[2,3],exit:[2,0],pillars:[],enemies:[{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:3,y:1,hp:25,maxHp:25}]},
     {name:'突破',size:5,playerStart:[2,3],exit:[2,0],pillars:[[2,2]],enemies:[{type:'bow',x:2,y:1,hp:25,maxHp:25},{type:'axe',x:1,y:2,hp:40,maxHp:40},{type:'axe',x:3,y:2,hp:40,maxHp:40}]},
    ]},
-  {id:'d11',diff:11,name:'射手の間',desc:'弓+斧の複合。射線管理が重要。',mapSize:5,roomCount:3,senseRange:4,
+  {id:'d11',category:'week',diff:11,name:'射手の間',desc:'弓+斧の複合。射線管理が重要。',mapSize:5,roomCount:3,senseRange:4,
    diffLabel:'★★★☆☆☆☆',diffClass:'diff-2',
    rooms:[
     {name:'射手と斧',size:5,playerStart:[2,3],exit:[2,0],pillars:[[2,2]],enemies:[{type:'bow',x:2,y:1,hp:25,maxHp:25},{type:'axe',x:1,y:2,hp:40,maxHp:40},{type:'axe',x:3,y:2,hp:40,maxHp:40}]},
@@ -960,7 +903,7 @@ const DUNGEON_ALL=[
     {name:'柱の影',size:5,playerStart:[2,3],exit:[2,0],pillars:[[1,2],[3,2]],enemies:[{type:'bow',x:2,y:1,hp:25,maxHp:25},{type:'axe',x:0,y:2,hp:40,maxHp:40},{type:'axe',x:4,y:2,hp:40,maxHp:40}]},
     {name:'包囲射撃',size:5,playerStart:[2,3],exit:[2,0],pillars:[[2,2]],enemies:[{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'axe',x:1,y:2,hp:40,maxHp:40},{type:'axe',x:3,y:2,hp:40,maxHp:40}]},
    ]},
-  {id:'d12',diff:12,name:'双弓の迷宮',desc:'弓2+斧の本格遠距離戦。',mapSize:5,roomCount:3,senseRange:4,
+  {id:'d12',category:'week',diff:12,name:'双弓の迷宮',desc:'弓2+斧の本格遠距離戦。',mapSize:5,roomCount:3,senseRange:4,
    diffLabel:'★★★★☆☆☆',diffClass:'diff-2',
    rooms:[
     {name:'双弓挟撃',size:5,playerStart:[2,3],exit:[2,0],pillars:[],enemies:[{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'axe',x:2,y:2,hp:40,maxHp:40}]},
@@ -969,7 +912,7 @@ const DUNGEON_ALL=[
     {name:'十字射撃',size:5,playerStart:[2,3],exit:[2,0],pillars:[],enemies:[{type:'bow',x:0,y:2,hp:25,maxHp:25},{type:'bow',x:4,y:2,hp:25,maxHp:25},{type:'axe',x:2,y:1,hp:40,maxHp:40}]},
     {name:'重包囲',size:5,playerStart:[2,3],exit:[2,0],pillars:[[2,2]],enemies:[{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'axe',x:1,y:2,hp:40,maxHp:40},{type:'axe',x:3,y:2,hp:40,maxHp:40}]},
    ]},
-  {id:'d13',diff:13,name:'迷宮の壁',desc:'5x5最高難度。弓+斧+複雑配置。',mapSize:5,roomCount:3,senseRange:4,
+  {id:'d13',category:'week',diff:13,name:'迷宮の壁',desc:'5x5最高難度。弓+斧+複雑配置。',mapSize:5,roomCount:3,senseRange:4,
    diffLabel:'★★★★★☆☆',diffClass:'diff-3',
    rooms:[
     {name:'最前線',size:5,playerStart:[2,3],exit:[2,0],pillars:[[1,2],[3,2]],enemies:[{type:'bow',x:2,y:1,hp:25,maxHp:25},{type:'axe',x:0,y:1,hp:40,maxHp:40},{type:'axe',x:4,y:1,hp:40,maxHp:40},{type:'axe',x:2,y:2,hp:40,maxHp:40}]},
@@ -978,7 +921,7 @@ const DUNGEON_ALL=[
     {name:'弓4斧',size:5,playerStart:[2,3],exit:[2,0],pillars:[[2,2]],enemies:[{type:'bow',x:2,y:0,hp:25,maxHp:25},{type:'axe',x:1,y:1,hp:40,maxHp:40},{type:'axe',x:3,y:1,hp:40,maxHp:40},{type:'axe',x:0,y:2,hp:40,maxHp:40},{type:'axe',x:4,y:2,hp:40,maxHp:40}]},
     {name:'完全封鎖',size:5,playerStart:[2,3],exit:[2,0],pillars:[[1,2],[3,2]],enemies:[{type:'bow',x:2,y:1,hp:25,maxHp:25},{type:'bow',x:2,y:0,hp:25,maxHp:25},{type:'axe',x:0,y:1,hp:40,maxHp:40},{type:'axe',x:4,y:1,hp:40,maxHp:40}]},
    ]},
-  {id:'d14',diff:14,name:'七壁の迷宮',desc:'7x7の広さに慣れよう。斧のみ。',mapSize:7,roomCount:3,senseRange:4,
+  {id:'d14',category:'week',diff:14,name:'七壁の迷宮',desc:'7x7の広さに慣れよう。斧のみ。',mapSize:7,roomCount:3,senseRange:4,
    diffLabel:'★★★☆☆☆☆',diffClass:'diff-2',
    rooms:[
     {name:'広い斧',size:7,playerStart:[3,5],exit:[3,0],pillars:[],enemies:[{type:'axe',x:3,y:1,hp:40,maxHp:40},{type:'axe',x:1,y:3,hp:40,maxHp:40},{type:'axe',x:5,y:3,hp:40,maxHp:40}]},
@@ -987,7 +930,7 @@ const DUNGEON_ALL=[
     {name:'密集7',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,2]],enemies:[{type:'axe',x:2,y:1,hp:40,maxHp:40},{type:'axe',x:4,y:1,hp:40,maxHp:40},{type:'axe',x:1,y:3,hp:40,maxHp:40},{type:'axe',x:5,y:3,hp:40,maxHp:40}]},
     {name:'四角陣',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[2,4],[4,4]],enemies:[{type:'axe',x:3,y:1,hp:40,maxHp:40},{type:'axe',x:1,y:3,hp:40,maxHp:40},{type:'axe',x:5,y:3,hp:40,maxHp:40},{type:'axe',x:3,y:5,hp:40,maxHp:40}]},
    ]},
-  {id:'d15',diff:15,name:'分岐の迷宮',desc:'7x7で斧が増加。',mapSize:7,roomCount:3,senseRange:4,
+  {id:'d15',category:'week',diff:15,name:'分岐の迷宮',desc:'7x7で斧が増加。',mapSize:7,roomCount:3,senseRange:4,
    diffLabel:'★★★★☆☆☆',diffClass:'diff-2',
    rooms:[
     {name:'五体7',size:7,playerStart:[3,5],exit:[3,0],pillars:[],enemies:[{type:'axe',x:1,y:1,hp:40,maxHp:40},{type:'axe',x:5,y:1,hp:40,maxHp:40},{type:'axe',x:3,y:2,hp:40,maxHp:40},{type:'axe',x:1,y:4,hp:40,maxHp:40},{type:'axe',x:5,y:4,hp:40,maxHp:40}]},
@@ -996,16 +939,16 @@ const DUNGEON_ALL=[
     {name:'壁際7',size:7,playerStart:[3,5],exit:[3,0],pillars:[[1,3],[5,3]],enemies:[{type:'axe',x:1,y:1,hp:40,maxHp:40},{type:'axe',x:5,y:1,hp:40,maxHp:40},{type:'axe',x:3,y:2,hp:40,maxHp:40},{type:'axe',x:3,y:4,hp:40,maxHp:40}]},
     {name:'六体',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,2]],enemies:[{type:'axe',x:1,y:1,hp:40,maxHp:40},{type:'axe',x:5,y:1,hp:40,maxHp:40},{type:'axe',x:1,y:3,hp:40,maxHp:40},{type:'axe',x:5,y:3,hp:40,maxHp:40},{type:'axe',x:2,y:5,hp:40,maxHp:40},{type:'axe',x:4,y:5,hp:40,maxHp:40}]},
    ]},
-  {id:'d16',diff:16,name:'七つの試練',desc:'斧7体。数で圧倒される。',mapSize:7,roomCount:3,senseRange:4,
+  {id:'d16',category:'week',diff:16,name:'七つの試練',desc:'斧7体。数で圧倒される。',mapSize:7,roomCount:3,senseRange:4,
    diffLabel:'★★★★★☆☆',diffClass:'diff-3',
    rooms:[
     {name:'七体',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,3]],enemies:[{type:'axe',x:1,y:1,hp:40,maxHp:40},{type:'axe',x:3,y:1,hp:40,maxHp:40},{type:'axe',x:5,y:1,hp:40,maxHp:40},{type:'axe',x:1,y:3,hp:40,maxHp:40},{type:'axe',x:5,y:3,hp:40,maxHp:40},{type:'axe',x:2,y:5,hp:40,maxHp:40},{type:'axe',x:4,y:5,hp:40,maxHp:40}]},
     {name:'密陣',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,3],[4,3]],enemies:[{type:'axe',x:2,y:2,hp:40,maxHp:40},{type:'axe',x:4,y:2,hp:40,maxHp:40},{type:'axe',x:1,y:3,hp:40,maxHp:40},{type:'axe',x:5,y:3,hp:40,maxHp:40},{type:'axe',x:3,y:4,hp:40,maxHp:40}]},
-    {name:'完全包囲',size:7,playerStart:[3,5],exit:[3,0],pillars:[],enemies:[{type:'axe',x:2,y:1,hp:40,maxHp:40},{type:'axe',x:4,y:1,hp:40,maxHp:40},{type:'axe',x:1,y:2,hp:40,maxHp:40},{type:'axe',x:5,y:2,hp:40,maxHp:40},{type:'axe',x:1,y:4,hp:40,maxHp:40},{type:'axe',x:5,y:4,hp:40,maxHp:40}]},
+    {name:'第17番　完全包囲',size:7,playerStart:[3,5],exit:[3,0],pillars:[],enemies:[{type:'axe',x:2,y:1,hp:40,maxHp:40},{type:'axe',x:4,y:1,hp:40,maxHp:40},{type:'axe',x:1,y:2,hp:40,maxHp:40},{type:'axe',x:5,y:2,hp:40,maxHp:40},{type:'axe',x:1,y:4,hp:40,maxHp:40},{type:'axe',x:5,y:4,hp:40,maxHp:40}]},
     {name:'回廊陣',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[2,4],[4,4]],enemies:[{type:'axe',x:3,y:1,hp:40,maxHp:40},{type:'axe',x:1,y:3,hp:40,maxHp:40},{type:'axe',x:5,y:3,hp:40,maxHp:40},{type:'axe',x:3,y:5,hp:40,maxHp:40}]},
     {name:'収束7',size:7,playerStart:[3,5],exit:[3,0],pillars:[],enemies:[{type:'axe',x:1,y:1,hp:40,maxHp:40},{type:'axe',x:5,y:1,hp:40,maxHp:40},{type:'axe',x:0,y:3,hp:40,maxHp:40},{type:'axe',x:6,y:3,hp:40,maxHp:40},{type:'axe',x:2,y:5,hp:40,maxHp:40},{type:'axe',x:4,y:5,hp:40,maxHp:40},{type:'axe',x:3,y:3,hp:40,maxHp:40}]},
    ]},
-  {id:'d17',diff:17,name:'射撃準備',desc:'弓が7x7に登場。まず1体。',mapSize:7,roomCount:3,senseRange:4,
+  {id:'d17',category:'week',diff:17,name:'射撃準備',desc:'弓が7x7に登場。まず1体。',mapSize:7,roomCount:3,senseRange:4,
    diffLabel:'★★★☆☆☆☆',diffClass:'diff-2',
    rooms:[
     {name:'弓単体',size:7,playerStart:[3,5],exit:[3,0],pillars:[],enemies:[{type:'bow',x:3,y:1,hp:25,maxHp:25}]},
@@ -1014,7 +957,7 @@ const DUNGEON_ALL=[
     {name:'横射7',size:7,playerStart:[3,5],exit:[3,0],pillars:[],enemies:[{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'axe',x:3,y:1,hp:40,maxHp:40},{type:'axe',x:3,y:5,hp:40,maxHp:40}]},
     {name:'弓と2斧',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,3]],enemies:[{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'axe',x:1,y:4,hp:40,maxHp:40},{type:'axe',x:5,y:4,hp:40,maxHp:40}]},
    ]},
-  {id:'d18',diff:18,name:'遠射の道',desc:'弓2体が7x7で暴れる。',mapSize:7,roomCount:3,senseRange:4,
+  {id:'d18',category:'stock',diff:18,name:'遠射の道',desc:'弓2体が7x7で暴れる。',mapSize:7,roomCount:3,senseRange:4,
    diffLabel:'★★★★☆☆☆',diffClass:'diff-2',
    rooms:[
     {name:'双弓7',size:7,playerStart:[3,5],exit:[3,0],pillars:[],enemies:[{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'axe',x:3,y:3,hp:40,maxHp:40}]},
@@ -1023,7 +966,7 @@ const DUNGEON_ALL=[
     {name:'射線交差',size:7,playerStart:[3,5],exit:[3,0],pillars:[],enemies:[{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'bow',x:6,y:3,hp:25,maxHp:25},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'axe',x:3,y:4,hp:40,maxHp:40}]},
     {name:'三弓7',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,3]],enemies:[{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:3,y:4,hp:25,maxHp:25},{type:'axe',x:3,y:2,hp:40,maxHp:40}]},
    ]},
-  {id:'d19',diff:19,name:'弓と斧の協奏',desc:'弓+斧の本格複合。星の前哨戦。',mapSize:7,roomCount:3,senseRange:4,
+  {id:'d19',category:'stock',diff:19,name:'弓と斧の協奏',desc:'弓+斧の本格複合。星の前哨戦。',mapSize:7,roomCount:3,senseRange:4,
    diffLabel:'★★★★★☆☆',diffClass:'diff-3',
    rooms:[
     {name:'協奏1',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,3],[4,3]],enemies:[{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'axe',x:1,y:2,hp:40,maxHp:40},{type:'axe',x:5,y:2,hp:40,maxHp:40},{type:'axe',x:3,y:4,hp:40,maxHp:40}]},
@@ -1032,7 +975,7 @@ const DUNGEON_ALL=[
     {name:'協奏4',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2]],enemies:[{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'axe',x:1,y:3,hp:40,maxHp:40},{type:'axe',x:5,y:3,hp:40,maxHp:40},{type:'axe',x:3,y:5,hp:40,maxHp:40}]},
     {name:'協奏5',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,2],[1,4],[5,4]],enemies:[{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:3,y:4,hp:25,maxHp:25},{type:'axe',x:2,y:3,hp:40,maxHp:40},{type:'axe',x:4,y:3,hp:40,maxHp:40}]},
    ]},
-  {id:'d20',diff:20,name:'拡張の迷宮',desc:'7x7の広い迷宮。斥候範囲が広がった。',mapSize:7,roomCount:3,senseRange:4,
+  {id:'d20',category:'main',diff:20,name:'第4番　拡張の迷宮',desc:'7x7の広い迷宮。斥候範囲が広がった。',mapSize:7,roomCount:3,senseRange:4,
    diffLabel:'★★★★☆☆☆',diffClass:'diff-2',
    rooms:[
     {name:'広間',size:7,playerStart:[3,5],exit:[3,0],pillars:[],enemies:[{type:'axe',x:3,y:2,hp:40,maxHp:40},{type:'axe',x:1,y:2,hp:40,maxHp:40},{type:'axe',x:5,y:2,hp:40,maxHp:40}]},
@@ -1041,7 +984,7 @@ const DUNGEON_ALL=[
     {name:'弓x2',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,3]],enemies:[{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'axe',x:3,y:2,hp:40,maxHp:40}]},
     {name:'乱戦',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,4]],enemies:[{type:'axe',x:1,y:1,hp:40,maxHp:40},{type:'axe',x:5,y:1,hp:40,maxHp:40},{type:'axe',x:2,y:3,hp:40,maxHp:40},{type:'bow',x:3,y:1,hp:25,maxHp:25}]},
    ]},
-  {id:'d21',diff:21,name:'広野の迷宮',desc:'7x7で弓が本格登場。',mapSize:7,roomCount:3,senseRange:4,
+  {id:'d21',category:'stock',diff:21,name:'広野の迷宮',desc:'7x7で弓が本格登場。',mapSize:7,roomCount:3,senseRange:4,
    diffLabel:'★★★★☆☆☆',diffClass:'diff-2',
    rooms:[
     {name:'広野の弓',size:7,playerStart:[3,5],exit:[3,0],pillars:[],enemies:[{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'axe',x:1,y:3,hp:40,maxHp:40},{type:'axe',x:5,y:3,hp:40,maxHp:40}]},
@@ -1050,7 +993,7 @@ const DUNGEON_ALL=[
     {name:'包囲弓',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,3]],enemies:[{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'axe',x:1,y:3,hp:40,maxHp:40},{type:'axe',x:5,y:3,hp:40,maxHp:40}]},
     {name:'弓と星',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,3],[4,3]],enemies:[{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'star',x:3,y:3,hp:55,maxHp:55}]},
    ]},
-  {id:'d22',diff:22,name:'挟撃の迷宮',desc:'弓の射線が2方向交差。',mapSize:7,roomCount:3,senseRange:4,
+  {id:'d22',category:'stock',diff:22,name:'挟撃の迷宮',desc:'弓の射線が2方向交差。',mapSize:7,roomCount:3,senseRange:4,
    diffLabel:'★★★★★☆☆',diffClass:'diff-3',
    rooms:[
     {name:'交差射線',size:7,playerStart:[3,5],exit:[3,0],pillars:[],enemies:[{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'axe',x:3,y:3,hp:40,maxHp:40}]},
@@ -1059,7 +1002,7 @@ const DUNGEON_ALL=[
     {name:'弓3斧',size:7,playerStart:[3,5],exit:[3,0],pillars:[[1,3],[5,3]],enemies:[{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'axe',x:2,y:2,hp:40,maxHp:40},{type:'axe',x:4,y:2,hp:40,maxHp:40},{type:'axe',x:3,y:4,hp:40,maxHp:40}]},
     {name:'遠距離陣',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,2]],enemies:[{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:3,y:4,hp:25,maxHp:25},{type:'axe',x:3,y:2,hp:40,maxHp:40}]},
    ]},
-  {id:'d23',diff:23,name:'三叉射線',desc:'弓3体の射線地獄。',mapSize:7,roomCount:3,senseRange:4,
+  {id:'d23',category:'stock',diff:23,name:'三叉射線',desc:'弓3体の射線地獄。',mapSize:7,roomCount:3,senseRange:4,
    diffLabel:'★★★★★☆☆',diffClass:'diff-3',
    rooms:[
     {name:'三叉',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,3]],enemies:[{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:3,y:4,hp:25,maxHp:25}]},
@@ -1068,7 +1011,7 @@ const DUNGEON_ALL=[
     {name:'弓3斧2',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,3],[4,3]],enemies:[{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'axe',x:2,y:4,hp:40,maxHp:40},{type:'axe',x:4,y:4,hp:40,maxHp:40}]},
     {name:'全弓',size:7,playerStart:[3,5],exit:[3,0],pillars:[[1,2],[5,2],[3,4]],enemies:[{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:3,y:2,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:6,y:4,hp:25,maxHp:25}]},
    ]},
-  {id:'d24',diff:24,name:'星の降臨',desc:'星が複数登場。',mapSize:7,roomCount:3,senseRange:5,
+  {id:'d24',category:'stock',diff:24,name:'星の降臨',desc:'星が複数登場。',mapSize:7,roomCount:3,senseRange:5,
    diffLabel:'★★★★★☆☆',diffClass:'diff-3',
    rooms:[
     {name:'星2弓1',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,3],[4,3]],enemies:[{type:'star',x:2,y:2,hp:55,maxHp:55},{type:'star',x:4,y:2,hp:55,maxHp:55},{type:'bow',x:3,y:4,hp:25,maxHp:25}]},
@@ -1077,7 +1020,7 @@ const DUNGEON_ALL=[
     {name:'星弓混合',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,4]],enemies:[{type:'star',x:3,y:2,hp:55,maxHp:55},{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'bow',x:6,y:3,hp:25,maxHp:25},{type:'axe',x:3,y:4,hp:40,maxHp:40}]},
     {name:'星4体',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,3]],enemies:[{type:'star',x:1,y:1,hp:55,maxHp:55},{type:'star',x:5,y:1,hp:55,maxHp:55},{type:'star',x:1,y:5,hp:55,maxHp:55},{type:'star',x:5,y:5,hp:55,maxHp:55}]},
    ]},
-  {id:'d25',diff:25,name:'収縮の迷宮',desc:'空間が狭まる感覚を覚えよ。',mapSize:7,roomCount:3,senseRange:5,
+  {id:'d25',category:'stock',diff:25,name:'収縮の迷宮',desc:'空間が狭まる感覚を覚えよ。',mapSize:7,roomCount:3,senseRange:5,
    diffLabel:'★★★★★★☆',diffClass:'diff-3',
    rooms:[
     {name:'収縮1',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[2,4],[4,4]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'bow',x:6,y:3,hp:25,maxHp:25}]},
@@ -1086,7 +1029,7 @@ const DUNGEON_ALL=[
     {name:'収縮4',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,3]],enemies:[{type:'star',x:2,y:2,hp:55,maxHp:55},{type:'star',x:4,y:2,hp:55,maxHp:55},{type:'bow',x:1,y:4,hp:25,maxHp:25},{type:'bow',x:5,y:4,hp:25,maxHp:25},{type:'axe',x:3,y:1,hp:40,maxHp:40}]},
     {name:'収縮5',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[3,4]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'star',x:1,y:3,hp:55,maxHp:55},{type:'star',x:5,y:3,hp:55,maxHp:55},{type:'axe',x:3,y:5,hp:40,maxHp:40}]},
    ]},
-  {id:'d26',diff:26,name:'交差の迷宮',desc:'射線と攻撃範囲が交差する。',mapSize:7,roomCount:3,senseRange:5,
+  {id:'d26',category:'stock',diff:26,name:'交差の迷宮',desc:'射線と攻撃範囲が交差する。',mapSize:7,roomCount:3,senseRange:5,
    diffLabel:'★★★★★★☆',diffClass:'diff-3',
    rooms:[
     {name:'交差1',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,3]],enemies:[{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'star',x:3,y:3,hp:55,maxHp:55},{type:'axe',x:3,y:1,hp:40,maxHp:40}]},
@@ -1095,7 +1038,7 @@ const DUNGEON_ALL=[
     {name:'交差4',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,2],[3,4]],enemies:[{type:'bow',x:1,y:3,hp:25,maxHp:25},{type:'bow',x:5,y:3,hp:25,maxHp:25},{type:'star',x:2,y:2,hp:55,maxHp:55},{type:'star',x:4,y:2,hp:55,maxHp:55}]},
     {name:'交差5',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[2,4],[4,4]],enemies:[{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'star',x:3,y:3,hp:55,maxHp:55},{type:'axe',x:3,y:5,hp:40,maxHp:40}]},
    ]},
-  {id:'d27',diff:27,name:'鎧の迷宮',desc:'柱と敵が組み合わさり難攻不落の陣。',mapSize:7,roomCount:3,senseRange:5,
+  {id:'d27',category:'stock',diff:27,name:'鎧の迷宮',desc:'柱と敵が組み合わさり難攻不落の陣。',mapSize:7,roomCount:3,senseRange:5,
    diffLabel:'★★★★★★☆',diffClass:'diff-4',
    rooms:[
     {name:'鎧陣1',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[3,4]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'bow',x:6,y:3,hp:25,maxHp:25},{type:'axe',x:3,y:5,hp:40,maxHp:40}]},
@@ -1104,7 +1047,7 @@ const DUNGEON_ALL=[
     {name:'鎧陣4',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,2],[1,4],[5,4]],enemies:[{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'star',x:3,y:3,hp:55,maxHp:55},{type:'axe',x:0,y:3,hp:40,maxHp:40},{type:'axe',x:6,y:3,hp:40,maxHp:40}]},
     {name:'鎧陣5',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[2,4],[4,4]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:3,hp:25,maxHp:25},{type:'bow',x:5,y:3,hp:25,maxHp:25},{type:'axe',x:2,y:5,hp:40,maxHp:40},{type:'axe',x:4,y:5,hp:40,maxHp:40}]},
    ]},
-  {id:'d28',diff:28,name:'双壁の迷宮',desc:'ダメージが重なる複合部屋。',mapSize:7,roomCount:3,senseRange:5,
+  {id:'d28',category:'stock',diff:28,name:'双壁の迷宮',desc:'ダメージが重なる複合部屋。',mapSize:7,roomCount:3,senseRange:5,
    diffLabel:'★★★★★★☆',diffClass:'diff-4',
    rooms:[
     {name:'双壁1',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,3]],enemies:[{type:'star',x:2,y:2,hp:55,maxHp:55},{type:'star',x:4,y:2,hp:55,maxHp:55},{type:'bow',x:1,y:4,hp:25,maxHp:25},{type:'bow',x:5,y:4,hp:25,maxHp:25}]},
@@ -1113,7 +1056,7 @@ const DUNGEON_ALL=[
     {name:'双壁4',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,2],[3,4]],enemies:[{type:'star',x:1,y:3,hp:55,maxHp:55},{type:'star',x:5,y:3,hp:55,maxHp:55},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'axe',x:2,y:4,hp:40,maxHp:40},{type:'axe',x:4,y:4,hp:40,maxHp:40}]},
     {name:'双壁5',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,3],[4,3],[3,1]],enemies:[{type:'bow',x:1,y:2,hp:25,maxHp:25},{type:'bow',x:5,y:2,hp:25,maxHp:25},{type:'star',x:3,y:3,hp:55,maxHp:55},{type:'axe',x:3,y:5,hp:40,maxHp:40},{type:'star',x:3,y:1,hp:55,maxHp:55}]},
    ]},
-  {id:'d29',diff:29,name:'嵐の前',desc:'星+弓+斧の高密度複合。D30直前。',mapSize:7,roomCount:3,senseRange:5,
+  {id:'d29',category:'stock',diff:29,name:'嵐の前',desc:'星+弓+斧の高密度複合。D30直前。',mapSize:7,roomCount:3,senseRange:5,
    diffLabel:'★★★★★★★',diffClass:'diff-4',
    rooms:[
     {name:'嵐前1',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,3],[4,3]],enemies:[{type:'star',x:3,y:2,hp:55,maxHp:55},{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'axe',x:2,y:4,hp:40,maxHp:40},{type:'axe',x:4,y:4,hp:40,maxHp:40}]},
@@ -1122,7 +1065,7 @@ const DUNGEON_ALL=[
     {name:'嵐前4',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[3,4]],enemies:[{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'star',x:3,y:3,hp:55,maxHp:55},{type:'axe',x:1,y:4,hp:40,maxHp:40},{type:'axe',x:5,y:4,hp:40,maxHp:40}]},
     {name:'嵐前5',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,2],[1,3],[5,3]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:2,hp:25,maxHp:25},{type:'bow',x:5,y:2,hp:25,maxHp:25},{type:'axe',x:2,y:4,hp:40,maxHp:40},{type:'axe',x:4,y:4,hp:40,maxHp:40},{type:'star',x:3,y:4,hp:55,maxHp:55}]},
    ]},
-  {id:'d30',diff:30,name:'全方位の迷宮',desc:'周囲8マス攻撃の敵が現れる。近づかれたら終わり。',mapSize:7,roomCount:3,senseRange:4,
+  {id:'d30',category:'main',diff:30,name:'第5番　星獄の迷宮',desc:'周囲8マス攻撃の敵が現れる。近づかれたら終わり。',mapSize:7,roomCount:3,senseRange:4,
    diffLabel:'★★★★★☆☆',diffClass:'diff-3',
    rooms:[
     {name:'初星',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,3],[4,3]],enemies:[{type:'star',x:3,y:2,hp:55,maxHp:55}]},
@@ -1131,7 +1074,7 @@ const DUNGEON_ALL=[
     {name:'双星',size:7,playerStart:[3,5],exit:[3,0],pillars:[],enemies:[{type:'star',x:2,y:2,hp:55,maxHp:55},{type:'star',x:4,y:2,hp:55,maxHp:55}]},
     {name:'三叉',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,2]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'axe',x:1,y:2,hp:40,maxHp:40},{type:'axe',x:5,y:2,hp:40,maxHp:40},{type:'bow',x:0,y:1,hp:25,maxHp:25}]},
    ]},
-  {id:'d31',diff:31,name:'星の迷宮',desc:'星2体の8方向攻撃が本格化。',mapSize:7,roomCount:3,senseRange:4,
+  {id:'d31',category:'stock',diff:31,name:'星の迷宮',desc:'星2体の8方向攻撃が本格化。',mapSize:7,roomCount:3,senseRange:4,
    diffLabel:'★★★★★☆☆',diffClass:'diff-3',
    rooms:[
     {name:'双星2',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,3]],enemies:[{type:'star',x:2,y:2,hp:55,maxHp:55},{type:'star',x:4,y:2,hp:55,maxHp:55}]},
@@ -1140,7 +1083,7 @@ const DUNGEON_ALL=[
     {name:'三星',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,3]],enemies:[{type:'star',x:1,y:2,hp:55,maxHp:55},{type:'star',x:5,y:2,hp:55,maxHp:55},{type:'star',x:3,y:4,hp:55,maxHp:55}]},
     {name:'星2弓',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:3,hp:25,maxHp:25},{type:'bow',x:5,y:3,hp:25,maxHp:25},{type:'axe',x:3,y:4,hp:40,maxHp:40}]},
    ]},
-  {id:'d32',diff:32,name:'星雲の迷宮',desc:'星が広がる9×7の空間',mapSize:7,roomCount:3,senseRange:5,
+  {id:'d32',category:'stock',diff:32,name:'星雲の迷宮',desc:'星が広がる9×7の空間',mapSize:7,roomCount:3,senseRange:5,
    diffLabel:'★★★★★★☆',diffClass:'diff-4',
    rooms:[
     {name:'星雲の1',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,3],[4,3]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:3,hp:25,maxHp:25},{type:'axe',x:5,y:3,hp:40,maxHp:40}]},
@@ -1150,7 +1093,7 @@ const DUNGEON_ALL=[
     {name:'星雲の5',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,3],[4,3]],enemies:[{type:'star',x:1,y:2,hp:55,maxHp:55},{type:'star',x:5,y:2,hp:55,maxHp:55},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:6,y:4,hp:25,maxHp:25}]},
     {name:'星雲の6',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,3],[4,3]],enemies:[{type:'star',x:2,y:2,hp:40,maxHp:40},{type:'star',x:4,y:2,hp:40,maxHp:40},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'axe',x:2,y:4,hp:40,maxHp:40},{type:'axe',x:4,y:4,hp:40,maxHp:40},{type:'star',x:3,y:4,hp:40,maxHp:40}]},
    ]},
-  {id:'d33',diff:33,name:'四星の迷宮',desc:'星4体が同時出現',mapSize:7,roomCount:3,senseRange:5,
+  {id:'d33',category:'stock',diff:33,name:'四星の迷宮',desc:'星4体が同時出現',mapSize:7,roomCount:3,senseRange:5,
    diffLabel:'★★★★★★☆',diffClass:'diff-4',
    rooms:[
     {name:'四星の1',size:7,playerStart:[3,5],exit:[3,0],pillars:[[1,2],[5,2],[3,4]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:3,hp:25,maxHp:25},{type:'axe',x:5,y:3,hp:40,maxHp:40}]},
@@ -1160,7 +1103,7 @@ const DUNGEON_ALL=[
     {name:'四星の5',size:7,playerStart:[3,5],exit:[3,0],pillars:[[1,2],[5,2],[3,4]],enemies:[{type:'star',x:1,y:2,hp:55,maxHp:55},{type:'star',x:5,y:2,hp:55,maxHp:55},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:6,y:4,hp:25,maxHp:25}]},
     {name:'四星の6',size:7,playerStart:[3,5],exit:[3,0],pillars:[[1,2],[5,2],[3,4]],enemies:[{type:'star',x:2,y:2,hp:42,maxHp:42},{type:'star',x:4,y:2,hp:42,maxHp:42},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'axe',x:2,y:4,hp:40,maxHp:40},{type:'axe',x:4,y:4,hp:40,maxHp:40},{type:'star',x:3,y:4,hp:42,maxHp:42}]},
    ]},
-  {id:'d34',diff:34,name:'星弓の迷宮',desc:'星+弓の射程地獄',mapSize:7,roomCount:3,senseRange:5,
+  {id:'d34',category:'stock',diff:34,name:'星弓の迷宮',desc:'星+弓の射程地獄',mapSize:7,roomCount:3,senseRange:5,
    diffLabel:'★★★★★★☆',diffClass:'diff-4',
    rooms:[
     {name:'星弓の1',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,2],[1,3],[5,3]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:3,hp:25,maxHp:25},{type:'axe',x:5,y:3,hp:40,maxHp:40}]},
@@ -1170,7 +1113,7 @@ const DUNGEON_ALL=[
     {name:'星弓の5',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,2],[1,3],[5,3]],enemies:[{type:'star',x:1,y:2,hp:55,maxHp:55},{type:'star',x:5,y:2,hp:55,maxHp:55},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:6,y:4,hp:25,maxHp:25}]},
     {name:'星弓の6',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,2],[1,3],[5,3]],enemies:[{type:'star',x:2,y:2,hp:44,maxHp:44},{type:'star',x:4,y:2,hp:44,maxHp:44},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'axe',x:2,y:4,hp:40,maxHp:40},{type:'axe',x:4,y:4,hp:40,maxHp:40},{type:'star',x:3,y:4,hp:44,maxHp:44}]},
    ]},
-  {id:'d35',diff:35,name:'封印の迷宮',desc:'柱が全ての通路を塞ぐ',mapSize:7,roomCount:3,senseRange:5,
+  {id:'d35',category:'stock',diff:35,name:'封印の迷宮',desc:'柱が全ての通路を塞ぐ',mapSize:7,roomCount:3,senseRange:5,
    diffLabel:'★★★★★★☆',diffClass:'diff-4',
    rooms:[
     {name:'封印の1',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[2,4],[4,4]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:3,hp:25,maxHp:25},{type:'axe',x:5,y:3,hp:40,maxHp:40}]},
@@ -1180,7 +1123,7 @@ const DUNGEON_ALL=[
     {name:'封印の5',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[2,4],[4,4]],enemies:[{type:'star',x:1,y:2,hp:55,maxHp:55},{type:'star',x:5,y:2,hp:55,maxHp:55},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:6,y:4,hp:25,maxHp:25}]},
     {name:'封印の6',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[2,4],[4,4]],enemies:[{type:'star',x:2,y:2,hp:46,maxHp:46},{type:'star',x:4,y:2,hp:46,maxHp:46},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'axe',x:2,y:4,hp:40,maxHp:40},{type:'axe',x:4,y:4,hp:40,maxHp:40},{type:'star',x:3,y:4,hp:46,maxHp:46}]},
    ]},
-  {id:'d36',diff:36,name:'天幕の迷宮',desc:'見渡す限り敵',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d36',category:'stock',diff:36,name:'天幕の迷宮',desc:'見渡す限り敵',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'★★★★★★☆',diffClass:'diff-4',
    rooms:[
     {name:'天幕の1',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,3],[4,3]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:3,hp:25,maxHp:25},{type:'axe',x:5,y:3,hp:40,maxHp:40}]},
@@ -1190,7 +1133,7 @@ const DUNGEON_ALL=[
     {name:'天幕の5',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,3],[4,3]],enemies:[{type:'star',x:1,y:2,hp:55,maxHp:55},{type:'star',x:5,y:2,hp:55,maxHp:55},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:6,y:4,hp:25,maxHp:25}]},
     {name:'天幕の6',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,3],[4,3]],enemies:[{type:'star',x:2,y:2,hp:48,maxHp:48},{type:'star',x:4,y:2,hp:48,maxHp:48},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'axe',x:2,y:4,hp:40,maxHp:40},{type:'axe',x:4,y:4,hp:40,maxHp:40},{type:'star',x:3,y:4,hp:48,maxHp:48}]},
    ]},
-  {id:'d37',diff:37,name:'鋼壁の迷宮',desc:'固い敵が柱の後ろに',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d37',category:'stock',diff:37,name:'鋼壁の迷宮',desc:'固い敵が柱の後ろに',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'★★★★★★★',diffClass:'diff-4',
    rooms:[
     {name:'鋼壁の1',size:7,playerStart:[3,5],exit:[3,0],pillars:[[1,2],[5,2],[3,4]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:3,hp:25,maxHp:25},{type:'axe',x:5,y:3,hp:40,maxHp:40}]},
@@ -1200,7 +1143,7 @@ const DUNGEON_ALL=[
     {name:'鋼壁の5',size:7,playerStart:[3,5],exit:[3,0],pillars:[[1,2],[5,2],[3,4]],enemies:[{type:'star',x:1,y:2,hp:55,maxHp:55},{type:'star',x:5,y:2,hp:55,maxHp:55},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:6,y:4,hp:25,maxHp:25}]},
     {name:'鋼壁の6',size:7,playerStart:[3,5],exit:[3,0],pillars:[[1,2],[5,2],[3,4]],enemies:[{type:'star',x:2,y:2,hp:50,maxHp:50},{type:'star',x:4,y:2,hp:50,maxHp:50},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'axe',x:2,y:4,hp:40,maxHp:40},{type:'axe',x:4,y:4,hp:40,maxHp:40},{type:'star',x:3,y:4,hp:50,maxHp:50}]},
    ]},
-  {id:'d38',diff:38,name:'烈風の迷宮',desc:'高速接近の敵配置',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d38',category:'stock',diff:38,name:'烈風の迷宮',desc:'高速接近の敵配置',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'★★★★★★★',diffClass:'diff-4',
    rooms:[
     {name:'烈風の1',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,2],[1,3],[5,3]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:3,hp:25,maxHp:25},{type:'axe',x:5,y:3,hp:40,maxHp:40}]},
@@ -1210,7 +1153,7 @@ const DUNGEON_ALL=[
     {name:'烈風の5',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,2],[1,3],[5,3]],enemies:[{type:'star',x:1,y:2,hp:55,maxHp:55},{type:'star',x:5,y:2,hp:55,maxHp:55},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:6,y:4,hp:25,maxHp:25}]},
     {name:'烈風の6',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,2],[1,3],[5,3]],enemies:[{type:'star',x:2,y:2,hp:52,maxHp:52},{type:'star',x:4,y:2,hp:52,maxHp:52},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'axe',x:2,y:4,hp:40,maxHp:40},{type:'axe',x:4,y:4,hp:40,maxHp:40},{type:'star',x:3,y:4,hp:52,maxHp:52}]},
    ]},
-  {id:'d39',diff:39,name:'前夜の迷宮',desc:'D40複合への準備',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d39',category:'stock',diff:39,name:'前夜の迷宮',desc:'D40複合への準備',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'★★★★★★★',diffClass:'diff-4',
    rooms:[
     {name:'前夜の1',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,3],[1,1],[5,1]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:3,hp:25,maxHp:25},{type:'axe',x:5,y:3,hp:40,maxHp:40}]},
@@ -1220,7 +1163,7 @@ const DUNGEON_ALL=[
     {name:'前夜の5',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,3],[1,1],[5,1]],enemies:[{type:'star',x:1,y:2,hp:55,maxHp:55},{type:'star',x:5,y:2,hp:55,maxHp:55},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:6,y:4,hp:25,maxHp:25}]},
     {name:'前夜の6',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,3],[1,1],[5,1]],enemies:[{type:'star',x:2,y:2,hp:54,maxHp:54},{type:'star',x:4,y:2,hp:54,maxHp:54},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'axe',x:2,y:4,hp:40,maxHp:40},{type:'axe',x:4,y:4,hp:40,maxHp:40},{type:'star',x:3,y:4,hp:54,maxHp:54}]},
    ]},
-  {id:'d40',diff:40,name:'複合の迷宮',desc:'斧・弓・星の複合部屋。単純な正面突破は通じない。',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d40',category:'main',diff:40,name:'第6番　複合の迷宮',desc:'斧・弓・星の複合部屋。単純な正面突破は通じない。',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'★★★★★★☆',diffClass:'diff-4',
    rooms:[
     {name:'三種揃い',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,3],[4,3]],enemies:[{type:'axe',x:1,y:2,hp:40,maxHp:40},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'star',x:5,y:2,hp:55,maxHp:55}]},
@@ -1229,7 +1172,7 @@ const DUNGEON_ALL=[
     {name:'十字封鎖',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,2],[2,3],[4,3]],enemies:[{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'axe',x:1,y:3,hp:40,maxHp:40},{type:'axe',x:5,y:3,hp:40,maxHp:40},{type:'star',x:3,y:4,hp:55,maxHp:55}]},
     {name:'混沌',size:7,playerStart:[3,5],exit:[3,0],pillars:[[1,2],[5,2],[3,3]],enemies:[{type:'star',x:2,y:1,hp:55,maxHp:55},{type:'star',x:4,y:1,hp:55,maxHp:55},{type:'bow',x:3,y:2,hp:25,maxHp:25},{type:'axe',x:0,y:3,hp:40,maxHp:40},{type:'axe',x:6,y:3,hp:40,maxHp:40}]},
    ]},
-  {id:'d41',diff:41,name:'複合中級1',desc:'三種の敵が狭い空間で連携。',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d41',category:'stock',diff:41,name:'複合中級1',desc:'三種の敵が狭い空間で連携。',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'★★★★★★☆',diffClass:'diff-4',
    rooms:[
     {name:'弓星斧',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,3],[4,3]],enemies:[{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'star',x:3,y:3,hp:55,maxHp:55},{type:'axe',x:1,y:2,hp:40,maxHp:40},{type:'axe',x:5,y:2,hp:40,maxHp:40}]},
@@ -1239,7 +1182,7 @@ const DUNGEON_ALL=[
     {name:'鋏陣',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,3]],enemies:[{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'star',x:3,y:2,hp:55,maxHp:55},{type:'axe',x:2,y:4,hp:40,maxHp:40},{type:'axe',x:4,y:4,hp:40,maxHp:40}]},
     {name:'完全挟撃',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[3,4]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'bow',x:6,y:3,hp:25,maxHp:25},{type:'axe',x:2,y:3,hp:40,maxHp:40},{type:'axe',x:4,y:3,hp:40,maxHp:40}]},
    ]},
-  {id:'d42',diff:42,name:'鉄鎖の迷宮',desc:'連鎖する攻撃範囲',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d42',category:'stock',diff:42,name:'鉄鎖の迷宮',desc:'連鎖する攻撃範囲',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'★★★★★★☆',diffClass:'diff-4',
    rooms:[
     {name:'部屋A',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,3],[4,3]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:3,hp:25,maxHp:25},{type:'bow',x:5,y:3,hp:25,maxHp:25},{type:'axe',x:3,y:5,hp:40,maxHp:40}]},
@@ -1249,7 +1192,7 @@ const DUNGEON_ALL=[
     {name:'部屋E',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,3],[4,3]],enemies:[{type:'star',x:1,y:2,hp:40,maxHp:40},{type:'star',x:5,y:2,hp:40,maxHp:40},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:3,y:5,hp:25,maxHp:25},{type:'axe',x:2,y:3,hp:40,maxHp:40},{type:'axe',x:4,y:3,hp:40,maxHp:40}]},
     {name:'部屋F',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,3],[4,3]],enemies:[{type:'star',x:2,y:2,hp:40,maxHp:40},{type:'star',x:4,y:2,hp:40,maxHp:40},{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:40,maxHp:40},{type:'axe',x:0,y:4,hp:40,maxHp:40},{type:'axe',x:6,y:4,hp:40,maxHp:40}]},
    ]},
-  {id:'d43',diff:43,name:'砲台の迷宮',desc:'弓が砲台のように並ぶ',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d43',category:'stock',diff:43,name:'砲台の迷宮',desc:'弓が砲台のように並ぶ',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'★★★★★★☆',diffClass:'diff-4',
    rooms:[
     {name:'部屋A',size:7,playerStart:[3,5],exit:[3,0],pillars:[[1,2],[5,2],[3,4]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:3,hp:25,maxHp:25},{type:'bow',x:5,y:3,hp:25,maxHp:25},{type:'axe',x:3,y:5,hp:40,maxHp:40}]},
@@ -1259,7 +1202,7 @@ const DUNGEON_ALL=[
     {name:'部屋E',size:7,playerStart:[3,5],exit:[3,0],pillars:[[1,2],[5,2],[3,4]],enemies:[{type:'star',x:1,y:2,hp:43,maxHp:43},{type:'star',x:5,y:2,hp:43,maxHp:43},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:3,y:5,hp:25,maxHp:25},{type:'axe',x:2,y:3,hp:40,maxHp:40},{type:'axe',x:4,y:3,hp:40,maxHp:40}]},
     {name:'部屋F',size:7,playerStart:[3,5],exit:[3,0],pillars:[[1,2],[5,2],[3,4]],enemies:[{type:'star',x:2,y:2,hp:43,maxHp:43},{type:'star',x:4,y:2,hp:43,maxHp:43},{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:43,maxHp:43},{type:'axe',x:0,y:4,hp:40,maxHp:40},{type:'axe',x:6,y:4,hp:40,maxHp:40}]},
    ]},
-  {id:'d44',diff:44,name:'蜂の巣の迷宮',desc:'全方位への攻撃が飛び交う',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d44',category:'stock',diff:44,name:'蜂の巣の迷宮',desc:'全方位への攻撃が飛び交う',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'★★★★★★☆',diffClass:'diff-4',
    rooms:[
     {name:'部屋A',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,2],[1,3],[5,3]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:3,hp:25,maxHp:25},{type:'bow',x:5,y:3,hp:25,maxHp:25},{type:'axe',x:3,y:5,hp:40,maxHp:40}]},
@@ -1269,7 +1212,7 @@ const DUNGEON_ALL=[
     {name:'部屋E',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,2],[1,3],[5,3]],enemies:[{type:'star',x:1,y:2,hp:46,maxHp:46},{type:'star',x:5,y:2,hp:46,maxHp:46},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:3,y:5,hp:25,maxHp:25},{type:'axe',x:2,y:3,hp:40,maxHp:40},{type:'axe',x:4,y:3,hp:40,maxHp:40}]},
     {name:'部屋F',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,2],[1,3],[5,3]],enemies:[{type:'star',x:2,y:2,hp:46,maxHp:46},{type:'star',x:4,y:2,hp:46,maxHp:46},{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:46,maxHp:46},{type:'axe',x:0,y:4,hp:40,maxHp:40},{type:'axe',x:6,y:4,hp:40,maxHp:40}]},
    ]},
-  {id:'d45',diff:45,name:'包囲網の迷宮',desc:'じわじわ迫る包囲',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d45',category:'stock',diff:45,name:'包囲網の迷宮',desc:'じわじわ迫る包囲',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'★★★★★★☆',diffClass:'diff-4',
    rooms:[
     {name:'部屋A',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[2,4],[4,4]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:3,hp:25,maxHp:25},{type:'bow',x:5,y:3,hp:25,maxHp:25},{type:'axe',x:3,y:5,hp:40,maxHp:40}]},
@@ -1279,7 +1222,7 @@ const DUNGEON_ALL=[
     {name:'部屋E',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[2,4],[4,4]],enemies:[{type:'star',x:1,y:2,hp:49,maxHp:49},{type:'star',x:5,y:2,hp:49,maxHp:49},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:3,y:5,hp:25,maxHp:25},{type:'axe',x:2,y:3,hp:40,maxHp:40},{type:'axe',x:4,y:3,hp:40,maxHp:40}]},
     {name:'部屋F',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[2,4],[4,4]],enemies:[{type:'star',x:2,y:2,hp:49,maxHp:49},{type:'star',x:4,y:2,hp:49,maxHp:49},{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:49,maxHp:49},{type:'axe',x:0,y:4,hp:40,maxHp:40},{type:'axe',x:6,y:4,hp:40,maxHp:40}]},
    ]},
-  {id:'d46',diff:46,name:'十字の迷宮',desc:'十字状の陣形',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d46',category:'stock',diff:46,name:'十字の迷宮',desc:'十字状の陣形',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'★★★★★★★',diffClass:'diff-4',
    rooms:[
     {name:'部屋A',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,3],[1,1],[5,1]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:3,hp:25,maxHp:25},{type:'bow',x:5,y:3,hp:25,maxHp:25},{type:'axe',x:3,y:5,hp:40,maxHp:40}]},
@@ -1289,7 +1232,7 @@ const DUNGEON_ALL=[
     {name:'部屋E',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,3],[1,1],[5,1]],enemies:[{type:'star',x:1,y:2,hp:52,maxHp:52},{type:'star',x:5,y:2,hp:52,maxHp:52},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:3,y:5,hp:25,maxHp:25},{type:'axe',x:2,y:3,hp:40,maxHp:40},{type:'axe',x:4,y:3,hp:40,maxHp:40}]},
     {name:'部屋F',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,3],[1,1],[5,1]],enemies:[{type:'star',x:2,y:2,hp:52,maxHp:52},{type:'star',x:4,y:2,hp:52,maxHp:52},{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:52,maxHp:52},{type:'axe',x:0,y:4,hp:40,maxHp:40},{type:'axe',x:6,y:4,hp:40,maxHp:40}]},
    ]},
-  {id:'d47',diff:47,name:'菱形の迷宮',desc:'菱形の攻撃配置',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d47',category:'stock',diff:47,name:'菱形の迷宮',desc:'菱形の攻撃配置',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'★★★★★★★',diffClass:'diff-4',
    rooms:[
     {name:'部屋A',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,3],[4,3],[3,1]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:3,hp:25,maxHp:25},{type:'bow',x:5,y:3,hp:25,maxHp:25},{type:'axe',x:3,y:5,hp:40,maxHp:40}]},
@@ -1299,7 +1242,7 @@ const DUNGEON_ALL=[
     {name:'部屋E',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,3],[4,3],[3,1]],enemies:[{type:'star',x:1,y:2,hp:55,maxHp:55},{type:'star',x:5,y:2,hp:55,maxHp:55},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:3,y:5,hp:25,maxHp:25},{type:'axe',x:2,y:3,hp:40,maxHp:40},{type:'axe',x:4,y:3,hp:40,maxHp:40}]},
     {name:'部屋F',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,3],[4,3],[3,1]],enemies:[{type:'star',x:2,y:2,hp:55,maxHp:55},{type:'star',x:4,y:2,hp:55,maxHp:55},{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:55,maxHp:55},{type:'axe',x:0,y:4,hp:40,maxHp:40},{type:'axe',x:6,y:4,hp:40,maxHp:40}]},
    ]},
-  {id:'d48',diff:48,name:'回廊の迷宮',desc:'狭い通路での戦闘',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d48',category:'stock',diff:48,name:'回廊の迷宮',desc:'狭い通路での戦闘',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'★★★★★★★',diffClass:'diff-4',
    rooms:[
     {name:'部屋A',size:7,playerStart:[3,5],exit:[3,0],pillars:[[1,2],[5,2],[3,3]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:3,hp:25,maxHp:25},{type:'bow',x:5,y:3,hp:25,maxHp:25},{type:'axe',x:3,y:5,hp:40,maxHp:40}]},
@@ -1309,7 +1252,7 @@ const DUNGEON_ALL=[
     {name:'部屋E',size:7,playerStart:[3,5],exit:[3,0],pillars:[[1,2],[5,2],[3,3]],enemies:[{type:'star',x:1,y:2,hp:58,maxHp:58},{type:'star',x:5,y:2,hp:58,maxHp:58},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:3,y:5,hp:25,maxHp:25},{type:'axe',x:2,y:3,hp:40,maxHp:40},{type:'axe',x:4,y:3,hp:40,maxHp:40}]},
     {name:'部屋F',size:7,playerStart:[3,5],exit:[3,0],pillars:[[1,2],[5,2],[3,3]],enemies:[{type:'star',x:2,y:2,hp:58,maxHp:58},{type:'star',x:4,y:2,hp:58,maxHp:58},{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:58,maxHp:58},{type:'axe',x:0,y:4,hp:40,maxHp:40},{type:'axe',x:6,y:4,hp:40,maxHp:40}]},
    ]},
-  {id:'d49',diff:49,name:'蓄積の迷宮',desc:'D50への橋渡し',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d49',category:'stock',diff:49,name:'蓄積の迷宮',desc:'D50への橋渡し',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'★★★★★★★',diffClass:'diff-4',
    rooms:[
     {name:'部屋A',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[3,4]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:3,hp:25,maxHp:25},{type:'bow',x:5,y:3,hp:25,maxHp:25},{type:'axe',x:3,y:5,hp:40,maxHp:40}]},
@@ -1319,7 +1262,7 @@ const DUNGEON_ALL=[
     {name:'部屋E',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[3,4]],enemies:[{type:'star',x:1,y:2,hp:61,maxHp:61},{type:'star',x:5,y:2,hp:61,maxHp:61},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:3,y:5,hp:25,maxHp:25},{type:'axe',x:2,y:3,hp:40,maxHp:40},{type:'axe',x:4,y:3,hp:40,maxHp:40}]},
     {name:'部屋F',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[3,4]],enemies:[{type:'star',x:2,y:2,hp:61,maxHp:61},{type:'star',x:4,y:2,hp:61,maxHp:61},{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:61,maxHp:61},{type:'axe',x:0,y:4,hp:40,maxHp:40},{type:'axe',x:6,y:4,hp:40,maxHp:40}]},
    ]},
-  {id:'d50',diff:50,name:'均衡の迷宮',desc:'全ての敵が連携して動く。一手一手が命取り。',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d50',category:'main',diff:50,name:'第7番　均衡の迷宮',desc:'全ての敵が連携して動く。一手一手が命取り。',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'★★★★★★★',diffClass:'diff-4',
    rooms:[
     {name:'連鎖',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,3],[4,3],[1,1],[5,1]],enemies:[{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'axe',x:1,y:2,hp:40,maxHp:40},{type:'axe',x:5,y:2,hp:40,maxHp:40},{type:'star',x:3,y:3,hp:55,maxHp:55}]},
@@ -1329,7 +1272,7 @@ const DUNGEON_ALL=[
     {name:'殲滅',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,3],[4,3],[3,2]],enemies:[{type:'star',x:1,y:2,hp:55,maxHp:55},{type:'star',x:5,y:2,hp:55,maxHp:55},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'axe',x:2,y:4,hp:40,maxHp:40},{type:'axe',x:4,y:4,hp:40,maxHp:40}]},
     {name:'要塞',size:7,playerStart:[3,5],exit:[3,0],pillars:[[1,2],[5,2],[3,1],[3,5]],enemies:[{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'star',x:3,y:3,hp:55,maxHp:55},{type:'axe',x:0,y:3,hp:40,maxHp:40},{type:'axe',x:6,y:3,hp:40,maxHp:40}]},
    ]},
-  {id:'d51',diff:51,name:'収束の迷宮',desc:'全方位からの収束攻撃。',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d51',category:'stock',diff:51,name:'収束の迷宮',desc:'全方位からの収束攻撃。',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'★★★★★★★',diffClass:'diff-4',
    rooms:[
     {name:'収束',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,3],[4,3]],enemies:[{type:'star',x:1,y:2,hp:55,maxHp:55},{type:'star',x:5,y:2,hp:55,maxHp:55},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'axe',x:3,y:4,hp:40,maxHp:40}]},
@@ -1339,7 +1282,7 @@ const DUNGEON_ALL=[
     {name:'最密',size:7,playerStart:[3,5],exit:[3,0],pillars:[[1,2],[5,2],[3,4]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:3,hp:25,maxHp:25},{type:'bow',x:5,y:3,hp:25,maxHp:25},{type:'axe',x:2,y:2,hp:40,maxHp:40},{type:'axe',x:4,y:2,hp:40,maxHp:40},{type:'star',x:3,y:4,hp:55,maxHp:55}]},
     {name:'要塞2',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,3],[4,3],[3,1]],enemies:[{type:'bow',x:1,y:2,hp:25,maxHp:25},{type:'bow',x:5,y:2,hp:25,maxHp:25},{type:'star',x:3,y:3,hp:55,maxHp:55},{type:'axe',x:0,y:4,hp:40,maxHp:40},{type:'axe',x:6,y:4,hp:40,maxHp:40}]},
    ]},
-  {id:'d52',diff:52,name:'炎陣の迷宮',desc:'燃える敵の包囲陣',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d52',category:'stock',diff:52,name:'炎陣の迷宮',desc:'燃える敵の包囲陣',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'☠☠☠☠☠★☆',diffClass:'diff-5',
    rooms:[
     {name:'部屋A',size:7,playerStart:[3,5],exit:[3,0],pillars:[[1,2],[5,2],[3,1]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:2,hp:25,maxHp:25},{type:'bow',x:5,y:2,hp:25,maxHp:25},{type:'axe',x:2,y:4,hp:40,maxHp:40},{type:'axe',x:4,y:4,hp:40,maxHp:40}]},
@@ -1349,7 +1292,7 @@ const DUNGEON_ALL=[
     {name:'部屋E',size:7,playerStart:[3,5],exit:[3,0],pillars:[[1,2],[5,2],[3,1]],enemies:[{type:'star',x:1,y:2,hp:60,maxHp:60},{type:'star',x:5,y:2,hp:60,maxHp:60},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'bow',x:6,y:3,hp:25,maxHp:25},{type:'axe',x:3,y:5,hp:40,maxHp:40}]},
     {name:'部屋F',size:7,playerStart:[3,5],exit:[3,0],pillars:[[1,2],[5,2],[3,1]],enemies:[{type:'star',x:2,y:2,hp:65,maxHp:65},{type:'star',x:4,y:2,hp:65,maxHp:65},{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:65,maxHp:65},{type:'axe',x:2,y:4,hp:40,maxHp:40},{type:'axe',x:4,y:4,hp:40,maxHp:40}]},
    ]},
-  {id:'d53',diff:53,name:'鉄壁の迷宮',desc:'鉄壁のような防衛線',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d53',category:'stock',diff:53,name:'鉄壁の迷宮',desc:'鉄壁のような防衛線',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'☠☠☠☠☠★☆',diffClass:'diff-5',
    rooms:[
     {name:'部屋A',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[2,4],[4,4]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:2,hp:25,maxHp:25},{type:'bow',x:5,y:2,hp:25,maxHp:25},{type:'axe',x:2,y:4,hp:40,maxHp:40},{type:'axe',x:4,y:4,hp:40,maxHp:40}]},
@@ -1359,7 +1302,7 @@ const DUNGEON_ALL=[
     {name:'部屋E',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[2,4],[4,4]],enemies:[{type:'star',x:1,y:2,hp:65,maxHp:65},{type:'star',x:5,y:2,hp:65,maxHp:65},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'bow',x:6,y:3,hp:25,maxHp:25},{type:'axe',x:3,y:5,hp:40,maxHp:40}]},
     {name:'部屋F',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[2,4],[4,4]],enemies:[{type:'star',x:2,y:2,hp:70,maxHp:70},{type:'star',x:4,y:2,hp:70,maxHp:70},{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:70,maxHp:70},{type:'axe',x:2,y:4,hp:40,maxHp:40},{type:'axe',x:4,y:4,hp:40,maxHp:40}]},
    ]},
-  {id:'d54',diff:54,name:'崩壊の迷宮',desc:'崩れ落ちる均衡',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d54',category:'stock',diff:54,name:'崩壊の迷宮',desc:'崩れ落ちる均衡',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'☠☠☠☠☠★☆',diffClass:'diff-5',
    rooms:[
     {name:'部屋A',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,2],[1,3],[5,3],[3,4]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:2,hp:25,maxHp:25},{type:'bow',x:5,y:2,hp:25,maxHp:25},{type:'axe',x:2,y:4,hp:40,maxHp:40},{type:'axe',x:4,y:4,hp:40,maxHp:40}]},
@@ -1369,7 +1312,7 @@ const DUNGEON_ALL=[
     {name:'部屋E',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,2],[1,3],[5,3],[3,4]],enemies:[{type:'star',x:1,y:2,hp:70,maxHp:70},{type:'star',x:5,y:2,hp:70,maxHp:70},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'bow',x:6,y:3,hp:25,maxHp:25},{type:'axe',x:3,y:5,hp:40,maxHp:40}]},
     {name:'部屋F',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,2],[1,3],[5,3],[3,4]],enemies:[{type:'star',x:2,y:2,hp:75,maxHp:75},{type:'star',x:4,y:2,hp:75,maxHp:75},{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:75,maxHp:75},{type:'axe',x:2,y:4,hp:40,maxHp:40},{type:'axe',x:4,y:4,hp:40,maxHp:40}]},
    ]},
-  {id:'d55',diff:55,name:'螺旋の迷宮',desc:'螺旋状に迫る敵',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d55',category:'stock',diff:55,name:'螺旋の迷宮',desc:'螺旋状に迫る敵',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'☠☠☠☠☠★☆',diffClass:'diff-5',
    rooms:[
     {name:'部屋A',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,3],[4,3],[3,1],[3,5]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:2,hp:25,maxHp:25},{type:'bow',x:5,y:2,hp:25,maxHp:25},{type:'axe',x:2,y:4,hp:40,maxHp:40},{type:'axe',x:4,y:4,hp:40,maxHp:40}]},
@@ -1379,7 +1322,7 @@ const DUNGEON_ALL=[
     {name:'部屋E',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,3],[4,3],[3,1],[3,5]],enemies:[{type:'star',x:1,y:2,hp:75,maxHp:75},{type:'star',x:5,y:2,hp:75,maxHp:75},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'bow',x:6,y:3,hp:25,maxHp:25},{type:'axe',x:3,y:5,hp:40,maxHp:40}]},
     {name:'部屋F',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,3],[4,3],[3,1],[3,5]],enemies:[{type:'star',x:2,y:2,hp:80,maxHp:80},{type:'star',x:4,y:2,hp:80,maxHp:80},{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:80,maxHp:80},{type:'axe',x:2,y:4,hp:40,maxHp:40},{type:'axe',x:4,y:4,hp:40,maxHp:40}]},
    ]},
-  {id:'d56',diff:56,name:'暗黒の迷宮',desc:'視界を覆う敵の密度',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d56',category:'stock',diff:56,name:'暗黒の迷宮',desc:'視界を覆う敵の密度',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'☠☠☠☠☠☠☆',diffClass:'diff-5',
    rooms:[
     {name:'部屋A',size:7,playerStart:[3,5],exit:[3,0],pillars:[[1,2],[5,2],[3,3]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:2,hp:25,maxHp:25},{type:'bow',x:5,y:2,hp:25,maxHp:25},{type:'axe',x:2,y:4,hp:40,maxHp:40},{type:'axe',x:4,y:4,hp:40,maxHp:40}]},
@@ -1389,7 +1332,7 @@ const DUNGEON_ALL=[
     {name:'部屋E',size:7,playerStart:[3,5],exit:[3,0],pillars:[[1,2],[5,2],[3,3]],enemies:[{type:'star',x:1,y:2,hp:80,maxHp:80},{type:'star',x:5,y:2,hp:80,maxHp:80},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'bow',x:6,y:3,hp:25,maxHp:25},{type:'axe',x:3,y:5,hp:40,maxHp:40}]},
     {name:'部屋F',size:7,playerStart:[3,5],exit:[3,0],pillars:[[1,2],[5,2],[3,3]],enemies:[{type:'star',x:2,y:2,hp:85,maxHp:85},{type:'star',x:4,y:2,hp:85,maxHp:85},{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:85,maxHp:85},{type:'axe',x:2,y:4,hp:40,maxHp:40},{type:'axe',x:4,y:4,hp:40,maxHp:40}]},
    ]},
-  {id:'d57',diff:57,name:'終焉の迷宮',desc:'終焉に向かう密度',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d57',category:'stock',diff:57,name:'終焉の迷宮',desc:'終焉に向かう密度',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'☠☠☠☠☠☠☆',diffClass:'diff-5',
    rooms:[
     {name:'部屋A',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[3,4]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:2,hp:25,maxHp:25},{type:'bow',x:5,y:2,hp:25,maxHp:25},{type:'axe',x:2,y:4,hp:40,maxHp:40},{type:'axe',x:4,y:4,hp:40,maxHp:40}]},
@@ -1399,7 +1342,7 @@ const DUNGEON_ALL=[
     {name:'部屋E',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[3,4]],enemies:[{type:'star',x:1,y:2,hp:85,maxHp:85},{type:'star',x:5,y:2,hp:85,maxHp:85},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'bow',x:6,y:3,hp:25,maxHp:25},{type:'axe',x:3,y:5,hp:40,maxHp:40}]},
     {name:'部屋F',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[3,4]],enemies:[{type:'star',x:2,y:2,hp:90,maxHp:90},{type:'star',x:4,y:2,hp:90,maxHp:90},{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:90,maxHp:90},{type:'axe',x:2,y:4,hp:40,maxHp:40},{type:'axe',x:4,y:4,hp:40,maxHp:40}]},
    ]},
-  {id:'d58',diff:58,name:'煉獄前夜',desc:'煉獄の直前。最高難度の予習。',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d58',category:'stock',diff:58,name:'煉獄前夜',desc:'煉獄の直前。最高難度の予習。',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'☠☠☠☠☠☠☆',diffClass:'diff-5',
    rooms:[
     {name:'部屋A',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,2],[1,3],[5,3],[3,5]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:2,hp:25,maxHp:25},{type:'bow',x:5,y:2,hp:25,maxHp:25},{type:'axe',x:2,y:4,hp:40,maxHp:40},{type:'axe',x:4,y:4,hp:40,maxHp:40}]},
@@ -1409,7 +1352,7 @@ const DUNGEON_ALL=[
     {name:'部屋E',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,2],[1,3],[5,3],[3,5]],enemies:[{type:'star',x:1,y:2,hp:90,maxHp:90},{type:'star',x:5,y:2,hp:90,maxHp:90},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'bow',x:6,y:3,hp:25,maxHp:25},{type:'axe',x:3,y:5,hp:40,maxHp:40}]},
     {name:'部屋F',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,2],[1,3],[5,3],[3,5]],enemies:[{type:'star',x:2,y:2,hp:95,maxHp:95},{type:'star',x:4,y:2,hp:95,maxHp:95},{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:95,maxHp:95},{type:'axe',x:2,y:4,hp:40,maxHp:40},{type:'axe',x:4,y:4,hp:40,maxHp:40}]},
    ]},
-  {id:'d59',diff:59,name:'煉獄の影',desc:'D60直前の最高密度。',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d59',category:'stock',diff:59,name:'煉獄の影',desc:'D60直前の最高密度。',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'☠☠☠☠☠☠☆',diffClass:'diff-5',
    rooms:[
     {name:'部屋A',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[2,4],[4,4],[3,3]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:2,hp:25,maxHp:25},{type:'bow',x:5,y:2,hp:25,maxHp:25},{type:'axe',x:2,y:4,hp:40,maxHp:40},{type:'axe',x:4,y:4,hp:40,maxHp:40}]},
@@ -1419,7 +1362,7 @@ const DUNGEON_ALL=[
     {name:'部屋E',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[2,4],[4,4],[3,3]],enemies:[{type:'star',x:1,y:2,hp:95,maxHp:95},{type:'star',x:5,y:2,hp:95,maxHp:95},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'bow',x:6,y:3,hp:25,maxHp:25},{type:'axe',x:3,y:5,hp:40,maxHp:40}]},
     {name:'部屋F',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[2,4],[4,4],[3,3]],enemies:[{type:'star',x:2,y:2,hp:100,maxHp:100},{type:'star',x:4,y:2,hp:100,maxHp:100},{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:100,maxHp:100},{type:'axe',x:2,y:4,hp:40,maxHp:40},{type:'axe',x:4,y:4,hp:40,maxHp:40}]},
    ]},
-  {id:'d60',diff:60,name:'圧迫の迷宮',desc:'逃げ場が狭くなる。煉獄の手前。',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d60',category:'main',diff:60,name:'第8番　圧迫の迷宮',desc:'逃げ場が狭くなる。煉獄の手前。',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'☠☠☠☠☠☠☆',diffClass:'diff-5',
    rooms:[
     {name:'圧迫',size:7,playerStart:[3,5],exit:[3,0],pillars:[[1,2],[5,2],[3,1]],enemies:[{type:'star',x:2,y:1,hp:55,maxHp:55},{type:'star',x:4,y:1,hp:55,maxHp:55},{type:'bow',x:3,y:2,hp:25,maxHp:25},{type:'axe',x:1,y:3,hp:40,maxHp:40},{type:'axe',x:5,y:3,hp:40,maxHp:40}]},
@@ -1429,7 +1372,7 @@ const DUNGEON_ALL=[
     {name:'絶壁',size:7,playerStart:[3,5],exit:[3,0],pillars:[[1,2],[5,2],[3,2],[1,4],[5,4]],enemies:[{type:'star',x:2,y:1,hp:55,maxHp:55},{type:'star',x:4,y:1,hp:55,maxHp:55},{type:'bow',x:3,y:3,hp:25,maxHp:25},{type:'axe',x:0,y:4,hp:40,maxHp:40},{type:'axe',x:6,y:4,hp:40,maxHp:40}]},
     {name:'地獄門',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,3],[4,3],[1,1],[5,1]],enemies:[{type:'bow',x:2,y:1,hp:25,maxHp:25},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'star',x:1,y:3,hp:55,maxHp:55},{type:'star',x:5,y:3,hp:55,maxHp:55},{type:'axe',x:3,y:5,hp:40,maxHp:40}]},
    ]},
-  {id:'d61',diff:61,name:'黒煙の迷宮',desc:'煉獄直前。逃げ場ほぼ皆無。',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d61',category:'stock',diff:61,name:'黒煙の迷宮',desc:'煉獄直前。逃げ場ほぼ皆無。',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'☠☠☠☠☠☠☆',diffClass:'diff-5',
    rooms:[
     {name:'壁際6',size:7,playerStart:[3,5],exit:[3,0],pillars:[[1,2],[5,2],[3,1]],enemies:[{type:'star',x:2,y:1,hp:55,maxHp:55},{type:'star',x:4,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:4,hp:25,maxHp:25},{type:'bow',x:5,y:4,hp:25,maxHp:25},{type:'axe',x:3,y:3,hp:40,maxHp:40}]},
@@ -1439,7 +1382,7 @@ const DUNGEON_ALL=[
     {name:'最圧',size:7,playerStart:[3,5],exit:[3,0],pillars:[[1,2],[5,2],[3,2],[1,4],[5,4]],enemies:[{type:'bow',x:2,y:1,hp:25,maxHp:25},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'star',x:1,y:3,hp:55,maxHp:55},{type:'star',x:5,y:3,hp:55,maxHp:55},{type:'axe',x:3,y:5,hp:40,maxHp:40}]},
     {name:'煉獄前',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,3],[4,3],[1,1],[5,1],[3,5]],enemies:[{type:'star',x:2,y:1,hp:55,maxHp:55},{type:'star',x:4,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:3,hp:25,maxHp:25},{type:'bow',x:5,y:3,hp:25,maxHp:25},{type:'axe',x:3,y:4,hp:40,maxHp:40},{type:'star',x:3,y:2,hp:55,maxHp:55}]},
    ]},
-  {id:'d62',diff:62,name:'焦土の迷宮',desc:'焦土となった7x7',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d62',category:'stock',diff:62,name:'焦土の迷宮',desc:'焦土となった7x7',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'☠☠☠☠☠☠☆',diffClass:'diff-5',
    rooms:[
     {name:'部屋A',size:7,playerStart:[3,5],exit:[3,0],pillars:[[1,2],[5,2],[3,2]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:2,hp:25,maxHp:25},{type:'bow',x:5,y:2,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:80,maxHp:80},{type:'axe',x:2,y:5,hp:40,maxHp:40},{type:'axe',x:4,y:5,hp:40,maxHp:40}]},
@@ -1449,7 +1392,7 @@ const DUNGEON_ALL=[
     {name:'部屋E',size:7,playerStart:[3,5],exit:[3,0],pillars:[[1,2],[5,2],[3,2]],enemies:[{type:'star',x:1,y:2,hp:85,maxHp:85},{type:'star',x:5,y:2,hp:85,maxHp:85},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:1,y:4,hp:25,maxHp:25},{type:'bow',x:5,y:4,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:85,maxHp:85},{type:'axe',x:3,y:5,hp:40,maxHp:40}]},
     {name:'部屋F',size:7,playerStart:[3,5],exit:[3,0],pillars:[[1,2],[5,2],[3,2]],enemies:[{type:'star',x:2,y:2,hp:90,maxHp:90},{type:'star',x:4,y:2,hp:90,maxHp:90},{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'bow',x:6,y:3,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:90,maxHp:90}]},
    ]},
-  {id:'d63',diff:63,name:'崩壊の塔',desc:'崩れ落ちる防衛線',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d63',category:'stock',diff:63,name:'崩壊の塔',desc:'崩れ落ちる防衛線',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'☠☠☠☠☠☠☆',diffClass:'diff-5',
    rooms:[
     {name:'部屋A',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[2,4],[4,4]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:2,hp:25,maxHp:25},{type:'bow',x:5,y:2,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:85,maxHp:85},{type:'axe',x:2,y:5,hp:40,maxHp:40},{type:'axe',x:4,y:5,hp:40,maxHp:40}]},
@@ -1459,7 +1402,7 @@ const DUNGEON_ALL=[
     {name:'部屋E',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[2,4],[4,4]],enemies:[{type:'star',x:1,y:2,hp:90,maxHp:90},{type:'star',x:5,y:2,hp:90,maxHp:90},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:1,y:4,hp:25,maxHp:25},{type:'bow',x:5,y:4,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:90,maxHp:90},{type:'axe',x:3,y:5,hp:40,maxHp:40}]},
     {name:'部屋F',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[2,4],[4,4]],enemies:[{type:'star',x:2,y:2,hp:95,maxHp:95},{type:'star',x:4,y:2,hp:95,maxHp:95},{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'bow',x:6,y:3,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:95,maxHp:95}]},
    ]},
-  {id:'d64',diff:64,name:'修羅の迷宮',desc:'修羅場の連続',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d64',category:'stock',diff:64,name:'修羅の迷宮',desc:'修羅場の連続',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'☠☠☠☠☠☠☆',diffClass:'diff-5',
    rooms:[
     {name:'部屋A',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,2],[1,3],[5,3],[3,4]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:2,hp:25,maxHp:25},{type:'bow',x:5,y:2,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:90,maxHp:90},{type:'axe',x:2,y:5,hp:40,maxHp:40},{type:'axe',x:4,y:5,hp:40,maxHp:40}]},
@@ -1469,7 +1412,7 @@ const DUNGEON_ALL=[
     {name:'部屋E',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,2],[1,3],[5,3],[3,4]],enemies:[{type:'star',x:1,y:2,hp:95,maxHp:95},{type:'star',x:5,y:2,hp:95,maxHp:95},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:1,y:4,hp:25,maxHp:25},{type:'bow',x:5,y:4,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:95,maxHp:95},{type:'axe',x:3,y:5,hp:40,maxHp:40}]},
     {name:'部屋F',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,2],[1,3],[5,3],[3,4]],enemies:[{type:'star',x:2,y:2,hp:100,maxHp:100},{type:'star',x:4,y:2,hp:100,maxHp:100},{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'bow',x:6,y:3,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:100,maxHp:100}]},
    ]},
-  {id:'d65',diff:65,name:'地獄の回廊',desc:'地獄の狭い回廊',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d65',category:'stock',diff:65,name:'地獄の回廊',desc:'地獄の狭い回廊',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'☠☠☠☠☠☠☆',diffClass:'diff-5',
    rooms:[
     {name:'部屋A',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,3],[4,3],[1,1],[5,1],[3,5]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:2,hp:25,maxHp:25},{type:'bow',x:5,y:2,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:95,maxHp:95},{type:'axe',x:2,y:5,hp:40,maxHp:40},{type:'axe',x:4,y:5,hp:40,maxHp:40}]},
@@ -1479,7 +1422,7 @@ const DUNGEON_ALL=[
     {name:'部屋E',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,3],[4,3],[1,1],[5,1],[3,5]],enemies:[{type:'star',x:1,y:2,hp:100,maxHp:100},{type:'star',x:5,y:2,hp:100,maxHp:100},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:1,y:4,hp:25,maxHp:25},{type:'bow',x:5,y:4,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:100,maxHp:100},{type:'axe',x:3,y:5,hp:40,maxHp:40}]},
     {name:'部屋F',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,3],[4,3],[1,1],[5,1],[3,5]],enemies:[{type:'star',x:2,y:2,hp:105,maxHp:105},{type:'star',x:4,y:2,hp:105,maxHp:105},{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'bow',x:6,y:3,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:105,maxHp:105}]},
    ]},
-  {id:'d66',diff:66,name:'黄泉の迷宮',desc:'黄泉への道',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d66',category:'stock',diff:66,name:'黄泉の迷宮',desc:'黄泉への道',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'☠☠☠☠☠☠☆',diffClass:'diff-5',
    rooms:[
     {name:'部屋A',size:7,playerStart:[3,5],exit:[3,0],pillars:[[1,2],[5,2],[3,3],[2,5],[4,5]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:2,hp:25,maxHp:25},{type:'bow',x:5,y:2,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:100,maxHp:100},{type:'axe',x:2,y:5,hp:40,maxHp:40},{type:'axe',x:4,y:5,hp:40,maxHp:40}]},
@@ -1489,7 +1432,7 @@ const DUNGEON_ALL=[
     {name:'部屋E',size:7,playerStart:[3,5],exit:[3,0],pillars:[[1,2],[5,2],[3,3],[2,5],[4,5]],enemies:[{type:'star',x:1,y:2,hp:105,maxHp:105},{type:'star',x:5,y:2,hp:105,maxHp:105},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:1,y:4,hp:25,maxHp:25},{type:'bow',x:5,y:4,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:105,maxHp:105},{type:'axe',x:3,y:5,hp:40,maxHp:40}]},
     {name:'部屋F',size:7,playerStart:[3,5],exit:[3,0],pillars:[[1,2],[5,2],[3,3],[2,5],[4,5]],enemies:[{type:'star',x:2,y:2,hp:110,maxHp:110},{type:'star',x:4,y:2,hp:110,maxHp:110},{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'bow',x:6,y:3,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:110,maxHp:110}]},
    ]},
-  {id:'d67',diff:67,name:'奈落の底',desc:'奈落の底で戦う',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d67',category:'stock',diff:67,name:'奈落の底',desc:'奈落の底で戦う',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'☠☠☠☠☠☠☆',diffClass:'diff-5',
    rooms:[
     {name:'部屋A',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[3,4],[3,2]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:2,hp:25,maxHp:25},{type:'bow',x:5,y:2,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:105,maxHp:105},{type:'axe',x:2,y:5,hp:40,maxHp:40},{type:'axe',x:4,y:5,hp:40,maxHp:40}]},
@@ -1499,7 +1442,7 @@ const DUNGEON_ALL=[
     {name:'部屋E',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[3,4],[3,2]],enemies:[{type:'star',x:1,y:2,hp:110,maxHp:110},{type:'star',x:5,y:2,hp:110,maxHp:110},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:1,y:4,hp:25,maxHp:25},{type:'bow',x:5,y:4,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:110,maxHp:110},{type:'axe',x:3,y:5,hp:40,maxHp:40}]},
     {name:'部屋F',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[3,4],[3,2]],enemies:[{type:'star',x:2,y:2,hp:115,maxHp:115},{type:'star',x:4,y:2,hp:115,maxHp:115},{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'bow',x:6,y:3,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:115,maxHp:115}]},
    ]},
-  {id:'d68',diff:68,name:'鬼道の迷宮',desc:'鬼が跋扈する迷宮',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d68',category:'stock',diff:68,name:'鬼道の迷宮',desc:'鬼が跋扈する迷宮',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'☠☠☠☠☠☠☆',diffClass:'diff-5',
    rooms:[
     {name:'部屋A',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,3],[1,2],[5,2],[1,4],[5,4]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:2,hp:25,maxHp:25},{type:'bow',x:5,y:2,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:110,maxHp:110},{type:'axe',x:2,y:5,hp:40,maxHp:40},{type:'axe',x:4,y:5,hp:40,maxHp:40}]},
@@ -1509,7 +1452,7 @@ const DUNGEON_ALL=[
     {name:'部屋E',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,3],[1,2],[5,2],[1,4],[5,4]],enemies:[{type:'star',x:1,y:2,hp:115,maxHp:115},{type:'star',x:5,y:2,hp:115,maxHp:115},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:1,y:4,hp:25,maxHp:25},{type:'bow',x:5,y:4,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:115,maxHp:115},{type:'axe',x:3,y:5,hp:40,maxHp:40}]},
     {name:'部屋F',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,3],[1,2],[5,2],[1,4],[5,4]],enemies:[{type:'star',x:2,y:2,hp:120,maxHp:120},{type:'star',x:4,y:2,hp:120,maxHp:120},{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'bow',x:6,y:3,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:120,maxHp:120}]},
    ]},
-  {id:'d69',diff:69,name:'最後の扉',desc:'煉獄の手前の扉',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d69',category:'stock',diff:69,name:'最後の扉',desc:'煉獄の手前の扉',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'☠☠☠☠☠☠☆',diffClass:'diff-5',
    rooms:[
     {name:'部屋A',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[2,4],[4,4],[3,1],[3,5]],enemies:[{type:'star',x:3,y:1,hp:55,maxHp:55},{type:'bow',x:1,y:2,hp:25,maxHp:25},{type:'bow',x:5,y:2,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:115,maxHp:115},{type:'axe',x:2,y:5,hp:40,maxHp:40},{type:'axe',x:4,y:5,hp:40,maxHp:40}]},
@@ -1519,9 +1462,9 @@ const DUNGEON_ALL=[
     {name:'部屋E',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[2,4],[4,4],[3,1],[3,5]],enemies:[{type:'star',x:1,y:2,hp:120,maxHp:120},{type:'star',x:5,y:2,hp:120,maxHp:120},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:1,y:4,hp:25,maxHp:25},{type:'bow',x:5,y:4,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:120,maxHp:120},{type:'axe',x:3,y:5,hp:40,maxHp:40}]},
     {name:'部屋F',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[2,4],[4,4],[3,1],[3,5]],enemies:[{type:'star',x:2,y:2,hp:125,maxHp:125},{type:'star',x:4,y:2,hp:125,maxHp:125},{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'bow',x:6,y:3,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:125,maxHp:125}]},
    ]},
-  {id:'hard',diff:70,name:'煉獄迷宮',desc:'7x7の密閉迷宮。敵の配置は固定、逃げ場はない。生還者僅少。覚悟を決めよ。',mapSize:7,roomCount:3,senseRange:5,
+  {id:'hard',category:'main',diff:70,name:'第9番　煉獄迷宮',desc:'7x7の密閉迷宮。敵の配置は固定、逃げ場はない。生還者僅少。覚悟を決めよ。',mapSize:7,roomCount:3,senseRange:5,
    diffLabel:'☠☠☠☠☠☠☠',diffClass:'diff-hard',rooms:[]},
-  {id:'d70',diff:70,name:'余震の迷宮',desc:'煉獄をくぐり抜けた先の試練',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d70',category:'stock',diff:70,name:'余震の迷宮',desc:'煉獄をくぐり抜けた先の試練',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'☠☠☠☠☠☠★',diffClass:'diff-5',
    rooms:[
     {name:'部屋A',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[2,4],[4,4]],enemies:[{type:'star',x:3,y:1,hp:100,maxHp:100},{type:'bow',x:1,y:2,hp:25,maxHp:25},{type:'bow',x:5,y:2,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:100,maxHp:100},{type:'axe',x:2,y:5,hp:40,maxHp:40},{type:'axe',x:4,y:5,hp:40,maxHp:40}]},
@@ -1531,7 +1474,7 @@ const DUNGEON_ALL=[
     {name:'部屋E',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,3],[1,2],[5,2],[1,4],[5,4]],enemies:[{type:'star',x:2,y:2,hp:110,maxHp:110},{type:'star',x:4,y:2,hp:110,maxHp:110},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'bow',x:6,y:3,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:105,maxHp:105},{type:'axe',x:4,y:5,hp:40,maxHp:40}]},
     {name:'部屋F',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[2,4],[4,4],[3,1]],enemies:[{type:'star',x:1,y:2,hp:110,maxHp:110},{type:'star',x:5,y:2,hp:110,maxHp:110},{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:6,y:4,hp:25,maxHp:25},{type:'star',x:3,y:3,hp:105,maxHp:105}]},
    ]},
-  {id:'d71',diff:71,name:'深化の迷宮',desc:'さらに深い闇へ',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d71',category:'stock',diff:71,name:'深化の迷宮',desc:'さらに深い闇へ',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'☠☠☠☠☠☠★',diffClass:'diff-5',
    rooms:[
     {name:'部屋A',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[2,4],[4,4]],enemies:[{type:'star',x:3,y:1,hp:108,maxHp:108},{type:'bow',x:1,y:2,hp:25,maxHp:25},{type:'bow',x:5,y:2,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:108,maxHp:108},{type:'axe',x:2,y:5,hp:40,maxHp:40},{type:'axe',x:4,y:5,hp:40,maxHp:40}]},
@@ -1541,7 +1484,7 @@ const DUNGEON_ALL=[
     {name:'部屋E',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,3],[1,2],[5,2],[1,4],[5,4]],enemies:[{type:'star',x:2,y:2,hp:118,maxHp:118},{type:'star',x:4,y:2,hp:118,maxHp:118},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'bow',x:6,y:3,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:113,maxHp:113},{type:'axe',x:4,y:5,hp:40,maxHp:40}]},
     {name:'部屋F',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[2,4],[4,4],[3,1]],enemies:[{type:'star',x:1,y:2,hp:118,maxHp:118},{type:'star',x:5,y:2,hp:118,maxHp:118},{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:6,y:4,hp:25,maxHp:25},{type:'star',x:3,y:3,hp:113,maxHp:113}]},
    ]},
-  {id:'d72',diff:72,name:'沈黙の迷宮',desc:'静寂の中の死闘',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d72',category:'stock',diff:72,name:'沈黙の迷宮',desc:'静寂の中の死闘',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'☠☠☠☠☠☠★',diffClass:'diff-5',
    rooms:[
     {name:'部屋A',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[2,4],[4,4]],enemies:[{type:'star',x:3,y:1,hp:116,maxHp:116},{type:'bow',x:1,y:2,hp:25,maxHp:25},{type:'bow',x:5,y:2,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:116,maxHp:116},{type:'axe',x:2,y:5,hp:40,maxHp:40},{type:'axe',x:4,y:5,hp:40,maxHp:40}]},
@@ -1551,7 +1494,7 @@ const DUNGEON_ALL=[
     {name:'部屋E',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,3],[1,2],[5,2],[1,4],[5,4]],enemies:[{type:'star',x:2,y:2,hp:126,maxHp:126},{type:'star',x:4,y:2,hp:126,maxHp:126},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'bow',x:6,y:3,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:121,maxHp:121},{type:'axe',x:4,y:5,hp:40,maxHp:40}]},
     {name:'部屋F',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[2,4],[4,4],[3,1]],enemies:[{type:'star',x:1,y:2,hp:126,maxHp:126},{type:'star',x:5,y:2,hp:126,maxHp:126},{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:6,y:4,hp:25,maxHp:25},{type:'star',x:3,y:3,hp:121,maxHp:121}]},
    ]},
-  {id:'d73',diff:73,name:'深紅の迷宮',desc:'赤く染まった戦場',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d73',category:'stock',diff:73,name:'深紅の迷宮',desc:'赤く染まった戦場',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'☠☠☠☠☠☠★',diffClass:'diff-5',
    rooms:[
     {name:'部屋A',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[2,4],[4,4]],enemies:[{type:'star',x:3,y:1,hp:124,maxHp:124},{type:'bow',x:1,y:2,hp:25,maxHp:25},{type:'bow',x:5,y:2,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:124,maxHp:124},{type:'axe',x:2,y:5,hp:40,maxHp:40},{type:'axe',x:4,y:5,hp:40,maxHp:40}]},
@@ -1561,7 +1504,7 @@ const DUNGEON_ALL=[
     {name:'部屋E',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,3],[1,2],[5,2],[1,4],[5,4]],enemies:[{type:'star',x:2,y:2,hp:134,maxHp:134},{type:'star',x:4,y:2,hp:134,maxHp:134},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'bow',x:6,y:3,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:129,maxHp:129},{type:'axe',x:4,y:5,hp:40,maxHp:40}]},
     {name:'部屋F',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[2,4],[4,4],[3,1]],enemies:[{type:'star',x:1,y:2,hp:134,maxHp:134},{type:'star',x:5,y:2,hp:134,maxHp:134},{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:6,y:4,hp:25,maxHp:25},{type:'star',x:3,y:3,hp:129,maxHp:129}]},
    ]},
-  {id:'d74',diff:74,name:'深淵の予感',desc:'9x9の深淵が迫る',mapSize:7,roomCount:4,senseRange:5,
+  {id:'d74',category:'stock',diff:74,name:'深淵の予感',desc:'9x9の深淵が迫る',mapSize:7,roomCount:4,senseRange:5,
    diffLabel:'☠☠☠☠☠☠★',diffClass:'diff-5',
    rooms:[
     {name:'部屋A',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[2,4],[4,4]],enemies:[{type:'star',x:3,y:1,hp:132,maxHp:132},{type:'bow',x:1,y:2,hp:25,maxHp:25},{type:'bow',x:5,y:2,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:132,maxHp:132},{type:'axe',x:2,y:5,hp:40,maxHp:40},{type:'axe',x:4,y:5,hp:40,maxHp:40}]},
@@ -1571,7 +1514,7 @@ const DUNGEON_ALL=[
     {name:'部屋E',size:7,playerStart:[3,5],exit:[3,0],pillars:[[3,3],[1,2],[5,2],[1,4],[5,4]],enemies:[{type:'star',x:2,y:2,hp:142,maxHp:142},{type:'star',x:4,y:2,hp:142,maxHp:142},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'bow',x:6,y:3,hp:25,maxHp:25},{type:'star',x:3,y:4,hp:137,maxHp:137},{type:'axe',x:4,y:5,hp:40,maxHp:40}]},
     {name:'部屋F',size:7,playerStart:[3,5],exit:[3,0],pillars:[[2,2],[4,2],[2,4],[4,4],[3,1]],enemies:[{type:'star',x:1,y:2,hp:142,maxHp:142},{type:'star',x:5,y:2,hp:142,maxHp:142},{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:6,y:4,hp:25,maxHp:25},{type:'star',x:3,y:3,hp:137,maxHp:137}]},
    ]},
-  {id:'d75',diff:75,name:'深淵の入り口',desc:'9x9の広大な迷宮。敵の数が増える。',mapSize:9,roomCount:4,senseRange:6,
+  {id:'d75',category:'main',diff:75,name:'第10番　深淵の入口',desc:'9x9の広大な迷宮。敵の数が増える。',mapSize:9,roomCount:4,senseRange:6,
    diffLabel:'👁👁👁👁☆☆☆',diffClass:'diff-6',
    rooms:[
     {name:'九宮格',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[2,6],[6,6]],enemies:[{type:'star',x:4,y:2,hp:55,maxHp:55},{type:'axe',x:2,y:4,hp:60,maxHp:60},{type:'axe',x:6,y:4,hp:60,maxHp:60},{type:'bow',x:1,y:1,hp:25,maxHp:25},{type:'bow',x:7,y:1,hp:25,maxHp:25}]},
@@ -1580,7 +1523,7 @@ const DUNGEON_ALL=[
     {name:'崩壊',size:9,playerStart:[4,7],exit:[4,0],pillars:[[1,2],[7,2],[4,3],[1,6],[7,6]],enemies:[{type:'bow',x:2,y:1,hp:25,maxHp:25},{type:'bow',x:6,y:1,hp:25,maxHp:25},{type:'star',x:4,y:2,hp:55,maxHp:55},{type:'star',x:1,y:5,hp:55,maxHp:55},{type:'star',x:7,y:5,hp:55,maxHp:55}]},
     {name:'終末',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,3],[6,3],[4,2],[2,6],[6,6],[4,5]],enemies:[{type:'star',x:1,y:2,hp:55,maxHp:55},{type:'star',x:7,y:2,hp:55,maxHp:55},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'axe',x:4,y:4,hp:60,maxHp:60},{type:'axe',x:2,y:5,hp:60,maxHp:60},{type:'axe',x:6,y:5,hp:60,maxHp:60}]},
    ]},
-  {id:'d76',diff:76,name:'深淵の回廊',desc:'9x9に敵が充満。',mapSize:9,roomCount:4,senseRange:6,
+  {id:'d76',category:'stock',diff:76,name:'深淵の回廊',desc:'9x9に敵が充満。',mapSize:9,roomCount:4,senseRange:6,
    diffLabel:'👁👁👁👁★☆☆',diffClass:'diff-6',
    rooms:[
     {name:'回廊',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[2,6],[6,6]],enemies:[{type:'star',x:4,y:2,hp:55,maxHp:55},{type:'bow',x:1,y:1,hp:40,maxHp:40},{type:'bow',x:7,y:1,hp:40,maxHp:40},{type:'axe',x:2,y:4,hp:60,maxHp:60},{type:'axe',x:6,y:4,hp:60,maxHp:60}]},
@@ -1589,7 +1532,7 @@ const DUNGEON_ALL=[
     {name:'深淵2',size:9,playerStart:[4,7],exit:[4,0],pillars:[[1,2],[7,2],[4,4],[1,6],[7,6]],enemies:[{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'star',x:2,y:3,hp:40,maxHp:40},{type:'star',x:6,y:3,hp:40,maxHp:40},{type:'axe',x:4,y:6,hp:60,maxHp:60}]},
     {name:'収束深',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,3],[6,3],[4,2],[2,6],[6,6]],enemies:[{type:'star',x:1,y:2,hp:40,maxHp:40},{type:'star',x:7,y:2,hp:40,maxHp:40},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'axe',x:3,y:5,hp:60,maxHp:60},{type:'axe',x:5,y:5,hp:60,maxHp:60}]},
    ]},
-  {id:'d77',diff:77,name:'深淵の回廊2',desc:'9x9の回廊第2段',mapSize:9,roomCount:4,senseRange:6,
+  {id:'d77',category:'stock',diff:77,name:'深淵の回廊2',desc:'9x9の回廊第2段',mapSize:9,roomCount:4,senseRange:6,
    diffLabel:'👁👁👁👁👁☆☆',diffClass:'diff-6',
    rooms:[
     {name:'深1A',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,4],[2,6],[6,6]],enemies:[{type:'star',x:4,y:1,hp:100,maxHp:100},{type:'bow',x:1,y:1,hp:40,maxHp:40},{type:'bow',x:7,y:1,hp:40,maxHp:40},{type:'star',x:1,y:4,hp:85,maxHp:85},{type:'star',x:7,y:4,hp:85,maxHp:85},{type:'axe',x:4,y:6,hp:100,maxHp:100}]},
@@ -1598,7 +1541,7 @@ const DUNGEON_ALL=[
     {name:'深1D',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,4],[2,6],[6,6]],enemies:[{type:'star',x:2,y:2,hp:100,maxHp:100},{type:'star',x:6,y:2,hp:100,maxHp:100},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:1,y:4,hp:25,maxHp:25},{type:'bow',x:7,y:4,hp:25,maxHp:25},{type:'star',x:4,y:5,hp:100,maxHp:100},{type:'axe',x:4,y:6,hp:110,maxHp:110}]},
     {name:'深1E',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,4],[2,6],[6,6]],enemies:[{type:'star',x:1,y:1,hp:110,maxHp:110},{type:'star',x:7,y:1,hp:110,maxHp:110},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'star',x:4,y:4,hp:100,maxHp:100},{type:'axe',x:4,y:7,hp:110,maxHp:110}]},
    ]},
-  {id:'d78',diff:78,name:'深淵の核',desc:'核を守る強力な敵',mapSize:9,roomCount:4,senseRange:6,
+  {id:'d78',category:'stock',diff:78,name:'深淵の核',desc:'核を守る強力な敵',mapSize:9,roomCount:4,senseRange:6,
    diffLabel:'👁👁👁👁👁☆☆',diffClass:'diff-6',
    rooms:[
     {name:'深2A',size:9,playerStart:[4,7],exit:[4,0],pillars:[[3,3],[5,3],[3,5],[5,5],[4,2]],enemies:[{type:'star',x:4,y:1,hp:115,maxHp:115},{type:'bow',x:1,y:1,hp:40,maxHp:40},{type:'bow',x:7,y:1,hp:40,maxHp:40},{type:'star',x:1,y:4,hp:100,maxHp:100},{type:'star',x:7,y:4,hp:100,maxHp:100},{type:'axe',x:4,y:6,hp:115,maxHp:115}]},
@@ -1607,7 +1550,7 @@ const DUNGEON_ALL=[
     {name:'深2D',size:9,playerStart:[4,7],exit:[4,0],pillars:[[3,3],[5,3],[3,5],[5,5],[4,2]],enemies:[{type:'star',x:2,y:2,hp:115,maxHp:115},{type:'star',x:6,y:2,hp:115,maxHp:115},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:1,y:4,hp:25,maxHp:25},{type:'bow',x:7,y:4,hp:25,maxHp:25},{type:'star',x:4,y:5,hp:115,maxHp:115},{type:'axe',x:4,y:6,hp:125,maxHp:125}]},
     {name:'深2E',size:9,playerStart:[4,7],exit:[4,0],pillars:[[3,3],[5,3],[3,5],[5,5],[4,2]],enemies:[{type:'star',x:1,y:1,hp:125,maxHp:125},{type:'star',x:7,y:1,hp:125,maxHp:125},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'star',x:4,y:4,hp:115,maxHp:115},{type:'axe',x:4,y:7,hp:125,maxHp:125}]},
    ]},
-  {id:'d79',diff:79,name:'深淵の谷',desc:'谷間を走る戦い',mapSize:9,roomCount:4,senseRange:6,
+  {id:'d79',category:'stock',diff:79,name:'深淵の谷',desc:'谷間を走る戦い',mapSize:9,roomCount:4,senseRange:6,
    diffLabel:'👁👁👁👁👁☆☆',diffClass:'diff-6',
    rooms:[
     {name:'深3A',size:9,playerStart:[4,7],exit:[4,0],pillars:[[1,2],[7,2],[4,3],[1,6],[7,6]],enemies:[{type:'star',x:4,y:1,hp:130,maxHp:130},{type:'bow',x:1,y:1,hp:40,maxHp:40},{type:'bow',x:7,y:1,hp:40,maxHp:40},{type:'star',x:1,y:4,hp:115,maxHp:115},{type:'star',x:7,y:4,hp:115,maxHp:115},{type:'axe',x:4,y:6,hp:130,maxHp:130}]},
@@ -1616,7 +1559,7 @@ const DUNGEON_ALL=[
     {name:'深3D',size:9,playerStart:[4,7],exit:[4,0],pillars:[[1,2],[7,2],[4,3],[1,6],[7,6]],enemies:[{type:'star',x:2,y:2,hp:130,maxHp:130},{type:'star',x:6,y:2,hp:130,maxHp:130},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:1,y:4,hp:25,maxHp:25},{type:'bow',x:7,y:4,hp:25,maxHp:25},{type:'star',x:4,y:5,hp:130,maxHp:130},{type:'axe',x:4,y:6,hp:140,maxHp:140}]},
     {name:'深3E',size:9,playerStart:[4,7],exit:[4,0],pillars:[[1,2],[7,2],[4,3],[1,6],[7,6]],enemies:[{type:'star',x:1,y:1,hp:140,maxHp:140},{type:'star',x:7,y:1,hp:140,maxHp:140},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'star',x:4,y:4,hp:130,maxHp:130},{type:'axe',x:4,y:7,hp:140,maxHp:140}]},
    ]},
-  {id:'d80',diff:80,name:'深淵',desc:'敵の斥候が広範囲に及ぶ。ほぼ逃げ場なし。',mapSize:9,roomCount:4,senseRange:6,
+  {id:'d80',category:'main',diff:80,name:'第11番　深淵',desc:'敵の斥候が広範囲に及ぶ。ほぼ逃げ場なし。',mapSize:9,roomCount:4,senseRange:6,
    diffLabel:'👁👁👁👁👁☆☆',diffClass:'diff-6',
    rooms:[
     {name:'業炎',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,4],[2,6],[6,6]],enemies:[{type:'star',x:1,y:1,hp:20,maxHp:20},{type:'star',x:7,y:1,hp:20,maxHp:20},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25}]},
@@ -1625,7 +1568,7 @@ const DUNGEON_ALL=[
     {name:'奈落',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,4],[2,6],[6,6]],enemies:[{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'star',x:1,y:3,hp:20,maxHp:20},{type:'star',x:7,y:3,hp:20,maxHp:20},{type:'star',x:4,y:2,hp:20,maxHp:20},{type:'axe',x:4,y:6,hp:60,maxHp:60}]},
     {name:'冥府',size:9,playerStart:[4,7],exit:[4,0],pillars:[[3,3],[5,3],[3,5],[5,5],[1,1],[7,1],[1,7],[7,7]],enemies:[{type:'star',x:2,y:2,hp:30,maxHp:30},{type:'star',x:6,y:2,hp:30,maxHp:30},{type:'star',x:2,y:6,hp:30,maxHp:30},{type:'star',x:6,y:6,hp:30,maxHp:30},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:4,y:7,hp:25,maxHp:25}]},
    ]},
-  {id:'d81',diff:81,name:'深淵の核',desc:'HP高めの敵が核を守る。',mapSize:9,roomCount:4,senseRange:6,
+  {id:'d81',category:'stock',diff:81,name:'深淵の核',desc:'HP高めの敵が核を守る。',mapSize:9,roomCount:4,senseRange:6,
    diffLabel:'👁👁👁👁👁★☆',diffClass:'diff-6',
    rooms:[
     {name:'核守護',size:9,playerStart:[4,7],exit:[4,0],pillars:[[3,3],[5,3],[4,2],[3,5],[5,5]],enemies:[{type:'star',x:4,y:1,hp:60,maxHp:60},{type:'star',x:2,y:3,hp:40,maxHp:40},{type:'star',x:6,y:3,hp:40,maxHp:40},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'axe',x:4,y:6,hp:60,maxHp:60}]},
@@ -1634,7 +1577,7 @@ const DUNGEON_ALL=[
     {name:'深核2',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,4],[2,6],[6,6]],enemies:[{type:'star',x:1,y:1,hp:60,maxHp:60},{type:'star',x:7,y:1,hp:60,maxHp:60},{type:'bow',x:1,y:4,hp:25,maxHp:25},{type:'bow',x:7,y:4,hp:25,maxHp:25},{type:'star',x:4,y:4,hp:60,maxHp:60}]},
     {name:'真深淵',size:9,playerStart:[4,7],exit:[4,0],pillars:[[3,3],[5,3],[3,5],[5,5],[1,1],[7,1]],enemies:[{type:'star',x:2,y:2,hp:60,maxHp:60},{type:'star',x:6,y:2,hp:60,maxHp:60},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'star',x:4,y:6,hp:40,maxHp:40}]},
    ]},
-  {id:'d82',diff:82,name:'冥界の扉',desc:'冥界への扉が開く',mapSize:9,roomCount:4,senseRange:6,
+  {id:'d82',category:'stock',diff:82,name:'冥界の扉',desc:'冥界への扉が開く',mapSize:9,roomCount:4,senseRange:6,
    diffLabel:'👁👁👁👁👁👁☆',diffClass:'diff-6',
    rooms:[
     {name:'扉1A',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,4],[2,6],[6,6]],enemies:[{type:'star',x:4,y:1,hp:120,maxHp:120},{type:'star',x:1,y:4,hp:110,maxHp:110},{type:'star',x:7,y:4,hp:110,maxHp:110},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'axe',x:4,y:6,hp:130,maxHp:130}]},
@@ -1643,7 +1586,7 @@ const DUNGEON_ALL=[
     {name:'扉1D',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,4],[2,6],[6,6]],enemies:[{type:'star',x:1,y:1,hp:130,maxHp:130},{type:'star',x:7,y:1,hp:130,maxHp:130},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'star',x:4,y:5,hp:130,maxHp:130},{type:'axe',x:4,y:7,hp:140,maxHp:140}]},
     {name:'扉1E',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,4],[2,6],[6,6]],enemies:[{type:'star',x:2,y:2,hp:140,maxHp:140},{type:'star',x:6,y:2,hp:140,maxHp:140},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'bow',x:8,y:3,hp:25,maxHp:25},{type:'star',x:2,y:6,hp:130,maxHp:130},{type:'star',x:6,y:6,hp:130,maxHp:130},{type:'axe',x:4,y:6,hp:140,maxHp:140}]},
    ]},
-  {id:'d83',diff:83,name:'黄泉の迷宮9',desc:'9x9の黄泉路',mapSize:9,roomCount:4,senseRange:6,
+  {id:'d83',category:'stock',diff:83,name:'黄泉の迷宮9',desc:'9x9の黄泉路',mapSize:9,roomCount:4,senseRange:6,
    diffLabel:'👁👁👁👁👁👁☆',diffClass:'diff-6',
    rooms:[
     {name:'扉2A',size:9,playerStart:[4,7],exit:[4,0],pillars:[[3,3],[5,3],[3,5],[5,5],[1,1],[7,1]],enemies:[{type:'star',x:4,y:1,hp:130,maxHp:130},{type:'star',x:1,y:4,hp:120,maxHp:120},{type:'star',x:7,y:4,hp:120,maxHp:120},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'axe',x:4,y:6,hp:140,maxHp:140}]},
@@ -1652,7 +1595,7 @@ const DUNGEON_ALL=[
     {name:'扉2D',size:9,playerStart:[4,7],exit:[4,0],pillars:[[3,3],[5,3],[3,5],[5,5],[1,1],[7,1]],enemies:[{type:'star',x:1,y:1,hp:140,maxHp:140},{type:'star',x:7,y:1,hp:140,maxHp:140},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'star',x:4,y:5,hp:140,maxHp:140},{type:'axe',x:4,y:7,hp:150,maxHp:150}]},
     {name:'扉2E',size:9,playerStart:[4,7],exit:[4,0],pillars:[[3,3],[5,3],[3,5],[5,5],[1,1],[7,1]],enemies:[{type:'star',x:2,y:2,hp:150,maxHp:150},{type:'star',x:6,y:2,hp:150,maxHp:150},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'bow',x:8,y:3,hp:25,maxHp:25},{type:'star',x:2,y:6,hp:140,maxHp:140},{type:'star',x:6,y:6,hp:140,maxHp:140},{type:'axe',x:4,y:6,hp:150,maxHp:150}]},
    ]},
-  {id:'d84',diff:84,name:'魔王の間',desc:'魔王の玉座前',mapSize:9,roomCount:4,senseRange:6,
+  {id:'d84',category:'stock',diff:84,name:'魔王の間',desc:'魔王の玉座前',mapSize:9,roomCount:4,senseRange:6,
    diffLabel:'👁👁👁👁👁👁☆',diffClass:'diff-6',
    rooms:[
     {name:'扉3A',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,3],[2,6],[6,6],[0,2],[8,2]],enemies:[{type:'star',x:4,y:1,hp:140,maxHp:140},{type:'star',x:1,y:4,hp:130,maxHp:130},{type:'star',x:7,y:4,hp:130,maxHp:130},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'axe',x:4,y:6,hp:150,maxHp:150}]},
@@ -1661,7 +1604,7 @@ const DUNGEON_ALL=[
     {name:'扉3D',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,3],[2,6],[6,6],[0,2],[8,2]],enemies:[{type:'star',x:1,y:1,hp:150,maxHp:150},{type:'star',x:7,y:1,hp:150,maxHp:150},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'star',x:4,y:5,hp:150,maxHp:150},{type:'axe',x:4,y:7,hp:160,maxHp:160}]},
     {name:'扉3E',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,3],[2,6],[6,6],[0,2],[8,2]],enemies:[{type:'star',x:2,y:2,hp:160,maxHp:160},{type:'star',x:6,y:2,hp:160,maxHp:160},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'bow',x:8,y:3,hp:25,maxHp:25},{type:'star',x:2,y:6,hp:150,maxHp:150},{type:'star',x:6,y:6,hp:150,maxHp:150},{type:'axe',x:4,y:6,hp:160,maxHp:160}]},
    ]},
-  {id:'d85',diff:85,name:'深渕の王',desc:'渕の王が待ち受ける',mapSize:9,roomCount:4,senseRange:6,
+  {id:'d85',category:'stock',diff:85,name:'深渕の王',desc:'渕の王が待ち受ける',mapSize:9,roomCount:4,senseRange:6,
    diffLabel:'👁👁👁👁👁👁☆',diffClass:'diff-6',
    rooms:[
     {name:'扉4A',size:9,playerStart:[4,7],exit:[4,0],pillars:[[3,3],[5,3],[3,5],[5,5],[4,2],[4,6]],enemies:[{type:'star',x:4,y:1,hp:150,maxHp:150},{type:'star',x:1,y:4,hp:140,maxHp:140},{type:'star',x:7,y:4,hp:140,maxHp:140},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'axe',x:4,y:6,hp:160,maxHp:160}]},
@@ -1670,7 +1613,7 @@ const DUNGEON_ALL=[
     {name:'扉4D',size:9,playerStart:[4,7],exit:[4,0],pillars:[[3,3],[5,3],[3,5],[5,5],[4,2],[4,6]],enemies:[{type:'star',x:1,y:1,hp:160,maxHp:160},{type:'star',x:7,y:1,hp:160,maxHp:160},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'star',x:4,y:5,hp:160,maxHp:160},{type:'axe',x:4,y:7,hp:170,maxHp:170}]},
     {name:'扉4E',size:9,playerStart:[4,7],exit:[4,0],pillars:[[3,3],[5,3],[3,5],[5,5],[4,2],[4,6]],enemies:[{type:'star',x:2,y:2,hp:170,maxHp:170},{type:'star',x:6,y:2,hp:170,maxHp:170},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'bow',x:8,y:3,hp:25,maxHp:25},{type:'star',x:2,y:6,hp:160,maxHp:160},{type:'star',x:6,y:6,hp:160,maxHp:160},{type:'axe',x:4,y:6,hp:170,maxHp:170}]},
    ]},
-  {id:'d86',diff:86,name:'永劫の迷宮',desc:'終わりなき試練',mapSize:9,roomCount:5,senseRange:7,
+  {id:'d86',category:'stock',diff:86,name:'永劫の迷宮',desc:'終わりなき試練',mapSize:9,roomCount:5,senseRange:7,
    diffLabel:'💀💀💀💀💀💀★',diffClass:'diff-7',
    rooms:[
     {name:'扉5A',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,4],[2,6],[6,6],[0,4],[8,4]],enemies:[{type:'star',x:4,y:1,hp:160,maxHp:160},{type:'star',x:1,y:4,hp:150,maxHp:150},{type:'star',x:7,y:4,hp:150,maxHp:150},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'axe',x:4,y:6,hp:170,maxHp:170}]},
@@ -1679,7 +1622,7 @@ const DUNGEON_ALL=[
     {name:'扉5D',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,4],[2,6],[6,6],[0,4],[8,4]],enemies:[{type:'star',x:1,y:1,hp:170,maxHp:170},{type:'star',x:7,y:1,hp:170,maxHp:170},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'star',x:4,y:5,hp:170,maxHp:170},{type:'axe',x:4,y:7,hp:180,maxHp:180}]},
     {name:'扉5E',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,4],[2,6],[6,6],[0,4],[8,4]],enemies:[{type:'star',x:2,y:2,hp:180,maxHp:180},{type:'star',x:6,y:2,hp:180,maxHp:180},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'bow',x:8,y:3,hp:25,maxHp:25},{type:'star',x:2,y:6,hp:170,maxHp:170},{type:'star',x:6,y:6,hp:170,maxHp:170},{type:'axe',x:4,y:6,hp:180,maxHp:180}]},
    ]},
-  {id:'d87',diff:87,name:'天獄の前室',desc:'天獄の前の部屋',mapSize:9,roomCount:5,senseRange:7,
+  {id:'d87',category:'stock',diff:87,name:'天獄の前室',desc:'天獄の前の部屋',mapSize:9,roomCount:5,senseRange:7,
    diffLabel:'💀💀💀💀💀💀★',diffClass:'diff-7',
    rooms:[
     {name:'扉6A',size:9,playerStart:[4,7],exit:[4,0],pillars:[[1,2],[7,2],[4,3],[1,6],[7,6],[4,5]],enemies:[{type:'star',x:4,y:1,hp:170,maxHp:170},{type:'star',x:1,y:4,hp:160,maxHp:160},{type:'star',x:7,y:4,hp:160,maxHp:160},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'axe',x:4,y:6,hp:180,maxHp:180}]},
@@ -1688,7 +1631,7 @@ const DUNGEON_ALL=[
     {name:'扉6D',size:9,playerStart:[4,7],exit:[4,0],pillars:[[1,2],[7,2],[4,3],[1,6],[7,6],[4,5]],enemies:[{type:'star',x:1,y:1,hp:180,maxHp:180},{type:'star',x:7,y:1,hp:180,maxHp:180},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'star',x:4,y:5,hp:180,maxHp:180},{type:'axe',x:4,y:7,hp:190,maxHp:190}]},
     {name:'扉6E',size:9,playerStart:[4,7],exit:[4,0],pillars:[[1,2],[7,2],[4,3],[1,6],[7,6],[4,5]],enemies:[{type:'star',x:2,y:2,hp:190,maxHp:190},{type:'star',x:6,y:2,hp:190,maxHp:190},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'bow',x:8,y:3,hp:25,maxHp:25},{type:'star',x:2,y:6,hp:180,maxHp:180},{type:'star',x:6,y:6,hp:180,maxHp:180},{type:'axe',x:4,y:6,hp:190,maxHp:190}]},
    ]},
-  {id:'d88',diff:88,name:'神罰の道',desc:'神の罰が降り注ぐ',mapSize:9,roomCount:5,senseRange:7,
+  {id:'d88',category:'stock',diff:88,name:'神罰の道',desc:'神の罰が降り注ぐ',mapSize:9,roomCount:5,senseRange:7,
    diffLabel:'💀💀💀💀💀💀★',diffClass:'diff-7',
    rooms:[
     {name:'扉7A',size:9,playerStart:[4,7],exit:[4,0],pillars:[[3,3],[5,3],[3,5],[5,5],[1,1],[7,1],[1,7],[7,7]],enemies:[{type:'star',x:4,y:1,hp:180,maxHp:180},{type:'star',x:1,y:4,hp:170,maxHp:170},{type:'star',x:7,y:4,hp:170,maxHp:170},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'axe',x:4,y:6,hp:190,maxHp:190}]},
@@ -1697,7 +1640,7 @@ const DUNGEON_ALL=[
     {name:'扉7D',size:9,playerStart:[4,7],exit:[4,0],pillars:[[3,3],[5,3],[3,5],[5,5],[1,1],[7,1],[1,7],[7,7]],enemies:[{type:'star',x:1,y:1,hp:190,maxHp:190},{type:'star',x:7,y:1,hp:190,maxHp:190},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'star',x:4,y:5,hp:190,maxHp:190},{type:'axe',x:4,y:7,hp:200,maxHp:200}]},
     {name:'扉7E',size:9,playerStart:[4,7],exit:[4,0],pillars:[[3,3],[5,3],[3,5],[5,5],[1,1],[7,1],[1,7],[7,7]],enemies:[{type:'star',x:2,y:2,hp:200,maxHp:200},{type:'star',x:6,y:2,hp:200,maxHp:200},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'bow',x:8,y:3,hp:25,maxHp:25},{type:'star',x:2,y:6,hp:190,maxHp:190},{type:'star',x:6,y:6,hp:190,maxHp:190},{type:'axe',x:4,y:6,hp:200,maxHp:200}]},
    ]},
-  {id:'d89',diff:89,name:'真実の扉',desc:'d90への最後の扉',mapSize:9,roomCount:5,senseRange:7,
+  {id:'d89',category:'stock',diff:89,name:'真実の扉',desc:'d90への最後の扉',mapSize:9,roomCount:5,senseRange:7,
    diffLabel:'💀💀💀💀💀💀★',diffClass:'diff-7',
    rooms:[
     {name:'扉8A',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,4],[2,6],[6,6],[0,2],[8,2],[0,6],[8,6]],enemies:[{type:'star',x:4,y:1,hp:190,maxHp:190},{type:'star',x:1,y:4,hp:180,maxHp:180},{type:'star',x:7,y:4,hp:180,maxHp:180},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'axe',x:4,y:6,hp:200,maxHp:200}]},
@@ -1706,14 +1649,14 @@ const DUNGEON_ALL=[
     {name:'扉8D',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,4],[2,6],[6,6],[0,2],[8,2],[0,6],[8,6]],enemies:[{type:'star',x:1,y:1,hp:200,maxHp:200},{type:'star',x:7,y:1,hp:200,maxHp:200},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'star',x:4,y:5,hp:200,maxHp:200},{type:'axe',x:4,y:7,hp:210,maxHp:210}]},
     {name:'扉8E',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,4],[2,6],[6,6],[0,2],[8,2],[0,6],[8,6]],enemies:[{type:'star',x:2,y:2,hp:210,maxHp:210},{type:'star',x:6,y:2,hp:210,maxHp:210},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'bow',x:8,y:3,hp:25,maxHp:25},{type:'star',x:2,y:6,hp:200,maxHp:200},{type:'star',x:6,y:6,hp:200,maxHp:200},{type:'axe',x:4,y:6,hp:210,maxHp:210}]},
    ]},
-  {id:'d90',diff:90,name:'絶望の迷宮',desc:'生存率極低。全ての手を尽くせ。',mapSize:9,roomCount:5,senseRange:7,
+  {id:'d90',category:'main',diff:90,name:'第12番　絶望の迷宮',desc:'生存率極低。全ての手を尽くせ。',mapSize:9,roomCount:5,senseRange:7,
    diffLabel:'👁👁👁👁👁👁☆',diffClass:'diff-7',
    rooms:[
     {name:'絶望の入口',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,4],[2,6],[6,6],[0,2],[8,2]],enemies:[{type:'star',x:1,y:1,hp:40,maxHp:40},{type:'star',x:7,y:1,hp:40,maxHp:40},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'star',x:4,y:3,hp:40,maxHp:40},{type:'axe',x:0,y:5,hp:60,maxHp:60},{type:'axe',x:8,y:5,hp:60,maxHp:60}]},
     {name:'万策尽きる',size:9,playerStart:[4,7],exit:[4,0],pillars:[[3,2],[5,2],[3,6],[5,6],[1,4],[7,4],[4,1]],enemies:[{type:'bow',x:2,y:1,hp:25,maxHp:25},{type:'bow',x:6,y:1,hp:25,maxHp:25},{type:'star',x:1,y:3,hp:40,maxHp:40},{type:'star',x:7,y:3,hp:40,maxHp:40},{type:'star',x:4,y:5,hp:40,maxHp:40},{type:'axe',x:3,y:7,hp:60,maxHp:60},{type:'axe',x:5,y:7,hp:60,maxHp:60}]},
     {name:'阿鼻叫喚',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,3],[2,6],[6,6],[0,4],[8,4]],enemies:[{type:'star',x:1,y:1,hp:40,maxHp:40},{type:'star',x:7,y:1,hp:40,maxHp:40},{type:'bow',x:1,y:4,hp:25,maxHp:25},{type:'bow',x:7,y:4,hp:25,maxHp:25},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'star',x:4,y:6,hp:40,maxHp:40},{type:'axe',x:3,y:5,hp:60,maxHp:60},{type:'axe',x:5,y:5,hp:60,maxHp:60}]},
    ]},
-  {id:'d91',diff:91,name:'阿鼻の間',desc:'絶望的な包囲陣。',mapSize:9,roomCount:5,senseRange:7,
+  {id:'d91',category:'main',diff:91,name:'第13番　阿鼻の間',desc:'絶望的な包囲陣。',mapSize:9,roomCount:5,senseRange:7,
    diffLabel:'👁👁👁👁👁👁★',diffClass:'diff-7',
    rooms:[
     {name:'阿鼻',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,3],[2,6],[6,6],[0,4],[8,4]],enemies:[{type:'star',x:1,y:1,hp:60,maxHp:60},{type:'star',x:7,y:1,hp:60,maxHp:60},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'axe',x:4,y:5,hp:60,maxHp:60}]},
@@ -1723,63 +1666,63 @@ const DUNGEON_ALL=[
     {name:'冥府2',size:9,playerStart:[4,7],exit:[4,0],pillars:[[3,3],[5,3],[3,5],[5,5],[1,1],[7,1],[1,7],[7,7]],enemies:[{type:'star',x:2,y:2,hp:80,maxHp:80},{type:'star',x:6,y:2,hp:80,maxHp:80},{type:'star',x:2,y:6,hp:80,maxHp:80},{type:'star',x:6,y:6,hp:80,maxHp:80},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25}]},
     {name:'最終門',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,4],[2,6],[6,6],[0,2],[8,2]],enemies:[{type:'star',x:1,y:1,hp:80,maxHp:80},{type:'star',x:7,y:1,hp:80,maxHp:80},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'star',x:4,y:3,hp:60,maxHp:60},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'axe',x:4,y:6,hp:80,maxHp:80}]},
    ]},
-  {id:'d92',diff:92,name:'深淵の底',desc:' 底なしの深淵',mapSize:9,roomCount:5,senseRange:7,
+  {id:'d92',category:'stock',diff:92,name:'深淵の底',desc:' 底なしの深淵',mapSize:9,roomCount:5,senseRange:7,
    diffLabel:'💀💀💀💀💀💀★',diffClass:'diff-7',
    rooms:[
     {name:'底1A',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,4],[2,6],[6,6],[0,4],[8,4]],enemies:[{type:'star',x:1,y:1,hp:160,maxHp:160},{type:'star',x:7,y:1,hp:160,maxHp:160},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'star',x:4,y:4,hp:160,maxHp:160}]},
     {name:'底1B',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,4],[2,6],[6,6],[0,4],[8,4]],enemies:[{type:'star',x:2,y:2,hp:170,maxHp:170},{type:'star',x:6,y:2,hp:170,maxHp:170},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'bow',x:8,y:3,hp:25,maxHp:25},{type:'star',x:2,y:6,hp:170,maxHp:170},{type:'star',x:6,y:6,hp:170,maxHp:170},{type:'axe',x:4,y:7,hp:170,maxHp:170}]},
     {name:'底1C',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,4],[2,6],[6,6],[0,4],[8,4]],enemies:[{type:'star',x:1,y:1,hp:180,maxHp:180},{type:'star',x:7,y:1,hp:180,maxHp:180},{type:'star',x:1,y:7,hp:160,maxHp:160},{type:'star',x:7,y:7,hp:160,maxHp:160},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'star',x:4,y:4,hp:170,maxHp:170}]},
    ]},
-  {id:'d93',diff:93,name:'万物の終焉',desc:'全ての敵が集結',mapSize:9,roomCount:5,senseRange:7,
+  {id:'d93',category:'stock',diff:93,name:'万物の終焉',desc:'全ての敵が集結',mapSize:9,roomCount:5,senseRange:7,
    diffLabel:'💀💀💀💀💀💀★',diffClass:'diff-7',
    rooms:[
     {name:'底2A',size:9,playerStart:[4,7],exit:[4,0],pillars:[[3,3],[5,3],[3,5],[5,5],[1,1],[7,1],[1,7],[7,7]],enemies:[{type:'star',x:1,y:1,hp:180,maxHp:180},{type:'star',x:7,y:1,hp:180,maxHp:180},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'star',x:4,y:4,hp:180,maxHp:180}]},
     {name:'底2B',size:9,playerStart:[4,7],exit:[4,0],pillars:[[3,3],[5,3],[3,5],[5,5],[1,1],[7,1],[1,7],[7,7]],enemies:[{type:'star',x:2,y:2,hp:190,maxHp:190},{type:'star',x:6,y:2,hp:190,maxHp:190},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'bow',x:8,y:3,hp:25,maxHp:25},{type:'star',x:2,y:6,hp:190,maxHp:190},{type:'star',x:6,y:6,hp:190,maxHp:190},{type:'axe',x:4,y:7,hp:190,maxHp:190}]},
     {name:'底2C',size:9,playerStart:[4,7],exit:[4,0],pillars:[[3,3],[5,3],[3,5],[5,5],[1,1],[7,1],[1,7],[7,7]],enemies:[{type:'star',x:1,y:1,hp:200,maxHp:200},{type:'star',x:7,y:1,hp:200,maxHp:200},{type:'star',x:1,y:7,hp:180,maxHp:180},{type:'star',x:7,y:7,hp:180,maxHp:180},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'star',x:4,y:4,hp:190,maxHp:190}]},
    ]},
-  {id:'d94',diff:94,name:'黙示録',desc:'最後の審判の前哨',mapSize:9,roomCount:5,senseRange:7,
+  {id:'d94',category:'stock',diff:94,name:'黙示録',desc:'最後の審判の前哨',mapSize:9,roomCount:5,senseRange:7,
    diffLabel:'💀💀💀💀💀💀★',diffClass:'diff-7',
    rooms:[
     {name:'底3A',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,4],[2,6],[6,6],[0,2],[8,2],[0,6],[8,6]],enemies:[{type:'star',x:1,y:1,hp:200,maxHp:200},{type:'star',x:7,y:1,hp:200,maxHp:200},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'star',x:4,y:4,hp:200,maxHp:200}]},
     {name:'底3B',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,4],[2,6],[6,6],[0,2],[8,2],[0,6],[8,6]],enemies:[{type:'star',x:2,y:2,hp:210,maxHp:210},{type:'star',x:6,y:2,hp:210,maxHp:210},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:3,hp:25,maxHp:25},{type:'bow',x:8,y:3,hp:25,maxHp:25},{type:'star',x:2,y:6,hp:210,maxHp:210},{type:'star',x:6,y:6,hp:210,maxHp:210},{type:'axe',x:4,y:7,hp:210,maxHp:210}]},
     {name:'底3C',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,4],[2,6],[6,6],[0,2],[8,2],[0,6],[8,6]],enemies:[{type:'star',x:1,y:1,hp:220,maxHp:220},{type:'star',x:7,y:1,hp:220,maxHp:220},{type:'star',x:1,y:7,hp:200,maxHp:200},{type:'star',x:7,y:7,hp:200,maxHp:200},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'star',x:4,y:4,hp:210,maxHp:210}]},
    ]},
-  {id:'d95',diff:95,name:'極の迷宮',desc:'d100直前。HP+20の強化敵。',mapSize:9,roomCount:5,senseRange:7,
+  {id:'d95',category:'main',diff:95,name:'第14番　極の迷宮',desc:'d100直前。HP+20の強化敵。',mapSize:9,roomCount:5,senseRange:7,
    diffLabel:'💀💀💀💀💀💀★',diffClass:'diff-7',
    rooms:[
     {name:'極1a',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,4],[2,6],[6,6]],enemies:[{type:'star',x:1,y:1,hp:80,maxHp:80},{type:'star',x:7,y:1,hp:80,maxHp:80},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'star',x:4,y:5,hp:80,maxHp:80},{type:'axe',x:4,y:7,hp:100,maxHp:100}]},
     {name:'極1b',size:9,playerStart:[4,7],exit:[4,0],pillars:[[3,3],[5,3],[3,5],[5,5],[1,1],[7,1]],enemies:[{type:'star',x:2,y:2,hp:80,maxHp:80},{type:'star',x:6,y:2,hp:80,maxHp:80},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'star',x:2,y:6,hp:60,maxHp:60},{type:'star',x:6,y:6,hp:60,maxHp:60}]},
     {name:'極1c',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,3],[2,6],[6,6],[0,2],[8,2]],enemies:[{type:'star',x:1,y:1,hp:100,maxHp:100},{type:'star',x:7,y:1,hp:100,maxHp:100},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'axe',x:4,y:6,hp:100,maxHp:100}]},
    ]},
-  {id:'d96',diff:96,name:'天獄の迷宮',desc:'d100直前。HP+35の強化敵。',mapSize:9,roomCount:5,senseRange:8,
+  {id:'d96',category:'main',diff:96,name:'第15番　天獄の迷宮',desc:'d100直前。HP+35の強化敵。',mapSize:9,roomCount:5,senseRange:8,
    diffLabel:'💀💀💀💀💀💀★',diffClass:'diff-7',
    rooms:[
     {name:'極2a',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,4],[2,6],[6,6]],enemies:[{type:'star',x:1,y:1,hp:95,maxHp:95},{type:'star',x:7,y:1,hp:95,maxHp:95},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'star',x:4,y:5,hp:95,maxHp:95},{type:'axe',x:4,y:7,hp:115,maxHp:115}]},
     {name:'極2b',size:9,playerStart:[4,7],exit:[4,0],pillars:[[3,3],[5,3],[3,5],[5,5],[1,1],[7,1]],enemies:[{type:'star',x:2,y:2,hp:95,maxHp:95},{type:'star',x:6,y:2,hp:95,maxHp:95},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'star',x:2,y:6,hp:75,maxHp:75},{type:'star',x:6,y:6,hp:75,maxHp:75}]},
     {name:'極2c',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,3],[2,6],[6,6],[0,2],[8,2]],enemies:[{type:'star',x:1,y:1,hp:115,maxHp:115},{type:'star',x:7,y:1,hp:115,maxHp:115},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'axe',x:4,y:6,hp:115,maxHp:115}]},
    ]},
-  {id:'d97',diff:97,name:'神罰の迷宮',desc:'d100直前。HP+50の強化敵。',mapSize:9,roomCount:5,senseRange:9,
+  {id:'d97',category:'main',diff:97,name:'第16番　神罰の迷宮',desc:'d100直前。HP+50の強化敵。',mapSize:9,roomCount:5,senseRange:9,
    diffLabel:'💀💀💀💀💀💀★',diffClass:'diff-7',
    rooms:[
     {name:'極3a',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,4],[2,6],[6,6]],enemies:[{type:'star',x:1,y:1,hp:110,maxHp:110},{type:'star',x:7,y:1,hp:110,maxHp:110},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'star',x:4,y:5,hp:110,maxHp:110},{type:'axe',x:4,y:7,hp:130,maxHp:130}]},
     {name:'極3b',size:9,playerStart:[4,7],exit:[4,0],pillars:[[3,3],[5,3],[3,5],[5,5],[1,1],[7,1]],enemies:[{type:'star',x:2,y:2,hp:110,maxHp:110},{type:'star',x:6,y:2,hp:110,maxHp:110},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'star',x:2,y:6,hp:90,maxHp:90},{type:'star',x:6,y:6,hp:90,maxHp:90}]},
     {name:'極3c',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,3],[2,6],[6,6],[0,2],[8,2]],enemies:[{type:'star',x:1,y:1,hp:130,maxHp:130},{type:'star',x:7,y:1,hp:130,maxHp:130},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'axe',x:4,y:6,hp:130,maxHp:130}]},
    ]},
-  {id:'d98',diff:98,name:'完全包囲',desc:'d100直前。HP+65の強化敵。',mapSize:9,roomCount:5,senseRange:10,
+  {id:'d98',category:'main',diff:98,name:'完全包囲',desc:'d100直前。HP+65の強化敵。',mapSize:9,roomCount:5,senseRange:10,
    diffLabel:'💀💀💀💀💀💀★',diffClass:'diff-7',
    rooms:[
     {name:'極4a',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,4],[2,6],[6,6]],enemies:[{type:'star',x:1,y:1,hp:125,maxHp:125},{type:'star',x:7,y:1,hp:125,maxHp:125},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'star',x:4,y:5,hp:125,maxHp:125},{type:'axe',x:4,y:7,hp:145,maxHp:145}]},
     {name:'極4b',size:9,playerStart:[4,7],exit:[4,0],pillars:[[3,3],[5,3],[3,5],[5,5],[1,1],[7,1]],enemies:[{type:'star',x:2,y:2,hp:125,maxHp:125},{type:'star',x:6,y:2,hp:125,maxHp:125},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'star',x:2,y:6,hp:105,maxHp:105},{type:'star',x:6,y:6,hp:105,maxHp:105}]},
     {name:'極4c',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,3],[2,6],[6,6],[0,2],[8,2]],enemies:[{type:'star',x:1,y:1,hp:145,maxHp:145},{type:'star',x:7,y:1,hp:145,maxHp:145},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'axe',x:4,y:6,hp:145,maxHp:145}]},
    ]},
-  {id:'d99',diff:99,name:'最終門前',desc:'d100直前。HP+80の強化敵。',mapSize:9,roomCount:5,senseRange:11,
+  {id:'d99',category:'main',diff:99,name:'第18番　最終門前',desc:'d100直前。HP+80の強化敵。',mapSize:9,roomCount:5,senseRange:11,
    diffLabel:'💀💀💀💀💀💀★',diffClass:'diff-7',
    rooms:[
     {name:'極5a',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,4],[2,6],[6,6]],enemies:[{type:'star',x:1,y:1,hp:140,maxHp:140},{type:'star',x:7,y:1,hp:140,maxHp:140},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'star',x:4,y:5,hp:140,maxHp:140},{type:'axe',x:4,y:7,hp:160,maxHp:160}]},
     {name:'極5b',size:9,playerStart:[4,7],exit:[4,0],pillars:[[3,3],[5,3],[3,5],[5,5],[1,1],[7,1]],enemies:[{type:'star',x:2,y:2,hp:140,maxHp:140},{type:'star',x:6,y:2,hp:140,maxHp:140},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'star',x:2,y:6,hp:120,maxHp:120},{type:'star',x:6,y:6,hp:120,maxHp:120}]},
     {name:'極5c',size:9,playerStart:[4,7],exit:[4,0],pillars:[[2,2],[6,2],[4,3],[2,6],[6,6],[0,2],[8,2]],enemies:[{type:'star',x:1,y:1,hp:160,maxHp:160},{type:'star',x:7,y:1,hp:160,maxHp:160},{type:'bow',x:3,y:1,hp:25,maxHp:25},{type:'bow',x:5,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'axe',x:4,y:6,hp:160,maxHp:160}]},
    ]},
-  {id:'d100',diff:100,name:'真・煉獄',desc:'全てを凌ぐ最終試練。ここを制する者は殿堂入り。',mapSize:9,roomCount:5,senseRange:8,
+  {id:'d100',category:'main',diff:100,name:'第19番　真・煉獄',desc:'全てを凌ぐ最終試練。ここを制する者は殿堂入り。',mapSize:9,roomCount:5,senseRange:8,
    diffLabel:'💀💀💀💀💀💀💀',diffClass:'diff-hard',
    rooms:[
     {name:'絶対絶命',size:9,playerStart:[4,7],exit:[4,0],pillars:[[1,1],[7,1],[1,7],[7,7],[4,2],[4,6],[2,4],[6,4]],enemies:[{type:'star',x:2,y:2,hp:60,maxHp:60},{type:'star',x:6,y:2,hp:60,maxHp:60},{type:'bow',x:4,y:1,hp:25,maxHp:25},{type:'bow',x:0,y:4,hp:25,maxHp:25},{type:'bow',x:8,y:4,hp:25,maxHp:25},{type:'star',x:2,y:6,hp:60,maxHp:60},{type:'star',x:6,y:6,hp:60,maxHp:60}]},
@@ -1802,25 +1745,20 @@ function _dbPush(path,data){
   return fetch(DB_URL+path+'.json',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).catch(()=>{});
 }
 
-// ===== ゲーム難易度 =====
-function getGameDiff(){ return localStorage.getItem('sq_diff')||''; }
-function saveGameDiff(d){ localStorage.setItem('sq_diff',d); }
-let gameDiff='normal'; // 現在の難易度
-let _selectedDiff=''; // ニックネーム画面での選択中
+// ===== ゲーム難易度（廃止・内部互換用） =====
+// 難易度選択は廃止。タイマー制は特定ダンジョンで個別に有効化予定。
+let gameDiff='normal'; // 内部互換用（タイマー制は常に無効）
+function getGameDiff(){ return 'normal'; }
+function saveGameDiff(d){ /* 廃止 */ }
+function _applyDiff(d){ gameDiff='normal'; }
 
-function selectDiff(d){
-  _selectedDiff=d;
-  document.querySelectorAll('.diff-card').forEach(c=>{
-    c.classList.toggle('selected',c.dataset.diff===d);
-  });
+function onNickInput(){
+  const val=(document.getElementById('nick-input-field')?.value||'').trim();
   const btn=document.getElementById('nick-submit-btn');
-  if(btn){btn.style.opacity='1';btn.style.pointerEvents='auto';}
-}
-
-function _applyDiff(d){
-  gameDiff=d||'normal';
-  // イージー・ノーマル・ハードはタイマーシステム無効化
-  // インポッシブルのみ1秒ターン制
+  if(btn){
+    btn.style.opacity=val?'1':'0.4';
+    btn.style.pointerEvents=val?'auto':'none';
+  }
 }
 
 // ===== データリセット =====
@@ -1856,10 +1794,7 @@ function submitNick(){
   const input=document.getElementById('nick-input-field');
   const val=(input?input.value:'').trim();
   if(!val){ if(input)input.style.borderColor='#E05A3A'; return; }
-  if(!_selectedDiff){ return; } // 難易度未選択
   saveNick(val);
-  saveGameDiff(_selectedDiff);
-  _applyDiff(_selectedDiff);
   document.getElementById('nick-screen').classList.remove('open');
   _saveRanking(0);
   document.getElementById('pw-screen').classList.remove('hidden');
@@ -1944,30 +1879,75 @@ function closeHof(){
 // ===== ダンジョン選択リスト描画 =====
 let _dungeonPage=0;
 const DUNGEON_PAGE_SIZE=10;
+let _dungeonTab='main';
+window._dungeonExpMult=1; // 'main' | 'exp' | 'week'
+
+// 曜日名
+const WEEK_NAMES=['日曜','月曜','火曜','水曜','木曜','金曜','土曜'];
+const WEEK_COLORS=['#E07020','#7DC4F8','#E05A3A','#1D9E75','#c8a85a','#aaaaff','#E090C0'];
+
+function switchDungeonTab(tab){
+  _dungeonTab=tab;
+  _dungeonPage=0;
+  document.querySelectorAll('.dungeon-tab').forEach(b=>b.classList.remove('active'));
+  const tabEl=document.getElementById('tab-'+tab);
+  if(tabEl)tabEl.classList.add('active');
+
+  const titleEl=document.getElementById('dungeon-tab-title');
+  const descEl=document.getElementById('dungeon-tab-desc');
+  if(tab==='main'){
+    if(titleEl)titleEl.textContent='メインダンジョン';
+    if(descEl)descEl.style.display='none';
+  } else if(tab==='exp'){
+    if(titleEl)titleEl.textContent='経験値ダンジョン';
+    if(descEl){descEl.style.display='';descEl.textContent='クリアするとEXP×4（難易度×4）獲得できる特別なダンジョン。';}
+  } else if(tab==='week'){
+    if(titleEl)titleEl.textContent='曜日ダンジョン';
+    if(descEl){descEl.style.display='';descEl.textContent='今日の曜日に対応したダンジョン。毎日内容が変わる。クリアすると特別EXPを獲得。';}
+  }
+  renderDungeonList();
+}
 
 function renderDungeonList(){
   const list=document.getElementById('dungeon-list');
   const pageBtns=document.getElementById('dungeon-page-btns');
   if(!list)return;
   const unlocked=getUnlocked();
+  const today=new Date().getDay(); // 0=日〜6=土
 
-  // 解放済みダンジョンのみ
-  const visibleDungeons=DUNGEON_ALL.filter(d=>unlocked.includes(d.id));
+  let visibleDungeons=[];
 
-  // ページ計算
+  if(_dungeonTab==='main'){
+    // メイン: categoryが'main'のもの、解放済みのみ
+    visibleDungeons=DUNGEON_ALL.filter(d=>d.category==='main'&&unlocked.includes(d.id));
+  } else if(_dungeonTab==='exp'){
+    // 経験値: categoryが'exp'のもの（常時解放・いつでも遊べる）
+    visibleDungeons=DUNGEON_ALL.filter(d=>d.category==='exp');
+  } else if(_dungeonTab==='week'){
+    // 曜日: 土日のみ解放（today===0=日, today===6=土）
+    const isWeekend=(today===0||today===6);
+    if(isWeekend){
+      const weekDungeons=DUNGEON_ALL.filter(d=>d.category==='week');
+      // 土=1個目、日=2個目
+      const idx=today===6?0:1;
+      const todayDungeon=weekDungeons[idx%weekDungeons.length];
+      if(todayDungeon)visibleDungeons=[todayDungeon];
+    }
+    // 平日は空（closed表示）
+  }
+
+  // ページ計算（メインのみページネーション）
   const totalPages=Math.max(1,Math.ceil(visibleDungeons.length/DUNGEON_PAGE_SIZE));
   _dungeonPage=Math.min(_dungeonPage,totalPages-1);
-
-  // ページボタン生成
   if(pageBtns){
     pageBtns.innerHTML='';
-    if(totalPages>1){
+    if(_dungeonTab==='main'&&totalPages>1){
       for(let p=0;p<totalPages;p++){
         const btn=document.createElement('button');
         btn.className='dungeon-page-btn'+(p===_dungeonPage?' active':'');
-        const startDiff=visibleDungeons[p*DUNGEON_PAGE_SIZE]?.diff??'';
-        const endDiff=visibleDungeons[Math.min((p+1)*DUNGEON_PAGE_SIZE-1,visibleDungeons.length-1)]?.diff??'';
-        btn.textContent=startDiff+(startDiff!==endDiff?'〜'+endDiff:'');
+        const s=visibleDungeons[p*DUNGEON_PAGE_SIZE]?.diff??'';
+        const e2=visibleDungeons[Math.min((p+1)*DUNGEON_PAGE_SIZE-1,visibleDungeons.length-1)]?.diff??'';
+        btn.textContent=s+(s!==e2?'〜'+e2:'');
         btn.dataset.page=p;
         btn.onclick=()=>{_dungeonPage=p;renderDungeonList();};
         pageBtns.appendChild(btn);
@@ -1975,28 +1955,63 @@ function renderDungeonList(){
     }
   }
 
-  // ページ内のダンジョンのみ表示
   const start=_dungeonPage*DUNGEON_PAGE_SIZE;
-  const pageItems=visibleDungeons.slice(start,start+DUNGEON_PAGE_SIZE);
+  const pageItems=_dungeonTab==='main'?visibleDungeons.slice(start,start+DUNGEON_PAGE_SIZE):visibleDungeons;
 
   list.innerHTML='';
-  pageItems.forEach(d=>{
+
+  if(_dungeonTab==='week'&&visibleDungeons.length>0){
+    // 曜日ダンジョン: 今日の曜日を大きく表示
+    const todayLabel=document.createElement('div');
+    todayLabel.style.cssText='width:100%;max-width:360px;text-align:center;font-size:13px;font-weight:700;padding:8px;border-radius:8px;margin-bottom:8px;background:rgba(200,168,90,0.08);border:1px solid rgba(200,168,90,0.2);color:'+WEEK_COLORS[today]+';';
+    todayLabel.textContent=(today===6?'今日は土曜':'今日は日曜')+'のダンジョン（EXP×10）';
+    list.appendChild(todayLabel);
+  }
+
+  if(pageItems.length===0){
+    const empty=document.createElement('div');
+    empty.style.cssText='text-align:center;color:#5a5a54;font-size:12px;padding:32px;';
+    if(_dungeonTab==='week'){
+      const isWeekend=(today===0||today===6);
+      empty.textContent=isWeekend?'今日の曜日ダンジョンはありません。':'曜日ダンジョンは土日のみ開催！（土曜・日曜に挑戦しよう）';
+      
+    } else {
+      empty.textContent=_dungeonTab==='main'?'まだダンジョンが解放されていません。':'ダンジョンがありません。';
+    }
+    list.appendChild(empty);
+    return;
+  }
+
+  pageItems.forEach((d,idx)=>{
     const card=document.createElement('div');
     card.className='dungeon-card';
     card.dataset.id=d.id;
-    // 通し番号（tutorialは0扱い、hardはD70）
-    const numIdx=DUNGEON_ALL.indexOf(d);
-    const numLabel=d.id==='tutorial'?'入門':d.id==='hard'?'D70':(numIdx>=0?'D'+d.diff:'');
+    // 番号
+    let numLabel='';
+    if(_dungeonTab==='main'){
+      const mainDungeons=DUNGEON_ALL.filter(dd=>dd.category==='main');
+      const mainIdx=mainDungeons.indexOf(d)+1;
+      numLabel=d.id==='tutorial'?'入門':mainIdx>0?mainIdx+'番目':'';
+    } else if(_dungeonTab==='exp'){
+      numLabel='EXP '+String(idx+1);
+    } else if(_dungeonTab==='week'){
+      numLabel='今日 '+WEEK_NAMES[today];
+    }
+    // 経験値・曜日ダンジョンはEXP報酬を表示
+    let extraInfo='';
+    if(_dungeonTab==='exp') extraInfo='<div style="font-size:11px;color:#c8a85a;margin-top:4px;">✨ EXP ×2 獲得</div>';
+    if(_dungeonTab==='week') extraInfo='<div style="font-size:11px;color:'+WEEK_COLORS[today]+';margin-top:4px;">📅 土日限定 EXP ×10</div>';
+
     card.innerHTML=
       '<div class="dungeon-card-num">'+numLabel+'</div>'+
       '<div class="dungeon-card-name">'+d.name+'</div>'+
       '<span class="dungeon-card-diff '+d.diffClass+'">'+d.diffLabel+'</span>'+
-      '<div class="dungeon-card-desc">'+d.desc.replace(/\n/g,'<br>')+'</div>';
-    card.onclick=()=>selectDungeon(d.id);
+      '<div class="dungeon-card-desc">'+d.desc.replace(/\n/g,'<br>')+'</div>'+
+      extraInfo;
+    card.onclick=()=>selectDungeon(d.id,{tab:_dungeonTab});
     list.appendChild(card);
   });
 
-  // GPカーソル初期化
   _gpCursor.dungeon=0;
   _gpCursor.dungeonInPage=true;
   _gpApplyDungeonCursor();
@@ -2023,112 +2038,182 @@ function getEnhLv(key){ return parseInt(localStorage.getItem('sq_enh_'+key)||'0'
 function saveEnhLv(key,v){ localStorage.setItem('sq_enh_'+key,v.toString()); }
 
 // 強化コスト定義
-const ENH_DEF={
-  // HP: Lv1-50は+20/Lv、Lv51-999は×1.01/Lv複利
-  hp:    {cost:20, maxLv:999, label:'最大HP強化',
-    apply:()=>{ player.maxHp=_enhHpVal(); player.hp=Math.min(player.hp,player.maxHp); updHpBar(); }},
-  // ATK: Lv1-50は+3/Lv、Lv51-999は×1.01複利
-  atk:   {cost:15, maxLv:999, label:'攻撃力強化', apply:()=>{}},
-  // ブレ低減: Lv1-50は-1/Lv、Lv51-999は×0.99複利（ブレが縮む）
-  spread:{cost:10, maxLv:999, label:'ブレ低減',   apply:()=>{}},
-  // 回復: Lv1-50は+5/Lv、Lv51-999は×1.02複利
-  regen: {cost:30, maxLv:999, label:'戦闘後HP回復',apply:()=>{}},
+// ===== 武器強化システム =====
+// 武器ごとに固有の強化項目を持つ
+// ストレージキー: sq_wpnenh_{weaponId}_{statKey}
+
+const WEAPON_ENH_DEF = {
+  fu:  [
+    {key:'atk',   label:'攻撃力',     desc:'前方1マスの威力を上げる',    base:2,  inc:0.04, maxLv:99, unit:'ATK+'},
+    {key:'spread',label:'ブレ低減',   desc:'攻撃力のばらつきを減らす',   base:1,  inc:0.02, maxLv:99, unit:'ブレ-'},
+    {key:'regen', label:'戦闘後回復', desc:'部屋クリア後にHPを回復する', base:3,  inc:0.06, maxLv:99, unit:'回復+'},
+  ],
+  kyo: [
+    {key:'atk',   label:'攻撃力',     desc:'前方2マスの威力を上げる',    base:1.5,inc:0.03, maxLv:99, unit:'ATK+'},
+    {key:'range', label:'射程延長',   desc:'射程を1マス延長する',         base:5,  inc:0.10, maxLv:5,  unit:'射程+'},
+    {key:'spread',label:'ブレ低減',   desc:'攻撃力のばらつきを減らす',   base:1,  inc:0.02, maxLv:99, unit:'ブレ-'},
+  ],
+  kei: [
+    {key:'atk',   label:'攻撃力',     desc:'跳び攻撃の威力を上げる',     base:2,  inc:0.04, maxLv:99, unit:'ATK+'},
+    {key:'spread',label:'ブレ低減',   desc:'攻撃力のばらつきを減らす',   base:1,  inc:0.02, maxLv:99, unit:'ブレ-'},
+    {key:'regen', label:'戦闘後回復', desc:'部屋クリア後にHPを回復する', base:3,  inc:0.06, maxLv:99, unit:'回復+'},
+  ],
+  hi:  [
+    {key:'atk',   label:'攻撃力',     desc:'縦横攻撃の威力を上げる',     base:1.5,inc:0.03, maxLv:99, unit:'ATK+'},
+    {key:'range', label:'射程延長',   desc:'射程を1マス延長する',         base:5,  inc:0.10, maxLv:3,  unit:'射程+'},
+    {key:'spread',label:'ブレ低減',   desc:'攻撃力のばらつきを減らす',   base:1,  inc:0.02, maxLv:99, unit:'ブレ-'},
+  ],
+  kaku:[
+    {key:'atk',   label:'攻撃力',     desc:'斜め攻撃の威力を上げる',     base:1.5,inc:0.03, maxLv:99, unit:'ATK+'},
+    {key:'range', label:'射程延長',   desc:'射程を1マス延長する',         base:5,  inc:0.10, maxLv:3,  unit:'射程+'},
+    {key:'spread',label:'ブレ低減',   desc:'攻撃力のばらつきを減らす',   base:1,  inc:0.02, maxLv:99, unit:'ブレ-'},
+  ],
+  gin: [
+    {key:'atk',   label:'攻撃力',     desc:'多方向攻撃の威力を上げる',   base:1,  inc:0.02, maxLv:99, unit:'ATK+'},
+    {key:'spread',label:'ブレ低減',   desc:'攻撃力のばらつきを減らす',   base:1,  inc:0.02, maxLv:99, unit:'ブレ-'},
+    {key:'regen', label:'戦闘後回復', desc:'部屋クリア後にHPを回復する', base:3,  inc:0.06, maxLv:99, unit:'回復+'},
+  ],
 };
 
-// 強化値計算（前半は加算、後半は乗算複利）
-function _enhHpVal(){
-  const lv=getEnhLv('hp');
-  if(lv<=50) return 100+lv*20;
-  return Math.round((100+50*20)*Math.pow(1.01,lv-50));
+// ===== 武器庫ストレージ =====
+function getWpnCount(id){ return parseInt(localStorage.getItem('sq_wpn_'+id)||'0'); }
+function saveWpnCount(id,v){ localStorage.setItem('sq_wpn_'+id,Math.max(0,v).toString()); }
+function addWpnToVault(id){
+  if(!id||!WDEFS[id])return;
+  saveWpnCount(id, getWpnCount(id)+1);
 }
-function _enhAtkFlat(){
-  const lv=getEnhLv('atk');
-  if(lv<=50) return lv*3;
-  return Math.round(50*3*Math.pow(1.01,lv-50));
-}
-function _enhSpreadFlat(){
-  const lv=getEnhLv('spread');
-  if(lv<=50) return lv;
-  return Math.round(50*Math.pow(1.01,lv-50));
-}
-function _enhRegenVal(){
-  const lv=getEnhLv('regen');
-  if(lv<=50) return lv*5;
-  return Math.round(50*5*Math.pow(1.02,lv-50));
+function getWpnSynth(id){ return parseInt(localStorage.getItem('sq_synth_'+id)||'0'); }
+function saveWpnSynth(id,v){ localStorage.setItem('sq_synth_'+id,Math.max(0,v).toString()); }
+
+// ダンジョン持込武器の管理
+// _vaultWeapon: 武器庫から持ち込んだ自前武器（選ばれなかったら武器庫に戻す）
+let _vaultWeapon=null; // {id, ...} 武器庫から取り出した武器
+// _pendingVaultWeapons: 宝箱で出た・入れ替えで外した武器（クリアで武器庫へ）
+let _pendingVaultWeapons=[]; // クリア時に武器庫へ送る武器のid配列
+
+function _clearVaultState(){
+  _vaultWeapon=null;
+  _pendingVaultWeapons=[];
 }
 
-function enhance(key){
-  const def=ENH_DEF[key];
-  if(!def)return;
-  const lv=getEnhLv(key);
-  if(lv>=def.maxLv){ showMsg('これ以上強化できません。'); return; }
-  // コスト: Lv50まで線形増加、Lv51以降は×1.1複利（高Lvは高コスト）
-  const cost=lv<=50
-    ? def.cost+lv*Math.floor(def.cost*0.3)
-    : Math.round((def.cost+50*Math.floor(def.cost*0.3))*Math.pow(1.1,lv-50));
-  const exp=getExp();
-  if(exp<cost){ showMsg('EXPが足りません。（必要: '+cost+' EXP）'); return; }
-  saveExp(exp-cost);
-  saveEnhLv(key,lv+1);
-  if(def.apply)def.apply();
-  renderEnhance();
-  const newLv=lv+1;
-  let valueStr='';
-  if(key==='hp')valueStr=' → HP上限: '+_enhHpVal();
-  else if(key==='atk')valueStr=' → 攻撃力: +'+_enhAtkFlat();
-  else if(key==='spread')valueStr=' → ブレ: -'+_enhSpreadFlat();
-  else if(key==='regen')valueStr=' → 回復: +'+_enhRegenVal();
-  showMsg(def.label+' Lv.'+newLv+'に強化！'+valueStr+'（残りEXP: '+getExp()+'）');
+function getWpnEnhLv(wpnId, statKey){
+  return parseInt(localStorage.getItem('sq_wpnenh_'+wpnId+'_'+statKey)||'0');
+}
+function saveWpnEnhLv(wpnId, statKey, v){
+  localStorage.setItem('sq_wpnenh_'+wpnId+'_'+statKey, v.toString());
 }
 
-// 強化ボーナスをプレイヤーに適用
+// 武器ごとの強化ボーナス取得
+function getWpnAtkBonus(wpnId){
+  const defs=WEAPON_ENH_DEF[wpnId];
+  if(!defs)return 0;
+  const def=defs.find(d=>d.key==='atk');
+  if(!def)return 0;
+  const lv=getWpnEnhLv(wpnId,'atk');
+  return lv*3;
+}
+function getWpnSpreadReduction(wpnId){
+  const defs=WEAPON_ENH_DEF[wpnId];
+  if(!defs)return 0;
+  const def=defs.find(d=>d.key==='spread');
+  if(!def)return 0;
+  return getWpnEnhLv(wpnId,'spread');
+}
+function getWpnRegenVal(wpnId){
+  const defs=WEAPON_ENH_DEF[wpnId];
+  if(!defs)return 0;
+  const def=defs.find(d=>d.key==='regen');
+  if(!def)return 0;
+  return getWpnEnhLv(wpnId,'regen')*5;
+}
+function getWpnRangeBonus(wpnId){
+  const defs=WEAPON_ENH_DEF[wpnId];
+  if(!defs)return 0;
+  const def=defs.find(d=>d.key==='range');
+  if(!def)return 0;
+  return getWpnEnhLv(wpnId,'range');
+}
+
+// 後方互換: genWeapon/applyEnhancements用（装備中武器のボーナスを返す）
+function getAtkBonus(){
+  if(player.weapon)return getWpnAtkBonus(player.weapon.id);
+  return 0;
+}
+function getSpreadReduction(){
+  if(player.weapon)return getWpnSpreadReduction(player.weapon.id);
+  return 0;
+}
 function applyEnhancements(){
-  player.maxHp=_enhHpVal();
+  // 武器強化移行後はプレイヤーHPは固定100
+  player.maxHp=100;
   player.hp=Math.min(player.hp,player.maxHp);
 }
 
-// genWeapon に強化ボーナス適用
-function getAtkBonus(){ return _enhAtkFlat(); }
-function getSpreadReduction(){ return _enhSpreadFlat(); }
+// 選択中の武器ID（強化画面用）
+let _enhSelWpn=Object.keys(WDEFS)[0];
+
+function enhanceWpn(wpnId, statKey){
+  const defs=WEAPON_ENH_DEF[wpnId];
+  if(!defs)return;
+  const def=defs.find(d=>d.key===statKey);
+  if(!def)return;
+  const lv=getWpnEnhLv(wpnId,statKey);
+  if(lv>=def.maxLv){showMsg('これ以上強化できません。');return;}
+  const cost=Math.max(1,Math.round(def.base+lv*def.inc));
+  const exp=getExp();
+  if(exp<cost){showMsg('EXPが足りません。（必要: '+cost+' EXP）');return;}
+  saveExp(exp-cost);
+  saveWpnEnhLv(wpnId,statKey,lv+1);
+  renderEnhance();
+  showMsg(WDEFS[wpnId].name+' '+def.label+' Lv.'+(lv+1)+'に強化！（残りEXP: '+getExp()+'）');
+}
 
 function renderEnhance(){
   const exp=getExp();
   const disp=document.getElementById('enh-exp-disp');
   if(disp)disp.textContent='EXP: '+exp;
 
-  // 各強化の「現在値 / 次レベルの値」を計算するヘルパー
-  function _nextEnhHp(lv){ const n=lv+1; return n<=50?(100+n*20):Math.round((100+50*20)*Math.pow(1.01,n-50)); }
-  function _nextEnhAtk(lv){ const n=lv+1; return n<=50?n*3:Math.round(50*3*Math.pow(1.01,n-50)); }
-  function _nextEnhSpread(lv){ const n=lv+1; return n<=50?n:Math.round(50*Math.pow(1.01,n-50)); }
-  function _nextEnhRegen(lv){ const n=lv+1; return n<=50?n*5:Math.round(50*5*Math.pow(1.02,n-50)); }
+  // 武器選択タブ
+  const sel=document.getElementById('enh-wpn-selector');
+  if(sel){
+    sel.innerHTML='';
+    Object.keys(WDEFS).forEach(id=>{
+      const btn=document.createElement('button');
+      btn.style.cssText='padding:5px 12px;border-radius:6px;border:1px solid '+(id===_enhSelWpn?'var(--player)':'#444')+';background:'+(id===_enhSelWpn?'rgba(29,158,117,0.12)':'#252520')+';color:'+(id===_enhSelWpn?'var(--player)':'#8a8a80')+';font-size:13px;font-weight:600;cursor:pointer;';
+      btn.textContent=WDEFS[id].name;
+      btn.onclick=()=>{_enhSelWpn=id;renderEnhance();};
+      sel.appendChild(btn);
+    });
+  }
 
-  const items=[
-    {key:'hp', lvEl:'enh-lv-hp', btnEl:'enh-btn-hp',
-     lvText:()=>{const lv=getEnhLv('hp');const cur=_enhHpVal();const nxt=_nextEnhHp(lv);
-       return 'Lv.'+lv+' ｜ 現在HP上限: '+cur+(lv<999?' → 次: '+nxt:'')+(lv>50?' [×1.01複利]':'');}},
-    {key:'atk', lvEl:'enh-lv-atk', btnEl:'enh-btn-atk',
-     lvText:()=>{const lv=getEnhLv('atk');const cur=_enhAtkFlat();const nxt=_nextEnhAtk(lv);
-       return 'Lv.'+lv+' ｜ 現在ボーナス: +'+cur+(lv<999?' → 次: +'+nxt:'')+(lv>50?' [×1.01複利]':'');}},
-    {key:'spread', lvEl:'enh-lv-spread', btnEl:'enh-btn-spread',
-     lvText:()=>{const lv=getEnhLv('spread');const cur=_enhSpreadFlat();const nxt=_nextEnhSpread(lv);
-       return 'Lv.'+lv+' ｜ 現在ブレ低減: -'+cur+(lv<999?' → 次: -'+nxt:'')+(lv>50?' [×1.01複利]':'');}},
-    {key:'regen', lvEl:'enh-lv-regen', btnEl:'enh-btn-regen',
-     lvText:()=>{const lv=getEnhLv('regen');const cur=_enhRegenVal();const nxt=_nextEnhRegen(lv);
-       return 'Lv.'+lv+' ｜ 現在回復量: +'+cur+(lv<999?' → 次: +'+nxt:'')+(lv>50?' [×1.02複利]':'');}},
-  ];
-  items.forEach(item=>{
-    const def=ENH_DEF[item.key];
-    const lv=getEnhLv(item.key);
-    const cost=lv<=50
-      ? def.cost+lv*Math.floor(def.cost*0.3)
-      : Math.round((def.cost+50*Math.floor(def.cost*0.3))*Math.pow(1.1,lv-50));
-    const lEl=document.getElementById(item.lvEl);
-    const bEl=document.getElementById(item.btnEl);
-    if(lEl)lEl.textContent=item.lvText();
-    if(bEl){
-      if(lv>=def.maxLv){ bEl.textContent='Lv.MAX(999)'; bEl.disabled=true; }
-      else { bEl.textContent=cost+' EXP'; bEl.disabled=(exp<cost); }
-    }
+  // 強化項目
+  const rows=document.getElementById('enh-wpn-rows');
+  if(!rows)return;
+  rows.innerHTML='';
+  const defs=WEAPON_ENH_DEF[_enhSelWpn]||[];
+  const wdef=WDEFS[_enhSelWpn];
+  // ヘッダー
+  const hdr=document.createElement('div');
+  hdr.style.cssText='font-size:11px;font-weight:700;color:#5a5a54;letter-spacing:0.2em;margin:10px 0 6px;';
+  hdr.textContent=wdef.name+'（'+RARITY_LABEL[wdef.rarity]+'）の強化';
+  rows.appendChild(hdr);
+
+  defs.forEach(def=>{
+    const lv=getWpnEnhLv(_enhSelWpn,def.key);
+    const cost=Math.max(1,Math.round(def.base+lv*def.inc));
+    const nextVal=(def.key==='atk'?(lv+1)*3:def.key==='spread'?(lv+1):def.key==='regen'?(lv+1)*5:(lv+1));
+    const row=document.createElement('div');
+    row.className='enh-row';
+    row.innerHTML=
+      '<div class="enh-row-info">'+
+        '<div class="enh-row-name">'+def.label+'</div>'+
+        '<div class="enh-row-desc">'+def.desc+'</div>'+
+        '<div class="enh-row-lv">Lv.'+lv+(lv<def.maxLv?' → 次: '+def.unit+nextVal:'')+'　(MAX: '+def.maxLv+')</div>'+
+      '</div>'+
+      '<button class="enh-btn"'+(lv>=def.maxLv?' disabled':exp<cost?' disabled':'')+' onclick="enhanceWpn(''+_enhSelWpn+'',''+def.key+'')">'+
+        (lv>=def.maxLv?'MAX':cost+' EXP')+
+      '</button>';
+    rows.appendChild(row);
   });
 }
 
@@ -2175,7 +2260,7 @@ let logEntries=[];
 // 1秒ターンタイマー
 let turnTimer=null, pendingAction=null, turnPhase='idle'; // idle/waiting
 let _deathTimer=null; // gameOver遅延タイマー
-let weaponRotateTimer=null, wpnRotateIdx=0, wpnRotateList=[];
+// weaponRotateTimer廃止済み（武器選択はランダム3択に変更）
 // オプション設定
 let opt_skip_turn=false, opt_timer_beat=false, opt_4beat=false, opt_colorblind=false;
 let opt_timer_style='circle'; // 'circle' | 'bar' | 'twin'
@@ -2229,15 +2314,33 @@ const HARD_ROOM_LABELS=['安全な部屋','の間 1','の間 2','最終試練'];
 // ===== 武器生成 =====
 function genWeapon(id){
   const d=WDEFS[id];
-  const atkBonus=getAtkBonus();
-  const spreadRed=Math.min(getSpreadReduction(), Math.floor(d.spread/2));
+  // 武器固有の強化ボーナスを適用
+  const atkBonus=getWpnAtkBonus(id);
+  const spreadRed=Math.min(getWpnSpreadReduction(id), Math.floor(d.spread/2));
+  const rangeBonus=getWpnRangeBonus(id);
   const effectiveSpread=Math.max(1,d.spread-spreadRed);
   const bonus=Math.floor(Math.random()*effectiveSpread)-Math.floor(effectiveSpread/2);
   const effectiveBase=d.baseAtk+atkBonus;
-  return {id,name:d.name,atk:effectiveBase+bonus,baseAtk:effectiveBase,bonus,rarity:d.rarity,range:d.range,desc:d.desc};
+  // 射程延長: rangeが2次元配列なので最大距離を伸ばす
+  let effectiveRange=d.range;
+  if(rangeBonus>0){
+    effectiveRange=d.range.map(([dx,dy])=>{
+      const dist=Math.max(Math.abs(dx),Math.abs(dy));
+      if(dist===0)return [dx,dy];
+      const sx=dx===0?0:Math.sign(dx), sy=dy===0?0:Math.sign(dy);
+      // 最大射程のマスを延長
+      const maxD=Math.max(...d.range.map(([x,y])=>Math.max(Math.abs(x),Math.abs(y))));
+      if(dist===maxD) return [[dx,dy],[sx*(dist+rangeBonus),sy*(dist+rangeBonus)]];
+      return [[dx,dy]];
+    }).flat();
+    // 重複排除
+    const seen=new Set();
+    effectiveRange=effectiveRange.filter(([x,y])=>{const k=x+','+y;if(seen.has(k))return false;seen.add(k);return true;});
+  }
+  return {id,name:d.name,atk:effectiveBase+bonus,baseAtk:effectiveBase,bonus,rarity:d.rarity,range:effectiveRange,desc:d.desc};
 }
 function pickWeapons(){
-  return Object.keys(WDEFS).sort(()=>Math.random()-0.5).slice(0,2).map(genWeapon);
+  return Object.keys(WDEFS).sort(()=>Math.random()-0.5).slice(0,3).map(genWeapon);
 }
 
 // ===== マップ初期化 =====
@@ -2732,8 +2835,7 @@ function doAttack(){
 // ===== 宝箱 =====
 function pickChestWeapon(){
   const r=Math.random();
-  // イージーはレジェンド率アップ
-  const rarity= gameDiff==='easy'?(r<0.5?'L':r<0.8?'U':'N'):(r<0.3?'L':r<0.8?'U':'N');
+  const rarity=r<0.3?'L':r<0.8?'U':'N';
   const pool=Object.keys(WDEFS).filter(k=>WDEFS[k].rarity===rarity);
   const id=pool[Math.floor(Math.random()*pool.length)]||Object.keys(WDEFS)[0];
   return genWeapon(id);
@@ -2755,28 +2857,31 @@ function openChest(){
   box.style.maxHeight='60vh';
 
   if(!player.weapon){
-    sub.textContent='宝箱から武器が'+count+'個出てきた。1つを選べ。';
+    sub.textContent='宝箱から武器が'+count+'個出てきた。1つを選べ。選ばなかった武器は武器庫へ。';
     newWeapons.forEach(w=>{
       box.appendChild(makeWeaponCard(w,'選ぶ',()=>{
+        // 選ばなかった他の武器は武器庫へ
+        newWeapons.forEach(ow=>{ if(ow!==w) addWpnToVault(ow.id); });
         player.weapon=w;
         overlay.style.display='none';
         updWpn();
-        showMsg(w.name+'を入手した！');
+        showMsg(w.name+'を入手した！選ばなかった武器は武器庫に送られた。');
         if(phase==='battle'&&enemies.length>0)startTurnTimer();
       }));
     });
   } else {
-    sub.textContent='宝箱から武器が'+count+'個出てきた。今の武器と合わせてどれを持つか選べ。';
-    // 今の武器も選択肢に加える
+    sub.textContent='宝箱から武器が'+count+'個出てきた。どれを持つか選べ。選ばなかった武器は武器庫へ。';
     const curWpn=player.weapon;
     const allWeapons=[curWpn,...newWeapons];
     allWeapons.forEach((w,i)=>{
       const isCurrent=i===0;
-      box.appendChild(makeWeaponCard(w, isCurrent?'今の武器を持ち続ける':'この武器を持つ', ()=>{
+      box.appendChild(makeWeaponCard(w, isCurrent?'今の武器を持ち続ける':'この武器に持ち替える', ()=>{
+        // 選ばなかった武器を全て武器庫へ
+        allWeapons.forEach(ow=>{ if(ow!==w) addWpnToVault(ow.id); });
         player.weapon=w;
         overlay.style.display='none';
         updWpn();
-        showMsg(isCurrent?'今の武器を選んだ。':w.name+'に持ち替えた！');
+        showMsg(isCurrent?'今の武器を持ち続ける。他の武器は武器庫へ。':w.name+'に持ち替えた！元の武器と選ばなかった武器は武器庫へ。');
         if(phase==='battle'&&enemies.length>0)startTurnTimer();
       }, isCurrent));
     });
@@ -2818,7 +2923,9 @@ function goNextRoom(){
     hardRoomIdx++;
     if(hardRoomIdx>=HARD_ROOMS.length){
       unlockNext('hard');
-      showMsg('全ての試練を乗り越えた！煉獄迷宮を制覇した！！');
+      if(player.weapon){ addWpnToVault(player.weapon.id); player.weapon=null; }
+      _clearVaultState();
+      showMsg('全ての試練を乗り越えた！煉獄迷宮を制覇した！！武器は武器庫に収納された。');
       return;
     }
     const room=HARD_ROOMS[hardRoomOrder[hardRoomIdx]];
@@ -2834,12 +2941,15 @@ function goNextRoom(){
       const clearedId = dng ? dng.id : 'd1';
       unlockNext(clearedId);
       // 経験値付与
-      _addExp(dng ? Math.max(5, dng.diff) : 5);
+      _addExp(Math.round((dng ? Math.max(5, dng.diff) : 5) * (window._dungeonExpMult||1)));
       // regen強化
-      const regenHp=_enhRegenVal();
+      const regenHp=player.weapon?getWpnRegenVal(player.weapon.id):0;
       if(regenHp>0){player.hp=Math.min(player.maxHp,player.hp+regenHp);updHpBar();}
+      // クリア→所持中の武器を武器庫へ
+      if(player.weapon){ addWpnToVault(player.weapon.id); player.weapon=null; }
+      _clearVaultState();
       const msg=dungeonType==='tutorial'?'チュートリアル完了！冒険の準備ができた！':
-        (dng?dng.name:'ダンジョン')+'をクリア！次のダンジョンが解放された！';
+        (dng?dng.name:'ダンジョン')+'をクリア！使った武器は武器庫に収納された。';
       showMsg(msg);
       setTimeout(()=>{
         document.getElementById('dungeon-select').classList.add('open');
@@ -2853,8 +2963,10 @@ function goNextRoom(){
       // 念のため: roomが見つからなければクリア扱い
       const clearedId = dng ? dng.id : 'd1';
       unlockNext(clearedId);
-      _addExp(dng ? Math.max(5, dng.diff) : 5);
-      showMsg((dng?dng.name:'ダンジョン')+'をクリア！');
+      _addExp(Math.round((dng ? Math.max(5, dng.diff) : 5) * (window._dungeonExpMult||1)));
+      if(player.weapon){ addWpnToVault(player.weapon.id); player.weapon=null; }
+      _clearVaultState();
+      showMsg((dng?dng.name:'ダンジョン')+'をクリア！使った武器は武器庫に収納された。');
       setTimeout(()=>{document.getElementById('dungeon-select').classList.add('open');renderDungeonList();},1500);
       return;
     }
@@ -2874,7 +2986,7 @@ function goNextRoom(){
   }
 }
 
-function startBattle(){initBattle();render();showMsg(dungeonType==='hard'?'煉獄へようこそ。生き延びろ。':'敵の部屋に入った！1秒毎にターンが進む。素早く行動しよう！');startTurnTimer();}
+function startBattle(){initBattle();render();showMsg(dungeonType==='hard'?'煉獄へようこそ。生き延びろ。':'敵の部屋に入った！');startTurnTimer();}
 
 // ===== 敵AI =====
 function mdist(ax,ay,bx,by){return Math.abs(ax-bx)+Math.abs(ay-by);}
@@ -3066,7 +3178,9 @@ function giveUp(){
   stopTimerDraw();
   gamePaused=false;
   phase='safe';
+  // 諦め→武器は消える（武器庫には戻らない）
   player.hp=player.maxHp;player.weapon=null;player.burnTurns=0;
+  _clearVaultState();
   enemies=[];fireTiles={};trapTiles={};
   renderDungeonList();
   document.getElementById('dungeon-select').classList.add('open');
@@ -3078,8 +3192,10 @@ function restartGame(){
   pendingAction=null;turnPhase='idle';
   stopTimerDraw();
   gamePaused=false;
-  phase='safe'; // safe にしてgameOver判定を無効化
+  phase='safe';
+  // ゲームオーバー→武器は消える（武器庫には戻らない）
   player.hp=player.maxHp;player.weapon=null;player.burnTurns=0;
+  _clearVaultState();
   enemies=[];fireTiles={};trapTiles={};
   logEntries=[];lastMsgText='';msgRepeatCount=1;
   const el=document.getElementById('msg-text');
@@ -3206,113 +3322,104 @@ function drawMiniRange(canvas,weapon){
 }
 
 function showWpnOverlay(){
-  wpnStocked=null;
-  _clearStock();
-  wpnRotateList=pickWeapons();
-  _renderWpnOverlay(wpnRotateList);
-  if(weaponRotateTimer) clearInterval(weaponRotateTimer);
-  weaponRotateTimer=setInterval(()=>{
-    wpnRotateList=pickWeapons();
-    _renderWpnOverlay(wpnRotateList);
-  },1000);
+  _clearVaultState();
+  // ランダム3本
+  const randoms=pickWeapons(); // 3本
+  // 武器庫から自前1本（EXP最多の武器を自動選択、未所持なら空）
+  let vaultWpn=null;
+  const vaultIds=Object.keys(WDEFS).filter(id=>getWpnCount(id)>0);
+  if(vaultIds.length>0){
+    // 強化レベルが最も高い武器を自動選択
+    const best=vaultIds.reduce((a,b)=>{
+      const la=getWpnEnhLv(a,'atk')+getWpnEnhLv(a,'spread')+getWpnEnhLv(a,'regen')+getWpnEnhLv(a,'range');
+      const lb=getWpnEnhLv(b,'atk')+getWpnEnhLv(b,'spread')+getWpnEnhLv(b,'regen')+getWpnEnhLv(b,'range');
+      return la>=lb?a:b;
+    });
+    vaultWpn=genWeapon(best);
+    _vaultWeapon=vaultWpn;
+  }
+  _renderWpnOverlay(randoms, vaultWpn);
   document.getElementById('weapon-overlay').style.display='flex';
 }
 
-let wpnStocked=null;
-
-function _stockWeapon(w){
-  wpnStocked=w;
-  const area=document.getElementById('wpn-stock-area');
-  const empty=document.getElementById('wpn-stock-empty');
-  const info=document.getElementById('wpn-stock-info');
-  const sc=document.getElementById('wpn-stock-canvas');
-  const bs=w.bonus>0?'+'+w.bonus:w.bonus<0?''+w.bonus:'\xb10';
-  if(area) area.classList.add('has-stock');
-  if(empty) empty.style.display='none';
-  if(info) info.style.display='block';
-  if(sc) sc.style.display='block';
-  const sn=document.getElementById('wpn-stock-name');
-  const sa=document.getElementById('wpn-stock-atk');
-  if(sn) sn.textContent=w.name+' ('+RARITY_LABEL[w.rarity]+')';
-  if(sa) sa.textContent='\u653b\u6483\u529b '+w.atk+' ('+bs+')';
-  if(sc) requestAnimationFrame(()=>drawMiniRange(sc,w));
-}
-
-function _clearStock(){
-  wpnStocked=null;
-  const area=document.getElementById('wpn-stock-area');
-  if(area) area.classList.remove('has-stock');
-  const empty=document.getElementById('wpn-stock-empty');
-  if(empty) empty.style.display='';
-  const info=document.getElementById('wpn-stock-info');
-  if(info) info.style.display='none';
-  const sc=document.getElementById('wpn-stock-canvas');
-  if(sc) sc.style.display='none';
-}
-
-function onStockTap(){
-  if(!wpnStocked) return;
-  const bs=wpnStocked.bonus>0?'+'+wpnStocked.bonus:wpnStocked.bonus<0?''+wpnStocked.bonus:'\xb10';
-  const cn=document.getElementById('wpn-confirm-name');
-  const ca=document.getElementById('wpn-confirm-atk');
-  if(cn) cn.textContent=wpnStocked.name+' ('+RARITY_LABEL[wpnStocked.rarity]+')';
-  if(ca) ca.textContent='\u653b\u6483\u529b '+wpnStocked.atk+' ('+bs+')';
-  _gpCursor.confirm=0;
-  const yes=document.querySelector('.wpn-confirm-yes');
-  const no=document.querySelector('.wpn-confirm-no');
-  if(yes)yes.style.outline='2px solid var(--player)';
-  if(no)no.style.outline='';
-  document.getElementById('wpn-confirm').classList.add('open');
-}
-function confirmWeapon(){
-  if(!wpnStocked) return;
-  player.weapon=wpnStocked;
-  document.getElementById('wpn-confirm').classList.remove('open');
-  if(weaponRotateTimer){clearInterval(weaponRotateTimer);weaponRotateTimer=null;}
-  document.getElementById('weapon-overlay').style.display='none';
-  const w=wpnStocked;
-  _clearStock();
-  updWpn();
-  showMsg(w.name+'\u3092\u88c5\u5099\u3057\u305f\uff01\u4e0a\u306e\u90e8\u5c4b\u3078\u9032\u3082\u3046\u3002');
-}
-function cancelWeapon(){
-  document.getElementById('wpn-confirm').classList.remove('open');
-}
-
-function _renderWpnOverlay(weapons){
+function _renderWpnOverlay(randoms, vaultWpn){
   const box=document.getElementById('weapon-choices');
   box.innerHTML='';
-  weapons.forEach((w,idx)=>{
-    const card=document.createElement('div');
-    card.className='weapon-card rotating';
-    const bs=w.bonus>0?'+'+w.bonus:w.bonus<0?''+w.bonus:'0';
-    const bc=w.bonus>0?'stat-bonus':w.bonus<0?'stat-minus':'';
-    const cid='wc-'+idx;
-    card.innerHTML=
-      '<div style="display:flex;gap:10px;align-items:flex-start;">'+
-        '<div style="flex:1;min-width:0;">'+
-          '<div class="weapon-card-top"><span class="rarity-badge rarity-'+w.rarity+'">'+RARITY_LABEL[w.rarity]+'</span><span class="weapon-card-name">'+w.name+'</span></div>'+
-          '<div class="weapon-card-stats">攻撃力：<span class="stat-base">'+w.baseAtk+'</span> <span class="'+bc+'">('+bs+')</span> = <strong>'+w.atk+'</strong></div>'+
-          '<div class="weapon-card-range">'+w.desc+'</div>'+
-        '</div>'+
-        '<canvas id="'+cid+'" width="110" height="110" style="flex-shrink:0;image-rendering:pixelated;"></canvas>'+
-      '</div>';
-    card.addEventListener('pointerdown',(e)=>{ e.preventDefault(); _stockWeapon(w); });
-    card.addEventListener('click',(e)=>{ e.stopPropagation(); }); // clickの重複防止
-    box.appendChild(card);
-    requestAnimationFrame(()=>drawMiniRange(document.getElementById(cid),w));
+
+  // ラベル：ランダム3択
+  const randLabel=document.createElement('div');
+  randLabel.style.cssText='font-size:10px;font-weight:700;color:#8a8a80;letter-spacing:0.15em;margin-bottom:6px;';
+  randLabel.textContent='▼ 今回の武器（ランダム）';
+  box.appendChild(randLabel);
+
+  randoms.forEach((w,idx)=>{
+    box.appendChild(_makeWpnCard(w,'この武器で冒険する',()=>selectWeaponAndStart(w,false),false));
   });
-  // GPカーソルを再適用
+
+  // 自前武器
+  if(vaultWpn){
+    const vaultLabel=document.createElement('div');
+    vaultLabel.style.cssText='font-size:10px;font-weight:700;color:#c8a85a;letter-spacing:0.15em;margin:12px 0 6px;';
+    vaultLabel.textContent='▼ 武器庫から持ち込んだ武器';
+    box.appendChild(vaultLabel);
+    box.appendChild(_makeWpnCard(vaultWpn,'この武器で冒険する',()=>selectWeaponAndStart(vaultWpn,true),true));
+  } else {
+    const noVault=document.createElement('div');
+    noVault.style.cssText='font-size:12px;color:#5a5a54;text-align:center;padding:12px;border:1px dashed #333;border-radius:8px;margin-top:10px;';
+    noVault.textContent='武器庫に武器がありません';
+    box.appendChild(noVault);
+  }
+
   _gpApplyWpnCursor();
 }
+
+function _makeWpnCard(w, btnLabel, onClick, isVault=false){
+  const card=document.createElement('div');
+  card.className='weapon-card';
+  if(isVault) card.style.borderColor='rgba(200,168,90,0.6)';
+  const bs=w.bonus>0?'+'+w.bonus:w.bonus<0?''+w.bonus:'0';
+  const bc=w.bonus>0?'stat-bonus':w.bonus<0?'stat-minus':'';
+  const cid='wc-'+Math.random().toString(36).slice(2);
+  card.innerHTML=
+    '<div style="display:flex;gap:10px;align-items:flex-start;">'+
+      '<div style="flex:1;min-width:0;">'+
+        '<div class="weapon-card-top">'+
+          (isVault?'<span style="font-size:9px;color:#c8a85a;margin-right:4px;">武器庫</span>':'')+
+          '<span class="rarity-badge rarity-'+w.rarity+'">'+RARITY_LABEL[w.rarity]+'</span>'+
+          '<span class="weapon-card-name">'+w.name+'</span>'+
+        '</div>'+
+        '<div class="weapon-card-stats">攻撃力：<span class="stat-base">'+w.baseAtk+'</span> <span class="'+bc+'">('+bs+')</span> = <strong>'+w.atk+'</strong></div>'+
+        '<div class="weapon-card-range">'+w.desc+'</div>'+
+      '</div>'+
+      '<canvas id="'+cid+'" width="110" height="110" style="flex-shrink:0;image-rendering:pixelated;"></canvas>'+
+    '</div>'+
+    '<button style="width:100%;margin-top:10px;padding:9px;border-radius:6px;border:1px solid var(--player);background:none;color:var(--player);font-size:13px;font-weight:700;cursor:pointer;">'+btnLabel+'</button>';
+  card.querySelector('button').addEventListener('click', onClick);
+  requestAnimationFrame(()=>drawMiniRange(document.getElementById(cid),w));
+  return card;
+}
+
+function selectWeaponAndStart(w, isVault=false){
+  // 自前武器を選ばなかった場合、武器庫に戻す
+  if(!isVault && _vaultWeapon){
+    // 武器庫には戻す（持ち出したが使わなかった）
+    // ※既にgetWpnCountには含まれているのでそのまま
+  }
+  // 自前武器を選んだ場合、武器庫から1枚取り出す（clリア/GOで戻す/消す）
+  if(isVault && _vaultWeapon){
+    saveWpnCount(_vaultWeapon.id, Math.max(0, getWpnCount(_vaultWeapon.id)-1));
+  }
+  player.weapon=w;
+  document.getElementById('weapon-overlay').style.display='none';
+  updWpn();
+  showMsg(w.name+'を装備した！上の部屋へ進もう。');
+}
+
 function _gpApplyWpnCursor(){
   const cards=document.querySelectorAll('#weapon-choices .weapon-card');
-  const stock=document.getElementById('wpn-stock-area');
-  const total=cards.length+1; // +1 for stock
   cards.forEach((c,i)=>{
-    c.classList.toggle('gp-sel', i===_gpCursor.wpn&&!_gpCursor.stockFocus);
+    c.classList.toggle('gp-sel', i===_gpCursor.wpn);
   });
-  if(stock) stock.classList.toggle('gp-sel', _gpCursor.stockFocus||false);
 }
 
 // ===== ターンタイマーcanvas描画 =====
@@ -3573,7 +3680,7 @@ function _gpCurrentScreen(){
   if(pw&&!pw.classList.contains('hidden')) return 'pw';
   if(document.getElementById('dungeon-select').classList.contains('open')) return 'dungeon';
   if(document.getElementById('weapon-overlay').style.display==='flex') return 'weapon';
-  if(document.getElementById('wpn-confirm').classList.contains('open')) return 'confirm';
+  // wpn-confirm廃止済み
   if(document.getElementById('pause-overlay').classList.contains('open')) return 'pause';
   if(document.getElementById('options-overlay').classList.contains('open')) return 'options';
   if(document.getElementById('gameover-overlay').style.display==='flex') return 'gameover';
@@ -3676,43 +3783,18 @@ function pollGp(){
   // ===== 武器選択 =====
   if(scr==='weapon'){
     const cards=document.querySelectorAll('#weapon-choices .weapon-card');
-    const total=cards.length+1; // +1=ストック
     if(dir.down||dir.right){
-      const next=(_gpCursor.stockFocus?cards.length:_gpCursor.wpn)+1;
-      if(next>=total){ _gpCursor.stockFocus=true; }
-      else { _gpCursor.wpn=next%cards.length; _gpCursor.stockFocus=false; }
+      _gpCursor.wpn=Math.min(cards.length-1,_gpCursor.wpn+1);
       _gpApplyWpnCursor();
     }
     if(dir.up||dir.left){
-      if(_gpCursor.stockFocus){ _gpCursor.stockFocus=false; _gpCursor.wpn=Math.max(0,cards.length-1); }
-      else { _gpCursor.wpn=Math.max(0,_gpCursor.wpn-1); }
+      _gpCursor.wpn=Math.max(0,_gpCursor.wpn-1);
       _gpApplyWpnCursor();
     }
     if(bA){
-      if(_gpCursor.stockFocus){ onStockTap(); }
-      else {
-        const card=cards[_gpCursor.wpn];
-        if(card)card.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));
-      }
+      const card=cards[_gpCursor.wpn];
+      if(card){const btn=card.querySelector('button');if(btn)btn.click();}
     }
-    return;
-  }
-
-  // ===== 確認ダイアログ =====
-  if(scr==='confirm'){
-    // 左右でカーソル（0=はい, 1=いいえ）
-    if(dir.left||dir.right){
-      _gpCursor.confirm=_gpCursor.confirm===0?1:0;
-      const yes=document.querySelector('.wpn-confirm-yes');
-      const no=document.querySelector('.wpn-confirm-no');
-      if(yes)yes.style.outline=_gpCursor.confirm===0?'2px solid var(--player)':'';
-      if(no)no.style.outline=_gpCursor.confirm===1?'2px solid #888':'';
-    }
-    if(bA){
-      if(_gpCursor.confirm===0)confirmWeapon();
-      else cancelWeapon();
-    }
-    if(bB)cancelWeapon();
     return;
   }
 
@@ -3818,18 +3900,10 @@ setInterval(()=>{
 // ===== 初期化 =====
 function init(){
   initSafe();render();updHpBar();updWpn();updHd();
-  // 難易度を復元
-  const savedDiff=getGameDiff();
-  if(savedDiff) _applyDiff(savedDiff);
   // ニックネーム未設定なら先にニックネーム画面
-  if(!getNick()||!getGameDiff()){
+  if(!getNick()){
     document.getElementById('pw-screen').classList.add('hidden');
     document.getElementById('nick-screen').classList.add('open');
-    // 既存ユーザー（nick有・diff無）はdiff選択のみ表示
-    if(getNick()&&!getGameDiff()){
-      const fi=document.getElementById('nick-input-field');
-      if(fi)fi.value=getNick();
-    }
   }
   loadUnlockedFromDB();
 }
@@ -3881,8 +3955,8 @@ init();
   function toggleOptions(){
     const overlay=document.getElementById('options-overlay');
     const isOpen=overlay.classList.contains('open');
-    // タイマー/プレビュー行の表示制御（非インポッシブルは非表示）
-    const showTimer=gameDiff==='impossible';
+    // タイマー/プレビュー行は特定ダンジョン専用機能のため常に非表示
+    const showTimer=false;
     ['opt-sec-timer','opt-row-style','opt-row-pos','opt-row-beat','opt-row-4beat',
      'opt-sec-preview'].forEach(id=>{
       const el=document.getElementById(id);
@@ -4020,7 +4094,10 @@ init();
     }
   }
 
-  function selectDungeon(id){
+  function selectDungeon(id, opts={}){
+    const _tabWhenSelected=opts.tab||_dungeonTab;
+    // EXP倍率設定
+    window._dungeonExpMult = _tabWhenSelected==='exp'?4:_tabWhenSelected==='week'?10:1;
     const dng=DUNGEON_ALL.find(d=>d.id===id);
     if(!dng)return;
     currentDungeon=dng;
