@@ -3915,214 +3915,214 @@ function init(){
 }
 init();
 
-  // ===== 一時停止 =====
-  let gamePaused=false;
-  let pauseRemainingMs=0; // 一時停止時の残り時間
+// ===== 一時停止 =====
+let gamePaused=false;
+let pauseRemainingMs=0; // 一時停止時の残り時間
 
-  function pauseGame(){
-    if(phase!=='battle'||gamePaused) return;
-    gamePaused=true;
-    // タイマーの残り時間を記録して停止
-    if(turnTimer){
-      pauseRemainingMs=Math.max(0, 1000-(Date.now()-_turnStartMs));
-      clearTimeout(turnTimer);
-      turnTimer=null;
-    }
-    stopTimerDraw();
-    document.getElementById('pause-overlay').classList.add('open');
+function pauseGame(){
+  if(phase!=='battle'||gamePaused) return;
+  gamePaused=true;
+  // タイマーの残り時間を記録して停止
+  if(turnTimer){
+    pauseRemainingMs=Math.max(0, 1000-(Date.now()-_turnStartMs));
+    clearTimeout(turnTimer);
+    turnTimer=null;
   }
-  function resumeGame(){
-    gamePaused=false;
-    document.getElementById('pause-overlay').classList.remove('open');
-    if(phase==='battle'&&enemies.length>0){
-      // 残り時間から再開
-      _turnStartMs=Date.now()-Math.max(0,1000-pauseRemainingMs);
+  stopTimerDraw();
+  document.getElementById('pause-overlay').classList.add('open');
+}
+function resumeGame(){
+  gamePaused=false;
+  document.getElementById('pause-overlay').classList.remove('open');
+  if(phase==='battle'&&enemies.length>0){
+    // 残り時間から再開
+    _turnStartMs=Date.now()-Math.max(0,1000-pauseRemainingMs);
+    startTimerDraw();
+    turnPhase='waiting';
+    turnTimer=setTimeout(()=>{
+      turnTimer=null;
+      stopTimerDraw();
+      if(pendingAction){
+        const a=pendingAction;pendingAction=null;
+        if(a.type==='move') doMove(a.dir);
+        else if(a.type==='attack') doAttack();
+        else if(a.type==='wait') waitAction();
+      } else {
+        if(phase==='battle') enemyTurn(false);
+      }
+      turnPhase='idle';
+      if(phase==='battle'&&enemies.length>0) startTurnTimer();
+      else stopTimerDraw();
+    }, pauseRemainingMs||1000);
+  }
+}
+
+// ===== オプション操作 =====
+function toggleOptions(){
+  const overlay=document.getElementById('options-overlay');
+  const isOpen=overlay.classList.contains('open');
+  // タイマー/プレビュー行は特定ダンジョン専用機能のため常に非表示
+  const showTimer=false;
+  ['opt-sec-timer','opt-row-style','opt-row-pos','opt-row-beat','opt-row-4beat',
+   'opt-sec-preview'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.style.display=showTimer?'':'none';
+  });
+  // tog-preview・tog-gp-preview行
+  document.querySelectorAll('#options-overlay .opt-row').forEach(row=>{
+    const label=row.querySelector('.opt-label');
+    if(label&&(label.textContent.includes('タイマープレビュー')||label.textContent.includes('コントローラープレビュー'))){
+      row.style.display=showTimer?'':'none';
+    }
+  });
+  if(isOpen){
+    // 閉じる → バトル中ならタイマー再開
+    overlay.classList.remove('open');
+    if(phase==='battle'&&enemies.length>0&&!gamePaused){
+      _turnStartMs=Date.now()-Math.max(0,1000-_optPauseRemainingMs);
       startTimerDraw();
       turnPhase='waiting';
       turnTimer=setTimeout(()=>{
-        turnTimer=null;
-        stopTimerDraw();
-        if(pendingAction){
-          const a=pendingAction;pendingAction=null;
-          if(a.type==='move') doMove(a.dir);
-          else if(a.type==='attack') doAttack();
-          else if(a.type==='wait') waitAction();
-        } else {
-          if(phase==='battle') enemyTurn(false);
-        }
+        turnTimer=null;stopTimerDraw();
+        if(pendingAction){const a=pendingAction;pendingAction=null;
+          if(a.type==='move')doMove(a.dir);
+          else if(a.type==='attack')doAttack();
+          else if(a.type==='wait')waitAction();
+        }else{if(phase==='battle')enemyTurn(false);}
         turnPhase='idle';
-        if(phase==='battle'&&enemies.length>0) startTurnTimer();
-        else stopTimerDraw();
-      }, pauseRemainingMs||1000);
+        if(phase==='battle'&&enemies.length>0)startTurnTimer();else stopTimerDraw();
+      },_optPauseRemainingMs||1000);
     }
+  } else {
+    // 開く → タイマーを止める
+    overlay.classList.add('open');
+    if(turnTimer){
+      _optPauseRemainingMs=Math.max(0,1000-(Date.now()-_turnStartMs));
+      clearTimeout(turnTimer);turnTimer=null;
+    }else{_optPauseRemainingMs=1000;}
+    stopTimerDraw();
   }
+}
+let _optPauseRemainingMs=1000;
+function toggleOpt(key){
+  if(key==='skip_turn'){ opt_skip_turn=!opt_skip_turn; _updTog('tog-skip-turn',opt_skip_turn); }
+  else if(key==='beat'){ opt_timer_beat=!opt_timer_beat; _updTog('tog-beat',opt_timer_beat); }
+  else if(key==='4beat'){ opt_4beat=!opt_4beat; _updTog('tog-4beat',opt_4beat); }
+  else if(key==='colorblind'){
+    opt_colorblind=!opt_colorblind;
+    _updTog('tog-colorblind',opt_colorblind);
+    document.body.classList.toggle('colorblind',opt_colorblind);
+  }
+  // タイマー描画を確実に継続
+  if(!_timerRafId && (turnTimer||phase==='battle')) startTimerDraw();
+}
+function cycleTimerStyle(){
+  const i=(TIMER_STYLES.indexOf(opt_timer_style)+1)%TIMER_STYLES.length;
+  opt_timer_style=TIMER_STYLES[i];
+  const btn=document.getElementById('timer-style-btn');
+  if(btn)btn.textContent=TIMER_STYLE_LABELS[i];
+  if(!_timerRafId&&(turnTimer||phase==='battle'))startTimerDraw();
+}
+function cycleTimerPos(){
+  const i=(TIMER_POSITIONS.indexOf(opt_timer_pos)+1)%TIMER_POSITIONS.length;
+  opt_timer_pos=TIMER_POSITIONS[i];
+  const unit=document.getElementById('timer-unit');
+  if(unit){unit.className='pos-'+opt_timer_pos;}
+  const btn=document.getElementById('timer-pos-btn');
+  if(btn)btn.textContent=TIMER_POS_LABELS[i];
+}
+function _updTog(id,val){
+  const el=document.getElementById(id);
+  if(el) el.classList.toggle('on',val);
+}
 
-  // ===== オプション操作 =====
-  function toggleOptions(){
-    const overlay=document.getElementById('options-overlay');
-    const isOpen=overlay.classList.contains('open');
-    // タイマー/プレビュー行は特定ダンジョン専用機能のため常に非表示
-    const showTimer=false;
-    ['opt-sec-timer','opt-row-style','opt-row-pos','opt-row-beat','opt-row-4beat',
-     'opt-sec-preview'].forEach(id=>{
-      const el=document.getElementById(id);
-      if(el)el.style.display=showTimer?'':'none';
-    });
-    // tog-preview・tog-gp-preview行
-    document.querySelectorAll('#options-overlay .opt-row').forEach(row=>{
-      const label=row.querySelector('.opt-label');
-      if(label&&(label.textContent.includes('タイマープレビュー')||label.textContent.includes('コントローラープレビュー'))){
-        row.style.display=showTimer?'':'none';
-      }
-    });
-    if(isOpen){
-      // 閉じる → バトル中ならタイマー再開
-      overlay.classList.remove('open');
-      if(phase==='battle'&&enemies.length>0&&!gamePaused){
-        _turnStartMs=Date.now()-Math.max(0,1000-_optPauseRemainingMs);
-        startTimerDraw();
-        turnPhase='waiting';
-        turnTimer=setTimeout(()=>{
-          turnTimer=null;stopTimerDraw();
-          if(pendingAction){const a=pendingAction;pendingAction=null;
-            if(a.type==='move')doMove(a.dir);
-            else if(a.type==='attack')doAttack();
-            else if(a.type==='wait')waitAction();
-          }else{if(phase==='battle')enemyTurn(false);}
-          turnPhase='idle';
-          if(phase==='battle'&&enemies.length>0)startTurnTimer();else stopTimerDraw();
-        },_optPauseRemainingMs||1000);
-      }
-    } else {
-      // 開く → タイマーを止める
-      overlay.classList.add('open');
-      if(turnTimer){
-        _optPauseRemainingMs=Math.max(0,1000-(Date.now()-_turnStartMs));
-        clearTimeout(turnTimer);turnTimer=null;
-      }else{_optPauseRemainingMs=1000;}
-      stopTimerDraw();
-    }
+// ===== パスワード =====
+const _psys = {
+  ver:'1.0.4',build:'b20260329',
+  overrideCodes:[7731,4402,8819,2253,6670],
+  devKeys:['DEV-GAMMA-9921','DEV-DELTA-4477'],
+  legacy:'5018374629',
+};
+const _pvalidator = {
+  checksum:[14,28,42,7,35,56,63,49],
+  segments:[[0,3],[3,7],[7,10]],
+  segHashes:['NzMxOA==','NjYxMg==','NDQwMQ=='],
+  attempts:0, maxAttempts:30,
+};
+function _pLegacyValidate(code){
+  const lc=[6621,4403,7712,8834,3356];
+  return lc.some(c=>String(c)===code.slice(0,4));
+}
+function _pSegmentCheck(raw){
+  if(raw.length<4) return false;
+  const digits=raw.split('').map(Number);
+  const cs=digits.reduce((a,d,i)=>a+d*(_pvalidator.checksum[i%8]||1),0);
+  return cs>0;
+}
+function _pCoreValidate(raw){
+  if(raw.length!==10) return false;
+  if(_pvalidator.attempts>=_pvalidator.maxAttempts) return false;
+  _pvalidator.attempts++;
+  if(!_pSegmentCheck(raw)) return false;
+  if(_pLegacyValidate(raw)) return false;
+  const _ref=[53,57,54,51]; // 内部照合値
+  const seg1=raw.substring(_pvalidator.segments[1][0],_pvalidator.segments[1][1]);
+  return seg1.split('').every((c,i)=>c.charCodeAt(0)===_ref[i]);
+}
+let _pwBuf='';
+function pwInput(n){
+  if(_pwBuf.length>=10) return;
+  _pwBuf+=String(n);
+  _pwRenderDots();
+  if(_pwBuf.length===10) setTimeout(_pwExecCheck,120);
+}
+function pwDelete(){
+  _pwBuf=_pwBuf.slice(0,-1);
+  _pwRenderDots();
+}
+function _pwRenderDots(state){
+  for(let i=0;i<10;i++){
+    const d=document.getElementById('d'+i);
+    if(!d) continue;
+    d.className='pw-dot';
+    if(state==='error') d.classList.add('error');
+    else if(i<_pwBuf.length) d.classList.add('filled');
   }
-  let _optPauseRemainingMs=1000;
-  function toggleOpt(key){
-    if(key==='skip_turn'){ opt_skip_turn=!opt_skip_turn; _updTog('tog-skip-turn',opt_skip_turn); }
-    else if(key==='beat'){ opt_timer_beat=!opt_timer_beat; _updTog('tog-beat',opt_timer_beat); }
-    else if(key==='4beat'){ opt_4beat=!opt_4beat; _updTog('tog-4beat',opt_4beat); }
-    else if(key==='colorblind'){
-      opt_colorblind=!opt_colorblind;
-      _updTog('tog-colorblind',opt_colorblind);
-      document.body.classList.toggle('colorblind',opt_colorblind);
-    }
-    // タイマー描画を確実に継続
-    if(!_timerRafId && (turnTimer||phase==='battle')) startTimerDraw();
+}
+function _pwExecCheck(){
+  if(_pCoreValidate(_pwBuf)){
+    document.getElementById('pw-screen').classList.add('hidden');
+    renderDungeonList();
+    document.getElementById('dungeon-select').classList.add('open');
+  } else {
+    _pwRenderDots('error');
+    setTimeout(()=>{ _pwBuf=''; _pwRenderDots(); },700);
   }
-  function cycleTimerStyle(){
-    const i=(TIMER_STYLES.indexOf(opt_timer_style)+1)%TIMER_STYLES.length;
-    opt_timer_style=TIMER_STYLES[i];
-    const btn=document.getElementById('timer-style-btn');
-    if(btn)btn.textContent=TIMER_STYLE_LABELS[i];
-    if(!_timerRafId&&(turnTimer||phase==='battle'))startTimerDraw();
-  }
-  function cycleTimerPos(){
-    const i=(TIMER_POSITIONS.indexOf(opt_timer_pos)+1)%TIMER_POSITIONS.length;
-    opt_timer_pos=TIMER_POSITIONS[i];
-    const unit=document.getElementById('timer-unit');
-    if(unit){unit.className='pos-'+opt_timer_pos;}
-    const btn=document.getElementById('timer-pos-btn');
-    if(btn)btn.textContent=TIMER_POS_LABELS[i];
-  }
-  function _updTog(id,val){
-    const el=document.getElementById(id);
-    if(el) el.classList.toggle('on',val);
-  }
+}
 
-  // ===== パスワード =====
-  const _psys = {
-    ver:'1.0.4',build:'b20260329',
-    overrideCodes:[7731,4402,8819,2253,6670],
-    devKeys:['DEV-GAMMA-9921','DEV-DELTA-4477'],
-    legacy:'5018374629',
-  };
-  const _pvalidator = {
-    checksum:[14,28,42,7,35,56,63,49],
-    segments:[[0,3],[3,7],[7,10]],
-    segHashes:['NzMxOA==','NjYxMg==','NDQwMQ=='],
-    attempts:0, maxAttempts:30,
-  };
-  function _pLegacyValidate(code){
-    const lc=[6621,4403,7712,8834,3356];
-    return lc.some(c=>String(c)===code.slice(0,4));
+function selectDungeon(id, opts={}){
+  const _tabWhenSelected=opts.tab||_dungeonTab;
+  // EXP倍率設定
+  window._dungeonExpMult = _tabWhenSelected==='exp'?4:_tabWhenSelected==='week'?10:1;
+  const dng=DUNGEON_ALL.find(d=>d.id===id);
+  if(!dng)return;
+  currentDungeon=dng;
+  dungeonType=id==='hard'?'hard':(id==='tutorial'?'tutorial':'ranked');
+  document.getElementById('dungeon-select').classList.remove('open');
+  if(id==='hard'){
+    hardRoomOrder=[0,1,2].sort(()=>Math.random()-0.5);
+    hardRoomIdx=0;
+  } else if(dng.rooms&&dng.rooms.length>0){
+    // プールからroomCount個をランダム選出
+    const pool=[...dng.rooms.keys()];
+    pool.sort(()=>Math.random()-0.5);
+    hardRoomOrder=pool.slice(0,Math.min(dng.roomCount,pool.length));
+    hardRoomIdx=0;
   }
-  function _pSegmentCheck(raw){
-    if(raw.length<4) return false;
-    const digits=raw.split('').map(Number);
-    const cs=digits.reduce((a,d,i)=>a+d*(_pvalidator.checksum[i%8]||1),0);
-    return cs>0;
-  }
-  function _pCoreValidate(raw){
-    if(raw.length!==10) return false;
-    if(_pvalidator.attempts>=_pvalidator.maxAttempts) return false;
-    _pvalidator.attempts++;
-    if(!_pSegmentCheck(raw)) return false;
-    if(_pLegacyValidate(raw)) return false;
-    const _ref=[53,57,54,51]; // 内部照合値
-    const seg1=raw.substring(_pvalidator.segments[1][0],_pvalidator.segments[1][1]);
-    return seg1.split('').every((c,i)=>c.charCodeAt(0)===_ref[i]);
-  }
-  let _pwBuf='';
-  function pwInput(n){
-    if(_pwBuf.length>=10) return;
-    _pwBuf+=String(n);
-    _pwRenderDots();
-    if(_pwBuf.length===10) setTimeout(_pwExecCheck,120);
-  }
-  function pwDelete(){
-    _pwBuf=_pwBuf.slice(0,-1);
-    _pwRenderDots();
-  }
-  function _pwRenderDots(state){
-    for(let i=0;i<10;i++){
-      const d=document.getElementById('d'+i);
-      if(!d) continue;
-      d.className='pw-dot';
-      if(state==='error') d.classList.add('error');
-      else if(i<_pwBuf.length) d.classList.add('filled');
-    }
-  }
-  function _pwExecCheck(){
-    if(_pCoreValidate(_pwBuf)){
-      document.getElementById('pw-screen').classList.add('hidden');
-      renderDungeonList();
-      document.getElementById('dungeon-select').classList.add('open');
-    } else {
-      _pwRenderDots('error');
-      setTimeout(()=>{ _pwBuf=''; _pwRenderDots(); },700);
-    }
-  }
-
-  function selectDungeon(id, opts={}){
-    const _tabWhenSelected=opts.tab||_dungeonTab;
-    // EXP倍率設定
-    window._dungeonExpMult = _tabWhenSelected==='exp'?4:_tabWhenSelected==='week'?10:1;
-    const dng=DUNGEON_ALL.find(d=>d.id===id);
-    if(!dng)return;
-    currentDungeon=dng;
-    dungeonType=id==='hard'?'hard':(id==='tutorial'?'tutorial':'ranked');
-    document.getElementById('dungeon-select').classList.remove('open');
-    if(id==='hard'){
-      hardRoomOrder=[0,1,2].sort(()=>Math.random()-0.5);
-      hardRoomIdx=0;
-    } else if(dng.rooms&&dng.rooms.length>0){
-      // プールからroomCount個をランダム選出
-      const pool=[...dng.rooms.keys()];
-      pool.sort(()=>Math.random()-0.5);
-      hardRoomOrder=pool.slice(0,Math.min(dng.roomCount,pool.length));
-      hardRoomIdx=0;
-    }
-    player.hp=player.maxHp;player.weapon=null;player.burnTurns=0;
-    initSafe();render();updHpBar();updWpn();updHd();
-    setTimeout(showWpnOverlay,300);
-  }
+  player.hp=player.maxHp;player.weapon=null;player.burnTurns=0;
+  initSafe();render();updHpBar();updWpn();updHd();
+  setTimeout(showWpnOverlay,300);
+}
 
 </script>
 </body>
