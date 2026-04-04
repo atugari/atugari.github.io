@@ -273,6 +273,7 @@
       align-items:center;justify-content:center;
       gap:24px;z-index:9999;
       font-family:'Noto Serif JP',serif;
+      touch-action:manipulation;
     }
     #pw-screen.hidden{display:none;}
     .pw-label{font-size:13px;color:#9a9a92;letter-spacing:0.2em;}
@@ -281,8 +282,8 @@
     .pw-dot{width:11px;height:11px;border-radius:50%;border:1.5px solid #444;background:#1a1a18;transition:background 0.15s,border-color 0.15s;}
     .pw-dot.filled{background:#9a9a92;border-color:#9a9a92;}
     .pw-dot.error{background:#D85A30;border-color:#D85A30;}
-    .pw-keypad{display:grid;grid-template-columns:repeat(3,64px);gap:10px;}
-    .pw-key{height:56px;border:1px solid #333;border-radius:10px;background:#252520;font-size:20px;color:#f0efe9;cursor:pointer;transition:background 0.1s;font-family:sans-serif;}
+    .pw-keypad{display:grid;grid-template-columns:repeat(3,64px);gap:10px;touch-action:manipulation;}
+    .pw-key{height:56px;border:1px solid #333;border-radius:10px;background:#252520;font-size:20px;color:#f0efe9;cursor:pointer;transition:background 0.1s;font-family:sans-serif;touch-action:manipulation;}
     .pw-key:active{background:#333330;}
     .pw-key.empty{visibility:hidden;}
     .pw-back{font-size:12px;color:#5a5a54;text-decoration:none;letter-spacing:0.1em;margin-top:4px;}
@@ -413,18 +414,18 @@
     <div class="pw-dot" id="d9"></div>
   </div>
   <div class="pw-keypad">
-    <button class="pw-key" onclick="pwInput(1)">1</button>
-    <button class="pw-key" onclick="pwInput(2)">2</button>
-    <button class="pw-key" onclick="pwInput(3)">3</button>
-    <button class="pw-key" onclick="pwInput(4)">4</button>
-    <button class="pw-key" onclick="pwInput(5)">5</button>
-    <button class="pw-key" onclick="pwInput(6)">6</button>
-    <button class="pw-key" onclick="pwInput(7)">7</button>
-    <button class="pw-key" onclick="pwInput(8)">8</button>
-    <button class="pw-key" onclick="pwInput(9)">9</button>
+    <button class="pw-key" onclick="pwInput(1)" ontouchend="event.preventDefault();pwInput(1)">1</button>
+    <button class="pw-key" onclick="pwInput(2)" ontouchend="event.preventDefault();pwInput(2)">2</button>
+    <button class="pw-key" onclick="pwInput(3)" ontouchend="event.preventDefault();pwInput(3)">3</button>
+    <button class="pw-key" onclick="pwInput(4)" ontouchend="event.preventDefault();pwInput(4)">4</button>
+    <button class="pw-key" onclick="pwInput(5)" ontouchend="event.preventDefault();pwInput(5)">5</button>
+    <button class="pw-key" onclick="pwInput(6)" ontouchend="event.preventDefault();pwInput(6)">6</button>
+    <button class="pw-key" onclick="pwInput(7)" ontouchend="event.preventDefault();pwInput(7)">7</button>
+    <button class="pw-key" onclick="pwInput(8)" ontouchend="event.preventDefault();pwInput(8)">8</button>
+    <button class="pw-key" onclick="pwInput(9)" ontouchend="event.preventDefault();pwInput(9)">9</button>
     <button class="pw-key empty"></button>
-    <button class="pw-key" onclick="pwInput(0)">0</button>
-    <button class="pw-key" onclick="pwDelete()">削除</button>
+    <button class="pw-key" onclick="pwInput(0)" ontouchend="event.preventDefault();pwInput(0)">0</button>
+    <button class="pw-key" onclick="pwDelete()" ontouchend="event.preventDefault();pwDelete()">削除</button>
   </div>
   <a class="pw-back" href="plaza.html">← 幻実世界の電子遊戯へ戻る</a>
 </div>
