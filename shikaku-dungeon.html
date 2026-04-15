@@ -15,7 +15,8 @@
       --text:#f0efe9;--text2:#9a9a92;--text3:#5a5a54;
     }
     html,body{height:100%;background:var(--bg);color:var(--text);font-family:sans-serif;overflow:hidden;touch-action:none;user-select:none;}
-    .game-wrap{display:flex;flex-direction:column;height:100%;max-width:420px;margin:0 auto;}
+    .game-wrap{display:flex;flex-direction:column;height:100%;max-width:420px;margin:0 auto;pointer-events:none;}
+    .game-wrap.active{pointer-events:auto;}
     .dev-banner{background:#534AB7;color:#fff;text-align:center;font-size:11px;padding:5px;flex-shrink:0;letter-spacing:.04em;}
     .hd{display:flex;align-items:center;justify-content:space-between;padding:0 12px;background:var(--surface);border-bottom:1px solid var(--border);height:44px;flex-shrink:0;}
     .hd-title{font-size:14px;font-weight:500;}
@@ -414,18 +415,18 @@
     <div class="pw-dot" id="d9"></div>
   </div>
   <div class="pw-keypad">
-    <button class="pw-key" onclick="pwInput(1)" ontouchend="event.preventDefault();pwInput(1)">1</button>
-    <button class="pw-key" onclick="pwInput(2)" ontouchend="event.preventDefault();pwInput(2)">2</button>
-    <button class="pw-key" onclick="pwInput(3)" ontouchend="event.preventDefault();pwInput(3)">3</button>
-    <button class="pw-key" onclick="pwInput(4)" ontouchend="event.preventDefault();pwInput(4)">4</button>
-    <button class="pw-key" onclick="pwInput(5)" ontouchend="event.preventDefault();pwInput(5)">5</button>
-    <button class="pw-key" onclick="pwInput(6)" ontouchend="event.preventDefault();pwInput(6)">6</button>
-    <button class="pw-key" onclick="pwInput(7)" ontouchend="event.preventDefault();pwInput(7)">7</button>
-    <button class="pw-key" onclick="pwInput(8)" ontouchend="event.preventDefault();pwInput(8)">8</button>
-    <button class="pw-key" onclick="pwInput(9)" ontouchend="event.preventDefault();pwInput(9)">9</button>
+    <button class="pw-key" ontouchstart="event.preventDefault();pwInput(1)" onclick="pwInput(1)">1</button>
+    <button class="pw-key" ontouchstart="event.preventDefault();pwInput(2)" onclick="pwInput(2)">2</button>
+    <button class="pw-key" ontouchstart="event.preventDefault();pwInput(3)" onclick="pwInput(3)">3</button>
+    <button class="pw-key" ontouchstart="event.preventDefault();pwInput(4)" onclick="pwInput(4)">4</button>
+    <button class="pw-key" ontouchstart="event.preventDefault();pwInput(5)" onclick="pwInput(5)">5</button>
+    <button class="pw-key" ontouchstart="event.preventDefault();pwInput(6)" onclick="pwInput(6)">6</button>
+    <button class="pw-key" ontouchstart="event.preventDefault();pwInput(7)" onclick="pwInput(7)">7</button>
+    <button class="pw-key" ontouchstart="event.preventDefault();pwInput(8)" onclick="pwInput(8)">8</button>
+    <button class="pw-key" ontouchstart="event.preventDefault();pwInput(9)" onclick="pwInput(9)">9</button>
     <button class="pw-key empty"></button>
-    <button class="pw-key" onclick="pwInput(0)" ontouchend="event.preventDefault();pwInput(0)">0</button>
-    <button class="pw-key" onclick="pwDelete()" ontouchend="event.preventDefault();pwDelete()">削除</button>
+    <button class="pw-key" ontouchstart="event.preventDefault();pwInput(0)" onclick="pwInput(0)">0</button>
+    <button class="pw-key" ontouchstart="event.preventDefault();pwDelete()" onclick="pwDelete()">削除</button>
   </div>
   <a class="pw-back" href="plaza.html">← 幻実世界の電子遊戯へ戻る</a>
 </div>
@@ -582,13 +583,13 @@
       </div>
       <div class="dpad">
         <div class="dpad-btn empty"></div>
-        <div class="dpad-btn" onmousedown="heldDir='up';queueAction({type:'move',dir:'up'})" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="(function(e){e.preventDefault();heldDir='up';queueAction({type:'move',dir:'up'});})(event)" ontouchend="stopMove()" ontouchcancel="stopMove()">▲</div>
+        <div class="dpad-btn" onmousedown="heldDir='up';queueAction({type:'move',dir:'up'})" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="(function(e){e.preventDefault();heldDir='up';queueAction({type:'move',dir:'up'});})(event)" ontouchcancel="stopMove()">▲</div>
         <div class="dpad-btn empty"></div>
-        <div class="dpad-btn" onmousedown="heldDir='left';queueAction({type:'move',dir:'left'})" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="(function(e){e.preventDefault();heldDir='left';queueAction({type:'move',dir:'left'});})(event)" ontouchend="stopMove()" ontouchcancel="stopMove()">◀</div>
+        <div class="dpad-btn" onmousedown="heldDir='left';queueAction({type:'move',dir:'left'})" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="(function(e){e.preventDefault();heldDir='left';queueAction({type:'move',dir:'left'});})(event)" ontouchcancel="stopMove()">◀</div>
         <div class="dpad-btn center" onclick="queueAction({type:'wait'})" ontouchstart="(function(e){e.preventDefault();queueAction({type:'wait'});})(event)">待機</div>
-        <div class="dpad-btn" onmousedown="heldDir='right';queueAction({type:'move',dir:'right'})" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="(function(e){e.preventDefault();heldDir='right';queueAction({type:'move',dir:'right'});})(event)" ontouchend="stopMove()" ontouchcancel="stopMove()">▶</div>
+        <div class="dpad-btn" onmousedown="heldDir='right';queueAction({type:'move',dir:'right'})" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="(function(e){e.preventDefault();heldDir='right';queueAction({type:'move',dir:'right'});})(event)" ontouchcancel="stopMove()">▶</div>
         <div class="dpad-btn empty"></div>
-        <div class="dpad-btn" onmousedown="heldDir='down';queueAction({type:'move',dir:'down'})" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="(function(e){e.preventDefault();heldDir='down';queueAction({type:'move',dir:'down'});})(event)" ontouchend="stopMove()" ontouchcancel="stopMove()">▼</div>
+        <div class="dpad-btn" onmousedown="heldDir='down';queueAction({type:'move',dir:'down'})" onmouseup="stopMove()" onmouseleave="stopMove()" ontouchstart="(function(e){e.preventDefault();heldDir='down';queueAction({type:'move',dir:'down'});})(event)" ontouchcancel="stopMove()">▼</div>
         <div class="dpad-btn empty"></div>
       </div>
       <div class="atk-col" style="display:flex;flex-direction:column;gap:6px;align-items:center;">
@@ -3917,8 +3918,8 @@ function init(){
   if(!getNick()){
     document.getElementById('pw-screen').classList.add('hidden');
     document.getElementById('nick-screen').classList.add('open');
+    document.querySelector('.game-wrap').classList.add('active');
   }
-  // ニックネームあり→pw-screenはそのまま表示（デフォルト表示）
   loadUnlockedFromDB();
 }
 init();
@@ -4045,37 +4046,11 @@ function _updTog(id,val){
 }
 
 // ===== パスワード =====
-const _psys = {
-  ver:'1.0.4',build:'b20260329',
-  overrideCodes:[7731,4402,8819,2253,6670],
-  devKeys:['DEV-GAMMA-9921','DEV-DELTA-4477'],
-  legacy:'5018374629',
-};
-const _pvalidator = {
-  checksum:[14,28,42,7,35,56,63,49],
-  segments:[[0,3],[3,7],[7,10]],
-  segHashes:['NzMxOA==','NjYxMg==','NDQwMQ=='],
-  attempts:0, maxAttempts:30,
-};
-function _pLegacyValidate(code){
-  const lc=[6621,4403,7712,8834,3356];
-  return lc.some(c=>String(c)===code.slice(0,4));
-}
-function _pSegmentCheck(raw){
-  if(raw.length<4) return false;
-  const digits=raw.split('').map(Number);
-  const cs=digits.reduce((a,d,i)=>a+d*(_pvalidator.checksum[i%8]||1),0);
-  return cs>0;
-}
+// ===== パスワード検証 =====
+// 正解: 10桁入力のうち2〜5桁目（index 2〜5）が「5963」
 function _pCoreValidate(raw){
   if(raw.length!==10) return false;
-  if(_pvalidator.attempts>=_pvalidator.maxAttempts) return false;
-  _pvalidator.attempts++;
-  if(!_pSegmentCheck(raw)) return false;
-  if(_pLegacyValidate(raw)) return false;
-  const _ref=[53,57,54,51]; // 内部照合値
-  const seg1=raw.substring(_pvalidator.segments[1][0],_pvalidator.segments[1][1]);
-  return seg1.split('').every((c,i)=>c.charCodeAt(0)===_ref[i]);
+  return raw.substring(2,6)==='5963';
 }
 let _pwBuf='';
 function pwInput(n){
@@ -4100,6 +4075,7 @@ function _pwRenderDots(state){
 function _pwExecCheck(){
   if(_pCoreValidate(_pwBuf)){
     document.getElementById('pw-screen').classList.add('hidden');
+    document.querySelector('.game-wrap').classList.add('active');
     renderDungeonList();
     document.getElementById('dungeon-select').classList.add('open');
   } else {
