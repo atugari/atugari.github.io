@@ -1,0 +1,1663 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ショッピング メモ — 幻実世界の電子遊戯</title>
+<style>
+  :root{
+    --paper: #FBF7EF;
+    --ink: #2B2822;
+    --sub: #9A9186;
+    --red: #C6402E;
+    --red-soft: #E9C9C3;
+    --line: #D9D0C0;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: var(--paper);
+    background-image:
+      repeating-linear-gradient(to bottom, transparent, transparent 34px, rgba(0,0,0,0.035) 35px);
+    color: var(--ink);
+    font-family: "Hiragino Sans", "Yu Gothic", "Noto Sans JP", "Zen Kaku Gothic New", sans-serif;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding: 24px 14px 60px;
+  }
+  .sheet{
+    width:100%;
+    max-width: 460px;
+  }
+  h1{
+    font-size: 15px;
+    letter-spacing: 0.25em;
+    color: var(--sub);
+    text-align:center;
+    margin: 0;
+    font-weight: 600;
+    flex: 1;
+  }
+  .title-row{
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    gap: 8px;
+  }
+  .customize-btn{
+    background: none;
+    border: 1px solid var(--sub);
+    color: var(--sub);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 5px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .customize-btn:active{
+    background: var(--sub);
+    color: #fff;
+  }
+  .spacer-btn{
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .input-card{
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: 0 1px 0 var(--line), 0 6px 16px rgba(60,50,30,0.06);
+    padding: 18px 16px 16px;
+    margin-bottom: 26px;
+  }
+  .mode-tabs{
+    display:flex;
+    gap: 6px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  .mode-tab{
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 8px 4px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--sub);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+  }
+  .mode-tab.active{
+    color: var(--red);
+    border-bottom: 2px solid var(--red);
+  }
+  .text-mode-textarea{
+    width: 100%;
+    min-height: 220px;
+    font-size: 16px;
+    font-family: inherit;
+    line-height: 1.6;
+    color: var(--ink);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 10px;
+    resize: vertical;
+  }
+  .text-mode-textarea::placeholder{
+    color: var(--sub);
+    opacity: 0.7;
+  }
+  .text-mode-help{
+    font-size: 11px;
+    color: var(--sub);
+    line-height: 1.6;
+    margin-top: 8px;
+  }
+  .fields{
+    display:flex;
+    flex-direction:column;
+    gap: 14px;
+  }
+  .entry-group{
+    display:flex;
+    flex-direction:column;
+    gap: 8px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--line);
+  }
+  .entry-group.first{
+    border-top: none;
+    padding-top: 0;
+  }
+  .entry-row{
+    display:flex;
+    align-items:center;
+    gap: 8px;
+  }
+  .entry-row.multi{
+    align-items: flex-start;
+  }
+  .entry-row.multi .side-btns,
+  .entry-row.multi .input-marker{
+    margin-top: 2px;
+  }
+  .side-btns{
+    display:flex;
+    flex-direction:row;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .entry-btn-placeholder{
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+  }
+  .input-marker{
+    flex-shrink: 0;
+    color: var(--red);
+    font-weight: 700;
+    font-size: 16px;
+    display:flex;
+    align-items:center;
+    min-width: 20px;
+  }
+  .entry-field{
+    flex: 1;
+    min-width: 0;
+    display:flex;
+    flex-direction:column;
+    gap: 8px;
+  }
+  .entry-plus,
+  .entry-minus{
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .entry-plus{
+    background: var(--red);
+    color: #fff;
+  }
+  .entry-minus{
+    background: #fff;
+    border: 1px solid var(--line);
+    color: var(--sub);
+  }
+  .field-wrap{
+    display:flex;
+    flex-direction:column;
+    gap: 2px;
+  }
+  .field-done-btn{
+    align-self: flex-end;
+    margin-top: 2px;
+    padding: 5px 14px;
+    border: none;
+    border-radius: 4px;
+    background: var(--red);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .edit-label{
+    font-size: 12px;
+    color: var(--red);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+  .field{
+    display:flex;
+    align-items:baseline;
+    font-size: 19px;
+    line-height:1.4;
+    cursor: pointer;
+    min-height: 30px;
+  }
+  .bracket{
+    color: var(--red);
+    font-weight: 700;
+    white-space:pre;
+  }
+  .field .value{
+    color: var(--red);
+    font-weight: 700;
+  }
+  .field .placeholder{
+    color: var(--red);
+    opacity: 0.55;
+  }
+  .field.filled .value{
+    color: var(--ink);
+    opacity: 1;
+    font-weight: 500;
+  }
+  .field input{
+    font-size: 19px;
+    font-family: inherit;
+    border: none;
+    border-bottom: 2px solid var(--red);
+    outline: none;
+    background: transparent;
+    color: var(--ink);
+    padding: 2px 2px;
+    width: 100%;
+    min-width: 40px;
+  }
+  .field input.qty{
+    width: 70px;
+  }
+  .field input::placeholder{
+    color: var(--red);
+    opacity: 0.45;
+  }
+
+  .add-btn{
+    margin-top: 16px;
+    width: 100%;
+    padding: 11px;
+    border: none;
+    border-radius: 4px;
+    background: var(--red);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+  }
+  .add-btn:disabled{
+    background: var(--red-soft);
+    cursor: not-allowed;
+  }
+  .list-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom: 10px;
+  }
+  .list-header span{
+    font-size: 12px;
+    color: var(--sub);
+    letter-spacing: 0.15em;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    touch-action: manipulation;
+  }
+  .list-actions{
+    display:flex;
+    align-items:center;
+    gap: 14px;
+  }
+  .copy-btn{
+    background: none;
+    border: 1px solid var(--red);
+    color: var(--red);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 4px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  .copy-btn:active{
+    background: var(--red);
+    color: #fff;
+  }
+  .clear-all{
+    background:none;
+    border:none;
+    color: var(--sub);
+    font-size: 12px;
+    text-decoration: underline;
+    cursor:pointer;
+    padding: 4px;
+  }
+  .group{
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    box-shadow: 0 1px 0 var(--line), 0 4px 10px rgba(60,50,30,0.05);
+    padding: 12px 14px;
+    margin-bottom: 14px;
+  }
+  .group-title{
+    display:flex;
+    align-items:center;
+    gap: 8px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 6px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+  }
+  .group-title-text{
+    flex: 1;
+    min-width: 0;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    touch-action: manipulation;
+  }
+  .group-title .bk{
+    color: var(--red);
+  }
+  .store-empty{
+    color: var(--sub);
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 0.05em;
+  }
+  .group-delete-btn{
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--sub);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    padding: 3px 9px;
+    border-radius: 3px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .group-delete-btn:active{
+    background: var(--sub);
+    color: #fff;
+  }
+  .group-meta{
+    font-size: 11px;
+    color: var(--sub);
+    margin: -2px 0 8px;
+    letter-spacing: 0.05em;
+  }
+  .group-copy-btn{
+    background: none;
+    border: 1px solid var(--red);
+    color: var(--red);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    padding: 3px 9px;
+    border-radius: 3px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .group-copy-btn:active{
+    background: var(--red);
+    color: #fff;
+  }
+  .item-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size: 16px;
+    padding: 5px 2px 5px 10px;
+    border-bottom: 1px dashed var(--line);
+  }
+  .item-row:last-child{
+    border-bottom: none;
+  }
+  .item-text{
+    display:flex;
+    gap: 2px;
+    cursor: pointer;
+    flex: 1;
+  }
+  .item-text .qty{
+    color: var(--sub);
+  }
+  .edit-item-form{
+    display:flex;
+    flex-direction:column;
+    gap: 6px;
+    padding: 10px;
+    margin: 6px 0;
+    background: var(--paper);
+    border: 1px solid var(--red);
+    border-radius: 4px;
+  }
+  .edit-item-form .field{
+    font-size: 16px;
+    min-height: 26px;
+  }
+  .edit-item-form .field input{
+    font-size: 16px;
+  }
+  .edit-item-btns{
+    display:flex;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .edit-item-save,
+  .edit-item-cancel{
+    flex: 1;
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .edit-item-save{
+    border: none;
+    background: var(--red);
+    color: #fff;
+  }
+  .edit-item-cancel{
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--sub);
+  }
+  .empty{
+    text-align:center;
+    color: var(--sub);
+    font-size: 13px;
+    padding: 30px 0;
+  }
+  .status{
+    text-align:center;
+    font-size: 11px;
+    color: var(--sub);
+    margin-top: 30px;
+  }
+  .copy-overlay{
+    position: fixed;
+    inset: 0;
+    background: rgba(30,25,20,0.5);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 20px;
+    z-index: 100;
+  }
+  .copy-box{
+    background: #fff;
+    border-radius: 6px;
+    padding: 16px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  }
+  .copy-box-title{
+    font-size: 13px;
+    color: var(--ink);
+    margin-bottom: 10px;
+    line-height: 1.5;
+  }
+  .copy-box-text{
+    width: 100%;
+    min-height: 160px;
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--ink);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 10px;
+    resize: vertical;
+    margin-bottom: 12px;
+  }
+  .copy-box-close{
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    background: var(--red);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .option-section-title{
+    font-size: 12px;
+    color: var(--red);
+    font-weight: 700;
+    margin-bottom: 6px;
+    letter-spacing: 0.05em;
+  }
+  .option-list{
+    display:flex;
+    flex-direction:row;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .option-row{
+    flex: 1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap: 6px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 10px 6px;
+    cursor: pointer;
+    text-align:center;
+  }
+  .option-row:has(input:checked){
+    border-color: var(--red);
+    background: rgba(198,64,46,0.06);
+  }
+  .option-row input[type="radio"]{
+    accent-color: var(--red);
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+  .option-label{
+    font-size: 12px;
+    color: var(--sub);
+    font-weight: 700;
+    line-height: 1.4;
+    display:flex;
+    flex-direction:column;
+    gap: 1px;
+  }
+  .option-label .ol-line{
+    white-space: nowrap;
+  }
+  .toggle-list{
+    display:flex;
+    flex-direction:column;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .toggle-row{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 10px 12px;
+    cursor: pointer;
+  }
+  .toggle-row input[type="checkbox"]{
+    accent-color: var(--red);
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+  .toggle-label{
+    font-size: 14px;
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .option-preview{
+    font-size: 16px;
+    color: var(--ink);
+    text-align:center;
+    background: var(--paper);
+    border: 1px dashed var(--line);
+    border-radius: 4px;
+    padding: 12px;
+    margin-bottom: 14px;
+  }
+  .option-more-space{
+    min-height: 4px;
+  }
+  .plaza-back{
+    display:block;
+    text-align:center;
+    margin-top:28px;
+    padding-top:14px;
+    border-top:1px dashed var(--line);
+    color: var(--sub);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-decoration:none;
+  }
+  .plaza-back:active, .plaza-back:hover{ color: var(--ink); }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <div class="title-row">
+    <button class="customize-btn spacer-btn" aria-hidden="true" tabindex="-1">こだわる</button>
+    <h1>ショッピング メモ</h1>
+    <button class="customize-btn" id="customizeBtn">こだわる</button>
+  </div>
+
+  <div class="input-card">
+    <div class="mode-tabs">
+      <button class="mode-tab active" id="tabItem" data-mode="item">項目モード</button>
+      <button class="mode-tab" id="tabText" data-mode="text">テキストモード</button>
+    </div>
+    <div class="fields" id="fields"></div>
+    <button class="add-btn" id="addBtn">リストを作成する</button>
+  </div>
+
+  <div class="list-header">
+    <span>― リスト ―</span>
+    <div class="list-actions">
+      <button class="clear-all" id="clearAll">全部消す</button>
+    </div>
+  </div>
+
+  <div id="list"></div>
+  <div class="status" id="status"></div>
+  <a class="plaza-back" href="plaza.html">← 幻実世界の電子遊戯へ戻る</a>
+</div>
+
+<script>
+// ===== サイト用ストレージシム =====
+// window.storage（アーティファクト環境のAPI）が無い場合は
+// localStorage を同じインターフェースでラップして使う。
+if(!window.storage){
+  window.storage = {
+    async get(key){
+      const v = localStorage.getItem(key);
+      if(v === null) throw new Error('not found');
+      return { key, value: v, shared: false };
+    },
+    async set(key, value){
+      localStorage.setItem(key, value);
+      return { key, value, shared: false };
+    },
+    async delete(key){
+      localStorage.removeItem(key);
+      return { key, deleted: true, shared: false };
+    },
+    async list(prefix){
+      const keys = [];
+      for(let i = 0; i < localStorage.length; i++){
+        const k = localStorage.key(i);
+        if(!prefix || k.startsWith(prefix)) keys.push(k);
+      }
+      return { keys, prefix, shared: false };
+    }
+  };
+}
+
+const KEY = 'shopping-items-v1';
+let items = []; // {id, store, item, qty}
+let draft = { entries: [ { store:'', items: [ { item:'', kind:'', qty:'' } ] } ] };
+let editing = null; // { gIndex, field:'store' } | { gIndex, iIndex, field:'item'|'qty'|'kind' } | null
+let editingItemId = null; // リスト内の項目を編集中のID
+let currentMode = 'item'; // 'item' | 'text'
+let textDraft = '';
+
+const fieldsEl = document.getElementById('fields');
+const addBtn = document.getElementById('addBtn');
+const listEl = document.getElementById('list');
+const statusEl = document.getElementById('status');
+const clearAllBtn = document.getElementById('clearAll');
+const tabItem = document.getElementById('tabItem');
+const tabText = document.getElementById('tabText');
+
+tabItem.addEventListener('click', ()=>{
+  currentMode = 'item';
+  tabItem.classList.add('active');
+  tabText.classList.remove('active');
+  render();
+});
+tabText.addEventListener('click', ()=>{
+  currentMode = 'text';
+  tabText.classList.add('active');
+  tabItem.classList.remove('active');
+  render();
+});
+const SETTINGS_KEY = 'shopping-settings-v1';
+let settings = { kindPos: 'after-item', marker: 'circle', showDate: false, showNumber: false, inputMarker: 'none' }; // inputMarker: 'none' | 'dot' | 'circle'
+
+function formatDateTime(ts){
+  if(!ts) return '';
+  const d = new Date(ts);
+  const mm = d.getMonth() + 1;
+  const dd = d.getDate();
+  const hh = String(d.getHours()).padStart(2, '0');
+  const mi = String(d.getMinutes()).padStart(2, '0');
+  return mm + '/' + dd + ' ' + hh + ':' + mi;
+}
+
+async function saveSettings(){
+  try{
+    if(window.storage && window.storage.set){
+      await window.storage.set(SETTINGS_KEY, JSON.stringify(settings), false);
+    }
+  }catch(e){ /* 設定保存に失敗しても動作は継続 */ }
+}
+
+async function loadSettings(){
+  try{
+    if(window.storage && window.storage.get){
+      const res = await window.storage.get(SETTINGS_KEY, false);
+      if(res && res.value){
+        settings = Object.assign(settings, JSON.parse(res.value));
+      }
+    }
+  }catch(e){ /* 既定値のまま */ }
+}
+
+const CIRCLED_NUMBERS = '①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳㉑㉒㉓㉔㉕㉖㉗㉘㉙㉚㉛㉜㉝㉞㉟㊱㊲㊳㊴㊵㊶㊷㊸㊹㊺㊻㊼㊽㊾㊿';
+
+function markerFor(n){
+  if(n >= 1 && n <= CIRCLED_NUMBERS.length){
+    return CIRCLED_NUMBERS[n - 1];
+  }
+  return '(' + n + ')';
+}
+
+function formatItemLine(it, index){
+  const marker = settings.marker === 'dot' ? '・' : markerFor(index || 1);
+  const kindPart = it.kind ? '（' + it.kind + '）' : '';
+  const itemPart = it.item || '';
+  const qtyPart = (it.qty === '' || it.qty === undefined || it.qty === null) ? '' : ' ×' + it.qty;
+  if(settings.kindPos === 'after-qty'){
+    return marker + ' ' + itemPart + qtyPart + kindPart;
+  }
+  if(settings.kindPos === 'before-item'){
+    return marker + ' ' + kindPart + itemPart + qtyPart;
+  }
+  return marker + ' ' + itemPart + kindPart + qtyPart;
+}
+
+const customizeBtn = document.getElementById('customizeBtn');
+customizeBtn.addEventListener('click', showCustomizeModal);
+
+function showCustomizeModal(){
+  const overlay = document.createElement('div');
+  overlay.className = 'copy-overlay';
+
+  const box = document.createElement('div');
+  box.className = 'copy-box';
+
+  const title = document.createElement('div');
+  title.className = 'copy-box-title';
+  title.textContent = 'リストの見た目をこだわれます。';
+  box.appendChild(title);
+
+  const dummy = { item:'じゃがいも', kind:'北海道産', qty:3 };
+  const preview = document.createElement('div');
+  preview.className = 'option-preview';
+
+  function refreshPreview(){
+    preview.textContent = formatItemLine(dummy, 1);
+  }
+
+  function buildOptionGroup(name, options, getVal, setVal){
+    const list = document.createElement('div');
+    list.className = 'option-list';
+    options.forEach(opt=>{
+      const row = document.createElement('label');
+      row.className = 'option-row';
+
+      const radio = document.createElement('input');
+      radio.type = 'radio';
+      radio.name = name;
+      radio.value = opt.val;
+      radio.checked = getVal() === opt.val;
+      radio.addEventListener('change', async ()=>{
+        setVal(opt.val);
+        refreshPreview();
+        await saveSettings();
+        render();
+      });
+
+      const lbl = document.createElement('div');
+      lbl.className = 'option-label';
+      lbl.innerHTML = opt.labelHtml;
+
+      row.appendChild(radio);
+      row.appendChild(lbl);
+      list.appendChild(row);
+    });
+    return list;
+  }
+
+  function buildToggleGroup(items){
+    const list = document.createElement('div');
+    list.className = 'toggle-list';
+    items.forEach(opt=>{
+      const row = document.createElement('label');
+      row.className = 'toggle-row';
+
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.checked = opt.getVal();
+      checkbox.addEventListener('change', async ()=>{
+        opt.setVal(checkbox.checked);
+        await saveSettings();
+        render();
+      });
+
+      const lbl = document.createElement('div');
+      lbl.className = 'toggle-label';
+      lbl.textContent = opt.label;
+
+      row.appendChild(checkbox);
+      row.appendChild(lbl);
+      list.appendChild(row);
+    });
+    return list;
+  }
+
+  const posTitle = document.createElement('div');
+  posTitle.className = 'option-section-title';
+  posTitle.textContent = '位置';
+  box.appendChild(posTitle);
+  box.appendChild(buildOptionGroup('kindPos', [
+    { val:'after-item',  labelHtml:'<span class="ol-line">《なにを》</span><span class="ol-line">の後ろ</span>' },
+    { val:'after-qty',   labelHtml:'<span class="ol-line">『なんこ』</span><span class="ol-line">の後ろ</span>' },
+    { val:'before-item', labelHtml:'<span class="ol-line">《なにを》</span><span class="ol-line">の前</span>' },
+  ], ()=>settings.kindPos, (v)=>{ settings.kindPos = v; }));
+
+  const markerTitle = document.createElement('div');
+  markerTitle.className = 'option-section-title';
+  markerTitle.textContent = '記号';
+  box.appendChild(markerTitle);
+  box.appendChild(buildOptionGroup('marker', [
+    { val:'circle', labelHtml:'<span class="ol-line">①②③</span>' },
+    { val:'dot',    labelHtml:'<span class="ol-line">・</span>' },
+  ], ()=>settings.marker, (v)=>{ settings.marker = v; }));
+
+  const infoTitle = document.createElement('div');
+  infoTitle.className = 'option-section-title';
+  infoTitle.textContent = 'メモに表示する情報';
+  box.appendChild(infoTitle);
+  box.appendChild(buildToggleGroup([
+    { label:'日付・時刻', getVal: ()=>settings.showDate, setVal: (v)=>{ settings.showDate = v; } },
+    { label:'番号',       getVal: ()=>settings.showNumber, setVal: (v)=>{ settings.showNumber = v; } },
+  ]));
+
+  const inputMarkerTitle = document.createElement('div');
+  inputMarkerTitle.className = 'option-section-title';
+  inputMarkerTitle.textContent = '入力欄の－の右';
+  box.appendChild(inputMarkerTitle);
+  box.appendChild(buildOptionGroup('inputMarker', [
+    { val:'none',   labelHtml:'<span class="ol-line">なし</span>' },
+    { val:'dot',    labelHtml:'<span class="ol-line">・</span>' },
+    { val:'circle', labelHtml:'<span class="ol-line">①②③</span>' },
+  ], ()=>settings.inputMarker, (v)=>{ settings.inputMarker = v; }));
+
+  refreshPreview();
+  box.appendChild(preview);
+
+  const spacer = document.createElement('div');
+  spacer.className = 'option-more-space';
+  box.appendChild(spacer);
+
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'copy-box-close';
+  closeBtn.textContent = '閉じる';
+  closeBtn.addEventListener('click', ()=> document.body.removeChild(overlay));
+  box.appendChild(closeBtn);
+
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+}
+
+function groupItems(){
+  const order = [];
+  const groups = {};
+  items.forEach(it=>{
+    const key = it.store !== '' ? ('store::' + it.store) : ('memo::' + (it.batchId || it.id));
+    if(!groups[key]){
+      groups[key] = { store: it.store, list: [] };
+      order.push(key);
+    }
+    groups[key].list.push(it);
+  });
+  return { order, groups };
+}
+
+function groupText(store, groupList){
+  const lines = [];
+  lines.push('【' + store + '】');
+  groupList.forEach((it, idx)=>{
+    lines.push(formatItemLine(it, idx + 1));
+  });
+  return lines.join('\n');
+}
+
+async function copyText(text){
+  // 1) Clipboard API
+  try{
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      await navigator.clipboard.writeText(text);
+      setStatus('コピーしました');
+      return;
+    }
+  }catch(e){ /* 次の方法を試す */ }
+
+  // 2) execCommand フォールバック
+  try{
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    const ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    if(ok){ setStatus('コピーしました'); return; }
+  }catch(e){ /* 次の方法を試す */ }
+
+  // 3) 手動コピー用モーダル（長押しでコピーしてもらう）
+  showManualCopy(text);
+}
+
+function showManualCopy(text){
+  const overlay = document.createElement('div');
+  overlay.className = 'copy-overlay';
+
+  const box = document.createElement('div');
+  box.className = 'copy-box';
+
+  const title = document.createElement('div');
+  title.className = 'copy-box-title';
+  title.textContent = '自動コピーができませんでした。長押しして選択・コピーしてください';
+
+  const ta = document.createElement('textarea');
+  ta.className = 'copy-box-text';
+  ta.value = text;
+  ta.readOnly = true;
+
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'copy-box-close';
+  closeBtn.textContent = '閉じる';
+  closeBtn.addEventListener('click', ()=> document.body.removeChild(overlay));
+
+  box.appendChild(title);
+  box.appendChild(ta);
+  box.appendChild(closeBtn);
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+
+  ta.focus();
+  ta.select();
+}
+
+
+function setStatus(msg, duration){
+  statusEl.textContent = msg;
+  const d = duration || 1800;
+  if(msg){ setTimeout(()=>{ if(statusEl.textContent===msg) statusEl.textContent=''; }, d); }
+}
+
+let storageOk = true;
+let storageWarned = false;
+
+async function save(){
+  if(!storageOk) return;
+  try{
+    if(!window.storage || !window.storage.set){
+      storageOk = false;
+      warnNoStorage();
+      return;
+    }
+    const res = await window.storage.set(KEY, JSON.stringify(items), false);
+    if(!res){
+      storageOk = false;
+      warnNoStorage();
+    }
+  }catch(e){
+    storageOk = false;
+    warnNoStorage();
+  }
+}
+
+function warnNoStorage(){
+  if(storageWarned) return;
+  storageWarned = true;
+  setStatus('保存機能が使えません（このまま入力は続けられますが、閉じると消えます）', 4000);
+}
+
+async function load(){
+  try{
+    if(window.storage && window.storage.get){
+      const res = await window.storage.get(KEY, false);
+      if(res && res.value){
+        items = JSON.parse(res.value);
+      }
+    }
+  }catch(e){
+    items = [];
+  }
+  await loadSettings();
+  render();
+}
+
+function renderFields(){
+  fieldsEl.innerHTML = '';
+
+  if(currentMode === 'text'){
+    renderTextMode();
+    return;
+  }
+
+  // 【どこで】ごとのグループ。各グループの中に《なにを》『なんこ』（どんな）を複数持てる
+  draft.entries.forEach((groupEntry, gIndex)=>{
+    renderGroupEntry(groupEntry, gIndex);
+  });
+}
+
+function renderTextMode(){
+  const textarea = document.createElement('textarea');
+  textarea.className = 'text-mode-textarea';
+  textarea.value = textDraft;
+  textarea.placeholder = 'イオン\n\nじゃがいも 3  北海道産\nにんじん 2\n\n\nコンビニ\n\nおにぎり';
+  textarea.addEventListener('input', (e)=>{ textDraft = e.target.value; });
+  fieldsEl.appendChild(textarea);
+
+  const help = document.createElement('div');
+  help.className = 'text-mode-help';
+  help.textContent = '1行目が店名、1行空けて買う物を1行ずつ。2行以上空けると次の店名になります。買う物は「名前 半角スペース 数字」でなんこ、その後にスペース2個以上あけて書くとどんなになります（例: じゃがいも 3  北海道産）。';
+  fieldsEl.appendChild(help);
+
+  setTimeout(()=> textarea.focus(), 0);
+}
+
+// テキストモードの内容を「店ごとのブロック」に分解する
+// ルール: 空行が1つ → 店名と買う物リストの区切り／空行が2つ以上 → 次の店のブロックの区切り
+function parseItemLine(line){
+  // 2個以上の空白で「どんな」を分離
+  const kindSplit = line.split(/[ 　]{2,}/);
+  let itemQtyPart = kindSplit[0];
+  const kind = kindSplit.length > 1 ? kindSplit.slice(1).join('  ').trim() : '';
+
+  // 残りの末尾が「空白+数字」なら「なんこ」として分離
+  const qtyMatch = itemQtyPart.match(/^(.*?)[ 　](\d+)$/);
+  let item, qty;
+  if(qtyMatch){
+    item = qtyMatch[1].trim();
+    qty = qtyMatch[2];
+  } else {
+    item = itemQtyPart.trim();
+    qty = '';
+  }
+  return { item, qty, kind };
+}
+
+function parseTextMode(text){
+  const rawLines = text.split('\n');
+  const blocks = [];
+  let current = [];
+  let blankStreak = 0;
+
+  rawLines.forEach(line=>{
+    if(line.trim() === ''){
+      blankStreak++;
+    } else {
+      if(blankStreak >= 2 && current.length){
+        blocks.push(current);
+        current = [];
+      } else if(blankStreak === 1 && current.length){
+        current.push('');
+      }
+      blankStreak = 0;
+      current.push(line);
+    }
+  });
+  if(current.length) blocks.push(current);
+
+  return blocks.map(blockLines=>{
+    const store = (blockLines[0] || '').trim();
+    const rest = blockLines.slice(1);
+    const sepIdx = rest.indexOf('');
+    const itemLines = sepIdx !== -1 ? rest.slice(sepIdx + 1) : rest;
+    const cleanItems = itemLines
+      .filter(l=>l.trim() !== '')
+      .map(l=>parseItemLine(l));
+    return { store, items: cleanItems };
+  });
+}
+
+function buildTapField(opts){
+  // opts: { value, ph, open, close, optional, numeric, isEditing, onInput, onStartEdit, onCommit, onEnterAdd, showDoneButton }
+  if(opts.isEditing){
+    const wrap = document.createElement('div');
+    wrap.className = 'field-wrap';
+
+    const label = document.createElement('div');
+    label.className = 'edit-label';
+    label.textContent = opts.ph + (opts.optional ? '（任意）' : '');
+    wrap.appendChild(label);
+
+    const inner = document.createElement('div');
+    inner.className = 'field';
+
+    const open = document.createElement('span');
+    open.className = 'bracket';
+    open.textContent = opts.open;
+    const input = document.createElement('input');
+    input.value = opts.value;
+    input.placeholder = opts.ph;
+    input.autofocus = true;
+    if(opts.numeric){
+      input.className = 'qty';
+      input.type = 'number';
+      input.inputMode = 'numeric';
+      input.min = '1';
+    } else {
+      input.type = 'text';
+    }
+    const close = document.createElement('span');
+    close.className = 'bracket';
+    close.textContent = opts.close;
+
+    input.addEventListener('input', (e)=>{ opts.onInput(e.target.value); });
+    input.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter'){
+        e.preventDefault();
+        if(opts.onEnterAdd){
+          opts.onEnterAdd();
+        } else {
+          opts.onCommit();
+        }
+      }
+    });
+    if(!opts.onEnterAdd){
+      input.addEventListener('blur', ()=>{ opts.onCommit(); });
+    }
+
+    inner.appendChild(open);
+    inner.appendChild(input);
+    inner.appendChild(close);
+    wrap.appendChild(inner);
+
+    if(opts.showDoneButton){
+      const doneBtn = document.createElement('button');
+      doneBtn.className = 'field-done-btn';
+      doneBtn.textContent = '決定';
+      doneBtn.addEventListener('click', ()=>{ opts.onCommit(); });
+      wrap.appendChild(doneBtn);
+    }
+
+    setTimeout(()=> input.focus(), 0);
+    return wrap;
+  } else {
+    const filled = opts.value !== '';
+    const row = document.createElement('div');
+    row.className = 'field' + (filled ? ' filled' : '');
+    const open = document.createElement('span');
+    open.className = 'bracket';
+    open.textContent = opts.open;
+    const val = document.createElement('span');
+    if(filled){
+      val.className = 'value';
+      val.textContent = opts.value;
+    } else {
+      val.className = 'placeholder';
+      val.textContent = opts.ph;
+    }
+    const close = document.createElement('span');
+    close.className = 'bracket';
+    close.textContent = opts.close;
+
+    row.appendChild(open);
+    row.appendChild(val);
+    row.appendChild(close);
+    row.addEventListener('click', opts.onStartEdit);
+    return row;
+  }
+}
+
+const FIELD_DEFS = {
+  store: { open:'【', close:'】', ph:'どこで' },
+  item:  { open:'《', close:'》', ph:'なにを' },
+  qty:   { open:'『', close:'』', ph:'なんこ', numeric:true },
+  kind:  { open:'（', close:'）', ph:'どんな', optional:true },
+};
+
+// +と-を両方置ける場合はまとめて描画するための共通部品
+function buildSideButtons(canRemove, canAdd, onRemove, onAdd){
+  const wrap = document.createElement('div');
+  wrap.className = 'side-btns';
+
+  if(canAdd){
+    const plus = document.createElement('button');
+    plus.className = 'entry-plus';
+    plus.textContent = '＋';
+    plus.addEventListener('click', onAdd);
+    wrap.appendChild(plus);
+  } else {
+    const placeholder = document.createElement('div');
+    placeholder.className = 'entry-btn-placeholder';
+    wrap.appendChild(placeholder);
+  }
+
+  if(canRemove){
+    const minus = document.createElement('button');
+    minus.className = 'entry-minus';
+    minus.textContent = '－';
+    minus.addEventListener('click', onRemove);
+    wrap.appendChild(minus);
+  } else {
+    const placeholder = document.createElement('div');
+    placeholder.className = 'entry-btn-placeholder';
+    wrap.appendChild(placeholder);
+  }
+
+  return wrap;
+}
+
+function renderGroupEntry(groupEntry, gIndex){
+  const isFirstGroup = gIndex === 0;
+  const canRemoveGroup = draft.entries.length > 1;
+
+  const groupWrap = document.createElement('div');
+  groupWrap.className = 'entry-group' + (gIndex === 0 ? ' first' : '');
+
+  // 【どこで】の行
+  const storeRow = document.createElement('div');
+  storeRow.className = 'entry-row';
+
+  storeRow.appendChild(buildSideButtons(
+    canRemoveGroup, isFirstGroup,
+    ()=>{ draft.entries.splice(gIndex, 1); editing = null; renderFields(); },
+    ()=>{ draft.entries.push({ store:'', items:[ { item:'', kind:'', qty:'' } ] }); editing = null; renderFields(); }
+  ));
+
+  const storeCol = document.createElement('div');
+  storeCol.className = 'entry-field';
+  const storeDef = FIELD_DEFS.store;
+  const storeEditing = editing && editing.gIndex === gIndex && editing.field === 'store' && editing.iIndex === undefined;
+  storeCol.appendChild(buildTapField({
+    value: groupEntry.store,
+    ph: storeDef.ph,
+    open: storeDef.open,
+    close: storeDef.close,
+    isEditing: storeEditing,
+    onInput: (v)=>{ groupEntry.store = v; },
+    onStartEdit: ()=>{ editing = { gIndex, field:'store' }; renderFields(); },
+    onCommit: ()=>{ editing = null; renderFields(); }
+  }));
+  storeRow.appendChild(storeCol);
+  groupWrap.appendChild(storeRow);
+
+  // 《なにを》『なんこ』（どんな）の行（グループ内で複数）
+  groupEntry.items.forEach((itemEntry, iIndex)=>{
+    renderItemRow(groupEntry, gIndex, itemEntry, iIndex, groupWrap);
+  });
+
+  fieldsEl.appendChild(groupWrap);
+}
+
+function renderItemRow(groupEntry, gIndex, itemEntry, iIndex, groupWrap){
+  const isFirstItem = iIndex === 0;
+  const canRemoveItem = groupEntry.items.length > 1;
+
+  const row = document.createElement('div');
+  row.className = 'entry-row multi item-sub-row';
+
+  row.appendChild(buildSideButtons(
+    canRemoveItem, isFirstItem,
+    ()=>{ groupEntry.items.splice(iIndex, 1); editing = null; renderFields(); },
+    ()=>{ groupEntry.items.push({ item:'', kind:'', qty:'' }); editing = null; renderFields(); }
+  ));
+
+  if(settings.inputMarker !== 'none'){
+    const marker = document.createElement('div');
+    marker.className = 'input-marker';
+    marker.textContent = settings.inputMarker === 'dot' ? '・' : markerFor(iIndex + 1);
+    row.appendChild(marker);
+  }
+
+  const col = document.createElement('div');
+  col.className = 'entry-field';
+
+  ['item', 'qty', 'kind'].forEach(key=>{
+    const def = FIELD_DEFS[key];
+    const isEditing = editing && editing.gIndex === gIndex && editing.iIndex === iIndex && editing.field === key;
+    const field = buildTapField({
+      value: itemEntry[key],
+      ph: def.ph,
+      open: def.open,
+      close: def.close,
+      optional: def.optional,
+      numeric: def.numeric,
+      isEditing: isEditing,
+      onInput: (v)=>{ itemEntry[key] = v; },
+      onStartEdit: ()=>{ editing = { gIndex, iIndex, field: key }; renderFields(); },
+      onCommit: ()=>{ editing = null; renderFields(); },
+      onEnterAdd: key === 'item' ? ()=>{
+        const insertAt = iIndex + 1;
+        groupEntry.items.splice(insertAt, 0, { item:'', kind:'', qty:'' });
+        editing = { gIndex, iIndex: insertAt, field: 'item' };
+        renderFields();
+      } : undefined,
+      showDoneButton: key === 'item'
+    });
+    col.appendChild(field);
+  });
+
+  row.appendChild(col);
+  groupWrap.appendChild(row);
+}
+
+function updateAddBtn(){
+  addBtn.disabled = false;
+}
+
+addBtn.addEventListener('click', async ()=>{
+  if(currentMode === 'text'){
+    const groups = parseTextMode(textDraft);
+    groups.forEach(g=>{
+      if(!g.store && g.items.length === 0) return;
+      const batchId = Date.now() + '-' + Math.random().toString(36).slice(2,7);
+      if(g.items.length === 0){
+        items.push({
+          id: Date.now() + '-' + Math.random().toString(36).slice(2,7),
+          batchId: batchId,
+          store: g.store,
+          item: '',
+          kind: '',
+          qty: '',
+          createdAt: Date.now()
+        });
+      } else {
+        g.items.forEach(parsed=>{
+          const qtyTrim = parsed.qty;
+          items.push({
+            id: Date.now() + '-' + Math.random().toString(36).slice(2,7),
+            batchId: batchId,
+            store: g.store,
+            item: parsed.item,
+            kind: parsed.kind,
+            qty: qtyTrim === '' ? '' : Number(qtyTrim),
+            createdAt: Date.now()
+          });
+        });
+      }
+    });
+    textDraft = '';
+    render();
+    await save();
+    return;
+  }
+
+  draft.entries.forEach(groupEntry=>{
+    const store = groupEntry.store.trim();
+    const batchId = Date.now() + '-' + Math.random().toString(36).slice(2,7);
+    groupEntry.items.forEach(itemEntry=>{
+      const qtyTrim = itemEntry.qty.trim();
+      items.push({
+        id: Date.now() + '-' + Math.random().toString(36).slice(2,7),
+        batchId: batchId,
+        store: store,
+        item: itemEntry.item.trim(),
+        kind: itemEntry.kind.trim(),
+        qty: qtyTrim === '' ? '' : Number(qtyTrim),
+        createdAt: Date.now()
+      });
+    });
+  });
+  // 追加後は全部クリア
+  draft.entries = [ { store:'', items: [ { item:'', kind:'', qty:'' } ] } ];
+  editing = null;
+  render();
+  await save();
+});
+
+function renderList(){
+  listEl.innerHTML = '';
+  if(items.length === 0){
+    listEl.innerHTML = '<div class="empty">まだ何もありません</div>';
+    return;
+  }
+  // 店・メモごとにグループ化（初出順を維持）
+  const { order, groups } = groupItems();
+
+  order.forEach((key, gi)=>{
+    const group = groups[key];
+    const store = group.store;
+    const list = group.list;
+
+    const g = document.createElement('div');
+    g.className = 'group';
+
+    const title = document.createElement('div');
+    title.className = 'group-title';
+
+    const groupCopyBtn = document.createElement('button');
+    groupCopyBtn.className = 'group-copy-btn';
+    groupCopyBtn.textContent = 'コピー';
+    groupCopyBtn.addEventListener('click', async ()=>{
+      await copyText(groupText(store, list));
+    });
+
+    const titleText = document.createElement('span');
+    titleText.className = 'group-title-text';
+    if(store){
+      titleText.innerHTML = '<span class="bk">【</span>' + escapeHtml(store) + '<span class="bk">】</span>';
+    } else {
+      titleText.innerHTML = '<span class="bk">【</span><span class="store-empty">どこでなし</span><span class="bk">】</span>';
+    }
+    attachLongPress(titleText, ()=>{ recallGroupToEditor(group); });
+
+    const groupDeleteBtn = document.createElement('button');
+    groupDeleteBtn.className = 'group-delete-btn';
+    groupDeleteBtn.textContent = '削除';
+    groupDeleteBtn.addEventListener('click', ()=>{
+      showConfirm('このメモを削除しますか？', async ()=>{
+        const idSet = new Set(list.map(it => it.id));
+        items = items.filter(it => !idSet.has(it.id));
+        render();
+        await save();
+      });
+    });
+
+    title.appendChild(groupCopyBtn);
+    title.appendChild(titleText);
+    title.appendChild(groupDeleteBtn);
+    g.appendChild(title);
+
+    if(settings.showDate || settings.showNumber){
+      const meta = document.createElement('div');
+      meta.className = 'group-meta';
+      const parts = [];
+      if(settings.showNumber) parts.push('No.' + (gi + 1));
+      if(settings.showDate) parts.push(formatDateTime(list[0].createdAt));
+      meta.textContent = parts.join(' ・ ');
+      g.appendChild(meta);
+    }
+
+    list.forEach((it, idx)=>{
+      if(editingItemId === it.id){
+        g.appendChild(buildEditItemRow(it));
+        return;
+      }
+
+      const row = document.createElement('div');
+      row.className = 'item-row';
+
+      const text = document.createElement('div');
+      text.className = 'item-text';
+      text.textContent = formatItemLine(it, idx + 1);
+      text.addEventListener('click', ()=>{
+        editingItemId = it.id;
+        renderList();
+      });
+
+      row.appendChild(text);
+      g.appendChild(row);
+    });
+
+    listEl.appendChild(g);
+  });
+}
+
+function buildEditItemRow(it){
+  const wrap = document.createElement('div');
+  wrap.className = 'edit-item-form';
+
+  const temp = { store: it.store, item: it.item, kind: it.kind || '', qty: it.qty === '' ? '' : String(it.qty) };
+
+  const defs = [
+    { key:'store', open:'【', close:'】', ph:'どこで' },
+    { key:'item',  open:'《', close:'》', ph:'なにを' },
+    { key:'qty',   open:'『', close:'』', ph:'なんこ', numeric:true },
+    { key:'kind',  open:'（', close:'）', ph:'どんな' },
+  ];
+
+  defs.forEach(d=>{
+    const row = document.createElement('div');
+    row.className = 'field';
+
+    const open = document.createElement('span');
+    open.className = 'bracket';
+    open.textContent = d.open;
+
+    const input = document.createElement('input');
+    input.value = temp[d.key];
+    input.placeholder = d.ph;
+    if(d.numeric){
+      input.type = 'number';
+      input.inputMode = 'numeric';
+      input.className = 'qty';
+    } else {
+      input.type = 'text';
+    }
+    input.addEventListener('input', (e)=>{ temp[d.key] = e.target.value; });
+
+    const close = document.createElement('span');
+    close.className = 'bracket';
+    close.textContent = d.close;
+
+    row.appendChild(open);
+    row.appendChild(input);
+    row.appendChild(close);
+    wrap.appendChild(row);
+  });
+
+  const btnRow = document.createElement('div');
+  btnRow.className = 'edit-item-btns';
+
+  const saveBtn = document.createElement('button');
+  saveBtn.className = 'edit-item-save';
+  saveBtn.textContent = '保存';
+  saveBtn.addEventListener('click', async ()=>{
+    it.store = temp.store.trim();
+    it.item = temp.item.trim();
+    it.kind = temp.kind.trim();
+    const qtyTrim = temp.qty.trim();
+    it.qty = qtyTrim === '' ? '' : Number(qtyTrim);
+    editingItemId = null;
+    render();
+    await save();
+  });
+
+  const cancelBtn = document.createElement('button');
+  cancelBtn.className = 'edit-item-cancel';
+  cancelBtn.textContent = 'キャンセル';
+  cancelBtn.addEventListener('click', ()=>{
+    editingItemId = null;
+    renderList();
+  });
+
+  btnRow.appendChild(cancelBtn);
+  btnRow.appendChild(saveBtn);
+  wrap.appendChild(btnRow);
+
+  return wrap;
+}
+
+function escapeHtml(s){
+  return s.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function showConfirm(message, onYes){
+  const overlay = document.createElement('div');
+  overlay.className = 'copy-overlay';
+
+  const box = document.createElement('div');
+  box.className = 'copy-box';
+
+  const title = document.createElement('div');
+  title.className = 'copy-box-title';
+  title.textContent = message;
+  box.appendChild(title);
+
+  const btnRow = document.createElement('div');
+  btnRow.className = 'edit-item-btns';
+
+  const cancelBtn = document.createElement('button');
+  cancelBtn.className = 'edit-item-cancel';
+  cancelBtn.textContent = 'キャンセル';
+  cancelBtn.addEventListener('click', ()=> document.body.removeChild(overlay));
+
+  const yesBtn = document.createElement('button');
+  yesBtn.className = 'edit-item-save';
+  yesBtn.textContent = '消す';
+  yesBtn.addEventListener('click', async ()=>{
+    document.body.removeChild(overlay);
+    await onYes();
+  });
+
+  btnRow.appendChild(cancelBtn);
+  btnRow.appendChild(yesBtn);
+  box.appendChild(btnRow);
+
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+}
+
+clearAllBtn.addEventListener('click', ()=>{
+  if(items.length === 0) return;
+  showConfirm('リストを全部消しますか？', async ()=>{
+    items = [];
+    render();
+    await save();
+  });
+});
+
+// メモのタイトル部分を長押しすると、そのメモの内容を作成前の入力欄に戻せる
+function attachLongPress(el, onLongPress, delay){
+  let timer = null;
+  const start = ()=>{ clearTimeout(timer); timer = setTimeout(onLongPress, delay || 600); };
+  const cancel = ()=>{ clearTimeout(timer); };
+  el.addEventListener('touchstart', start, { passive: false });
+  el.addEventListener('touchend', (e)=>{ e.preventDefault(); cancel(); });
+  el.addEventListener('touchcancel', cancel);
+  el.addEventListener('touchmove', cancel);
+  el.addEventListener('mousedown', start);
+  el.addEventListener('mouseup', cancel);
+  el.addEventListener('mouseleave', cancel);
+  el.addEventListener('contextmenu', (e)=> e.preventDefault());
+  el.addEventListener('selectstart', (e)=> e.preventDefault());
+}
+
+async function recallGroupToEditor(group){
+  const items_ = group.list.map(it => ({
+    item: it.item,
+    kind: it.kind || '',
+    qty: (it.qty === '' || it.qty === undefined || it.qty === null) ? '' : String(it.qty)
+  }));
+  const newGroupEntry = {
+    store: group.store,
+    items: items_.length ? items_ : [ { item:'', kind:'', qty:'' } ]
+  };
+  const idSet = new Set(group.list.map(it => it.id));
+  items = items.filter(it => !idSet.has(it.id));
+  draft.entries = [ newGroupEntry ];
+  editing = null;
+  editingItemId = null;
+  render();
+  await save();
+  setStatus('編集用に入力欄へ戻しました');
+}
+
+function render(){
+  renderFields();
+  updateAddBtn();
+  renderList();
+}
+
+load();
+</script>
+</body>
+</html>

@@ -5,18 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#ffffff">
   <title>幻実世界の電子遊戯 | 現電</title>
-  <meta name="description" content="幻実世界（インターネット）の電子遊戯（ゲームソフト）。現電。丸場所記憶ゲーム・飛べ飛・感覚謎解きが遊べるミニゲーム広場です。">
-  <meta name="keywords" content="現電,幻実世界,電子遊戯,現実世界の電子遊戯,ゲーム,ブラウザゲーム,無料ゲーム,ミニゲーム,丸場所記憶ゲーム,飛べ飛,感覚謎解き">
+  <meta name="description" content="幻実世界（インターネット）の電子遊戯（ゲームソフト）。現電。丸場所記憶ゲーム・飛べ飛・感覚謎解き・ショッピング メモが使えるミニゲーム広場です。">
+  <meta name="keywords" content="現電,幻実世界,電子遊戯,現実世界の電子遊戯,ゲーム,ブラウザゲーム,無料ゲーム,ミニゲーム,丸場所記憶ゲーム,飛べ飛,感覚謎解き,ショッピング メモ,買い物メモ">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://atugari.github.io/plaza.html">
   <meta property="og:title" content="幻実世界の電子遊戯 | 現電">
-  <meta property="og:description" content="現電 — 幻実世界（インターネット）の電子遊戯（ゲームソフト）。無料ブラウザゲーム3本収録。">
+  <meta property="og:description" content="現電 — 幻実世界（インターネット）の電子遊戯（ゲームソフト）。無料ブラウザゲーム4本+便利ツール収録。">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://atugari.github.io/plaza.html">
   <meta property="og:locale" content="ja_JP">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="幻実世界の電子遊戯 | 現電">
-  <meta name="twitter:description" content="現電 — 幻実世界（インターネット）の電子遊戯（ゲームソフト）。無料ブラウザゲーム3本収録。">
+  <meta name="twitter:description" content="現電 — 幻実世界（インターネット）の電子遊戯（ゲームソフト）。無料ブラウザゲーム4本+便利ツール収録。">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
@@ -271,6 +271,12 @@
       <div class="card-desc">四角いダンジョンを探索する<br>現在準備中です</div>
     </a>
 
+    <a class="game-card" href="shopping-memo.html" id="card-4">
+      <div class="card-tag">PERFECT TOOL</div>
+      <div class="card-title">ショッピング メモ</div>
+      <div class="card-desc">買い物リストをさっと作れる<br>お店ごとにまとめて管理</div>
+    </a>
+
   </div>
 
   
@@ -295,7 +301,7 @@
 <script>
   // ===== コントローラー操作 =====
   // Aボタン（buttons[1]）: 決定  Bボタン（buttons[0]）: 丸場所へ戻る
-  const CARDS = ['card-0', 'card-1', 'card-2', 'card-3'];
+  const CARDS = ['card-0', 'card-1', 'card-2', 'card-3', 'card-4'];
   let _cur = 0;
   let _gpConnected = false;
   let _prev = {};
