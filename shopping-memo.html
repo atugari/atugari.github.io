@@ -37,14 +37,15 @@
     text-align:center;
     margin: 0;
     font-weight: 600;
-    flex: 1;
+    white-space: nowrap;
   }
   .title-row{
+    margin-bottom: 8px;
+  }
+  .customize-row{
     display:flex;
-    align-items:center;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    gap: 8px;
+    justify-content:flex-end;
+    margin-bottom: 14px;
   }
   .customize-btn{
     background: none;
@@ -61,10 +62,6 @@
   .customize-btn:active{
     background: var(--sub);
     color: #fff;
-  }
-  .spacer-btn{
-    visibility: hidden;
-    pointer-events: none;
   }
   .input-card{
     background: #fff;
@@ -620,14 +617,23 @@
     text-decoration:none;
   }
   .plaza-back:active, .plaza-back:hover{ color: var(--ink); }
+  .privacy-note{
+    text-align:center;
+    margin-top: 14px;
+    font-size: 11px;
+    line-height: 1.7;
+    color: var(--sub);
+  }
+  .privacy-note .pn-lock{ margin-right: 4px; }
 </style>
 </head>
 <body>
 <div class="sheet">
   <div class="title-row">
-    <button class="customize-btn spacer-btn" aria-hidden="true" tabindex="-1">こだわる</button>
     <h1>ショッピング メモ</h1>
-    <button class="customize-btn" id="customizeBtn">こだわる</button>
+  </div>
+  <div class="customize-row">
+    <button class="customize-btn" id="customizeBtn">こだわるボタン</button>
   </div>
 
   <div class="input-card">
@@ -648,6 +654,7 @@
 
   <div id="list"></div>
   <div class="status" id="status"></div>
+  <p class="privacy-note"><span class="pn-lock">🔒</span>メモはこの端末の中だけに保存されます。<br>他の人に公開・共有されることはありません。</p>
   <a class="plaza-back" href="plaza.html">← 幻実世界の電子遊戯へ戻る</a>
 </div>
 
@@ -710,7 +717,7 @@ tabText.addEventListener('click', ()=>{
   render();
 });
 const SETTINGS_KEY = 'shopping-settings-v1';
-let settings = { kindPos: 'after-item', marker: 'circle', showDate: false, showNumber: false, inputMarker: 'none' }; // inputMarker: 'none' | 'dot' | 'circle'
+let settings = { kindPos: 'after-item', marker: 'circle', showDate: false, showNumber: false, inputMarker: 'none', oneLineText: false }; // inputMarker: 'none' | 'dot' | 'circle'
 
 function formatDateTime(ts){
   if(!ts) return '';
@@ -778,6 +785,47 @@ function showCustomizeModal(){
   title.className = 'copy-box-title';
   title.textContent = 'リストの見た目をこだわれます。';
   box.appendChild(title);
+
+  // ===== ページ切り替えタブ =====
+  const pageTabs = document.createElement('div');
+  pageTabs.className = 'mode-tabs';
+  const pageTab1 = document.createElement('button');
+  pageTab1.className = 'mode-tab active';
+  pageTab1.textContent = '1ページ目';
+  const pageTab2 = document.createElement('button');
+  pageTab2.className = 'mode-tab';
+  pageTab2.textContent = '2ページ目';
+  pageTabs.appendChild(pageTab1);
+  pageTabs.appendChild(pageTab2);
+  box.appendChild(pageTabs);
+
+  const page1 = document.createElement('div');
+  const page2 = document.createElement('div');
+  page2.style.display = 'none';
+
+  // 2ページ目: テキストモードの書き方設定
+  const oneLineTitle = document.createElement('div');
+  oneLineTitle.className = 'option-section-title';
+  oneLineTitle.textContent = 'テキストモードの書き方';
+  page2.appendChild(oneLineTitle);
+
+  page2.appendChild(buildToggleGroup([
+    { label:'1行形式（店名 品名… 数）', getVal: ()=>settings.oneLineText, setVal: (v)=>{ settings.oneLineText = v; } },
+  ]));
+
+  const oneLineHelp = document.createElement('div');
+  oneLineHelp.className = 'text-mode-help';
+  oneLineHelp.textContent = 'オンにすると、1行に「店名 品名 品名… 数 数 数」の順でスペース区切りで書けます。品名はいくつ書いてもOK。最後にスペースを空けて数字を書くと、順番に品名の個数になります。例:「イオン 栗 蟹 イクラ 8 6 2」→ 栗が8個、蟹が6個、イクラが2個。数字を書かなければ個数なしになります。';
+  page2.appendChild(oneLineHelp);
+
+  function showSettingsPage(n){
+    page1.style.display = n === 1 ? '' : 'none';
+    page2.style.display = n === 2 ? '' : 'none';
+    pageTab1.classList.toggle('active', n === 1);
+    pageTab2.classList.toggle('active', n === 2);
+  }
+  pageTab1.addEventListener('click', ()=> showSettingsPage(1));
+  pageTab2.addEventListener('click', ()=> showSettingsPage(2));
 
   const dummy = { item:'じゃがいも', kind:'北海道産', qty:3 };
   const preview = document.createElement('div');
@@ -847,8 +895,8 @@ function showCustomizeModal(){
   const posTitle = document.createElement('div');
   posTitle.className = 'option-section-title';
   posTitle.textContent = '位置';
-  box.appendChild(posTitle);
-  box.appendChild(buildOptionGroup('kindPos', [
+  page1.appendChild(posTitle);
+  page1.appendChild(buildOptionGroup('kindPos', [
     { val:'after-item',  labelHtml:'<span class="ol-line">《なにを》</span><span class="ol-line">の後ろ</span>' },
     { val:'after-qty',   labelHtml:'<span class="ol-line">『なんこ』</span><span class="ol-line">の後ろ</span>' },
     { val:'before-item', labelHtml:'<span class="ol-line">《なにを》</span><span class="ol-line">の前</span>' },
@@ -857,8 +905,8 @@ function showCustomizeModal(){
   const markerTitle = document.createElement('div');
   markerTitle.className = 'option-section-title';
   markerTitle.textContent = '記号';
-  box.appendChild(markerTitle);
-  box.appendChild(buildOptionGroup('marker', [
+  page1.appendChild(markerTitle);
+  page1.appendChild(buildOptionGroup('marker', [
     { val:'circle', labelHtml:'<span class="ol-line">①②③</span>' },
     { val:'dot',    labelHtml:'<span class="ol-line">・</span>' },
   ], ()=>settings.marker, (v)=>{ settings.marker = v; }));
@@ -866,8 +914,8 @@ function showCustomizeModal(){
   const infoTitle = document.createElement('div');
   infoTitle.className = 'option-section-title';
   infoTitle.textContent = 'メモに表示する情報';
-  box.appendChild(infoTitle);
-  box.appendChild(buildToggleGroup([
+  page1.appendChild(infoTitle);
+  page1.appendChild(buildToggleGroup([
     { label:'日付・時刻', getVal: ()=>settings.showDate, setVal: (v)=>{ settings.showDate = v; } },
     { label:'番号',       getVal: ()=>settings.showNumber, setVal: (v)=>{ settings.showNumber = v; } },
   ]));
@@ -875,15 +923,17 @@ function showCustomizeModal(){
   const inputMarkerTitle = document.createElement('div');
   inputMarkerTitle.className = 'option-section-title';
   inputMarkerTitle.textContent = '入力欄の－の右';
-  box.appendChild(inputMarkerTitle);
-  box.appendChild(buildOptionGroup('inputMarker', [
+  page1.appendChild(inputMarkerTitle);
+  page1.appendChild(buildOptionGroup('inputMarker', [
     { val:'none',   labelHtml:'<span class="ol-line">なし</span>' },
     { val:'dot',    labelHtml:'<span class="ol-line">・</span>' },
     { val:'circle', labelHtml:'<span class="ol-line">①②③</span>' },
   ], ()=>settings.inputMarker, (v)=>{ settings.inputMarker = v; }));
 
   refreshPreview();
-  box.appendChild(preview);
+  page1.appendChild(preview);
+  box.appendChild(page1);
+  box.appendChild(page2);
 
   const spacer = document.createElement('div');
   spacer.className = 'option-more-space';
@@ -1049,13 +1099,21 @@ function renderTextMode(){
   const textarea = document.createElement('textarea');
   textarea.className = 'text-mode-textarea';
   textarea.value = textDraft;
-  textarea.placeholder = 'イオン\n\nじゃがいも 3  北海道産\nにんじん 2\n\n\nコンビニ\n\nおにぎり';
+  if(settings.oneLineText){
+    textarea.placeholder = 'イオン 栗 蟹 イクラ 8 6 2\nコンビニ おにぎり お茶 2';
+  } else {
+    textarea.placeholder = 'イオン\n\nじゃがいも 3  北海道産\nにんじん 2\n\n\nコンビニ\n\nおにぎり';
+  }
   textarea.addEventListener('input', (e)=>{ textDraft = e.target.value; });
   fieldsEl.appendChild(textarea);
 
   const help = document.createElement('div');
   help.className = 'text-mode-help';
-  help.textContent = '1行目が店名、1行空けて買う物を1行ずつ。2行以上空けると次の店名になります。買う物は「名前 半角スペース 数字」でなんこ、その後にスペース2個以上あけて書くとどんなになります（例: じゃがいも 3  北海道産）。';
+  if(settings.oneLineText){
+    help.textContent = '1行に「店名 品名 品名… 数 数 数」をスペース区切りで。品名はいくつでもOK。最後にスペースを空けて数字を並べると、順番に個数になります（例: イオン 栗 蟹 イクラ 8 6 2 → 栗8・蟹6・イクラ2）。数字を書かなければ個数なし。1行ごとに別のお店になります。';
+  } else {
+    help.textContent = '1行目が店名、1行空けて買う物を1行ずつ。2行以上空けると次の店名になります。買う物は「名前 半角スペース 数字」でなんこ、その後にスペース2個以上あけて書くとどんなになります（例: じゃがいも 3  北海道産）。';
+  }
   fieldsEl.appendChild(help);
 
   setTimeout(()=> textarea.focus(), 0);
@@ -1082,8 +1140,39 @@ function parseItemLine(line){
   return { item, qty, kind };
 }
 
-function parseTextMode(text){
-  const rawLines = text.split('\n');
+// 1行形式: 「店名 品名 品名… 数」を1行で書く形式のパーサー
+// 末尾に続く数字トークンを、順番に品名の個数として割り当てる
+// 例: 「イオン 栗 蟹 イクラ 8 6 2」→ 栗8個・蟹6個・イクラ2個
+// 数字トークンが1つだけのとき（例:「862」）は1桁ずつ順に割り当てる
+function parseOneLineTextMode(text){
+  const z2h = s => s.replace(/[０-９]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xFEE0));
+  return text.split('\n')
+    .map(l => l.trim())
+    .filter(l => l !== '')
+    .map(line => {
+      const tokens = line.split(/[ 　]+/).map(z2h);
+      const store = tokens.shift() || '';
+
+      // 末尾から連続する数字トークンを個数として回収（品名が最低1つ残るように）
+      const qtys = [];
+      while(tokens.length > qtys.length + 1 && /^[0-9]+$/.test(tokens[tokens.length - 1])){
+        qtys.unshift(tokens.pop());
+      }
+
+      let items;
+      if(qtys.length === 1 && tokens.length > 1 && qtys[0].length === tokens.length){
+        // 数字トークンが1つで品名が複数、桁数が品名数と一致 → 1桁ずつ割り当て（例: 862）
+        const digits = qtys[0];
+        items = tokens.map((t, i) => ({ item: t, kind: '', qty: digits[i] }));
+      } else {
+        // 数字トークンを順番に割り当て（例: 8 6 2）。足りない分は個数なし
+        items = tokens.map((t, i) => ({ item: t, kind: '', qty: qtys[i] !== undefined ? qtys[i] : '' }));
+      }
+      return { store, items };
+    });
+}
+
+function parseTextMode(text){  const rawLines = text.split('\n');
   const blocks = [];
   let current = [];
   let blankStreak = 0;
@@ -1345,7 +1434,7 @@ function updateAddBtn(){
 
 addBtn.addEventListener('click', async ()=>{
   if(currentMode === 'text'){
-    const groups = parseTextMode(textDraft);
+    const groups = settings.oneLineText ? parseOneLineTextMode(textDraft) : parseTextMode(textDraft);
     groups.forEach(g=>{
       if(!g.store && g.items.length === 0) return;
       const batchId = Date.now() + '-' + Math.random().toString(36).slice(2,7);
