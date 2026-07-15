@@ -53,6 +53,18 @@
       letter-spacing: 0.45em;
       white-space: nowrap;
       margin-bottom: 6px;
+      font-family: 'Courier New', 'Osaka-Mono', monospace;
+      text-shadow: 1px 1px 0 #e4e4e4;
+      animation: label-blink 2.4s steps(1) infinite;
+    }
+    .title-label::before { content: '▶ '; }
+    .title-label::after { content: ' ◀'; }
+    @keyframes label-blink {
+      0%, 74%, 100% { opacity: 1; }
+      75%, 92% { opacity: 0.25; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .title-label { animation: none; }
     }
 
     /* 上段: 幻実世界（左寄せ） */
@@ -77,20 +89,75 @@
       font-weight: 400;
     }
 
+    /* インターネットのルビ: シャドウ付き */
+    .title-ruby.ruby-shadow {
+      text-shadow: 0 2px 4px rgba(123, 92, 255, 0.45);
+    }
+
     /* 漢字共通 */
     .title-kanji {
       display: block;
-      font-size: clamp(26px, 7.5vw, 36px);
+      font-size: clamp(30px, 8.8vw, 42px);
       font-weight: 900;
       color: #1a1a1a;
       letter-spacing: 0.05em;
       line-height: 1;
     }
 
+    /* 幻実世界: 幻想的なグラデーション文字 */
+    .title-kanji.fantasy {
+      background: linear-gradient(120deg,
+        #7b5cff 0%,
+        #4da3ff 25%,
+        #b06bff 50%,
+        #5ee0d8 75%,
+        #7b5cff 100%);
+      background-size: 300% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 7px rgba(140, 100, 255, 0.35));
+      animation: fantasy-shift 7s ease-in-out infinite;
+    }
+    @keyframes fantasy-shift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .title-kanji.fantasy { animation: none; }
+    }
+
+    /* 電子遊戯: サイバーパンク調ネオン文字 */
+    .title-kanji.cyber {
+      background: linear-gradient(100deg,
+        #00e5ff 0%,
+        #00a8ff 35%,
+        #b400ff 70%,
+        #ff2bd6 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      filter:
+        drop-shadow(0 0 5px rgba(0, 229, 255, 0.5))
+        drop-shadow(0 0 12px rgba(255, 43, 214, 0.3));
+      animation: cyber-flicker 4s linear infinite;
+    }
+    @keyframes cyber-flicker {
+      0%, 6.9%, 7.6%, 41.9%, 42.4%, 43.1%, 43.6%, 100% { opacity: 1; transform: none; }
+      7%, 7.5% { opacity: 0.45; transform: translateX(1px); }
+      42%, 42.3% { opacity: 0.55; transform: translateX(-1px) skewX(2deg); }
+      43.2%, 43.5% { opacity: 0.7; transform: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .title-kanji.cyber { animation: none; }
+    }
+
     /* 中段: の（中央） */
     .title-no {
       text-align: center;
-      font-size: clamp(26px, 7.5vw, 36px);
+      font-size: clamp(20px, 5.8vw, 28px);
       font-weight: 900;
       color: #1a1a1a;
       letter-spacing: 0.05em;
@@ -141,6 +208,78 @@
       color: #ccc;
     }
 
+    /* 丸場所記憶: 金銀赤の薄い丸を背景に */
+    .game-card.medal-bg {
+      overflow: hidden;
+    }
+    .game-card.medal-bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background:
+        radial-gradient(circle at 76% 26%, rgba(212, 175, 55, 0.18) 0 20px, transparent 21px),
+        radial-gradient(circle at 89% 62%, rgba(150, 155, 165, 0.20) 0 15px, transparent 16px),
+        radial-gradient(circle at 66% 76%, rgba(198, 64, 46, 0.14) 0 11px, transparent 12px);
+      pointer-events: none;
+    }
+
+    /* 飛べ飛: 大きな「飛」を斜めに薄く */
+    .game-card.tobe-bg {
+      overflow: hidden;
+    }
+    .game-card.tobe-bg::before {
+      content: '飛';
+      position: absolute;
+      right: 2px;
+      top: 50%;
+      transform: translateY(-50%) rotate(-18deg);
+      font-size: 92px;
+      font-weight: 900;
+      line-height: 1;
+      color: rgba(26, 26, 26, 0.06);
+      pointer-events: none;
+    }
+
+    /* ショッピング メモ: メモ用紙を薄く */
+    .game-card.memo-bg {
+      overflow: hidden;
+    }
+    .game-card.memo-bg::before {
+      content: '';
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      width: 84px;
+      height: 84px;
+      transform: translateY(-50%) rotate(6deg);
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231a1a1a' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 2h12a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z'/%3E%3Cline x1='8.5' y1='7' x2='15.5' y2='7'/%3E%3Cline x1='8.5' y1='11' x2='15.5' y2='11'/%3E%3Cline x1='8.5' y1='15' x2='13' y2='15'/%3E%3C/svg%3E") no-repeat center / contain;
+      opacity: 0.08;
+      pointer-events: none;
+    }
+
+    /* 作成中カード: 斜線で飛べないことを示す */    .game-card.wip {
+      pointer-events: none;
+      cursor: default;
+    }
+    .game-card.wip::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: repeating-linear-gradient(
+        -45deg,
+        rgba(0, 0, 0, 0.06) 0px,
+        rgba(0, 0, 0, 0.06) 8px,
+        transparent 8px,
+        transparent 20px
+      );
+      pointer-events: none;
+    }
+    .game-card.wip::after {
+      content: '';
+    }
+
     .card-tag {
       font-size: 10px;
       color: #aaa;
@@ -182,6 +321,32 @@
       margin: 20px 0 10px;
     }
 
+    /* 新作ラベル: ポップに目立たせる */
+    .section-label.pop {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.3em;
+      color: #ff4d6d;
+      text-shadow: 0 2px 0 rgba(255, 77, 109, 0.18);
+      animation: pop-float 1.4s ease-in-out infinite;
+    }
+    .section-label.pop .spark {
+      display: inline-block;
+      color: #ffb03a;
+      animation: pop-spin 2.8s linear infinite;
+    }
+    @keyframes pop-float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+    @keyframes pop-spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .section-label.pop, .section-label.pop .spark { animation: none; }
+    }
+
     .footer {
       text-align: center;
       margin-top: 44px;
@@ -190,6 +355,48 @@
       line-height: 2.5;
     }
     .footer a { color: #999; text-decoration: none; }
+
+    /* フッターブランド: グリッチ演出 */
+    .footer-brand {
+      position: relative;
+      display: inline-block;
+      font-size: 10px;
+      color: #ccc;
+      letter-spacing: 0.08em;
+    }
+    .footer-brand::before,
+    .footer-brand::after {
+      content: attr(data-text);
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .footer-brand::before {
+      color: #00e5ff;
+      animation: glitch-a 3.4s steps(1) infinite;
+    }
+    .footer-brand::after {
+      color: #ff2bd6;
+      animation: glitch-b 3.4s steps(1) infinite;
+    }
+    @keyframes glitch-a {
+      0%, 88.9%, 94.1%, 100% { opacity: 0; transform: none; clip-path: none; }
+      89% { opacity: 0.9; transform: translate(-1.5px, -1px); clip-path: inset(0 0 50% 0); }
+      91% { opacity: 0.9; transform: translate(1px, 0.5px); clip-path: inset(55% 0 0 0); }
+      93% { opacity: 0.9; transform: translate(-1px, 0); clip-path: inset(20% 0 40% 0); }
+    }
+    @keyframes glitch-b {
+      0%, 88.9%, 94.1%, 100% { opacity: 0; transform: none; clip-path: none; }
+      89.5% { opacity: 0.9; transform: translate(1.5px, 1px); clip-path: inset(45% 0 0 0); }
+      91.5% { opacity: 0.9; transform: translate(-1px, -0.5px); clip-path: inset(0 0 60% 0); }
+      93.5% { opacity: 0.9; transform: translate(1px, 0); clip-path: inset(30% 0 30% 0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .footer-brand::before, .footer-brand::after { animation: none; opacity: 0; }
+    }
     .footer a:active { color: #555; }
   
     /* ===== AdSense 広告 ===== */
@@ -225,8 +432,8 @@
     <!-- 幻実世界（左上） -->
     <div class="title-left">
       <div class="title-block">
-        <span class="title-ruby">インターネット</span>
-        <span class="title-kanji">幻実世界</span>
+        <span class="title-ruby ruby-shadow">インターネット</span>
+        <span class="title-kanji fantasy">幻実世界</span>
       </div>
     </div>
 
@@ -236,8 +443,8 @@
     <!-- 電子遊戯（右下） -->
     <div class="title-right">
       <div class="title-block">
-        <span class="title-ruby">ゲームソフト</span>
-        <span class="title-kanji">電子遊戯</span>
+        <span class="title-ruby ruby-shadow">ゲームソフト</span>
+        <span class="title-kanji cyber">電子遊戯</span>
       </div>
     </div>
   </div>
@@ -245,36 +452,38 @@
   <!-- ===== ゲームカード ===== -->
   <div class="game-list">
 
-    <a class="game-card" href="index.html" id="card-0">
+    <a class="game-card medal-bg" href="index.html" id="card-0">
       <div class="card-tag">MEMORY</div>
       <div class="card-title">丸場所記憶ゲーム</div>
       <div class="card-desc">丸の場所を記憶して答える<br>金・銀・赤のメダルを目指せ</div>
     </a>
 
-    <a class="game-card" href="dungeon.html" id="card-1">
+    <a class="game-card tobe-bg" href="dungeon.html" id="card-1">
       <div class="card-tag">ACTION</div>
       <div class="card-title">飛べ飛</div>
       <div class="card-desc">漢字「飛」が「壁」の隙間をくぐる<br>100壁達成で無理ゲーモード解放</div>
     </a>
 
-    <div class="section-label">— 新着 —</div>
+    <div class="section-label pop"><span class="spark">✦</span> 新作 <span class="spark">✦</span></div>
 
-    <a class="game-card" href="kankaku.html" id="card-2">
-      <div class="card-tag">PUZZLE <span class="badge">メンテナンス中</span></div>
-      <div class="card-title">感覚謎解き</div>
-      <div class="card-desc">言葉のない謎解き<br>現在準備中です</div>
-    </a>
-
-    <a class="game-card" href="shikaku-dungeon.html" id="card-3">
-      <div class="card-tag">RPG <span class="badge">メンテナンス中</span></div>
-      <div class="card-title">四角迷宮</div>
-      <div class="card-desc">四角いダンジョンを探索する<br>現在準備中です</div>
-    </a>
-
-    <a class="game-card" href="shopping-memo.html" id="card-4">
+    <a class="game-card memo-bg" href="shopping-memo.html" id="card-4">
       <div class="card-tag">PERFECT TOOL</div>
       <div class="card-title">ショッピング メモ</div>
       <div class="card-desc">買い物リストをさっと作れる<br>お店ごとにまとめて管理</div>
+    </a>
+
+    <div class="section-label">— 制作中 —</div>
+
+    <a class="game-card wip" id="card-2">
+      <div class="card-tag">PUZZLE <span class="badge">制作中</span></div>
+      <div class="card-title">感覚謎解き</div>
+      <div class="card-desc">言葉のない謎解き<br>現在制作中です</div>
+    </a>
+
+    <a class="game-card wip" id="card-3">
+      <div class="card-tag">RPG <span class="badge">制作中</span></div>
+      <div class="card-title">四角迷宮</div>
+      <div class="card-desc">四角いダンジョンを探索する<br>現在制作中です</div>
     </a>
 
   </div>
@@ -291,9 +500,8 @@
   <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
 </div>
 <div class="footer">
-    <a href="index.html">丸場所記憶ゲームへ戻る</a><br>
-    <span style="font-size:10px;color:#ccc;letter-spacing:0.08em;">現電 — 幻実世界の電子遊戯</span><br>
-    <span style="font-size:9px;letter-spacing:0.05em;">v2026.03.29</span>
+    <span class="footer-brand" data-text="現電 — 幻実世界の電子遊戯">現電 — 幻実世界の電子遊戯</span><br>
+    <span style="font-size:9px;letter-spacing:0.05em;">ver2026.07.15</span>
   </div>
 
 </div>
@@ -301,7 +509,7 @@
 <script>
   // ===== コントローラー操作 =====
   // Aボタン（buttons[1]）: 決定  Bボタン（buttons[0]）: 丸場所へ戻る
-  const CARDS = ['card-0', 'card-1', 'card-2', 'card-3', 'card-4'];
+  const CARDS = ['card-0', 'card-1', 'card-4', 'card-2', 'card-3'];
   let _cur = 0;
   let _gpConnected = false;
   let _prev = {};
@@ -340,7 +548,8 @@
       const bA = _btnOn(gp.buttons[1]);
       if(bA && !_prev[idx+'_A']){
         const el = document.getElementById(CARDS[_cur]);
-        if(el) window.location.href = el.getAttribute('href');
+        const href = el ? el.getAttribute('href') : null;
+        if(href) window.location.href = href;
       }
       _prev[idx+'_A'] = bA;
 
