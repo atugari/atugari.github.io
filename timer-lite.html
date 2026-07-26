@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- timer-lite v1 : 古いChrome(39+)向け軽量版。ES5のみ・CSS変数/flex gap/clip-path不使用 -->
+<!-- timer-lite v5 : 実機デバッグ用の画面エラー表示・版数表示を追加 -->
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -19,17 +19,21 @@
     display:inline-block; text-decoration:none; color:#141414; background:#f4f4f4;
     border:3px solid #141414; font-weight:bold; font-size:12px; padding:8px 12px; margin-left:6px;
   }
-  .stage { text-align:center; white-space:nowrap; margin-top:10px; }
+  .stage { text-align:center; margin-top:10px; }
+  .stage.horiz { white-space:nowrap; }
   .meter {
-    display:inline-block; vertical-align:middle;
     width:64px; border:6px solid #141414; padding:6px; background:#f4f4f4;
   }
   .cell {
-    height:26px; border:3px solid #141414; background:#f4f4f4; margin-bottom:5px;
+    border:3px solid #141414; background:#f4f4f4; margin-bottom:5px;
   }
   .cell.last { margin-bottom:0; }
   .cell.on { background:#141414; }
-  .panel { display:inline-block; vertical-align:middle; margin-left:22px; white-space:normal; width:240px; }
+  .panel { white-space:normal; width:240px; }
+  .stage.horiz > .meter, .stage.horiz > .panel { display:inline-block; vertical-align:middle; }
+  .stage.horiz > * + * { margin-left:22px; }
+  .stage.vert > .meter, .stage.vert > .panel { display:block; margin-left:auto; margin-right:auto; }
+  .stage.vert > * + * { margin-top:18px; }
   .time {
     width:100%; border:0; border-bottom:5px solid #141414; background:transparent;
     color:#141414; font-family:"Courier New", monospace; font-weight:bold;
@@ -58,21 +62,46 @@
 </style>
 </head>
 <body>
+<script>
+/* 実機デバッグ用：JSエラーを画面下に赤帯で表示（Chrome39でも動くES5） */
+window.onerror = function(msg, url, line){
+  var d = document.getElementById('errbox');
+  if (!d) {
+    d = document.createElement('div');
+    d.id = 'errbox';
+    d.style.position = 'fixed'; d.style.left = '0'; d.style.right = '0'; d.style.bottom = '0';
+    d.style.background = '#c0392b'; d.style.color = '#fff';
+    d.style.font = '12px monospace'; d.style.padding = '8px'; d.style.zIndex = '99999';
+    d.style.whiteSpace = 'pre-wrap';
+    document.body.appendChild(d);
+  }
+  d.appendChild(document.createTextNode('ERR: ' + msg + ' (line ' + line + ')\n'));
+  return false;
+};
+</script>
   <div class="wrap">
     <div class="top">
       <a class="lnk" href="plaza.html">← 幻実世界の電子遊戯へ</a>
       <a class="lnk" href="timer-gauge.html">高機能版へ</a>
     </div>
 
-    <div class="stage">
+    <div class="stage horiz" id="stage">
       <div class="meter" id="meter"></div>
-      <div class="panel">
+      <div class="panel" id="panel">
         <input class="time" id="time" type="text" value="01:00">
         <div class="controls">
           <button class="btn" id="startBtn">START</button>
           <button class="btn" id="resetBtn" style="margin-left:2%;">RESET</button>
         </div>
       </div>
+    </div>
+
+    <div class="row">
+      <div class="lbl">配置</div>
+      <button class="opt on" data-layout="left">メーター左</button>
+      <button class="opt" data-layout="right">メーター右</button>
+      <button class="opt" data-layout="top">メーター上</button>
+      <button class="opt" data-layout="bottom">メーター下</button>
     </div>
 
     <div class="row">
@@ -89,9 +118,18 @@
       <button class="opt opt2" data-mode="fill">増える</button>
     </div>
 
+    <div class="row">
+      <div class="lbl">アラーム音（タップで試聴）</div>
+      <button class="opt" data-vol="none">無し</button>
+      <button class="opt" data-vol="low">小</button>
+      <button class="opt on" data-vol="mid">中</button>
+      <button class="opt" data-vol="high">大</button>
+    </div>
+
     <div class="note">
       軽量版（古い端末・古いブラウザ向け）です。<br>
-      色・音・配置などの機能は「高機能版」でご利用ください。
+      色・音（効果音）・配置などの高度な機能は「高機能版」でご利用ください。<br>
+      <span style="opacity:.6;">lite v4</span>
     </div>
   </div>
 
@@ -105,6 +143,34 @@
   var endAt = 0;
   var tickId = null;
   var editing = false;
+  var alarmVol = 0.67;              // 0=無し / .34小 / .67中 / 1大
+  var audioCtx = null;
+  function initAudio(){
+    if (audioCtx) return;
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) audioCtx = new AC();
+    } catch (e) { audioCtx = null; }
+  }
+  function beep(t, freq, dur, vol){
+    if (!audioCtx) return;
+    var osc = audioCtx.createOscillator();
+    var g = audioCtx.createGain();
+    osc.type = 'square';
+    osc.frequency.value = freq;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.linearRampToValueAtTime(vol, t + 0.01);
+    g.gain.linearRampToValueAtTime(0.0001, t + dur);
+    osc.connect(g); g.connect(audioCtx.destination);
+    osc.start(t); osc.stop(t + dur + 0.03);
+  }
+  function playAlarm(){
+    if (!audioCtx || alarmVol <= 0) return;
+    var t = audioCtx.currentTime, v = alarmVol * 0.3;
+    beep(t,        880,  0.15, v);
+    beep(t + 0.22, 880,  0.15, v);
+    beep(t + 0.44, 1174, 0.32, v);
+  }
 
   var meterEl  = document.getElementById('meter');
   var timeEl   = document.getElementById('time');
@@ -113,9 +179,13 @@
 
   function buildMeter(){
     while (meterEl.firstChild) { meterEl.removeChild(meterEl.firstChild); }
+    var INNER = 300, MARGIN = 5;                       // メーターの総高さは常に一定
+    var cellH = (INNER - (CELLS - 1) * MARGIN) / CELLS;
+    if (cellH < 4) cellH = 4;
     for (var i = 0; i < CELLS; i++) {
       var d = document.createElement('div');
       d.className = 'cell' + (i === CELLS - 1 ? ' last' : '');
+      d.style.height = cellH + 'px';
       meterEl.appendChild(d);
     }
   }
@@ -172,6 +242,7 @@
       running = false;
       if (tickId) { clearInterval(tickId); tickId = null; }
       startBtn.innerHTML = 'START';
+      playAlarm();
       render();
       return;
     }
@@ -181,6 +252,7 @@
   function start(){
     var parsed = parseTime(timeEl.value);
     if (parsed === null || parsed <= 0) { flash(); return; }
+    initAudio();                                 // ユーザー操作内で音声を有効化
     if (!running && remainMs <= 0) remainMs = setMs;
     if (!running && (remainMs === setMs || remainMs <= 0)) { setMs = parsed; remainMs = parsed; }
     else if (!running && setMs !== parsed && remainMs === setMs) { setMs = parsed; remainMs = parsed; }
@@ -255,7 +327,61 @@
     })(modeBtns[d2]);
   }
 
+  // 配置プリセット（メーター左/右/上/下）
+  function applyLayout(name){
+    var stage = document.getElementById('stage');
+    var meter = document.getElementById('meter');
+    var panel = document.getElementById('panel');
+    var horiz = (name === 'left' || name === 'right');
+    stage.className = 'stage ' + (horiz ? 'horiz' : 'vert');
+    var meterFirst = (name === 'left' || name === 'top');
+    if (meterFirst) { stage.appendChild(meter); stage.appendChild(panel); }
+    else { stage.appendChild(panel); stage.appendChild(meter); }
+    try { localStorage.setItem('timerLiteLayout', name); } catch (e) {}
+  }
+  var layoutBtns = document.querySelectorAll('.opt[data-layout]');
+  for (var q = 0; q < layoutBtns.length; q++) {
+    (function(btn){
+      btn.onclick = function(){
+        for (var k = 0; k < layoutBtns.length; k++) layoutBtns[k].className = 'opt';
+        btn.className = 'opt on';
+        applyLayout(btn.getAttribute('data-layout'));
+      };
+    })(layoutBtns[q]);
+  }
+  var savedLayout = 'left';
+  try { var sv = localStorage.getItem('timerLiteLayout'); if (sv) savedLayout = sv; } catch (e) {}
+  for (var q2 = 0; q2 < layoutBtns.length; q2++) {
+    layoutBtns[q2].className = (layoutBtns[q2].getAttribute('data-layout') === savedLayout) ? 'opt on' : 'opt';
+  }
+
+  // アラーム音量（タップで試聴）
+  var volBtns = document.querySelectorAll('.opt[data-vol]');
+  var VOLMAP = { none:0, low:0.34, mid:0.67, high:1 };
+  for (var vb = 0; vb < volBtns.length; vb++) {
+    (function(btn){
+      btn.onclick = function(){
+        alarmVol = VOLMAP[btn.getAttribute('data-vol')];
+        for (var k = 0; k < volBtns.length; k++) volBtns[k].className = 'opt';
+        btn.className = 'opt on';
+        try { localStorage.setItem('timerLiteVol', btn.getAttribute('data-vol')); } catch (e) {}
+        initAudio();
+        playAlarm();
+      };
+    })(volBtns[vb]);
+  }
+  try {
+    var svv = localStorage.getItem('timerLiteVol');
+    if (svv && VOLMAP.hasOwnProperty(svv)) {
+      alarmVol = VOLMAP[svv];
+      for (var vb2 = 0; vb2 < volBtns.length; vb2++) {
+        volBtns[vb2].className = (volBtns[vb2].getAttribute('data-vol') === svv) ? 'opt on' : 'opt';
+      }
+    }
+  } catch (e) {}
+
   buildMeter();
+  applyLayout(savedLayout);
   render();
 })();
 </script>
