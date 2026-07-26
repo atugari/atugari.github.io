@@ -258,6 +258,23 @@
       pointer-events: none;
     }
 
+    /* メータータイマー: 縦のメーター(四角)を薄く */
+    .game-card.timer-bg {
+      overflow: hidden;
+    }
+    .game-card.timer-bg::before {
+      content: '';
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      width: 70px;
+      height: 88px;
+      transform: translateY(-50%);
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 30' fill='none' stroke='%231a1a1a' stroke-width='1.4'%3E%3Crect x='7' y='2' width='10' height='5'/%3E%3Crect x='7' y='9' width='10' height='5'/%3E%3Crect x='7' y='16' width='10' height='5'/%3E%3Crect x='7' y='23' width='10' height='5'/%3E%3C/svg%3E") no-repeat center / contain;
+      opacity: 0.08;
+      pointer-events: none;
+    }
+
     /* 作成中カード: 斜線で飛べないことを示す */    .game-card.wip {
       pointer-events: none;
       cursor: default;
@@ -472,6 +489,12 @@
       <div class="card-desc">買い物リストをさっと作れる<br>お店ごとにまとめて管理</div>
     </a>
 
+    <a class="game-card timer-bg" href="timer-gauge.html" id="card-5">
+      <div class="card-tag">TOOL</div>
+      <div class="card-title">メータータイマー</div>
+      <div class="card-desc">メーター付きの多機能タイマー<br>色・音・配置を自由にカスタム</div>
+    </a>
+
     <div class="section-label">— 制作中 —</div>
 
     <a class="game-card wip" id="card-2">
@@ -509,7 +532,7 @@
 <script>
   // ===== コントローラー操作 =====
   // Aボタン（buttons[1]）: 決定  Bボタン（buttons[0]）: 丸場所へ戻る
-  const CARDS = ['card-0', 'card-1', 'card-4', 'card-2', 'card-3'];
+  const CARDS = ['card-0', 'card-1', 'card-4', 'card-5', 'card-2', 'card-3'];
   let _cur = 0;
   let _gpConnected = false;
   let _prev = {};
