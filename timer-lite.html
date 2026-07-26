@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- timer-lite v5 : 実機デバッグ用の画面エラー表示・版数表示を追加 -->
+<!-- timer-lite v6 : 時間プリセット/背景色/終了点滅を追加(機能ごとエラー切り分け) -->
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -59,6 +59,28 @@
     .panel { width:150px; margin-left:14px; }
     .time { font-size:40px; }
   }
+
+  /* 背景色テーマ（CSS変数を使わずベタ指定・Chrome39対応） */
+  body.theme-dark { background:#141414; color:#f4f4f4; }
+  body.theme-dark .meter,
+  body.theme-dark .cell { border-color:#f4f4f4; background:#141414; }
+  body.theme-dark .cell.on { background:#f4f4f4; }
+  body.theme-dark .time { color:#f4f4f4; border-bottom-color:#f4f4f4; }
+  body.theme-dark .btn,
+  body.theme-dark .opt,
+  body.theme-dark .lnk { border-color:#f4f4f4; background:#141414; color:#f4f4f4; }
+  body.theme-dark .opt.on { background:#f4f4f4; color:#141414; }
+  body.theme-dark .note { color:#999; }
+
+  body.theme-sepia { background:#efe6d3; color:#4a3f30; }
+  body.theme-sepia .meter,
+  body.theme-sepia .cell { border-color:#4a3f30; background:#efe6d3; }
+  body.theme-sepia .cell.on { background:#4a3f30; }
+  body.theme-sepia .time { color:#4a3f30; border-bottom-color:#4a3f30; }
+  body.theme-sepia .btn,
+  body.theme-sepia .opt,
+  body.theme-sepia .lnk { border-color:#4a3f30; background:#efe6d3; color:#4a3f30; }
+  body.theme-sepia .opt.on { background:#4a3f30; color:#efe6d3; }
 </style>
 </head>
 <body>
@@ -126,10 +148,31 @@ window.onerror = function(msg, url, line){
       <button class="opt" data-vol="high">大</button>
     </div>
 
+    <div class="row" id="feat-time">
+      <div class="lbl">時間プリセット</div>
+      <button class="opt" data-preset="60">1分</button>
+      <button class="opt" data-preset="180">3分</button>
+      <button class="opt" data-preset="300">5分</button>
+      <button class="opt" data-preset="600">10分</button>
+    </div>
+
+    <div class="row" id="feat-theme">
+      <div class="lbl">背景色</div>
+      <button class="opt on" data-theme="light">白</button>
+      <button class="opt" data-theme="dark">黒</button>
+      <button class="opt" data-theme="sepia">セピア</button>
+    </div>
+
+    <div class="row" id="feat-blink">
+      <div class="lbl">終了時の点滅</div>
+      <button class="opt opt2 on" data-blink="on">あり</button>
+      <button class="opt opt2" data-blink="off">なし</button>
+    </div>
+
     <div class="note">
       軽量版（古い端末・古いブラウザ向け）です。<br>
       色・音（効果音）・配置などの高度な機能は「高機能版」でご利用ください。<br>
-      <span style="opacity:.6;">lite v4</span>
+      <span style="opacity:.6;">lite v6</span>
     </div>
   </div>
 
@@ -170,6 +213,42 @@ window.onerror = function(msg, url, line){
     beep(t,        880,  0.15, v);
     beep(t + 0.22, 880,  0.15, v);
     beep(t + 0.44, 1174, 0.32, v);
+  }
+
+  /* 追加機能は個別にtry/catch。失敗したらその機能だけ無効化し、赤帯に機能名を表示 */
+  function showErr(text){
+    var d = document.getElementById('errbox');
+    if (!d) {
+      d = document.createElement('div'); d.id = 'errbox';
+      d.style.position='fixed'; d.style.left='0'; d.style.right='0'; d.style.bottom='0';
+      d.style.background='#c0392b'; d.style.color='#fff'; d.style.font='12px monospace';
+      d.style.padding='8px'; d.style.zIndex='99999'; d.style.whiteSpace='pre-wrap';
+      document.body.appendChild(d);
+    }
+    d.appendChild(document.createTextNode(text + '\n'));
+  }
+  function feature(name, key, fn){
+    try { fn(); }
+    catch (e) {
+      showErr('機能「' + name + '」を無効化: ' + (e && e.message ? e.message : e));
+      var el = document.getElementById('feat-' + key);
+      if (el) el.style.display = 'none';
+    }
+  }
+
+  // 終了時の点滅（メーターを数回チカチカ）
+  var blinkOn = true;
+  var blinkTimer = null;
+  function stopBlink(){ if (blinkTimer) { clearInterval(blinkTimer); blinkTimer = null; } meterEl.style.opacity = '1'; }
+  function startBlink(){
+    stopBlink();
+    if (!blinkOn) return;
+    var on = true, count = 0;
+    blinkTimer = setInterval(function(){
+      on = !on; count++;
+      meterEl.style.opacity = on ? '1' : '0.25';
+      if (count >= 8) { stopBlink(); }
+    }, 300);
   }
 
   var meterEl  = document.getElementById('meter');
@@ -243,6 +322,7 @@ window.onerror = function(msg, url, line){
       if (tickId) { clearInterval(tickId); tickId = null; }
       startBtn.innerHTML = 'START';
       playAlarm();
+      startBlink();
       render();
       return;
     }
@@ -253,6 +333,7 @@ window.onerror = function(msg, url, line){
     var parsed = parseTime(timeEl.value);
     if (parsed === null || parsed <= 0) { flash(); return; }
     initAudio();                                 // ユーザー操作内で音声を有効化
+    stopBlink();
     if (!running && remainMs <= 0) remainMs = setMs;
     if (!running && (remainMs === setMs || remainMs <= 0)) { setMs = parsed; remainMs = parsed; }
     else if (!running && setMs !== parsed && remainMs === setMs) { setMs = parsed; remainMs = parsed; }
@@ -269,6 +350,7 @@ window.onerror = function(msg, url, line){
   function pause(){
     running = false;
     if (tickId) { clearInterval(tickId); tickId = null; }
+    stopBlink();
     startBtn.innerHTML = 'START';
     render();
   }
@@ -276,6 +358,7 @@ window.onerror = function(msg, url, line){
   function reset(){
     running = false;
     if (tickId) { clearInterval(tickId); tickId = null; }
+    stopBlink();
     var parsed = parseTime(timeEl.value);
     if (parsed !== null && parsed > 0) setMs = parsed;
     remainMs = setMs;
@@ -379,6 +462,64 @@ window.onerror = function(msg, url, line){
       }
     }
   } catch (e) {}
+
+  // ---- 追加機能（各機能は個別にtry/catch。失敗しても他は動く）----
+  feature('時間プリセット', 'time', function(){
+    var pbtns = document.querySelectorAll('.opt[data-preset]');
+    for (var i = 0; i < pbtns.length; i++) {
+      (function(btn){
+        btn.onclick = function(){
+          stopBlink();
+          running = false; if (tickId) { clearInterval(tickId); tickId = null; }
+          startBtn.innerHTML = 'START';
+          setMs = parseInt(btn.getAttribute('data-preset'), 10) * 1000;
+          remainMs = setMs;
+          render();
+        };
+      })(pbtns[i]);
+    }
+  });
+
+  feature('背景色', 'theme', function(){
+    var tbtns = document.querySelectorAll('.opt[data-theme]');
+    function setTheme(name){
+      document.body.className = (name === 'light') ? '' : ('theme-' + name);
+      try { localStorage.setItem('timerLiteTheme', name); } catch (e) {}
+    }
+    for (var i = 0; i < tbtns.length; i++) {
+      (function(btn){
+        btn.onclick = function(){
+          for (var k = 0; k < tbtns.length; k++) tbtns[k].className = 'opt';
+          btn.className = 'opt on';
+          setTheme(btn.getAttribute('data-theme'));
+        };
+      })(tbtns[i]);
+    }
+    var sv = null; try { sv = localStorage.getItem('timerLiteTheme'); } catch (e) {}
+    if (sv) {
+      for (var j = 0; j < tbtns.length; j++) tbtns[j].className = (tbtns[j].getAttribute('data-theme') === sv) ? 'opt on' : 'opt';
+      setTheme(sv);
+    }
+  });
+
+  feature('終了時の点滅', 'blink', function(){
+    var bbtns = document.querySelectorAll('.opt[data-blink]');
+    for (var i = 0; i < bbtns.length; i++) {
+      (function(btn){
+        btn.onclick = function(){
+          blinkOn = (btn.getAttribute('data-blink') === 'on');
+          for (var k = 0; k < bbtns.length; k++) bbtns[k].className = 'opt opt2';
+          btn.className = 'opt opt2 on';
+          try { localStorage.setItem('timerLiteBlink', blinkOn ? 'on' : 'off'); } catch (e) {}
+        };
+      })(bbtns[i]);
+    }
+    var sv = null; try { sv = localStorage.getItem('timerLiteBlink'); } catch (e) {}
+    if (sv) {
+      blinkOn = (sv === 'on');
+      for (var j = 0; j < bbtns.length; j++) bbtns[j].className = (bbtns[j].getAttribute('data-blink') === sv) ? 'opt opt2 on' : 'opt opt2';
+    }
+  });
 
   buildMeter();
   applyLayout(savedLayout);
