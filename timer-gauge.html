@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- timer-gauge v51 : 戻り先URLをatugari.github.io/plaza.htmlに修正 -->
+<!-- timer-gauge v52 : 軽量版(timer-lite)への切替ボタン＋古いブラウザ検出バナー -->
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -159,6 +159,7 @@
     padding:8px 12px; border:2px solid var(--ink); color:var(--ink); background:var(--paper);
   }
   .back-btn:active{ background:var(--ink); color:var(--paper); }
+  .compat-link{ display:block; text-align:center; margin:0 0 16px; }
 
   /* プレビュー（空きスペースに実演） */
   .preview{ display:flex; flex-direction:column; align-items:center; gap:12px; margin-block:auto; }
@@ -403,6 +404,21 @@
 </style>
 </head>
 <body>
+<div id="oldBanner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:#141414;color:#fff;font-family:sans-serif;font-size:14px;line-height:1.5;text-align:center;padding:12px 14px;">
+  お使いのブラウザでは表示が崩れる場合があります。
+  <a href="timer-lite.html" style="color:#fff;font-weight:bold;text-decoration:underline;">軽量版を開く →</a>
+</div>
+<script>
+/* 古いブラウザ判定（純ES5・下のメインJSが読めなくても動く）。CSS変数非対応なら軽量版へ誘導 */
+(function(){
+  try {
+    var ok = window.CSS && CSS.supports && CSS.supports('--a', '0');
+    if (!ok) { document.getElementById('oldBanner').style.display = 'block'; }
+  } catch (e) {
+    var b = document.getElementById('oldBanner'); if (b) { b.style.display = 'block'; }
+  }
+})();
+</script>
   <!-- 設定ボタン -->
   <button class="settings-btn" id="settingsBtn" aria-haspopup="dialog">設定</button>
 
@@ -440,6 +456,7 @@
         <h2 id="modalTitle">設定</h2>
         <a class="back-btn" href="https://atugari.github.io/plaza.html">← 幻実世界の電子遊戯へ</a>
       </div>
+      <a class="back-btn compat-link" href="timer-lite.html">🔧 軽量版（古い端末・古いブラウザ向け）へ</a>
 
       <div class="tabs" role="tablist">
         <button class="tab active" data-tab="timer" role="tab">タイマー</button>
@@ -653,7 +670,7 @@
         <button class="ctrl" id="applyBtn">適用</button>
         <button class="ctrl" id="closeBtn">閉じる</button>
       </div>
-      <div style="margin-top:12px;font-size:10px;letter-spacing:.1em;opacity:.4;text-align:right;">v51</div>
+      <div style="margin-top:12px;font-size:10px;letter-spacing:.1em;opacity:.4;text-align:right;">v52</div>
     </div>
 
     <!-- 適用確認 -->

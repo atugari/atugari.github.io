@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<!-- timer-lite v1 : 古いChrome(39+)向け軽量版。ES5のみ・CSS変数/flex gap/clip-path不使用 -->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>メータータイマー（軽量版）</title>
+<style>
+  * { -webkit-box-sizing:border-box; box-sizing:border-box; }
+  html, body { height:100%; margin:0; }
+  body {
+    background:#f4f4f4; color:#141414;
+    font-family:"Courier New", monospace;
+    -webkit-text-size-adjust:100%;
+  }
+  .wrap { padding:18px; text-align:center; }
+  .top { text-align:right; margin-bottom:8px; }
+  .lnk {
+    display:inline-block; text-decoration:none; color:#141414; background:#f4f4f4;
+    border:3px solid #141414; font-weight:bold; font-size:12px; padding:8px 12px; margin-left:6px;
+  }
+  .stage { text-align:center; white-space:nowrap; margin-top:10px; }
+  .meter {
+    display:inline-block; vertical-align:middle;
+    width:64px; border:6px solid #141414; padding:6px; background:#f4f4f4;
+  }
+  .cell {
+    height:26px; border:3px solid #141414; background:#f4f4f4; margin-bottom:5px;
+  }
+  .cell.last { margin-bottom:0; }
+  .cell.on { background:#141414; }
+  .panel { display:inline-block; vertical-align:middle; margin-left:22px; white-space:normal; width:240px; }
+  .time {
+    width:100%; border:0; border-bottom:5px solid #141414; background:transparent;
+    color:#141414; font-family:"Courier New", monospace; font-weight:bold;
+    font-size:56px; text-align:center; padding:4px 0; margin:0;
+  }
+  .controls { margin-top:20px; }
+  .btn {
+    font-family:"Courier New", monospace; font-weight:bold; font-size:18px;
+    padding:14px 10px; border:5px solid #141414; background:#f4f4f4; color:#141414;
+    width:48%; cursor:pointer;
+  }
+  .row { margin-top:16px; }
+  .lbl { font-size:12px; font-weight:bold; margin-bottom:6px; letter-spacing:1px; }
+  .opt {
+    font-family:"Courier New", monospace; font-weight:bold; font-size:15px;
+    padding:10px 0; border:3px solid #141414; background:#f4f4f4; color:#141414;
+    width:23%; cursor:pointer;
+  }
+  .opt.on { background:#141414; color:#f4f4f4; }
+  .opt2 { width:47%; }
+  .note { font-size:11px; color:#555; margin-top:18px; line-height:1.5; }
+  @media (max-width:520px){
+    .panel { width:150px; margin-left:14px; }
+    .time { font-size:40px; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <a class="lnk" href="plaza.html">← 幻実世界の電子遊戯へ</a>
+      <a class="lnk" href="timer-gauge.html">高機能版へ</a>
+    </div>
+
+    <div class="stage">
+      <div class="meter" id="meter"></div>
+      <div class="panel">
+        <input class="time" id="time" type="text" value="01:00">
+        <div class="controls">
+          <button class="btn" id="startBtn">START</button>
+          <button class="btn" id="resetBtn" style="margin-left:2%;">RESET</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="lbl">メーターの数</div>
+      <button class="opt" data-count="5">5</button>
+      <button class="opt on" data-count="10">10</button>
+      <button class="opt" data-count="15">15</button>
+      <button class="opt" data-count="20">20</button>
+    </div>
+
+    <div class="row">
+      <div class="lbl">メーターの動き</div>
+      <button class="opt opt2 on" data-mode="drain">減る</button>
+      <button class="opt opt2" data-mode="fill">増える</button>
+    </div>
+
+    <div class="note">
+      軽量版（古い端末・古いブラウザ向け）です。<br>
+      色・音・配置などの機能は「高機能版」でご利用ください。
+    </div>
+  </div>
+
+<script>
+(function(){
+  var CELLS = 10;
+  var mode = 'drain';
+  var setMs = 60000;
+  var remainMs = 60000;
+  var running = false;
+  var endAt = 0;
+  var tickId = null;
+  var editing = false;
+
+  var meterEl  = document.getElementById('meter');
+  var timeEl   = document.getElementById('time');
+  var startBtn = document.getElementById('startBtn');
+  var resetBtn = document.getElementById('resetBtn');
+
+  function buildMeter(){
+    while (meterEl.firstChild) { meterEl.removeChild(meterEl.firstChild); }
+    for (var i = 0; i < CELLS; i++) {
+      var d = document.createElement('div');
+      d.className = 'cell' + (i === CELLS - 1 ? ' last' : '');
+      meterEl.appendChild(d);
+    }
+  }
+
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+  function fmt(ms){
+    var s = Math.ceil(ms / 1000);
+    if (s < 0) s = 0;
+    var m = Math.floor(s / 60);
+    return pad(m) + ':' + pad(s - m * 60);
+  }
+
+  function parseTime(str){
+    if (!str) return null;
+    str = ('' + str).replace(/\s/g, '');
+    if (str.indexOf(':') >= 0) {
+      var p = str.split(':');
+      var mm = parseInt(p[0], 10);
+      var ss = parseInt(p[1], 10);
+      if (isNaN(mm) || isNaN(ss)) return null;
+      return (mm * 60 + ss) * 1000;
+    }
+    var digits = str.replace(/[^0-9]/g, '');
+    if (!digits.length) return null;
+    var num = parseInt(digits, 10);
+    if (isNaN(num)) return null;
+    if (digits.length <= 2) return num * 1000;            // 秒
+    var secPart = parseInt(digits.slice(-2), 10);
+    var minPart = parseInt(digits.slice(0, digits.length - 2), 10);
+    return (minPart * 60 + secPart) * 1000;
+  }
+
+  function render(){
+    if (!editing) timeEl.value = fmt(remainMs);
+    var per = setMs / CELLS;
+    var rem = per > 0 ? Math.ceil(remainMs / per) : 0;
+    if (rem < 0) rem = 0;
+    if (rem > CELLS) rem = CELLS;
+    var onCount = (mode === 'fill') ? (CELLS - rem) : rem;
+    var cells = meterEl.childNodes;
+    for (var i = 0; i < cells.length; i++) {
+      var fromBottom = cells.length - i;      // 1 = 一番下
+      var on = fromBottom <= onCount;
+      var base = 'cell' + (i === cells.length - 1 ? ' last' : '');
+      cells[i].className = on ? base + ' on' : base;
+    }
+  }
+
+  function tick(){
+    if (!running) return;
+    remainMs = endAt - (new Date()).getTime();
+    if (remainMs <= 0) {
+      remainMs = 0;
+      running = false;
+      if (tickId) { clearInterval(tickId); tickId = null; }
+      startBtn.innerHTML = 'START';
+      render();
+      return;
+    }
+    render();
+  }
+
+  function start(){
+    var parsed = parseTime(timeEl.value);
+    if (parsed === null || parsed <= 0) { flash(); return; }
+    if (!running && remainMs <= 0) remainMs = setMs;
+    if (!running && (remainMs === setMs || remainMs <= 0)) { setMs = parsed; remainMs = parsed; }
+    else if (!running && setMs !== parsed && remainMs === setMs) { setMs = parsed; remainMs = parsed; }
+    // 開始
+    setMs = (remainMs === 0 ? parsed : setMs);
+    if (remainMs <= 0) remainMs = setMs;
+    endAt = (new Date()).getTime() + remainMs;
+    running = true;
+    startBtn.innerHTML = 'PAUSE';
+    if (tickId) clearInterval(tickId);
+    tickId = setInterval(tick, 100);
+  }
+
+  function pause(){
+    running = false;
+    if (tickId) { clearInterval(tickId); tickId = null; }
+    startBtn.innerHTML = 'START';
+    render();
+  }
+
+  function reset(){
+    running = false;
+    if (tickId) { clearInterval(tickId); tickId = null; }
+    var parsed = parseTime(timeEl.value);
+    if (parsed !== null && parsed > 0) setMs = parsed;
+    remainMs = setMs;
+    startBtn.innerHTML = 'START';
+    render();
+  }
+
+  function flash(){
+    var old = timeEl.value;
+    timeEl.value = '--:--';
+    setTimeout(function(){ timeEl.value = old; }, 500);
+  }
+
+  startBtn.onclick = function(){ if (running) pause(); else start(); };
+  resetBtn.onclick = function(){ reset(); };
+
+  timeEl.onfocus = function(){ editing = true; };
+  timeEl.onblur = function(){
+    editing = false;
+    var parsed = parseTime(timeEl.value);
+    if (parsed !== null && parsed > 0 && !running) { setMs = parsed; remainMs = parsed; }
+    render();
+  };
+
+  // メーターの数
+  var countBtns = document.querySelectorAll('.opt[data-count]');
+  for (var c = 0; c < countBtns.length; c++) {
+    (function(btn){
+      btn.onclick = function(){
+        CELLS = parseInt(btn.getAttribute('data-count'), 10);
+        for (var k = 0; k < countBtns.length; k++) countBtns[k].className = 'opt';
+        btn.className = 'opt on';
+        buildMeter();
+        render();
+      };
+    })(countBtns[c]);
+  }
+
+  // メーターの動き
+  var modeBtns = document.querySelectorAll('.opt[data-mode]');
+  for (var d2 = 0; d2 < modeBtns.length; d2++) {
+    (function(btn){
+      btn.onclick = function(){
+        mode = btn.getAttribute('data-mode');
+        for (var k = 0; k < modeBtns.length; k++) modeBtns[k].className = 'opt opt2';
+        btn.className = 'opt opt2 on';
+        render();
+      };
+    })(modeBtns[d2]);
+  }
+
+  buildMeter();
+  render();
+})();
+</script>
+</body>
+</html>
