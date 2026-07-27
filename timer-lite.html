@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- timer-lite v8 : 高機能版由来の簡易版(数自由入力/メーター自体/枠)を追加 -->
+<!-- timer-lite v10 : 要素取得を使用前へ移動（undefined.styleエラー修正）-->
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -162,6 +162,40 @@ window.onerror = function(msg, url, line){
       <button class="opt opt2 on" data-frame="show">消さない</button>
     </div>
 
+    <div class="row" id="feat-scale">
+      <div class="lbl">目盛り △</div>
+      <button class="opt opt2" data-scale="on">あり</button>
+      <button class="opt opt2 on" data-scale="off">なし</button>
+      <div style="margin-top:8px;">
+        <button class="opt" data-scount="2">2</button>
+        <button class="opt on" data-scount="3">3</button>
+        <button class="opt" data-scount="4">4</button>
+        <button class="opt" data-scount="5">5</button>
+      </div>
+    </div>
+
+    <div class="row" id="feat-digitcolor">
+      <div class="lbl">数字の色</div>
+      <button class="opt on" data-dc="default">標準</button>
+      <button class="opt" data-dc="#e14b4b">赤</button>
+      <button class="opt" data-dc="#4169c9">青</button>
+      <button class="opt" data-dc="#3faf60">緑</button>
+    </div>
+
+    <div class="row" id="feat-metercolor">
+      <div class="lbl">メーターの色</div>
+      <button class="opt on" data-mc="default">標準</button>
+      <button class="opt" data-mc="#e14b4b">赤</button>
+      <button class="opt" data-mc="#4169c9">青</button>
+      <button class="opt" data-mc="#3faf60">緑</button>
+    </div>
+
+    <div class="row" id="feat-countmethod">
+      <div class="lbl">カウント方法</div>
+      <button class="opt opt2 on" data-cm="down">カウントダウン</button>
+      <button class="opt opt2" data-cm="up">カウントアップ</button>
+    </div>
+
     <div class="row">
       <div class="lbl">メーターの動き</div>
       <button class="opt opt2 on" data-mode="drain">減る</button>
@@ -228,7 +262,7 @@ window.onerror = function(msg, url, line){
     <div class="note">
       軽量版（古い端末・古いブラウザ向け）です。<br>
       色・音（効果音）・配置などの高度な機能は「高機能版」でご利用ください。<br>
-      <span style="opacity:.6;">lite v8</span>
+      <span style="opacity:.6;">lite v10</span>
     </div>
   </div>
 
@@ -298,6 +332,12 @@ window.onerror = function(msg, url, line){
     }
   }
 
+  // 要素参照（これ以降で使うので先に取得）
+  var meterEl  = document.getElementById('meter');
+  var timeEl   = document.getElementById('time');
+  var startBtn = document.getElementById('startBtn');
+  var resetBtn = document.getElementById('resetBtn');
+
   // 終了時の点滅（メーターを数回チカチカ）
   var blinkOn = true;
   var blinkTimer = null;
@@ -313,13 +353,38 @@ window.onerror = function(msg, url, line){
     }, 300);
   }
 
-  var meterEl  = document.getElementById('meter');
-  var timeEl   = document.getElementById('time');
-  var startBtn = document.getElementById('startBtn');
-  var resetBtn = document.getElementById('resetBtn');
+  // 追加機能で使う状態
+  var cellNodes = [];              // メーターの四角（scaleElを除外して描画するため）
+  var countUp = false;             // カウント方法（false=ダウン, true=アップ）
+  var meterColor = null;           // メーターの色（nullで標準）
+  var scaleOn = false, scaleCount = 3;
+
+  // 目盛り △スケール（メーター右に絶対配置）
+  meterEl.style.position = 'relative';
+  var scaleEl = document.createElement('div');
+  scaleEl.style.position = 'absolute';
+  scaleEl.style.left = '100%'; scaleEl.style.top = '0'; scaleEl.style.bottom = '0';
+  scaleEl.style.marginLeft = '10px'; scaleEl.style.width = '22px'; scaleEl.style.display = 'none';
+  meterEl.appendChild(scaleEl);
+  function renderScale(){
+    while (scaleEl.firstChild) scaleEl.removeChild(scaleEl.firstChild);
+    if (!scaleOn) { scaleEl.style.display = 'none'; return; }
+    scaleEl.style.display = 'block';
+    var h = Math.floor(300 / scaleCount) - 6; if (h < 6) h = 6;
+    for (var i = 0; i < scaleCount; i++) {
+      var t = document.createElement('div');
+      t.style.width = '0'; t.style.height = '0'; t.style.margin = '3px auto';
+      t.style.borderLeft = '10px solid transparent';
+      t.style.borderRight = '10px solid transparent';
+      if (mode === 'fill') t.style.borderBottom = h + 'px solid currentColor';   // △上向き
+      else t.style.borderTop = h + 'px solid currentColor';                      // ▽下向き
+      scaleEl.appendChild(t);
+    }
+  }
 
   function buildMeter(){
     while (meterEl.firstChild) { meterEl.removeChild(meterEl.firstChild); }
+    cellNodes = [];
     var INNER = 300, MARGIN = 5;                       // メーターの総高さは常に一定
     var cellH = (INNER - (CELLS - 1) * MARGIN) / CELLS;
     if (cellH < 4) cellH = 4;
@@ -328,7 +393,9 @@ window.onerror = function(msg, url, line){
       d.className = 'cell' + (i === CELLS - 1 ? ' last' : '');
       d.style.height = cellH + 'px';
       meterEl.appendChild(d);
+      cellNodes.push(d);
     }
+    if (scaleEl) meterEl.appendChild(scaleEl);          // 目盛りを末尾に戻す
   }
 
   function pad(n){ return (n < 10 ? '0' : '') + n; }
@@ -360,18 +427,18 @@ window.onerror = function(msg, url, line){
   }
 
   function render(){
-    if (!editing) timeEl.value = fmt(remainMs);
+    if (!editing) timeEl.value = fmt(countUp ? (setMs - remainMs) : remainMs);
     var per = setMs / CELLS;
     var rem = per > 0 ? Math.ceil(remainMs / per) : 0;
     if (rem < 0) rem = 0;
     if (rem > CELLS) rem = CELLS;
     var onCount = (mode === 'fill') ? (CELLS - rem) : rem;
-    var cells = meterEl.childNodes;
-    for (var i = 0; i < cells.length; i++) {
-      var fromBottom = cells.length - i;      // 1 = 一番下
+    for (var i = 0; i < cellNodes.length; i++) {
+      var fromBottom = cellNodes.length - i;      // 1 = 一番下
       var on = fromBottom <= onCount;
-      var base = 'cell' + (i === cells.length - 1 ? ' last' : '');
-      cells[i].className = on ? base + ' on' : base;
+      var base = 'cell' + (i === cellNodes.length - 1 ? ' last' : '');
+      cellNodes[i].className = on ? base + ' on' : base;
+      cellNodes[i].style.backgroundColor = (on && meterColor) ? meterColor : '';
     }
   }
 
@@ -481,6 +548,7 @@ window.onerror = function(msg, url, line){
         for (var k = 0; k < modeBtns.length; k++) modeBtns[k].className = 'opt opt2';
         btn.className = 'opt opt2 on';
         render();
+        renderScale();
       };
     })(modeBtns[d2]);
   }
@@ -734,6 +802,87 @@ window.onerror = function(msg, url, line){
       for (var j = 0; j < btns.length; j++) btns[j].className = (btns[j].getAttribute('data-frame') === 'hide') ? 'opt opt2 on' : 'opt opt2';
       meterEl.className = meterEl.className + ' frame-off';
     }
+  });
+
+  feature('目盛り△', 'scale', function(){
+    var onBtns = document.querySelectorAll('.opt[data-scale]');
+    var cnBtns = document.querySelectorAll('.opt[data-scount]');
+    for (var i = 0; i < onBtns.length; i++) {
+      (function(b){
+        b.onclick = function(){
+          scaleOn = (b.getAttribute('data-scale') === 'on');
+          for (var k = 0; k < onBtns.length; k++) onBtns[k].className = 'opt opt2';
+          b.className = 'opt opt2 on';
+          renderScale();
+          try { localStorage.setItem('timerLiteScale', scaleOn ? 'on' : 'off'); } catch (e) {}
+        };
+      })(onBtns[i]);
+    }
+    for (var j = 0; j < cnBtns.length; j++) {
+      (function(b){
+        b.onclick = function(){
+          scaleCount = parseInt(b.getAttribute('data-scount'), 10);
+          for (var k = 0; k < cnBtns.length; k++) cnBtns[k].className = 'opt';
+          b.className = 'opt on';
+          renderScale();
+          try { localStorage.setItem('timerLiteScaleN', scaleCount); } catch (e) {}
+        };
+      })(cnBtns[j]);
+    }
+    var s1 = null, s2 = null;
+    try { s1 = localStorage.getItem('timerLiteScale'); s2 = localStorage.getItem('timerLiteScaleN'); } catch (e) {}
+    if (s2) { scaleCount = parseInt(s2, 10); for (var m = 0; m < cnBtns.length; m++) cnBtns[m].className = (cnBtns[m].getAttribute('data-scount') === s2) ? 'opt on' : 'opt'; }
+    if (s1 === 'on') { scaleOn = true; for (var n = 0; n < onBtns.length; n++) onBtns[n].className = (onBtns[n].getAttribute('data-scale') === 'on') ? 'opt opt2 on' : 'opt opt2'; }
+    renderScale();
+  });
+
+  feature('数字の色', 'digitcolor', function(){
+    var btns = document.querySelectorAll('.opt[data-dc]');
+    function setDC(val){ timeEl.style.color = (val === 'default') ? '' : val; try { localStorage.setItem('timerLiteDigitColor', val); } catch (e) {} }
+    for (var i = 0; i < btns.length; i++) {
+      (function(b){
+        b.onclick = function(){
+          for (var k = 0; k < btns.length; k++) btns[k].className = 'opt';
+          b.className = 'opt on';
+          setDC(b.getAttribute('data-dc'));
+        };
+      })(btns[i]);
+    }
+    var sv = null; try { sv = localStorage.getItem('timerLiteDigitColor'); } catch (e) {}
+    if (sv) { for (var j = 0; j < btns.length; j++) btns[j].className = (btns[j].getAttribute('data-dc') === sv) ? 'opt on' : 'opt'; setDC(sv); }
+  });
+
+  feature('メーターの色', 'metercolor', function(){
+    var btns = document.querySelectorAll('.opt[data-mc]');
+    function setMC(val){ meterColor = (val === 'default') ? null : val; render(); try { localStorage.setItem('timerLiteMeterColor', val); } catch (e) {} }
+    for (var i = 0; i < btns.length; i++) {
+      (function(b){
+        b.onclick = function(){
+          for (var k = 0; k < btns.length; k++) btns[k].className = 'opt';
+          b.className = 'opt on';
+          setMC(b.getAttribute('data-mc'));
+        };
+      })(btns[i]);
+    }
+    var sv = null; try { sv = localStorage.getItem('timerLiteMeterColor'); } catch (e) {}
+    if (sv) { for (var j = 0; j < btns.length; j++) btns[j].className = (btns[j].getAttribute('data-mc') === sv) ? 'opt on' : 'opt'; setMC(sv); }
+  });
+
+  feature('カウント方法', 'countmethod', function(){
+    var btns = document.querySelectorAll('.opt[data-cm]');
+    for (var i = 0; i < btns.length; i++) {
+      (function(b){
+        b.onclick = function(){
+          countUp = (b.getAttribute('data-cm') === 'up');
+          for (var k = 0; k < btns.length; k++) btns[k].className = 'opt opt2';
+          b.className = 'opt opt2 on';
+          render();
+          try { localStorage.setItem('timerLiteCountMethod', countUp ? 'up' : 'down'); } catch (e) {}
+        };
+      })(btns[i]);
+    }
+    var sv = null; try { sv = localStorage.getItem('timerLiteCountMethod'); } catch (e) {}
+    if (sv) { countUp = (sv === 'up'); for (var j = 0; j < btns.length; j++) btns[j].className = (btns[j].getAttribute('data-cm') === sv) ? 'opt opt2 on' : 'opt opt2'; }
   });
 
   buildMeter();
