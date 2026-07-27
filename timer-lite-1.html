@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<!-- timer-lite v9 : 目盛り△/数字色/メーター色/カウント方法を追加 -->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>メータータイマー（軽量版）</title>
+<style>
+  * { -webkit-box-sizing:border-box; box-sizing:border-box; }
+  html, body { height:100%; margin:0; }
+  body {
+    background:#f4f4f4; color:#141414;
+    font-family:"Courier New", monospace;
+    -webkit-text-size-adjust:100%;
+  }
+  .wrap { padding:18px; text-align:center; }
+  .top { text-align:right; margin-bottom:8px; }
+  .lnk {
+    display:inline-block; text-decoration:none; color:#141414; background:#f4f4f4;
+    border:3px solid #141414; font-weight:bold; font-size:12px; padding:8px 12px; margin-left:6px;
+  }
+  .stage { text-align:center; margin-top:10px; }
+  .stage.horiz { white-space:nowrap; }
+  .meter {
+    width:64px; border:6px solid #141414; padding:6px; background:#f4f4f4;
+  }
+  .cell {
+    border:3px solid #141414; background:#f4f4f4; margin-bottom:5px;
+  }
+  .cell.last { margin-bottom:0; }
+  .cell.on { background:#141414; }
+  .panel { white-space:normal; width:240px; }
+  .stage.horiz > .meter, .stage.horiz > .panel { display:inline-block; vertical-align:middle; }
+  .stage.horiz > * + * { margin-left:22px; }
+  .stage.vert > .meter, .stage.vert > .panel { display:block; margin-left:auto; margin-right:auto; }
+  .stage.vert > * + * { margin-top:18px; }
+  .time {
+    width:100%; border:0; border-bottom:5px solid #141414; background:transparent;
+    color:#141414; font-family:"Courier New", monospace; font-weight:bold;
+    font-size:56px; text-align:center; padding:4px 0; margin:0;
+  }
+  .controls { margin-top:20px; }
+  .btn {
+    font-family:"Courier New", monospace; font-weight:bold; font-size:18px;
+    padding:14px 10px; border:5px solid #141414; background:#f4f4f4; color:#141414;
+    width:48%; cursor:pointer;
+  }
+  .row { margin-top:16px; }
+  .lbl { font-size:12px; font-weight:bold; margin-bottom:6px; letter-spacing:1px; }
+  .opt {
+    font-family:"Courier New", monospace; font-weight:bold; font-size:15px;
+    padding:10px 0; border:3px solid #141414; background:#f4f4f4; color:#141414;
+    width:23%; cursor:pointer;
+  }
+  .opt.on { background:#141414; color:#f4f4f4; }
+  .opt2 { width:47%; }
+  .note { font-size:11px; color:#555; margin-top:18px; line-height:1.5; }
+  @media (max-width:520px){
+    .panel { width:150px; margin-left:14px; }
+    .time { font-size:40px; }
+  }
+
+  /* 背景色テーマ（CSS変数を使わずベタ指定・Chrome39対応） */
+  body.theme-dark { background:#141414; color:#f4f4f4; }
+  body.theme-dark .meter,
+  body.theme-dark .cell { border-color:#f4f4f4; background:#141414; }
+  body.theme-dark .cell.on { background:#f4f4f4; }
+  body.theme-dark .time { color:#f4f4f4; border-bottom-color:#f4f4f4; }
+  body.theme-dark .btn,
+  body.theme-dark .opt,
+  body.theme-dark .lnk { border-color:#f4f4f4; background:#141414; color:#f4f4f4; }
+  body.theme-dark .opt.on { background:#f4f4f4; color:#141414; }
+  body.theme-dark .note { color:#999; }
+
+  body.theme-sepia { background:#efe6d3; color:#4a3f30; }
+  body.theme-sepia .meter,
+  body.theme-sepia .cell { border-color:#4a3f30; background:#efe6d3; }
+  body.theme-sepia .cell.on { background:#4a3f30; }
+  body.theme-sepia .time { color:#4a3f30; border-bottom-color:#4a3f30; }
+  body.theme-sepia .btn,
+  body.theme-sepia .opt,
+  body.theme-sepia .lnk { border-color:#4a3f30; background:#efe6d3; color:#4a3f30; }
+  body.theme-sepia .opt.on { background:#4a3f30; color:#efe6d3; }
+
+  /* 自由入力欄 */
+  .lite-num {
+    font-family:"Courier New", monospace; font-weight:bold; font-size:18px;
+    width:64%; padding:9px 6px; border:3px solid #141414; background:#f4f4f4; color:#141414; text-align:center;
+  }
+  body.theme-dark .lite-num { border-color:#f4f4f4; background:#141414; color:#f4f4f4; }
+  body.theme-sepia .lite-num { border-color:#4a3f30; background:#efe6d3; color:#4a3f30; }
+  /* メーター自体/枠の非表示 */
+  .meter.cells-off .cell { visibility:hidden; }
+  .meter.frame-off { border-color:transparent !important; }
+</style>
+</head>
+<body>
+<script>
+/* 実機デバッグ用：JSエラーを画面下に赤帯で表示（Chrome39でも動くES5） */
+window.onerror = function(msg, url, line){
+  var d = document.getElementById('errbox');
+  if (!d) {
+    d = document.createElement('div');
+    d.id = 'errbox';
+    d.style.position = 'fixed'; d.style.left = '0'; d.style.right = '0'; d.style.bottom = '0';
+    d.style.background = '#c0392b'; d.style.color = '#fff';
+    d.style.font = '12px monospace'; d.style.padding = '8px'; d.style.zIndex = '99999';
+    d.style.whiteSpace = 'pre-wrap';
+    document.body.appendChild(d);
+  }
+  d.appendChild(document.createTextNode('ERR: ' + msg + ' (line ' + line + ')\n'));
+  return false;
+};
+</script>
+  <div class="wrap">
+    <div class="top">
+      <a class="lnk" href="plaza.html">← 幻実世界の電子遊戯へ</a>
+      <a class="lnk" href="timer-gauge.html">高機能版へ</a>
+    </div>
+
+    <div class="stage horiz" id="stage">
+      <div class="meter" id="meter"></div>
+      <div class="panel" id="panel">
+        <input class="time" id="time" type="text" value="01:00">
+        <div class="controls">
+          <button class="btn" id="startBtn">START</button>
+          <button class="btn" id="resetBtn" style="margin-left:2%;">RESET</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="lbl">配置</div>
+      <button class="opt on" data-layout="left">メーター左</button>
+      <button class="opt" data-layout="right">メーター右</button>
+      <button class="opt" data-layout="top">メーター上</button>
+      <button class="opt" data-layout="bottom">メーター下</button>
+    </div>
+
+    <div class="row" id="feat-count">
+      <div class="lbl">メーターの数</div>
+      <button class="opt" data-count="5">5</button>
+      <button class="opt on" data-count="10">10</button>
+      <button class="opt" data-count="15">15</button>
+      <button class="opt" data-count="20">20</button>
+      <div style="margin-top:8px;">
+        <input class="lite-num" id="countInput" type="text" value="" placeholder="1〜50">
+        <button class="opt" id="countApply" style="width:28%;">指定</button>
+      </div>
+      <div id="countNote" style="font-size:11px;color:#c0392b;margin-top:5px;min-height:14px;"></div>
+    </div>
+
+    <div class="row" id="feat-cells">
+      <div class="lbl">メーター自体</div>
+      <button class="opt opt2" data-cells="hide">消す</button>
+      <button class="opt opt2 on" data-cells="show">消さない</button>
+    </div>
+
+    <div class="row" id="feat-frame">
+      <div class="lbl">枠</div>
+      <button class="opt opt2" data-frame="hide">消す</button>
+      <button class="opt opt2 on" data-frame="show">消さない</button>
+    </div>
+
+    <div class="row" id="feat-scale">
+      <div class="lbl">目盛り △</div>
+      <button class="opt opt2" data-scale="on">あり</button>
+      <button class="opt opt2 on" data-scale="off">なし</button>
+      <div style="margin-top:8px;">
+        <button class="opt" data-scount="2">2</button>
+        <button class="opt on" data-scount="3">3</button>
+        <button class="opt" data-scount="4">4</button>
+        <button class="opt" data-scount="5">5</button>
+      </div>
+    </div>
+
+    <div class="row" id="feat-digitcolor">
+      <div class="lbl">数字の色</div>
+      <button class="opt on" data-dc="default">標準</button>
+      <button class="opt" data-dc="#e14b4b">赤</button>
+      <button class="opt" data-dc="#4169c9">青</button>
+      <button class="opt" data-dc="#3faf60">緑</button>
+    </div>
+
+    <div class="row" id="feat-metercolor">
+      <div class="lbl">メーターの色</div>
+      <button class="opt on" data-mc="default">標準</button>
+      <button class="opt" data-mc="#e14b4b">赤</button>
+      <button class="opt" data-mc="#4169c9">青</button>
+      <button class="opt" data-mc="#3faf60">緑</button>
+    </div>
+
+    <div class="row" id="feat-countmethod">
+      <div class="lbl">カウント方法</div>
+      <button class="opt opt2 on" data-cm="down">カウントダウン</button>
+      <button class="opt opt2" data-cm="up">カウントアップ</button>
+    </div>
+
+    <div class="row">
+      <div class="lbl">メーターの動き</div>
+      <button class="opt opt2 on" data-mode="drain">減る</button>
+      <button class="opt opt2" data-mode="fill">増える</button>
+    </div>
+
+    <div class="row">
+      <div class="lbl">アラーム音（タップで試聴）</div>
+      <button class="opt" data-vol="none">無し</button>
+      <button class="opt" data-vol="low">小</button>
+      <button class="opt on" data-vol="mid">中</button>
+      <button class="opt" data-vol="high">大</button>
+    </div>
+
+    <div class="row" id="feat-time">
+      <div class="lbl">時間プリセット</div>
+      <button class="opt" data-preset="60">1分</button>
+      <button class="opt" data-preset="180">3分</button>
+      <button class="opt" data-preset="300">5分</button>
+      <button class="opt" data-preset="600">10分</button>
+    </div>
+
+    <div class="row" id="feat-theme">
+      <div class="lbl">背景色</div>
+      <button class="opt on" data-theme="light">白</button>
+      <button class="opt" data-theme="dark">黒</button>
+      <button class="opt" data-theme="sepia">セピア</button>
+    </div>
+
+    <div class="row" id="feat-blink">
+      <div class="lbl">終了時の点滅</div>
+      <button class="opt opt2 on" data-blink="on">あり</button>
+      <button class="opt opt2" data-blink="off">なし</button>
+    </div>
+
+    <div class="row" id="feat-width">
+      <div class="lbl">メーターの太さ</div>
+      <button class="opt" data-width="48">細い</button>
+      <button class="opt on" data-width="64">普通</button>
+      <button class="opt" data-width="88">太い</button>
+    </div>
+
+    <div class="row" id="feat-adjust">
+      <div class="lbl">時間を増減</div>
+      <button class="opt" data-adj="-60">−1分</button>
+      <button class="opt" data-adj="-10">−10秒</button>
+      <button class="opt" data-adj="10">＋10秒</button>
+      <button class="opt" data-adj="60">＋1分</button>
+    </div>
+
+    <div class="row" id="feat-sound">
+      <div class="lbl">アラーム音の種類（タップで試聴）</div>
+      <button class="opt on" data-sound="pipi">ピピッ</button>
+      <button class="opt" data-sound="buzz">ブザー</button>
+      <button class="opt" data-sound="bell">ベル風</button>
+    </div>
+
+    <div class="row" id="feat-repeat">
+      <div class="lbl">終了後リピート</div>
+      <button class="opt opt2" data-repeat="on">あり</button>
+      <button class="opt opt2 on" data-repeat="off">なし</button>
+    </div>
+
+    <div class="note">
+      軽量版（古い端末・古いブラウザ向け）です。<br>
+      色・音（効果音）・配置などの高度な機能は「高機能版」でご利用ください。<br>
+      <span style="opacity:.6;">lite v9</span>
+    </div>
+  </div>
+
+<script>
+(function(){
+  var CELLS = 10;
+  var mode = 'drain';
+  var setMs = 60000;
+  var remainMs = 60000;
+  var running = false;
+  var endAt = 0;
+  var tickId = null;
+  var editing = false;
+  var alarmVol = 0.67;              // 0=無し / .34小 / .67中 / 1大
+  var audioCtx = null;
+  function initAudio(){
+    if (audioCtx) return;
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) audioCtx = new AC();
+    } catch (e) { audioCtx = null; }
+  }
+  var soundType = 'pipi';          // pipi / buzz / bell
+  var repeatOn = false;
+  function beep(t, freq, dur, vol, type){
+    if (!audioCtx) return;
+    var osc = audioCtx.createOscillator();
+    var g = audioCtx.createGain();
+    osc.type = type || 'square';
+    osc.frequency.value = freq;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.linearRampToValueAtTime(vol, t + 0.01);
+    g.gain.linearRampToValueAtTime(0.0001, t + dur);
+    osc.connect(g); g.connect(audioCtx.destination);
+    osc.start(t); osc.stop(t + dur + 0.03);
+  }
+  function playAlarm(){
+    if (!audioCtx || alarmVol <= 0) return;
+    var t = audioCtx.currentTime, v = alarmVol * 0.3;
+    if (soundType === 'buzz') {
+      beep(t, 200, 0.55, v); beep(t + 0.6, 200, 0.55, v);
+    } else if (soundType === 'bell') {
+      beep(t, 1318, 0.5, v * 0.9, 'triangle'); beep(t + 0.18, 1760, 0.6, v * 0.9, 'triangle');
+    } else {
+      beep(t, 880, 0.15, v); beep(t + 0.22, 880, 0.15, v); beep(t + 0.44, 1174, 0.32, v);
+    }
+  }
+
+  /* 追加機能は個別にtry/catch。失敗したらその機能だけ無効化し、赤帯に機能名を表示 */
+  function showErr(text){
+    var d = document.getElementById('errbox');
+    if (!d) {
+      d = document.createElement('div'); d.id = 'errbox';
+      d.style.position='fixed'; d.style.left='0'; d.style.right='0'; d.style.bottom='0';
+      d.style.background='#c0392b'; d.style.color='#fff'; d.style.font='12px monospace';
+      d.style.padding='8px'; d.style.zIndex='99999'; d.style.whiteSpace='pre-wrap';
+      document.body.appendChild(d);
+    }
+    d.appendChild(document.createTextNode(text + '\n'));
+  }
+  function feature(name, key, fn){
+    try { fn(); }
+    catch (e) {
+      showErr('機能「' + name + '」を無効化: ' + (e && e.message ? e.message : e));
+      var el = document.getElementById('feat-' + key);
+      if (el) el.style.display = 'none';
+    }
+  }
+
+  // 終了時の点滅（メーターを数回チカチカ）
+  var blinkOn = true;
+  var blinkTimer = null;
+  function stopBlink(){ if (blinkTimer) { clearInterval(blinkTimer); blinkTimer = null; } meterEl.style.opacity = '1'; }
+  function startBlink(){
+    stopBlink();
+    if (!blinkOn) return;
+    var on = true, count = 0;
+    blinkTimer = setInterval(function(){
+      on = !on; count++;
+      meterEl.style.opacity = on ? '1' : '0.25';
+      if (count >= 8) { stopBlink(); }
+    }, 300);
+  }
+
+  // 追加機能で使う状態
+  var cellNodes = [];              // メーターの四角（scaleElを除外して描画するため）
+  var countUp = false;             // カウント方法（false=ダウン, true=アップ）
+  var meterColor = null;           // メーターの色（nullで標準）
+  var scaleOn = false, scaleCount = 3;
+
+  // 目盛り △スケール（メーター右に絶対配置）
+  meterEl.style.position = 'relative';
+  var scaleEl = document.createElement('div');
+  scaleEl.style.position = 'absolute';
+  scaleEl.style.left = '100%'; scaleEl.style.top = '0'; scaleEl.style.bottom = '0';
+  scaleEl.style.marginLeft = '10px'; scaleEl.style.width = '22px'; scaleEl.style.display = 'none';
+  meterEl.appendChild(scaleEl);
+  function renderScale(){
+    while (scaleEl.firstChild) scaleEl.removeChild(scaleEl.firstChild);
+    if (!scaleOn) { scaleEl.style.display = 'none'; return; }
+    scaleEl.style.display = 'block';
+    var h = Math.floor(300 / scaleCount) - 6; if (h < 6) h = 6;
+    for (var i = 0; i < scaleCount; i++) {
+      var t = document.createElement('div');
+      t.style.width = '0'; t.style.height = '0'; t.style.margin = '3px auto';
+      t.style.borderLeft = '10px solid transparent';
+      t.style.borderRight = '10px solid transparent';
+      if (mode === 'fill') t.style.borderBottom = h + 'px solid currentColor';   // △上向き
+      else t.style.borderTop = h + 'px solid currentColor';                      // ▽下向き
+      scaleEl.appendChild(t);
+    }
+  }
+
+  var meterEl  = document.getElementById('meter');
+  var timeEl   = document.getElementById('time');
+  var startBtn = document.getElementById('startBtn');
+  var resetBtn = document.getElementById('resetBtn');
+
+  function buildMeter(){
+    while (meterEl.firstChild) { meterEl.removeChild(meterEl.firstChild); }
+    cellNodes = [];
+    var INNER = 300, MARGIN = 5;                       // メーターの総高さは常に一定
+    var cellH = (INNER - (CELLS - 1) * MARGIN) / CELLS;
+    if (cellH < 4) cellH = 4;
+    for (var i = 0; i < CELLS; i++) {
+      var d = document.createElement('div');
+      d.className = 'cell' + (i === CELLS - 1 ? ' last' : '');
+      d.style.height = cellH + 'px';
+      meterEl.appendChild(d);
+      cellNodes.push(d);
+    }
+    if (scaleEl) meterEl.appendChild(scaleEl);          // 目盛りを末尾に戻す
+  }
+
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+  function fmt(ms){
+    var s = Math.ceil(ms / 1000);
+    if (s < 0) s = 0;
+    var m = Math.floor(s / 60);
+    return pad(m) + ':' + pad(s - m * 60);
+  }
+
+  function parseTime(str){
+    if (!str) return null;
+    str = ('' + str).replace(/\s/g, '');
+    if (str.indexOf(':') >= 0) {
+      var p = str.split(':');
+      var mm = parseInt(p[0], 10);
+      var ss = parseInt(p[1], 10);
+      if (isNaN(mm) || isNaN(ss)) return null;
+      return (mm * 60 + ss) * 1000;
+    }
+    var digits = str.replace(/[^0-9]/g, '');
+    if (!digits.length) return null;
+    var num = parseInt(digits, 10);
+    if (isNaN(num)) return null;
+    if (digits.length <= 2) return num * 1000;            // 秒
+    var secPart = parseInt(digits.slice(-2), 10);
+    var minPart = parseInt(digits.slice(0, digits.length - 2), 10);
+    return (minPart * 60 + secPart) * 1000;
+  }
+
+  function render(){
+    if (!editing) timeEl.value = fmt(countUp ? (setMs - remainMs) : remainMs);
+    var per = setMs / CELLS;
+    var rem = per > 0 ? Math.ceil(remainMs / per) : 0;
+    if (rem < 0) rem = 0;
+    if (rem > CELLS) rem = CELLS;
+    var onCount = (mode === 'fill') ? (CELLS - rem) : rem;
+    for (var i = 0; i < cellNodes.length; i++) {
+      var fromBottom = cellNodes.length - i;      // 1 = 一番下
+      var on = fromBottom <= onCount;
+      var base = 'cell' + (i === cellNodes.length - 1 ? ' last' : '');
+      cellNodes[i].className = on ? base + ' on' : base;
+      cellNodes[i].style.backgroundColor = (on && meterColor) ? meterColor : '';
+    }
+  }
+
+  function tick(){
+    if (!running) return;
+    remainMs = endAt - (new Date()).getTime();
+    if (remainMs <= 0) {
+      remainMs = 0;
+      running = false;
+      if (tickId) { clearInterval(tickId); tickId = null; }
+      startBtn.innerHTML = 'START';
+      playAlarm();
+      startBlink();
+      render();
+      if (repeatOn && setMs > 0) {
+        setTimeout(function(){
+          if (!running && repeatOn && setMs > 0) {
+            stopBlink();
+            remainMs = setMs;
+            endAt = (new Date()).getTime() + remainMs;
+            running = true;
+            startBtn.innerHTML = 'PAUSE';
+            if (tickId) clearInterval(tickId);
+            tickId = setInterval(tick, 100);
+          }
+        }, 1200);
+      }
+      return;
+    }
+    render();
+  }
+
+  function start(){
+    var parsed = parseTime(timeEl.value);
+    if (parsed === null || parsed <= 0) { flash(); return; }
+    initAudio();                                 // ユーザー操作内で音声を有効化
+    stopBlink();
+    if (!running && remainMs <= 0) remainMs = setMs;
+    if (!running && (remainMs === setMs || remainMs <= 0)) { setMs = parsed; remainMs = parsed; }
+    else if (!running && setMs !== parsed && remainMs === setMs) { setMs = parsed; remainMs = parsed; }
+    // 開始
+    setMs = (remainMs === 0 ? parsed : setMs);
+    if (remainMs <= 0) remainMs = setMs;
+    endAt = (new Date()).getTime() + remainMs;
+    running = true;
+    startBtn.innerHTML = 'PAUSE';
+    if (tickId) clearInterval(tickId);
+    tickId = setInterval(tick, 100);
+  }
+
+  function pause(){
+    running = false;
+    if (tickId) { clearInterval(tickId); tickId = null; }
+    stopBlink();
+    startBtn.innerHTML = 'START';
+    render();
+  }
+
+  function reset(){
+    running = false;
+    if (tickId) { clearInterval(tickId); tickId = null; }
+    stopBlink();
+    var parsed = parseTime(timeEl.value);
+    if (parsed !== null && parsed > 0) setMs = parsed;
+    remainMs = setMs;
+    startBtn.innerHTML = 'START';
+    render();
+  }
+
+  function flash(){
+    var old = timeEl.value;
+    timeEl.value = '--:--';
+    setTimeout(function(){ timeEl.value = old; }, 500);
+  }
+
+  startBtn.onclick = function(){ if (running) pause(); else start(); };
+  resetBtn.onclick = function(){ reset(); };
+
+  timeEl.onfocus = function(){ editing = true; };
+  timeEl.onblur = function(){
+    editing = false;
+    var parsed = parseTime(timeEl.value);
+    if (parsed !== null && parsed > 0 && !running) { setMs = parsed; remainMs = parsed; }
+    render();
+  };
+
+  // メーターの数
+  var countBtns = document.querySelectorAll('.opt[data-count]');
+  for (var c = 0; c < countBtns.length; c++) {
+    (function(btn){
+      btn.onclick = function(){
+        CELLS = parseInt(btn.getAttribute('data-count'), 10);
+        for (var k = 0; k < countBtns.length; k++) countBtns[k].className = 'opt';
+        btn.className = 'opt on';
+        buildMeter();
+        render();
+      };
+    })(countBtns[c]);
+  }
+
+  // メーターの動き
+  var modeBtns = document.querySelectorAll('.opt[data-mode]');
+  for (var d2 = 0; d2 < modeBtns.length; d2++) {
+    (function(btn){
+      btn.onclick = function(){
+        mode = btn.getAttribute('data-mode');
+        for (var k = 0; k < modeBtns.length; k++) modeBtns[k].className = 'opt opt2';
+        btn.className = 'opt opt2 on';
+        render();
+        renderScale();
+      };
+    })(modeBtns[d2]);
+  }
+
+  // 配置プリセット（メーター左/右/上/下）
+  function applyLayout(name){
+    var stage = document.getElementById('stage');
+    var meter = document.getElementById('meter');
+    var panel = document.getElementById('panel');
+    var horiz = (name === 'left' || name === 'right');
+    stage.className = 'stage ' + (horiz ? 'horiz' : 'vert');
+    var meterFirst = (name === 'left' || name === 'top');
+    if (meterFirst) { stage.appendChild(meter); stage.appendChild(panel); }
+    else { stage.appendChild(panel); stage.appendChild(meter); }
+    try { localStorage.setItem('timerLiteLayout', name); } catch (e) {}
+  }
+  var layoutBtns = document.querySelectorAll('.opt[data-layout]');
+  for (var q = 0; q < layoutBtns.length; q++) {
+    (function(btn){
+      btn.onclick = function(){
+        for (var k = 0; k < layoutBtns.length; k++) layoutBtns[k].className = 'opt';
+        btn.className = 'opt on';
+        applyLayout(btn.getAttribute('data-layout'));
+      };
+    })(layoutBtns[q]);
+  }
+  var savedLayout = 'left';
+  try { var sv = localStorage.getItem('timerLiteLayout'); if (sv) savedLayout = sv; } catch (e) {}
+  for (var q2 = 0; q2 < layoutBtns.length; q2++) {
+    layoutBtns[q2].className = (layoutBtns[q2].getAttribute('data-layout') === savedLayout) ? 'opt on' : 'opt';
+  }
+
+  // アラーム音量（タップで試聴）
+  var volBtns = document.querySelectorAll('.opt[data-vol]');
+  var VOLMAP = { none:0, low:0.34, mid:0.67, high:1 };
+  for (var vb = 0; vb < volBtns.length; vb++) {
+    (function(btn){
+      btn.onclick = function(){
+        alarmVol = VOLMAP[btn.getAttribute('data-vol')];
+        for (var k = 0; k < volBtns.length; k++) volBtns[k].className = 'opt';
+        btn.className = 'opt on';
+        try { localStorage.setItem('timerLiteVol', btn.getAttribute('data-vol')); } catch (e) {}
+        initAudio();
+        playAlarm();
+      };
+    })(volBtns[vb]);
+  }
+  try {
+    var svv = localStorage.getItem('timerLiteVol');
+    if (svv && VOLMAP.hasOwnProperty(svv)) {
+      alarmVol = VOLMAP[svv];
+      for (var vb2 = 0; vb2 < volBtns.length; vb2++) {
+        volBtns[vb2].className = (volBtns[vb2].getAttribute('data-vol') === svv) ? 'opt on' : 'opt';
+      }
+    }
+  } catch (e) {}
+
+  // ---- 追加機能（各機能は個別にtry/catch。失敗しても他は動く）----
+  feature('時間プリセット', 'time', function(){
+    var pbtns = document.querySelectorAll('.opt[data-preset]');
+    for (var i = 0; i < pbtns.length; i++) {
+      (function(btn){
+        btn.onclick = function(){
+          stopBlink();
+          running = false; if (tickId) { clearInterval(tickId); tickId = null; }
+          startBtn.innerHTML = 'START';
+          setMs = parseInt(btn.getAttribute('data-preset'), 10) * 1000;
+          remainMs = setMs;
+          render();
+        };
+      })(pbtns[i]);
+    }
+  });
+
+  feature('背景色', 'theme', function(){
+    var tbtns = document.querySelectorAll('.opt[data-theme]');
+    function setTheme(name){
+      document.body.className = (name === 'light') ? '' : ('theme-' + name);
+      try { localStorage.setItem('timerLiteTheme', name); } catch (e) {}
+    }
+    for (var i = 0; i < tbtns.length; i++) {
+      (function(btn){
+        btn.onclick = function(){
+          for (var k = 0; k < tbtns.length; k++) tbtns[k].className = 'opt';
+          btn.className = 'opt on';
+          setTheme(btn.getAttribute('data-theme'));
+        };
+      })(tbtns[i]);
+    }
+    var sv = null; try { sv = localStorage.getItem('timerLiteTheme'); } catch (e) {}
+    if (sv) {
+      for (var j = 0; j < tbtns.length; j++) tbtns[j].className = (tbtns[j].getAttribute('data-theme') === sv) ? 'opt on' : 'opt';
+      setTheme(sv);
+    }
+  });
+
+  feature('終了時の点滅', 'blink', function(){
+    var bbtns = document.querySelectorAll('.opt[data-blink]');
+    for (var i = 0; i < bbtns.length; i++) {
+      (function(btn){
+        btn.onclick = function(){
+          blinkOn = (btn.getAttribute('data-blink') === 'on');
+          for (var k = 0; k < bbtns.length; k++) bbtns[k].className = 'opt opt2';
+          btn.className = 'opt opt2 on';
+          try { localStorage.setItem('timerLiteBlink', blinkOn ? 'on' : 'off'); } catch (e) {}
+        };
+      })(bbtns[i]);
+    }
+    var sv = null; try { sv = localStorage.getItem('timerLiteBlink'); } catch (e) {}
+    if (sv) {
+      blinkOn = (sv === 'on');
+      for (var j = 0; j < bbtns.length; j++) bbtns[j].className = (bbtns[j].getAttribute('data-blink') === sv) ? 'opt opt2 on' : 'opt opt2';
+    }
+  });
+
+  feature('メーターの太さ', 'width', function(){
+    var wbtns = document.querySelectorAll('.opt[data-width]');
+    function setW(px){ meterEl.style.width = px + 'px'; try { localStorage.setItem('timerLiteWidth', px); } catch (e) {} }
+    for (var i = 0; i < wbtns.length; i++) {
+      (function(btn){
+        btn.onclick = function(){
+          for (var k = 0; k < wbtns.length; k++) wbtns[k].className = 'opt';
+          btn.className = 'opt on';
+          setW(btn.getAttribute('data-width'));
+        };
+      })(wbtns[i]);
+    }
+    var sv = null; try { sv = localStorage.getItem('timerLiteWidth'); } catch (e) {}
+    if (sv) {
+      for (var j = 0; j < wbtns.length; j++) wbtns[j].className = (wbtns[j].getAttribute('data-width') === sv) ? 'opt on' : 'opt';
+      meterEl.style.width = sv + 'px';
+    }
+  });
+
+  feature('時間を増減', 'adjust', function(){
+    var abtns = document.querySelectorAll('.opt[data-adj]');
+    for (var i = 0; i < abtns.length; i++) {
+      (function(btn){
+        btn.onclick = function(){
+          var d = parseInt(btn.getAttribute('data-adj'), 10) * 1000;
+          if (running) {
+            endAt += d;
+            remainMs = endAt - (new Date()).getTime();
+            if (remainMs < 0) remainMs = 0;
+          } else {
+            setMs = setMs + d; if (setMs < 0) setMs = 0;
+            remainMs = setMs;
+          }
+          render();
+        };
+      })(abtns[i]);
+    }
+  });
+
+  feature('アラーム音の種類', 'sound', function(){
+    var sbtns = document.querySelectorAll('.opt[data-sound]');
+    for (var i = 0; i < sbtns.length; i++) {
+      (function(btn){
+        btn.onclick = function(){
+          soundType = btn.getAttribute('data-sound');
+          for (var k = 0; k < sbtns.length; k++) sbtns[k].className = 'opt';
+          btn.className = 'opt on';
+          try { localStorage.setItem('timerLiteSound', soundType); } catch (e) {}
+          initAudio();
+          playAlarm();
+        };
+      })(sbtns[i]);
+    }
+    var sv = null; try { sv = localStorage.getItem('timerLiteSound'); } catch (e) {}
+    if (sv) {
+      soundType = sv;
+      for (var j = 0; j < sbtns.length; j++) sbtns[j].className = (sbtns[j].getAttribute('data-sound') === sv) ? 'opt on' : 'opt';
+    }
+  });
+
+  feature('終了後リピート', 'repeat', function(){
+    var rbtns = document.querySelectorAll('.opt[data-repeat]');
+    for (var i = 0; i < rbtns.length; i++) {
+      (function(btn){
+        btn.onclick = function(){
+          repeatOn = (btn.getAttribute('data-repeat') === 'on');
+          for (var k = 0; k < rbtns.length; k++) rbtns[k].className = 'opt opt2';
+          btn.className = 'opt opt2 on';
+          try { localStorage.setItem('timerLiteRepeat', repeatOn ? 'on' : 'off'); } catch (e) {}
+        };
+      })(rbtns[i]);
+    }
+    var sv = null; try { sv = localStorage.getItem('timerLiteRepeat'); } catch (e) {}
+    if (sv) {
+      repeatOn = (sv === 'on');
+      for (var j = 0; j < rbtns.length; j++) rbtns[j].className = (rbtns[j].getAttribute('data-repeat') === sv) ? 'opt opt2 on' : 'opt opt2';
+    }
+  });
+
+  feature('メーターの数(自由)', 'count', function(){
+    var inp = document.getElementById('countInput');
+    var btn = document.getElementById('countApply');
+    var note = document.getElementById('countNote');
+    var presets = document.querySelectorAll('.opt[data-count]');
+    function syncPresets(){
+      for (var i = 0; i < presets.length; i++) {
+        presets[i].className = (parseInt(presets[i].getAttribute('data-count'), 10) === CELLS) ? 'opt on' : 'opt';
+      }
+    }
+    function apply(){
+      var v = parseInt(inp.value, 10);
+      if (isNaN(v) || v < 1) { note.innerHTML = '1以上を入力してください'; return; }
+      if (v > 50) { note.innerHTML = '50までしか指定できません（上限 50）'; return; }
+      note.innerHTML = '';
+      CELLS = v; buildMeter(); render(); syncPresets();
+    }
+    btn.onclick = apply;
+    inp.onkeydown = function(e){ if (e.keyCode === 13) apply(); };   // Enter（Chrome39はkeyCode）
+  });
+
+  feature('メーター自体', 'cells', function(){
+    var btns = document.querySelectorAll('.opt[data-cells]');
+    for (var i = 0; i < btns.length; i++) {
+      (function(b){
+        b.onclick = function(){
+          for (var k = 0; k < btns.length; k++) btns[k].className = 'opt opt2';
+          b.className = 'opt opt2 on';
+          if (b.getAttribute('data-cells') === 'hide') meterEl.className = 'meter cells-off' + (meterEl.className.indexOf('frame-off') >= 0 ? ' frame-off' : '');
+          else meterEl.className = 'meter' + (meterEl.className.indexOf('frame-off') >= 0 ? ' frame-off' : '');
+          try { localStorage.setItem('timerLiteCells', b.getAttribute('data-cells')); } catch (e) {}
+        };
+      })(btns[i]);
+    }
+    var sv = null; try { sv = localStorage.getItem('timerLiteCells'); } catch (e) {}
+    if (sv === 'hide') {
+      for (var j = 0; j < btns.length; j++) btns[j].className = (btns[j].getAttribute('data-cells') === 'hide') ? 'opt opt2 on' : 'opt opt2';
+      meterEl.className = meterEl.className + ' cells-off';
+    }
+  });
+
+  feature('枠', 'frame', function(){
+    var btns = document.querySelectorAll('.opt[data-frame]');
+    for (var i = 0; i < btns.length; i++) {
+      (function(b){
+        b.onclick = function(){
+          for (var k = 0; k < btns.length; k++) btns[k].className = 'opt opt2';
+          b.className = 'opt opt2 on';
+          if (b.getAttribute('data-frame') === 'hide') meterEl.className = 'meter frame-off' + (meterEl.className.indexOf('cells-off') >= 0 ? ' cells-off' : '');
+          else meterEl.className = 'meter' + (meterEl.className.indexOf('cells-off') >= 0 ? ' cells-off' : '');
+          try { localStorage.setItem('timerLiteFrame', b.getAttribute('data-frame')); } catch (e) {}
+        };
+      })(btns[i]);
+    }
+    var sv = null; try { sv = localStorage.getItem('timerLiteFrame'); } catch (e) {}
+    if (sv === 'hide') {
+      for (var j = 0; j < btns.length; j++) btns[j].className = (btns[j].getAttribute('data-frame') === 'hide') ? 'opt opt2 on' : 'opt opt2';
+      meterEl.className = meterEl.className + ' frame-off';
+    }
+  });
+
+  feature('目盛り△', 'scale', function(){
+    var onBtns = document.querySelectorAll('.opt[data-scale]');
+    var cnBtns = document.querySelectorAll('.opt[data-scount]');
+    for (var i = 0; i < onBtns.length; i++) {
+      (function(b){
+        b.onclick = function(){
+          scaleOn = (b.getAttribute('data-scale') === 'on');
+          for (var k = 0; k < onBtns.length; k++) onBtns[k].className = 'opt opt2';
+          b.className = 'opt opt2 on';
+          renderScale();
+          try { localStorage.setItem('timerLiteScale', scaleOn ? 'on' : 'off'); } catch (e) {}
+        };
+      })(onBtns[i]);
+    }
+    for (var j = 0; j < cnBtns.length; j++) {
+      (function(b){
+        b.onclick = function(){
+          scaleCount = parseInt(b.getAttribute('data-scount'), 10);
+          for (var k = 0; k < cnBtns.length; k++) cnBtns[k].className = 'opt';
+          b.className = 'opt on';
+          renderScale();
+          try { localStorage.setItem('timerLiteScaleN', scaleCount); } catch (e) {}
+        };
+      })(cnBtns[j]);
+    }
+    var s1 = null, s2 = null;
+    try { s1 = localStorage.getItem('timerLiteScale'); s2 = localStorage.getItem('timerLiteScaleN'); } catch (e) {}
+    if (s2) { scaleCount = parseInt(s2, 10); for (var m = 0; m < cnBtns.length; m++) cnBtns[m].className = (cnBtns[m].getAttribute('data-scount') === s2) ? 'opt on' : 'opt'; }
+    if (s1 === 'on') { scaleOn = true; for (var n = 0; n < onBtns.length; n++) onBtns[n].className = (onBtns[n].getAttribute('data-scale') === 'on') ? 'opt opt2 on' : 'opt opt2'; }
+    renderScale();
+  });
+
+  feature('数字の色', 'digitcolor', function(){
+    var btns = document.querySelectorAll('.opt[data-dc]');
+    function setDC(val){ timeEl.style.color = (val === 'default') ? '' : val; try { localStorage.setItem('timerLiteDigitColor', val); } catch (e) {} }
+    for (var i = 0; i < btns.length; i++) {
+      (function(b){
+        b.onclick = function(){
+          for (var k = 0; k < btns.length; k++) btns[k].className = 'opt';
+          b.className = 'opt on';
+          setDC(b.getAttribute('data-dc'));
+        };
+      })(btns[i]);
+    }
+    var sv = null; try { sv = localStorage.getItem('timerLiteDigitColor'); } catch (e) {}
+    if (sv) { for (var j = 0; j < btns.length; j++) btns[j].className = (btns[j].getAttribute('data-dc') === sv) ? 'opt on' : 'opt'; setDC(sv); }
+  });
+
+  feature('メーターの色', 'metercolor', function(){
+    var btns = document.querySelectorAll('.opt[data-mc]');
+    function setMC(val){ meterColor = (val === 'default') ? null : val; render(); try { localStorage.setItem('timerLiteMeterColor', val); } catch (e) {} }
+    for (var i = 0; i < btns.length; i++) {
+      (function(b){
+        b.onclick = function(){
+          for (var k = 0; k < btns.length; k++) btns[k].className = 'opt';
+          b.className = 'opt on';
+          setMC(b.getAttribute('data-mc'));
+        };
+      })(btns[i]);
+    }
+    var sv = null; try { sv = localStorage.getItem('timerLiteMeterColor'); } catch (e) {}
+    if (sv) { for (var j = 0; j < btns.length; j++) btns[j].className = (btns[j].getAttribute('data-mc') === sv) ? 'opt on' : 'opt'; setMC(sv); }
+  });
+
+  feature('カウント方法', 'countmethod', function(){
+    var btns = document.querySelectorAll('.opt[data-cm]');
+    for (var i = 0; i < btns.length; i++) {
+      (function(b){
+        b.onclick = function(){
+          countUp = (b.getAttribute('data-cm') === 'up');
+          for (var k = 0; k < btns.length; k++) btns[k].className = 'opt opt2';
+          b.className = 'opt opt2 on';
+          render();
+          try { localStorage.setItem('timerLiteCountMethod', countUp ? 'up' : 'down'); } catch (e) {}
+        };
+      })(btns[i]);
+    }
+    var sv = null; try { sv = localStorage.getItem('timerLiteCountMethod'); } catch (e) {}
+    if (sv) { countUp = (sv === 'up'); for (var j = 0; j < btns.length; j++) btns[j].className = (btns[j].getAttribute('data-cm') === sv) ? 'opt opt2 on' : 'opt opt2'; }
+  });
+
+  buildMeter();
+  applyLayout(savedLayout);
+  render();
+})();
+</script>
+</body>
+</html>
