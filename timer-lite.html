@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- timer-lite v13 : 自由配置(ドラッグ移動/拡縮/回転/保存 タッチ+マウス) -->
+<!-- timer-lite v15 : 自由配置の拡大縮小を縦横選択(両方/横/縦)に -->
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -109,6 +109,11 @@
     font-family:"Courier New", monospace; font-weight:bold; font-size:14px;
     padding:11px 8px; margin:3px; border:2px solid #141414; background:#f4f4f4; color:#141414; cursor:pointer; min-width:52px;
   }
+  .lfa {
+    font-family:"Courier New", monospace; font-weight:bold; font-size:14px;
+    padding:10px 14px; margin:3px; border:2px solid #141414; background:#f4f4f4; color:#141414; cursor:pointer; min-width:60px;
+  }
+  .lfa.on { background:#141414; color:#f4f4f4; }
   .lfp.on { background:#141414; color:#f4f4f4; }
   .lfp:active, .lfo:active { background:#141414; color:#f4f4f4; }
   body.lite-layout .stage { position:relative; }
@@ -207,6 +212,10 @@ window.onerror = function(msg, url, line){
       <button class="opt" data-dc="#e14b4b">赤</button>
       <button class="opt" data-dc="#4169c9">青</button>
       <button class="opt" data-dc="#3faf60">緑</button>
+      <div style="margin-top:8px;">
+        <button class="opt opt2" data-dsh="darker">濃く</button>
+        <button class="opt opt2" data-dsh="lighter">淡く</button>
+      </div>
     </div>
 
     <div class="row" id="feat-metercolor" data-cat="look">
@@ -215,6 +224,10 @@ window.onerror = function(msg, url, line){
       <button class="opt" data-mc="#e14b4b">赤</button>
       <button class="opt" data-mc="#4169c9">青</button>
       <button class="opt" data-mc="#3faf60">緑</button>
+      <div style="margin-top:8px;">
+        <button class="opt opt2" data-msh="darker">濃く</button>
+        <button class="opt opt2" data-msh="lighter">淡く</button>
+      </div>
     </div>
 
     <div class="row" id="feat-countmethod" data-cat="time">
@@ -227,6 +240,7 @@ window.onerror = function(msg, url, line){
       <div class="lbl">メーターの消え方</div>
       <button class="opt opt2 on" data-fade="step">一つ一つ</button>
       <button class="opt opt2" data-fade="shave">徐々に</button>
+      <button class="opt opt2" data-fade="fadeout">薄くなり消える</button>
     </div>
 
     <div class="row" id="feat-fullscreen" data-cat="other">
@@ -312,7 +326,7 @@ window.onerror = function(msg, url, line){
     <div class="note">
       軽量版（古い端末・古いブラウザ向け）です。<br>
       色・音（効果音）・配置などの高度な機能は「高機能版」でご利用ください。<br>
-      <span style="opacity:.6;">lite v13</span>
+      <span style="opacity:.6;">lite v15</span>
     </div>
   </div>
 
@@ -325,6 +339,12 @@ window.onerror = function(msg, url, line){
     <button class="lfp" data-lfpart="start">START</button>
     <button class="lfp" data-lfpart="reset">RESET</button>
     <button class="lfp" data-lfpart="label">ラベル</button>
+  </div>
+  <div style="text-align:center;font-size:12px;font-weight:bold;margin:10px 0 6px;">拡大縮小の向き</div>
+  <div style="text-align:center;">
+    <button class="lfa on" data-lfaxis="both">縦横</button>
+    <button class="lfa" data-lfaxis="x">横</button>
+    <button class="lfa" data-lfaxis="y">縦</button>
   </div>
   <div style="text-align:center;font-size:12px;font-weight:bold;margin:10px 0 6px;">操作（ドラッグでも移動できます）</div>
   <div style="text-align:center;">
@@ -428,6 +448,17 @@ window.onerror = function(msg, url, line){
   var cellNodes = [];              // メーターの四角（scaleElを除外して描画するため）
   var countUp = false;             // カウント方法（false=ダウン, true=アップ）
   var meterColor = null;           // メーターの色（nullで標準）
+  var digitColor = null;           // 数字の色（nullで標準）
+  function shade(hex, delta){      // 濃淡（delta>0で淡く, <0で濃く）
+    hex = ('' + hex).replace('#', '');
+    if (hex.length === 3) hex = hex.charAt(0)+hex.charAt(0)+hex.charAt(1)+hex.charAt(1)+hex.charAt(2)+hex.charAt(2);
+    var r = parseInt(hex.slice(0,2),16), g = parseInt(hex.slice(2,4),16), b = parseInt(hex.slice(4,6),16);
+    if (isNaN(r)||isNaN(g)||isNaN(b)) { r=20; g=20; b=20; }
+    if (delta > 0) { r+=(255-r)*delta; g+=(255-g)*delta; b+=(255-b)*delta; }
+    else { var k = 1 + delta; r*=k; g*=k; b*=k; }
+    function h(n){ n=Math.max(0,Math.min(255,Math.round(n))); var s=n.toString(16); return s.length<2?'0'+s:s; }
+    return '#' + h(r) + h(g) + h(b);
+  }
   var scaleOn = false, scaleCount = 3;
   var fadeStyle = 'step';          // 消え方（step=一つ一つ / shave=徐々に）
   var currentTheme = 'light';      // 背景テーマ（消え方=徐々に の色計算に使用）
@@ -520,6 +551,7 @@ window.onerror = function(msg, url, line){
     for (var i = 0; i < cellNodes.length; i++) {
       var f = cellNodes.length - i;               // 1 = 一番下
       var base = 'cell' + (i === cellNodes.length - 1 ? ' last' : '');
+      cellNodes[i].style.opacity = '1';
       if (fadeStyle === 'shave') {
         cellNodes[i].className = base;
         if (f <= full) {
@@ -528,6 +560,17 @@ window.onerror = function(msg, url, line){
           var frac = onF - full; if (frac < 0) frac = 0; if (frac > 1) frac = 1;
           var pct = Math.round(frac * 100);
           cellNodes[i].style.background = 'linear-gradient(to top, ' + onColor + ' ' + pct + '%, ' + offColor + ' ' + pct + '%)';
+        } else {
+          cellNodes[i].style.background = '';
+        }
+      } else if (fadeStyle === 'fadeout') {
+        cellNodes[i].className = base;
+        if (f <= full) {
+          cellNodes[i].style.background = onColor;
+        } else if (f === full + 1) {
+          var fr = onF - full; if (fr < 0) fr = 0; if (fr > 1) fr = 1;
+          cellNodes[i].style.background = onColor;
+          cellNodes[i].style.opacity = '' + fr;
         } else {
           cellNodes[i].style.background = '';
         }
@@ -937,7 +980,7 @@ window.onerror = function(msg, url, line){
 
   feature('数字の色', 'digitcolor', function(){
     var btns = document.querySelectorAll('.opt[data-dc]');
-    function setDC(val){ timeEl.style.color = (val === 'default') ? '' : val; try { localStorage.setItem('timerLiteDigitColor', val); } catch (e) {} }
+    function setDC(val){ digitColor = (val === 'default') ? null : val; timeEl.style.color = digitColor ? digitColor : ''; try { localStorage.setItem('timerLiteDigitColor', val); } catch (e) {} }
     for (var i = 0; i < btns.length; i++) {
       (function(b){
         b.onclick = function(){
@@ -1043,7 +1086,8 @@ window.onerror = function(msg, url, line){
     ];
     var NAMES = { meter:'メーター', digit:'数字', start:'START', reset:'RESET', label:'ラベル' };
     var lay = {};
-    for (var i = 0; i < LP.length; i++) lay[LP[i].k] = { x:0, y:0, rot:0, scale:1 };
+    for (var i = 0; i < LP.length; i++) lay[LP[i].k] = { x:0, y:0, rot:0, sx:1, sy:1 };
+    var axisMode = 'both';
     var pad = document.getElementById('lfPad');
     var badge = document.getElementById('lfBadge');
     var selKey = 'meter';
@@ -1052,14 +1096,14 @@ window.onerror = function(msg, url, line){
     function apply(k){
       var el = elOf(k); if (!el) return;
       var t = lay[k];
-      var s = 'translate(' + Math.round(t.x) + 'px,' + Math.round(t.y) + 'px) rotate(' + t.rot + 'deg) scale(' + t.scale + ')';
+      var s = 'translate(' + Math.round(t.x) + 'px,' + Math.round(t.y) + 'px) rotate(' + t.rot + 'deg) scale(' + t.sx + ',' + t.sy + ')';
       el.style.webkitTransform = s; el.style.transform = s;
     }
     function applyAll(){ for (var i = 0; i < LP.length; i++) apply(LP[i].k); }
     function badgeUpd(){
       var t = lay[selKey];
       badge.innerHTML = '';
-      badge.appendChild(document.createTextNode(NAMES[selKey] + '  x:' + Math.round(t.x) + ' y:' + Math.round(t.y) + '  ' + (((t.rot % 360) + 360) % 360) + '°  ' + t.scale.toFixed(1) + 'x'));
+      badge.appendChild(document.createTextNode(NAMES[selKey] + '  x:' + Math.round(t.x) + ' y:' + Math.round(t.y) + '  ' + (((t.rot % 360) + 360) % 360) + '°  横' + t.sx.toFixed(1) + ' 縦' + t.sy.toFixed(1)));
     }
     function outlines(){
       for (var i = 0; i < LP.length; i++) {
@@ -1078,7 +1122,7 @@ window.onerror = function(msg, url, line){
     function save(){
       try {
         var o = '';
-        for (var i = 0; i < LP.length; i++) { var k = LP[i].k, t = lay[k]; o += k + ':' + Math.round(t.x) + ',' + Math.round(t.y) + ',' + t.rot + ',' + t.scale + '|'; }
+        for (var i = 0; i < LP.length; i++) { var k = LP[i].k, t = lay[k]; o += k + ':' + Math.round(t.x) + ',' + Math.round(t.y) + ',' + t.rot + ',' + t.sx + ',' + t.sy + '|'; }
         localStorage.setItem('timerLiteFreeLayout', o);
       } catch (e) {}
     }
@@ -1089,7 +1133,8 @@ window.onerror = function(msg, url, line){
         for (var i = 0; i < arr.length; i++) {
           if (!arr[i]) continue;
           var c = arr[i].indexOf(':'); var k = arr[i].slice(0, c); var v = arr[i].slice(c + 1).split(',');
-          if (lay[k] && v.length === 4) lay[k] = { x:+v[0], y:+v[1], rot:+v[2], scale:+v[3] };
+          if (lay[k] && v.length === 5) lay[k] = { x:+v[0], y:+v[1], rot:+v[2], sx:+v[3], sy:+v[4] };
+          else if (lay[k] && v.length === 4) lay[k] = { x:+v[0], y:+v[1], rot:+v[2], sx:+v[3], sy:+v[3] };
         }
       } catch (e) {}
     }
@@ -1125,19 +1170,56 @@ window.onerror = function(msg, url, line){
           var a = b.getAttribute('data-lfop');
           if (a === 'done') { exit(); return; }
           var t = lay[selKey];
-          if (a === 'bigger') t.scale = Math.min(3, Math.round((t.scale + 0.1) * 10) / 10);
-          else if (a === 'smaller') t.scale = Math.max(0.3, Math.round((t.scale - 0.1) * 10) / 10);
+          if (a === 'bigger') { if (axisMode !== 'y') t.sx = Math.min(3, Math.round((t.sx + 0.1) * 10) / 10); if (axisMode !== 'x') t.sy = Math.min(3, Math.round((t.sy + 0.1) * 10) / 10); }
+          else if (a === 'smaller') { if (axisMode !== 'y') t.sx = Math.max(0.3, Math.round((t.sx - 0.1) * 10) / 10); if (axisMode !== 'x') t.sy = Math.max(0.3, Math.round((t.sy - 0.1) * 10) / 10); }
           else if (a === 'rotL') t.rot -= 15;
           else if (a === 'rotR') t.rot += 15;
-          else if (a === 'reset') lay[selKey] = { x:0, y:0, rot:0, scale:1 };
+          else if (a === 'reset') lay[selKey] = { x:0, y:0, rot:0, sx:1, sy:1 };
           apply(selKey); badgeUpd(); save();
         };
       })(ops[o]);
     }
     document.getElementById('lfModeBtn').onclick = enter;
-    document.getElementById('lfResetAll').onclick = function(){ for (var i = 0; i < LP.length; i++) lay[LP[i].k] = { x:0, y:0, rot:0, scale:1 }; applyAll(); save(); };
+    document.getElementById('lfResetAll').onclick = function(){ for (var i = 0; i < LP.length; i++) lay[LP[i].k] = { x:0, y:0, rot:0, sx:1, sy:1 }; applyAll(); save(); };
+    // 拡大縮小の向き
+    var axs = document.querySelectorAll('.lfa');
+    for (var a2 = 0; a2 < axs.length; a2++) {
+      (function(b){ b.onclick = function(){ axisMode = b.getAttribute('data-lfaxis'); for (var k = 0; k < axs.length; k++) axs[k].className = (axs[k] === b) ? 'lfa on' : 'lfa'; }; })(axs[a2]);
+    }
 
     load(); applyAll();
+  });
+
+  feature('メーターの濃淡', 'metershade', function(){
+    var btns = document.querySelectorAll('.opt[data-msh]');
+    for (var i = 0; i < btns.length; i++) {
+      (function(b){
+        b.onclick = function(){
+          var base = meterColor || (THEME_COLORS[currentTheme] || THEME_COLORS.light).ink;
+          meterColor = shade(base, b.getAttribute('data-msh') === 'darker' ? -0.15 : 0.15);
+          render();
+          try { localStorage.setItem('timerLiteMeterColor', meterColor); } catch (e) {}
+          var mc = document.querySelectorAll('.opt[data-mc]');
+          for (var k = 0; k < mc.length; k++) mc[k].className = (mc[k].getAttribute('data-mc') === meterColor) ? 'opt on' : 'opt';
+        };
+      })(btns[i]);
+    }
+  });
+
+  feature('数字の濃淡', 'digitshade', function(){
+    var btns = document.querySelectorAll('.opt[data-dsh]');
+    for (var i = 0; i < btns.length; i++) {
+      (function(b){
+        b.onclick = function(){
+          var base = digitColor || (THEME_COLORS[currentTheme] || THEME_COLORS.light).ink;
+          digitColor = shade(base, b.getAttribute('data-dsh') === 'darker' ? -0.15 : 0.15);
+          timeEl.style.color = digitColor;
+          try { localStorage.setItem('timerLiteDigitColor', digitColor); } catch (e) {}
+          var dc = document.querySelectorAll('.opt[data-dc]');
+          for (var k = 0; k < dc.length; k++) dc[k].className = (dc[k].getAttribute('data-dc') === digitColor) ? 'opt on' : 'opt';
+        };
+      })(btns[i]);
+    }
   });
 
   // 設定をカテゴリに振り分けて折りたたみ表示
