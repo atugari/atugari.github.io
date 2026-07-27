@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- timer-lite v15 : 自由配置の拡大縮小を縦横選択(両方/横/縦)に -->
+<!-- timer-lite v17 : 自由配置パッドにフル/小/隠す・半透明を追加 -->
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -114,6 +114,19 @@
     padding:10px 14px; margin:3px; border:2px solid #141414; background:#f4f4f4; color:#141414; cursor:pointer; min-width:60px;
   }
   .lfa.on { background:#141414; color:#f4f4f4; }
+  .lfs {
+    font-family:"Courier New", monospace; font-weight:bold; font-size:13px;
+    padding:10px 8px; margin:3px; border:2px solid #141414; background:#f4f4f4; color:#141414; cursor:pointer; min-width:60px;
+  }
+  .lfs:active { background:#141414; color:#f4f4f4; }
+  .lfm {
+    font-family:"Courier New", monospace; font-weight:bold; font-size:12px;
+    padding:7px 11px; margin:2px; border:2px solid #141414; background:#f4f4f4; color:#141414; cursor:pointer;
+  }
+  .lfm.on { background:#141414; color:#f4f4f4; }
+  #lfPad.mode-hidden .lf-body { display:none; }
+  #lfPad.mode-compact .lf-head { display:none; }
+  #lfPad.mode-compact .lf-body > div { margin-top:4px; }
   .lfp.on { background:#141414; color:#f4f4f4; }
   .lfp:active, .lfo:active { background:#141414; color:#f4f4f4; }
   body.lite-layout .stage { position:relative; }
@@ -326,34 +339,61 @@ window.onerror = function(msg, url, line){
     <div class="note">
       軽量版（古い端末・古いブラウザ向け）です。<br>
       色・音（効果音）・配置などの高度な機能は「高機能版」でご利用ください。<br>
-      <span style="opacity:.6;">lite v15</span>
+      <span style="opacity:.6;">lite v17</span>
     </div>
   </div>
 
 <div id="lfBadge" style="display:none;position:fixed;top:8px;left:8px;z-index:9999;background:#141414;color:#fff;font:12px monospace;padding:6px 10px;"></div>
-<div id="lfPad" style="display:none;position:fixed;left:0;right:0;bottom:0;z-index:9998;background:#f4f4f4;border-top:3px solid #141414;padding:10px 8px;font-family:'Courier New',monospace;color:#141414;">
-  <div style="text-align:center;font-size:12px;font-weight:bold;margin-bottom:8px;">動かすパーツを選ぶ</div>
+<div id="lfPad" class="mode-full" style="display:none;position:fixed;left:0;right:0;bottom:0;z-index:9998;background:#f4f4f4;border-top:3px solid #141414;padding:10px 8px;font-family:'Courier New',monospace;color:#141414;max-height:75%;overflow-y:auto;">
+  <div style="text-align:center;margin-bottom:8px;">
+    <span style="font-size:11px;font-weight:bold;opacity:.6;">パッド</span>
+    <button class="lfm on" data-lfmode="full">フル</button>
+    <button class="lfm" data-lfmode="compact">小</button>
+    <button class="lfm" data-lfmode="hidden">隠す</button>
+    <button class="lfm" id="lfTransBtn">半透明</button>
+    <button class="lfo" data-lfop="done">完了</button>
+  </div>
+  <div class="lf-body">
+  <div class="lf-head" style="text-align:center;font-size:12px;font-weight:bold;margin-bottom:8px;">動かすパーツを選ぶ</div>
   <div style="text-align:center;">
     <button class="lfp on" data-lfpart="meter">メーター</button>
     <button class="lfp" data-lfpart="digit">数字</button>
     <button class="lfp" data-lfpart="start">START</button>
     <button class="lfp" data-lfpart="reset">RESET</button>
     <button class="lfp" data-lfpart="label">ラベル</button>
+    <button class="lfp" data-lfpart="all">全部</button>
   </div>
-  <div style="text-align:center;font-size:12px;font-weight:bold;margin:10px 0 6px;">拡大縮小の向き</div>
+  <div class="lf-head" style="text-align:center;font-size:12px;font-weight:bold;margin:10px 0 6px;">拡大縮小の向き</div>
   <div style="text-align:center;">
     <button class="lfa on" data-lfaxis="both">縦横</button>
     <button class="lfa" data-lfaxis="x">横</button>
     <button class="lfa" data-lfaxis="y">縦</button>
   </div>
-  <div style="text-align:center;font-size:12px;font-weight:bold;margin:10px 0 6px;">操作（ドラッグでも移動できます）</div>
+  <div class="lf-head" style="text-align:center;font-size:12px;font-weight:bold;margin:10px 0 6px;">操作（ドラッグでも移動できます）</div>
   <div style="text-align:center;">
+    <button class="lfo" data-lfop="left">←</button>
+    <button class="lfo" data-lfop="up">↑</button>
+    <button class="lfo" data-lfop="down">↓</button>
+    <button class="lfo" data-lfop="right">→</button>
+  </div>
+  <div style="text-align:center;margin-top:4px;">
     <button class="lfo" data-lfop="bigger">拡大</button>
     <button class="lfo" data-lfop="smaller">縮小</button>
     <button class="lfo" data-lfop="rotL">↺</button>
     <button class="lfo" data-lfop="rotR">↻</button>
     <button class="lfo" data-lfop="reset">リセット</button>
-    <button class="lfo" data-lfop="done">完了</button>
+  </div>
+  <div class="lf-head" style="text-align:center;font-size:12px;font-weight:bold;margin:10px 0 6px;">記憶（配置の保存 / 呼び出し）</div>
+  <div style="text-align:center;">
+    <button class="lfs" data-lfsave="1">保存1</button>
+    <button class="lfs" data-lfsave="2">保存2</button>
+    <button class="lfs" data-lfsave="3">保存3</button>
+  </div>
+  <div style="text-align:center;margin-top:4px;">
+    <button class="lfs" data-lfload="1">呼出1</button>
+    <button class="lfs" data-lfload="2">呼出2</button>
+    <button class="lfs" data-lfload="3">呼出3</button>
+  </div>
   </div>
 </div>
 
@@ -1100,16 +1140,18 @@ window.onerror = function(msg, url, line){
       el.style.webkitTransform = s; el.style.transform = s;
     }
     function applyAll(){ for (var i = 0; i < LP.length; i++) apply(LP[i].k); }
+    function targets(){ if (selKey === 'all') { var a = []; for (var i = 0; i < LP.length; i++) a.push(LP[i].k); return a; } return [selKey]; }
     function badgeUpd(){
-      var t = lay[selKey];
       badge.innerHTML = '';
+      if (selKey === 'all') { badge.appendChild(document.createTextNode('全部を操作中（まとめて移動・拡縮・回転）')); return; }
+      var t = lay[selKey];
       badge.appendChild(document.createTextNode(NAMES[selKey] + '  x:' + Math.round(t.x) + ' y:' + Math.round(t.y) + '  ' + (((t.rot % 360) + 360) % 360) + '°  横' + t.sx.toFixed(1) + ' 縦' + t.sy.toFixed(1)));
     }
     function outlines(){
       for (var i = 0; i < LP.length; i++) {
         var el = LP[i].el; if (!el) continue;
         if (!layoutMode) { el.style.outline = ''; continue; }
-        el.style.outline = (LP[i].k === selKey) ? '3px solid #e14b4b' : '1px solid rgba(120,120,120,.6)';
+        el.style.outline = (selKey === 'all' || LP[i].k === selKey) ? '3px solid #e14b4b' : '1px solid rgba(120,120,120,.6)';
         el.style.outlineOffset = '2px';
       }
     }
@@ -1119,25 +1161,24 @@ window.onerror = function(msg, url, line){
       for (var i = 0; i < pb.length; i++) pb[i].className = (pb[i].getAttribute('data-lfpart') === k) ? 'lfp on' : 'lfp';
       outlines(); badgeUpd();
     }
-    function save(){
-      try {
-        var o = '';
-        for (var i = 0; i < LP.length; i++) { var k = LP[i].k, t = lay[k]; o += k + ':' + Math.round(t.x) + ',' + Math.round(t.y) + ',' + t.rot + ',' + t.sx + ',' + t.sy + '|'; }
-        localStorage.setItem('timerLiteFreeLayout', o);
-      } catch (e) {}
+    function serialize(){
+      var o = '';
+      for (var i = 0; i < LP.length; i++) { var k = LP[i].k, t = lay[k]; o += k + ':' + Math.round(t.x) + ',' + Math.round(t.y) + ',' + t.rot + ',' + t.sx + ',' + t.sy + '|'; }
+      return o;
     }
-    function load(){
-      try {
-        var s = localStorage.getItem('timerLiteFreeLayout'); if (!s) return;
-        var arr = s.split('|');
-        for (var i = 0; i < arr.length; i++) {
-          if (!arr[i]) continue;
-          var c = arr[i].indexOf(':'); var k = arr[i].slice(0, c); var v = arr[i].slice(c + 1).split(',');
-          if (lay[k] && v.length === 5) lay[k] = { x:+v[0], y:+v[1], rot:+v[2], sx:+v[3], sy:+v[4] };
-          else if (lay[k] && v.length === 4) lay[k] = { x:+v[0], y:+v[1], rot:+v[2], sx:+v[3], sy:+v[3] };
-        }
-      } catch (e) {}
+    function parseStr(s){
+      var arr = s.split('|');
+      for (var i = 0; i < arr.length; i++) {
+        if (!arr[i]) continue;
+        var c = arr[i].indexOf(':'); var k = arr[i].slice(0, c); var v = arr[i].slice(c + 1).split(',');
+        if (lay[k] && v.length === 5) lay[k] = { x:+v[0], y:+v[1], rot:+v[2], sx:+v[3], sy:+v[4] };
+        else if (lay[k] && v.length === 4) lay[k] = { x:+v[0], y:+v[1], rot:+v[2], sx:+v[3], sy:+v[3] };
+      }
     }
+    function save(){ try { localStorage.setItem('timerLiteFreeLayout', serialize()); } catch (e) {} }
+    function load(){ try { var s = localStorage.getItem('timerLiteFreeLayout'); if (s) parseStr(s); } catch (e) {} }
+    function saveSlot(n){ try { localStorage.setItem('timerLiteSlot' + n, serialize()); } catch (e) {} }
+    function loadSlot(n){ try { var s = localStorage.getItem('timerLiteSlot' + n); if (s) { parseStr(s); applyAll(); badgeUpd(); save(); } } catch (e) {} }
     function enter(){ if (running) pause(); layoutMode = true; pad.style.display = 'block'; badge.style.display = 'block'; selectPart(selKey); }
     function exit(){ layoutMode = false; pad.style.display = 'none'; badge.style.display = 'none'; outlines(); save(); }
 
@@ -1169,13 +1210,22 @@ window.onerror = function(msg, url, line){
         b.onclick = function(){
           var a = b.getAttribute('data-lfop');
           if (a === 'done') { exit(); return; }
-          var t = lay[selKey];
-          if (a === 'bigger') { if (axisMode !== 'y') t.sx = Math.min(3, Math.round((t.sx + 0.1) * 10) / 10); if (axisMode !== 'x') t.sy = Math.min(3, Math.round((t.sy + 0.1) * 10) / 10); }
-          else if (a === 'smaller') { if (axisMode !== 'y') t.sx = Math.max(0.3, Math.round((t.sx - 0.1) * 10) / 10); if (axisMode !== 'x') t.sy = Math.max(0.3, Math.round((t.sy - 0.1) * 10) / 10); }
-          else if (a === 'rotL') t.rot -= 15;
-          else if (a === 'rotR') t.rot += 15;
-          else if (a === 'reset') lay[selKey] = { x:0, y:0, rot:0, sx:1, sy:1 };
-          apply(selKey); badgeUpd(); save();
+          var STEP = 8;
+          var ts = targets();
+          for (var ti = 0; ti < ts.length; ti++) {
+            var t = lay[ts[ti]];
+            if (a === 'up') t.y -= STEP;
+            else if (a === 'down') t.y += STEP;
+            else if (a === 'left') t.x -= STEP;
+            else if (a === 'right') t.x += STEP;
+            else if (a === 'bigger') { if (axisMode !== 'y') t.sx = Math.min(3, Math.round((t.sx + 0.1) * 10) / 10); if (axisMode !== 'x') t.sy = Math.min(3, Math.round((t.sy + 0.1) * 10) / 10); }
+            else if (a === 'smaller') { if (axisMode !== 'y') t.sx = Math.max(0.3, Math.round((t.sx - 0.1) * 10) / 10); if (axisMode !== 'x') t.sy = Math.max(0.3, Math.round((t.sy - 0.1) * 10) / 10); }
+            else if (a === 'rotL') t.rot -= 15;
+            else if (a === 'rotR') t.rot += 15;
+            else if (a === 'reset') lay[ts[ti]] = { x:0, y:0, rot:0, sx:1, sy:1 };
+            apply(ts[ti]);
+          }
+          badgeUpd(); save();
         };
       })(ops[o]);
     }
@@ -1186,6 +1236,21 @@ window.onerror = function(msg, url, line){
     for (var a2 = 0; a2 < axs.length; a2++) {
       (function(b){ b.onclick = function(){ axisMode = b.getAttribute('data-lfaxis'); for (var k = 0; k < axs.length; k++) axs[k].className = (axs[k] === b) ? 'lfa on' : 'lfa'; }; })(axs[a2]);
     }
+    // 記憶スロット（保存 / 呼び出し）
+    var svb = document.querySelectorAll('.lfs[data-lfsave]');
+    for (var s1 = 0; s1 < svb.length; s1++) { (function(b){ b.onclick = function(){ saveSlot(b.getAttribute('data-lfsave')); }; })(svb[s1]); }
+    var ldb = document.querySelectorAll('.lfs[data-lfload]');
+    for (var l1 = 0; l1 < ldb.length; l1++) { (function(b){ b.onclick = function(){ loadSlot(b.getAttribute('data-lfload')); }; })(ldb[l1]); }
+
+    // パッド表示モード（フル/小/隠す）と半透明
+    var padMode = 'full', padTrans = false;
+    function padClass(){ pad.className = 'mode-' + padMode; pad.style.background = padTrans ? 'rgba(244,244,244,.72)' : '#f4f4f4'; }
+    var lfm = document.querySelectorAll('.lfm[data-lfmode]');
+    for (var mi = 0; mi < lfm.length; mi++) {
+      (function(b){ b.onclick = function(){ padMode = b.getAttribute('data-lfmode'); for (var k = 0; k < lfm.length; k++) lfm[k].className = (lfm[k] === b) ? 'lfm on' : 'lfm'; padClass(); }; })(lfm[mi]);
+    }
+    var tb = document.getElementById('lfTransBtn');
+    if (tb) tb.onclick = function(){ padTrans = !padTrans; tb.className = padTrans ? 'lfm on' : 'lfm'; padClass(); };
 
     load(); applyAll();
   });
