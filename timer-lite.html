@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- timer-lite v17 : 自由配置パッドにフル/小/隠す・半透明を追加 -->
+<!-- timer-lite v18b : 注記文を削除し更新日+版数のみに -->
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -154,6 +154,7 @@ window.onerror = function(msg, url, line){
     <div class="top">
       <a class="lnk" href="plaza.html">← 幻実世界の電子遊戯へ</a>
       <a class="lnk" href="timer-gauge.html">高機能版へ</a>
+      <button class="lnk" id="toggleSettings" type="button">設定を隠す</button>
     </div>
 
     <div id="labelText" style="display:none;font-weight:bold;font-size:20px;letter-spacing:1px;margin:6px 0 4px;"></div>
@@ -337,9 +338,7 @@ window.onerror = function(msg, url, line){
     </div>
 
     <div class="note">
-      軽量版（古い端末・古いブラウザ向け）です。<br>
-      色・音（効果音）・配置などの高度な機能は「高機能版」でご利用ください。<br>
-      <span style="opacity:.6;">lite v17</span>
+      <span style="opacity:.6;">2026/07/27 更新　lite v18</span>
     </div>
   </div>
 
@@ -1285,6 +1284,19 @@ window.onerror = function(msg, url, line){
         };
       })(btns[i]);
     }
+  });
+
+  feature('設定の表示', 'togglesettings', function(){
+    var btn = document.getElementById('toggleSettings');
+    var secEls = document.querySelectorAll('.sec');
+    var hidden = false;
+    try { if (localStorage.getItem('timerLiteHideSettings') === '1') hidden = true; } catch (e) {}
+    function apply(){
+      for (var i = 0; i < secEls.length; i++) secEls[i].style.display = hidden ? 'none' : '';
+      btn.innerHTML = ''; btn.appendChild(document.createTextNode(hidden ? '設定を表示' : '設定を隠す'));
+    }
+    btn.onclick = function(){ hidden = !hidden; apply(); try { localStorage.setItem('timerLiteHideSettings', hidden ? '1' : '0'); } catch (e) {} };
+    apply();
   });
 
   // 設定をカテゴリに振り分けて折りたたみ表示
