@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- skins.html v2 : Firebase設定を埋め込み（ad-game-7b40a Firestore） -->
+<!-- skins.html v3 : スパム対策（投稿間隔60秒/NGワード/作者名必須） -->
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -73,9 +73,9 @@
     <h2>きせかえを公開する</h2>
     <div class="card">
       <label>きせかえ名</label>
-      <input id="pubName" placeholder="例: 夜空">
-      <label>作者名（任意）</label>
-      <input id="pubAuthor" placeholder="例: あつがり">
+      <input id="pubName" placeholder="例: 夜空" maxlength="40">
+      <label>作者名（必須）</label>
+      <input id="pubAuthor" placeholder="例: あつがり" maxlength="24">
       <label>きせかえコード（タイマーの「今のUIを書き出し」で取得）</label>
       <input id="pubCode" placeholder="T2,... を貼り付け">
       <button class="btn" id="pubBtn">公開する</button>
@@ -139,19 +139,36 @@
 
   function msg(el, text, ok){ el.textContent=text; el.className='msg '+(ok?'ok':'err'); }
 
+  // NGワード（必要に応じて追加・削除してください。小文字で記載）
+  var NG_WORDS = ['死ね','しね','ﾀﾋ','殺す','ころす','きちがい','障害者','土人','セックス','ちんこ','まんこ','うんこ','fuck','shit','nigger'];
+  var POST_COOLDOWN = 60 * 1000;   // 投稿間隔（ミリ秒）＝60秒
+  function hasNG(text){
+    text=(text||'').toLowerCase();
+    for (var i=0;i<NG_WORDS.length;i++){ if (text.indexOf(NG_WORDS[i])>=0) return true; }
+    return false;
+  }
+
   document.getElementById('pubBtn').addEventListener('click', function(){
     var name=document.getElementById('pubName').value.trim();
     var author=document.getElementById('pubAuthor').value.trim();
     var code=document.getElementById('pubCode').value.trim();
     var pm=document.getElementById('pubMsg');
-    if (!name || !code){ msg(pm,'きせかえ名とコードを入力してください',false); return; }
+    if (!name){ msg(pm,'きせかえ名を入力してください',false); return; }
+    if (!author){ msg(pm,'作者名を入力してください（必須）',false); return; }
+    if (!code){ msg(pm,'きせかえコードを入力してください',false); return; }
     if (!codeColors(code)){ msg(pm,'コードの形式が正しくありません',false); return; }
+    if (hasNG(name) || hasNG(author)){ msg(pm,'使用できない語句が含まれています',false); return; }
+    // 投稿間隔の制限（この端末での連続投稿を防止）
+    var last=0; try { last=parseInt(localStorage.getItem('skinsLastPost'),10)||0; } catch(e){}
+    var wait = POST_COOLDOWN - (Date.now()-last);
+    if (wait > 0){ msg(pm,'連続投稿はできません。あと '+Math.ceil(wait/1000)+' 秒お待ちください',false); return; }
     if (!db){ msg(pm,'Firebaseが未設定です（下部の設定を確認）',false); return; }
     var btn=document.getElementById('pubBtn'); btn.disabled=true;
     db.collection('skins').add({
-      name:name.slice(0,40), author:(author||'名無し').slice(0,24), code:code.slice(0,300),
+      name:name.slice(0,40), author:author.slice(0,24), code:code.slice(0,300),
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     }).then(function(){
+      try { localStorage.setItem('skinsLastPost', ''+Date.now()); } catch(e){}
       msg(pm,'公開しました！',true);
       document.getElementById('pubName').value=''; document.getElementById('pubAuthor').value=''; document.getElementById('pubCode').value='';
       loadList();
