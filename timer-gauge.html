@@ -1,10 +1,13 @@
 <!DOCTYPE html>
-<!-- timer-gauge v53 : 配置に「全部」まとめ操作＋拡縮の縦横指定を追加 -->
+<!-- timer-gauge v58 : 非表示パネルをdisplay:noneにし下部の空白を解消 -->
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>タイマーゲージ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;700;900&family=Zen+Maru+Gothic:wght@500;700;900&family=Klee+One:wght@400;600&family=M+PLUS+Rounded+1c:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
     --ink:#141414;      /* 枠・文字（UIの線・文字色） */
@@ -37,7 +40,7 @@
     margin:0;
     background:var(--paper);
     color:var(--ink);
-    font-family:"SFMono-Regular",Consolas,"Roboto Mono","DejaVu Sans Mono",monospace;
+    font-family:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho","YuMincho",serif;
     display:flex; align-items:center; justify-content:center;
     padding:24px;
     transition:background-color var(--fade),color var(--fade);
@@ -111,7 +114,7 @@
     width:100%; border:0; background:transparent; color:var(--digit);
     font-family:inherit; font-weight:700;
     font-size:clamp(56px,16vw,120px); line-height:1; letter-spacing:.02em;
-    text-align:center; padding:0;
+    text-align:center; padding:0; font-variant-numeric:tabular-nums;
     transition:color var(--fade),-webkit-text-fill-color var(--fade);
   }
   .time:focus{ outline:none; }
@@ -196,7 +199,7 @@
     transition:background-color var(--fade),border-color var(--fade);
   }
   .tabpanel{ grid-area:1 / 1; }         /* 同じ位置に重ねて最大の高さを確保 */
-  .tabpanel.hidden{ visibility:hidden; } /* 非表示でも場所は確保（切替で上下しない） */
+  .tabpanel.hidden{ display:none; }        /* 表示中パネルの高さに合わせる（下部の空白防止） */
 
   /* タイマータブ */
   .modal-label{ display:block; font-size:12px; letter-spacing:.08em; margin-bottom:8px; opacity:.7; }
@@ -295,7 +298,7 @@
     padding:16px 14px 14px; position:relative; z-index:1;
   }
   .subpanel{ grid-area:1 / 1; }
-  .subpanel.hidden{ visibility:hidden; }   /* 非表示でも場所は確保 */
+  .subpanel.hidden{ display:none; }
 
   /* 色タブ内の3階層タブ（テーマ / 背景）：小さめの塗り分けトグル */
   .subtabs2{ display:flex; gap:8px; margin-bottom:14px; }
@@ -308,7 +311,7 @@
   .subtab2:focus-visible{ outline:3px solid var(--ink); outline-offset:2px; }
   .subpanels2{ display:grid; }
   .subpanel2{ grid-area:1 / 1; }
-  .subpanel2.hidden{ visibility:hidden; }
+  .subpanel2.hidden{ display:none; }
 
   /* 適用確認ダイアログ */
   .confirm-layer{
@@ -406,6 +409,18 @@
   .lp-wide{ flex:1; font-size:13px; min-width:0; }
   .lp-btn.lp-done{ background:var(--ink); color:var(--paper); }
 
+  /* ===== 豪華装飾（色カスタムと非干渉：影/角丸/金の差し色） ===== */
+  body::before{ content:""; position:fixed; top:0; left:0; right:0; height:5px;
+    background:linear-gradient(90deg,#8a6d1a,#e8cf7a,#fff4cf,#e8cf7a,#8a6d1a); z-index:9; pointer-events:none;
+    box-shadow:0 1px 8px rgba(201,162,39,.55); }
+  .gauge{ border-radius:6px; overflow:hidden;
+    box-shadow:0 16px 38px rgba(0,0,0,.24), 0 0 0 1px rgba(201,162,39,.40); }
+  .time{ text-shadow:0 3px 8px rgba(0,0,0,.16); }
+  .ctrl{ border-radius:11px; box-shadow:0 6px 16px rgba(0,0,0,.18); }
+  .settings-btn{ border-radius:12px; box-shadow:0 6px 16px rgba(0,0,0,.20), 0 0 0 1px rgba(201,162,39,.45); }
+  .modal{ border-radius:18px; box-shadow:0 26px 80px rgba(0,0,0,.50), 0 0 0 1px rgba(201,162,39,.35); }
+  .tab-card{ border-radius:12px; }
+  .back-btn, .compat-link{ border-radius:9px; }
 </style>
 </head>
 <body>
@@ -466,6 +481,7 @@
       <div class="tabs" role="tablist">
         <button class="tab active" data-tab="timer" role="tab">タイマー</button>
         <button class="tab" data-tab="ui" role="tab">UI</button>
+        <button class="tab" data-tab="finish" role="tab">終了時</button>
       </div>
 
       <div class="tab-card">
@@ -517,8 +533,8 @@
           <div class="subtabs" role="tablist">
             <button class="subtab active" data-subtab="color" role="tab">色</button>
             <button class="subtab" data-subtab="meter" role="tab">メーター</button>
-            <button class="subtab" data-subtab="finish" role="tab">終了時</button>
             <button class="subtab" data-subtab="layout" role="tab">配置</button>
+            <button class="subtab" data-subtab="font" role="tab">フォント</button>
           </div>
 
           <div class="subpanels">
@@ -623,31 +639,19 @@
             </div>
 
             <!-- 終了時 -->
-            <div class="subpanel hidden" data-subpanel="finish">
+            <div class="subpanel hidden" data-subpanel="font">
               <div class="field">
-                <span class="field-label">終了時の点滅</span>
-                <div class="seg" data-seg="blink">
-                  <button class="seg-btn active" data-val="on">あり</button>
-                  <button class="seg-btn" data-val="off">なし</button>
+                <span class="field-label">フォント（オンライン時に反映）</span>
+                <div class="seg" data-seg="font" style="flex-wrap:wrap;">
+                  <button class="seg-btn active" data-font="mincho">明朝</button>
+                  <button class="seg-btn" data-font="maru">丸ゴシック</button>
+                  <button class="seg-btn" data-font="klee">手書き</button>
+                  <button class="seg-btn" data-font="pop">ポップ</button>
+                  <button class="seg-btn" data-font="system">標準</button>
                 </div>
               </div>
               <div class="field">
-                <span class="field-label">アラーム音（タップで試聴）</span>
-                <div class="soundlist" id="soundList"></div>
-              </div>
-              <div class="field">
-                <span class="field-label">音量</span>
-                <div class="seg" data-seg="alarm">
-                  <button class="seg-btn" data-val="none">無し</button>
-                  <button class="seg-btn" data-val="low">小</button>
-                  <button class="seg-btn active" data-val="mid">中</button>
-                  <button class="seg-btn" data-val="high">大</button>
-                </div>
-                <div class="volbar" id="volBar" role="slider" aria-label="アラーム音量"
-                     aria-valuemin="0" aria-valuemax="100" tabindex="0">
-                  <div class="volbar-track"></div>
-                  <div class="volbar-knob" id="volKnob"></div>
-                </div>
+                <span class="field-label" style="opacity:.6;font-size:12px;">明朝＝豪華／丸ゴシック＝可愛い／手書き＝上品／ポップ＝元気／標準＝端末フォント</span>
               </div>
             </div>
             <!-- 配置（レイアウト） -->
@@ -669,13 +673,41 @@
             </div>
           </div>
         </div>
+
+        <div class="tabpanel hidden" data-panel="finish">
+          <div class="field">
+            <span class="field-label">終了時の点滅</span>
+            <div class="seg" data-seg="blink">
+              <button class="seg-btn active" data-val="on">あり</button>
+              <button class="seg-btn" data-val="off">なし</button>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-label">アラーム音（タップで試聴）</span>
+            <div class="soundlist" id="soundList"></div>
+          </div>
+          <div class="field">
+            <span class="field-label">音量</span>
+            <div class="seg" data-seg="alarm">
+              <button class="seg-btn" data-val="none">無し</button>
+              <button class="seg-btn" data-val="low">小</button>
+              <button class="seg-btn active" data-val="mid">中</button>
+              <button class="seg-btn" data-val="high">大</button>
+            </div>
+            <div class="volbar" id="volBar" role="slider" aria-label="アラーム音量"
+                 aria-valuemin="0" aria-valuemax="100" tabindex="0">
+              <div class="volbar-track"></div>
+              <div class="volbar-knob" id="volKnob"></div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="modal-actions">
         <button class="ctrl" id="applyBtn">適用</button>
         <button class="ctrl" id="closeBtn">閉じる</button>
       </div>
-      <div style="margin-top:12px;font-size:10px;letter-spacing:.1em;opacity:.4;text-align:right;">v53</div>
+      <div style="margin-top:12px;font-size:10px;letter-spacing:.1em;opacity:.4;text-align:right;">v58</div>
     </div>
 
     <!-- 適用確認 -->
@@ -1418,6 +1450,31 @@
     if (e.key === 'ArrowLeft' || e.key === 'ArrowDown'){ setAlarmVol(alarmVol - 0.1); e.preventDefault(); }
     else if (e.key === 'ArrowRight' || e.key === 'ArrowUp'){ setAlarmVol(alarmVol + 0.1); e.preventDefault(); }
   });
+
+  // ----- フォント切替 -----
+  const FONT_MAP = {
+    mincho: '"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif',
+    maru:   '"Zen Maru Gothic","Hiragino Maru Gothic ProN",sans-serif',
+    klee:   '"Klee One","Hiragino Mincho ProN",serif',
+    pop:    '"M PLUS Rounded 1c","Hiragino Maru Gothic ProN",sans-serif',
+    system: 'system-ui,-apple-system,"Hiragino Kaku Gothic ProN",sans-serif'
+  };
+  function setFont(key){
+    document.body.style.fontFamily = FONT_MAP[key] || FONT_MAP.mincho;
+    try { localStorage.setItem('timerFont', key); } catch(e){}
+  }
+  document.querySelectorAll('.seg[data-seg="font"] .seg-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      document.querySelectorAll('.seg[data-seg="font"] .seg-btn').forEach(x => x.classList.toggle('active', x === b));
+      setFont(b.dataset.font);
+    });
+  });
+  (function(){
+    let f = 'mincho';
+    try { const s = localStorage.getItem('timerFont'); if (s && FONT_MAP[s]) f = s; } catch(e){}
+    document.querySelectorAll('.seg[data-seg="font"] .seg-btn').forEach(x => x.classList.toggle('active', x.dataset.font === f));
+    setFont(f);
+  })();
 
   // ----- タブ -----
   document.querySelectorAll('.tab').forEach(tab => {
