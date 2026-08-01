@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- timer-gauge v58 : 非表示パネルをdisplay:noneにし下部の空白を解消 -->
+<!-- timer-gauge v66 : 見出しにアイコン＋カテゴリ別の色、タブにアイコンで区別しやすく -->
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -176,8 +176,8 @@
   /* ===== タブ（付箋／フォルダのつまみ風） ===== */
   .tabs{ display:flex; gap:6px; padding-left:10px; position:relative; z-index:2; }
   .tab{
-    font-family:inherit; font-weight:700; letter-spacing:.1em; font-size:13px;
-    padding:9px 20px 12px;
+    font-family:inherit; font-weight:700; letter-spacing:.06em; font-size:13px;
+    padding:9px 14px 12px;
     border:var(--cell-border) solid var(--ink);
     border-bottom:0;
     border-radius:10px 10px 0 0;          /* 上だけ丸める＝紙のつまみ */
@@ -309,6 +309,18 @@
   }
   .subtab2.active{ background:var(--ink); color:var(--paper); }
   .subtab2:focus-visible{ outline:3px solid var(--ink); outline-offset:2px; }
+
+  /* サブタブ→アコーディオン（タブ内タブの解消） */
+  .subpanels.acc{ display:block; }
+  .acc-head{
+    display:block; width:100%; text-align:left; font-family:inherit; font-weight:700;
+    font-size:14px; letter-spacing:.06em; padding:13px 14px; margin-top:8px;
+    border:var(--cell-border) solid var(--ink); background:var(--paper); color:var(--ink);
+    cursor:pointer; border-radius:10px; transition:background-color .1s,color .1s;
+  }
+  .acc-head:active{ background:var(--ink); color:var(--paper); }
+  .subpanels.acc > .acc-head:first-child{ margin-top:0; }
+  .subpanel.acc-body{ padding:12px 4px 6px; }
   .subpanels2{ display:grid; }
   .subpanel2{ grid-area:1 / 1; }
   .subpanel2.hidden{ display:none; }
@@ -420,7 +432,52 @@
   .settings-btn{ border-radius:12px; box-shadow:0 6px 16px rgba(0,0,0,.20), 0 0 0 1px rgba(201,162,39,.45); }
   .modal{ border-radius:18px; box-shadow:0 26px 80px rgba(0,0,0,.50), 0 0 0 1px rgba(201,162,39,.35); }
   .tab-card{ border-radius:12px; }
+  /* きせかえ（保存スロット） */
+  .skin-open{ width:100%; margin-bottom:16px; }
+  #skinView.hidden, #tabArea.hidden{ display:none; }
+  #skinBack{ margin-bottom:14px; }
+  .skin-slots{ display:flex; flex-direction:column; gap:8px; }
+  .skin-slot{ display:flex; align-items:stretch; gap:6px; }
+  .skin-apply, .skin-save{
+    flex:1; min-width:0; text-align:left; font-family:inherit; font-weight:700; font-size:15px;
+    padding:12px 14px; border:var(--cell-border) solid var(--ink); background:var(--paper); color:var(--ink);
+    cursor:pointer; border-radius:9px; display:flex; align-items:center; gap:10px;
+  }
+  .skin-save{ opacity:.6; }
+  .skin-apply:active, .skin-save:active{ background:var(--ink); color:var(--paper); }
+  .skin-no{ display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px;
+    border-radius:50%; border:2px solid currentColor; font-size:12px; flex:none; }
+  .skin-name{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .skin-op{ font-family:inherit; font-weight:700; font-size:13px; padding:0 12px;
+    border:var(--cell-border) solid var(--ink); background:var(--paper); color:var(--ink); cursor:pointer; border-radius:9px; flex:none; }
+  .skin-op:active{ background:var(--ink); color:var(--paper); }
   .back-btn, .compat-link{ border-radius:9px; }
+
+  /* ===== 要所の差し色（設定を見やすく。青=選択/主要, 金=きせかえ） ===== */
+  .seg-btn.active{ background:#3d7dd8; color:#fff; border-color:#3d7dd8; }
+  .subtab2.active{ background:#3d7dd8; color:#fff; border-color:#3d7dd8; }
+  .acc-head{ border-left:5px solid #3d7dd8; }
+  .acc-head.open{ background:rgba(61,125,216,.14); }
+  /* カテゴリ別の差し色 */
+  .acc-color{ border-left-color:#e0568a; }
+  .acc-color.open{ background:rgba(224,86,138,.14); }
+  .acc-meter{ border-left-color:#3d7dd8; }
+  .acc-meter.open{ background:rgba(61,125,216,.14); }
+  .acc-layout{ border-left-color:#2fa96b; }
+  .acc-layout.open{ background:rgba(47,169,107,.14); }
+  .acc-font{ border-left-color:#8a5cd0; }
+  .acc-font.open{ background:rgba(138,92,208,.14); }
+  .acc-method{ border-left-color:#e08a2e; }
+  .acc-method.open{ background:rgba(224,138,46,.14); }
+  .acc-notation{ border-left-color:#2bb0a3; }
+  .acc-notation.open{ background:rgba(43,176,163,.14); }
+  .acc-head:active{ background:#3d7dd8; color:#fff; }
+  .tab.active{ box-shadow:inset 0 4px 0 #3d7dd8; }
+  #applyBtn{ background:#3d7dd8; color:#fff; border-color:#3d7dd8; }
+  .skin-open{ background:#c9a227; color:#fff; border-color:#c9a227; }
+  .skin-add{ border-color:#c9a227 !important; color:#9a7d1f; }
+  .swatch.active{ outline:3px solid #3d7dd8; outline-offset:2px; }
+  .volbar-knob{ background:#3d7dd8; }
 </style>
 </head>
 <body>
@@ -478,10 +535,30 @@
       </div>
       <a class="back-btn compat-link" href="timer-lite.html">🔧 軽量版（古い端末・古いブラウザ向け）へ</a>
 
+      <button class="ctrl skin-open" id="skinOpenBtn" type="button">🎨 きせかえ（保存・共有）</button>
+
+      <div id="skinView" class="hidden">
+        <button class="back-btn" id="skinBack" type="button">← 設定にもどる</button>
+        <div class="field">
+          <span class="field-label">保存したきせかえ（タップで適用・最大10個）</span>
+          <div class="skin-slots" id="skinSlots"></div>
+        </div>
+        <div class="field">
+          <span class="field-label">共有コード</span>
+          <input class="modal-input" id="skinCode" style="font-size:13px;letter-spacing:0;" placeholder="コードを貼り付けて読み込み">
+          <div class="seg" style="margin-top:10px;">
+            <button class="seg-btn" id="skinExport">今のUIを書き出し</button>
+            <button class="seg-btn" id="skinImport">読み込んで保存</button>
+          </div>
+          <div class="modal-hint" style="margin-top:8px;">「書き出し」で出たコードをコピーして共有できます。もらったコードは貼り付けて「読み込んで保存」。</div>
+        </div>
+      </div>
+
+      <div id="tabArea">
       <div class="tabs" role="tablist">
-        <button class="tab active" data-tab="timer" role="tab">タイマー</button>
-        <button class="tab" data-tab="ui" role="tab">UI</button>
-        <button class="tab" data-tab="finish" role="tab">終了時</button>
+        <button class="tab active" data-tab="timer" role="tab">⏱️ タイマー</button>
+        <button class="tab" data-tab="ui" role="tab">🎨 UI</button>
+        <button class="tab" data-tab="finish" role="tab">🔔 終了時</button>
       </div>
 
       <div class="tab-card">
@@ -702,12 +779,13 @@
           </div>
         </div>
       </div>
+      </div>
 
       <div class="modal-actions">
         <button class="ctrl" id="applyBtn">適用</button>
         <button class="ctrl" id="closeBtn">閉じる</button>
       </div>
-      <div style="margin-top:12px;font-size:10px;letter-spacing:.1em;opacity:.4;text-align:right;">v58</div>
+      <div style="margin-top:12px;font-size:10px;letter-spacing:.1em;opacity:.4;text-align:right;">v66</div>
     </div>
 
     <!-- 適用確認 -->
@@ -1476,6 +1554,140 @@
     setFont(f);
   })();
 
+  // ----- きせかえ（保存スロット・最大10） -----
+  const SKIN_KEY = 'timerSkins';
+  let skins = [];
+  function loadSkins(){
+    skins = [];
+    try { const s = localStorage.getItem(SKIN_KEY); if (s){ const a = JSON.parse(s); if (Array.isArray(a)) skins = a; } } catch(e){}
+    while (skins.length < 10) skins.push(null);
+    skins = skins.slice(0,10);
+  }
+  function saveSkins(){ try { localStorage.setItem(SKIN_KEY, JSON.stringify(skins)); } catch(e){} }
+  function clickSeg(seg, val){ const b = document.querySelector('.seg[data-seg="'+seg+'"] .seg-btn[data-val="'+val+'"]'); if (b) b.click(); }
+  function currentFontKey(){ const a = document.querySelector('.seg[data-seg="font"] .seg-btn.active'); return a ? a.dataset.font : 'mincho'; }
+  function currentSkin(name){
+    return { name: name || 'マイきせかえ', paper: PARTS.paper.override, digit: PARTS.digit.override,
+             gauge: PARTS.gauge.override, ink: PARTS.ink.override, font: currentFontKey(), count: CELLS, fade: fadeStyle };
+  }
+  function applySkin(s){
+    if (!s) return;
+    PARTS.paper.override = s.paper; PARTS.paper.base = s.paper;
+    PARTS.digit.override = s.digit; PARTS.digit.base = s.digit;
+    PARTS.gauge.override = s.gauge; PARTS.gauge.base = s.gauge;
+    PARTS.ink.override   = s.ink;   PARTS.ink.base   = s.ink;
+    applyColors(); syncSwatches();
+    if (s.font){ setFont(s.font); document.querySelectorAll('.seg[data-seg="font"] .seg-btn').forEach(x => x.classList.toggle('active', x.dataset.font === s.font)); }
+    if (s.count != null) setCount(s.count);
+    if (s.fade) clickSeg('fade', s.fade);
+    updatePreview();
+  }
+  function addSkinToEmpty(){
+    const empty = skins.indexOf(null);
+    if (empty < 0){ alert('空きがありません（最大10個）。不要なきせかえを削除してください。'); return; }
+    const nm = prompt('きせかえの名前', 'マイきせかえ'); if (nm === null) return;
+    skins[empty] = currentSkin((nm.trim()) || ('きせかえ'+(empty+1))); saveSkins(); renderSkinSlots();
+  }
+  function renderSkinSlots(){
+    const wrap = document.getElementById('skinSlots'); if (!wrap) return;
+    wrap.innerHTML = '';
+    let shown = 0;
+    skins.forEach((s, i) => {
+      if (!s) return;
+      shown++;
+      const num = shown;
+      const row = document.createElement('div'); row.className = 'skin-slot';
+      const apply = document.createElement('button'); apply.className = 'skin-apply';
+      apply.innerHTML = '<span class="skin-no"></span><span class="skin-name"></span>';
+      apply.querySelector('.skin-no').textContent = num;
+      apply.querySelector('.skin-name').textContent = s.name;
+      apply.addEventListener('click', () => applySkin(s));
+      const over = document.createElement('button'); over.className = 'skin-op skin-over'; over.textContent = '上書';
+      over.addEventListener('click', () => {
+        if (confirm('「'+s.name+'」に今のUIを上書きしますか？')){
+          const nm = prompt('名前', s.name); if (nm === null) return;
+          skins[i] = currentSkin((nm.trim()) || s.name); saveSkins(); renderSkinSlots();
+        }
+      });
+      const del = document.createElement('button'); del.className = 'skin-op skin-del'; del.textContent = '×';
+      del.addEventListener('click', () => {
+        if (confirm('「'+s.name+'」を削除しますか？')){ skins[i] = null; saveSkins(); renderSkinSlots(); }
+      });
+      row.appendChild(apply); row.appendChild(over); row.appendChild(del);
+      wrap.appendChild(row);
+    });
+    if (shown === 0){
+      const empty = document.createElement('div'); empty.className = 'modal-hint'; empty.style.marginBottom = '4px';
+      empty.textContent = 'まだきせかえがありません。下の「＋追加」で今のUIを保存できます。';
+      wrap.appendChild(empty);
+    }
+    if (skins.indexOf(null) >= 0){
+      const row = document.createElement('div'); row.className = 'skin-slot';
+      const add = document.createElement('button'); add.className = 'skin-save skin-add';
+      add.innerHTML = '<span class="skin-no">＋</span><span class="skin-name">追加（今のUIをきせかえとして保存）</span>';
+      add.addEventListener('click', addSkinToEmpty);
+      row.appendChild(add); wrap.appendChild(row);
+    }
+  }
+  // 共有コード（短縮形式 T2 / 旧TMR1も読める）
+  const FONT_CODE = { mincho:'m', maru:'r', klee:'k', pop:'p', system:'s' };
+  const FONT_DECODE = { m:'mincho', r:'maru', k:'klee', p:'pop', s:'system' };
+  const FADE_CODE = { step:'t', shave:'v', fadeout:'f' };
+  const FADE_DECODE = { t:'step', v:'shave', f:'fadeout' };
+  function hex6(c){ return c ? c.replace('#','') : ''; }
+  function unhex(h){ return h ? ('#'+h) : null; }
+  function skinToCode(s){
+    return 'T2,' + [ hex6(s.paper), hex6(s.digit), hex6(s.gauge), hex6(s.ink),
+      FONT_CODE[s.font]||'m', FADE_CODE[s.fade]||'t', s.count, s.name ].join(',');
+  }
+  function codeToSkinV1(code){
+    const p = code.slice(5).split('|'); if (p.length < 8) return null;
+    const cnt = parseInt(p[6],10);
+    return { name: decodeURIComponent(p[0]||'共有きせかえ'), paper:p[1],
+      digit:p[2]==='auto'?null:p[2], gauge:p[3]==='auto'?null:p[3], ink:p[4]==='auto'?null:p[4],
+      font:p[5], count:isNaN(cnt)?10:cnt, fade:p[7] };
+  }
+  function codeToSkin(code){
+    code = (code||'').trim();
+    if (code.indexOf('TMR1:') === 0) return codeToSkinV1(code);
+    if (code.indexOf('T2,') === 0) code = code.slice(3);
+    const p = code.split(','); if (p.length < 8) return null;
+    const cnt = parseInt(p[6], 10);
+    return { paper: unhex(p[0]) || '#f4f4f4', digit: unhex(p[1]), gauge: unhex(p[2]), ink: unhex(p[3]),
+      font: FONT_DECODE[p[4]] || 'mincho', fade: FADE_DECODE[p[5]] || 'step',
+      count: isNaN(cnt) ? 10 : cnt, name: p.slice(7).join(',') || '共有きせかえ' };
+  }
+  const skinCodeInput = document.getElementById('skinCode');
+  const skinExportBtn = document.getElementById('skinExport');
+  const skinImportBtn = document.getElementById('skinImport');
+  if (skinExportBtn) skinExportBtn.addEventListener('click', () => {
+    const nm = prompt('書き出すきせかえの名前', 'マイきせかえ'); if (nm === null) return;
+    skinCodeInput.value = skinToCode(currentSkin((nm.trim()) || 'マイきせかえ'));
+    skinCodeInput.focus(); skinCodeInput.select();
+  });
+  if (skinImportBtn) skinImportBtn.addEventListener('click', () => {
+    const s = codeToSkin(skinCodeInput.value);
+    if (!s){ alert('コードが正しくありません。'); return; }
+    const empty = skins.indexOf(null);
+    if (empty < 0){ if (confirm('空きがありません。保存せず今のUIに適用だけしますか？')){ applySkin(s); } return; }
+    skins[empty] = s; saveSkins(); renderSkinSlots(); applySkin(s);
+    alert('「'+s.name+'」を保存して適用しました。');
+  });
+  loadSkins(); renderSkinSlots();
+
+  // きせかえビューの開閉（タブとは別画面に切替）
+  const skinOpenBtn = document.getElementById('skinOpenBtn');
+  const skinBackBtn = document.getElementById('skinBack');
+  const skinView = document.getElementById('skinView');
+  const tabArea = document.getElementById('tabArea');
+  function showSkinView(on){
+    if (skinView) skinView.classList.toggle('hidden', !on);
+    if (tabArea) tabArea.classList.toggle('hidden', on);
+    if (on) renderSkinSlots();
+  }
+  if (skinOpenBtn) skinOpenBtn.addEventListener('click', () => showSkinView(true));
+  if (skinBackBtn) skinBackBtn.addEventListener('click', () => showSkinView(false));
+
   // ----- タブ -----
   document.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('click', () => {
@@ -1506,6 +1718,46 @@
       const name = st.dataset.subtab2;
       group.querySelectorAll('.subtab2').forEach(x => x.classList.toggle('active', x === st));
       group.querySelectorAll('.subpanel2').forEach(p => p.classList.toggle('hidden', p.dataset.subpanel2 !== name));
+    });
+  });
+
+  // ----- サブタブをアコーディオン表示に変換（タブ内タブを解消） -----
+  const ACC_META = {
+    color:    { icon:'🎨', cls:'acc-color' },
+    meter:    { icon:'📊', cls:'acc-meter' },
+    layout:   { icon:'🧭', cls:'acc-layout' },
+    font:     { icon:'🔤', cls:'acc-font' },
+    method:   { icon:'⏱️', cls:'acc-method' },
+    notation: { icon:'🕐', cls:'acc-notation' }
+  };
+  document.querySelectorAll('.tab-card .tabpanel').forEach(panel => {
+    const subtabs = panel.querySelector('.subtabs');
+    const subpanels = panel.querySelector('.subpanels');
+    if (!subtabs || !subpanels) return;
+    const labels = {};
+    subtabs.querySelectorAll('.subtab').forEach(b => { labels[b.dataset.subtab] = b.textContent; });
+    subtabs.style.display = 'none';
+    subpanels.classList.add('acc');
+    const secs = Array.prototype.slice.call(subpanels.querySelectorAll('.subpanel'));
+    secs.forEach((sp, idx) => {
+      sp.classList.remove('hidden');
+      sp.classList.add('acc-body');
+      const key = sp.dataset.subpanel;
+      const name = labels[key] || '';
+      const meta = ACC_META[key] || { icon:'•', cls:'' };
+      const head = document.createElement('button');
+      head.type = 'button'; head.className = 'acc-head' + (meta.cls ? ' ' + meta.cls : '');
+      sp.parentNode.insertBefore(head, sp);
+      let open = (idx === 0);
+      const refresh = () => {
+        head.textContent = (open ? '▼ ' : '▶ ') + meta.icon + ' ' + name;
+        head.classList.toggle('open', open);
+        sp.style.display = open ? '' : 'none';
+        const stab = subtabs.querySelector('.subtab[data-subtab="' + key + '"]');
+        if (stab) stab.classList.toggle('active', open);
+      };
+      head.addEventListener('click', () => { open = !open; refresh(); updatePreview(); });
+      refresh();
     });
   });
 
@@ -1602,6 +1854,7 @@
 
   function openModal(){
     pendingMode = mode;
+    if (typeof showSkinView === 'function') showSkinView(false);   // 開くたびタブ表示に戻す
     echoTargetToInput();
     updateTargetLabel(mode);
     updateAmpmVisibility();

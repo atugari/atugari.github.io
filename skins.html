@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<!-- skins.html v2 : Firebase設定を埋め込み（ad-game-7b40a Firestore） -->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>きせかえギャラリー</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; }
+  body{
+    background:linear-gradient(165deg,#fcfcfd,#e8e8ec); color:#1c1c1e; min-height:100vh;
+    font-family:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  }
+  body::before{ content:""; position:fixed; top:0; left:0; right:0; height:5px; z-index:9; pointer-events:none;
+    background:linear-gradient(90deg,#8a6d1a,#e8cf7a,#fff4cf,#e8cf7a,#8a6d1a); box-shadow:0 1px 8px rgba(201,162,39,.55); }
+  .wrap{ max-width:640px; margin:0 auto; padding:22px 16px 60px; }
+  header h1{ font-size:24px; letter-spacing:.08em; margin:6px 0 4px; }
+  .links{ margin-bottom:18px; }
+  .lnk{ display:inline-block; text-decoration:none; color:#1c1c1e; background:#fff;
+    border:2px solid #1c1c1e; border-radius:8px; font-weight:700; font-size:13px; padding:8px 12px; margin:2px 6px 2px 0;
+    box-shadow:0 3px 8px rgba(0,0,0,.10); }
+  h2{ font-size:17px; letter-spacing:.06em; border-left:5px solid #c9a227; padding-left:10px; margin:26px 0 12px; }
+  .card{ background:#fff; border:2px solid #1c1c1e; border-radius:12px; padding:16px; margin-bottom:16px;
+    box-shadow:0 5px 16px rgba(0,0,0,.10); }
+  label{ display:block; font-size:12px; font-weight:700; opacity:.7; margin:10px 0 5px; letter-spacing:.04em; }
+  input{ width:100%; font-family:inherit; font-weight:700; font-size:15px; padding:11px 12px;
+    border:2px solid #1c1c1e; border-radius:8px; background:#fff; color:#1c1c1e; }
+  .btn{ font-family:inherit; font-weight:700; font-size:15px; padding:12px 16px; border-radius:9px; cursor:pointer;
+    border:2px solid #c9a227; background:#c9a227; color:#fff; box-shadow:0 4px 10px rgba(201,162,39,.3); margin-top:14px; }
+  .btn.sub{ border-color:#1c1c1e; background:#fff; color:#1c1c1e; box-shadow:0 3px 8px rgba(0,0,0,.12); }
+  .msg{ font-size:13px; margin-top:10px; min-height:18px; font-weight:700; }
+  .msg.ok{ color:#2fa96b; } .msg.err{ color:#c0392b; }
+  .warn{ background:#fff7e6; border:2px solid #c9a227; border-radius:12px; padding:16px; font-size:13px; line-height:1.7; }
+  .warn code{ background:#f1e7c8; padding:1px 5px; border-radius:4px; }
+  /* ギャラリー項目 */
+  .item{ display:flex; gap:14px; align-items:center; background:#fff; border:2px solid #1c1c1e; border-radius:12px;
+    padding:12px; margin-bottom:12px; box-shadow:0 4px 12px rgba(0,0,0,.08); }
+  .prev{ width:92px; height:64px; flex:none; border:2px solid #1c1c1e; border-radius:8px; overflow:hidden;
+    display:flex; align-items:center; justify-content:center; gap:5px; position:relative; }
+  .prev .cells{ display:flex; flex-direction:column; gap:3px; }
+  .prev .cell{ width:11px; height:9px; border:1.5px solid; }
+  .prev .t{ font-weight:900; font-size:15px; }
+  .item-body{ flex:1; min-width:0; }
+  .item-name{ font-weight:700; font-size:16px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .item-author{ font-size:12px; opacity:.6; margin-top:2px; }
+  .item-ops{ display:flex; gap:6px; margin-top:8px; flex-wrap:wrap; }
+  .op{ font-family:inherit; font-weight:700; font-size:12px; padding:7px 10px; border-radius:7px; cursor:pointer;
+    text-decoration:none; border:2px solid #1c1c1e; background:#fff; color:#1c1c1e; }
+  .op.use{ border-color:#3d7dd8; background:#3d7dd8; color:#fff; }
+  .empty{ opacity:.6; font-size:14px; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>きせかえギャラリー</h1>
+      <div class="links">
+        <a class="lnk" href="plaza.html">← 幻実世界の電子遊戯へ</a>
+        <a class="lnk" href="timer-gauge.html">タイマーへ</a>
+      </div>
+    </header>
+
+    <div class="warn" id="configWarn" style="display:none;">
+      公開・閲覧には Firebase の設定が必要です。<br>
+      このファイルの下部 <code>firebaseConfig</code> に、Firebaseコンソールの「ウェブアプリ設定」を貼り付けてください。<br>
+      Firestore を有効化し、コレクション <code>skins</code> に対して読み取り・作成を許可するルールを設定してください。
+    </div>
+
+    <h2>きせかえを公開する</h2>
+    <div class="card">
+      <label>きせかえ名</label>
+      <input id="pubName" placeholder="例: 夜空">
+      <label>作者名（任意）</label>
+      <input id="pubAuthor" placeholder="例: あつがり">
+      <label>きせかえコード（タイマーの「今のUIを書き出し」で取得）</label>
+      <input id="pubCode" placeholder="T2,... を貼り付け">
+      <button class="btn" id="pubBtn">公開する</button>
+      <div class="msg" id="pubMsg"></div>
+    </div>
+
+    <h2>みんなのきせかえ</h2>
+    <div id="list"><span class="empty">読み込み中...</span></div>
+  </div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+  // ▼▼▼ ここに Firebase の「ウェブアプリ設定」を貼り付けてください ▼▼▼
+  var firebaseConfig = {
+    apiKey: "AIzaSyCwIH0lXYNVYbcpmEDGXRRPxRueyOD0XoU",
+    authDomain: "ad-game-7b40a.firebaseapp.com",
+    projectId: "ad-game-7b40a",
+    storageBucket: "ad-game-7b40a.firebasestorage.app",
+    messagingSenderId: "5960938874",
+    appId: "1:5960938874:web:0fac17704f74f5f0f512c3"
+  };
+  // ▲▲▲ plazaと同じプロジェクト(ad-game-7b40a)でOK ▲▲▲
+
+  var TIMER_URL = 'timer-gauge.html';
+  var db = null;
+  function configured(){ return !!(firebaseConfig.projectId && firebaseConfig.apiKey); }
+
+  if (configured()) {
+    try { firebase.initializeApp(firebaseConfig); db = firebase.firestore(); }
+    catch (e) { console.error(e); }
+  } else {
+    document.getElementById('configWarn').style.display = 'block';
+  }
+
+  // コード→色（プレビュー用）
+  function lum(hex){ hex=hex.replace('#',''); var r=parseInt(hex.slice(0,2),16),g=parseInt(hex.slice(2,4),16),b=parseInt(hex.slice(4,6),16); return (0.299*r+0.587*g+0.114*b)/255; }
+  function codeColors(code){
+    code=(code||'').trim();
+    if (code.indexOf('TMR1:')===0){
+      var q=code.slice(5).split('|'); if(q.length<8) return null;
+      return normalize(q[1], q[2]==='auto'?null:q[2], q[3]==='auto'?null:q[3], q[4]==='auto'?null:q[4]);
+    }
+    if (code.indexOf('T2,')===0) code=code.slice(3);
+    var p=code.split(','); if(p.length<8) return null;
+    var h=function(x){ return x?('#'+x):null; };
+    return normalize(h(p[0])||'#f4f4f4', h(p[1]), h(p[2]), h(p[3]));
+  }
+  function normalize(paper,digit,gauge,ink){
+    var auto = lum(paper)>0.5 ? '#141414' : '#f4f4f4';
+    return { paper:paper, digit:digit||auto, gauge:gauge||auto, ink:ink||auto };
+  }
+
+  function previewHTML(c){
+    var cells='';
+    for (var i=0;i<3;i++) cells+='<span class="cell" style="border-color:'+c.gauge+';background:'+(i<2?c.gauge:'transparent')+'"></span>';
+    return '<div class="prev" style="background:'+c.paper+';border-color:'+c.ink+'">'
+         + '<div class="cells">'+cells+'</div>'
+         + '<div class="t" style="color:'+c.digit+'">10</div></div>';
+  }
+
+  function msg(el, text, ok){ el.textContent=text; el.className='msg '+(ok?'ok':'err'); }
+
+  document.getElementById('pubBtn').addEventListener('click', function(){
+    var name=document.getElementById('pubName').value.trim();
+    var author=document.getElementById('pubAuthor').value.trim();
+    var code=document.getElementById('pubCode').value.trim();
+    var pm=document.getElementById('pubMsg');
+    if (!name || !code){ msg(pm,'きせかえ名とコードを入力してください',false); return; }
+    if (!codeColors(code)){ msg(pm,'コードの形式が正しくありません',false); return; }
+    if (!db){ msg(pm,'Firebaseが未設定です（下部の設定を確認）',false); return; }
+    var btn=document.getElementById('pubBtn'); btn.disabled=true;
+    db.collection('skins').add({
+      name:name.slice(0,40), author:(author||'名無し').slice(0,24), code:code.slice(0,300),
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(function(){
+      msg(pm,'公開しました！',true);
+      document.getElementById('pubName').value=''; document.getElementById('pubAuthor').value=''; document.getElementById('pubCode').value='';
+      loadList();
+    }).catch(function(e){ msg(pm,'公開に失敗: '+e.message,false); })
+      .then(function(){ btn.disabled=false; });
+  });
+
+  function render(items){
+    var list=document.getElementById('list');
+    if (!items.length){ list.innerHTML='<span class="empty">まだ公開されたきせかえがありません。</span>'; return; }
+    list.innerHTML='';
+    items.forEach(function(it){
+      var c=codeColors(it.code); if(!c) return;
+      var row=document.createElement('div'); row.className='item';
+      row.innerHTML = previewHTML(c) +
+        '<div class="item-body">'+
+          '<div class="item-name"></div>'+
+          '<div class="item-author"></div>'+
+          '<div class="item-ops">'+
+            '<a class="op use" target="_blank" rel="noopener">タイマーで使う</a>'+
+            '<button class="op copy">コードをコピー</button>'+
+          '</div>'+
+        '</div>';
+      row.querySelector('.item-name').textContent = it.name || '無題';
+      row.querySelector('.item-author').textContent = 'by ' + (it.author || '名無し');
+      row.querySelector('.op.use').href = TIMER_URL + '?skin=' + encodeURIComponent(it.code);
+      row.querySelector('.op.copy').addEventListener('click', function(){
+        var done=function(){ this.textContent='コピー済み'; }.bind(this);
+        if (navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(it.code).then(done, function(){ prompt('コピーしてください', it.code); }); }
+        else { prompt('コピーしてください', it.code); }
+      });
+      list.appendChild(row);
+    });
+  }
+
+  function loadList(){
+    var list=document.getElementById('list');
+    if (!db){ list.innerHTML='<span class="empty">Firebase未設定のため一覧を表示できません。</span>'; return; }
+    db.collection('skins').orderBy('createdAt','desc').limit(100).get().then(function(snap){
+      var items=[]; snap.forEach(function(d){ items.push(d.data()); }); render(items);
+    }).catch(function(e){ list.innerHTML='<span class="empty">読み込みに失敗しました: '+e.message+'</span>'; });
+  }
+  loadList();
+</script>
+</body>
+</html>
