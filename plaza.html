@@ -275,6 +275,21 @@
       pointer-events: none;
     }
 
+    /* きせかえギャラリー: 額縁モチーフ */
+    .game-card.gallery-bg { overflow: hidden; }
+    .game-card.gallery-bg::before {
+      content: '';
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      width: 82px;
+      height: 82px;
+      transform: translateY(-50%);
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231a1a1a' stroke-width='1.4'%3E%3Crect x='3' y='4' width='18' height='16' rx='1.5'/%3E%3Ccircle cx='8.5' cy='9.5' r='1.8'/%3E%3Cpath d='M4 18l5-5 4 4 3-3 4 4'/%3E%3C/svg%3E") no-repeat center / contain;
+      opacity: 0.08;
+      pointer-events: none;
+    }
+
     /* 作成中カード: 斜線で飛べないことを示す */    .game-card.wip {
       pointer-events: none;
       cursor: default;
@@ -483,16 +498,22 @@
 
     <div class="section-label pop"><span class="spark">✦</span> 新作 <span class="spark">✦</span></div>
 
-    <a class="game-card memo-bg" href="shopping-memo.html" id="card-4">
+    <a class="game-card memo-bg" href="shopping-memo.html" id="card-4" data-published="2026-07-13">
       <div class="card-tag">PERFECT TOOL</div>
       <div class="card-title">ショッピング メモ</div>
       <div class="card-desc">買い物リストをさっと作れる<br>お店ごとにまとめて管理</div>
     </a>
 
-    <a class="game-card timer-bg" href="timer-gauge.html" id="card-5">
+    <a class="game-card timer-bg" href="timer-gauge.html" id="card-5" data-published="2026-07-27">
       <div class="card-tag">TOOL</div>
       <div class="card-title">メータータイマー</div>
       <div class="card-desc">メーター付きの多機能タイマー<br>色・音・配置を自由にカスタム</div>
+    </a>
+
+    <a class="game-card gallery-bg" href="skins.html" id="card-6" data-published="2026-08-01">
+      <div class="card-tag">GALLERY</div>
+      <div class="card-title">きせかえギャラリー</div>
+      <div class="card-desc">タイマーのきせかえを公開・共有<br>みんなの着せ替えを使える</div>
     </a>
 
     <div class="section-label">— 制作中 —</div>
@@ -532,7 +553,30 @@
 <script>
   // ===== コントローラー操作 =====
   // Aボタン（buttons[1]）: 決定  Bボタン（buttons[0]）: 丸場所へ戻る
-  const CARDS = ['card-0', 'card-1', 'card-4', 'card-5', 'card-2', 'card-3'];
+  // ===== 新作の自動管理：公開から1ヶ月で「新作」から外す =====
+  (function(){
+    const newLabel = document.querySelector('.section-label.pop');
+    if (!newLabel) return;
+    const MONTH = 30 * 24 * 60 * 60 * 1000;
+    const now = Date.now();
+    document.querySelectorAll('.game-card[data-published]').forEach(card => {
+      const d = new Date(card.getAttribute('data-published') + 'T00:00:00');
+      if (isNaN(d.getTime())) return;
+      if (now - d.getTime() > MONTH){
+        // 1ヶ月を過ぎたら新作ラベルの前（通常エリア）へ移動
+        newLabel.parentNode.insertBefore(card, newLabel);
+      }
+    });
+    // 新作セクションにカードが1枚も残らなければラベルを隠す
+    let n = newLabel.nextElementSibling, hasNew = false;
+    while (n && !(n.classList && n.classList.contains('section-label'))){
+      if (n.classList && n.classList.contains('game-card')){ hasNew = true; break; }
+      n = n.nextElementSibling;
+    }
+    if (!hasNew) newLabel.style.display = 'none';
+  })();
+
+  const CARDS = ['card-0', 'card-1', 'card-4', 'card-5', 'card-6', 'card-2', 'card-3'];
   let _cur = 0;
   let _gpConnected = false;
   let _prev = {};
