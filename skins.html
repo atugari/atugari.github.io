@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- skins.html v4 : 並び替え(新着/人気)・検索・いいね を追加 -->
+<!-- skins.html v5 : ページング(もっと見る)＋人気を(いいね+使用回数)に -->
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -58,6 +58,8 @@
   #search{ flex:1; min-width:160px; font-size:14px; padding:9px 12px; }
   .op.like{ border-color:#e0568a; color:#e0568a; }
   .op.like.liked{ background:#e0568a; color:#fff; }
+  .item-stat{ font-size:11px; opacity:.6; margin-top:3px; }
+  .more{ width:100%; margin-top:6px; }
 </style>
 </head>
 <body>
@@ -177,7 +179,7 @@
     var btn=document.getElementById('pubBtn'); btn.disabled=true;
     db.collection('skins').add({
       name:name.slice(0,40), author:author.slice(0,24), code:code.slice(0,300),
-      likes:0, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      likes:0, uses:0, createdAt: firebase.firestore.FieldValue.serverTimestamp()
     }).then(function(){
       try { localStorage.setItem('skinsLastPost', ''+Date.now()); } catch(e){}
       msg(pm,'公開しました！',true);
@@ -188,10 +190,15 @@
   });
 
   var ALL_ITEMS = [];
+  var FILTERED = [];
   var sortMode = 'new';   // new / popular
   var searchText = '';
+  var PAGE = 12;
+  var shown = PAGE;
 
   function likedMap(){ try { return JSON.parse(localStorage.getItem('skinsLiked')||'{}'); } catch(e){ return {}; } }
+  function popScore(it){ return (it.likes||0) + (it.uses||0); }
+
   function likeSkin(it, btn){
     if (!db || !it.id) return;
     var liked = likedMap();
@@ -203,19 +210,25 @@
       btn.classList.add('liked');
     }).catch(function(){ /* ルールで拒否された等 */ });
   }
+  function useSkin(it){          // 「タイマーで使う」で使用回数を加算（成功可否は問わない）
+    if (!db || !it.id) return;
+    db.collection('skins').doc(it.id).update({ uses: firebase.firestore.FieldValue.increment(1) })
+      .then(function(){ it.uses = (it.uses||0) + 1; }).catch(function(){});
+  }
 
-  function render(items){
+  function renderPage(){
     var list=document.getElementById('list');
-    if (!items.length){ list.innerHTML='<span class="empty">該当するきせかえがありません。</span>'; return; }
+    if (!FILTERED.length){ list.innerHTML='<span class="empty">該当するきせかえがありません。</span>'; return; }
     list.innerHTML='';
     var liked = likedMap();
-    items.forEach(function(it){
+    FILTERED.slice(0, shown).forEach(function(it){
       var c=codeColors(it.code); if(!c) return;
       var row=document.createElement('div'); row.className='item';
       row.innerHTML = previewHTML(c) +
         '<div class="item-body">'+
           '<div class="item-name"></div>'+
           '<div class="item-author"></div>'+
+          '<div class="item-stat">♥ <span class="likec2"></span> ・ ▶ <span class="usec"></span> 使用</div>'+
           '<div class="item-ops">'+
             '<a class="op use" target="_blank" rel="noopener">タイマーで使う</a>'+
             '<button class="op copy">コピー</button>'+
@@ -224,7 +237,11 @@
         '</div>';
       row.querySelector('.item-name').textContent = it.name || '無題';
       row.querySelector('.item-author').textContent = 'by ' + (it.author || '名無し');
-      row.querySelector('.op.use').href = TIMER_URL + '?skin=' + encodeURIComponent(it.code);
+      row.querySelector('.likec2').textContent = it.likes||0;
+      row.querySelector('.usec').textContent = it.uses||0;
+      var useLink=row.querySelector('.op.use');
+      useLink.href = TIMER_URL + '?skin=' + encodeURIComponent(it.code);
+      useLink.addEventListener('click', function(){ useSkin(it); });
       row.querySelector('.op.copy').addEventListener('click', function(){
         var self=this;
         var done=function(){ self.textContent='コピー済み'; };
@@ -237,27 +254,35 @@
       likeBtn.addEventListener('click', function(){ likeSkin(it, likeBtn); });
       list.appendChild(row);
     });
+    if (FILTERED.length > shown){
+      var more=document.createElement('button');
+      more.className='btn sub more';
+      more.textContent='もっと見る（残り '+(FILTERED.length-shown)+'）';
+      more.addEventListener('click', function(){ shown += PAGE; renderPage(); });
+      list.appendChild(more);
+    }
   }
 
   function renderFiltered(){
     var q=searchText.trim().toLowerCase();
-    var items=ALL_ITEMS.filter(function(it){
+    FILTERED=ALL_ITEMS.filter(function(it){
       if (!q) return true;
       return (((it.name||'')+' '+(it.author||'')).toLowerCase().indexOf(q) >= 0);
     });
-    items.sort(function(a,b){
-      if (sortMode==='popular') return (b.likes||0)-(a.likes||0);
+    FILTERED.sort(function(a,b){
+      if (sortMode==='popular') return popScore(b)-popScore(a);
       var ta=(a.createdAt&&a.createdAt.seconds)||0, tb=(b.createdAt&&b.createdAt.seconds)||0;
       return tb-ta;
     });
-    render(items);
+    shown=PAGE;
+    renderPage();
   }
 
   function loadList(){
     var list=document.getElementById('list');
     if (!db){ list.innerHTML='<span class="empty">Firebase未設定のため一覧を表示できません。</span>'; return; }
-    db.collection('skins').orderBy('createdAt','desc').limit(200).get().then(function(snap){
-      ALL_ITEMS=[]; snap.forEach(function(d){ var o=d.data(); o.id=d.id; if(o.likes==null)o.likes=0; ALL_ITEMS.push(o); });
+    db.collection('skins').orderBy('createdAt','desc').limit(500).get().then(function(snap){
+      ALL_ITEMS=[]; snap.forEach(function(d){ var o=d.data(); o.id=d.id; if(o.likes==null)o.likes=0; if(o.uses==null)o.uses=0; ALL_ITEMS.push(o); });
       renderFiltered();
     }).catch(function(e){ list.innerHTML='<span class="empty">読み込みに失敗しました: '+e.message+'</span>'; });
   }
