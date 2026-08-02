@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- timer-gauge v66 : 見出しにアイコン＋カテゴリ別の色、タブにアイコンで区別しやすく -->
+<!-- timer-gauge v87 : 公開フォームのきせかえ名/作者名入力欄を小さく -->
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -17,6 +17,9 @@
     --scrim:rgba(0,0,0,.30);
     --frame:6px;
     --cell-border:3px;
+    --cell-radius:0px;
+    --cell-gap:6px;
+    --cell-off:var(--paper);
     --fade:0s;          /* 通常は即時。切替演出は下記の波ワイプで行う */
   }
 
@@ -67,14 +70,16 @@
   .gauge{
     border:var(--frame) solid var(--gauge);
     padding:8px; background:var(--paper);
-    display:flex; flex-direction:column; gap:6px;
+    display:flex; flex-direction:column; gap:var(--cell-gap);
     width:clamp(64px,14vw,96px);
     transition:background-color var(--fade),border-color var(--fade);
   }
   .cell{
     flex:1; min-height:0; position:relative;
+    pointer-events:none;
     border:var(--cell-border) solid var(--gauge);
-    background:var(--paper);
+    background:var(--cell-off);
+    border-radius:var(--cell-radius);
     /* メーターの点灯は素早く、テーマの枠色だけゆっくり */
     transition:background-color .18s linear,border-color var(--fade);
   }
@@ -97,6 +102,22 @@
   .cell.on{ background:var(--gauge); }
   .gauge.cells-off .cell{ visibility:hidden; }        /* メーター自体を消す（場所は保持）*/
   .gauge.frame-off{ border-color:transparent; }        /* 外枠を消す（場所は保持）*/
+
+  /* ひし形セル */
+  .gauge.cell-diamond .cell{ clip-path:polygon(50% 0, 100% 50%, 50% 100%, 0 50%); border-radius:0; }
+
+  /* 円形（リング）メーター：セルを円状に配置（点灯ロジックは共通） */
+  .gauge.ring{
+    position:relative; width:clamp(150px,54vw,240px); height:clamp(150px,54vw,240px);
+    border:none !important; background:transparent !important; padding:0; gap:0; border-radius:50%;
+    box-shadow:none !important;
+  }
+  .gauge.ring .cell{
+    position:absolute; left:50%; top:50%; flex:none;
+    width:clamp(10px,3.2vw,16px); height:clamp(20px,7vw,34px);
+    margin:0; /* 位置はJSのtransformで指定 */
+  }
+  .gauge-wrap:has(.gauge.ring) .tickscale{ display:none; }
   /* メーターの消え方 */
   .gauge.style-step  .cell{ transition:border-color var(--fade); }               /* 即時（一つずつ） */
   .gauge.style-shave .cell{ transition:border-color var(--fade); }               /* 境界は塗りで連続 */
@@ -113,7 +134,7 @@
   .time{
     width:100%; border:0; background:transparent; color:var(--digit);
     font-family:inherit; font-weight:700;
-    font-size:clamp(56px,16vw,120px); line-height:1; letter-spacing:.02em;
+    font-size:calc(clamp(56px,16vw,120px) * var(--digit-scale,1)); line-height:1; letter-spacing:.02em;
     text-align:center; padding:0; font-variant-numeric:tabular-nums;
     transition:color var(--fade),-webkit-text-fill-color var(--fade);
   }
@@ -351,6 +372,43 @@
     content:""; position:absolute; inset:0; background:rgba(128,128,128,.10); pointer-events:none;
   }
   body.layout-mode .layout-part.lp-selected{ outline:3px solid #e14b4b; outline-offset:3px; }
+
+  /* ジェスチャ操作：タップ箇所のハイライト */
+  @keyframes lpFlash { 0%{ filter:brightness(1.7); } 100%{ filter:brightness(1); } }
+  body.layout-mode .layout-part.lp-flash{ animation:lpFlash .45s ease-out; }
+
+  /* 対象そばの小さな折りたたみ操作パネル（PCウィンドウ風） */
+  #lpFloat{ position:fixed; top:12px; right:8px; z-index:23; display:none;
+    --ink:#141414; --paper:#f4f4f4;
+    background:var(--paper); border:2px solid var(--ink); border-radius:10px;
+    box-shadow:0 8px 22px rgba(0,0,0,.28); font-family:inherit; }
+  /* 全体表示（クリーン）モード：パッドや設定ボタンを隠してタイマーだけ見せる */
+  body.lp-clean .layout-pad,
+  body.lp-clean .settings-btn{ display:none !important; }
+  body.lp-clean #lpFloat{ display:block; }
+  #lpFloat.collapsed .lpf-body{ display:none; }
+  #lpFloat .lpf-tab{ display:block; width:38px; height:34px; font-size:18px; line-height:1;
+    border:0; background:transparent; color:var(--ink); cursor:pointer; font-weight:700; }
+  #lpFloat:not(.collapsed) .lpf-tab{ width:100%; height:26px; border-bottom:2px solid rgba(20,20,20,.18); font-size:14px; }
+  .lpf-body{ padding:8px; }
+  .lpf-grid{ display:grid; grid-template-columns:repeat(3,40px); grid-auto-rows:36px; gap:5px; align-items:center; justify-items:center; }
+  .lpf-b{ width:100%; height:100%; font-family:inherit; font-weight:700; font-size:15px;
+    border:2px solid var(--ink); background:var(--paper); color:var(--ink); border-radius:8px; cursor:pointer; padding:0; }
+  .lpf-b:active{ background:var(--ink); color:var(--paper); }
+  .lpf-b.g-up{ grid-column:2; grid-row:1; border-color:#3d7dd8; color:#3d7dd8; }
+  .lpf-b.g-left{ grid-column:1; grid-row:2; border-color:#3d7dd8; color:#3d7dd8; }
+  .lpf-b.g-right{ grid-column:3; grid-row:2; border-color:#3d7dd8; color:#3d7dd8; }
+  .lpf-b.g-down{ grid-column:2; grid-row:3; border-color:#3d7dd8; color:#3d7dd8; }
+  .lpf-b.g-big{ grid-column:1; grid-row:1; border-color:#1f9e8f; color:#1f9e8f; }
+  .lpf-b.g-small{ grid-column:3; grid-row:1; border-color:#1f9e8f; color:#1f9e8f; }
+  .lpf-b.g-rotl{ grid-column:1; grid-row:3; border-color:#8a5cd0; color:#8a5cd0; }
+  .lpf-b.g-rotr{ grid-column:3; grid-row:3; border-color:#8a5cd0; color:#8a5cd0; }
+  .lpf-b.g-reset{ grid-column:2; grid-row:2; border-color:#d84b4b; color:#d84b4b; font-size:13px; }
+  .lpf-done{ display:block; width:100%; margin-top:7px; padding:8px; font-family:inherit; font-weight:700; font-size:14px;
+    border:2px solid #2fa96b; background:#2fa96b; color:#fff; border-radius:8px; cursor:pointer; }
+  .lpf-clean{ display:block; width:100%; margin-top:7px; padding:8px; font-family:inherit; font-weight:700; font-size:13px;
+    border:2px solid #3d7dd8; background:var(--paper); color:#3d7dd8; border-radius:8px; cursor:pointer; }
+  body.lp-clean .lpf-clean{ background:#3d7dd8; color:#fff; }
   body.layout-mode{ user-select:none; }
 
   /* 選択パーツの数値バッジ */
@@ -367,7 +425,7 @@
     position:fixed; left:0; right:0; bottom:0; z-index:20;
     display:none; background:var(--paper); border-top:3px solid var(--ink);
     padding:12px 12px calc(12px + env(safe-area-inset-bottom,0px));
-    max-height:70vh; overflow-y:auto;
+    max-height:56vh; overflow-y:auto;
   }
   body.layout-mode .layout-pad{ display:block; }
   /* 表示切替バー */
@@ -378,6 +436,7 @@
     border:2px solid var(--ink); background:var(--paper); color:var(--ink); cursor:pointer;
   }
   .lp-mode.active, .lp-trans.on{ background:var(--ink); color:var(--paper); }
+  .lp-mode.active{ background:#3d7dd8; border-color:#3d7dd8; color:#fff; }
   .lp-barbtn{ min-width:0; padding:7px 16px; font-size:13px; }
   /* モード：小＝見出し類を省略, 隠す＝本体非表示（ドラッグのみ） */
   .layout-pad.mode-hidden .lp-body{ display:none; }
@@ -387,6 +446,46 @@
   .layout-pad.mode-compact .lp-ops{ gap:10px; }
   .layout-pad.mode-compact .lp-parts{ margin-bottom:6px; }
   .layout-pad.mode-compact .lp-foot{ margin-top:8px; }
+
+  /* ミニモード：ラベル省略＋ボタン小さめで最小フットプリント */
+  .layout-pad.mode-mini .lp-head,
+  .layout-pad.mode-mini .lp-divider,
+  .layout-pad.mode-mini .lp-gl,
+  .layout-pad.mode-mini .lp-foot{ display:none; }
+  .layout-pad.mode-mini{ padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px)); max-height:42vh; }
+  .layout-pad.mode-mini .lp-bar{ margin-bottom:6px; }
+  .layout-pad.mode-mini .lp-parts{ margin-bottom:6px; gap:4px; }
+  .layout-pad.mode-mini .lp-part{ padding:5px 9px; font-size:12px; }
+  .layout-pad.mode-mini .lp-ops{ gap:8px 12px; }
+  .layout-pad.mode-mini .lp-btn{ min-width:38px; min-height:34px; font-size:14px; }
+  .layout-pad.mode-mini .lp-dpad{ grid-template-columns:repeat(3,38px); grid-template-rows:repeat(3,30px); gap:3px; }
+  .layout-pad.mode-mini .lp-dpad .lp-btn{ font-size:15px; }
+  .layout-pad.mode-mini .lp-scalebtn{ width:44px; height:44px; min-width:44px; min-height:44px; font-size:18px; }
+  .layout-pad.mode-mini .lp-rot{ width:42px; height:42px; min-width:42px; min-height:42px; font-size:19px; }
+
+  /* レイアウトパッド：機能ごとに「色＋形」で区別（四角の羅列を解消） */
+  .lp-part.active{ background:#e14b4b; border-color:#e14b4b; color:#fff; }
+  /* 移動＝青い三角（向きが形で分かる） */
+  .lp-dpad{ grid-template-rows:repeat(3,46px); }
+  .lp-dpad .lp-btn{ background:#3d7dd8; border:0; color:#fff; border-radius:0; font-size:0; }
+  .lp-d-up{ clip-path:polygon(50% 8%, 96% 92%, 4% 92%); }
+  .lp-d-down{ clip-path:polygon(4% 8%, 96% 8%, 50% 92%); }
+  .lp-d-left{ clip-path:polygon(92% 4%, 92% 96%, 8% 50%); }
+  .lp-d-right{ clip-path:polygon(8% 4%, 8% 96%, 92% 50%); }
+  .lp-dpad .lp-btn:active{ background:#2861ad; }
+  /* 拡大縮小＝緑の丸 */
+  .lp-scalebtn{ border-radius:50%; width:54px; height:54px; min-width:54px; min-height:54px; padding:0; border:2px solid #1f9e8f; color:#1f9e8f; }
+  .lp-scalebtn:active{ background:#1f9e8f; color:#fff; }
+  /* 回転＝紫の丸 */
+  .lp-rot{ border-radius:50%; width:52px; height:52px; min-width:52px; min-height:52px; padding:0; border:2px solid #8a5cd0; color:#8a5cd0; }
+  .lp-rot:active{ background:#8a5cd0; color:#fff; }
+  /* 拡縮の向き＝橙のピル（選択式） */
+  .lp-axis{ border-radius:999px; }
+  .lp-axis.active{ background:#c9822b; border-color:#c9822b; color:#fff; }
+  .lp-done{ background:#2fa96b !important; border-color:#2fa96b !important; color:#fff !important; }
+  .lp-btn[data-lp="resetOne"]{ border-color:#d84b4b; color:#d84b4b; }
+  .lp-btn[data-lp="resetOne"]:active{ background:#d84b4b; color:#fff; }
+  .lp-trans.on{ background:#3d7dd8; border-color:#3d7dd8; color:#fff; }
   /* 半透明（下の配置が透ける） */
   .layout-pad.translucent{ background:rgba(244,244,244,.72); backdrop-filter:blur(1px); }
   body.layout-mode .layout-pad{ display:block; }
@@ -419,6 +518,31 @@
   .lp-axis.active{ background:var(--ink); color:var(--paper); }
   .lp-foot{ display:flex; gap:8px; justify-content:center; max-width:460px; margin:14px auto 0; }
   .lp-wide{ flex:1; font-size:13px; min-width:0; }
+
+  /* 操作しやすい配置：十字キー＋大きめボタン */
+  .lp-btn{ min-width:46px; min-height:42px; font-size:16px; }
+  .lp-dpad{ display:grid; grid-template-columns:repeat(3,48px); grid-template-rows:repeat(3,40px); gap:4px; }
+  .lp-d-up{ grid-column:2; grid-row:1; }
+  .lp-d-left{ grid-column:1; grid-row:2; }
+  .lp-d-right{ grid-column:3; grid-row:2; }
+  .lp-d-down{ grid-column:2; grid-row:3; }
+  .lp-dpad .lp-btn{ width:100%; height:100%; min-width:0; min-height:0; font-size:18px; }
+  .lp-scalebtn{ font-size:22px; min-width:56px; min-height:46px; }
+  .lp-rot{ font-size:26px; min-width:52px; min-height:46px; }
+  .lp-ops{ gap:14px 20px; align-items:flex-start; }
+
+  /* スマホ用：画面まるごとを縮小したミニ画面（縦横比＝実機）に、実機と同じ中央配置でタイマーを表示 */
+  #screenMirror{ display:none; }
+  body.lp-preview #screenMirror{
+    display:flex; align-items:center; justify-content:center;
+    position:fixed; top:10px; left:50%;
+    width:100vw; height:100vh;
+    transform:translateX(-50%) scale(var(--lp-scale,1));
+    transform-origin:top center;
+    z-index:6; overflow:hidden;
+    box-shadow:0 0 0 2px rgba(0,0,0,.45), 0 12px 30px rgba(0,0,0,.28);
+  }
+  body.lp-preview .layout-pad{ box-shadow:0 -10px 24px rgba(0,0,0,.16); }
   .lp-btn.lp-done{ background:var(--ink); color:var(--paper); }
 
   /* ===== 豪華装飾（色カスタムと非干渉：影/角丸/金の差し色） ===== */
@@ -428,6 +552,10 @@
   .gauge{ border-radius:6px; overflow:hidden;
     box-shadow:0 16px 38px rgba(0,0,0,.24), 0 0 0 1px rgba(201,162,39,.40); }
   .time{ text-shadow:0 3px 8px rgba(0,0,0,.16); }
+  .time.fx-none{ text-shadow:none; -webkit-text-stroke:0; }
+  .time.fx-shadow{ text-shadow:0 4px 10px rgba(0,0,0,.38); -webkit-text-stroke:0; }
+  .time.fx-outline{ text-shadow:none; -webkit-text-stroke:2px var(--ink); }
+  .time.fx-glow{ text-shadow:0 0 10px var(--digit),0 0 22px var(--digit); -webkit-text-stroke:0; }
   .ctrl{ border-radius:11px; box-shadow:0 6px 16px rgba(0,0,0,.18); }
   .settings-btn{ border-radius:12px; box-shadow:0 6px 16px rgba(0,0,0,.20), 0 0 0 1px rgba(201,162,39,.45); }
   .modal{ border-radius:18px; box-shadow:0 26px 80px rgba(0,0,0,.50), 0 0 0 1px rgba(201,162,39,.35); }
@@ -451,7 +579,46 @@
   .skin-op{ font-family:inherit; font-weight:700; font-size:13px; padding:0 12px;
     border:var(--cell-border) solid var(--ink); background:var(--paper); color:var(--ink); cursor:pointer; border-radius:9px; flex:none; }
   .skin-op:active{ background:var(--ink); color:var(--paper); }
+  /* きせかえ画面のボタンを機能ごとに色分け */
+  .skin-apply{ border-left:6px solid #3d7dd8; }               /* 適用＝青ライン */
+  .skin-over{ border-color:#c9822b; color:#c9822b; }          /* 上書＝橙 */
+  .skin-over:active{ background:#c9822b; color:#fff; }
+  .skin-del{ border-color:#d84b4b; color:#d84b4b; }           /* 削除＝赤 */
+  .skin-del:active{ background:#d84b4b; color:#fff; }
+  .skin-share-row{ display:flex; gap:8px; margin-top:10px; }
+  .skin-share-btn{ flex:1; font-family:inherit; font-weight:700; font-size:14px; padding:11px 8px;
+    border:var(--cell-border) solid var(--ink); background:var(--paper); border-radius:9px; cursor:pointer; }
+  .skin-share-btn.export{ border-color:#3d7dd8; color:#3d7dd8; }
+  .skin-share-btn.export:active{ background:#3d7dd8; color:#fff; }
+  .skin-share-btn.import{ border-color:#2fa96b; color:#2fa96b; }
+  .skin-share-btn.import:active{ background:#2fa96b; color:#fff; }
+  #pubSkinBtn{ background:#1f9e8f; border-color:#1f9e8f; color:#fff; }
+  #pubSkinName, #pubSkinAuthor{ font-size:15px; text-align:left; padding:9px 11px; margin-bottom:8px; }
   .back-btn, .compat-link{ border-radius:9px; }
+
+  /* タブの一行説明 */
+  .tab-hint{ font-size:12px; line-height:1.6; opacity:.72; background:rgba(61,125,216,.10);
+    border-left:4px solid #3d7dd8; border-radius:6px; padding:8px 10px; margin-bottom:12px; }
+
+  /* チュートリアル */
+  #tutorial{ position:fixed; inset:0; z-index:60; display:flex; align-items:center; justify-content:center;
+    background:rgba(0,0,0,.55); padding:20px; }
+  #tutorial.hidden{ display:none; }
+  .tut-card{ background:#fff; color:#141414; border:2px solid #141414; border-radius:16px;
+    max-width:360px; width:100%; padding:22px; box-shadow:0 24px 70px rgba(0,0,0,.5);
+    font-family:"Zen Old Mincho","Hiragino Mincho ProN",serif; }
+  .tut-title{ font-size:19px; font-weight:900; margin-bottom:10px; letter-spacing:.04em; }
+  .tut-body{ font-size:14px; line-height:1.85; min-height:104px; }
+  .tut-dots{ display:flex; gap:6px; justify-content:center; margin:16px 0 2px; }
+  .tut-dot{ width:8px; height:8px; border-radius:50%; background:rgba(20,20,20,.2); }
+  .tut-dot.on{ background:#3d7dd8; }
+  .tut-btns{ display:flex; gap:8px; margin-top:14px; align-items:center; }
+  .tut-skip{ font-family:inherit; font-weight:700; font-size:13px; background:transparent; border:0;
+    color:rgba(20,20,20,.55); cursor:pointer; padding:8px 4px; }
+  .tut-prev{ margin-left:auto; }
+  .tut-prev, .tut-next{ font-family:inherit; font-weight:700; font-size:14px; padding:9px 15px; border-radius:9px; cursor:pointer;
+    border:2px solid #141414; background:#fff; color:#141414; }
+  .tut-next{ background:#3d7dd8; border-color:#3d7dd8; color:#fff; }
 
   /* ===== 要所の差し色（設定を見やすく。青=選択/主要, 金=きせかえ） ===== */
   .seg-btn.active{ background:#3d7dd8; color:#fff; border-color:#3d7dd8; }
@@ -471,6 +638,9 @@
   .acc-method.open{ background:rgba(224,138,46,.14); }
   .acc-notation{ border-left-color:#2bb0a3; }
   .acc-notation.open{ background:rgba(43,176,163,.14); }
+  .deco-slider{ width:100%; accent-color:#3d7dd8; height:30px; margin-top:2px; }
+  .acc-deco{ border-left-color:#d98a3d; }
+  .acc-deco.open{ background:rgba(217,138,61,.14); }
   .acc-head:active{ background:#3d7dd8; color:#fff; }
   .tab.active{ box-shadow:inset 0 4px 0 #3d7dd8; }
   #applyBtn{ background:#3d7dd8; color:#fff; border-color:#3d7dd8; }
@@ -536,9 +706,12 @@
       <a class="back-btn compat-link" href="timer-lite.html">🔧 軽量版（古い端末・古いブラウザ向け）へ</a>
 
       <button class="ctrl skin-open" id="skinOpenBtn" type="button">🎨 きせかえ（保存・共有）</button>
+      <button class="ctrl" id="fsBtn" type="button" style="width:100%; margin-bottom:16px;">📱 全画面表示（スマホ画面いっぱい）</button>
+      <button class="ctrl" id="helpBtn" type="button" style="width:100%; margin-bottom:16px;">❓ 使い方（チュートリアル）</button>
 
       <div id="skinView" class="hidden">
         <button class="back-btn" id="skinBack" type="button">← 設定にもどる</button>
+        <a class="back-btn" href="skins.html" style="display:block;text-align:center;margin-bottom:14px;">🖼️ みんなのきせかえを見る / 公開する →</a>
         <div class="field">
           <span class="field-label">保存したきせかえ（タップで適用・最大10個）</span>
           <div class="skin-slots" id="skinSlots"></div>
@@ -546,11 +719,19 @@
         <div class="field">
           <span class="field-label">共有コード</span>
           <input class="modal-input" id="skinCode" style="font-size:13px;letter-spacing:0;" placeholder="コードを貼り付けて読み込み">
-          <div class="seg" style="margin-top:10px;">
-            <button class="seg-btn" id="skinExport">今のUIを書き出し</button>
-            <button class="seg-btn" id="skinImport">読み込んで保存</button>
+          <div class="skin-share-row">
+            <button class="skin-share-btn export" id="skinExport">📤 書き出し</button>
+            <button class="skin-share-btn import" id="skinImport">📥 読み込み</button>
           </div>
           <div class="modal-hint" style="margin-top:8px;">「書き出し」で出たコードをコピーして共有できます。もらったコードは貼り付けて「読み込んで保存」。</div>
+        </div>
+        <div class="field">
+          <span class="field-label">🌐 みんなに公開（ギャラリーに投稿）</span>
+          <input class="modal-input" id="pubSkinName" placeholder="きせかえ名" maxlength="40">
+          <input class="modal-input" id="pubSkinAuthor" placeholder="作者名（必須）" maxlength="24" style="margin-top:8px;">
+          <button class="ctrl" id="pubSkinBtn" type="button" style="margin-top:10px;">🌐 今のUIを公開する</button>
+          <div class="modal-hint" id="pubSkinMsg" style="margin-top:8px;"></div>
+          <a class="back-btn" href="skins.html" style="display:block;text-align:center;margin-top:8px;">公開されたきせかえ一覧を見る →</a>
         </div>
       </div>
 
@@ -564,6 +745,7 @@
       <div class="tab-card">
         <!-- タイマータブ -->
         <div class="tabpanel" data-panel="timer">
+          <div class="tab-hint">⏱️ 時間・カウント方法・時刻表記を設定します</div>
           <div class="subtabs" role="tablist">
             <button class="subtab active" data-subtab="method" role="tab">カウント方法</button>
             <button class="subtab" data-subtab="notation" role="tab">表記</button>
@@ -607,11 +789,13 @@
 
         <!-- UIタブ -->
         <div class="tabpanel hidden" data-panel="ui">
+          <div class="tab-hint">🎨 色・メーター・配置・フォント・装飾。見出しをタップで開閉します</div>
           <div class="subtabs" role="tablist">
             <button class="subtab active" data-subtab="color" role="tab">色</button>
             <button class="subtab" data-subtab="meter" role="tab">メーター</button>
             <button class="subtab" data-subtab="layout" role="tab">配置</button>
             <button class="subtab" data-subtab="font" role="tab">フォント</button>
+            <button class="subtab" data-subtab="deco" role="tab">装飾</button>
           </div>
 
           <div class="subpanels">
@@ -731,6 +915,69 @@
                 <span class="field-label" style="opacity:.6;font-size:12px;">明朝＝豪華／丸ゴシック＝可愛い／手書き＝上品／ポップ＝元気／標準＝端末フォント</span>
               </div>
             </div>
+            <!-- 装飾（細かいデザイン） -->
+            <div class="subpanel hidden" data-subpanel="deco">
+              <div class="field">
+                <span class="field-label">セルの角丸 / 形</span>
+                <div class="seg" data-seg="dcr">
+                  <button class="seg-btn active" data-val="0">なし</button>
+                  <button class="seg-btn" data-val="1">角丸</button>
+                  <button class="seg-btn" data-val="2">丸</button>
+                  <button class="seg-btn" data-val="3">ひし形</button>
+                </div>
+              </div>
+              <div class="field">
+                <span class="field-label">メーターの形</span>
+                <div class="seg" data-seg="dms">
+                  <button class="seg-btn active" data-val="bar">バー</button>
+                  <button class="seg-btn" data-val="ring">円</button>
+                </div>
+              </div>
+              <div class="field">
+                <span class="field-label">セルの隙間</span>
+                <div class="seg" data-seg="dcg">
+                  <button class="seg-btn" data-val="0">狭い</button>
+                  <button class="seg-btn active" data-val="1">普通</button>
+                  <button class="seg-btn" data-val="2">広い</button>
+                </div>
+              </div>
+              <div class="field">
+                <span class="field-label">消灯セルの色</span>
+                <div class="seg" data-seg="dco">
+                  <button class="seg-btn active" data-val="bg">背景と同じ</button>
+                  <button class="seg-btn" data-val="light">うすい</button>
+                  <button class="seg-btn" data-val="dark">こい</button>
+                </div>
+              </div>
+              <div class="field">
+                <span class="field-label">数字の効果</span>
+                <div class="seg" data-seg="dfx">
+                  <button class="seg-btn" data-val="none">なし</button>
+                  <button class="seg-btn active" data-val="shadow">影</button>
+                  <button class="seg-btn" data-val="outline">ふち</button>
+                  <button class="seg-btn" data-val="glow">発光</button>
+                </div>
+              </div>
+              <div class="field">
+                <span class="field-label">背景</span>
+                <div class="seg" data-seg="dbg">
+                  <button class="seg-btn active" data-val="0">単色</button>
+                  <button class="seg-btn" data-val="1">グラデ</button>
+                </div>
+              </div>
+              <div class="field">
+                <span class="field-label">枠の太さ（細かい調整）</span>
+                <input type="range" class="deco-slider" data-slider="framew" min="0" max="12" step="1" value="6">
+              </div>
+              <div class="field">
+                <span class="field-label">セルの枠線</span>
+                <input type="range" class="deco-slider" data-slider="cellbw" min="0" max="8" step="1" value="3">
+              </div>
+              <div class="field">
+                <span class="field-label">数字の大きさ</span>
+                <input type="range" class="deco-slider" data-slider="digitsize" min="0.7" max="1.3" step="0.05" value="1">
+              </div>
+            </div>
             <!-- 配置（レイアウト） -->
             <div class="subpanel hidden" data-subpanel="layout">
               <div class="field">
@@ -752,6 +999,7 @@
         </div>
 
         <div class="tabpanel hidden" data-panel="finish">
+          <div class="tab-hint">🔔 終了時の点滅・アラーム音・音量を設定します</div>
           <div class="field">
             <span class="field-label">終了時の点滅</span>
             <div class="seg" data-seg="blink">
@@ -785,7 +1033,7 @@
         <button class="ctrl" id="applyBtn">適用</button>
         <button class="ctrl" id="closeBtn">閉じる</button>
       </div>
-      <div style="margin-top:12px;font-size:10px;letter-spacing:.1em;opacity:.4;text-align:right;">v66</div>
+      <div style="margin-top:12px;font-size:10px;letter-spacing:.1em;opacity:.4;text-align:right;">v87</div>
     </div>
 
     <!-- 適用確認 -->
@@ -804,16 +1052,15 @@
   <div class="lp-bar">
     <span class="lp-bl">パッド</span>
     <button class="lp-mode active" data-mode="full">フル</button>
-    <button class="lp-mode" data-mode="compact">小</button>
     <button class="lp-mode" data-mode="hidden">隠す</button>
     <button class="lp-trans" id="lpTrans">半透明</button>
-    <button class="lp-btn lp-done lp-barbtn" data-lp="done">完了</button>
+    <button class="lp-btn lp-done lp-barbtn" data-lp="done">✓ 完了</button>
   </div>
   <div class="lp-body">
     <div class="lp-head">① 動かすパーツを選ぶ（画面で直接ドラッグ移動も可）</div>
     <div class="lp-parts">
       <button class="lp-part active" data-part="gauge">メーター</button>
-      <button class="lp-part" data-part="scale">△</button>
+      <button class="lp-part" data-part="scale">目盛</button>
       <button class="lp-part" data-part="digit">数字</button>
       <button class="lp-part" data-part="start">START</button>
       <button class="lp-part" data-part="reset">RESET</button>
@@ -824,18 +1071,18 @@
     <div class="lp-ops">
       <div class="lp-group">
         <span class="lp-gl">移動</span>
-        <div class="lp-row">
-          <button class="lp-btn" data-lp="left">◀</button>
-          <button class="lp-btn" data-lp="up">▲</button>
-          <button class="lp-btn" data-lp="down">▼</button>
-          <button class="lp-btn" data-lp="right">▶</button>
+        <div class="lp-dpad">
+          <button class="lp-btn lp-d-up" data-lp="up" aria-label="上へ">▲</button>
+          <button class="lp-btn lp-d-left" data-lp="left" aria-label="左へ">◀</button>
+          <button class="lp-btn lp-d-right" data-lp="right" aria-label="右へ">▶</button>
+          <button class="lp-btn lp-d-down" data-lp="down" aria-label="下へ">▼</button>
         </div>
       </div>
       <div class="lp-group">
         <span class="lp-gl">拡大 / 縮小</span>
         <div class="lp-row">
-          <button class="lp-btn" data-lp="bigger">◄►</button>
-          <button class="lp-btn" data-lp="smaller">►◄</button>
+          <button class="lp-btn lp-scalebtn" data-lp="bigger">＋</button>
+          <button class="lp-btn lp-scalebtn" data-lp="smaller">－</button>
         </div>
       </div>
       <div class="lp-group">
@@ -860,6 +1107,39 @@
   </div>
 </div>
 <div class="layout-badge" id="layoutBadge" aria-hidden="true"></div>
+<div id="lpFloat" class="collapsed" aria-hidden="true">
+  <button class="lpf-tab" id="lpfTab" type="button" aria-label="詳細操作">◹</button>
+  <div class="lpf-body">
+    <div class="lpf-grid">
+      <button class="lpf-b g-big" data-lp="bigger" title="大きく">＋</button>
+      <button class="lpf-b g-up" data-lp="up" aria-label="上">▲</button>
+      <button class="lpf-b g-small" data-lp="smaller" title="小さく">－</button>
+      <button class="lpf-b g-left" data-lp="left" aria-label="左">◀</button>
+      <button class="lpf-b g-reset" data-lp="resetOne" title="リセット">⟲</button>
+      <button class="lpf-b g-right" data-lp="right" aria-label="右">▶</button>
+      <button class="lpf-b g-rotl" data-lp="rotL" title="左回転">↺</button>
+      <button class="lpf-b g-down" data-lp="down" aria-label="下">▼</button>
+      <button class="lpf-b g-rotr" data-lp="rotR" title="右回転">↻</button>
+    </div>
+    <button class="lpf-done" data-lp="done" type="button">✓ 完了</button>
+    <button class="lpf-clean" id="lpfClean" type="button">🖥 全体表示</button>
+  </div>
+</div>
+<div id="screenMirror" aria-hidden="true"></div>
+<div id="tutorial" class="hidden" role="dialog" aria-modal="true">
+  <div class="tut-card">
+    <div class="tut-title" id="tutTitle"></div>
+    <div class="tut-body" id="tutBody"></div>
+    <div class="tut-dots" id="tutDots"></div>
+    <div class="tut-btns">
+      <button class="tut-skip" id="tutSkip" type="button">スキップ</button>
+      <button class="tut-prev" id="tutPrev" type="button">← 前へ</button>
+      <button class="tut-next" id="tutNext" type="button">次へ →</button>
+    </div>
+  </div>
+</div>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script>
 (() => {
   let CELLS = 10;   // メーターの数（5/10/15/20 で切替）
@@ -879,17 +1159,19 @@
   // ゲージのセル（本体・プレビュー）を CELLS 個で作り直す
   const cells = [];
   const pCells = [];
+  // 装飾状態（buildGauges→positionRing より前に定義しておく）
+  const deco = { cellradius:'0', cellgap:'1', celloff:'bg', digitfx:'shadow', bggrad:'0',
+                 ring:'bar', framew:'6', cellbw:'3', digitsize:'1' };
   function buildGauges(){
     gaugeEl.innerHTML = ''; previewGauge.innerHTML = '';
     cells.length = 0; pCells.length = 0;
-    const gap = CELLS >= 15 ? '4px' : '6px';   // 数が多いときは隙間を詰める
-    gaugeEl.style.gap = gap; previewGauge.style.gap = gap;
     for (let i = 0; i < CELLS; i++){
       const a = document.createElement('div'); a.className = 'cell';
       gaugeEl.appendChild(a); cells.push(a);
       const b = document.createElement('div'); b.className = 'cell';
       previewGauge.appendChild(b); pCells.push(b);
     }
+    if (typeof positionRing === 'function') positionRing();
   }
   buildGauges();
 
@@ -1387,6 +1669,56 @@
     const contrast = autoInk();  // 背景の明暗に対する黒/白
     if (overlay){ overlay.style.setProperty('--ink', contrast); overlay.style.setProperty('--gauge', contrast); }
     if (settingsBtn){ settingsBtn.style.setProperty('--ink', contrast); }
+    // 背景グラデーション（装飾）
+    document.body.style.background = (deco.bggrad === '1')
+      ? ('linear-gradient(160deg,' + PARTS.paper.override + ',' + adjustLightness(PARTS.paper.override, -0.18) + ')')
+      : '';
+  }
+  function positionRing(){
+    const ring = (deco.ring === 'ring');
+    [[gaugeEl, cells], [previewGauge, pCells]].forEach(pair => {
+      const g = pair[0], arr = pair[1];
+      if (!g || !arr) return;
+      const n = arr.length;
+      const R = (g.offsetWidth ? g.offsetWidth * 0.38 : 80);
+      arr.forEach((cell, i) => {
+        if (ring){
+          const ang = (i / n) * 360;
+          cell.style.transform = 'translate(-50%,-50%) rotate(' + ang + 'deg) translateY(-' + R + 'px)';
+        } else {
+          cell.style.transform = '';
+        }
+      });
+    });
+  }
+  function applyDeco(){
+    const rs = document.documentElement.style;
+    const diamond = (deco.cellradius === '3');
+    rs.setProperty('--cell-radius', deco.cellradius === '2' ? '999px' : deco.cellradius === '1' ? '8px' : '0px');
+    rs.setProperty('--cell-gap', deco.cellgap === '2' ? '12px' : deco.cellgap === '0' ? '2px' : '6px');
+    rs.setProperty('--cell-off', deco.celloff === 'light' ? 'rgba(128,128,128,.16)' : deco.celloff === 'dark' ? 'rgba(128,128,128,.42)' : 'var(--paper)');
+    rs.setProperty('--frame', deco.framew + 'px');
+    rs.setProperty('--cell-border', deco.cellbw + 'px');
+    rs.setProperty('--digit-scale', deco.digitsize);
+    [gaugeEl, previewGauge].forEach(g => {
+      if (!g) return;
+      g.classList.toggle('cell-diamond', diamond);
+      g.classList.toggle('ring', deco.ring === 'ring');
+    });
+    timeEl.classList.remove('fx-none','fx-shadow','fx-outline','fx-glow');
+    timeEl.classList.add('fx-' + deco.digitfx);
+    positionRing();
+    applyColors();
+  }
+  function syncDecoSegs(){
+    [['dcr','cellradius'],['dcg','cellgap'],['dco','celloff'],['dfx','digitfx'],['dbg','bggrad'],['dms','ring']].forEach(p => {
+      document.querySelectorAll('.seg[data-seg="'+p[0]+'"] .seg-btn').forEach(b =>
+        b.classList.toggle('active', b.dataset.val === deco[p[1]]));
+    });
+    const sv = { framew: deco.framew, cellbw: deco.cellbw, digitsize: deco.digitsize };
+    document.querySelectorAll('.deco-slider').forEach(sl => {
+      const k = sl.dataset.slider; if (sv[k] != null) sl.value = sv[k];
+    });
   }
   function syncSwatches(){
     Object.keys(PARTS).forEach(part => {
@@ -1444,6 +1776,7 @@
   });
   applyColors();
   syncSwatches();
+  applyDeco();
   // ===== プレビュー =====
   let previewRAF = null, previewStart = 0, previewActive = false;
   const P_CYCLE = 2600, P_HOLD = 700;
@@ -1568,7 +1901,9 @@
   function currentFontKey(){ const a = document.querySelector('.seg[data-seg="font"] .seg-btn.active'); return a ? a.dataset.font : 'mincho'; }
   function currentSkin(name){
     return { name: name || 'マイきせかえ', paper: PARTS.paper.override, digit: PARTS.digit.override,
-             gauge: PARTS.gauge.override, ink: PARTS.ink.override, font: currentFontKey(), count: CELLS, fade: fadeStyle };
+             gauge: PARTS.gauge.override, ink: PARTS.ink.override, font: currentFontKey(), count: CELLS, fade: fadeStyle,
+             cellradius: deco.cellradius, cellgap: deco.cellgap, celloff: deco.celloff, digitfx: deco.digitfx, bggrad: deco.bggrad,
+             ring: deco.ring, framew: deco.framew, cellbw: deco.cellbw, digitsize: deco.digitsize };
   }
   function applySkin(s){
     if (!s) return;
@@ -1580,6 +1915,16 @@
     if (s.font){ setFont(s.font); document.querySelectorAll('.seg[data-seg="font"] .seg-btn').forEach(x => x.classList.toggle('active', x.dataset.font === s.font)); }
     if (s.count != null) setCount(s.count);
     if (s.fade) clickSeg('fade', s.fade);
+    deco.cellradius = s.cellradius || '0';
+    deco.cellgap    = s.cellgap    || '1';
+    deco.celloff    = s.celloff    || 'bg';
+    deco.digitfx    = s.digitfx    || 'shadow';
+    deco.bggrad     = s.bggrad     || '0';
+    deco.ring       = s.ring       || 'bar';
+    deco.framew     = s.framew     || '6';
+    deco.cellbw     = s.cellbw     || '3';
+    deco.digitsize  = s.digitsize  || '1';
+    applyDeco(); syncDecoSegs();
     updatePreview();
   }
   function addSkinToEmpty(){
@@ -1602,14 +1947,14 @@
       apply.querySelector('.skin-no').textContent = num;
       apply.querySelector('.skin-name').textContent = s.name;
       apply.addEventListener('click', () => applySkin(s));
-      const over = document.createElement('button'); over.className = 'skin-op skin-over'; over.textContent = '上書';
+      const over = document.createElement('button'); over.className = 'skin-op skin-over'; over.textContent = '⬆上書';
       over.addEventListener('click', () => {
         if (confirm('「'+s.name+'」に今のUIを上書きしますか？')){
           const nm = prompt('名前', s.name); if (nm === null) return;
           skins[i] = currentSkin((nm.trim()) || s.name); saveSkins(); renderSkinSlots();
         }
       });
-      const del = document.createElement('button'); del.className = 'skin-op skin-del'; del.textContent = '×';
+      const del = document.createElement('button'); del.className = 'skin-op skin-del'; del.textContent = '🗑';
       del.addEventListener('click', () => {
         if (confirm('「'+s.name+'」を削除しますか？')){ skins[i] = null; saveSkins(); renderSkinSlots(); }
       });
@@ -1637,8 +1982,11 @@
   function hex6(c){ return c ? c.replace('#','') : ''; }
   function unhex(h){ return h ? ('#'+h) : null; }
   function skinToCode(s){
-    return 'T2,' + [ hex6(s.paper), hex6(s.digit), hex6(s.gauge), hex6(s.ink),
-      FONT_CODE[s.font]||'m', FADE_CODE[s.fade]||'t', s.count, s.name ].join(',');
+    return 'T4,' + [ hex6(s.paper), hex6(s.digit), hex6(s.gauge), hex6(s.ink),
+      FONT_CODE[s.font]||'m', FADE_CODE[s.fade]||'t', s.count,
+      (s.cellradius||'0'), (s.cellgap||'1'), (s.celloff||'bg'), (s.digitfx||'shadow'), (s.bggrad||'0'),
+      (s.ring||'bar'), (s.framew||'6'), (s.cellbw||'3'), (s.digitsize||'1'),
+      s.name ].join(',');
   }
   function codeToSkinV1(code){
     const p = code.slice(5).split('|'); if (p.length < 8) return null;
@@ -1650,12 +1998,26 @@
   function codeToSkin(code){
     code = (code||'').trim();
     if (code.indexOf('TMR1:') === 0) return codeToSkinV1(code);
-    if (code.indexOf('T2,') === 0) code = code.slice(3);
+    const isT4 = (code.indexOf('T4,') === 0);
+    const isT3 = (code.indexOf('T3,') === 0);
+    if (isT4 || isT3 || code.indexOf('T2,') === 0) code = code.slice(3);
     const p = code.split(','); if (p.length < 8) return null;
     const cnt = parseInt(p[6], 10);
-    return { paper: unhex(p[0]) || '#f4f4f4', digit: unhex(p[1]), gauge: unhex(p[2]), ink: unhex(p[3]),
+    const s = { paper: unhex(p[0]) || '#f4f4f4', digit: unhex(p[1]), gauge: unhex(p[2]), ink: unhex(p[3]),
       font: FONT_DECODE[p[4]] || 'mincho', fade: FADE_DECODE[p[5]] || 'step',
-      count: isNaN(cnt) ? 10 : cnt, name: p.slice(7).join(',') || '共有きせかえ' };
+      count: isNaN(cnt) ? 10 : cnt };
+    if ((isT4 || isT3) && p.length >= 13){
+      s.cellradius = p[7]; s.cellgap = p[8]; s.celloff = p[9]; s.digitfx = p[10]; s.bggrad = p[11];
+    }
+    if (isT4 && p.length >= 17){
+      s.ring = p[12]; s.framew = p[13]; s.cellbw = p[14]; s.digitsize = p[15];
+      s.name = p.slice(16).join(',') || '共有きせかえ';
+    } else if (isT3 && p.length >= 13){
+      s.name = p.slice(12).join(',') || '共有きせかえ';
+    } else {
+      s.name = p.slice(7).join(',') || '共有きせかえ';
+    }
+    return s;
   }
   const skinCodeInput = document.getElementById('skinCode');
   const skinExportBtn = document.getElementById('skinExport');
@@ -1675,6 +2037,54 @@
   });
   loadSkins(); renderSkinSlots();
 
+  // ----- ギャラリーへ公開（設定内で完結） -----
+  let skinDb = null;
+  try {
+    if (typeof firebase !== 'undefined'){
+      if (!firebase.apps.length){
+        firebase.initializeApp({
+          apiKey: "AIzaSyCwIH0lXYNVYbcpmEDGXRRPxRueyOD0XoU",
+          authDomain: "ad-game-7b40a.firebaseapp.com",
+          projectId: "ad-game-7b40a",
+          storageBucket: "ad-game-7b40a.firebasestorage.app",
+          messagingSenderId: "5960938874",
+          appId: "1:5960938874:web:0fac17704f74f5f0f512c3"
+        });
+      }
+      skinDb = firebase.firestore();
+    }
+  } catch(e){}
+  const PUB_NG = ['死ね','しね','ﾀﾋ','殺す','ころす','きちがい','障害者','土人','セックス','ちんこ','まんこ','うんこ','fuck','shit','nigger'];
+  const PUB_COOLDOWN = 60 * 1000;
+  function pubHasNG(t){ t = (t||'').toLowerCase(); for (let i = 0; i < PUB_NG.length; i++){ if (t.indexOf(PUB_NG[i]) >= 0) return true; } return false; }
+  const pubName = document.getElementById('pubSkinName');
+  const pubAuthor = document.getElementById('pubSkinAuthor');
+  const pubBtn = document.getElementById('pubSkinBtn');
+  const pubMsg = document.getElementById('pubSkinMsg');
+  function pubShow(t, ok){ if (pubMsg){ pubMsg.textContent = t; pubMsg.style.color = ok ? '#2fa96b' : '#c0392b'; } }
+  if (pubBtn) pubBtn.addEventListener('click', () => {
+    const name = (pubName.value || '').trim();
+    const author = (pubAuthor.value || '').trim();
+    if (!name){ pubShow('きせかえ名を入力してください', false); return; }
+    if (!author){ pubShow('作者名を入力してください（必須）', false); return; }
+    if (pubHasNG(name) || pubHasNG(author)){ pubShow('使用できない語句が含まれています', false); return; }
+    let last = 0; try { last = parseInt(localStorage.getItem('skinsLastPost'), 10) || 0; } catch(e){}
+    const wait = PUB_COOLDOWN - (Date.now() - last);
+    if (wait > 0){ pubShow('連続投稿はできません。あと ' + Math.ceil(wait / 1000) + ' 秒お待ちください', false); return; }
+    if (!skinDb){ pubShow('オンライン時のみ公開できます（接続を確認してください）', false); return; }
+    const code = skinToCode(currentSkin(name));
+    pubBtn.disabled = true;
+    skinDb.collection('skins').add({
+      name: name.slice(0, 40), author: author.slice(0, 24), code: code.slice(0, 300),
+      likes: 0, uses: 0, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => {
+      try { localStorage.setItem('skinsLastPost', '' + Date.now()); } catch(e){}
+      pubShow('公開しました！ギャラリーに反映されます', true);
+      pubName.value = ''; pubAuthor.value = '';
+    }).catch((e) => { pubShow('公開に失敗しました: ' + e.message, false); })
+      .then(() => { pubBtn.disabled = false; });
+  });
+
   // きせかえビューの開閉（タブとは別画面に切替）
   const skinOpenBtn = document.getElementById('skinOpenBtn');
   const skinBackBtn = document.getElementById('skinBack');
@@ -1685,8 +2095,15 @@
     if (tabArea) tabArea.classList.toggle('hidden', on);
     if (on) renderSkinSlots();
   }
-  if (skinOpenBtn) skinOpenBtn.addEventListener('click', () => showSkinView(true));
-  if (skinBackBtn) skinBackBtn.addEventListener('click', () => showSkinView(false));
+  if (skinOpenBtn) skinOpenBtn.addEventListener('click', () => {
+    const open = skinView && !skinView.classList.contains('hidden');
+    showSkinView(!open);
+    skinOpenBtn.textContent = open ? '🎨 きせかえ（保存・共有）' : '← 設定にもどる';
+  });
+  if (skinBackBtn) skinBackBtn.addEventListener('click', () => {
+    showSkinView(false);
+    if (skinOpenBtn) skinOpenBtn.textContent = '🎨 きせかえ（保存・共有）';
+  });
 
   // ----- タブ -----
   document.querySelectorAll('.tab').forEach(tab => {
@@ -1721,15 +2138,25 @@
     });
   });
 
+  // ----- 装飾スライダー（枠の太さ・セル枠線・数字サイズ） -----
+  document.querySelectorAll('.deco-slider').forEach(sl => {
+    sl.addEventListener('input', () => {
+      deco[sl.dataset.slider] = sl.value;
+      applyDeco();
+    });
+  });
+
   // ----- サブタブをアコーディオン表示に変換（タブ内タブを解消） -----
   const ACC_META = {
     color:    { icon:'🎨', cls:'acc-color' },
     meter:    { icon:'📊', cls:'acc-meter' },
     layout:   { icon:'🧭', cls:'acc-layout' },
     font:     { icon:'🔤', cls:'acc-font' },
+    deco:     { icon:'✨', cls:'acc-deco' },
     method:   { icon:'⏱️', cls:'acc-method' },
     notation: { icon:'🕐', cls:'acc-notation' }
   };
+  const ACC_SETTERS = [];
   document.querySelectorAll('.tab-card .tabpanel').forEach(panel => {
     const subtabs = panel.querySelector('.subtabs');
     const subpanels = panel.querySelector('.subpanels');
@@ -1748,7 +2175,7 @@
       const head = document.createElement('button');
       head.type = 'button'; head.className = 'acc-head' + (meta.cls ? ' ' + meta.cls : '');
       sp.parentNode.insertBefore(head, sp);
-      let open = (idx === 0);
+      let open = false;                       // 既定は閉じる
       const refresh = () => {
         head.textContent = (open ? '▼ ' : '▶ ') + meta.icon + ' ' + name;
         head.classList.toggle('open', open);
@@ -1756,10 +2183,12 @@
         const stab = subtabs.querySelector('.subtab[data-subtab="' + key + '"]');
         if (stab) stab.classList.toggle('active', open);
       };
+      ACC_SETTERS.push(v => { open = v; refresh(); });
       head.addEventListener('click', () => { open = !open; refresh(); updatePreview(); });
       refresh();
     });
   });
+  function collapseAccordions(){ ACC_SETTERS.forEach(fn => fn(false)); }
 
   // ----- UIセグメント -----
   document.querySelectorAll('.seg').forEach(seg => {
@@ -1808,6 +2237,12 @@
         setAlarmVol(map[val] != null ? map[val] : 0.67);
         playAlarmSound();
       }
+      else if (kind === 'dcr'){ deco.cellradius = val; applyDeco(); }
+      else if (kind === 'dcg'){ deco.cellgap = val; applyDeco(); }
+      else if (kind === 'dco'){ deco.celloff = val; applyDeco(); }
+      else if (kind === 'dfx'){ deco.digitfx = val; applyDeco(); }
+      else if (kind === 'dbg'){ deco.bggrad = val; applyDeco(); }
+      else if (kind === 'dms'){ deco.ring = val; applyDeco(); }
     });
   });
 
@@ -1855,6 +2290,9 @@
   function openModal(){
     pendingMode = mode;
     if (typeof showSkinView === 'function') showSkinView(false);   // 開くたびタブ表示に戻す
+    if (skinOpenBtn) skinOpenBtn.textContent = '🎨 きせかえ（保存・共有）';
+    if (typeof collapseAccordions === 'function') collapseAccordions();   // 開くたび項目を閉じる
+    if (typeof syncDecoSegs === 'function') syncDecoSegs();
     echoTargetToInput();
     updateTargetLabel(mode);
     updateAmpmVisibility();
@@ -1870,8 +2308,10 @@
     // 数字キーパッドが勝手に出ないよう、入力欄にはフォーカスしない
     const activeTab = overlay.querySelector('.tab.active');
     if (activeTab) activeTab.focus();
+    if (typeof tutorialSeen === 'function' && !tutorialSeen()){ setTimeout(() => { if (overlay.classList.contains('open') && !tutorialSeen()) showTut(); }, 350); }
   }
-  function closeModal(){ overlay.classList.remove('open'); stopPreview(); settingsBtn.focus(); }
+  function closeModal(){ overlay.classList.remove('open'); stopPreview(); settingsBtn.focus();
+    const t = document.getElementById('tutorial'); if (t) t.classList.add('hidden'); }
   function applyModal(){
     running = false;
     if (rafId) cancelAnimationFrame(rafId);
@@ -1946,13 +2386,53 @@
     document.querySelectorAll('.layout-part').forEach(p => p.classList.toggle('lp-selected', key === 'all' || p.dataset.part === key));
     document.querySelectorAll('.lp-part').forEach(b => b.classList.toggle('active', b.dataset.part === key));
     updateBadge();
+    if (typeof updateFloat === 'function') updateFloat();
   }
-  function enterLayout(){ if (running) pause(); layoutMode = true; document.body.classList.add('layout-mode'); closeModal(); selectPart(selectedPart || 'gauge'); }
+  let layoutScale = 1, stageHome = null, stageNext = null;
+  function updateLayoutPreview(){
+    const stage = document.querySelector('.stage');
+    const mirror = document.getElementById('screenMirror');
+    const narrow = Math.min(window.innerWidth, window.innerHeight) <= 600 && !document.body.classList.contains('lp-clean');
+    const rootS = document.documentElement.style;
+    if (layoutMode && narrow && stage && mirror){
+      if (stage.parentNode !== mirror){        // ステージをミラー内へ移動（初回のみ）
+        stageHome = stage.parentNode; stageNext = stage.nextSibling;
+        mirror.appendChild(stage);
+      }
+      document.body.classList.add('lp-preview');
+      mirror.style.background = document.body.style.background || getComputedStyle(document.body).backgroundColor || 'var(--paper)';
+      const pad = document.getElementById('layoutPad');
+      const padH = pad ? pad.getBoundingClientRect().height : 0;
+      const availH = window.innerHeight - padH - 20;
+      const availW = window.innerWidth - 16;
+      // ミラーは実画面(100vw×100vh)なので、縦横比を保ったまま収まる倍率
+      let k = Math.min(availW / window.innerWidth, availH / window.innerHeight);
+      if (!isFinite(k) || k <= 0) k = 0.5;
+      layoutScale = k;
+      rootS.setProperty('--lp-scale', String(k));
+    } else {
+      document.body.classList.remove('lp-preview');
+      if (stage && stageHome && stage.parentNode !== stageHome){
+        stageHome.insertBefore(stage, stageNext);   // 元の位置へ戻す
+      }
+      layoutScale = 1;
+      rootS.setProperty('--lp-scale', '1');
+    }
+  }
+  function enterLayout(){ if (running) pause(); layoutMode = true; document.body.classList.add('layout-mode'); closeModal(); selectPart(selectedPart || 'gauge'); requestAnimationFrame(() => { updateLayoutPreview(); if (typeof updateFloat==='function') updateFloat(); }); }
   function exitLayout(){
     layoutMode = false; document.body.classList.remove('layout-mode');
+    if (document.body.classList.contains('lp-clean')){
+      document.body.classList.remove('lp-clean');
+      const cb = document.getElementById('lpfClean'); if (cb) cb.textContent = '🖥 全体表示';
+      exitFS();
+    }
+    updateLayoutPreview();
+    if (typeof updateFloat==='function') updateFloat();
     document.querySelectorAll('.layout-part').forEach(p => p.classList.remove('lp-selected'));
     saveLayout();
   }
+  window.addEventListener('resize', () => { if (layoutMode){ updateLayoutPreview(); if (typeof updateFloat==='function') updateFloat(); } if (typeof positionRing === 'function') positionRing(); });
 
   // 保存（localStorage。プレビューでは不可の場合があるので try/catch）
   const L_KEY = 'timerGaugeLayout';
@@ -2021,37 +2501,185 @@
     btn.addEventListener('click', () => selectPart(btn.dataset.part));
   });
 
-  // 画面上でパーツを直接ドラッグして移動
-  let dragKey = null, dsx = 0, dsy = 0, dox = 0, doy = 0;
+  // 画面上でパーツを操作：普通のドラッグ=移動／端をタップして離し、もう一度ドラッグ=その方向へ拡縮
+  let dragKey = null, dsx = 0, dsy = 0, dox = 0, doy = 0, dosx = 1, dosy = 1, dbw = 1, dbh = 1;
+  let dragMode = 'move', dzx = 'C', dzy = 'C', dtzx = 'C', dtzy = 'C', moved = false;
+  let armedKey = null, armZx = 'C', armZy = 'C';
+  function clampScale(v){ return Math.max(0.2, Math.min(4, +(+v).toFixed(3))); }
+  function zoneShadow(zx, zy){
+    if (zx === 'C' && zy === 'C') return 'inset 0 0 0 2000px rgba(59,125,216,.30)';   // 移動中＝全体が青
+    const c = 'rgba(31,158,143,.85)';                                                 // 拡縮準備＝ティールの帯
+    const arr = [];
+    if (zx === 'R') arr.push('inset -12px 0 0 0 ' + c);
+    if (zx === 'L') arr.push('inset 12px 0 0 0 ' + c);
+    if (zy === 'B') arr.push('inset 0 -12px 0 0 ' + c);
+    if (zy === 'T') arr.push('inset 0 12px 0 0 ' + c);
+    return arr.join(',');
+  }
   LAYOUT_KEYS.forEach(key => {
     const el = partEl(key);
     if (!el) return;
     el.addEventListener('pointerdown', (e) => {
       if (!layoutMode) return;
       e.preventDefault();
+      document.querySelectorAll('.layout-part').forEach(p => { if (p !== el) p.style.boxShadow = ''; });
       selectPart(key);
-      dragKey = key; dsx = e.clientX; dsy = e.clientY;
-      dox = layout[key].x; doy = layout[key].y;
+      const rect = el.getBoundingClientRect();
+      const px = rect.width ? (e.clientX - rect.left) / rect.width : 0.5;
+      const py = rect.height ? (e.clientY - rect.top) / rect.height : 0.5;
+      dtzx = px < 0.34 ? 'L' : px > 0.66 ? 'R' : 'C';
+      dtzy = py < 0.34 ? 'T' : py > 0.66 ? 'B' : 'C';
+      dragKey = key; dsx = e.clientX; dsy = e.clientY; moved = false;
+      const L = layout[key];
+      dox = L.x; doy = L.y; dosx = L.sx; dosy = L.sy;
+      dbw = el.offsetWidth || 100; dbh = el.offsetHeight || 100;
+      if (armedKey === key && !(armZx === 'C' && armZy === 'C')){
+        dragMode = 'resize'; dzx = armZx; dzy = armZy;           // タップ済み→今回のドラッグは拡縮
+        el.style.boxShadow = zoneShadow(dzx, dzy);
+      } else {
+        dragMode = 'move'; dzx = 'C'; dzy = 'C';                 // 普通のドラッグ→移動
+        el.style.boxShadow = zoneShadow('C', 'C');
+      }
+      el.classList.add('lp-flash'); setTimeout(() => el.classList.remove('lp-flash'), 300);
       try { el.setPointerCapture(e.pointerId); } catch(_){}
+      updateFloat();
     });
     el.addEventListener('pointermove', (e) => {
       if (dragKey !== key) return;
-      layout[key].x = dox + (e.clientX - dsx);
-      layout[key].y = doy + (e.clientY - dsy);
-      applyLayout(key); updateBadge();
+      if (Math.abs(e.clientX - dsx) > 4 || Math.abs(e.clientY - dsy) > 4) moved = true;
+      const ddx = (e.clientX - dsx) / layoutScale;
+      const ddy = (e.clientY - dsy) / layoutScale;
+      const L = layout[key];
+      if (dragMode === 'move'){
+        L.x = dox + ddx; L.y = doy + ddy;
+      } else {
+        if (dzx === 'R'){ L.sx = clampScale(dosx + ddx / dbw); L.x = dox + ddx / 2; }
+        else if (dzx === 'L'){ L.sx = clampScale(dosx - ddx / dbw); L.x = dox + ddx / 2; }
+        if (dzy === 'B'){ L.sy = clampScale(dosy + ddy / dbh); L.y = doy + ddy / 2; }
+        else if (dzy === 'T'){ L.sy = clampScale(dosy - ddy / dbh); L.y = doy + ddy / 2; }
+      }
+      applyLayout(key); updateBadge(); updateFloat();
     });
-    const endDrag = () => { if (dragKey === key){ dragKey = null; saveLayout(); } };
+    const endDrag = () => {
+      if (dragKey !== key) return;
+      dragKey = null;
+      if (!moved){
+        // タップ（ほぼ動かさず離した）
+        if (dtzx === 'C' && dtzy === 'C'){ armedKey = null; el.style.boxShadow = ''; }   // 中央タップ＝拡縮解除
+        else { armedKey = key; armZx = dtzx; armZy = dtzy; el.style.boxShadow = zoneShadow(dtzx, dtzy); }  // 端タップ＝拡縮を準備（帯が残る）
+      } else {
+        el.style.boxShadow = '';
+        if (dragMode === 'resize') armedKey = null;   // 拡縮を1回使ったら解除
+        saveLayout();
+      }
+    };
     el.addEventListener('pointerup', endDrag);
     el.addEventListener('pointercancel', endDrag);
   });
+
+  const fsBtn = document.getElementById('fsBtn');
+  if (fsBtn) fsBtn.addEventListener('click', () => {
+    if (document.fullscreenElement || document.webkitFullscreenElement) exitFS(); else enterFS();
+  });
+
+  // ===== チュートリアル =====
+  const TUT_KEY = 'timerTutorialDone';
+  const TUT_STEPS = [
+    { t:'ようこそ 🎉', b:'このメータータイマーは、色・フォント・メーター・配置まで自由にカスタムできます。主な使い方をサッと紹介します。' },
+    { t:'🎨 きせかえ', b:'設定の上にある「きせかえ」から、今の見た目を保存（最大10個）したり、共有コードで受け渡し、みんなのきせかえギャラリーへ公開できます。' },
+    { t:'📑 タブ', b:'「タイマー」＝時間やカウント方法、「UI」＝色・メーター・フォント・装飾、「終了時」＝音や点滅。各項目の見出しをタップで開閉します。' },
+    { t:'✨ 装飾', b:'UIタブの「装飾」で、セルの形（丸・ひし形）、円形メーター、枠の太さや数字の大きさをスライダーで細かく調整できます。' },
+    { t:'📐 レイアウト', b:'「配置」からレイアウトモードへ。パーツは普通にドラッグで移動。端をタップして離し、もう一度ドラッグでその方向へ拡大できます。' },
+    { t:'📱 全画面', b:'設定の「全画面表示」や、レイアウト中の⊿→「全体表示」で、スマホ画面いっぱいにタイマーを表示できます。' },
+    { t:'準備OK！', b:'いつでも設定の「❓使い方」からこの説明を見返せます。あなただけのタイマーを作ってみてください。' }
+  ];
+  let tutIdx = 0;
+  const tutEl = document.getElementById('tutorial');
+  function renderTut(){
+    const s = TUT_STEPS[tutIdx];
+    document.getElementById('tutTitle').textContent = s.t;
+    document.getElementById('tutBody').textContent = s.b;
+    const dots = document.getElementById('tutDots'); dots.innerHTML = '';
+    TUT_STEPS.forEach((_, i) => { const d = document.createElement('span'); d.className = 'tut-dot' + (i === tutIdx ? ' on' : ''); dots.appendChild(d); });
+    document.getElementById('tutPrev').style.visibility = (tutIdx === 0) ? 'hidden' : 'visible';
+    document.getElementById('tutNext').textContent = (tutIdx === TUT_STEPS.length - 1) ? '始める' : '次へ →';
+  }
+  function showTut(){ if (!tutEl) return; tutIdx = 0; renderTut(); tutEl.classList.remove('hidden'); }
+  function hideTut(){ if (!tutEl) return; tutEl.classList.add('hidden'); try { localStorage.setItem(TUT_KEY, '1'); } catch(e){} }
+  function tutorialSeen(){ try { return !!localStorage.getItem(TUT_KEY); } catch(e){ return false; } }
+  const tutSkip = document.getElementById('tutSkip'); if (tutSkip) tutSkip.addEventListener('click', hideTut);
+  const tutPrev = document.getElementById('tutPrev'); if (tutPrev) tutPrev.addEventListener('click', () => { if (tutIdx > 0){ tutIdx--; renderTut(); } });
+  const tutNext = document.getElementById('tutNext'); if (tutNext) tutNext.addEventListener('click', () => { if (tutIdx < TUT_STEPS.length - 1){ tutIdx++; renderTut(); } else { hideTut(); } });
+  const helpBtn = document.getElementById('helpBtn'); if (helpBtn) helpBtn.addEventListener('click', showTut);
+  if (tutEl) tutEl.addEventListener('click', (e) => { if (e.target === tutEl) hideTut(); });
+
+  // 対象そばではなく画面の隅（右上）に固定。表示/非表示だけ切替
+  const lpFloat = document.getElementById('lpFloat');
+  function rectsOverlap(a, b){
+    return !(a.right < b.left || a.left > b.right || a.bottom < b.top || a.top > b.bottom);
+  }
+  function updateFloat(){
+    if (!lpFloat) return;
+    if (!layoutMode){ lpFloat.style.display = 'none'; return; }
+    lpFloat.style.display = 'block';
+    const fw = lpFloat.offsetWidth || 44, fh = lpFloat.offsetHeight || 40;
+    const vw = window.innerWidth, vh = window.innerHeight, m = 8;
+    const pad = document.getElementById('layoutPad');
+    const padTop = (pad && getComputedStyle(pad).display !== 'none') ? pad.getBoundingClientRect().top : vh;
+    const el = partEl(selectedPart === 'all' ? 'gauge' : selectedPart);
+    const target = el ? el.getBoundingClientRect() : null;
+    // 候補（優先順）：右上→左上→右中→左中→右下→左下→上中→下中
+    const cand = [
+      { left: vw - fw - m, top: 12 },
+      { left: m,           top: 12 },
+      { left: vw - fw - m, top: (vh - fh) / 2 },
+      { left: m,           top: (vh - fh) / 2 },
+      { left: vw - fw - m, top: padTop - fh - m },
+      { left: m,           top: padTop - fh - m },
+      { left: (vw - fw) / 2, top: 12 },
+      { left: (vw - fw) / 2, top: padTop - fh - m }
+    ];
+    let chosen = cand[0];
+    for (let i = 0; i < cand.length; i++){
+      const c = cand[i];
+      const r = { left: c.left, top: c.top, right: c.left + fw, bottom: c.top + fh };
+      if (r.top < 4 || r.bottom > vh - 4) continue;             // 画面外は除外
+      if (!target || !rectsOverlap(r, target)){ chosen = c; break; }   // 対象と重ならない位置
+    }
+    lpFloat.style.right = 'auto';
+    lpFloat.style.left = Math.max(4, Math.min(vw - fw - 4, chosen.left)) + 'px';
+    lpFloat.style.top  = Math.max(4, Math.min(vh - fh - 4, chosen.top)) + 'px';
+  }
+  // 全画面（ブラウザのURLバー等も隠す）
+  function enterFS(){ const el = document.documentElement; const r = el.requestFullscreen || el.webkitRequestFullscreen; if (r){ try { r.call(el); } catch(_){} } }
+  function exitFS(){ if (document.fullscreenElement || document.webkitFullscreenElement){ const x = document.exitFullscreen || document.webkitExitFullscreen; if (x){ try { x.call(document); } catch(_){} } } }
+  const lpfClean = document.getElementById('lpfClean');
+  if (lpfClean) lpfClean.addEventListener('click', () => {
+    const on = document.body.classList.toggle('lp-clean');
+    lpfClean.textContent = on ? '↩ 戻す' : '🖥 全体表示';
+    if (on) enterFS(); else exitFS();
+    requestAnimationFrame(updateLayoutPreview);   // パッド有無で倍率再計算
+  });
+  const lpfTab = document.getElementById('lpfTab');
+  if (lpfTab) lpfTab.addEventListener('click', () => { lpFloat.classList.toggle('collapsed'); updateFloat(); });
+  if (lpFloat){
+    lpFloat.querySelectorAll('.lpf-b, .lpf-done').forEach(b => {
+      const a = b.dataset.lp;
+      b.addEventListener('click', () => {
+        if (a === 'done'){ exitLayout(); return; }
+        performLp(a); saveLayout();
+      });
+    });
+  }
 
   // パッドの表示モード（フル/小/隠す）と半透明
   const lpPad = document.getElementById('layoutPad');
   document.querySelectorAll('.lp-mode').forEach(b => {
     b.addEventListener('click', () => {
-      lpPad.classList.remove('mode-full','mode-compact','mode-hidden');
+      lpPad.classList.remove('mode-full','mode-compact','mode-mini','mode-hidden');
       lpPad.classList.add('mode-' + b.dataset.mode);
       document.querySelectorAll('.lp-mode').forEach(x => x.classList.toggle('active', x === b));
+      requestAnimationFrame(updateLayoutPreview);
     });
   });
   const lpTrans = document.getElementById('lpTrans');
@@ -2110,6 +2738,16 @@
     btn.addEventListener('click', apply);
     inp.addEventListener('keydown', (e) => { if (e.key === 'Enter'){ e.preventDefault(); apply(); } });
     inp.addEventListener('input', () => { note.textContent = ''; });
+  })();
+
+  // URL ?skin=コード があれば、そのきせかえを適用（ギャラリーからの遷移用）
+  (function(){
+    try {
+      const m = location.search.match(/[?&]skin=([^&]+)/);
+      if (!m) return;
+      const s = codeToSkin(decodeURIComponent(m[1]));
+      if (s) applySkin(s);
+    } catch (e) {}
   })();
 })();
 </script>
