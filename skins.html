@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- skins.html v10 : プレビューのアイコンを🔍に変更 -->
+<!-- skins.html v11 : プレビューは?preview=1で設定ボタン無効化 -->
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -238,7 +238,7 @@
     if(!pvModal||!pvFrame) return;
     if(it.id){ useSkin(it); }                                  // プレビュー＝使用としてカウント
     pvTitle.textContent = (it.name||'無題') + '（by ' + (it.author||'名無し') + '）';
-    pvFrame.src = TIMER_URL + '?skin=' + encodeURIComponent(it.code);
+    pvFrame.src = TIMER_URL + '?preview=1&skin=' + encodeURIComponent(it.code);
     pvModal.classList.remove('hidden');
   }
   function closePreview(){

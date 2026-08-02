@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- timer-gauge v87 : 公開フォームのきせかえ名/作者名入力欄を小さく -->
+<!-- timer-gauge v93 : アコーディオンを排他式に＋終了時タブも折りたたみ収納 -->
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -385,6 +385,28 @@
   /* 全体表示（クリーン）モード：パッドや設定ボタンを隠してタイマーだけ見せる */
   body.lp-clean .layout-pad,
   body.lp-clean .settings-btn{ display:none !important; }
+  body.preview-embed .settings-btn{ display:none !important; }
+
+  /* 終了エフェクト */
+  .fx-flash{ position:fixed; inset:0; z-index:80; background:#fff; pointer-events:none;
+    animation:fxFlash .6s ease-out forwards; }
+  @keyframes fxFlash{ 0%{opacity:0;} 12%{opacity:.9;} 100%{opacity:0;} }
+  .fx-confetti{ position:fixed; inset:0; z-index:79; pointer-events:none; }
+  /* ゲームパッド接続トースト */
+  .gp-toast{ position:fixed; left:50%; bottom:calc(22px + env(safe-area-inset-bottom,0px)); transform:translateX(-50%);
+    background:rgba(20,20,20,.86); color:#fff; padding:10px 16px; border-radius:999px; font-weight:700; font-size:12.5px;
+    z-index:85; pointer-events:none; white-space:nowrap; animation:gpToast 2.8s ease forwards; }
+  @keyframes gpToast{ 0%{opacity:0;transform:translateX(-50%) translateY(10px);} 10%,72%{opacity:1;transform:translateX(-50%) translateY(0);} 100%{opacity:0;} }
+  /* コントローラー割り当て */
+  #gpView.hidden{ display:none; }
+  .gp-rows{ display:flex; flex-direction:column; gap:8px; margin-top:6px; }
+  .gp-row{ display:flex; align-items:center; gap:8px; padding:10px 12px;
+    border:var(--cell-border) solid var(--ink); border-radius:9px; }
+  .gp-label{ flex:1; font-weight:700; font-size:14px; }
+  .gp-cur{ font-size:12px; opacity:.7; font-weight:700; }
+  .gp-remap{ font-family:inherit; font-weight:700; font-size:13px; padding:7px 12px; border-radius:8px; cursor:pointer;
+    border:2px solid #3d7dd8; background:var(--paper); color:#3d7dd8; flex:none; }
+  .gp-remap.listening{ background:#e08a2e; border-color:#e08a2e; color:#fff; }
   body.lp-clean #lpFloat{ display:block; }
   #lpFloat.collapsed .lpf-body{ display:none; }
   #lpFloat .lpf-tab{ display:block; width:38px; height:34px; font-size:18px; line-height:1;
@@ -562,6 +584,10 @@
   .tab-card{ border-radius:12px; }
   /* きせかえ（保存スロット） */
   .skin-open{ width:100%; margin-bottom:16px; }
+  /* 設定上部のツールボタンを2×2に */
+  .head-tools{ display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:16px; }
+  .head-tools .ctrl{ width:100%; margin:0; font-size:14px; padding:11px 8px; }
+  .head-tools .skin-open{ margin:0; }
   #skinView.hidden, #tabArea.hidden{ display:none; }
   #skinBack{ margin-bottom:14px; }
   .skin-slots{ display:flex; flex-direction:column; gap:8px; }
@@ -641,6 +667,10 @@
   .deco-slider{ width:100%; accent-color:#3d7dd8; height:30px; margin-top:2px; }
   .acc-deco{ border-left-color:#d98a3d; }
   .acc-deco.open{ background:rgba(217,138,61,.14); }
+  .acc-finishvis{ border-left-color:#e0568a; }
+  .acc-finishvis.open{ background:rgba(224,86,138,.14); }
+  .acc-finishsnd{ border-left-color:#e08a2e; }
+  .acc-finishsnd.open{ background:rgba(224,138,46,.14); }
   .acc-head:active{ background:#3d7dd8; color:#fff; }
   .tab.active{ box-shadow:inset 0 4px 0 #3d7dd8; }
   #applyBtn{ background:#3d7dd8; color:#fff; border-color:#3d7dd8; }
@@ -705,9 +735,25 @@
       </div>
       <a class="back-btn compat-link" href="timer-lite.html">🔧 軽量版（古い端末・古いブラウザ向け）へ</a>
 
-      <button class="ctrl skin-open" id="skinOpenBtn" type="button">🎨 きせかえ（保存・共有）</button>
-      <button class="ctrl" id="fsBtn" type="button" style="width:100%; margin-bottom:16px;">📱 全画面表示（スマホ画面いっぱい）</button>
-      <button class="ctrl" id="helpBtn" type="button" style="width:100%; margin-bottom:16px;">❓ 使い方（チュートリアル）</button>
+      <div class="head-tools">
+        <button class="ctrl skin-open" id="skinOpenBtn" type="button">🎨 きせかえ</button>
+        <button class="ctrl" id="fsBtn" type="button">📱 全画面</button>
+        <button class="ctrl" id="helpBtn" type="button">❓ 使い方</button>
+        <button class="ctrl" id="gpOpenBtn" type="button">🎮 操作設定</button>
+      </div>
+
+      <div id="gpView" class="hidden">
+        <button class="back-btn" id="gpBack" type="button">← 設定にもどる</button>
+        <div class="tab-hint">🎮 コントローラー（プロコン等）で操作できます</div>
+        <div class="modal-hint" style="line-height:1.8;">
+          ・ブラウザの仕様上、接続後に<b>一度どれかのボタンを押す</b>と認識されます。<br>
+          ・反応しないときは、コントローラーのボタンを何回か押してみてください。<br>
+          ・下の「変更」を押してから、割り当てたい<b>コントローラーのボタンを押す</b>と再設定できます。
+        </div>
+        <div class="gp-rows" id="gpRows"></div>
+        <button class="ctrl" id="gpResetBtn" type="button" style="width:100%; margin-top:12px;">割り当てを初期化</button>
+        <div class="modal-hint" id="gpStatus" style="margin-top:10px;"></div>
+      </div>
 
       <div id="skinView" class="hidden">
         <button class="back-btn" id="skinBack" type="button">← 設定にもどる</button>
@@ -999,30 +1045,49 @@
         </div>
 
         <div class="tabpanel hidden" data-panel="finish">
-          <div class="tab-hint">🔔 終了時の点滅・アラーム音・音量を設定します</div>
-          <div class="field">
-            <span class="field-label">終了時の点滅</span>
-            <div class="seg" data-seg="blink">
-              <button class="seg-btn active" data-val="on">あり</button>
-              <button class="seg-btn" data-val="off">なし</button>
-            </div>
+          <div class="tab-hint">🔔 終了時の点滅・エフェクト・アラーム音を設定します</div>
+          <div class="subtabs" role="tablist">
+            <button class="subtab active" data-subtab="finishvis" role="tab">点滅・エフェクト</button>
+            <button class="subtab" data-subtab="finishsnd" role="tab">アラーム音</button>
           </div>
-          <div class="field">
-            <span class="field-label">アラーム音（タップで試聴）</span>
-            <div class="soundlist" id="soundList"></div>
-          </div>
-          <div class="field">
-            <span class="field-label">音量</span>
-            <div class="seg" data-seg="alarm">
-              <button class="seg-btn" data-val="none">無し</button>
-              <button class="seg-btn" data-val="low">小</button>
-              <button class="seg-btn active" data-val="mid">中</button>
-              <button class="seg-btn" data-val="high">大</button>
+          <div class="subpanels">
+            <div class="subpanel" data-subpanel="finishvis">
+              <div class="field">
+                <span class="field-label">終了時の点滅</span>
+                <div class="seg" data-seg="blink">
+                  <button class="seg-btn active" data-val="on">あり</button>
+                  <button class="seg-btn" data-val="off">なし</button>
+                </div>
+              </div>
+              <div class="field">
+                <span class="field-label">終了エフェクト</span>
+                <div class="seg" data-seg="finishfx">
+                  <button class="seg-btn active" data-val="none">なし</button>
+                  <button class="seg-btn" data-val="flash">フラッシュ</button>
+                  <button class="seg-btn" data-val="confetti">紙吹雪</button>
+                  <button class="seg-btn" data-val="both">両方</button>
+                </div>
+              </div>
             </div>
-            <div class="volbar" id="volBar" role="slider" aria-label="アラーム音量"
-                 aria-valuemin="0" aria-valuemax="100" tabindex="0">
-              <div class="volbar-track"></div>
-              <div class="volbar-knob" id="volKnob"></div>
+            <div class="subpanel hidden" data-subpanel="finishsnd">
+              <div class="field">
+                <span class="field-label">アラーム音（タップで試聴）</span>
+                <div class="soundlist" id="soundList"></div>
+              </div>
+              <div class="field">
+                <span class="field-label">音量</span>
+                <div class="seg" data-seg="alarm">
+                  <button class="seg-btn" data-val="none">無し</button>
+                  <button class="seg-btn" data-val="low">小</button>
+                  <button class="seg-btn active" data-val="mid">中</button>
+                  <button class="seg-btn" data-val="high">大</button>
+                </div>
+                <div class="volbar" id="volBar" role="slider" aria-label="アラーム音量"
+                     aria-valuemin="0" aria-valuemax="100" tabindex="0">
+                  <div class="volbar-track"></div>
+                  <div class="volbar-knob" id="volKnob"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1033,7 +1098,7 @@
         <button class="ctrl" id="applyBtn">適用</button>
         <button class="ctrl" id="closeBtn">閉じる</button>
       </div>
-      <div style="margin-top:12px;font-size:10px;letter-spacing:.1em;opacity:.4;text-align:right;">v87</div>
+      <div style="margin-top:12px;font-size:10px;letter-spacing:.1em;opacity:.4;text-align:right;">v93</div>
     </div>
 
     <!-- 適用確認 -->
@@ -1183,6 +1248,8 @@
 
   let meterMode = 'drain';
   let blinkOn   = true;
+  let finishFx  = 'none';
+  try { const _fx = localStorage.getItem('timerFinishFx'); if (_fx) finishFx = _fx; } catch(e){}
   let tickPattern = 'none';   // none / tri / num / dot / slash
   let tickCount   = 3;        // メーターに付ける模様の総数 2-5
   let metCells = true;        // メーター自体（四角）を表示するか
@@ -1604,6 +1671,44 @@
     playAlarmSound();            // 指定時間に到達 → 選択中のアラーム音
     gaugeEl.classList.remove('done');
     if (blinkOn){ void gaugeEl.offsetWidth; gaugeEl.classList.add('done'); }
+    if (finishFx === 'flash' || finishFx === 'both') flashScreen();
+    if (finishFx === 'confetti' || finishFx === 'both') confettiBurst();
+  }
+  function flashScreen(){
+    const f = document.createElement('div'); f.className = 'fx-flash';
+    document.body.appendChild(f);
+    setTimeout(() => { if (f.parentNode) f.remove(); }, 700);
+  }
+  function confettiBurst(){
+    const canvas = document.createElement('canvas'); canvas.className = 'fx-confetti';
+    const W = window.innerWidth, H = window.innerHeight;
+    canvas.width = W; canvas.height = H;
+    document.body.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+    const cols = ['#3d7dd8','#e0568a','#2fa96b','#c9a227','#8a5cd0','#e08a2e'];
+    const parts = [];
+    for (let i = 0; i < 130; i++){
+      parts.push({ x: Math.random()*W, y: -20 - Math.random()*H*0.4,
+        vx:(Math.random()-0.5)*3.5, vy:2+Math.random()*4.5,
+        w:6+Math.random()*6, h:8+Math.random()*9,
+        rot:Math.random()*Math.PI, vr:(Math.random()-0.5)*0.35,
+        color: cols[(Math.random()*cols.length)|0] });
+    }
+    const t0 = performance.now();
+    function frame(now){
+      const el = now - t0;
+      ctx.clearRect(0,0,W,H);
+      for (let i = 0; i < parts.length; i++){
+        const p = parts[i];
+        p.x += p.vx; p.y += p.vy; p.vy += 0.05; p.rot += p.vr;
+        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+        ctx.globalAlpha = el > 2200 ? Math.max(0, 1 - (el-2200)/800) : 1;
+        ctx.fillStyle = p.color; ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+        ctx.restore();
+      }
+      if (el < 3000){ requestAnimationFrame(frame); } else { canvas.remove(); }
+    }
+    requestAnimationFrame(frame);
   }
   function flashInvalid(el){
     const orig = el.value; el.value = '--:--';
@@ -2093,16 +2198,16 @@
   function showSkinView(on){
     if (skinView) skinView.classList.toggle('hidden', !on);
     if (tabArea) tabArea.classList.toggle('hidden', on);
-    if (on) renderSkinSlots();
+    if (on){ const gv = document.getElementById('gpView'); if (gv) gv.classList.add('hidden'); renderSkinSlots(); }
   }
   if (skinOpenBtn) skinOpenBtn.addEventListener('click', () => {
     const open = skinView && !skinView.classList.contains('hidden');
     showSkinView(!open);
-    skinOpenBtn.textContent = open ? '🎨 きせかえ（保存・共有）' : '← 設定にもどる';
+    skinOpenBtn.textContent = open ? '🎨 きせかえ' : '← 戻る';
   });
   if (skinBackBtn) skinBackBtn.addEventListener('click', () => {
     showSkinView(false);
-    if (skinOpenBtn) skinOpenBtn.textContent = '🎨 きせかえ（保存・共有）';
+    if (skinOpenBtn) skinOpenBtn.textContent = '🎨 きせかえ';
   });
 
   // ----- タブ -----
@@ -2154,7 +2259,9 @@
     font:     { icon:'🔤', cls:'acc-font' },
     deco:     { icon:'✨', cls:'acc-deco' },
     method:   { icon:'⏱️', cls:'acc-method' },
-    notation: { icon:'🕐', cls:'acc-notation' }
+    notation: { icon:'🕐', cls:'acc-notation' },
+    finishvis:{ icon:'✨', cls:'acc-finishvis' },
+    finishsnd:{ icon:'🔊', cls:'acc-finishsnd' }
   };
   const ACC_SETTERS = [];
   document.querySelectorAll('.tab-card .tabpanel').forEach(panel => {
@@ -2166,6 +2273,7 @@
     subtabs.style.display = 'none';
     subpanels.classList.add('acc');
     const secs = Array.prototype.slice.call(subpanels.querySelectorAll('.subpanel'));
+    const panelCtrls = [];
     secs.forEach((sp, idx) => {
       sp.classList.remove('hidden');
       sp.classList.add('acc-body');
@@ -2183,8 +2291,16 @@
         const stab = subtabs.querySelector('.subtab[data-subtab="' + key + '"]');
         if (stab) stab.classList.toggle('active', open);
       };
-      ACC_SETTERS.push(v => { open = v; refresh(); });
-      head.addEventListener('click', () => { open = !open; refresh(); updatePreview(); });
+      const setOpen = (v) => { open = v; refresh(); };
+      const ctrl = { setOpen };
+      panelCtrls.push(ctrl);
+      ACC_SETTERS.push(setOpen);
+      head.addEventListener('click', () => {
+        const willOpen = !open;
+        if (willOpen){ panelCtrls.forEach(c => { if (c !== ctrl) c.setOpen(false); }); }   // 排他：他を閉じる
+        open = willOpen; refresh(); updatePreview();
+        requestAnimationFrame(() => { if (typeof positionKnob === 'function') positionKnob(); });
+      });
       refresh();
     });
   });
@@ -2231,6 +2347,7 @@
         previewStart = 0;
       }
       else if (kind === 'blink'){ blinkOn = (val === 'on'); }
+      else if (kind === 'finishfx'){ finishFx = val; try { localStorage.setItem('timerFinishFx', val); } catch(e){} }
       else if (kind === 'alarm'){
         const map = { none:0, low:0.34, mid:0.67, high:1.0 };
         initAudio();
@@ -2290,7 +2407,8 @@
   function openModal(){
     pendingMode = mode;
     if (typeof showSkinView === 'function') showSkinView(false);   // 開くたびタブ表示に戻す
-    if (skinOpenBtn) skinOpenBtn.textContent = '🎨 きせかえ（保存・共有）';
+    { const gv = document.getElementById('gpView'); if (gv) gv.classList.add('hidden'); const ta = document.getElementById('tabArea'); if (ta) ta.classList.remove('hidden'); }
+    if (skinOpenBtn) skinOpenBtn.textContent = '🎨 きせかえ';
     if (typeof collapseAccordions === 'function') collapseAccordions();   // 開くたび項目を閉じる
     if (typeof syncDecoSegs === 'function') syncDecoSegs();
     echoTargetToInput();
@@ -2302,6 +2420,8 @@
     // 表記segの選択状態を同期
     document.querySelectorAll('.seg[data-seg="notation"] .seg-btn').forEach(b =>
       b.classList.toggle('active', b.dataset.val === (clock24 ? '24' : '12')));
+    document.querySelectorAll('.seg[data-seg="finishfx"] .seg-btn').forEach(b =>
+      b.classList.toggle('active', b.dataset.val === finishFx));
     overlay.classList.add('open');
     updatePreview();
     requestAnimationFrame(positionKnob);   // レイアウト後にノブ位置を反映
@@ -2743,12 +2863,98 @@
   // URL ?skin=コード があれば、そのきせかえを適用（ギャラリーからの遷移用）
   (function(){
     try {
+      if (/[?&]preview=1/.test(location.search)) document.body.classList.add('preview-embed');
       const m = location.search.match(/[?&]skin=([^&]+)/);
       if (!m) return;
       const s = codeToSkin(decodeURIComponent(m[1]));
       if (s) applySkin(s);
     } catch (e) {}
   })();
+
+  // ===== ゲームパッド（プロコン等）操作 ＋ 割り当て変更 =====
+  const GP_ACTIONS = [
+    { key:'start',    label:'スタート / 一時停止' },
+    { key:'reset',    label:'リセット / 戻る' },
+    { key:'settings', label:'設定の開閉' }
+  ];
+  let gpMap = { start:0, reset:1, settings:9 };
+  try { const _s = localStorage.getItem('timerGpMap'); if (_s){ const o = JSON.parse(_s); if (o) gpMap = Object.assign(gpMap, o); } } catch(e){}
+  function saveGpMap(){ try { localStorage.setItem('timerGpMap', JSON.stringify(gpMap)); } catch(e){} }
+  let gpListenFor = null, gpArm = false;
+  function setGpStatus(t){ const s = document.getElementById('gpStatus'); if (s) s.textContent = t; }
+  function renderGpRows(){
+    const wrap = document.getElementById('gpRows'); if (!wrap) return;
+    wrap.innerHTML = '';
+    GP_ACTIONS.forEach(a => {
+      const row = document.createElement('div'); row.className = 'gp-row';
+      row.innerHTML = '<span class="gp-label"></span><span class="gp-cur"></span><button class="gp-remap" type="button"></button>';
+      row.querySelector('.gp-label').textContent = a.label;
+      row.querySelector('.gp-cur').textContent = 'ボタン ' + gpMap[a.key];
+      const btn = row.querySelector('.gp-remap');
+      btn.textContent = (gpListenFor === a.key) ? '押して…' : '変更';
+      if (gpListenFor === a.key) btn.classList.add('listening');
+      btn.addEventListener('click', () => {
+        gpListenFor = (gpListenFor === a.key) ? null : a.key;
+        if (gpListenFor) gpArm = true;
+        setGpStatus(gpListenFor ? 'コントローラーのボタンを押してください' : '');
+        renderGpRows();
+      });
+      wrap.appendChild(row);
+    });
+  }
+  const gpResetBtn = document.getElementById('gpResetBtn');
+  if (gpResetBtn) gpResetBtn.addEventListener('click', () => {
+    gpMap = { start:0, reset:1, settings:9 }; gpListenFor = null; saveGpMap(); renderGpRows(); setGpStatus('初期化しました');
+  });
+  const gpView = document.getElementById('gpView');
+  const gpOpenBtn = document.getElementById('gpOpenBtn');
+  const gpBackBtn = document.getElementById('gpBack');
+  function showGpView(on){
+    if (gpView) gpView.classList.toggle('hidden', !on);
+    if (tabArea) tabArea.classList.toggle('hidden', on);
+    if (on){ const sv = document.getElementById('skinView'); if (sv) sv.classList.add('hidden'); renderGpRows(); setGpStatus(''); }
+    else { gpListenFor = null; }
+  }
+  if (gpOpenBtn) gpOpenBtn.addEventListener('click', () => { const open = gpView && !gpView.classList.contains('hidden'); showGpView(!open); });
+  if (gpBackBtn) gpBackBtn.addEventListener('click', () => showGpView(false));
+
+  if ('getGamepads' in navigator){
+    const gpPrev = {};
+    let gpCur = null;
+    const gpDown = (i) => !!(gpCur && gpCur.buttons[i] && gpCur.buttons[i].pressed);
+    const gpEdge = (name, now) => { const was = gpPrev[name]; gpPrev[name] = now; return now && !was; };
+    function gpPoll(){
+      const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+      gpCur = null;
+      for (let i = 0; i < pads.length; i++){ if (pads[i]){ gpCur = pads[i]; break; } }
+      if (gpCur){
+        if (gpListenFor){
+          if (gpArm){ for (let i = 0; i < gpCur.buttons.length; i++){ gpPrev['rm' + i] = gpDown(i); } gpArm = false; requestAnimationFrame(gpPoll); return; }
+          for (let i = 0; i < gpCur.buttons.length; i++){
+            if (gpEdge('rm' + i, gpDown(i))){
+              gpMap[gpListenFor] = i; saveGpMap();
+              const done = gpListenFor; gpListenFor = null; renderGpRows();
+              const a = GP_ACTIONS.find(x => x.key === done);
+              setGpStatus('「' + (a ? a.label : '') + '」をボタン ' + i + ' に設定しました');
+              break;
+            }
+          }
+          requestAnimationFrame(gpPoll); return;
+        }
+        const modalOpen = overlay.classList.contains('open');
+        if (gpEdge('a_start', gpDown(gpMap.start))){ if (!modalOpen && !layoutMode) startBtn.click(); }
+        if (gpEdge('a_reset', gpDown(gpMap.reset))){ if (modalOpen) closeModal(); else if (layoutMode) exitLayout(); else resetBtn.click(); }
+        if (gpEdge('a_settings', gpDown(gpMap.settings))){ if (modalOpen) closeModal(); else if (!layoutMode) settingsBtn.click(); }
+      }
+      requestAnimationFrame(gpPoll);
+    }
+    requestAnimationFrame(gpPoll);
+    window.addEventListener('gamepadconnected', () => {
+      const t = document.createElement('div'); t.className = 'gp-toast';
+      t.textContent = '🎮 コントローラー接続（設定 →「🎮 コントローラー設定」で割り当て確認）';
+      document.body.appendChild(t); setTimeout(() => { if (t.parentNode) t.remove(); }, 2800);
+    });
+  }
 })();
 </script>
 <div id="sounds" style="display:none" aria-hidden="true">
