@@ -603,7 +603,6 @@
     ]).then(function(){ try { localStorage.setItem('siteVisitDate', today); } catch(e){} }).catch(function(){});
   }
   chain.then(refresh, refresh);
-  showGameCounts();
 
   var GMAP = { 'index.html':'maru', 'dungeon.html':'tobetobi', 'shopping-memo.html':'memo', 'timer-gauge.html':'timer', 'skins.html':'gallery' };
   function showGameCounts(){
@@ -617,6 +616,7 @@
       }).catch(function(){ badge.textContent = ''; });
     });
   }
+  showGameCounts();
 
   function refresh(){
     db.collection('meta').doc('plaza').get().then(function(d){
