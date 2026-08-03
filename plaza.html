@@ -440,6 +440,20 @@
       overflow:hidden;
     }
     .ad-wrap ins{ display:block; }
+  /* 利用人数カウンター */
+  .visit-counter{ max-width:360px; margin:0 auto 18px; padding:14px 16px;
+    background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.18); border-radius:14px; }
+  .vc-head{ font-size:12px; opacity:.85; margin-bottom:8px; letter-spacing:.06em; }
+  .vc-nums{ display:flex; justify-content:center; gap:28px; margin-bottom:10px; }
+  .vc-item{ display:flex; flex-direction:column; align-items:center; }
+  .vc-big{ font-size:30px; font-weight:900; line-height:1; }
+  .vc-lbl{ font-size:11px; opacity:.7; margin-top:4px; }
+  .vc-days{ display:flex; align-items:flex-end; justify-content:center; gap:4px; height:44px; margin-top:4px; }
+  .vc-bar{ width:14px; background:linear-gradient(180deg,#e0a53a,#c9822b); border-radius:3px 3px 0 0; position:relative; min-height:3px; }
+  .vc-bar span{ position:absolute; bottom:-15px; left:50%; transform:translateX(-50%); font-size:8px; opacity:.6; white-space:nowrap; }
+  .vc-note{ font-size:10px; opacity:.5; margin-top:20px; }
+  .card-count{ position:absolute; bottom:8px; right:10px; z-index:2; font-size:10px; font-weight:700;
+    background:rgba(0,0,0,.4); color:#fff; padding:3px 8px; border-radius:999px; letter-spacing:.02em; }
 </style>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=YOUR_PUBLISHER_ID" crossorigin="anonymous"></script>
 </head>
@@ -544,12 +558,94 @@
   <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
 </div>
 <div class="footer">
+    <div class="visit-counter" id="visitCounter">
+      <div class="vc-head">🎮 このサイトののべ利用者数</div>
+      <div class="vc-nums">
+        <div class="vc-item"><span class="vc-big" id="cntToday">…</span><span class="vc-lbl">今日</span></div>
+        <div class="vc-item"><span class="vc-big" id="cntTotal">…</span><span class="vc-lbl">累計</span></div>
+      </div>
+      <div class="vc-days" id="cntDays"></div>
+      <div class="vc-note" id="cntNote"></div>
+    </div>
     <span class="footer-brand" data-text="現電 — 幻実世界の電子遊戯">現電 — 幻実世界の電子遊戯</span><br>
-    <span style="font-size:9px;letter-spacing:0.05em;">ver2026.07.15</span>
+    <span style="font-size:9px;letter-spacing:0.05em;">ver2026.08.03</span>
   </div>
 
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+// ===== 利用人数カウンター（日毎・累計、誰でも閲覧可） =====
+(function(){
+  var db = null;
+  try {
+    if (typeof firebase !== 'undefined'){
+      if (!firebase.apps.length){
+        firebase.initializeApp({ apiKey:"AIzaSyCwIH0lXYNVYbcpmEDGXRRPxRueyOD0XoU", authDomain:"ad-game-7b40a.firebaseapp.com", projectId:"ad-game-7b40a", storageBucket:"ad-game-7b40a.firebasestorage.app", messagingSenderId:"5960938874", appId:"1:5960938874:web:0fac17704f74f5f0f512c3" });
+      }
+      db = firebase.firestore();
+    }
+  } catch(e){}
+  if (!db){ var n=document.getElementById('cntNote'); if(n) n.textContent='（オフラインのため人数を取得できませんでした）'; return; }
+
+  function todayStr(){ var d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+  var today = todayStr();
+  var inc = firebase.firestore.FieldValue.increment(1);
+
+  var counted = false;
+  try { counted = (localStorage.getItem('siteVisitDate') === today); } catch(e){}
+  var chain = Promise.resolve();
+  if (!counted){
+    chain = Promise.all([
+      db.collection('visits').doc(today).set({ c: inc, d: today }, { merge:true }),
+      db.collection('meta').doc('plaza').set({ total: inc }, { merge:true })
+    ]).then(function(){ try { localStorage.setItem('siteVisitDate', today); } catch(e){} }).catch(function(){});
+  }
+  chain.then(refresh, refresh);
+  showGameCounts();
+
+  var GMAP = { 'index.html':'maru', 'dungeon.html':'tobetobi', 'shopping-memo.html':'memo', 'timer-gauge.html':'timer', 'skins.html':'gallery' };
+  function showGameCounts(){
+    document.querySelectorAll('.game-card[href]').forEach(function(card){
+      var gid = GMAP[card.getAttribute('href')]; if (!gid) return;
+      var badge = document.createElement('div'); badge.className = 'card-count'; badge.textContent = '…';
+      card.appendChild(badge);
+      db.collection('games').doc(gid).get().then(function(d){
+        var o = d.exists ? d.data() : {};
+        badge.textContent = '👤 ' + Number(o.people||0).toLocaleString() + '人 ・ ▶ ' + Number(o.uses||0).toLocaleString() + '回';
+      }).catch(function(){ badge.textContent = ''; });
+    });
+  }
+
+  function refresh(){
+    db.collection('meta').doc('plaza').get().then(function(d){
+      var t = (d.exists && d.data().total) ? d.data().total : 0;
+      var el=document.getElementById('cntTotal'); if(el) el.textContent = Number(t).toLocaleString();
+    }).catch(function(){});
+    db.collection('visits').orderBy('d','desc').limit(14).get().then(function(snap){
+      var rows=[]; snap.forEach(function(doc){ var o=doc.data(); rows.push({ d:(o.d||doc.id), c:(o.c||0) }); });
+      rows.reverse();
+      var tr = rows.filter(function(r){ return r.d===today; })[0];
+      var te=document.getElementById('cntToday'); if(te) te.textContent = Number(tr?tr.c:0).toLocaleString();
+      renderDays(rows);
+    }).catch(function(){});
+  }
+  function renderDays(rows){
+    var wrap=document.getElementById('cntDays'); if(!wrap) return;
+    wrap.innerHTML='';
+    var max=1; rows.forEach(function(r){ if(r.c>max) max=r.c; });
+    rows.forEach(function(r){
+      var bar=document.createElement('div'); bar.className='vc-bar';
+      bar.style.height = Math.max(3, Math.round(r.c/max*40)) + 'px';
+      bar.title = r.d + '：' + r.c + '人';
+      var lbl=document.createElement('span'); lbl.textContent = r.d.slice(5).replace('-','/');
+      bar.appendChild(lbl); wrap.appendChild(bar);
+    });
+    var note=document.getElementById('cntNote'); if(note) note.textContent='※同じ端末は1日1回カウント／棒グラフは直近14日。';
+  }
+})();
+</script>
 <script>
   // ===== コントローラー操作 =====
   // Aボタン（buttons[1]）: 決定  Bボタン（buttons[0]）: 丸場所へ戻る

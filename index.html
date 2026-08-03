@@ -1967,5 +1967,22 @@
   <div class="gp-row"><span class="gp-btn">右スティック</span><span class="gp-act">スクロール</span></div>
 </div>
 <div id="gp-dbg" style="position:fixed;top:0;left:0;right:0;background:rgba(0,0,0,0.85);color:#0f0;font-size:11px;padding:6px 8px;z-index:99999;font-family:monospace;pointer-events:none;display:none;white-space:pre;"></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+// ===== 利用カウント（サイト全体＋このゲーム） =====
+(function(){ var GID='maru', GNAME='丸場所記憶ゲーム';
+  try{
+    if(window.self!==window.top || location.search.indexOf('preview=1')>=0) return;
+    if(typeof firebase==='undefined') return;
+    if(!firebase.apps.length) firebase.initializeApp({apiKey:"AIzaSyCwIH0lXYNVYbcpmEDGXRRPxRueyOD0XoU",authDomain:"ad-game-7b40a.firebaseapp.com",projectId:"ad-game-7b40a",storageBucket:"ad-game-7b40a.firebasestorage.app",messagingSenderId:"5960938874",appId:"1:5960938874:web:0fac17704f74f5f0f512c3"});
+    var db=firebase.firestore(), inc=firebase.firestore.FieldValue.increment(1);
+    var d=new Date(), today=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    try{ if(localStorage.getItem('siteVisitDate')!==today){ db.collection('visits').doc(today).set({c:inc,d:today},{merge:true}); db.collection('meta').doc('plaza').set({total:inc},{merge:true}); localStorage.setItem('siteVisitDate',today);} }catch(e){}
+    db.collection('games').doc(GID).set({uses:inc,name:GNAME},{merge:true});
+    try{ if(localStorage.getItem('gameV_'+GID)!==today){ db.collection('games').doc(GID).set({people:inc,name:GNAME},{merge:true}); localStorage.setItem('gameV_'+GID,today);} }catch(e){}
+  }catch(e){}
+})();
+</script>
 </body>
 </html>

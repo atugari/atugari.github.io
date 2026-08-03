@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- timer-gauge v93 : アコーディオンを排他式に＋終了時タブも折りたたみ収納 -->
+<!-- timer-gauge v115 : グラデで設定が白飛びする不具合修正(ぼかし廃止・スクリム濃く)＋背景見出しに柄を明記 -->
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -106,6 +106,14 @@
   /* ひし形セル */
   .gauge.cell-diamond .cell{ clip-path:polygon(50% 0, 100% 50%, 50% 100%, 0 50%); border-radius:0; }
 
+  /* メーターの質感（スタイリッシュ） */
+  .gauge.tex-neon .cell.on{ box-shadow:0 0 6px var(--gauge), 0 0 15px var(--gauge); }
+  .gauge.tex-neon .cell{ border-color:var(--gauge); }
+  .gauge.tex-glass .cell{ background:rgba(255,255,255,.10); border-color:rgba(255,255,255,.45); }
+  .gauge.tex-glass .cell.on{
+    background:linear-gradient(150deg, rgba(255,255,255,.55), var(--gauge) 55%);
+    box-shadow:inset 0 5px 8px rgba(255,255,255,.4); }
+
   /* 円形（リング）メーター：セルを円状に配置（点灯ロジックは共通） */
   .gauge.ring{
     position:relative; width:clamp(150px,54vw,240px); height:clamp(150px,54vw,240px);
@@ -141,6 +149,53 @@
   .time:focus{ outline:none; }
   .time:disabled{ color:var(--digit); -webkit-text-fill-color:var(--digit); opacity:1; }
   .time:not(:disabled){ cursor:text; }
+
+  /* セグメント風フォント（7セグ）— 数字だけに適用 */
+  @font-face{ font-family:'DSEG7C'; font-weight:700; font-display:swap;
+    src:url('https://cdn.jsdelivr.net/npm/dseg@0.46.0/fonts/DSEG7-Classic/DSEG7Classic-Bold.woff2') format('woff2'); }
+  body.digit-seg .time{ font-family:'DSEG7C', ui-monospace, monospace; letter-spacing:.06em; }
+
+  /* アイコンだけのボタン（ストップウォッチ風） */
+  body.btn-icon .ctrl#startBtn, body.btn-icon .ctrl#resetBtn{
+    width:66px; height:66px; min-width:66px; border-radius:50%;
+    font-size:24px; padding:0; display:inline-flex; align-items:center; justify-content:center; }
+
+  /* インターバル */
+  .phase-label{ text-align:center; font-weight:800; font-size:clamp(18px,5vw,28px);
+    color:var(--gauge); margin-bottom:6px; letter-spacing:.04em; }
+  .phase-label .ph-round{ display:block; font-size:.6em; opacity:.7; color:var(--digit); font-weight:700; margin-top:2px; }
+  .phase-label.hidden{ display:none; }
+  .iv-phase{ display:flex; gap:8px; margin-bottom:8px; align-items:center; width:100%; }
+  .iv-phase .iv-num{ font-weight:800; width:20px; flex:none; opacity:.6; }
+  .iv-label{ flex:1 1 auto; min-width:0; font-family:inherit; font-weight:700; font-size:15px; padding:9px 10px;
+    border:var(--cell-border) solid var(--ink); background:var(--paper); color:var(--ink); border-radius:8px; box-sizing:border-box; }
+  .iv-time{ flex:none; width:76px; text-align:center; font-family:inherit; font-weight:700; font-size:16px; padding:9px 4px;
+    border:var(--cell-border) solid var(--ink); background:var(--paper); color:var(--ink); border-radius:8px; box-sizing:border-box; }
+  .iv-rounds{ display:flex; align-items:center; gap:14px; }
+  .iv-rbtn{ width:44px; height:44px; border-radius:50%; font-size:22px; font-weight:800;
+    border:2px solid #3d7dd8; color:#3d7dd8; background:var(--paper); cursor:pointer; }
+  .iv-rbtn:active{ background:#3d7dd8; color:#fff; }
+  #ivRoundNum{ font-size:22px; font-weight:800; min-width:34px; text-align:center; }
+  #ivSummary{ word-break:break-word; }
+  .iv-color{ width:34px; height:34px; flex:none; padding:0; border:2px solid var(--ink); border-radius:8px; background:none; cursor:pointer; }
+  .iv-del{ flex:none; width:30px; height:34px; border-radius:8px; border:2px solid #d84b4b; color:#d84b4b; background:var(--paper); font-size:16px; font-weight:800; cursor:pointer; }
+  .iv-add{ width:100%; margin-top:2px; padding:9px; border:2px dashed #3d7dd8; color:#3d7dd8; background:var(--paper); border-radius:8px; font-weight:700; cursor:pointer; }
+  .iv-presets{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .iv-preset{ display:flex; flex-direction:column; gap:2px; align-items:flex-start; text-align:left;
+    font-family:inherit; font-weight:800; font-size:14px; padding:10px 12px;
+    border:2px solid #2fa96b; color:#2fa96b; background:var(--paper); border-radius:12px; cursor:pointer; }
+  .iv-preset small{ font-weight:600; font-size:10.5px; opacity:.75; line-height:1.3; }
+  .iv-preset:active{ background:#2fa96b; color:#fff; }
+  .iv-save{ width:100%; margin-bottom:10px; padding:11px; border:2px solid #3d7dd8; color:#3d7dd8; background:var(--paper); border-radius:12px; font-weight:800; cursor:pointer; }
+  .iv-save:active{ background:#3d7dd8; color:#fff; }
+  .iv-custrow{ display:flex; gap:8px; margin-bottom:8px; }
+  .iv-custrow .iv-preset{ flex:1; }
+  .iv-custdel{ flex:none; width:44px; border:2px solid #d84b4b; color:#d84b4b; background:var(--paper); border-radius:12px; font-weight:800; font-size:18px; cursor:pointer; }
+  .iv-custdel:active{ background:#d84b4b; color:#fff; }
+  .iv-target{ width:130px; text-align:center; font-family:inherit; font-weight:700; font-size:16px; padding:9px 6px;
+    border:var(--cell-border) solid var(--ink); background:var(--paper); color:var(--ink); border-radius:8px; box-sizing:border-box; }
+  .time.tick-pulse{ animation:tickPulse .22s ease-out; }
+  @keyframes tickPulse{ 0%{ transform:scale(1.14); } 100%{ transform:scale(1); } }
 
   .controls{ display:flex; gap:12px; flex-wrap:wrap; }
   button.ctrl{
@@ -216,10 +271,10 @@
     background:var(--paper);
     padding:20px 18px 18px;
     position:relative; z-index:1;
-    display:grid;                       /* 2つのタブパネルを重ねる */
+    display:grid; grid-template-columns:minmax(0,1fr);   /* 2つのタブパネルを重ねる（列はコンテナ幅に固定）*/
     transition:background-color var(--fade),border-color var(--fade);
   }
-  .tabpanel{ grid-area:1 / 1; }         /* 同じ位置に重ねて最大の高さを確保 */
+  .tabpanel{ grid-area:1 / 1; min-width:0; }         /* 同じ位置に重ねて最大の高さを確保 */
   .tabpanel.hidden{ display:none; }        /* 表示中パネルの高さに合わせる（下部の空白防止） */
 
   /* タイマータブ */
@@ -239,18 +294,19 @@
   .field.hidden{ display:none; }
   .field:last-child{ margin-bottom:0; }
   .field-label{ display:block; font-size:12px; letter-spacing:.08em; opacity:.7; margin-bottom:8px; }
-  .seg{ display:flex; gap:12px; }
+  .seg{ display:flex; gap:4px; background:rgba(130,130,130,.16); border-radius:14px; padding:4px; }
   .seg.vertical{ flex-direction:column; }
   .seg-btn{
     flex:1; min-width:0; font-family:inherit; font-weight:700; font-size:13px; letter-spacing:.04em;
-    padding:11px 6px; background:var(--paper); color:var(--ink);
-    border:var(--cell-border) solid var(--ink); cursor:pointer;
+    padding:10px 6px; background:transparent; color:var(--ink);
+    border:0; border-radius:11px; cursor:pointer;
     text-align:center; overflow-wrap:anywhere;
+    transition:background-color .15s, color .15s, box-shadow .15s;
   }
   /* 選択：色反転（黒）＋一回り外に「白いすき間→黒枠」を出す */
   .seg-btn.active{
-    background:var(--ink); color:var(--paper);
-    box-shadow:0 0 0 3px var(--paper), 0 0 0 6px var(--ink);
+    background:var(--paper); color:var(--ink);
+    box-shadow:0 2px 6px rgba(0,0,0,.20);
   }
 
   /* 音量バー：棒＋黒丸だけのシンプルな表現 */
@@ -314,11 +370,11 @@
   .subtab:focus-visible{ outline:3px solid var(--ink); outline-offset:3px; }
   /* サブパネルはカード化＋同じ位置に重ねて最大高さを確保（切替で上下しない） */
   .subpanels{
-    display:grid;
+    display:grid; grid-template-columns:minmax(0,1fr);
     border:var(--cell-border) solid var(--ink); background:var(--paper);
     padding:16px 14px 14px; position:relative; z-index:1;
   }
-  .subpanel{ grid-area:1 / 1; }
+  .subpanel{ grid-area:1 / 1; min-width:0; }
   .subpanel.hidden{ display:none; }
 
   /* 色タブ内の3階層タブ（テーマ / 背景）：小さめの塗り分けトグル */
@@ -625,6 +681,17 @@
   /* タブの一行説明 */
   .tab-hint{ font-size:12px; line-height:1.6; opacity:.72; background:rgba(61,125,216,.10);
     border-left:4px solid #3d7dd8; border-radius:6px; padding:8px 10px; margin-bottom:12px; }
+  .field-desc{ font-size:12px; line-height:1.65; opacity:.6; margin:1px 0 9px; }
+  .bg-picker{ display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
+  .bg-chip{ font-family:inherit; font-weight:700; font-size:12px; padding:16px 4px 9px; border-radius:10px;
+    border:2px solid rgba(128,128,128,.4); color:var(--ink); cursor:pointer; text-shadow:0 1px 2px var(--paper),0 0 3px var(--paper); }
+  .bg-chip.active{ border-color:#3d7dd8; box-shadow:0 0 0 2px #3d7dd8 inset; }
+  .bgpat-row{ display:flex; gap:10px; align-items:center; }
+  .bgpat-c{ display:flex; flex-direction:column; align-items:center; gap:3px; font-size:11px; font-weight:700; opacity:.8; }
+  .bgpat-c input[type=color]{ width:44px; height:38px; padding:0; border:2px solid var(--ink); border-radius:8px; background:none; cursor:pointer; }
+  .desc-toggle{ display:block; margin:0 0 12px auto; font-family:inherit; font-weight:700; font-size:12px;
+    padding:6px 13px; border-radius:999px; border:2px solid var(--ink); background:var(--paper); color:var(--ink); cursor:pointer; }
+  body.hide-desc .field-desc, body.hide-desc .tab-hint{ display:none !important; }
 
   /* チュートリアル */
   #tutorial{ position:fixed; inset:0; z-index:60; display:flex; align-items:center; justify-content:center;
@@ -647,7 +714,7 @@
   .tut-next{ background:#3d7dd8; border-color:#3d7dd8; color:#fff; }
 
   /* ===== 要所の差し色（設定を見やすく。青=選択/主要, 金=きせかえ） ===== */
-  .seg-btn.active{ background:#3d7dd8; color:#fff; border-color:#3d7dd8; }
+  .seg-btn.active{ background:#3d7dd8; color:#fff; box-shadow:0 2px 7px rgba(61,125,216,.4); }
   .subtab2.active{ background:#3d7dd8; color:#fff; border-color:#3d7dd8; }
   .acc-head{ border-left:5px solid #3d7dd8; }
   .acc-head.open{ background:rgba(61,125,216,.14); }
@@ -671,6 +738,8 @@
   .acc-finishvis.open{ background:rgba(224,86,138,.14); }
   .acc-finishsnd{ border-left-color:#e08a2e; }
   .acc-finishsnd.open{ background:rgba(224,138,46,.14); }
+  .acc-interval{ border-left-color:#2fa96b; }
+  .acc-interval.open{ background:rgba(47,169,107,.14); }
   .acc-head:active{ background:#3d7dd8; color:#fff; }
   .tab.active{ box-shadow:inset 0 4px 0 #3d7dd8; }
   #applyBtn{ background:#3d7dd8; color:#fff; border-color:#3d7dd8; }
@@ -708,6 +777,7 @@
 
     <!-- タイマー -->
     <div class="panel">
+      <div class="phase-label hidden" id="phaseLabel"></div>
       <div class="display layout-part" id="display" data-part="digit">
         <input class="time" id="time" value="01:00"
                inputmode="numeric" aria-label="タイマー（分:秒）" aria-live="polite">
@@ -760,10 +830,12 @@
         <a class="back-btn" href="skins.html" style="display:block;text-align:center;margin-bottom:14px;">🖼️ みんなのきせかえを見る / 公開する →</a>
         <div class="field">
           <span class="field-label">保存したきせかえ（タップで適用・最大10個）</span>
+                <div class="field-desc">タップで今のUIに適用。「⬆上書」で今の見た目を保存、「🗑」で削除できます。</div>
           <div class="skin-slots" id="skinSlots"></div>
         </div>
         <div class="field">
           <span class="field-label">共有コード</span>
+                <div class="field-desc">今のUIをコードに書き出してコピー、またはもらったコードを貼って読み込めます。</div>
           <input class="modal-input" id="skinCode" style="font-size:13px;letter-spacing:0;" placeholder="コードを貼り付けて読み込み">
           <div class="skin-share-row">
             <button class="skin-share-btn export" id="skinExport">📤 書き出し</button>
@@ -773,6 +845,7 @@
         </div>
         <div class="field">
           <span class="field-label">🌐 みんなに公開（ギャラリーに投稿）</span>
+                <div class="field-desc">名前と作者名を入れて、今のUIをみんなのギャラリーへ公開します。</div>
           <input class="modal-input" id="pubSkinName" placeholder="きせかえ名" maxlength="40">
           <input class="modal-input" id="pubSkinAuthor" placeholder="作者名（必須）" maxlength="24" style="margin-top:8px;">
           <button class="ctrl" id="pubSkinBtn" type="button" style="margin-top:10px;">🌐 今のUIを公開する</button>
@@ -782,6 +855,7 @@
       </div>
 
       <div id="tabArea">
+        <button class="desc-toggle" id="descToggle" type="button">💬 説明を隠す</button>
       <div class="tabs" role="tablist">
         <button class="tab active" data-tab="timer" role="tab">⏱️ タイマー</button>
         <button class="tab" data-tab="ui" role="tab">🎨 UI</button>
@@ -795,12 +869,15 @@
           <div class="subtabs" role="tablist">
             <button class="subtab active" data-subtab="method" role="tab">カウント方法</button>
             <button class="subtab" data-subtab="notation" role="tab">表記</button>
+            <button class="subtab" data-subtab="interval" role="tab">インターバル</button>
           </div>
           <div class="subpanels">
             <!-- カウント方法 -->
             <div class="subpanel" data-subpanel="method">
+              <div class="modal-hint field-desc" style="margin-bottom:14px;">カウントの進み方を選びます。「指定時間から0」は減るタイマー、「0から指定時間」は増えるストップウォッチ式。現在時刻に向けて計るモードもあります。</div>
               <div class="field">
                 <span class="field-label">カウント方法</span>
+                <div class="field-desc">減る／増える／現在時刻に向けて、など進み方を選びます。</div>
                 <div class="seg vertical" data-seg="dir">
                   <button class="seg-btn active" data-val="down">指定時間から0</button>
                   <button class="seg-btn" data-val="up">0から指定時間</button>
@@ -814,20 +891,102 @@
               </div>
               <div class="field hidden" id="ampmField">
                 <span class="field-label">午前 / 午後</span>
+                <div class="field-desc">時刻モードのとき、午前か午後かを指定します。</div>
                 <div class="seg" data-seg="ampm">
-                  <button class="seg-btn active" data-val="AM">午前</button>
-                  <button class="seg-btn" data-val="PM">午後</button>
+                  <button class="seg-btn active" data-val="AM">🌅 午前</button>
+                  <button class="seg-btn" data-val="PM">🌆 午後</button>
                 </div>
               </div>
             </div>
             <!-- 表記 -->
             <div class="subpanel hidden" data-subpanel="notation">
+              <div class="modal-hint field-desc" style="margin-bottom:14px;">現在時刻を使うカウント（時刻モード）のときの、時刻の見せ方を選びます。AM/PM表記か24時間表記か。</div>
               <div class="field">
                 <span class="field-label">時刻の表記</span>
+                <div class="field-desc">時刻を AM/PM か 24時間表記で表示します。</div>
                 <div class="seg" data-seg="notation">
-                  <button class="seg-btn" data-val="12">AM/PM</button>
-                  <button class="seg-btn active" data-val="24">24時</button>
+                  <button class="seg-btn" data-val="12">🕛 AM/PM</button>
+                  <button class="seg-btn active" data-val="24">🕓 24時</button>
                 </div>
+              </div>
+            </div>
+            <!-- インターバル -->
+            <div class="subpanel hidden" data-subpanel="interval">
+              <div class="field">
+                <span class="field-label">インターバルモード</span>
+                <div class="field-desc">運動→休憩など、複数の時間をくり返して計るモードのオン/オフ。</div>
+                <div class="seg" data-seg="ivon">
+                  <button class="seg-btn active" data-val="off">✕ 使わない</button>
+                  <button class="seg-btn" data-val="on">✓ 使う</button>
+                </div>
+              </div>
+              <div class="modal-hint">運動5分→休憩3分…のように、異なる時間を順番に決めた回数くり返して計ります。時間0のフェーズは飛ばします。<br>時間は「<b>分:秒</b>」でも、数字だけでもOK（数字は<b>下2桁が秒</b>。例: 5959＝59:59 ／ 130＝1:30 ／ 20＝0:20）。</div>
+              <div class="field">
+                <span class="field-label">プリセット（タップで一発設定）</span>
+                <div class="field-desc">よく使う構成をワンタップで呼び出します。</div>
+                <div class="iv-presets">
+                  <button class="iv-preset" data-preset="タバタ" type="button">タバタ<small>運動20秒/休憩10秒 ×8</small></button>
+                  <button class="iv-preset" data-preset="ポモドーロ" type="button">ポモドーロ<small>作業25分/休憩5分 ×4</small></button>
+                  <button class="iv-preset" data-preset="HIIT" type="button">HIIT<small>運動40秒/休憩20秒 ×8</small></button>
+                  <button class="iv-preset" data-preset="筋トレ" type="button">筋トレ<small>運動45秒/休憩15秒 ×6</small></button>
+                </div>
+              </div>
+              <div class="field">
+                <span class="field-label">準備時間（レディ）</span>
+                <div class="field-desc">開始前に「よ〜い」の待ち時間を入れられます。</div>
+                <div class="seg" data-seg="ivready">
+                  <button class="seg-btn active" data-val="0">なし</button>
+                  <button class="seg-btn" data-val="3">3秒</button>
+                  <button class="seg-btn" data-val="5">5秒</button>
+                  <button class="seg-btn" data-val="10">10秒</button>
+                </div>
+              </div>
+              <div class="field">
+                <span class="field-label">切り替え前カウントダウン（3・2・1）</span>
+                <div class="field-desc">フェーズ終了の3秒前に音と数字で予告します。</div>
+                <div class="seg" data-seg="ivcount">
+                  <button class="seg-btn active" data-val="on">🔔 あり</button>
+                  <button class="seg-btn" data-val="off">— なし</button>
+                </div>
+              </div>
+              <div class="field">
+                <span class="field-label">フェーズごとに色を変える</span>
+                <div class="field-desc">各フェーズに色を割り当て、実行中にメーター色が変わります。</div>
+                <div class="seg" data-seg="ivcolor">
+                  <button class="seg-btn active" data-val="off">✕ 使わない</button>
+                  <button class="seg-btn" data-val="on">✓ 使う</button>
+                </div>
+              </div>
+              <div class="field">
+                <span class="field-label">フェーズ名を読み上げる（音声）</span>
+                <div class="field-desc">切り替え時に「運動」「休憩」などを端末が音声で読み上げます。</div>
+                <div class="seg" data-seg="ivvoice">
+                  <button class="seg-btn active" data-val="off">✕ なし</button>
+                  <button class="seg-btn" data-val="on">🔊 あり</button>
+                </div>
+              </div>
+              <div id="ivPhaseRows"></div>
+              <div class="field">
+                <span class="field-label">ラウンド数（くり返し回数）</span>
+                <div class="field-desc">フェーズ一式（運動＋休憩など）を何回くり返すかを決めます。</div>
+                <div class="iv-rounds">
+                  <button class="iv-rbtn" id="ivRoundMinus" type="button">－</button>
+                  <span id="ivRoundNum">4</span>
+                  <button class="iv-rbtn" id="ivRoundPlus" type="button">＋</button>
+                </div>
+              </div>
+              <div class="field">
+                <span class="field-label">目標の合計時間（分）から自動でラウンド数を決める</span>
+                <div class="field-desc">合計の分を入れると、必要なラウンド数を自動で計算します。</div>
+                <input class="iv-target" id="ivTargetTime" inputmode="numeric" placeholder="例: 62">
+                <div class="modal-hint" id="ivTargetHint"></div>
+              </div>
+              <div class="modal-hint" id="ivSummary"></div>
+              <div class="field" style="margin-top:6px;">
+                <span class="field-label">💾 マイプリセット（今の設定を保存・最大5つ）</span>
+                <div class="field-desc">今のフェーズ・ラウンド・準備時間をまとめて保存。次からワンタップで呼び出せます。</div>
+                <button class="iv-save" id="ivSaveBtn" type="button">💾 今の設定を保存する</button>
+                <div id="ivCustomList"></div>
               </div>
             </div>
           </div>
@@ -847,12 +1006,14 @@
           <div class="subpanels">
             <!-- 色 -->
             <div class="subpanel" data-subpanel="color">
+              <div class="modal-hint field-desc" style="margin-bottom:14px;">タイマーの背景・数字・メーターの色を自由に決められます。文字や枠は自動で見やすいコントラストに調整されます。</div>
               <div class="field">
                 <span class="field-label">濃淡</span>
+                <div class="field-desc">色の濃さ（明るさ）をまとめて調整します。</div>
                 <div class="seg" data-seg="shade">
-                  <button class="seg-btn" data-val="darker">濃く</button>
-                  <button class="seg-btn" data-val="reset">戻す</button>
-                  <button class="seg-btn" data-val="lighter">淡く</button>
+                  <button class="seg-btn" data-val="darker">⬛ 濃く</button>
+                  <button class="seg-btn" data-val="reset">↺ 戻す</button>
+                  <button class="seg-btn" data-val="lighter">⬜ 淡く</button>
                 </div>
               </div>
               <div class="subtabs2" role="tablist">
@@ -871,6 +1032,7 @@
 
             <!-- メーター -->
             <div class="subpanel hidden" data-subpanel="meter">
+              <div class="modal-hint field-desc" style="margin-bottom:14px;">メーターのマス（セル）の数、時間が減る/増える向き、消え方（ステップ・徐々に等）を設定します。</div>
               <div class="subtabs2" role="tablist">
                 <button class="subtab2 active" data-subtab2="count" role="tab">数</button>
                 <button class="subtab2" data-subtab2="change" role="tab">変化</button>
@@ -880,6 +1042,7 @@
                 <div class="subpanel2" data-subpanel2="count">
                   <div class="field">
                     <span class="field-label">メーターの数</span>
+                <div class="field-desc">メーターのマス（セル）の個数を決めます。</div>
                     <div class="seg" data-seg="count">
                       <button class="seg-btn" data-val="5">5</button>
                       <button class="seg-btn active" data-val="10">10</button>
@@ -895,6 +1058,7 @@
                   </div>
                   <div class="field">
                     <span class="field-label">目盛り</span>
+                <div class="field-desc">メーター横に目盛りを表示するかを選びます。</div>
                     <div class="seg" data-seg="tickpat">
                       <button class="seg-btn active" data-val="none">無し</button>
                       <button class="seg-btn" data-val="tri">△</button>
@@ -902,6 +1066,7 @@
                   </div>
                   <div class="field">
                     <span class="field-label">目盛りの数</span>
+                <div class="field-desc">目盛りの本数を決めます。</div>
                     <div class="seg" data-seg="tickcount">
                       <button class="seg-btn" data-val="2">2</button>
                       <button class="seg-btn active" data-val="3">3</button>
@@ -911,16 +1076,18 @@
                   </div>
                   <div class="field">
                     <span class="field-label">メーター自体</span>
+                <div class="field-desc">メーター本体を表示するかを選びます。</div>
                     <div class="seg" data-seg="cells">
-                      <button class="seg-btn" data-val="hide">消す</button>
-                      <button class="seg-btn active" data-val="show">消さない</button>
+                      <button class="seg-btn" data-val="hide">✕ 消す</button>
+                      <button class="seg-btn active" data-val="show">✓ 消さない</button>
                     </div>
                   </div>
                   <div class="field">
                     <span class="field-label">枠</span>
+                <div class="field-desc">外枠を表示するかを選びます。</div>
                     <div class="seg" data-seg="frame">
-                      <button class="seg-btn" data-val="hide">消す</button>
-                      <button class="seg-btn active" data-val="show">消さない</button>
+                      <button class="seg-btn" data-val="hide">✕ 消す</button>
+                      <button class="seg-btn active" data-val="show">✓ 消さない</button>
                     </div>
                   </div>
                 </div>
@@ -928,13 +1095,15 @@
                 <div class="subpanel2 hidden" data-subpanel2="change">
                   <div class="field">
                     <span class="field-label">メーターの動き</span>
+                <div class="field-desc">時間とともにメーターが減るか増えるかを選びます。</div>
                     <div class="seg" data-seg="meter">
-                      <button class="seg-btn active" data-val="drain">減る</button>
-                      <button class="seg-btn" data-val="fill">増える</button>
+                      <button class="seg-btn active" data-val="drain">⬇ 減る</button>
+                      <button class="seg-btn" data-val="fill">⬆ 増える</button>
                     </div>
                   </div>
                   <div class="field">
                     <span class="field-label">メーターの消え方</span>
+                <div class="field-desc">セルが消えるときの演出（一気に／徐々に等）。</div>
                     <div class="seg vertical" data-seg="fade">
                       <button class="seg-btn active" data-val="step">一つ一つ</button>
                       <button class="seg-btn" data-val="shave">徐々に減る</button>
@@ -947,14 +1116,25 @@
 
             <!-- 終了時 -->
             <div class="subpanel hidden" data-subpanel="font">
+              <div class="modal-hint field-desc" style="margin-bottom:14px;">数字や文字のフォントを選びます。「セグメント」はデジタル時計風、「ボタンの表示」で文字/アイコンも切替できます。</div>
               <div class="field">
                 <span class="field-label">フォント（オンライン時に反映）</span>
+                <div class="field-desc">数字や文字の書体。「セグメント」はデジタル時計風です。</div>
                 <div class="seg" data-seg="font" style="flex-wrap:wrap;">
                   <button class="seg-btn active" data-font="mincho">明朝</button>
                   <button class="seg-btn" data-font="maru">丸ゴシック</button>
                   <button class="seg-btn" data-font="klee">手書き</button>
                   <button class="seg-btn" data-font="pop">ポップ</button>
                   <button class="seg-btn" data-font="system">標準</button>
+                  <button class="seg-btn" data-font="segment">セグメント</button>
+                </div>
+              </div>
+              <div class="field">
+                <span class="field-label">ボタンの表示</span>
+                <div class="field-desc">START等の文字にするか、アイコン(▶↺)だけにするかを選びます。</div>
+                <div class="seg" data-seg="btns">
+                  <button class="seg-btn active" data-val="text">文字（START等）</button>
+                  <button class="seg-btn" data-val="icon">アイコンのみ（▶↺）</button>
                 </div>
               </div>
               <div class="field">
@@ -963,24 +1143,37 @@
             </div>
             <!-- 装飾（細かいデザイン） -->
             <div class="subpanel hidden" data-subpanel="deco">
+              <div class="modal-hint field-desc" style="margin-bottom:14px;">セルの形（丸・ひし形）、円形メーター、質感（ネオン発光・ガラス）、枠の太さ・数字の大きさなど、見た目を細かく飾れます。</div>
               <div class="field">
                 <span class="field-label">セルの角丸 / 形</span>
+                <div class="field-desc">セルを四角・角丸・丸・ひし形にできます。</div>
                 <div class="seg" data-seg="dcr">
-                  <button class="seg-btn active" data-val="0">なし</button>
-                  <button class="seg-btn" data-val="1">角丸</button>
-                  <button class="seg-btn" data-val="2">丸</button>
-                  <button class="seg-btn" data-val="3">ひし形</button>
+                  <button class="seg-btn active" data-val="0">□ なし</button>
+                  <button class="seg-btn" data-val="1">▢ 角丸</button>
+                  <button class="seg-btn" data-val="2">● 丸</button>
+                  <button class="seg-btn" data-val="3">◆ ひし形</button>
                 </div>
               </div>
               <div class="field">
                 <span class="field-label">メーターの形</span>
+                <div class="field-desc">縦バーか円形リングかを選びます。</div>
                 <div class="seg" data-seg="dms">
-                  <button class="seg-btn active" data-val="bar">バー</button>
-                  <button class="seg-btn" data-val="ring">円</button>
+                  <button class="seg-btn active" data-val="bar">▬ バー</button>
+                  <button class="seg-btn" data-val="ring">⭕ 円</button>
+                </div>
+              </div>
+              <div class="field">
+                <span class="field-label">メーターの質感（スタイル）</span>
+                <div class="field-desc">フラット／ネオン発光／ガラスの質感を選べます。</div>
+                <div class="seg" data-seg="dtex">
+                  <button class="seg-btn active" data-val="flat">▫ フラット</button>
+                  <button class="seg-btn" data-val="neon">✨ ネオン発光</button>
+                  <button class="seg-btn" data-val="glass">💧 ガラス</button>
                 </div>
               </div>
               <div class="field">
                 <span class="field-label">セルの隙間</span>
+                <div class="field-desc">セル同士の間隔を調整します。</div>
                 <div class="seg" data-seg="dcg">
                   <button class="seg-btn" data-val="0">狭い</button>
                   <button class="seg-btn active" data-val="1">普通</button>
@@ -989,6 +1182,7 @@
               </div>
               <div class="field">
                 <span class="field-label">消灯セルの色</span>
+                <div class="field-desc">点いていないセルの色。</div>
                 <div class="seg" data-seg="dco">
                   <button class="seg-btn active" data-val="bg">背景と同じ</button>
                   <button class="seg-btn" data-val="light">うすい</button>
@@ -997,40 +1191,67 @@
               </div>
               <div class="field">
                 <span class="field-label">数字の効果</span>
+                <div class="field-desc">数字に影・縁取り・発光などを付けます。</div>
                 <div class="seg" data-seg="dfx">
-                  <button class="seg-btn" data-val="none">なし</button>
-                  <button class="seg-btn active" data-val="shadow">影</button>
-                  <button class="seg-btn" data-val="outline">ふち</button>
-                  <button class="seg-btn" data-val="glow">発光</button>
+                  <button class="seg-btn" data-val="none">— なし</button>
+                  <button class="seg-btn active" data-val="shadow">🌑 影</button>
+                  <button class="seg-btn" data-val="outline">🔲 ふち</button>
+                  <button class="seg-btn" data-val="glow">✨ 発光</button>
                 </div>
               </div>
               <div class="field">
-                <span class="field-label">背景</span>
-                <div class="seg" data-seg="dbg">
-                  <button class="seg-btn active" data-val="0">単色</button>
-                  <button class="seg-btn" data-val="1">グラデ</button>
+                <span class="field-label">背景（単色・グラデ・柄）</span>
+                <div class="field-desc">背景を単色かグラデーションにします。</div>
+                <div class="bg-picker" id="bgPicker">
+                  <button class="bg-chip active" data-val="0" type="button">単色</button>
+                  <button class="bg-chip" data-val="1" type="button">グラデ</button>
+                  <button class="bg-chip" data-val="check" type="button">市松</button>
+                  <button class="bg-chip" data-val="grid" type="button">方眼</button>
+                  <button class="bg-chip" data-val="vstripe" type="button">縦縞</button>
+                  <button class="bg-chip" data-val="hstripe" type="button">横縞</button>
+                  <button class="bg-chip" data-val="diag" type="button">斜め</button>
+                  <button class="bg-chip" data-val="dot" type="button">ドット</button>
+                  <button class="bg-chip" data-val="gingham" type="button">ギンガム</button>
+                  <button class="bg-chip" data-val="finegrid" type="button">細方眼</button>
+                  <button class="bg-chip" data-val="cross" type="button">十字</button>
+                  <button class="bg-chip" data-val="tartan" type="button">タータン</button>
+                </div>
+              </div>
+              <div class="field" id="bgPatColorField" style="display:none;">
+                <span class="field-label">パターンの色</span>
+                <div class="field-desc">柄の色を変えられます（使う色数は柄ごと。未設定は自動）。</div>
+                <div class="bgpat-row">
+                  <label class="bgpat-c" id="bgpatC1"><span>色1</span><input type="color" id="bgPatColor" value="#3d7dd8"></label>
+                  <label class="bgpat-c" id="bgpatC2"><span>色2</span><input type="color" id="bgPatColor2" value="#e0503a"></label>
+                  <label class="bgpat-c" id="bgpatC3"><span>色3</span><input type="color" id="bgPatColor3" value="#c9a227"></label>
+                  <button class="skin-share-btn" id="bgPatAuto" type="button">自動</button>
                 </div>
               </div>
               <div class="field">
                 <span class="field-label">枠の太さ（細かい調整）</span>
+                <div class="field-desc">外枠の線の太さをスライダーで調整。</div>
                 <input type="range" class="deco-slider" data-slider="framew" min="0" max="12" step="1" value="6">
               </div>
               <div class="field">
                 <span class="field-label">セルの枠線</span>
+                <div class="field-desc">セルの枠線の太さ。</div>
                 <input type="range" class="deco-slider" data-slider="cellbw" min="0" max="8" step="1" value="3">
               </div>
               <div class="field">
                 <span class="field-label">数字の大きさ</span>
+                <div class="field-desc">数字の表示サイズを調整します。</div>
                 <input type="range" class="deco-slider" data-slider="digitsize" min="0.7" max="1.3" step="0.05" value="1">
               </div>
             </div>
             <!-- 配置（レイアウト） -->
             <div class="subpanel hidden" data-subpanel="layout">
+              <div class="modal-hint field-desc" style="margin-bottom:14px;">数字・メーター・ボタンの位置や大きさを自由に配置できます。実際の画面で指でも動かせます（レイアウトモード）。</div>
               <div class="field">
                 <button class="ctrl" id="layoutModeBtn">レイアウトモードにする</button>
               </div>
               <div class="field">
                 <span class="field-label">共有コード（書き出し / 読み込み）</span>
+                <div class="field-desc">きせかえコードを書き出し・読み込みします。</div>
                 <input class="modal-input" id="layoutCode" style="font-size:13px;letter-spacing:0;" placeholder="コードを貼り付け">
                 <div class="seg" style="margin-top:10px;">
                   <button class="seg-btn" id="layoutExport">書き出し</button>
@@ -1052,35 +1273,41 @@
           </div>
           <div class="subpanels">
             <div class="subpanel" data-subpanel="finishvis">
+              <div class="modal-hint field-desc" style="margin-bottom:14px;">タイマーが終わった瞬間の演出です。メーターの点滅や、フラッシュ・紙吹雪のエフェクトを選べます。</div>
               <div class="field">
                 <span class="field-label">終了時の点滅</span>
+                <div class="field-desc">終了時にメーターを点滅させるかを選びます。</div>
                 <div class="seg" data-seg="blink">
-                  <button class="seg-btn active" data-val="on">あり</button>
-                  <button class="seg-btn" data-val="off">なし</button>
+                  <button class="seg-btn active" data-val="on">✨ あり</button>
+                  <button class="seg-btn" data-val="off">— なし</button>
                 </div>
               </div>
               <div class="field">
                 <span class="field-label">終了エフェクト</span>
+                <div class="field-desc">終了時にフラッシュや紙吹雪を出します。</div>
                 <div class="seg" data-seg="finishfx">
-                  <button class="seg-btn active" data-val="none">なし</button>
-                  <button class="seg-btn" data-val="flash">フラッシュ</button>
-                  <button class="seg-btn" data-val="confetti">紙吹雪</button>
-                  <button class="seg-btn" data-val="both">両方</button>
+                  <button class="seg-btn active" data-val="none">— なし</button>
+                  <button class="seg-btn" data-val="flash">⚡ フラッシュ</button>
+                  <button class="seg-btn" data-val="confetti">🎉 紙吹雪</button>
+                  <button class="seg-btn" data-val="both">✨ 両方</button>
                 </div>
               </div>
             </div>
             <div class="subpanel hidden" data-subpanel="finishsnd">
+              <div class="modal-hint field-desc" style="margin-bottom:14px;">終了時に鳴らすアラーム音と、その音量を設定します。音はタップで試聴できます。</div>
               <div class="field">
                 <span class="field-label">アラーム音（タップで試聴）</span>
+                <div class="field-desc">終了時に鳴らす音。タップで試聴できます。</div>
                 <div class="soundlist" id="soundList"></div>
               </div>
               <div class="field">
                 <span class="field-label">音量</span>
+                <div class="field-desc">アラームの音量を調整します。</div>
                 <div class="seg" data-seg="alarm">
-                  <button class="seg-btn" data-val="none">無し</button>
-                  <button class="seg-btn" data-val="low">小</button>
-                  <button class="seg-btn active" data-val="mid">中</button>
-                  <button class="seg-btn" data-val="high">大</button>
+                  <button class="seg-btn" data-val="none">🔇 無し</button>
+                  <button class="seg-btn" data-val="low">🔈 小</button>
+                  <button class="seg-btn active" data-val="mid">🔉 中</button>
+                  <button class="seg-btn" data-val="high">🔊 大</button>
                 </div>
                 <div class="volbar" id="volBar" role="slider" aria-label="アラーム音量"
                      aria-valuemin="0" aria-valuemax="100" tabindex="0">
@@ -1098,7 +1325,7 @@
         <button class="ctrl" id="applyBtn">適用</button>
         <button class="ctrl" id="closeBtn">閉じる</button>
       </div>
-      <div style="margin-top:12px;font-size:10px;letter-spacing:.1em;opacity:.4;text-align:right;">v93</div>
+      <div style="margin-top:12px;font-size:10px;letter-spacing:.1em;opacity:.4;text-align:right;">v115</div>
     </div>
 
     <!-- 適用確認 -->
@@ -1212,6 +1439,14 @@
   const timeEl      = document.getElementById('time');
   const startBtn    = document.getElementById('startBtn');
   const resetBtn    = document.getElementById('resetBtn');
+  let btnStyle = 'text';
+  try { const _b = localStorage.getItem('timerBtnStyle'); if (_b) btnStyle = _b; } catch(e){}
+  function startLabel(pause){ return btnStyle === 'icon' ? (pause ? '⏸' : '▶') : (pause ? 'PAUSE' : 'START'); }
+  function applyBtnStyle(){
+    document.body.classList.toggle('btn-icon', btnStyle === 'icon');
+    if (resetBtn) resetBtn.textContent = (btnStyle === 'icon') ? '↺' : 'RESET';
+    if (startBtn) startBtn.textContent = startLabel(typeof running !== 'undefined' && running);
+  }
   const settingsBtn = document.getElementById('settingsBtn');
   const overlay     = document.getElementById('overlay');
   const modalTime   = document.getElementById('modalTime');
@@ -1226,7 +1461,7 @@
   const pCells = [];
   // 装飾状態（buildGauges→positionRing より前に定義しておく）
   const deco = { cellradius:'0', cellgap:'1', celloff:'bg', digitfx:'shadow', bggrad:'0',
-                 ring:'bar', framew:'6', cellbw:'3', digitsize:'1' };
+                 ring:'bar', framew:'6', cellbw:'3', digitsize:'1', celltex:'flat', bgpcolor:'', bgpcolor2:'', bgpcolor3:'' };
   function buildGauges(){
     gaugeEl.innerHTML = ''; previewGauge.innerHTML = '';
     cells.length = 0; pCells.length = 0;
@@ -1250,6 +1485,14 @@
   let blinkOn   = true;
   let finishFx  = 'none';
   try { const _fx = localStorage.getItem('timerFinishFx'); if (_fx) finishFx = _fx; } catch(e){}
+  let intervalOn = false;
+  let ivPhases = [ { label:'運動', ms:300000, color:'#e0503a' }, { label:'休憩', ms:180000, color:'#2f9d8f' }, { label:'', ms:0, color:'#c9a227' } ];
+  let ivRounds = 4, ivReady = 0, ivCountdown = true, ivColorOn = false, ivVoice = false;
+  let ivSeq = [], ivIdx = 0, ivActive = false, ivLastSec = 0;
+  try {
+    const _iv = localStorage.getItem('timerInterval');
+    if (_iv){ const o = JSON.parse(_iv); if (o){ intervalOn = !!o.on; if (Array.isArray(o.phases) && o.phases.length) ivPhases = o.phases; if (o.rounds) ivRounds = o.rounds; if (o.ready != null) ivReady = o.ready; if (o.countdown != null) ivCountdown = !!o.countdown; if (o.colorOn != null) ivColorOn = !!o.colorOn; if (o.voice != null) ivVoice = !!o.voice; } }
+  } catch(e){}
   let tickPattern = 'none';   // none / tri / num / dot / slash
   let tickCount   = 3;        // メーターに付ける模様の総数 2-5
   let metCells = true;        // メーター自体（四角）を表示するか
@@ -1602,6 +1845,7 @@
   // メイン表示のタップ編集は「指定時間（分:秒）」を表示中のときだけ許可
   function editableNow(){
     if (running) return false;
+    if (intervalOn) return false;                   // インターバルはフェーズ設定側で指定
     if (isClockMode(mode)) return false;            // 時刻モードは設定側で指定
     if (showsElapsed() && remainMs !== setMs) return false;
     return true;
@@ -1620,7 +1864,11 @@
       if (!lastTs) lastTs = ts;
       const dt = ts - lastTs; lastTs = ts;
       remainMs -= dt;
-      if (remainMs <= 0){ remainMs = 0; render(); finish(); return; }
+      if (intervalOn && ivActive && ivCountdown && remainMs > 0){
+        const sec = Math.ceil(remainMs / 1000);
+        if (sec >= 1 && sec <= 3 && sec !== ivLastSec){ ivBeep(sec === 1 ? 1100 : 760, 0.1); ivPulse(); ivLastSec = sec; }
+      }
+      if (remainMs <= 0){ remainMs = 0; render(); if (intervalOn && ivActive){ advancePhase(); } else { finish(); } return; }
     }
     render();
     rafId = requestAnimationFrame(loop);
@@ -1633,7 +1881,15 @@
       remainMs = setMs;
       targetAtMs = Date.now() + remainMs;
     } else {
-      if (remainMs <= 0) remainMs = setMs;
+      if (intervalOn){
+        if (!ivActive){
+          buildIvSeq();
+          if (!ivSeq.length){ flashInvalid(timeEl); return; }
+          ivIdx = 0; ivActive = true; setMs = ivSeq[0].ms; remainMs = ivSeq[0].ms; ivLastSec = 0; applyPhaseColor(ivSeq[0]); updatePhaseLabel(); speakPhase(ivSeq[0].label);
+        }
+      } else {
+        if (remainMs <= 0) remainMs = setMs;
+      }
     }
     initAudio();                 // ユーザー操作の中で音声を有効化
     unlockSound();               // 選択中のmp3を再生解禁
@@ -1641,31 +1897,34 @@
     running = true; lastTs = 0;
     setEditable(false);
     gaugeEl.classList.remove('done');
-    startBtn.textContent = 'PAUSE';
+    startBtn.textContent = startLabel(true);
     render();
     rafId = requestAnimationFrame(loop);
   }
   function pause(){
     running = false;
     if (rafId) cancelAnimationFrame(rafId);
-    startBtn.textContent = 'START';
+    startBtn.textContent = startLabel(false);
     setEditable(editableNow());
     renderInstant();     // 進行中のフェードを止めて現在値に合わせる
   }
   function reset(){
     running = false;
     if (rafId) cancelAnimationFrame(rafId);
-    if (isClockMode(mode)){ setMs = 0; remainMs = 0; }  // 次のSTARTで再計算
+    if (intervalOn){ buildIvSeq(); ivIdx = 0; ivActive = false; setMs = ivSeq.length ? ivSeq[0].ms : 0; remainMs = setMs; applyColors(); updatePhaseLabel(); }
+    else if (isClockMode(mode)){ setMs = 0; remainMs = 0; }  // 次のSTARTで再計算
     else { remainMs = setMs; }
     gaugeEl.classList.remove('done');
-    startBtn.textContent = 'START';
+    startBtn.textContent = startLabel(false);
     setEditable(editableNow());
     renderInstant();     // 変化を戻さず即座に満/初期状態へ
   }
   function finish(){
     running = false;
+    ivActive = false;
+    if (intervalOn && ivColorOn) applyColors();
     if (rafId) cancelAnimationFrame(rafId);
-    startBtn.textContent = 'START';
+    startBtn.textContent = startLabel(false);
     setEditable(editableNow());
     renderInstant();             // 終了状態へ即確定
     playAlarmSound();            // 指定時間に到達 → 選択中のアラーム音
@@ -1710,6 +1969,196 @@
     }
     requestAnimationFrame(frame);
   }
+
+  // ===== インターバル =====
+  function saveIv(){ try { localStorage.setItem('timerInterval', JSON.stringify({ on:intervalOn, phases:ivPhases, rounds:ivRounds, ready:ivReady, countdown:ivCountdown, colorOn:ivColorOn, voice:ivVoice })); } catch(e){} }
+  function speakPhase(text){
+    if (!ivVoice || !text || !('speechSynthesis' in window)) return;
+    try { const u = new SpeechSynthesisUtterance(text); u.lang = 'ja-JP'; u.rate = 1.1; u.volume = 1; window.speechSynthesis.cancel(); window.speechSynthesis.speak(u); } catch(e){}
+  }
+  const IV_PRESETS = {
+    'タバタ':     { phases:[{label:'運動',ms:20000,color:'#e0503a'},{label:'休憩',ms:10000,color:'#2f9d8f'}], rounds:8, ready:5 },
+    'ポモドーロ': { phases:[{label:'作業',ms:1500000,color:'#3d7dd8'},{label:'休憩',ms:300000,color:'#2f9d8f'}], rounds:4, ready:0 },
+    'HIIT':       { phases:[{label:'運動',ms:40000,color:'#e0503a'},{label:'休憩',ms:20000,color:'#2f9d8f'}], rounds:8, ready:5 },
+    '筋トレ':     { phases:[{label:'運動',ms:45000,color:'#e0503a'},{label:'休憩',ms:15000,color:'#2f9d8f'}], rounds:6, ready:5 }
+  };
+  function applyIvPreset(name){
+    const p = IV_PRESETS[name]; if (!p) return;
+    ivPhases = p.phases.map(x => ({ label:x.label, ms:x.ms, color:x.color }));
+    ivRounds = p.rounds; ivReady = p.ready || 0; intervalOn = true;
+    saveIv();
+    renderIvRows(); updateRoundNum(); updateIvSummary();
+    document.querySelectorAll('.seg[data-seg="ivon"] .seg-btn').forEach(b => b.classList.toggle('active', b.dataset.val === 'on'));
+    document.querySelectorAll('.seg[data-seg="ivready"] .seg-btn').forEach(b => b.classList.toggle('active', b.dataset.val === String(ivReady)));
+    applyIntervalMode();
+  }
+  // マイプリセット（自作・最大5つ）
+  let ivCustom = [];
+  try { const _c = localStorage.getItem('timerIvPresets'); if (_c){ const a = JSON.parse(_c); if (Array.isArray(a)) ivCustom = a; } } catch(e){}
+  function saveIvCustom(){ try { localStorage.setItem('timerIvPresets', JSON.stringify(ivCustom)); } catch(e){} }
+  function ivCustomSummary(c){
+    const act = (c.phases||[]).filter(p => p.ms > 0);
+    return act.map(p => (p.label||'—') + ' ' + fmtIvTime(p.ms)).join(' / ') + ' ×' + c.rounds;
+  }
+  function applyIvCustom(i){
+    const c = ivCustom[i]; if (!c) return;
+    ivPhases = (c.phases||[]).map(x => ({ label:x.label, ms:x.ms, color:x.color || '#e0503a' }));
+    ivRounds = c.rounds || 1; ivReady = c.ready || 0; intervalOn = true;
+    saveIv();
+    renderIvRows(); updateRoundNum(); updateIvSummary();
+    document.querySelectorAll('.seg[data-seg="ivon"] .seg-btn').forEach(b => b.classList.toggle('active', b.dataset.val === 'on'));
+    document.querySelectorAll('.seg[data-seg="ivready"] .seg-btn').forEach(b => b.classList.toggle('active', b.dataset.val === String(ivReady)));
+    applyIntervalMode();
+  }
+  function renderIvCustom(){
+    const wrap = document.getElementById('ivCustomList'); if (!wrap) return;
+    wrap.innerHTML = '';
+    if (!ivCustom.length){ const e = document.createElement('div'); e.className = 'field-desc'; e.textContent = '保存したプリセットはまだありません。'; wrap.appendChild(e); return; }
+    ivCustom.forEach((c, i) => {
+      const row = document.createElement('div'); row.className = 'iv-custrow';
+      const ap = document.createElement('button'); ap.type = 'button'; ap.className = 'iv-preset';
+      ap.appendChild(document.createTextNode(c.name || ('マイ設定' + (i+1))));
+      const s = document.createElement('small'); s.textContent = ivCustomSummary(c); ap.appendChild(s);
+      ap.addEventListener('click', () => applyIvCustom(i));
+      const del = document.createElement('button'); del.type = 'button'; del.className = 'iv-custdel'; del.textContent = '×';
+      del.addEventListener('click', () => { if (confirm('「' + (c.name||'') + '」を削除しますか？')){ ivCustom.splice(i, 1); saveIvCustom(); renderIvCustom(); } });
+      row.appendChild(ap); row.appendChild(del); wrap.appendChild(row);
+    });
+  }
+  { const sb = document.getElementById('ivSaveBtn');
+    if (sb) sb.addEventListener('click', () => {
+      if (ivCustom.length >= 5){ alert('保存は最大5つまでです。不要なものを削除してください。'); return; }
+      if (!ivPhases.some(p => p.ms > 0)){ alert('時間が設定されていません。'); return; }
+      const name = (prompt('プリセット名を入力してください', 'マイ設定' + (ivCustom.length + 1)) || '').trim();
+      if (!name) return;
+      ivCustom.push({ name: name.slice(0, 16), phases: ivPhases.map(x => ({ label:x.label, ms:x.ms, color:x.color })), rounds: ivRounds, ready: ivReady });
+      saveIvCustom(); renderIvCustom();
+    });
+  }
+  function ivBeep(freq, dur){
+    if (!audioCtx || alarmVol <= 0) return;
+    try {
+      const t = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator(), g = audioCtx.createGain();
+      osc.type = 'square'; osc.frequency.value = freq;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(Math.min(0.25, alarmVol), t + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      osc.connect(g); g.connect(audioCtx.destination); osc.start(t); osc.stop(t + dur + 0.02);
+    } catch(e){}
+  }
+  function ivPulse(){ if (!timeEl) return; timeEl.classList.remove('tick-pulse'); void timeEl.offsetWidth; timeEl.classList.add('tick-pulse'); }
+  function applyPhaseColor(ph){
+    const rs = document.documentElement.style;
+    if (intervalOn && ivColorOn && ph && ph.color){ rs.setProperty('--gauge', ph.color); }
+    else { applyColors(); }
+  }
+  function parseIvTime(str){
+    str = (str||'').trim(); if (!str) return 0;
+    if (str.indexOf(':') >= 0){ const a = str.split(':'); const m = parseInt(a[0],10)||0; const s = parseInt(a[1],10)||0; return (m*60+s)*1000; }
+    const digits = str.replace(/[^0-9]/g,''); if (!digits) return 0;   // 数字のみ＝下2桁が秒・残りが分（例 5959→59:59, 130→1:30, 20→0:20）
+    const s = parseInt(digits.slice(-2), 10) || 0;
+    const m = parseInt(digits.slice(0, -2) || '0', 10) || 0;
+    return (m*60 + s) * 1000;
+  }
+  function fmtIvTime(ms){ const t = Math.round(ms/1000); const m = Math.floor(t/60); const s = t%60; return m + ':' + (s<10?'0':'') + s; }
+  function renderIvRows(){
+    const wrap = document.getElementById('ivPhaseRows'); if (!wrap) return;
+    wrap.innerHTML = '';
+    ivPhases.forEach((p, i) => {
+      const row = document.createElement('div'); row.className = 'iv-phase';
+      row.innerHTML = '<span class="iv-num"></span><input class="iv-color" type="color"><input class="iv-label" maxlength="8" placeholder="名前"><input class="iv-time" inputmode="numeric" placeholder="0:00"><button class="iv-del" type="button" aria-label="削除">×</button>';
+      row.querySelector('.iv-num').textContent = (i+1);
+      const col = row.querySelector('.iv-color'); col.value = p.color || '#e0503a'; col.style.display = ivColorOn ? '' : 'none';
+      col.addEventListener('input', () => { ivPhases[i].color = col.value; saveIv(); });
+      const lab = row.querySelector('.iv-label'); lab.value = p.label || '';
+      const tim = row.querySelector('.iv-time'); tim.value = p.ms ? fmtIvTime(p.ms) : '';
+      lab.addEventListener('change', () => { ivPhases[i].label = lab.value; saveIv(); updateIvSummary(); if (!ivActive) updatePhaseLabel(); });
+      tim.addEventListener('change', () => { ivPhases[i].ms = parseIvTime(tim.value); tim.value = ivPhases[i].ms ? fmtIvTime(ivPhases[i].ms) : ''; saveIv(); updateIvSummary(); if (!ivActive) refreshIvIdle(); });
+      const del = row.querySelector('.iv-del'); del.style.display = (ivPhases.length > 1) ? '' : 'none';
+      del.addEventListener('click', () => { ivPhases.splice(i,1); saveIv(); renderIvRows(); updateIvSummary(); if (!ivActive) refreshIvIdle(); });
+      wrap.appendChild(row);
+    });
+    const add = document.createElement('button'); add.type = 'button'; add.className = 'iv-add';
+    add.textContent = '＋ フェーズを追加'; add.style.display = (ivPhases.length < 6) ? '' : 'none';
+    add.addEventListener('click', () => { ivPhases.push({ label:'', ms:60000, color:'#3d7dd8' }); saveIv(); renderIvRows(); updateIvSummary(); });
+    wrap.appendChild(add);
+  }
+  function updateIvSummary(){
+    const el = document.getElementById('ivSummary'); if (!el) return;
+    const act = ivPhases.filter(p => p.ms > 0);
+    if (!act.length){ el.textContent = '時間を入力してください（例: 5:00）'; return; }
+    const per = act.reduce((a,p) => a + p.ms, 0);
+    const seqStr = act.map(p => (p.label||'—') + ' ' + fmtIvTime(p.ms)).join(' → ');
+    el.textContent = seqStr + '　×' + ivRounds + 'ラウンド ＝ 合計 ' + fmtIvTime(per * ivRounds);
+  }
+  function buildIvSeq(){
+    ivSeq = [];
+    if (ivReady > 0) ivSeq.push({ label:'よ〜い', ms:ivReady, round:1, ready:true, color:'#8a8f98' });
+    for (let r = 0; r < ivRounds; r++){
+      ivPhases.forEach(p => { if (p.ms > 0) ivSeq.push({ label:p.label, ms:p.ms, round:r+1, color:p.color }); });
+    }
+  }
+  function updatePhaseLabel(){
+    const el = document.getElementById('phaseLabel'); if (!el) return;
+    if (intervalOn && ivSeq[ivIdx]){
+      const ph = ivSeq[ivIdx];
+      el.classList.remove('hidden');
+      el.textContent = ph.label || 'フェーズ';
+      if (!ph.ready){
+        const r = document.createElement('span'); r.className = 'ph-round';
+        r.textContent = 'ラウンド ' + ph.round + ' / ' + ivRounds;
+        el.appendChild(r);
+      }
+    } else { el.classList.add('hidden'); }
+  }
+  function refreshIvIdle(){        // 停止中：先頭フェーズを表示に反映
+    if (!intervalOn || ivActive) return;
+    buildIvSeq(); ivIdx = 0;
+    if (ivSeq.length){ setMs = ivSeq[0].ms; remainMs = setMs; }
+    applyColors(); updatePhaseLabel(); renderInstant();
+  }
+  function advancePhase(){
+    if (ivIdx < ivSeq.length - 1){
+      ivIdx++;
+      const ph = ivSeq[ivIdx];
+      setMs = ph.ms; remainMs = ph.ms; ivLastSec = 0;
+      applyPhaseColor(ph);
+      updatePhaseLabel();
+      playAlarmSound();
+      speakPhase(ph.label);
+      if (finishFx === 'flash' || finishFx === 'both') flashScreen();
+      lastTs = 0; render();
+      rafId = requestAnimationFrame(loop);
+    } else {
+      ivActive = false; finish();
+    }
+  }
+  function applyIntervalMode(){
+    ivActive = false; ivIdx = 0; buildIvSeq();
+    if (intervalOn && ivSeq.length){ setMs = ivSeq[0].ms; remainMs = setMs; }
+    applyColors();
+    setEditable(editableNow());
+    updatePhaseLabel(); renderInstant();
+  }
+  function updateRoundNum(){ const el = document.getElementById('ivRoundNum'); if (el) el.textContent = ivRounds; }
+  { const mb = document.getElementById('ivRoundMinus'); if (mb) mb.addEventListener('click', () => { ivRounds = Math.max(1, ivRounds-1); updateRoundNum(); saveIv(); updateIvSummary(); refreshIvIdle(); }); }
+  { const pb = document.getElementById('ivRoundPlus'); if (pb) pb.addEventListener('click', () => { ivRounds = Math.min(50, ivRounds+1); updateRoundNum(); saveIv(); updateIvSummary(); refreshIvIdle(); }); }
+  document.querySelectorAll('.iv-preset[data-preset]').forEach(b => b.addEventListener('click', () => applyIvPreset(b.dataset.preset)));
+  renderIvCustom();
+  function ivPerRoundMs(){ return ivPhases.reduce((a, p) => a + (p.ms > 0 ? p.ms : 0), 0); }
+  { const ti = document.getElementById('ivTargetTime');
+    if (ti) ti.addEventListener('input', () => {
+      const min = parseInt((ti.value||'').replace(/[^0-9]/g,''), 10) || 0;
+      const per = ivPerRoundMs();
+      const hint = document.getElementById('ivTargetHint');
+      if (min > 0 && per > 0){
+        ivRounds = Math.max(1, Math.floor(min * 60000 / per));
+        updateRoundNum(); saveIv(); updateIvSummary(); if (!ivActive) refreshIvIdle();
+        if (hint) hint.textContent = '→ ' + ivRounds + 'ラウンド（1ラウンド ' + fmtIvTime(per) + '・合計 ' + fmtIvTime(per * ivRounds) + '）';
+      } else if (hint){ hint.textContent = ''; }
+    });
+  }
   function flashInvalid(el){
     const orig = el.value; el.value = '--:--';
     setTimeout(() => { el.value = orig; }, 500);
@@ -1748,7 +2197,7 @@
     const r=parseInt(hex.slice(0,2),16), g=parseInt(hex.slice(2,4),16), b=parseInt(hex.slice(4,6),16);
     return (0.299*r + 0.587*g + 0.114*b) / 255;
   }
-  function scrimFor(p){ return luminance(p) > 0.5 ? 'rgba(0,0,0,.30)' : 'rgba(255,255,255,.20)'; }
+  function scrimFor(p){ return luminance(p) > 0.5 ? 'rgba(0,0,0,.55)' : 'rgba(0,0,0,.66)'; }
   function autoInk(){ return luminance(PARTS.paper.override) > 0.5 ? '#141414' : '#f4f4f4'; }
   function effectiveColor(part){
     if (part === 'paper') return PARTS.paper.override;
@@ -1774,10 +2223,33 @@
     const contrast = autoInk();  // 背景の明暗に対する黒/白
     if (overlay){ overlay.style.setProperty('--ink', contrast); overlay.style.setProperty('--gauge', contrast); }
     if (settingsBtn){ settingsBtn.style.setProperty('--ink', contrast); }
-    // 背景グラデーション（装飾）
-    document.body.style.background = (deco.bggrad === '1')
-      ? ('linear-gradient(160deg,' + PARTS.paper.override + ',' + adjustLightness(PARTS.paper.override, -0.18) + ')')
-      : '';
+    // 背景（単色・グラデ・パターン）
+    document.body.style.background = bgCss(deco.bggrad, PARTS.paper.override, deco.bgpcolor, deco.bgpcolor2, deco.bgpcolor3);
+    if (typeof renderBgPreviews === 'function') renderBgPreviews();
+  }
+  function hexRgb(h){ h = (h||'').replace('#',''); if (h.length === 3) h = h.split('').map(c => c+c).join(''); const n = parseInt(h,16); if (isNaN(n)) return '128,128,128'; return ((n>>16)&255) + ',' + ((n>>8)&255) + ',' + (n&255); }
+  function bgCss(type, paper, c1, c2, c3){
+    paper = paper || '#f4f4f4';
+    const r1 = c1 ? hexRgb(c1) : '128,128,128';
+    const r2 = c2 ? hexRgb(c2) : r1;
+    const r3 = c3 ? hexRgb(c3) : r1;
+    const P = 'rgba('+r1+',.16)', P2 = 'rgba('+r1+',.30)';
+    const chk2 = c2 ? 'rgba('+r2+',.18)' : 'transparent';
+    const tb = 'rgba('+r1+',.22) 0 5px, transparent 5px 13px, rgba('+r2+',.16) 13px 17px, transparent 17px 26px, rgba('+r3+',.30) 26px 27px, transparent 27px 40px';
+    switch (type){
+      case '1':       return 'linear-gradient(160deg,' + paper + ',' + adjustLightness(paper, -0.18) + ')';
+      case 'check':   return 'repeating-conic-gradient(rgba('+r1+',.18) 0% 25%, ' + chk2 + ' 0% 50%) 0 0/44px 44px, ' + paper;
+      case 'grid':    return 'repeating-linear-gradient(0deg,' + P + ' 0 1px, transparent 1px 24px), repeating-linear-gradient(90deg,' + P + ' 0 1px, transparent 1px 24px), ' + paper;
+      case 'vstripe': return 'repeating-linear-gradient(90deg,' + P + ' 0 11px, transparent 11px 22px), ' + paper;
+      case 'hstripe': return 'repeating-linear-gradient(0deg,' + P + ' 0 11px, transparent 11px 22px), ' + paper;
+      case 'diag':    return 'repeating-linear-gradient(45deg,' + P + ' 0 11px, transparent 11px 22px), ' + paper;
+      case 'dot':     return 'radial-gradient(' + P2 + ' 2px, transparent 2.5px) 0 0/22px 22px, ' + paper;
+      case 'gingham': return 'repeating-linear-gradient(90deg, rgba('+r1+',.12) 0 13px, transparent 13px 26px), repeating-linear-gradient(0deg, rgba('+r2+',.12) 0 13px, transparent 13px 26px), ' + paper;
+      case 'finegrid':return 'repeating-linear-gradient(0deg,' + P + ' 0 1px, transparent 1px 12px), repeating-linear-gradient(90deg,' + P + ' 0 1px, transparent 1px 12px), ' + paper;
+      case 'cross':   return 'repeating-linear-gradient(45deg,' + P + ' 0 1px, transparent 1px 18px), repeating-linear-gradient(-45deg,' + P + ' 0 1px, transparent 1px 18px), ' + paper;
+      case 'tartan':  return 'repeating-linear-gradient(0deg,' + tb + '), repeating-linear-gradient(90deg,' + tb + '), ' + paper;
+      default:        return '';
+    }
   }
   function positionRing(){
     const ring = (deco.ring === 'ring');
@@ -1809,6 +2281,8 @@
       if (!g) return;
       g.classList.toggle('cell-diamond', diamond);
       g.classList.toggle('ring', deco.ring === 'ring');
+      g.classList.toggle('tex-neon', deco.celltex === 'neon');
+      g.classList.toggle('tex-glass', deco.celltex === 'glass');
     });
     timeEl.classList.remove('fx-none','fx-shadow','fx-outline','fx-glow');
     timeEl.classList.add('fx-' + deco.digitfx);
@@ -1816,10 +2290,11 @@
     applyColors();
   }
   function syncDecoSegs(){
-    [['dcr','cellradius'],['dcg','cellgap'],['dco','celloff'],['dfx','digitfx'],['dbg','bggrad'],['dms','ring']].forEach(p => {
+    [['dcr','cellradius'],['dcg','cellgap'],['dco','celloff'],['dfx','digitfx'],['dms','ring'],['dtex','celltex']].forEach(p => {
       document.querySelectorAll('.seg[data-seg="'+p[0]+'"] .seg-btn').forEach(b =>
         b.classList.toggle('active', b.dataset.val === deco[p[1]]));
     });
+    document.querySelectorAll('#bgPicker .bg-chip').forEach(b => b.classList.toggle('active', b.dataset.val === deco.bggrad));
     const sv = { framew: deco.framew, cellbw: deco.cellbw, digitsize: deco.digitsize };
     document.querySelectorAll('.deco-slider').forEach(sl => {
       const k = sl.dataset.slider; if (sv[k] != null) sl.value = sv[k];
@@ -1882,6 +2357,14 @@
   applyColors();
   syncSwatches();
   applyDeco();
+  applyBtnStyle();
+  renderIvRows(); updateRoundNum(); updateIvSummary(); applyIntervalMode();
+  // 説明の表示/非表示
+  let hideDesc = false;
+  try { hideDesc = localStorage.getItem('timerHideDesc') === '1'; } catch(e){}
+  function applyHideDesc(){ document.body.classList.toggle('hide-desc', hideDesc); const b = document.getElementById('descToggle'); if (b) b.textContent = hideDesc ? '💬 説明を表示' : '💬 説明を隠す'; }
+  { const b = document.getElementById('descToggle'); if (b) b.addEventListener('click', () => { hideDesc = !hideDesc; try { localStorage.setItem('timerHideDesc', hideDesc ? '1' : '0'); } catch(e){} applyHideDesc(); }); }
+  applyHideDesc();
   // ===== プレビュー =====
   let previewRAF = null, previewStart = 0, previewActive = false;
   const P_CYCLE = 2600, P_HOLD = 700;
@@ -1973,10 +2456,12 @@
     maru:   '"Zen Maru Gothic","Hiragino Maru Gothic ProN",sans-serif',
     klee:   '"Klee One","Hiragino Mincho ProN",serif',
     pop:    '"M PLUS Rounded 1c","Hiragino Maru Gothic ProN",sans-serif',
-    system: 'system-ui,-apple-system,"Hiragino Kaku Gothic ProN",sans-serif'
+    system: 'system-ui,-apple-system,"Hiragino Kaku Gothic ProN",sans-serif',
+    segment: 'system-ui,-apple-system,"Hiragino Kaku Gothic ProN",sans-serif'
   };
   function setFont(key){
     document.body.style.fontFamily = FONT_MAP[key] || FONT_MAP.mincho;
+    document.body.classList.toggle('digit-seg', key === 'segment');
     try { localStorage.setItem('timerFont', key); } catch(e){}
   }
   document.querySelectorAll('.seg[data-seg="font"] .seg-btn').forEach(b => {
@@ -2008,7 +2493,7 @@
     return { name: name || 'マイきせかえ', paper: PARTS.paper.override, digit: PARTS.digit.override,
              gauge: PARTS.gauge.override, ink: PARTS.ink.override, font: currentFontKey(), count: CELLS, fade: fadeStyle,
              cellradius: deco.cellradius, cellgap: deco.cellgap, celloff: deco.celloff, digitfx: deco.digitfx, bggrad: deco.bggrad,
-             ring: deco.ring, framew: deco.framew, cellbw: deco.cellbw, digitsize: deco.digitsize };
+             ring: deco.ring, framew: deco.framew, cellbw: deco.cellbw, digitsize: deco.digitsize, celltex: deco.celltex, bgpcolor: deco.bgpcolor, bgpcolor2: deco.bgpcolor2, bgpcolor3: deco.bgpcolor3 };
   }
   function applySkin(s){
     if (!s) return;
@@ -2029,6 +2514,11 @@
     deco.framew     = s.framew     || '6';
     deco.cellbw     = s.cellbw     || '3';
     deco.digitsize  = s.digitsize  || '1';
+    deco.celltex    = s.celltex    || 'flat';
+    deco.bgpcolor   = s.bgpcolor   || '';
+    deco.bgpcolor2  = s.bgpcolor2  || '';
+    deco.bgpcolor3  = s.bgpcolor3  || '';
+    if (typeof updateBgPatVisibility === 'function') updateBgPatVisibility();
     applyDeco(); syncDecoSegs();
     updatePreview();
   }
@@ -2080,17 +2570,17 @@
     }
   }
   // 共有コード（短縮形式 T2 / 旧TMR1も読める）
-  const FONT_CODE = { mincho:'m', maru:'r', klee:'k', pop:'p', system:'s' };
-  const FONT_DECODE = { m:'mincho', r:'maru', k:'klee', p:'pop', s:'system' };
+  const FONT_CODE = { mincho:'m', maru:'r', klee:'k', pop:'p', system:'s', segment:'g' };
+  const FONT_DECODE = { m:'mincho', r:'maru', k:'klee', p:'pop', s:'system', g:'segment' };
   const FADE_CODE = { step:'t', shave:'v', fadeout:'f' };
   const FADE_DECODE = { t:'step', v:'shave', f:'fadeout' };
   function hex6(c){ return c ? c.replace('#','') : ''; }
   function unhex(h){ return h ? ('#'+h) : null; }
   function skinToCode(s){
-    return 'T4,' + [ hex6(s.paper), hex6(s.digit), hex6(s.gauge), hex6(s.ink),
+    return 'T6,' + [ hex6(s.paper), hex6(s.digit), hex6(s.gauge), hex6(s.ink),
       FONT_CODE[s.font]||'m', FADE_CODE[s.fade]||'t', s.count,
       (s.cellradius||'0'), (s.cellgap||'1'), (s.celloff||'bg'), (s.digitfx||'shadow'), (s.bggrad||'0'),
-      (s.ring||'bar'), (s.framew||'6'), (s.cellbw||'3'), (s.digitsize||'1'),
+      (s.ring||'bar'), (s.framew||'6'), (s.cellbw||'3'), (s.digitsize||'1'), (s.celltex||'flat'), [hex6(s.bgpcolor||''),hex6(s.bgpcolor2||''),hex6(s.bgpcolor3||'')].join('|'),
       s.name ].join(',');
   }
   function codeToSkinV1(code){
@@ -2103,19 +2593,27 @@
   function codeToSkin(code){
     code = (code||'').trim();
     if (code.indexOf('TMR1:') === 0) return codeToSkinV1(code);
+    const isT6 = (code.indexOf('T6,') === 0);
+    const isT5 = (code.indexOf('T5,') === 0);
     const isT4 = (code.indexOf('T4,') === 0);
     const isT3 = (code.indexOf('T3,') === 0);
-    if (isT4 || isT3 || code.indexOf('T2,') === 0) code = code.slice(3);
+    if (isT6 || isT5 || isT4 || isT3 || code.indexOf('T2,') === 0) code = code.slice(3);
     const p = code.split(','); if (p.length < 8) return null;
     const cnt = parseInt(p[6], 10);
     const s = { paper: unhex(p[0]) || '#f4f4f4', digit: unhex(p[1]), gauge: unhex(p[2]), ink: unhex(p[3]),
       font: FONT_DECODE[p[4]] || 'mincho', fade: FADE_DECODE[p[5]] || 'step',
       count: isNaN(cnt) ? 10 : cnt };
-    if ((isT4 || isT3) && p.length >= 13){
+    if ((isT6 || isT5 || isT4 || isT3) && p.length >= 13){
       s.cellradius = p[7]; s.cellgap = p[8]; s.celloff = p[9]; s.digitfx = p[10]; s.bggrad = p[11];
     }
-    if (isT4 && p.length >= 17){
+    if ((isT6 || isT5 || isT4) && p.length >= 17){
       s.ring = p[12]; s.framew = p[13]; s.cellbw = p[14]; s.digitsize = p[15];
+    }
+    if (isT6 && p.length >= 19){
+      s.celltex = p[16]; const _pc = (p[17]||'').split('|'); s.bgpcolor = unhex(_pc[0]) || ''; s.bgpcolor2 = unhex(_pc[1]) || ''; s.bgpcolor3 = unhex(_pc[2]) || ''; s.name = p.slice(18).join(',') || '共有きせかえ';
+    } else if (isT5 && p.length >= 18){
+      s.celltex = p[16]; s.name = p.slice(17).join(',') || '共有きせかえ';
+    } else if (isT4 && p.length >= 17){
       s.name = p.slice(16).join(',') || '共有きせかえ';
     } else if (isT3 && p.length >= 13){
       s.name = p.slice(12).join(',') || '共有きせかえ';
@@ -2157,6 +2655,18 @@
         });
       }
       skinDb = firebase.firestore();
+    }
+  } catch(e){}
+  // ===== 利用カウント（サイト全体＋このゲーム 'timer'） =====
+  try {
+    var _embedTG = (window.self !== window.top) || (location.search.indexOf('preview=1') >= 0);
+    if (skinDb && !_embedTG){
+      const _inc = firebase.firestore.FieldValue.increment(1);
+      const _d = new Date();
+      const _today = _d.getFullYear() + '-' + String(_d.getMonth()+1).padStart(2,'0') + '-' + String(_d.getDate()).padStart(2,'0');
+      try { if (localStorage.getItem('siteVisitDate') !== _today){ skinDb.collection('visits').doc(_today).set({ c:_inc, d:_today }, { merge:true }); skinDb.collection('meta').doc('plaza').set({ total:_inc }, { merge:true }); localStorage.setItem('siteVisitDate', _today); } } catch(e){}
+      skinDb.collection('games').doc('timer').set({ uses:_inc, name:'メータータイマー' }, { merge:true });
+      try { if (localStorage.getItem('gameV_timer') !== _today){ skinDb.collection('games').doc('timer').set({ people:_inc, name:'メータータイマー' }, { merge:true }); localStorage.setItem('gameV_timer', _today); } } catch(e){}
     }
   } catch(e){}
   const PUB_NG = ['死ね','しね','ﾀﾋ','殺す','ころす','きちがい','障害者','土人','セックス','ちんこ','まんこ','うんこ','fuck','shit','nigger'];
@@ -2243,6 +2753,31 @@
     });
   });
 
+  // ----- 背景ピッカー（単色/グラデ/パターン10種） -----
+  function renderBgPreviews(){
+    const paper = (typeof PARTS !== 'undefined' && PARTS.paper) ? PARTS.paper.override : '#f4f4f4';
+    document.querySelectorAll('#bgPicker .bg-chip').forEach(b => { b.style.background = bgCss(b.dataset.val, paper, deco.bgpcolor, deco.bgpcolor2, deco.bgpcolor3) || paper; });
+  }
+  const PATTERN_COLORS = { check:2, gingham:2, tartan:3 };
+  function updateBgPatVisibility(){
+    const isPat = (deco.bggrad !== '0' && deco.bggrad !== '1');
+    const f = document.getElementById('bgPatColorField'); if (f) f.style.display = isPat ? '' : 'none';
+    const n = PATTERN_COLORS[deco.bggrad] || 1;
+    const c2 = document.getElementById('bgpatC2'), c3 = document.getElementById('bgpatC3');
+    if (c2) c2.style.display = (n >= 2) ? '' : 'none';
+    if (c3) c3.style.display = (n >= 3) ? '' : 'none';
+  }
+  document.querySelectorAll('#bgPicker .bg-chip').forEach(b => b.addEventListener('click', () => {
+    deco.bggrad = b.dataset.val;
+    document.querySelectorAll('#bgPicker .bg-chip').forEach(x => x.classList.toggle('active', x === b));
+    updateBgPatVisibility(); applyDeco();
+  }));
+  { const pc = document.getElementById('bgPatColor');  if (pc) pc.addEventListener('input', () => { deco.bgpcolor  = pc.value; applyDeco(); }); }
+  { const p2 = document.getElementById('bgPatColor2'); if (p2) p2.addEventListener('input', () => { deco.bgpcolor2 = p2.value; applyDeco(); }); }
+  { const p3 = document.getElementById('bgPatColor3'); if (p3) p3.addEventListener('input', () => { deco.bgpcolor3 = p3.value; applyDeco(); }); }
+  { const pa = document.getElementById('bgPatAuto');   if (pa) pa.addEventListener('click', () => { deco.bgpcolor = ''; deco.bgpcolor2 = ''; deco.bgpcolor3 = ''; applyDeco(); }); }
+  updateBgPatVisibility();
+
   // ----- 装飾スライダー（枠の太さ・セル枠線・数字サイズ） -----
   document.querySelectorAll('.deco-slider').forEach(sl => {
     sl.addEventListener('input', () => {
@@ -2260,6 +2795,7 @@
     deco:     { icon:'✨', cls:'acc-deco' },
     method:   { icon:'⏱️', cls:'acc-method' },
     notation: { icon:'🕐', cls:'acc-notation' },
+    interval: { icon:'🔁', cls:'acc-interval' },
     finishvis:{ icon:'✨', cls:'acc-finishvis' },
     finishsnd:{ icon:'🔊', cls:'acc-finishsnd' }
   };
@@ -2360,6 +2896,13 @@
       else if (kind === 'dfx'){ deco.digitfx = val; applyDeco(); }
       else if (kind === 'dbg'){ deco.bggrad = val; applyDeco(); }
       else if (kind === 'dms'){ deco.ring = val; applyDeco(); }
+      else if (kind === 'dtex'){ deco.celltex = val; applyDeco(); }
+      else if (kind === 'btns'){ btnStyle = val; try { localStorage.setItem('timerBtnStyle', val); } catch(e){} applyBtnStyle(); }
+      else if (kind === 'ivon'){ intervalOn = (val === 'on'); saveIv(); applyIntervalMode(); }
+      else if (kind === 'ivready'){ ivReady = (parseInt(val,10)||0) * 1000; saveIv(); if (!ivActive) refreshIvIdle(); }
+      else if (kind === 'ivcount'){ ivCountdown = (val === 'on'); saveIv(); }
+      else if (kind === 'ivcolor'){ ivColorOn = (val === 'on'); saveIv(); renderIvRows(); if (!ivActive) refreshIvIdle(); }
+      else if (kind === 'ivvoice'){ ivVoice = (val === 'on'); saveIv(); if (ivVoice) speakPhase('読み上げオン'); }
     });
   });
 
@@ -2422,6 +2965,19 @@
       b.classList.toggle('active', b.dataset.val === (clock24 ? '24' : '12')));
     document.querySelectorAll('.seg[data-seg="finishfx"] .seg-btn').forEach(b =>
       b.classList.toggle('active', b.dataset.val === finishFx));
+    document.querySelectorAll('.seg[data-seg="btns"] .seg-btn').forEach(b =>
+      b.classList.toggle('active', b.dataset.val === btnStyle));
+    document.querySelectorAll('.seg[data-seg="ivon"] .seg-btn').forEach(b =>
+      b.classList.toggle('active', b.dataset.val === (intervalOn ? 'on' : 'off')));
+    document.querySelectorAll('.seg[data-seg="ivready"] .seg-btn').forEach(b =>
+      b.classList.toggle('active', b.dataset.val === String(Math.round(ivReady/1000))));
+    document.querySelectorAll('.seg[data-seg="ivcount"] .seg-btn').forEach(b =>
+      b.classList.toggle('active', b.dataset.val === (ivCountdown ? 'on' : 'off')));
+    document.querySelectorAll('.seg[data-seg="ivcolor"] .seg-btn').forEach(b =>
+      b.classList.toggle('active', b.dataset.val === (ivColorOn ? 'on' : 'off')));
+    document.querySelectorAll('.seg[data-seg="ivvoice"] .seg-btn').forEach(b =>
+      b.classList.toggle('active', b.dataset.val === (ivVoice ? 'on' : 'off')));
+    if (typeof updateRoundNum === 'function'){ updateRoundNum(); updateIvSummary(); renderIvRows(); }
     overlay.classList.add('open');
     updatePreview();
     requestAnimationFrame(positionKnob);   // レイアウト後にノブ位置を反映
@@ -2435,7 +2991,7 @@
   function applyModal(){
     running = false;
     if (rafId) cancelAnimationFrame(rafId);
-    startBtn.textContent = 'START';
+    startBtn.textContent = startLabel(false);
     gaugeEl.classList.remove('done');
 
     if (isClockMode(pendingMode)){

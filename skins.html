@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- skins.html v11 : プレビューは?preview=1で設定ボタン無効化 -->
+<!-- skins.html v13 : きせかえコードT6(背景パターン色)対応 -->
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -162,6 +162,19 @@
     document.getElementById('configWarn').style.display = 'block';
   }
 
+  // ===== 利用カウント（サイト全体＋このゲーム 'gallery'） =====
+  try {
+    var _embedSK = (window.self !== window.top) || (location.search.indexOf('preview=1') >= 0);
+    if (db && !_embedSK){
+      var _incSK = firebase.firestore.FieldValue.increment(1);
+      var _dSK = new Date();
+      var _todaySK = _dSK.getFullYear() + '-' + String(_dSK.getMonth()+1).padStart(2,'0') + '-' + String(_dSK.getDate()).padStart(2,'0');
+      try { if (localStorage.getItem('siteVisitDate') !== _todaySK){ db.collection('visits').doc(_todaySK).set({ c:_incSK, d:_todaySK }, { merge:true }); db.collection('meta').doc('plaza').set({ total:_incSK }, { merge:true }); localStorage.setItem('siteVisitDate', _todaySK); } } catch(e){}
+      db.collection('games').doc('gallery').set({ uses:_incSK, name:'きせかえギャラリー' }, { merge:true });
+      try { if (localStorage.getItem('gameV_gallery') !== _todaySK){ db.collection('games').doc('gallery').set({ people:_incSK, name:'きせかえギャラリー' }, { merge:true }); localStorage.setItem('gameV_gallery', _todaySK); } } catch(e){}
+    }
+  } catch(e){}
+
   // コード→色（プレビュー用）
   function lum(hex){ hex=hex.replace('#',''); var r=parseInt(hex.slice(0,2),16),g=parseInt(hex.slice(2,4),16),b=parseInt(hex.slice(4,6),16); return (0.299*r+0.587*g+0.114*b)/255; }
   function codeColors(code){
@@ -170,7 +183,7 @@
       var q=code.slice(5).split('|'); if(q.length<8) return null;
       return normalize(q[1], q[2]==='auto'?null:q[2], q[3]==='auto'?null:q[3], q[4]==='auto'?null:q[4]);
     }
-    if (code.indexOf('T4,')===0 || code.indexOf('T3,')===0 || code.indexOf('T2,')===0) code=code.slice(3);
+    if (code.indexOf('T6,')===0 || code.indexOf('T5,')===0 || code.indexOf('T4,')===0 || code.indexOf('T3,')===0 || code.indexOf('T2,')===0) code=code.slice(3);
     var p=code.split(','); if(p.length<8) return null;
     var h=function(x){ return x?('#'+x):null; };
     return normalize(h(p[0])||'#f4f4f4', h(p[1]), h(p[2]), h(p[3]));
