@@ -41,6 +41,17 @@
 @media(max-width:760px){#export-dialog{max-height:calc(100vh - 16px);max-height:calc(100dvh - 16px)}}
 .custom-waveform-wrap{margin-top:10px;border:1px solid #b8cada;border-radius:5px;background:#fff;overflow:hidden;position:relative}.custom-waveform-wrap canvas{display:block;position:static;width:100%;height:96px;touch-action:none;cursor:crosshair}.custom-waveform-caption{display:flex;justify-content:space-between;gap:8px;padding:5px 8px;border-top:1px solid #d8e2ec;font-size:.75rem;color:var(--muted);line-height:1.4}.custom-waveform-caption strong{color:var(--teal);font-variant-numeric:tabular-nums}.custom-loop-setting .custom-loop-crossfade{grid-column:1 / -1}.custom-loop-setting .custom-loop-crossfade select{max-width:180px}.preset-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;margin-top:8px}.preset-row select,.preset-row input{min-width:0;width:100%;padding:6px 8px}.preset-row button{white-space:nowrap}.preset-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:7px}.preset-actions button{padding:6px 4px;font-size:.75rem}.preset-note{margin-top:8px}.wake-lock-note{margin-top:7px}.pwa-note{margin-top:7px}
 @media(max-width:760px){.preset-actions{grid-template-columns:1fr 1fr}.preset-actions button:last-child{grid-column:1 / -1}.custom-waveform-wrap canvas{height:88px}}
+@media(max-width:760px){
+ /* Let the phone scroll one page instead of trapping the long settings panel. */
+ .workspace{height:auto;min-height:calc(100vh - 54px);min-height:calc(100dvh - 54px);overflow:visible}
+ .stage,.results{overflow:visible}
+ .controls{max-height:none;overflow:visible}
+ .settings-pair{overflow:visible}
+}
+/* Touch targets stay usable while scrolling the page. The two canvases switch to
+   no-pan mode only when a drag is actually meaningful. */
+button,select,input,summary,.check{touch-action:manipulation}
+#maze.selecting,#maze.editing-targets,.custom-waveform-wrap,.custom-waveform-wrap canvas{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 </style>
 </head>
 <body>
@@ -536,6 +547,21 @@ canvas.addEventListener('pointerup',e=>endTargetDrag(e));canvas.addEventListener
 $('edit-endpoints').addEventListener('click',toggleEndpointEdit);for(const mode of ['move','add','delete'])$('target-'+mode).addEventListener('click',()=>{targetTool=mode;endpointControls();});$('selected-target').addEventListener('change',()=>{targetSelection=$('selected-target').value;targetTool='move';endpointControls();scheduleDraw();});$('target-place').addEventListener('click',()=>{const x=Number($('target-x').value)-1,y=Number($('target-y').value)-1;if(!Number.isInteger(x)||!Number.isInteger(y)||x<0||y<0||x>=model.w||y>=model.h){status('迷路の中の座標を指定してください。');return;}placeTarget(targetSelection,y*model.w+x);});
 $('goal-count').addEventListener('change',()=>{const count=Number($('goal-count').value),max=Number($('goal-count').max);if(!Number.isInteger(count)||count<1||count>max){status(`ゴール数は1〜${max}で指定してください。`);endpointControls();return;}const gs=MazeEngine.randomGoals(model,count,MazeEngine.random(seed()),$('random-goal-style').value,MazeEngine.goals(model));changeTargets(model.start,gs,`ゴールを${gs.length}個にしました。`);});$('random-goals').addEventListener('click',randomizeGoals);$('random-start').addEventListener('click',()=>{const gs=MazeEngine.goals(model),spaces=[];for(let p=0;p<model.grid.length;p++)if(model.grid[p]&&p!==model.start&&!gs.includes(p))spaces.push(p);if(spaces.length)changeTargets(spaces[Math.floor(MazeEngine.random(seed())()*spaces.length)],gs,'スタートをランダムに配置しました。');});
 $('goal-mode').addEventListener('change',()=>{if(!model.complete)return;const before=targetSnapshot();model.goalMode=$('goal-mode').value;if(before.goalMode===model.goalMode)return;targetHistory.push(before);clearAfterTargetEdit(model.goalMode==='all'?'すべてのゴールを巡る条件にしました。':'どれか1つに到達する条件にしました。');});$('target-reset').addEventListener('click',()=>{changeTargets(model.w+1,[(model.h-2)*model.w+model.w-2],'S・Gを初期位置に戻しました。');targetSelection='start';endpointControls();});$('target-undo').addEventListener('click',()=>{const old=targetHistory.pop();if(!old)return;MazeEngine.setEndpoints(model,old.start,old.goals);model.goalMode=old.goalMode;$('goal-mode').value=old.goalMode;targetSelection=old.selection;clearAfterTargetEdit('直前の配置変更を取り消しました。');});
+
+/* Older iOS/Android webviews may expose touch events without Pointer Events.
+   Forward one active touch as a pointer stream so crop, endpoint, and waveform
+   dragging remain usable without duplicating events on modern browsers. */
+function installTouchPointerFallback(target){
+ if(!target||('PointerEvent'in window))return;
+ let activeId=null;
+ const findTouch=e=>{const list=e.changedTouches||e.touches;if(!list||!list.length)return null;for(const touch of list){if(activeId===null||(touch.identifier??0)===activeId)return touch;}return null;};
+ const forward=(type,e)=>{const touch=findTouch(e);if(!touch)return;let synthetic;if(typeof Event==='function')synthetic=new Event(type,{bubbles:true,cancelable:true});else if(document.createEvent){synthetic=document.createEvent('Event');synthetic.initEvent(type,true,true);}else synthetic={type,bubbles:true,cancelable:true};const values={pointerId:touch.identifier??0,button:0,buttons:type==='pointerup'||type==='pointercancel'?0:1,pointerType:'touch',isPrimary:true,clientX:touch.clientX,clientY:touch.clientY,pageX:touch.pageX??touch.clientX,pageY:touch.pageY??touch.clientY,screenX:touch.screenX??touch.clientX,screenY:touch.screenY??touch.clientY,pressure:type==='pointerup'||type==='pointercancel'?0:.5};for(const [key,value]of Object.entries(values)){try{Object.defineProperty(synthetic,key,{value,configurable:true,enumerable:true})}catch(_){try{synthetic[key]=value}catch(__){}}}try{Object.defineProperty(synthetic,'preventDefault',{value:()=>e.preventDefault(),configurable:true})}catch(_){synthetic.preventDefault=()=>e.preventDefault();}if(target.dispatchEvent)target.dispatchEvent(synthetic);else if(target.dispatch)target.dispatch(type,synthetic);if(type==='pointerup'||type==='pointercancel')activeId=null;};
+ target.addEventListener('touchstart',e=>{if(activeId!==null)return;const touch=findTouch(e);if(touch)activeId=touch.identifier??0;forward('pointerdown',e);},{passive:false});
+ target.addEventListener('touchmove',e=>{if(activeId!==null)forward('pointermove',e);},{passive:false});
+ target.addEventListener('touchend',e=>{if(activeId!==null)forward('pointerup',e);},{passive:false});
+ target.addEventListener('touchcancel',e=>{if(activeId!==null)forward('pointercancel',e);},{passive:false});
+}
+installTouchPointerFallback(canvas);installTouchPointerFallback(customWaveform);
 
 $('generate').addEventListener('click',()=>beginGeneration());$('solve').addEventListener('click',()=>{if(!operation)startSearch($('solver').value);});$('compare').addEventListener('click',()=>{if(operation||!model.complete)return;cancel();initAudio();batch=order.slice(1);startSearch(order[0],true);});$('pause').addEventListener('click',pauseToggle);$('step').addEventListener('click',()=>{if(operation&&paused){initAudio();advance();flushSound();if(operation){paused=true;if(raf)cancelAnimationFrame(raf);raf=0;status('一時停止中。1ステップ進めました。');}controls();scheduleDraw();}});
 $('results-body').addEventListener('click',e=>{const b=e.target.closest('[data-algorithm]');if(b)showResult(b.dataset.algorithm);});
