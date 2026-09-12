@@ -305,6 +305,22 @@
       pointer-events: none;
     }
 
+    /* エコーダイブ: ひろがる音の輪 */
+    .game-card.echo-bg { overflow: hidden; }
+    .game-card.echo-bg::before {
+      content: '';
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      width: 82px;
+      height: 82px;
+      transform: translateY(-50%);
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231a1a1a' stroke-width='1.4' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='1.3' fill='%231a1a1a' stroke='none'/%3E%3Cpath d='M15.5 8.5a5 5 0 0 1 0 7M8.5 8.5a5 5 0 0 0 0 7'/%3E%3Cpath d='M18 5.5a9 9 0 0 1 0 13M6 5.5a9 9 0 0 0 0 13'/%3E%3C/svg%3E") no-repeat center / contain;
+      opacity: 0.08;
+      pointer-events: none;
+    }
+    .badge.ai { color: #5a4ad1; border-color: #cdc6f7; background: #f6f3ff; }
+
     /* 作成中カード: 斜線で飛べないことを示す */    .game-card.wip {
       pointer-events: none;
       cursor: default;
@@ -527,6 +543,12 @@
 
     <div class="section-label pop"><span class="spark">✦</span> 新作 <span class="spark">✦</span></div>
 
+    <a class="game-card echo-bg" href="echo-dive.html" id="card-8" data-published="2026-09-12">
+      <div class="card-tag">STEALTH <span class="badge ai">100% AI制作</span></div>
+      <div class="card-title">エコーダイブ</div>
+      <div class="card-desc">まっくらな洞窟を音の反響で探る<br>企画・設計・コード・音 すべてAIが制作</div>
+    </a>
+
     <a class="game-card maze-bg" href="./maze/" id="card-7" data-published="2026-09-09">
       <div class="card-tag">PERFECT TOOL</div>
       <div class="card-title">迷路ラボ</div>
@@ -589,7 +611,7 @@
       <div class="vc-note" id="cntNote"></div>
     </div>
     <span class="footer-brand" data-text="現電 — 幻実世界の電子遊戯">現電 — 幻実世界の電子遊戯</span><br>
-    <span style="font-size:9px;letter-spacing:0.05em;">ver2026.08.03</span>
+    <span style="font-size:9px;letter-spacing:0.05em;">ver2026.09.12</span>
   </div>
 
 </div>
@@ -625,7 +647,7 @@
   }
   chain.then(refresh, refresh);
 
-  var GMAP = { 'index.html':'maru', 'dungeon.html':'tobetobi', 'shopping-memo.html':'memo', 'timer-gauge.html':'timer', 'skins.html':'gallery' };
+  var GMAP = { 'index.html':'maru', 'dungeon.html':'tobetobi', 'echo-dive.html':'echo', 'shopping-memo.html':'memo', 'timer-gauge.html':'timer', 'skins.html':'gallery' };
   function showGameCounts(){
     document.querySelectorAll('.game-card[href]').forEach(function(card){
       var gid = GMAP[card.getAttribute('href')]; if (!gid) return;
@@ -693,7 +715,7 @@
     if (!hasNew) newLabel.style.display = 'none';
   })();
 
-  const CARDS = ['card-0', 'card-1', 'card-7', 'card-4', 'card-5', 'card-6', 'card-2', 'card-3'];
+  const CARDS = ['card-0', 'card-1', 'card-8', 'card-7', 'card-4', 'card-5', 'card-6', 'card-2', 'card-3'];
   let _cur = 0;
   let _gpConnected = false;
   let _prev = {};
