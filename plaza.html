@@ -698,31 +698,16 @@
   }
   chain.then(refresh, refresh);
 
-  var GMAP = { 'index.html':'maru', 'dungeon.html':'tobetobi', 'echo-dive.html':'echo', 'narabe100.html':'narabe', 'shopping-memo.html':'memo', 'timer-gauge.html':'timer', 'skins.html':'gallery' };
-  var RTDB_URL = 'https://ad-game-7b40a-default-rtdb.asia-southeast1.firebasedatabase.app';
-  var RMAP = { 'combination-blocks.html':'combination-blocks', './maze/':'maze-lab' };
+  var GMAP = { 'index.html':'maru', 'dungeon.html':'tobetobi', 'combination-blocks.html':'combination-blocks', './maze/':'maze-lab', 'echo-dive.html':'echo', 'narabe100.html':'narabe', 'shopping-memo.html':'memo', 'timer-gauge.html':'timer', 'skins.html':'gallery' };
   function showGameCounts(){
     document.querySelectorAll('.game-card[href]').forEach(function(card){
-      var href = card.getAttribute('href');
-      var gid = GMAP[href];
-      var rid = RMAP[href];
-      if (!gid && !rid) return;
+      var gid = GMAP[card.getAttribute('href')]; if (!gid) return;
       var badge = document.createElement('div'); badge.className = 'card-count'; badge.textContent = '…';
       card.appendChild(badge);
-      if (gid){
-        db.collection('games').doc(gid).get().then(function(d){
-          var o = d.exists ? d.data() : {};
-          badge.textContent = '👤 ' + Number(o.people||0).toLocaleString() + '人 ・ ▶ ' + Number(o.uses||0).toLocaleString() + '回';
-        }).catch(function(){ badge.textContent = ''; });
-      } else {
-        fetch(RTDB_URL + '/playCounts/' + encodeURIComponent(rid) + '.json', { cache:'no-store' })
-          .then(function(r){ if(!r.ok) throw new Error('count'); return r.json(); })
-          .then(function(o){
-            var people = (o && typeof o === 'object') ? Object.keys(o).length : 0;
-            badge.textContent = '👤 ' + Number(people).toLocaleString() + '人';
-          })
-          .catch(function(){ badge.textContent = ''; });
-      }
+      db.collection('games').doc(gid).get().then(function(d){
+        var o = d.exists ? d.data() : {};
+        badge.textContent = '👤 ' + Number(o.people||0).toLocaleString() + '人 ・ ▶ ' + Number(o.uses||0).toLocaleString() + '回';
+      }).catch(function(){ badge.textContent = '取得失敗'; });
     });
   }
   showGameCounts();
