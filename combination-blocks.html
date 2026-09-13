@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#101822">
-  <title>組み合わせを試す</title>
+  <title>Combine & Discover</title>
   <style>
     :root {
       color-scheme: dark;
@@ -54,7 +54,7 @@
     .brand { display: flex; align-items: center; gap: 8px; padding: 0 2px 8px; }
     .brand-symbol { color: var(--gold); font-size: 24px; }
     h1 { font-size: 18px; line-height: 1.4; }
-    .stage-navigation { display: grid; grid-template-columns: minmax(0, 1fr) 72px 52px 60px; gap: 4px; }
+    .stage-navigation { display: grid; grid-template-columns: minmax(0, 1fr) 96px 62px 60px; gap: 4px; }
     .site-back {
       display: grid;
       place-items: center;
@@ -95,15 +95,20 @@
       place-items: center;
       min-width: 0;
       min-height: 44px;
+      padding: 0 4px;
       border: 1px solid #b68a44;
       border-radius: 10px;
       background: #382d1c;
       color: var(--gold-2);
-      font-size: 20px;
-      font-weight: 800;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .02em;
       white-space: nowrap;
       font-variant-numeric: tabular-nums;
     }
+    #stage-select[data-cleared="true"] { border-color: var(--good); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--good) 46%, transparent); }
+    #stage-difficulty[data-cleared="true"] { border-color: var(--good); background: color-mix(in srgb, var(--good) 18%, #13231c); color: var(--good); }
+    #stage-difficulty[data-cleared="false"] { border-color: #6e7c86; background: #202a31; color: var(--muted); }
     .ui-button {
       min-width: 0;
       min-height: 44px;
@@ -209,8 +214,26 @@
     .score-stat { display: grid; min-width: 0; line-height: 1.25; }
     .score-stat > span { font-size: 14px; color: var(--muted); white-space: nowrap; }
     .score-stat strong { font-size: 16px; color: var(--gold-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
-    .result.success #result-details-button { border-color: var(--good); }
+    .result.success #result-details-button { border-color: var(--good); background: color-mix(in srgb, var(--good) 11%, #0c1721); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--good) 28%, transparent); }
     .result.failure #result-details-button { border-color: var(--bad); }
+    .result.success .score-stat:first-child > span { color: var(--good); font-weight: 900; letter-spacing: .05em; }
+    .result.success .score-stat:first-child strong { color: var(--good); }
+    .clear-flash {
+      position: fixed; inset: 0; z-index: 40; display: grid; place-items: center;
+      pointer-events: none; background: rgba(2, 12, 9, .22);
+    }
+    .clear-flash[hidden] { display: none !important; }
+    .clear-flash-card {
+      min-width: min(78vw, 340px); padding: 20px 24px; text-align: center;
+      border: 2px solid var(--good); border-radius: 14px;
+      background: color-mix(in srgb, var(--bg) 88%, #123a2a);
+      box-shadow: 0 12px 46px #000b, 0 0 28px color-mix(in srgb, var(--good) 30%, transparent);
+    }
+    .clear-flash-main { display: block; color: var(--good); font-size: clamp(25px, 8vw, 42px); font-weight: 950; line-height: 1.05; letter-spacing: .08em; }
+    .clear-flash-sub { display: block; margin-top: 7px; color: var(--text); font-size: 15px; font-weight: 800; }
+    .clear-flash.show .clear-flash-card { animation: clear-pop .9s ease both; }
+    @keyframes clear-pop { 0% { opacity: 0; transform: scale(.76); } 22% { opacity: 1; transform: scale(1.04); } 55% { transform: scale(1); } 100% { opacity: 0; transform: scale(1); } }
+    @media (prefers-reduced-motion: reduce) { .clear-flash.show .clear-flash-card { animation: none; } }
     .tutorial-target { outline: 3px solid var(--gold-2) !important; outline-offset: -4px !important; }
     #result-content.tutorial-coach { display: block; }
     .tutorial-coach span { display: block; font-size: 14px; line-height: 1.4; white-space: nowrap; }
@@ -550,6 +573,12 @@
 
   <div id="drag-preview" class="drag-preview" aria-hidden="true" hidden></div>
   <div id="effect-announcement" class="visually-hidden" role="status" aria-live="polite" aria-atomic="true"></div>
+  <div id="clear-flash" class="clear-flash" role="status" aria-live="assertive" aria-atomic="true" hidden>
+    <div class="clear-flash-card">
+      <span class="clear-flash-main">STAGE CLEAR</span>
+      <span id="clear-flash-sub" class="clear-flash-sub">目標達成</span>
+    </div>
+  </div>
 
   <dialog id="info-sheet" class="info-sheet" aria-labelledby="sheet-title">
     <header class="sheet-header">
@@ -1369,7 +1398,7 @@
 
     function showClearNotice(before) {
       const after = campaignProgress(), stage = currentStage(), result = state.result[state.stageIndex];
-      const sections = [{ label: `${stage.number}面クリア！ ${after.total}/${STAGES.length}面`,
+      const sections = [{ label: `${stage.number}面 CLEAR！ ${after.total}/${STAGES.length}面`,
         text: `${result.total}点。目標${stage.target}点を達成！ 最高理論値は${result.theoretical}点。` }];
       for (const area of AREAS) {
         if (after.areas.has(area.id) && !before.areas.has(area.id)) sections.push({ label: "新しいエリアを解放！", text: `「${area.name}」の1面が遊べるようになりました。${area.description}` });
@@ -1383,7 +1412,7 @@
         : nextUnlockText(stage.areaId, after) });
       const next = recommendStage(after);
       if (next >= 0) sections.push({ label: "次の挑戦", text: `「${AREAS.find(area => area.id === STAGES[next].areaId).name}」の${STAGES[next].number}面（☆${STAGES[next].difficulty}）へ進めます。閉じて、上部の欄から別の面を選んでもかまいません。` });
-      openSheet("clear", [{ key: "clear", title: after.total === STAGES.length ? "全ゲームクリア！" : "クリアと解放", sections }],
+      openSheet("clear", [{ key: "clear", title: after.total === STAGES.length ? "ALL STAGES CLEAR" : "STAGE CLEAR", sections }],
         next >= 0 ? () => { closeSheet(); switchStage(next); } : () => closeSheet(), next >= 0 ? "進む" : "続ける");
     }
 
@@ -2145,19 +2174,23 @@
       Array.from(stageSelect.children).forEach(option => {
         const index = Number(option.value), member = STAGES[index], unlocked = isStageUnlocked(index, progress);
         option.disabled = !unlocked;
-        option.textContent = unlocked ? `${member.number}面` : `${member.number}面（${UNLOCK_COUNTS[member.number - 1]}面クリアで解放）`;
-        option.title = visibleAreaText(`${member.title} ／ ☆${member.difficulty} ／ ${progress.cleared[index] ? "クリア済み" : unlocked ? "挑戦できます" : "未解放"}`, progress);
+        option.textContent = progress.cleared[index] ? `✓ ${member.number}面 ☆${member.difficulty}` : unlocked ? `${member.number}面 ☆${member.difficulty}` : `— ${member.number}面`;
+        option.title = visibleAreaText(`${member.title} ／ ☆${member.difficulty} ／ ${progress.cleared[index] ? "CLEAR・クリア済み" : unlocked ? "未クリア・挑戦できます" : "未解放"}`, progress);
       });
       state.areaStages[areaKey] = state.stageIndex;
       areaSelect.value = areaKey;
       areaSelect.title = `エリア${area.number}：${area.name} ／ ${progress.counts[area.id]}/${area.stageIds.length}面クリア`;
       stageSelect.value = String(state.stageIndex);
-      stageSelect.title = visibleAreaText(`${stage.number || stage.id}面：${stage.title}`, progress);
-      stageSelect.setAttribute("aria-label", visibleAreaText(`ステージを選ぶ。現在${stage.number || stage.id}面、${stage.title}`, progress));
+      const isCleared = progress.cleared[state.stageIndex];
+      stageSelect.dataset.cleared = String(isCleared);
+      stageSelect.title = visibleAreaText(`${stage.number || stage.id}面：${stage.title} ／ ☆${stage.difficulty} ／ ${isCleared ? "CLEAR・クリア済み" : "未クリア"}`, progress);
+      stageSelect.setAttribute("aria-label", visibleAreaText(`ステージを選ぶ。現在${stage.number || stage.id}面、${stage.title}。難易度${stage.difficulty}。${isCleared ? "クリア済み" : "未クリア"}`, progress));
       const badge = $("#stage-difficulty");
-      badge.textContent = `☆${stage.difficulty}`;
-      badge.setAttribute("aria-label", `難易度${stage.difficulty}、10段階。${progress.cleared[state.stageIndex] ? "クリア済み" : "未クリア"}`);
-      badge.title = `難易度 ☆${stage.difficulty} / 10（目標点に届くまでの目安）`;
+      badge.dataset.cleared = String(isCleared);
+      badge.textContent = isCleared ? "CLEAR" : "未クリア";
+      badge.setAttribute("aria-label", `${isCleared ? "クリア済み" : "未クリア"}。難易度${stage.difficulty}、10段階`);
+      badge.title = `${isCleared ? "CLEAR・クリア済み" : "未クリア"} ／ 難易度 ☆${stage.difficulty} / 10`;
+
     }
 
     function renderObjective() {
@@ -2303,11 +2336,13 @@
       }
       const statusClass = result.cleared || (result.theoreticalReached && !result.growthLimited) ? "success" : "failure";
       const status = result.growthLimited ? "強化が必要。先の3エリアの最高記録を伸ばそう" :
-        result.theoreticalReached ? "理論値到達" : result.cleared ? "目標達成" : "まだ届かない";
+        result.cleared ? "STAGE CLEAR。目標達成" : result.theoreticalReached ? "理論値到達" : "まだ届かない";
       $("#result").className = `result ${statusClass}`;
-      details.setAttribute("aria-label", `${status}。得点${result.total}点、最高理論値${result.theoretical}点。タップで内訳を見る`);
+      details.setAttribute("aria-label", `${status}。得点${result.total}点、目標${result.target}点、最高理論値${result.theoretical}点。タップで内訳を見る`);
       details.title = `${status} ／ タップで内訳を見る`;
-      resultElement.innerHTML = `<span class="score-stat"><span>${result.growthLimited ? "要強化" : result.cleared ? "達成" : "得点"}</span><strong aria-label="${result.total}点">${result.total}</strong></span><span class="score-stat"><span title="現在の強さでの最高理論値">理論値</span><strong aria-label="${result.theoretical}点">${result.theoretical}</strong></span><span class="visually-hidden">${status}</span>`;
+      resultElement.innerHTML = result.cleared
+        ? `<span class="score-stat"><span>STAGE CLEAR</span><strong aria-label="${result.total}点、目標${result.target}点">${result.total}/${result.target}</strong></span><span class="score-stat"><span title="現在の強さでの最高理論値">理論値</span><strong aria-label="${result.theoretical}点">${result.theoretical}</strong></span><span class="visually-hidden">${status}</span>`
+        : `<span class="score-stat"><span>${result.growthLimited ? "要強化" : "得点"}</span><strong aria-label="${result.total}点">${result.total}</strong></span><span class="score-stat"><span title="現在の強さでの最高理論値">理論値</span><strong aria-label="${result.theoretical}点">${result.theoretical}</strong></span><span class="visually-hidden">${status}</span>`;
     }
 
     function escapeText(text) {
@@ -2532,6 +2567,23 @@
       render();
     }
 
+    let clearFlashTimer = 0;
+    function flashStageClear(result) {
+      const flash = $("#clear-flash");
+      const sub = $("#clear-flash-sub");
+      if (!flash || !sub) return;
+      clearTimeout(clearFlashTimer);
+      sub.textContent = `${currentStage().number}面　${result.total}点 / 目標${result.target}点`;
+      flash.hidden = false;
+      flash.classList.remove("show");
+      void flash.offsetWidth;
+      flash.classList.add("show");
+      clearFlashTimer = setTimeout(() => {
+        flash.classList.remove("show");
+        flash.hidden = true;
+      }, 950);
+    }
+
     function check() {
       recordUniquePlayer('combination-blocks');
       const stage = currentStage();
@@ -2547,6 +2599,7 @@
       }
       if (result.cleared) endTutorial(false);
       render();
+      if (result.cleared) flashStageClear(result);
       if (result.cleared && (!before.cleared[state.stageIndex] || wasTutorial)) showClearNotice(before);
     }
 
