@@ -422,6 +422,36 @@
   console.error = (...args) => { _origErr(...args); _dbgLog('ERROR:', ...args); };
 
   const DB_URL       = 'https://ad-game-7b40a-default-rtdb.asia-southeast1.firebasedatabase.app';
+
+  // ===== プレイ人数カウント（同じブラウザ・端末は1回） =====
+  const SITE_PLAYER_ID_KEY = 'marubasho_site_player_id_v1';
+  function getSitePlayerId(){
+    try {
+      let id = localStorage.getItem(SITE_PLAYER_ID_KEY);
+      if(!id){
+        id = (globalThis.crypto && typeof crypto.randomUUID === 'function')
+          ? crypto.randomUUID()
+          : 'p_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,12);
+        localStorage.setItem(SITE_PLAYER_ID_KEY, id);
+      }
+      return id;
+    } catch(_) {
+      return 'session_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,12);
+    }
+  }
+  function recordUniquePlayer(gameKey){
+    const doneKey = 'marubasho_counted_' + gameKey + '_v1';
+    try { if(localStorage.getItem(doneKey) === '1') return; } catch(_) {}
+    const playerId = getSitePlayerId();
+    fetch(DB_URL + '/playCounts/' + gameKey + '/' + playerId + '.json', {
+      method: 'PUT',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ firstPlayedAt: { '.sv': 'timestamp' } }),
+      keepalive: true
+    }).then(r => {
+      if(r.ok){ try { localStorage.setItem(doneKey, '1'); } catch(_) {} }
+    }).catch(() => {});
+  }
   const LS_KEY        = 'tobiGame_best';       // 通常ハイスコア
   const LS_KEY_MURIGE = 'tobiGame_best_murige'; // 無理ゲーハイスコア
   const LS_CLEAR_KEY  = 'tobiGame_clearMode';
@@ -1053,6 +1083,7 @@
   // ===== ゲーム開始・終了 =====
   let _murigeMode = false;
   function startGame(murige){
+    recordUniquePlayer('tobetobi');
     _murigeMode = !!murige;
     cancelAnimationFrame(_raf);
     state = initState();
