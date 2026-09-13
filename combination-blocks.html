@@ -1,0 +1,2587 @@
+<!doctype html>
+<html lang="ja" data-area="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101822">
+  <title>組み合わせを試す</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0c1219;
+      --panel: #131e2a;
+      --line: #304556;
+      --text: #f0eee5;
+      --muted: #b0bec8;
+      --gold: #e8b866;
+      --gold-2: #ffdc98;
+      --good: #83e1b0;
+      --bad: #ff9a8a;
+    }
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+    body {
+      position: fixed;
+      inset: 0;
+      color: var(--text);
+      background: radial-gradient(ellipse at 12% 0%, #192d3a 0%, transparent 58%), var(--bg);
+      font: 16px/1.45 ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP", sans-serif;
+      overscroll-behavior: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    h1, h2, h3, p { margin: 0; }
+    button, select { font: inherit; color: inherit; touch-action: manipulation; }
+    button { cursor: pointer; }
+    button:disabled { opacity: .42; cursor: default; }
+    button:focus-visible, select:focus-visible { outline: 3px solid var(--gold-2); outline-offset: -3px; }
+    [hidden] { display: none !important; }
+
+    .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    /* The three explanations and the board always share the playable screen. */
+    .app {
+      --rail-size: 380px; --hud-size: 280px; --page-pad: 12px; --layout-gap: 8px;
+      --board-size: 0px; --board-gap: 8px; --board-padding: 10px; --stone-font: 32px;
+      position: absolute; inset: 0; height: 100vh; height: var(--viewport-height, 100dvh);
+      padding: max(var(--page-pad), env(safe-area-inset-top)) max(var(--page-pad), env(safe-area-inset-right))
+               max(var(--page-pad), env(safe-area-inset-bottom)) max(var(--page-pad), env(safe-area-inset-left));
+      display: grid; grid-template-columns: var(--rail-size) minmax(0, 1fr);
+      grid-template-rows: auto auto minmax(0, 1fr) auto;
+      grid-template-areas: "top board" "common board" "palette board" "hud board";
+      gap: var(--layout-gap); min-width: 0; min-height: 0; overflow: clip;
+    }
+    .app > * { min-width: 0; min-height: 0; }
+    .topline { grid-area: top; }
+    .brand { display: flex; align-items: center; gap: 8px; padding: 0 2px 8px; }
+    .brand-symbol { color: var(--gold); font-size: 24px; }
+    h1 { font-size: 18px; line-height: 1.4; }
+    .stage-navigation { display: grid; grid-template-columns: minmax(0, 1fr) 72px 52px 60px; gap: 4px; }
+    .site-back {
+      display: grid;
+      place-items: center;
+      min-width: 0;
+      min-height: 44px;
+      padding: 6px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #1b2b3a;
+      color: inherit;
+      font-size: 13px;
+      font-weight: 750;
+      line-height: 1;
+      text-decoration: none;
+      white-space: nowrap;
+      touch-action: manipulation;
+    }
+    .site-back:hover { background: #293e4f; border-color: #6c879a; }
+    .site-back:focus-visible { outline: 3px solid var(--gold-2); outline-offset: -3px; }
+    .stage-navigation select {
+      width: 100%;
+      min-width: 0;
+      min-height: 44px;
+      padding: 8px 26px 8px 8px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--panel);
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='m1 1 5 5 5-5' fill='none' stroke='%23b8cede' stroke-width='2'/%3E%3C/svg%3E");
+      background-position: right 8px center;
+      background-repeat: no-repeat;
+      font-size: 16px;
+    }
+    #area-select { border-color: #609aab; background-color: #193440; color: #d5f3f7; }
+    .difficulty-badge {
+      display: grid;
+      place-items: center;
+      min-width: 0;
+      min-height: 44px;
+      border: 1px solid #b68a44;
+      border-radius: 10px;
+      background: #382d1c;
+      color: var(--gold-2);
+      font-size: 20px;
+      font-weight: 800;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+    .ui-button {
+      min-width: 0;
+      min-height: 44px;
+      padding: 6px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #1b2b3a;
+      font-size: 14px;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+    .ui-button:hover:not(:disabled) { background: #293e4f; border-color: #6c879a; }
+    .ui-button.primary { background: var(--gold); border-color: var(--gold); color: #221b11; }
+    .ui-button.primary:hover { background: var(--gold-2); }
+    .objective { grid-area: objective; min-width: 0; }
+    .objective-stats { height: 44px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: center; gap: 4px; }
+    .stat { min-width: 0; text-align: center; }
+    .stat > span { display: block; font-size: 14px; line-height: 1.4; color: var(--muted); white-space: nowrap; }
+    .stat strong { display: block; font-size: 16px; line-height: 1.4; font-variant-numeric: tabular-nums; color: var(--gold-2); white-space: nowrap; }
+    .palette { grid-area: palette; min-width: 0; }
+    #rules-common { grid-area: common; font-size: 16px; line-height: 1.4; color: var(--muted); overflow-wrap: anywhere; align-self: start; }
+    #palette-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; }
+    .app[data-cards="columns"] #palette-list { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; }
+    .block-card { min-width: 0; min-height: 44px; padding: 8px; border: 1px solid var(--line); border-left: 3px solid var(--block-color); border-radius: 10px; background: #111d28; text-align: left; display: block; line-height: 1.4; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; cursor: grab; }
+    .block-card:hover { background: #1d2f3e; }
+    .block-card.selected { background: #243b4d; outline: 2px solid var(--gold); outline-offset: -2px; }
+    .block-card.dragging { opacity: .6; cursor: grabbing; }
+    .block-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+    .block-title { font-size: 16px; line-height: 1.35; font-weight: 750; white-space: nowrap; }
+    .remaining { font-size: 14px; color: var(--block-color); white-space: nowrap; }
+    .rule-copy { display: block; margin-top: 4px; font-size: 16px; line-height: 1.4; overflow-wrap: anywhere; white-space: normal; }
+    .condensed { display: none; }
+
+    .board-panel { grid-area: board; position: relative; overflow: clip; }
+    .board-wrap { position: absolute; inset: 0; display: grid; place-items: center; overflow: clip; }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-rows: repeat(4, minmax(0, 1fr));
+      width: var(--board-size);
+      height: var(--board-size);
+      gap: var(--board-gap);
+      padding: var(--board-padding);
+      border: 1px solid #a27c4a;
+      border-radius: 14px;
+      background:
+        linear-gradient(120deg, #ffffff0c, transparent 40%),
+        repeating-linear-gradient(0deg, #87602c18 0 2px, transparent 2px 10px), #392b1e;
+      box-shadow: inset 0 0 0 2px #f2bf6730;
+    }
+    .cell {
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      border: 1px solid #eac38740;
+      border-radius: 9px;
+      color: #fff1cf;
+      background: #19140e70;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      overflow: clip;
+    }
+    .cell:hover { border-color: #ffe1ae; }
+    .cell.empty::after { content: ""; width: 8px; height: 8px; border: 1px solid #ffffff33; border-radius: 50%; }
+    .cell.filled { cursor: grab; border-color: var(--cell-color); background: linear-gradient(145deg, color-mix(in srgb, var(--cell-color) 28%, #182633), #111923); }
+    .cell.filled::before { content: ""; position: absolute; inset: 5px; border: 1px solid color-mix(in srgb, var(--cell-color) 36%, transparent); border-radius: 5px; pointer-events: none; }
+    .cell.dragging { opacity: .5; cursor: grabbing; }
+    .cell.drag-over { border: 3px solid var(--gold-2); box-shadow: inset 0 0 18px #ffdb9960; }
+    .cell.drag-blocked { border: 3px solid var(--bad); }
+    .drag-preview {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 56px;
+      height: 56px;
+      display: grid;
+      place-items: center;
+      transform: translate(var(--drag-x, 0px), var(--drag-y, 0px));
+      z-index: 10;
+      border: 2px solid var(--drag-color);
+      border-radius: 10px;
+      background: #172937;
+      color: var(--drag-color);
+      box-shadow: 0 4px 18px #0009;
+      font-size: 28px;
+      font-weight: 800;
+      pointer-events: none;
+      user-select: none;
+    }
+    .cell-letter { color: var(--cell-color); font-size: var(--stone-font); font-weight: 900; line-height: 1; }
+    .cell-name { position: absolute; bottom: 5px; left: 0; right: 0; font-size: 14px; color: #e4e8ec; text-align: center; pointer-events: none; }
+    .app[data-small-cells="true"] .cell-name { display: none; }
+    .hud { grid-area: hud; display: grid; grid-template-areas: "objective" "result" "actions"; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 44px 44px; gap: 4px; align-self: start; }
+    .actions { grid-area: actions; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }
+    .result { grid-area: result; min-width: 0; height: 44px; }
+    #result-details-button { width: 100%; height: 44px; padding: 1px 4px; border: 1px solid var(--line); border-radius: 8px; background: #0c1721; }
+    #result-details-button:disabled { opacity: 1; cursor: default; }
+    #result-content { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; gap: 4px; min-width: 0; }
+    .score-stat { display: grid; min-width: 0; line-height: 1.25; }
+    .score-stat > span { font-size: 14px; color: var(--muted); white-space: nowrap; }
+    .score-stat strong { font-size: 16px; color: var(--gold-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .result.success #result-details-button { border-color: var(--good); }
+    .result.failure #result-details-button { border-color: var(--bad); }
+    .tutorial-target { outline: 3px solid var(--gold-2) !important; outline-offset: -4px !important; }
+    #result-content.tutorial-coach { display: block; }
+    .tutorial-coach span { display: block; font-size: 14px; line-height: 1.4; white-space: nowrap; }
+    .tutorial-coach span:first-child { color: var(--gold-2); font-weight: 750; }
+    .app[data-layout="stack"] { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto auto auto; grid-template-areas: "top" "board" "common" "palette" "hud"; }
+    .app[data-layout="side"] { grid-template-columns: minmax(0, 1fr) 124px; grid-template-rows: auto auto auto minmax(0, 1fr); grid-template-areas: "top top" "palette palette" "common common" "board hud"; }
+    .app[data-layout="bands"] { grid-template-columns: minmax(0, 1fr) var(--hud-size); grid-template-rows: auto auto auto minmax(0, 1fr); grid-template-areas: "top top" "palette palette" "board common" "board hud"; }
+    .app:not([data-layout="wide"]) .brand,
+    .app[data-density="compact"] .brand,
+    .app:not([data-layout="wide"]) .best-stat { display: none; }
+    .app:not([data-layout="wide"]) .objective-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .app[data-layout="stack"] .hud,
+    .app[data-layout="bands"] .hud { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: 44px 44px; grid-template-areas: "objective result" "actions actions"; }
+    .app[data-layout="side"] .hud { grid-template-rows: auto 44px 92px; }
+    .app[data-layout="side"] .actions { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: 44px 44px; }
+    .app[data-layout="side"] .objective-stats { height: auto; }
+    .app[data-layout="side"] .stat { display: flex; justify-content: center; align-items: baseline; gap: 2px; }
+    .app[data-density="compact"] .full { display: none; }
+    .app[data-density="compact"] .condensed { display: inline; }
+    .app[data-density="compact"] .block-card { padding: 3px 4px; line-height: 1.35; }
+    .app[data-density="compact"] .block-heading { display: inline; margin-right: 6px; white-space: nowrap; }
+    .app[data-density="compact"] .remaining { margin-left: 4px; }
+    .app[data-density="compact"] .rule-copy,
+    .app[data-density="compact"] #rules-common { margin-top: 0; line-height: 1.35; }
+    .app[data-density="compact"] #palette-list { gap: 4px; }
+
+    /* 説明と内訳はページ送り。通常サイズの文字を保ち、スクロールは不要。 */
+    .info-sheet {
+      width: min(680px, calc(100vw - 24px));
+      height: min(540px, calc(100vh - 24px));
+      height: min(540px, calc(100dvh - 24px));
+      max-width: none;
+      max-height: none;
+      margin: auto;
+      padding: 16px;
+      border: 1px solid #698299;
+      border-radius: 16px;
+      color: var(--text);
+      background: #142332;
+      overflow: clip;
+    }
+    .info-sheet[open] { display: grid; grid-template-rows: auto minmax(0, 1fr) 44px; gap: 14px; }
+    .info-sheet::backdrop { background: #040a12bc; backdrop-filter: blur(3px); }
+    .sheet-header { display: grid; grid-template-columns: minmax(0, 1fr) 64px; align-items: center; gap: 10px; }
+    .info-sheet[data-view="help"] .sheet-header { grid-template-columns: minmax(0, 1fr) 56px 64px; gap: 8px; }
+    .sheet-header h2 { font-size: 18px; line-height: 1.4; overflow-wrap: anywhere; }
+    .sheet-body { min-width: 0; min-height: 0; overflow: clip; font-size: 16px; line-height: 1.6; overflow-wrap: anywhere; }
+    .sheet-section + .sheet-section { margin-top: 16px; }
+    .sheet-section h3 { margin-bottom: 6px; font-size: 16px; color: var(--gold-2); }
+    .sheet-section p { font-size: 16px; white-space: pre-wrap; }
+    .sheet-footer { display: grid; grid-template-columns: 88px minmax(0, 1fr) 88px; align-items: center; gap: 8px; }
+    #sheet-page { text-align: center; color: var(--muted); font-size: 14px; }
+    #sheet-page span { display: block; line-height: 1.4; }
+    @media (max-height: 440px) {
+      .info-sheet { width: calc(100vw - 20px); padding: 10px; }
+      .info-sheet[open] { gap: 8px; }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .block-card, .ui-button { transition: background .12s, border-color .12s; }
+    }
+
+    /* Area materials. The original styles above remain the light garden. */
+    :root[data-area="enclosure"] {
+      color-scheme: light;
+      --bg: #eeeade; --panel: #f9f7ef; --line: #9ca791;
+      --text: #253a2c; --muted: #4e6052; --gold: #426b4b; --gold-2: #31573b;
+      --good: #277847; --bad: #a93e2f;
+      --theme-panel: #faf8f0; --theme-control: #e6eadb; --theme-hover: #d9e2cb;
+      --theme-active: #dce6d0; --theme-score: #f7f5ec; --theme-sheet: #f4f1e6;
+      --theme-selected: #355f40; --theme-button-ink: #fffdf3; --theme-radius: 4px;
+    }
+    :root[data-area="janken"] {
+      color-scheme: light;
+      --bg: #f5dfbd; --panel: #fff9e9; --line: #4b6072;
+      --text: #193348; --muted: #47566a; --gold: #c23e47; --gold-2: #a52538;
+      --good: #14704f; --bad: #b32632;
+      --theme-panel: #fffbef; --theme-control: #f7edd9; --theme-hover: #ffe0a7;
+      --theme-active: #fff0bd; --theme-score: #fff9e9; --theme-sheet: #fff7e5;
+      --theme-selected: #253e58; --theme-button-ink: #fffdf4; --theme-radius: 16px;
+    }
+    :root[data-area="final"] {
+      color-scheme: dark;
+      --bg: #10101d; --panel: #202033; --line: #646078;
+      --text: #f3eee5; --muted: #c0b9d1; --gold: #dfb979; --gold-2: #f8d99d;
+      --good: #93ddbd; --bad: #ffa79c;
+      --theme-panel: #1f2032; --theme-control: #292940; --theme-hover: #393751;
+      --theme-active: #383248; --theme-score: #161725; --theme-sheet: #1d1d2f;
+      --theme-selected: #f8d99d; --theme-button-ink: #241c16; --theme-radius: 3px;
+    }
+    :root[data-area="enclosure"] body {
+      background:
+        radial-gradient(ellipse at 104% 0%, #6d87632b 0%, transparent 44%),
+        repeating-linear-gradient(12deg, #80745b05 0 1px, transparent 1px 6px), #eeeade;
+    }
+    :root[data-area="janken"] body {
+      background:
+        radial-gradient(circle at 100% 0%, #e16f6670 0 16%, transparent 16.1%),
+        radial-gradient(circle at 0% 105%, #648cbf60 0 22%, transparent 22.1%),
+        radial-gradient(#263e5420 1px, transparent 1.5px) 0 0 / 16px 16px, #f5dfbd;
+    }
+    :root[data-area="final"] body {
+      background:
+        radial-gradient(ellipse at 90% 15%, #66517c45, transparent 50%),
+        radial-gradient(ellipse at 8% 95%, #35646c33, transparent 45%),
+        repeating-linear-gradient(135deg, transparent 0 79px, #bcb3da06 79px 80px), #10101d;
+    }
+    :root:not([data-area="light"]) .stage-navigation select {
+      border-radius: var(--theme-radius); border-color: var(--line); background-color: var(--theme-panel);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='m1 1 5 5 5-5' fill='none' stroke='%237d887e' stroke-width='2'/%3E%3C/svg%3E");
+    }
+    :root:not([data-area="light"]) .site-back { border-radius: var(--theme-radius); background: var(--theme-control); border-color: var(--line); }
+    :root:not([data-area="light"]) .site-back:hover { background: var(--theme-hover); border-color: var(--gold); }
+    :root:not([data-area="light"]) #area-select { background-color: var(--theme-control); color: var(--text); border-color: var(--gold); }
+    :root:not([data-area="light"]) .difficulty-badge { border-radius: var(--theme-radius); background: var(--theme-control); border-color: var(--gold); }
+    :root:not([data-area="light"]) .ui-button { border-radius: var(--theme-radius); background: var(--theme-control); border-color: var(--line); }
+    :root:not([data-area="light"]) .ui-button:hover:not(:disabled) { background: var(--theme-hover); border-color: var(--gold); }
+    :root:not([data-area="light"]) .ui-button.primary { color: var(--theme-button-ink); background: var(--gold); border-color: var(--gold); }
+    :root:not([data-area="light"]) .ui-button.primary:hover { background: var(--gold-2); }
+    :root:not([data-area="light"]) .block-card { border-radius: var(--theme-radius); background: var(--theme-panel); }
+    :root:not([data-area="light"]) .block-card:hover { background: var(--theme-hover); }
+    :root:not([data-area="light"]) .block-card.selected { background: var(--theme-active); outline-color: var(--theme-selected); }
+    :root:not([data-area="light"]) #result-details-button { background: var(--theme-score); border-radius: var(--theme-radius); }
+    :root:not([data-area="light"]) .info-sheet { background: var(--theme-sheet); border-color: var(--line); border-radius: var(--theme-radius); }
+
+    /* White sand, raked gravel and irregular mossy stone. */
+    :root[data-area="enclosure"] .board {
+      border-color: #60725a; border-radius: 5px;
+      background:
+        radial-gradient(#9d967340 .7px, transparent 1px) 0 0 / 7px 7px,
+        repeating-linear-gradient(0deg, #c3bda924 0 1px, transparent 1px 6px), #dbdac6;
+      box-shadow: inset 0 0 0 3px #b5b9a1, inset 0 0 0 5px #ece9d7;
+    }
+    :root[data-area="enclosure"] .cell.empty { border: 1px dashed #7c8a695c; border-radius: 3px; background: #f8f5e58a; }
+    :root[data-area="enclosure"] .cell.empty::after {
+      position: absolute; inset: 18%; width: auto; height: auto; border: 0; border-radius: 0;
+      background: repeating-linear-gradient(160deg, transparent 0 7px, #8c967140 7px 8px);
+    }
+    .piece-surface[data-skin="enclosure"] {
+      --piece-ink: #294332;
+      border-radius: 4px 14px 5px 11px; border-color: #6f806b; color: var(--piece-ink);
+      background:
+        radial-gradient(#53624d22 .7px, transparent 1px) 0 0 / 5px 6px,
+        linear-gradient(135deg, #f2f0df, #bac6ad);
+      box-shadow: inset 2px 2px 0 #ffffffe0, inset -2px -4px 0 #7a8d6d70;
+    }
+    .piece-surface[data-skin="enclosure"]::before {
+      content: ""; position: absolute; inset: 5px; border: 1px solid #56704755;
+      border-radius: 2px 9px 2px 7px; pointer-events: none;
+    }
+    .piece-surface[data-skin="enclosure"]::after {
+      content: ""; position: absolute; left: 0; bottom: 0; width: 35%; height: 27%;
+      border-radius: 0 85% 0 0; background: radial-gradient(ellipse at bottom left, #55734870, transparent 74%); pointer-events: none;
+    }
+    .piece-surface[data-skin="enclosure"] .cell-letter { color: var(--piece-ink); text-shadow: 0 1px #fff9; }
+    .piece-surface[data-skin="enclosure"] .cell-name { color: #304833; }
+    .piece-surface[data-stone="partition"] { --piece-ink: #344a45; background-color: #cad0c2; }
+    .piece-surface[data-stone="largegarden"] { --piece-ink: #65451e; }
+    :root[data-area="enclosure"] .block-card { box-shadow: inset 0 -2px #788a6520; }
+    :root[data-area="enclosure"] .info-sheet::backdrop { background: #233a2b88; }
+
+    /* A cheerful tabletop, checker squares and chunky circular playing pieces. */
+    :root[data-area="janken"] .board {
+      border-color: #263e54; border-radius: 20px;
+      background: repeating-linear-gradient(45deg, #ed8b70 0 10px, #f4c566 10px 20px, #78afa1 20px 30px, #719cc6 30px 40px);
+      box-shadow: inset 0 0 0 3px #263e54, inset 0 0 0 5px #fff6dc;
+    }
+    :root[data-area="janken"] .cell { border-radius: 10px; background-color: #fff6df; }
+    :root[data-area="janken"] .cell.empty { border-color: #344b6360; background: #fff6df; }
+    :root[data-area="janken"] .cell.empty:nth-child(8n+1),
+    :root[data-area="janken"] .cell.empty:nth-child(8n+3),
+    :root[data-area="janken"] .cell.empty:nth-child(8n+6),
+    :root[data-area="janken"] .cell.empty:nth-child(8n+8) { background: #dce9db; }
+    :root[data-area="janken"] .cell.empty::after {
+      width: 10px; height: 10px; border: 0; border-radius: 0;
+      background: linear-gradient(#506c694d, #506c694d) center / 2px 100% no-repeat,
+        linear-gradient(#506c694d, #506c694d) center / 100% 2px no-repeat;
+    }
+    .piece-surface[data-skin="janken"] { --piece-ink: #203c57; --piece-paper: #ffe3a4; border-color: transparent; border-radius: 10px; background: #fff6df; box-shadow: none; color: var(--piece-ink); }
+    .piece-surface[data-skin="janken"]::before {
+      content: ""; position: absolute; inset: 3px 3px 6px; border: 2px solid var(--piece-ink); border-radius: 50%;
+      background: var(--piece-paper); box-shadow: 0 3px 0 var(--piece-ink), inset 0 2px #fff8; pointer-events: none;
+    }
+    .piece-surface[data-skin="janken"]::after {
+      content: ""; position: absolute; inset: 8px 8px 11px; border: 1px dashed #203c5755; border-radius: 50%; pointer-events: none;
+    }
+    .piece-surface[data-stone="rock"] { --piece-paper: #f4b49c; }
+    .piece-surface[data-stone="scissors"] { --piece-paper: #b4dac3; }
+    .piece-surface[data-stone="paper"] { --piece-paper: #b6d4ed; }
+    .piece-surface[data-skin="janken"] .cell-letter { color: var(--piece-ink); }
+    .piece-surface[data-skin="janken"] .cell-name { left: 6px; right: 6px; color: #193348; background: #fff8e6; border-radius: 4px; }
+    .piece-surface .cell-letter, .piece-surface .cell-name { z-index: 1; }
+    :root[data-area="janken"] .block-card { box-shadow: inset 0 -3px #233e5916; }
+    :root[data-area="janken"] .info-sheet { box-shadow: 5px 5px 0 #213a55; }
+    :root[data-area="janken"] .info-sheet::backdrop { background: #213348aa; }
+
+    /* The final board collects objects made from each of the earlier materials. */
+    :root[data-area="final"] .board {
+      border-color: #9c87ac; border-radius: 4px;
+      background:
+        linear-gradient(135deg, #c3aa7359, transparent 22%, #73689540 65%, #84b4aa38),
+        repeating-linear-gradient(0deg, transparent 0 3px, #d9d2f007 3px 4px), #151625;
+      box-shadow: inset 0 0 0 2px #494158, inset 0 0 0 4px #c9aa6d6b;
+    }
+    :root[data-area="final"] .cell.empty { border-color: #b0a2c347; border-radius: 3px; background: linear-gradient(145deg, #252637, #141622); }
+    :root[data-area="final"] .cell.empty::after { width: 9px; height: 9px; border-color: #d1b7856b; border-radius: 0; transform: rotate(45deg); }
+    :root[data-area="final"] .piece-surface[data-skin="light"] {
+      border-color: #dfb16c; border-radius: 9px;
+      background: linear-gradient(145deg, #385061, #101c2a);
+      box-shadow: inset 0 0 0 4px #73512f, inset 0 0 0 5px #c99d575e;
+    }
+    :root[data-area="final"] .piece-surface[data-skin="light"]::before { inset: 6px; border-color: #e4b87477; background: linear-gradient(110deg, #ffc9790c, transparent 55%); }
+    :root[data-area="final"] .piece-surface[data-skin="light"] .cell-letter { color: #f3cc85; text-shadow: 0 0 12px #f3bd6160; }
+    :root[data-area="final"] .piece-surface[data-skin="janken"] { background: transparent; }
+    .piece-surface[data-stone="area_janken"]::before { background: conic-gradient(#f4b49c 0deg 120deg, #b4dac3 120deg 240deg, #b6d4ed 240deg); }
+    .piece-surface[data-stone="area_janken"]::after { border-style: solid; background: #fff0c9; }
+    :root[data-area="final"] .block-card[data-skin="light"] { background: linear-gradient(100deg, #352c21, #1d2835 45%); color: #f1e6ce; border-left-color: #dfb16c; }
+    :root[data-area="final"] .block-card[data-skin="enclosure"] { background: linear-gradient(120deg, #f1efdf, #d9e1c9); color: #263e2c; border-color: #849977; border-left-color: #426a49; --theme-selected: #2b5939; }
+    :root[data-area="final"] .block-card[data-skin="enclosure"] .remaining { color: #31553b; }
+    :root[data-area="final"] .block-card[data-skin="janken"] { background: #ffedc4; color: #203c57; border-color: #92a8b8; border-left-color: #c74650; border-radius: 12px; --theme-selected: #a32f3d; box-shadow: inset 0 -3px #e17f692b; }
+    :root[data-area="final"] .block-card[data-skin="janken"] .remaining { color: #94323d; }
+    :root[data-area="final"] .block-card.selected { box-shadow: inset 0 0 0 1px var(--theme-selected); }
+    :root[data-area="final"] .info-sheet { box-shadow: inset 0 0 0 3px #b59c6830; }
+    :root:not([data-area="light"]) .cell.drag-over { border: 3px solid var(--gold); box-shadow: inset 0 0 0 2px var(--theme-button-ink); }
+    :root:not([data-area="light"]) .cell.drag-blocked { border: 3px solid var(--bad); }
+    .drag-preview.piece-surface { isolation: isolate; }
+    .drag-preview .drag-letter { position: relative; z-index: 1; }
+
+    /* Effect drawings share the board's grid; they never take layout space or input. */
+    .board-effects {
+      position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+      width: var(--board-size); height: var(--board-size); z-index: 2;
+      display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(4, minmax(0, 1fr));
+      gap: var(--board-gap); padding: var(--board-padding); border: 1px solid transparent;
+      pointer-events: none; user-select: none; overflow: clip; border-radius: 14px;
+      --fx-good: #77efb7; --fx-bad: #ff998a; --fx-warn: #ffd178; --fx-off: #b5cbd3;
+    }
+    .board-effects * { pointer-events: none; }
+    .effect-cell { position: relative; min-width: 0; min-height: 0; border-radius: 8px; }
+    .effect-cell[data-tone="good"] { --fx-color: var(--fx-good); --fx-paper: #123c2c; --fx-ink: #b9ffdb; }
+    .effect-cell[data-tone="bad"] { --fx-color: var(--fx-bad); --fx-paper: #562219; --fx-ink: #ffded8; }
+    .effect-cell[data-tone="mixed"], .effect-cell[data-tone="warn"] { --fx-color: var(--fx-warn); --fx-paper: #49340c; --fx-ink: #ffecb1; }
+    .effect-cell[data-tone="off"] { --fx-color: var(--fx-off); --fx-paper: #273742; --fx-ink: #e3edf1; }
+    .effect-ring { position: absolute; inset: 1px; border: 2px solid var(--fx-color); border-radius: inherit; }
+    .effect-cell[data-tone="off"] .effect-ring { opacity: .45; border-style: dotted; }
+    .effect-cell[data-tone="bad"] .effect-ring { border-style: dashed; }
+    .effect-cell[data-tone="mixed"] .effect-ring, .effect-cell[data-tone="warn"] .effect-ring { border-style: double; border-width: 4px; }
+    .effect-cell.effect-focused .effect-ring { inset: 0; box-shadow: inset 0 0 0 2px #fff9, 0 0 8px var(--fx-color); }
+    .effect-value {
+      position: absolute; bottom: 3px; right: 3px; z-index: 3;
+      padding: 0 4px; border-radius: 4px; border: 1px solid var(--fx-color);
+      background: var(--fx-paper); color: var(--fx-ink); font-size: 14px; font-weight: 800;
+      line-height: 18px; white-space: nowrap; font-variant-numeric: tabular-nums;
+    }
+    .app[data-effect-labels="false"] .effect-value { display: none; }
+    .app[data-effect-labels="true"] .cell-letter { transform: translateY(-7px); }
+    .board .cell-name { display: none; }
+    .cell.effect-vacated { opacity: .18; }
+    .effect-room { background: var(--room-fill); border: 1px solid var(--room-edge); border-radius: 5px; }
+    .effect-room.effect-related { outline: 2px solid var(--room-edge); outline-offset: -2px; box-shadow: inset 0 0 12px var(--room-fill); }
+    .effect-room-size { position: absolute; top: 3px; left: 3px; z-index: 3; padding: 0 3px; border-radius: 4px; background: #fff5de; color: #25363c; font-size: 14px; font-weight: 800; line-height: 20px; white-space: nowrap; }
+    .effect-wash {
+      position: absolute; inset: 2px; z-index: 1; border-radius: 6px;
+      border: 2px solid var(--tile-edge); color: var(--tile-edge);
+      background: radial-gradient(ellipse at center, var(--tile-fill), transparent 115%);
+      box-shadow: inset 0 0 18px var(--tile-fill), inset 0 0 4px var(--tile-edge);
+      opacity: .54;
+    }
+    .effect-wash[data-related="true"] { opacity: 1; }
+    .effect-wash[data-signal="beam"] { --tile-edge: #f5c46e; --tile-fill: #ffc45d63; }
+    .effect-wash[data-signal="good"] { --tile-edge: #56d895; --tile-fill: #43d98b63; }
+    .effect-wash[data-signal="bad"] { --tile-edge: #ff897b; --tile-fill: #f86c656b; border-style: dashed; }
+    .effect-wash[data-signal="mixed"], .effect-wash[data-signal="warn"] { --tile-edge: #ffc56a; --tile-fill: #ffa83563; border-style: double; border-width: 4px; }
+    .effect-wash[data-signal="shield"], .effect-wash[data-signal="stop"] { --tile-edge: #ca9af5; --tile-fill: #b384ec63; }
+    .effect-wash[data-signal="range"] { --tile-edge: #7fc8e4; --tile-fill: #65bddd42; border-style: dotted; }
+    .effect-wash[data-signal="tie"], .effect-wash[data-signal="off"] { --tile-edge: #aec3cc; --tile-fill: #a0b5c440; }
+    .effect-wash[data-signal="source"] { --tile-edge: #ffe6ae; --tile-fill: #ffe0a340; }
+    .effect-wash[data-stop="true"] { border-style: dashed; }
+    .effect-cell[data-occupied="true"] .effect-wash { background: radial-gradient(ellipse at center, transparent 30%, var(--tile-fill) 110%); box-shadow: inset 0 0 12px var(--tile-fill); }
+    .effect-ring { z-index: 2; }
+    .effect-preview-stone { position: absolute; inset: 0; display: grid; place-items: center; border: 2px dashed var(--gold); border-radius: 9px; background: linear-gradient(145deg, color-mix(in srgb, var(--cell-color) 28%, #182633), #111923); }
+    .effect-preview-stone .cell-letter { position: relative; z-index: 1; }
+    #result-content.effect-readout { display: block; }
+    .effect-readout span { display: block; font-size: 14px; line-height: 19px; white-space: nowrap; }
+    .effect-readout span:first-child { font-weight: 800; color: var(--gold-2); }
+    .effect-readout span:last-child { color: var(--muted); }
+    :root[data-area="enclosure"] .board-effects, :root[data-area="janken"] .board-effects {
+      --fx-good: #227151; --fx-bad: #b33b2e; --fx-warn: #956112; --fx-off: #596d73;
+    }
+  </style>
+</head>
+<body>
+  <main class="app" data-layout="side" data-density="compact" data-cards="rows">
+    <header class="topline">
+      <div class="brand"><span class="brand-symbol" aria-hidden="true">▦</span><h1 id="stage-title"></h1></div>
+      <p id="stage-description" class="visually-hidden"></p>
+      <nav class="stage-navigation" aria-label="エリアとステージを選ぶ">
+        <select id="area-select" aria-label="エリアを選ぶ"></select>
+        <select id="stage-select" aria-label="ステージを選ぶ"></select>
+        <span id="stage-difficulty" class="difficulty-badge" role="status" aria-label="難易度1、10段階">☆1</span>
+        <a class="site-back" href="plaza.html" aria-label="幻実世界の電子遊戯へ戻る">広場へ</a>
+      </nav>
+    </header>
+
+    <aside class="palette" aria-label="このステージの3種類の石">
+      <div id="palette-list"></div>
+    </aside>
+    <p id="rules-common" aria-label="石の共通ルール"></p>
+
+    <section class="board-panel" aria-label="配置盤">
+      <div class="board-wrap">
+        <div id="board" class="board" role="grid" aria-label="4×4配置盤"></div>
+        <div id="board-effects" class="board-effects" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <div class="hud">
+      <section class="objective" aria-label="このステージの目標">
+        <div class="objective-stats">
+          <div class="stat"><span>目標</span><strong id="target-score">—</strong></div>
+          <div class="stat"><span>配置</span><strong id="placement-count">0/0</strong></div>
+          <div class="stat best-stat" aria-label="最高記録"><span>最高</span><strong id="best-score">—</strong></div>
+        </div>
+      </section>
+      <section id="result" class="result empty" aria-label="採点結果">
+        <button id="result-details-button" type="button" aria-label="採点後に内訳を見る" disabled>
+          <span id="result-content" aria-live="polite"></span>
+        </button>
+      </section>
+      <div class="actions" aria-label="盤面の操作">
+        <button id="undo-button" class="ui-button" type="button" aria-label="一手戻す">戻す</button>
+        <button id="reset-button" class="ui-button" type="button" aria-label="全部戻す">全戻す</button>
+        <button id="help-button" class="ui-button" type="button" aria-label="目的・進み具合・遊び方">進み方</button>
+        <button id="check-button" class="ui-button primary" type="button" aria-label="採点する">採点</button>
+      </div>
+    </div>
+  </main>
+
+  <div id="drag-preview" class="drag-preview" aria-hidden="true" hidden></div>
+  <div id="effect-announcement" class="visually-hidden" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <dialog id="info-sheet" class="info-sheet" aria-labelledby="sheet-title">
+    <header class="sheet-header">
+      <h2 id="sheet-title"></h2>
+      <button id="sheet-tutorial" class="ui-button" type="button" aria-label="最初の面でチュートリアルを受ける" hidden>練習</button>
+      <button id="sheet-close" class="ui-button" type="button" autofocus>閉じる</button>
+    </header>
+    <div id="sheet-body" class="sheet-body"></div>
+    <footer class="sheet-footer">
+      <button id="sheet-prev" class="ui-button" type="button">前へ</button>
+      <span id="sheet-page" aria-live="polite"></span>
+      <button id="sheet-next" class="ui-button" type="button">次へ</button>
+    </footer>
+  </dialog>
+
+  <script>
+    "use strict";
+
+    const GRID_W = 4;
+    const GRID_H = 4;
+    const STORAGE_KEY = "combination-blocks-best-v2";
+    const PROGRESS_KEY = "combination-blocks-progress-v1";
+    const UNLOCK_COUNTS = [0, 1, 1, 2, 2, 4, 4, 6, 6, 8];
+    const NEXT_AREA_CLEARS = 4;
+    const GAME_GOAL = "すべてのゲームを遊びつくそう！";
+
+    const LIGHT_TYPES = [
+      {
+        id: "beacon", mark: "光", name: "光源石", color: "#f3bd61",
+        effect: "基礎6。空きマス越しに見える受光石1個につき +12。",
+        condition: "上下左右の最初の石だけを見る。間に1マス以上の空きが必要。",
+        cost: "隣の受光石1個につき −8。すべての石が、その先の光を遮る。",
+        score: (ctx) => {
+          const receivers = ctx.sight.filter(hit => hit && hit.id === "photocell");
+          const lit = receivers.filter(hit => hit.distance >= 2).length;
+          const near = receivers.filter(hit => hit.distance === 1).length;
+          const reasons = ["基礎6"];
+          if (lit) reasons.push(`届く受光${lit}個 +${lit * 12}`);
+          if (near) reasons.push(`近すぎる受光${near}個 −${near * 8}`);
+          if (!lit && !near) reasons.push("見える受光なし");
+          return { value: 6 + lit * 12 - near * 8, reasons };
+        }
+      },
+      {
+        id: "photocell", mark: "受", name: "受光石", color: "#78d5dc",
+        effect: "基礎4。光が1方向だけから届くと +32。",
+        condition: "上下左右の最初の石が光源石で、間に1マス以上の空きが必要。",
+        cost: "2方向以上から届くと −16。隣の光源は無効。光なしは基礎点だけ。",
+        score: (ctx) => {
+          const lit = ctx.sight.filter(hit => hit && hit.id === "beacon" && hit.distance >= 2).length;
+          return {
+            value: 4 + (lit === 1 ? 32 : lit >= 2 ? -16 : 0),
+            reasons: ["基礎4", lit === 1 ? "光が1方向 +32" : lit >= 2 ? `光が${lit}方向 −16` : "届く光なし"]
+          };
+        }
+      },
+      {
+        id: "shade", mark: "遮", name: "遮光石", color: "#c19af2",
+        effect: "基礎8。光源石と受光石を反対側に見ると +22。",
+        condition: "上下か左右の最初の石が、光源・受光の組。隣り合ってもよい。",
+        cost: "その光は受光石に届かない。加点は1回まで。条件外は基礎点だけ。",
+        score: (ctx) => {
+          const shields = [[0, 2], [1, 3]].some(([a, b]) => {
+            const left = ctx.sight[a], right = ctx.sight[b];
+            return left && right && ((left.id === "beacon" && right.id === "photocell") ||
+              (left.id === "photocell" && right.id === "beacon"));
+          });
+          return { value: 8 + (shields ? 22 : 0), reasons: ["基礎8", shields ? "反対側の光源・受光 +22" : "反対側の組なし"] };
+        }
+      }
+    ];
+
+    // Maxima were exhaustively verified over every legal placement, including
+    // fewer stones and their unused-slot penalties. Do not reveal them pre-score.
+    const LIGHT_LEVELS = [
+      {
+        short: "初めの光", title: "一筋の光を届けよう", caps: [1, 1, 1], target: 44, theoretical: 62,
+        description: "光の庭・入門。置いてある光源石から1マス以上離して、同じ行か列に受光石を置こう。",
+        note: "光源石と受光石の間は空ける。斜めには光が届かない。最初の光源石も自由に動かせます。",
+        initialPieces: [{ index: 0, typeId: "beacon" }], initialSelection: "photocell"
+      },
+      {
+        short: "光の距離", title: "三つの石の居場所", caps: [1, 1, 1], target: 62, theoretical: 62,
+        description: "光の庭。今回は空の盤面から。光を届けたまま、遮光石も置いて目標を目指す。",
+        note: "石を置かない枠にも減点がある。遮光石が光を遮らない置き方を探してみよう。"
+      },
+      {
+        short: "光を絞る", title: "二つの光源、一つの受光", caps: [2, 1, 1], target: 90, theoretical: 90,
+        description: "光の庭。光源石が二つに増えた。受光石が欲しい光は1方向だけ。",
+        note: "一方の光を届け、もう一方を遮る。遮光石自身の加点条件も一緒に満たしてみよう。"
+      },
+      {
+        short: "光の分岐", title: "一つの光源を分け合う", caps: [1, 2, 1], target: 110, theoretical: 110,
+        description: "光の庭。一つの光源石から、二つの受光石へそれぞれ光を届ける。",
+        note: "同じ方向に受光石を並べると、手前の石がその先を遮る。光を別の方向へ分けよう。"
+      },
+      {
+        short: "一つの陰", title: "二筋の光と一つの陰", caps: [2, 2, 1], target: 138, theoretical: 138,
+        description: "光の庭。二つの受光石を照らしながら、遮光石の反対側にも光源・受光の組を作る。",
+        note: "受光石は、光を受ける方向と遮光石に見られる方向を分けられる。角度を変えて考えよう。"
+      },
+      {
+        short: "二つの陰", title: "二つの遮光を両立する", caps: [2, 2, 2], target: 168, theoretical: 168,
+        description: "光の庭。遮光石が二つに増えた。二つとも働かせ、受光石の光も失わない配置を探す。",
+        note: "届く光と遮る光の通り道を描いてみよう。片方の光源が照らす石を、もう片方が遮る形もある。"
+      },
+      {
+        short: "三つの光", title: "三つの受光石を照らす", caps: [2, 3, 1], target: 186, theoretical: 186,
+        description: "光の庭。受光石が三つに。互いに光を遮らず、それぞれ1方向だけから光を受ける。",
+        note: "一つの光源にすべてを任せず、二つの光源で担当を分けよう。最後に遮光石の通り道を作る。"
+      },
+      {
+        short: "光源混雑", title: "光が多くても困る", caps: [3, 3, 1], target: 192, theoretical: 192,
+        description: "光の庭。光源石が三つに増えて、光が重なりやすい。三つの受光石の照らしすぎを防ごう。",
+        note: "光源石も光を遮る。増えた光源をどの行・列に置けば、光の重なりを避けられるだろう。"
+      },
+      {
+        short: "三点照射", title: "遮るか、照らすか", caps: [2, 3, 2], target: 194, theoretical: 194,
+        description: "光の庭。二つの光源、三つの受光、二つの遮光。全員の条件を満たそうとすると光が足りない。",
+        note: "受光の加点と遮光の加点を比べよう。一部の石は基礎点だけにすると、全体の得点が伸びる。"
+      },
+      {
+        short: "光の庭", title: "四つの光を咲かせる", caps: [2, 4, 2], target: 220, theoretical: 220,
+        description: "光の庭・最終面。四つの受光石へ光を届ける。8個の石のために、空きマスの通り道を残そう。",
+        note: "4×4では、各光源が空きマス越しに照らせる方向は限られる。遮光石を働かせる代償も考えよう。"
+      }
+    ];
+    const LIGHT_STAGES = LIGHT_LEVELS.map((level, index) => ({
+      ...level,
+      id: `light-${index + 1}`,
+      areaId: "light", areaNumber: 1, number: index + 1, difficulty: index + 1,
+      limit: level.caps.reduce((sum, count) => sum + count, 0),
+      emptyPenalty: 5, usesSight: true,
+      types: LIGHT_TYPES.map((type, typeIndex) => ({ ...type, max: level.caps[typeIndex] }))
+    }));
+    const ENCLOSURE_TYPES = [
+      {
+        id: "partition", mark: "壁", name: "仕切石", color: "#b6bdcc",
+        effect: "基礎4。異なる空間2つ以上に接すると+20。",
+        condition: "上下左右に接する空きマスのつながりを調べる。同じ空間は1つと数える。",
+        cost: "空きマスに接していないと−8。盤外は空間に含めない。",
+        score: ctx => ({
+          value: ctx.rooms.length >= 2 ? 24 : ctx.rooms.length === 0 ? -4 : 4,
+          reasons: ["基礎4", ctx.rooms.length >= 2 ? `異なる空間${ctx.rooms.length}つを分断 +20`
+            : ctx.rooms.length === 0 ? "接する空間なし −8" : `接するのは一つの空間（${ctx.rooms[0].size}マス）`]
+        })
+      },
+      {
+        id: "smallgarden", mark: "小", name: "小庭石", color: "#8de3b3",
+        effect: "基礎4。接する空間が一つだけで、広さ2マスなら+32。",
+        condition: "上下左右に接する空間を数える。空間は他の庭石と共有できる。",
+        cost: "二つ以上の空間に触れると−14。その他は基礎4点。",
+        score: ctx => scoreGarden(ctx.rooms, 2, 32)
+      },
+      {
+        id: "largegarden", mark: "大", name: "大庭石", color: "#edbb7d",
+        effect: "基礎4。接する空間が一つだけで、広さ4マスなら+44。",
+        condition: "上下左右に接する空間を数える。空間の形は自由。",
+        cost: "二つ以上の空間に触れると−14。その他は基礎4点。",
+        score: ctx => scoreGarden(ctx.rooms, 4, 44)
+      }
+    ];
+    const ENCLOSURE_LEVELS = [
+      {
+        "caps": [
+          2,
+          1,
+          1
+        ],
+        "target": 80,
+        "theoretical": 88,
+        "short": "二マスの庭",
+        "title": "角に小さな空間を作ろう",
+        "description": "囲みの庭・入門。石を置かない空きマスが庭になる。置いてある3個を手がかりに、広さ2マスの空間へ小庭石を接しよう。",
+        "note": "上辺の右側に注目。小庭石も空間を区切る壁になる。最初の3個も自由に動かせます。",
+        "initialPieces": [
+          {
+            "index": 1,
+            "typeId": "partition"
+          },
+          {
+            "index": 6,
+            "typeId": "partition"
+          },
+          {
+            "index": 11,
+            "typeId": "largegarden"
+          }
+        ],
+        "initialSelection": "smallgarden"
+      },
+      {
+        "caps": [
+          3,
+          1,
+          1
+        ],
+        "target": 90,
+        "theoretical": 124,
+        "short": "四マスの庭",
+        "title": "大きい空間に切り替える",
+        "description": "空の盤面から広さ4マスの空間を作る。小庭石と大庭石では欲しい広さが違う。今回は大庭石を中心に考えよう。",
+        "note": "4マスの空間は正方形でなくてもよい。庭石も壁の一部に使える。仕切石は違う空間の間で働く。"
+      },
+      {
+        "caps": [
+          2,
+          2,
+          2
+        ],
+        "target": 138,
+        "theoretical": 152,
+        "short": "空間の共有",
+        "title": "一つの庭を分け合う",
+        "description": "庭石が2個ずつに増えた。庭石ごとに別の空間を用意する必要はない。同じ空間に複数の庭石を接して得点を伸ばす。",
+        "note": "二つの大庭石が同じ4マスの空間だけに接する形を探そう。小庭石が外側を区切る役になることもある。"
+      },
+      {
+        "caps": [
+          3,
+          2,
+          1
+        ],
+        "target": 134,
+        "theoretical": 148,
+        "short": "小庭の共有",
+        "title": "小さな庭に二つの入口",
+        "description": "広さ2マスの空間を、小庭石2個から利用する。仕切石も空間の分断を保ちながら働かせよう。",
+        "note": "小庭石2個が接する場所を残しつつ、空間が外側へ漏れないようにする。仕切石が触れる空間の数も数えよう。"
+      },
+      {
+        "caps": [
+          4,
+          1,
+          1
+        ],
+        "target": 180,
+        "theoretical": 180,
+        "short": "二つの広さ",
+        "title": "二マスと四マスを両立する",
+        "description": "仕切石が4個。小庭と大庭の条件を同じ盤面で満たす。片方を広げた結果、もう片方がつながってしまわないようにする。",
+        "note": "空間の面積は足し算で考えよう。2マスと4マスの空間を先に決め、残った空間との境界に仕切石を置く。"
+      },
+      {
+        "caps": [
+          4,
+          2,
+          2
+        ],
+        "target": 264,
+        "theoretical": 264,
+        "short": "境界の共有",
+        "title": "四つの境界を働かせる",
+        "description": "仕切石4個と庭石4個で空間を設計する。庭を囲むだけでなく、仕切石が異なる空間を分ける位置を探そう。",
+        "note": "盤外は空間として数えない。端の仕切石も、盤内の違う空間二つに触れれば加点される。1マスの空間も境界の相手に使える。"
+      },
+      {
+        "caps": [
+          2,
+          3,
+          2
+        ],
+        "target": 206,
+        "theoretical": 206,
+        "short": "壁の代役",
+        "title": "減点を引き受ける石",
+        "description": "仕切石は2個、庭石は5個。全員を得点役にしようとすると区切りが足りない。庭石を壁役に使う代償と、ほかの石の加点を比べよう。",
+        "note": "一つの庭石が二つ以上の空間に触れて減点されても、その区切りで複数の庭石が高得点になるなら全体は伸びる。"
+      },
+      {
+        "caps": [
+          4,
+          3,
+          1
+        ],
+        "target": 252,
+        "theoretical": 252,
+        "short": "小庭を囲む",
+        "title": "小さな庭を三つの石で共有する",
+        "description": "小庭石が3個、大庭石が1個。4個の仕切石も働かせながら、小庭石3個が同じ2マスの空間だけに触れる形を探そう。",
+        "note": "2マスの空間の周囲には、何個の石を置けるだろう。庭石自身も境界になることを利用する。"
+      },
+      {
+        "caps": [
+          2,
+          4,
+          2
+        ],
+        "target": 288,
+        "theoretical": 288,
+        "short": "庭の分割",
+        "title": "四つの小庭石の居場所",
+        "description": "小庭石が4個になり、仕切石は2個に減った。空間の共有と分割を組み合わせ、すべての庭石を働かせよう。",
+        "note": "空きマス8個を2・2・4マスに分けて考えよう。小庭石4個を二つの庭に均等に分ける必要はない。"
+      },
+      {
+        "caps": [
+          3,
+          3,
+          3
+        ],
+        "target": 304,
+        "theoretical": 304,
+        "short": "七マスの再設計",
+        "title": "一つ増えた石、消えた空間",
+        "description": "囲みの庭・最終面。石が9個になり、残る空きは7マス。前の面の2・2・4マスはもう作れない。庭の共有と壁の役割を組み直そう。",
+        "note": "空間を細かく分けるだけが正解ではない。小庭石3個で一つの小庭を、大庭石3個で一つの大庭を共有する形を考えよう。"
+      }
+    ];
+    const ENCLOSURE_STAGES = ENCLOSURE_LEVELS.map((level, index) => ({
+      ...level, id: `enclosure-${index + 1}`, areaId: "enclosure", areaNumber: 2,
+      number: index + 1, difficulty: index + 1,
+      limit: level.caps.reduce((sum, count) => sum + count, 0),
+      emptyPenalty: 5, usesRooms: true,
+      types: ENCLOSURE_TYPES.map((type, typeIndex) => ({ ...type, max: level.caps[typeIndex] }))
+    }));
+    const JANKEN_BEATS = { rock: "scissors", scissors: "paper", paper: "rock" };
+    const JANKEN_TYPES = [
+      { id: "rock", mark: "✊", name: "グー", color: "#efaa82", winsAgainst: "チョキ", losesAgainst: "パー" },
+      { id: "scissors", mark: "✌", name: "チョキ", color: "#7bdbb0", winsAgainst: "パー", losesAgainst: "グー" },
+      { id: "paper", mark: "✋", name: "パー", color: "#91bff4", winsAgainst: "グー", losesAgainst: "チョキ" }
+    ].map(hand => ({
+      ...hand,
+      effect: `${hand.winsAgainst}に勝ち、${hand.losesAgainst}に負ける。1勝なら30点。`,
+      condition: "上下左右の隣だけと対戦。2勝以上は12点、0勝は0点。",
+      cost: "1敗ごとに−10点。あいこは勝ち・負けに数えない。石は消えない。",
+      score: ctx => scoreJanken(ctx.matches)
+    }));
+    const JANKEN_LEVELS = [
+      {
+        "caps": [
+          1,
+          1,
+          1
+        ],
+        "target": 40,
+        "theoretical": 40,
+        "short": "はじめの一勝",
+        "title": "チョキに勝つグーを置こう",
+        "description": "ジャンケン・入門。チョキとパーが置いてある。グーを、チョキには勝ててパーには負けない場所に置こう。",
+        "note": "対戦するのは上下左右の隣だけ。最初の2個も自由に動かせます。1勝1敗でも20点になります。",
+        "initialPieces": [
+          {
+            "index": 5,
+            "typeId": "scissors"
+          },
+          {
+            "index": 6,
+            "typeId": "paper"
+          }
+        ],
+        "initialSelection": "rock"
+      },
+      {
+        "caps": [
+          2,
+          1,
+          1
+        ],
+        "target": 60,
+        "theoretical": 60,
+        "short": "相手を分け合う",
+        "title": "二つのグーで一つのチョキに勝つ",
+        "description": "同じ相手に複数の石が勝ってもよい。グー2個がチョキに勝ち、パーにも勝ち相手がいる配置を作ろう。",
+        "note": "パーの隣にグーを増やしすぎると2勝になり、1勝ボーナスが下がる。同じ手同士のあいこは無害。"
+      },
+      {
+        "caps": [
+          2,
+          2,
+          1
+        ],
+        "target": 80,
+        "theoretical": 80,
+        "short": "勝ちすぎ注意",
+        "title": "勝つ相手は一つずつ",
+        "description": "チョキも2個に増えた。グーを真ん中に置けば、勝ちすぎてしまうことがある。相手を一つずつ受け持とう。",
+        "note": "それぞれの石から、勝てる隣の石を数えてみよう。負けをゼロにするより、1勝を増やす方が得な場合がある。"
+      },
+      {
+        "caps": [
+          3,
+          1,
+          2
+        ],
+        "target": 100,
+        "theoretical": 100,
+        "short": "一つのチョキ",
+        "title": "勝ち相手が足りないとき",
+        "description": "グー3個に対し、チョキは1個。二つのパーの勝ち相手も必要になる。どの石を誰の隣に置くか整理しよう。",
+        "note": "チョキの上下左右には4か所しかない。勝てる相手と、自分を負かす相手のために場所を分ける。"
+      },
+      {
+        "caps": [
+          4,
+          2,
+          1
+        ],
+        "target": 120,
+        "theoretical": 120,
+        "short": "グーの大集団",
+        "title": "四つのグーの担当を決める",
+        "description": "グー4個、チョキ2個、パー1個。グーは同じチョキを共有できるが、二つのチョキに同時に触れると勝ちすぎる。",
+        "note": "グーの担当チョキを決めてから、パーの置き場所を探そう。パーは一つのグーにだけ勝てる位置を探す。"
+      },
+      {
+        "caps": [
+          2,
+          2,
+          2
+        ],
+        "target": 120,
+        "theoretical": 120,
+        "short": "勝ち相手の輪",
+        "title": "六つすべてに勝ち相手を",
+        "description": "3種類が2個ずつ。これまでのように勝てない石を残す配置では目標に届かない。勝ち相手が一周して戻る形を考えよう。",
+        "note": "グー→チョキ→パー→グーと、勝つ相手をつないで輪にする。同じ手が隣り合っても、あいこは勝敗に数えない。"
+      },
+      {
+        "caps": [
+          3,
+          2,
+          2
+        ],
+        "target": 140,
+        "theoretical": 140,
+        "short": "輪に加わる石",
+        "title": "勝ち相手の輪を広げる",
+        "description": "グーが1個増えた。誰かの勝ち相手を増やしすぎず、新しいグーにも1勝できる場所を作る。",
+        "note": "新しいグーはチョキに勝つが、パーにとっては新しい勝ち相手にもなる。両側の変化を確認しよう。"
+      },
+      {
+        "caps": [
+          3,
+          3,
+          2
+        ],
+        "target": 160,
+        "theoretical": 160,
+        "short": "三つのチョキ",
+        "title": "共有する相手を変える",
+        "description": "グーとチョキが3個ずつ。二つのパーをチョキが分け合う。全員がちょうど1勝できる形に組み直そう。",
+        "note": "一つのパーに複数のチョキが勝ってもよい。そのチョキを誰のグーが相手にするかまで考えよう。"
+      },
+      {
+        "caps": [
+          4,
+          2,
+          2
+        ],
+        "target": 160,
+        "theoretical": 160,
+        "short": "偏った八個",
+        "title": "少ないチョキに勝ち相手を集める",
+        "description": "石は8個のまま、グー4個・チョキ2個・パー2個に。前の面と同じ役割分担では、相手の数が合わなくなる。",
+        "note": "チョキの隣には、グーだけでなく勝つためのパーも必要。角・端・中央で置ける隣の数が違うことを使おう。"
+      },
+      {
+        "caps": [
+          5,
+          2,
+          2
+        ],
+        "target": 180,
+        "theoretical": 180,
+        "short": "五つのグー",
+        "title": "九個全員の一勝をつなぐ",
+        "description": "ジャンケン・最終面。グーが5個になった。二つのチョキの周囲を使い切りつつ、パーも含めて全員にちょうど1勝させよう。",
+        "note": "チョキはグーの相手になりながら、自分が勝つパーにも触れる必要がある。場所を多く使えるマスから役割を決めよう。"
+      }
+    ];
+    const JANKEN_STAGES = JANKEN_LEVELS.map((level, index) => ({
+      ...level, id: `janken-${index + 1}`, areaId: "janken", areaNumber: 3,
+      number: index + 1, difficulty: index + 1,
+      limit: level.caps.reduce((sum, count) => sum + count, 0),
+      emptyPenalty: 5, usesJanken: true,
+      types: JANKEN_TYPES.map((type, typeIndex) => ({ ...type, max: level.caps[typeIndex] }))
+    }));
+
+    const FINAL_TYPES = [{
+      id: "area_light", name: "光の庭", mark: "光", color: "#f2cd70",
+      sourceAreaId: "light", baseBonus: 10, maxExtra: 20, score: scoreAreaLight
+    }, {
+      id: "area_enclosure", name: "囲みの庭", mark: "囲", color: "#8cdbb0",
+      sourceAreaId: "enclosure", baseBonus: 20, maxExtra: 40, score: scoreAreaEnclosure
+    }, {
+      id: "area_janken", name: "ジャンケン", mark: "拳", color: "#ceadff",
+      sourceAreaId: "janken", baseBonus: 15, maxExtra: 30, score: scoreAreaJanken
+    }];
+    // Exact score envelopes from exhaustive enumeration, including unused stones.
+    // A row is [far light hits, matching rooms, single wins, score at base strength].
+    // Every integer bonus combination (21 × 41 × 31) is covered by these envelopes.
+    const FINAL_LEVELS = [{
+      caps: [1, 1, 1], target: 31, theoretical: 81,
+      frontier: [[1,0,1,31],[2,0,0,32]],
+      short: "エリアを石に", title: "三つのエリアを一つの盤面へ",
+      description: "光の庭・囲みの庭・ジャンケンが石になった。各エリアの10面の最高記録の合計で、対応する石の加点が強くなる。まずは囲みの庭を、光から1マス空けて置こう。",
+      note: "光は左上、ジャンケンはその右に配置済み。囲みの庭を3行1列へ置いて採点してみよう。過去の記録が0点でも最初の目標に届く。置いてある石も動かせる。",
+      initialSelection: "area_enclosure", initialPieces: [{ index: 0, typeId: "area_light" }, { index: 1, typeId: "area_janken" }]
+    }, {
+      caps: [2, 1, 1], target: 56, theoretical: 136,
+      frontier: [[0,1,0,24],[2,0,1,45],[4,0,0,56]],
+      short: "離して照らす", title: "二つの光で相手を共有する",
+      description: "光が2個になった。囲みとジャンケンを離して見せるか、ジャンケンを光の隣へ寄せるか。いま強い石を中心に考えよう。",
+      note: "空きマスを挟み、四隅に4個を置くと光の通り道を作りやすい。同じ光も視線を止めるので、光同士の位置にも注意。"
+    }, {
+      caps: [1, 1, 2], target: 70, theoretical: 124,
+      frontier: [[0,1,0,22],[1,0,2,44],[2,0,1,45]],
+      short: "光を分け合う", title: "一つの光に二つの勝ち相手",
+      description: "二つのジャンケンは、同じ光を勝ち相手にできる。ただし光は、隣に異種が増えると減点される。光を離す得点と比べよう。",
+      note: "ジャンケンの記録が伸びるほど、隣接による得点が有利になる。採点後の理論値が目標未満なら、先の3エリアの記録を伸ばそう。"
+    }, {
+      caps: [2, 1, 2], target: 115, theoretical: 188,
+      frontier: [[1,1,2,60],[2,1,1,69],[3,0,2,68],[4,0,1,69]],
+      short: "強さで選ぶ", title: "遠くを見るか、空間を囲むか",
+      description: "光を遠くへ通す配置と、囲みが2マスか4マスの空間に触れる配置を比べよう。どのエリアを育てたかで有利な形が変わる。",
+      note: "囲みの庭の石だけで囲う必要はない。光もジャンケンも壁になる。ただしジャンケンが囲みの隣に来ると減点される。"
+    }, {
+      caps: [2, 2, 2], target: 170, theoretical: 246,
+      frontier: [[1,2,2,86],[2,2,0,78],[3,1,1,83],[4,0,2,82]],
+      short: "三つの役割", title: "距離・広さ・勝ち相手を両立する",
+      description: "3種類が2個ずつ。光の通り道を作りながら、小さな空間を区切り、ジャンケンには光を一つずつ見つけよう。",
+      note: "同じ空間を複数の囲みの石で共有できる。光とジャンケンの位置を先に決め、残った空きの広さを数える方法もある。"
+    }, {
+      caps: [3, 2, 2], target: 230, theoretical: 316,
+      frontier: [[3,2,2,116],[4,2,0,102],[6,0,2,106]],
+      short: "光を増やす", title: "増えた光が味方を邪魔する",
+      description: "光が3個に増えた。遠い相手を先に隠したり、ジャンケンに二つ目の光が隣接したりしないよう、役割を分けよう。",
+      note: "光が強くても、ジャンケンの隣に2個置くと1勝の加点が消える。離れて見る光と、勝ち相手になる光を分ける。"
+    }, {
+      caps: [2, 3, 2], target: 250, theoretical: 310,
+      frontier: [[1,3,2,110],[3,3,0,112],[4,0,2,86],[4,2,0,100]],
+      short: "空間を分け合う", title: "三つの囲みに同じ庭を見せる",
+      description: "囲みの石が3個。広さ2マスか4マスの空間を共有させるか、複数の空間を作るか。ジャンケンとの接触にも気を配ろう。",
+      note: "一つの囲みが二つの空間に触れると加点を失い、さらに−8点。空間を細かく分けすぎないことが大切。"
+    }, {
+      caps: [2, 2, 3], target: 285, theoretical: 325,
+      frontier: [[2,2,3,115],[4,0,2,86],[4,2,0,100]],
+      short: "三つの勝ち役", title: "二つの光を三つの石で共有する",
+      description: "ジャンケンが3個に増えた。一つの光を共有してもよいが、どのジャンケンにも隣の光はちょうど1個が理想。",
+      note: "ジャンケンの加点が光の接触減点を上回るか比べよう。その組を壁として使えば、囲みの加点も同時に狙える。"
+    }, {
+      caps: [3, 3, 2], target: 340, theoretical: 374,
+      frontier: [[3,3,2,134],[4,3,1,135],[6,0,2,101],[6,1,0,104]],
+      short: "育て方で変わる", title: "強いエリアを中心に組み直す",
+      description: "光と囲みが3個ずつ。光の加点を一つ増やすために、ジャンケンの加点を一つ失ってもよいか。現在の効果を見て判断しよう。",
+      note: "先のエリアで最高記録を更新すると、同じ配置でも得点が伸びる。育成後は採点し直して、どの形が得か比較しよう。"
+    }, {
+      caps: [3, 3, 3], target: 430, theoretical: 445,
+      frontier: [[4,3,3,155],[5,3,1,147]],
+      short: "集大成", title: "三つのエリアの記録と配置を極める",
+      description: "3種類が3個ずつ。遠くへ光を通し、囲みに適した空間を作り、ジャンケンに光を一つずつ。これまでの記録と盤面の工夫を合わせよう。",
+      note: "目標は430点。3エリアの記録を十分に伸ばしたうえで、三つの効果を同時に使う配置を探そう。減点を一切なくすことより、合計点を重視する。"
+    }];
+    const FINAL_STAGES = FINAL_LEVELS.map((level, index) => ({
+      ...level, id: `final-${index + 1}`, areaId: "final", areaNumber: 4,
+      number: index + 1, difficulty: index + 1,
+      limit: level.caps.reduce((sum, count) => sum + count, 0),
+      emptyPenalty: 5, usesSight: true, usesRooms: true, usesAreaScores: true,
+      types: FINAL_TYPES.map((type, typeIndex) => ({ ...type, max: level.caps[typeIndex] }))
+    }));
+
+    const AREAS = [{
+      id: "light", number: 1, name: "光の庭", stageIds: LIGHT_STAGES.map(stage => stage.id),
+      description: "光源・受光・遮光の3種類を使う10面。光は上下左右の空きマスを通り、最初の石で止まります。受光には光源との間に1マス以上の空きが必要です。"
+    }, {
+      id: "enclosure", number: 2, name: "囲みの庭", stageIds: ENCLOSURE_STAGES.map(stage => stage.id),
+      description: "石で空きマスを区切る10面。上下左右につながる空きマスが一つの空間。広さ2マス・4マスの庭と、その境界を設計します。斜めはつながらず、盤外は空間に含めません。"
+    }];
+    AREAS.push({
+      id: "janken", number: 3, name: "ジャンケン", stageIds: JANKEN_STAGES.map(stage => stage.id),
+      description: "グー・チョキ・パーの3種類を使う10面。上下左右の隣と対戦し、ちょうど1勝が高得点になります。誰が誰に勝つかをつなぎ、勝ち相手を分け合う配置を考えます。"
+    });
+    AREAS.push({
+      id: "final", number: 4, name: "集大成", stageIds: FINAL_STAGES.map(stage => stage.id),
+      description: "最後のエリア・全10面。光の庭・囲みの庭・ジャンケンそのものを石として使います。それぞれのエリアの10面の最高記録の合計に応じて、対応する石の加点が強くなります。目標点は固定です。"
+    });
+    const STAGES = [...LIGHT_STAGES, ...ENCLOSURE_STAGES, ...JANKEN_STAGES, ...FINAL_STAGES];
+
+    // Complete scoring rules, with repeated area rules collected above the cards.
+    // Keeping all three on one surface lets the player compare combinations.
+    const RULE_TEXT = {
+      beacon: "基礎6。光が届く受光石1個に+12。隣の受光石には加点せず、1個に−8。",
+      photocell: "基礎4。届く光が1方向なら+32、2方向以上は−16。光なしは基礎点のみ。",
+      shade: "基礎8。反対側の光源・受光の組に+22（1回まで・隣接可）。その光は遮る。",
+      partition: "基礎4。隣の空間が2つ以上なら+20、空間なしなら−8。同じ空間に何面触れても1つ。",
+      smallgarden: "基礎4。隣の空間が1つだけ・広さ2マスで+32。2空間以上に触れると−14。",
+      largegarden: "基礎4。隣の空間が1つだけ・広さ4マスで+44。2空間以上に触れると−14。"
+    };
+    const RULE_COMPACT = {
+      beacon: "6点。光が届く受光1個+12／隣の受光1個−8。",
+      photocell: "届く光0方向4点／1方向36点／2方向以上−12点。",
+      shade: "8点。反対側に光源と受光で+22（1回・隣接可）。",
+      partition: "隣の空間2つ以上24点／1つ4点／なし−4点。同じ空間は1つ。",
+      smallgarden: "隣の空間1つ・2マスで36点。2空間以上は−10点。ほか4点。",
+      largegarden: "隣の空間1つ・4マスで48点。2空間以上は−10点。ほか4点。"
+    };
+    JANKEN_TYPES.forEach(hand => {
+      RULE_TEXT[hand.id] = `${hand.winsAgainst}に勝ち、${hand.losesAgainst}に負ける。同じ手はあいこ。`;
+      RULE_COMPACT[hand.id] = `${hand.winsAgainst}に勝つ／${hand.losesAgainst}に負ける。`;
+    });
+    function commonRuleText(stage, compact) {
+      if (stage.usesAreaScores) return compact
+        ? "基礎4。隣は上下左右。遠い＝空き越し最初の石。空間＝上下左右の空きの集まり。"
+        : "3種類とも基礎4点。隣は上下左右。光は空きを通り最初の石で止まる。上下左右でつながる空きが1空間。合計点は各エリア10面の最高記録。";
+      if (stage.usesJanken) return compact
+        ? "上下左右と対戦。1勝30点／2勝以上12点／0勝0点。1敗−10点。あいこは数えず、石は残る。"
+        : "上下左右の隣と対戦。1勝30点、2勝以上12点、0勝0点。そこから1敗につき−10点。あいこは勝敗に数えず、石は消えない。";
+      if (stage.usesRooms) return compact
+        ? "空きは上下左右で1空間。斜め×。石は3種とも壁。"
+        : "上下左右でつながる空きマスが1空間。斜め・盤外は含めない。3種類の石すべてが壁になる。";
+      return compact
+        ? "光は上下左右・最初の石まで。受光は空き1マス以上。"
+        : "光は上下左右の最初の石で止まる。受光には空き1マス以上が必要。";
+    }
+
+    function makeInitialBoard(stage) {
+      const board = Array(GRID_W * GRID_H).fill(null);
+      (stage.initialPieces || []).forEach(piece => { board[piece.index] = piece.typeId; });
+      return board;
+    }
+
+    const state = {
+      stageIndex: 0,
+      boards: STAGES.map(makeInitialBoard),
+      histories: STAGES.map(() => []),
+      selected: STAGES.map(stage => stage.initialSelection || stage.types[0].id),
+      result: STAGES.map(() => null),
+      areaStages: {},
+      best: loadBest(),
+      progress: loadProgress(),
+      tutorial: { active: false, selected: false }
+    };
+
+    const $ = (selector) => document.querySelector(selector);
+    const appElement = $(".app");
+    const areaSelect = $("#area-select");
+    const stageSelect = $("#stage-select");
+    const paletteList = $("#palette-list");
+    const boardElement = $("#board");
+    const boardEffects = $("#board-effects");
+    let effectFocus = null, effectHover = null, effectPreview = null, effectView = null;
+    let effectAnnouncementKey = "";
+    const boardWrapElement = document.querySelector(".board-wrap");
+    const resultElement = $("#result-content");
+    const rulesCommon = $("#rules-common");
+    const infoSheet = $("#info-sheet");
+    const sheetBody = $("#sheet-body");
+    let dragState = null;
+    const dragPreview = $("#drag-preview");
+    let suppressClickUntil = 0;
+    let boardFitFrame = 0;
+    let sheetItems = [];
+    let sheetPages = [];
+    let sheetPageIndex = 0;
+    let sheetPrimaryAction = null;
+    let sheetPrimaryLabel = "次へ";
+    let sheetSkipAction = null;
+
+    function loadBest() {
+      const scores = STAGES.map(() => null);
+      const read = (key, fallback) => {
+        try { return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); }
+        catch (error) { return fallback; }
+      };
+      const saved = read(STORAGE_KEY, {});
+      const old = read("combination-blocks-best-v1", []);
+      STAGES.forEach((stage, index) => {
+        const value = saved && !Array.isArray(saved) && typeof saved === "object" ? saved[stage.id] : null;
+        if (typeof value === "number" && Number.isFinite(value)) scores[index] = value;
+        else if (stage.areaId === "light" && Array.isArray(old)) {
+          // Old editions stored the six removed stages first. Keep only light records.
+          const previous = old[stage.number + 5];
+          if (typeof previous === "number" && Number.isFinite(previous)) scores[index] = previous;
+        }
+      });
+      return scores;
+    }
+
+    function saveBest() {
+      const saved = Object.fromEntries(STAGES.map((stage, index) => [stage.id, state.best[index]]));
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(saved)); } catch (error) { /* 保存不可でもプレイは継続 */ }
+    }
+
+    function loadProgress() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(PROGRESS_KEY) || "{}");
+        return { tutorialSeen: saved?.tutorialSeen === true,
+          lastStageId: typeof saved?.lastStageId === "string" ? saved.lastStageId : null };
+      } catch (error) { return { tutorialSeen: false, lastStageId: null }; }
+    }
+
+    function saveProgress() {
+      try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(state.progress)); } catch (error) { /* 保存不可でも遊べる */ }
+    }
+
+    function campaignProgress() {
+      const cleared = STAGES.map((stage, index) => typeof state.best[index] === "number" &&
+        Number.isFinite(state.best[index]) && state.best[index] >= stage.target);
+      const counts = Object.fromEntries(AREAS.map(area => [area.id, 0]));
+      cleared.forEach((yes, index) => { if (yes) counts[STAGES[index].areaId]++; });
+      const areas = new Set(), stages = new Set();
+      AREAS.forEach((area, index) => {
+        // Already-cleared areas from older editions remain accessible.
+        if (index === 0 || counts[area.id] > 0 ||
+          (areas.has(AREAS[index - 1].id) && counts[AREAS[index - 1].id] >= NEXT_AREA_CLEARS)) areas.add(area.id);
+      });
+      STAGES.forEach((stage, index) => {
+        if (areas.has(stage.areaId) && (cleared[index] || counts[stage.areaId] >= UNLOCK_COUNTS[stage.number - 1])) stages.add(stage.id);
+      });
+      return { cleared, counts, areas, stages, total: cleared.filter(Boolean).length };
+    }
+
+    function isStageUnlocked(index, progress = campaignProgress()) {
+      return Number.isInteger(index) && index >= 0 && index < STAGES.length && progress.stages.has(STAGES[index].id);
+    }
+
+    function visibleAreaText(text, progress = campaignProgress()) {
+      return AREAS.reduce((value, area) => progress.areas.has(area.id) ? value :
+        value.split(area.name).join(`エリア${area.number}`), String(text));
+    }
+
+    function recommendStage(progress = campaignProgress()) {
+      const candidates = STAGES.map((stage, index) => ({ stage, index })).filter(({ stage, index }) =>
+        progress.stages.has(stage.id) && !progress.cleared[index] &&
+        (!stage.usesAreaScores || currentTheoretical(stage) >= stage.target));
+      candidates.sort((a, b) => a.stage.difficulty - b.stage.difficulty || a.stage.areaNumber - b.stage.areaNumber);
+      return candidates.length ? candidates[0].index : -1;
+    }
+
+    function nextUnlockText(areaId, progress = campaignProgress()) {
+      const count = progress.counts[areaId], areaIndex = AREAS.findIndex(area => area.id === areaId);
+      if (!progress.areas.has(areaId)) return visibleAreaText(`「${AREAS[areaIndex - 1].name}」で${NEXT_AREA_CLEARS}面クリアすると解放。`, progress);
+      const required = UNLOCK_COUNTS.find(value => value > count);
+      const messages = [];
+      if (required != null) {
+        const numbers = UNLOCK_COUNTS.map((value, index) => value === required ? index + 1 : null).filter(Boolean);
+        messages.push(`あと${required - count}面クリアで${numbers.join("・")}面が解放`);
+      }
+      const next = AREAS[areaIndex + 1];
+      if (next && !progress.areas.has(next.id)) messages.push(`あと${NEXT_AREA_CLEARS - count}面クリアで次のエリアが解放`);
+      return messages.length ? messages.join("。") + "。" : count === 10 ? "このエリアは全10面クリア！" : "全10面を解放済み。残った面にも挑戦しよう。";
+    }
+
+    function progressItems(progress = campaignProgress()) {
+      return [{ key: "goal", title: "目的と進み具合", sections: [
+        { label: GAME_GOAL, text: `4エリア・全${STAGES.length}面の目標点を達成しよう！ 現在${progress.total}/${STAGES.length}面クリア。${progress.total === STAGES.length ? "すべてのゲームをクリアしました！" : "最高記録が目標点に届くとクリア。クリア数で難しい面と次のエリアが開きます。"}` },
+        { label: "次の解放", text: nextUnlockText(currentStage().areaId, progress) }
+      ] }, ...AREAS.map(area => {
+        const members = STAGES.map((stage, index) => ({ stage, index })).filter(({ stage }) => stage.areaId === area.id);
+        const list = predicate => members.filter(predicate).map(({ stage }) => stage.number).join("・") || "なし";
+        return { key: `progress-${area.id}`, title: progress.areas.has(area.id) ? `${area.name}の進み具合` : `エリア${area.number}：？？？`, sections: [
+          { label: `${progress.counts[area.id]}/10面クリア${progress.areas.has(area.id) ? "" : "・未解放"}`,
+            text: `クリア：${list(({ index }) => progress.cleared[index])}\n挑戦可：${list(({ stage, index }) => progress.stages.has(stage.id) && !progress.cleared[index])}\n未解放：${list(({ stage }) => !progress.stages.has(stage.id))}\n${nextUnlockText(area.id, progress)}` }
+        ] };
+      }), { key: "unlock-rules", title: "ステージの解放", sections: [
+        { label: "エリアごとに少しずつ", text: "最初は光の庭の1面だけ。各エリアで1面クリア→2・3面、2面クリア→4・5面、4面クリア→6・7面、6面クリア→8・9面、8面クリア→10面が開きます。4面クリアで次のエリアの1面も開きます。同じ面を繰り返してもクリア数は増えません。" },
+        { label: "好きな挑戦を選ぼう", text: "解放後は、難しい面に挑むか次のエリアへ進むかを選べます。全40面が最終目標です。" +
+          (progress.areas.has("final") ? "集大成で強さが足りないときは、先の3エリアの記録を伸ばしましょう。" : "エリアの名前は解放してからのお楽しみです。") + "過去の最高記録とクリアは引き継ぎます。" },
+        { label: "チュートリアル", text: "最初の面で、石を選ぶ・置く・動かす・採点する操作を練習できます。上の「練習」から何度でも開始でき、練習中の「終了」でいつでも案内を飛ばせます。スキップではクリアになりません。" }
+      ] }];
+    }
+
+    function openSheet(kind, items, action = null, label = "次へ", skip = null) {
+      cancelCellDrag();
+      infoSheet.dataset.view = kind;
+      $("#sheet-tutorial").hidden = kind !== "help";
+      const progress = campaignProgress();
+      sheetItems = items.map(item => ({ ...item, title: visibleAreaText(item.title, progress),
+        sections: item.sections.map(section => ({ ...section, label: visibleAreaText(section.label, progress), text: visibleAreaText(section.text, progress) })) }));
+      sheetPrimaryAction = action;
+      sheetPrimaryLabel = label;
+      sheetSkipAction = skip;
+      if (!infoSheet.open) infoSheet.showModal();
+      paginateSheet();
+    }
+
+    function closeSheet() {
+      if (infoSheet.dataset.view === "tutorial-intro") {
+        state.progress.tutorialSeen = true;
+        saveProgress();
+      }
+      infoSheet.close();
+      sheetPrimaryAction = sheetSkipAction = null;
+    }
+
+    function showClearNotice(before) {
+      const after = campaignProgress(), stage = currentStage(), result = state.result[state.stageIndex];
+      const sections = [{ label: `${stage.number}面クリア！ ${after.total}/${STAGES.length}面`,
+        text: `${result.total}点。目標${stage.target}点を達成！ 最高理論値は${result.theoretical}点。` }];
+      for (const area of AREAS) {
+        if (after.areas.has(area.id) && !before.areas.has(area.id)) sections.push({ label: "新しいエリアを解放！", text: `「${area.name}」の1面が遊べるようになりました。${area.description}` });
+        else {
+          const added = STAGES.filter(member => member.areaId === area.id && after.stages.has(member.id) && !before.stages.has(member.id));
+          if (added.length) sections.push({ label: `${area.name}の新しい面`, text: added.map(member => `${member.number}面（☆${member.difficulty}）`).join("・") + "を解放しました。" });
+        }
+      }
+      sections.push({ label: after.total === STAGES.length ? GAME_GOAL : "次の目標", text: after.total === STAGES.length
+        ? "全40面クリア！ すべてのエリアを遊びきりました。配置を工夫して最高記録を伸ばすこともできます。"
+        : nextUnlockText(stage.areaId, after) });
+      const next = recommendStage(after);
+      if (next >= 0) sections.push({ label: "次の挑戦", text: `「${AREAS.find(area => area.id === STAGES[next].areaId).name}」の${STAGES[next].number}面（☆${STAGES[next].difficulty}）へ進めます。閉じて、上部の欄から別の面を選んでもかまいません。` });
+      openSheet("clear", [{ key: "clear", title: after.total === STAGES.length ? "全ゲームクリア！" : "クリアと解放", sections }],
+        next >= 0 ? () => { closeSheet(); switchStage(next); } : () => closeSheet(), next >= 0 ? "進む" : "続ける");
+    }
+
+    function showTutorialIntro() {
+      openSheet("tutorial-intro", [{ key: "intro", title: "チュートリアル", sections: [
+        { label: GAME_GOAL, text: "4エリア・全40面に挑戦しよう。まずは「光の庭」の1面で、石を置いて得点を作る操作を練習します。" },
+        { label: "自分で動かして覚える", text: "光るカードやマスが次の操作の目印です。3種類の説明を見ながら、石を選ぶ・置く・動かす・採点する流れを試します。" },
+        { label: "いつでもスキップ", text: "「スキップ」で説明なしで遊べます。開始後も「終了」で案内を飛ばせます。練習は1面を初期配置に戻して始めますが、最高記録は残ります。" }
+      ] }], startTutorial, "始める", () => closeSheet());
+    }
+
+    function startTutorial() {
+      closeSheet();
+      endTutorial(false);
+      switchStage(0);
+      pushHistory();
+      state.boards[0] = makeInitialBoard(STAGES[0]);
+      state.selected[0] = "photocell";
+      state.result[0] = null;
+      state.tutorial = { active: true, selected: false };
+      state.progress.tutorialSeen = true;
+      saveProgress();
+      render();
+    }
+
+    function endTutorial(renderNow = true) {
+      if (!state.tutorial.active) return;
+      state.tutorial.active = false;
+      state.progress.tutorialSeen = true;
+      saveProgress();
+      if (renderNow) render();
+    }
+
+    function tutorialStep() {
+      if (!state.tutorial.active || state.stageIndex !== 0) return null;
+      const board = currentBoard();
+      if (board[0] !== "beacon") return { label: "光を左上へ", hint: "光るマスへ", typeId: "beacon", target: 0,
+        detail: "光源石を左上（1行1列）へ戻そう。別の石があればタップして戻せます。置いてある光源石をドラッグして運んでもかまいません。" };
+      if (!state.tutorial.selected && !board.includes("photocell")) return { label: "①受光を選ぶ", hint: "カードを押す", typeId: "photocell",
+        detail: "受光石の説明カードをタップして選ぼう。カードから直接、光っているマスへドラッグして置くこともできます。" };
+      if (board[2] !== "photocell" && board[3] !== "photocell") return { label: "②受光を置く", hint: "1行3列へ", typeId: "photocell", target: 2,
+        detail: "光源石から空き1マスを挟み、1行3列の光るマスへ受光石を置こう。空きマスをタップ、またはカードからドラッグして離すと置けます。すでに別の場所にある受光石は動かせます。" };
+      if (board[3] !== "photocell") return { label: "③石を動かす", hint: "1行4列へ", typeId: "photocell", target: 3,
+        detail: "置いた受光石を押したまま、右隣の1行4列へ動かして離そう。マウスでも指でも動かせます。タップして一度戻し、置き直してもかまいません。" };
+      if (board[5] !== "shade") return { label: "④遮光を置く", hint: "2行2列へ", typeId: "shade", target: 5,
+        detail: "遮光石のカードを選び、2行2列へ置こう。光源石と受光石の間に置くと光を遮ります。説明を比べながら、三つの石を組み合わせよう。" };
+      return { label: "⑤採点しよう", hint: "目標44点", action: "check-button",
+        detail: "「採点」を押そう。目標の44点以上ならクリアです。採点後に最高理論値も表示され、2・3面が解放されます。やり直したいときは「戻す」「全戻す」を使えます。" };
+    }
+
+    function renderTutorial() {
+      const controls = [...paletteList.children, ...boardElement.children, ...$(".actions").children];
+      controls.forEach(control => control.classList.remove("tutorial-target"));
+      const step = tutorialStep(), help = $("#help-button");
+      help.textContent = step ? "終了" : "進み方";
+      help.setAttribute("aria-label", step ? "チュートリアルを終了して自由に遊ぶ" : "目的・進み具合・遊び方");
+      if (!step) return;
+      if (step.typeId) {
+        paletteList.querySelector(`[data-type-id="${step.typeId}"]`)?.classList.add("tutorial-target");
+        const source = currentBoard().indexOf(step.typeId);
+        if (source >= 0) boardCellAtIndex(source)?.classList.add("tutorial-target");
+      }
+      if (step.target != null) boardCellAtIndex(step.target)?.classList.add("tutorial-target");
+      if (step.action) $("#" + step.action)?.classList.add("tutorial-target");
+    }
+
+    function showTutorialTip() {
+      const step = tutorialStep();
+      if (!step) return;
+      openSheet("tutorial-tip", [{ key: "tip", title: step.label, sections: [
+        { label: step.hint, text: step.detail },
+        { label: "スキップもできます", text: "練習を続けるときは「戻る」。案内をやめるときは「スキップ」を押してください。盤面の配置はそのまま残ります。" }
+      ] }], () => closeSheet(), "戻る", () => { closeSheet(); endTutorial(); });
+    }
+
+    function areaStrengths() {
+      return Object.fromEntries(FINAL_TYPES.map(type => {
+        let total = 0, maximum = 0;
+        STAGES.forEach((stage, index) => {
+          if (stage.areaId !== type.sourceAreaId) return;
+          maximum += stage.theoretical;
+          const best = state.best[index];
+          if (typeof best === "number" && Number.isFinite(best)) total += Math.max(0, Math.min(stage.theoretical, best));
+        });
+        const extra = maximum ? Math.round(type.maxExtra * total / maximum) : 0;
+        return [type.id, { total, maximum, extra, bonus: type.baseBonus + extra }];
+      }));
+    }
+
+    function currentTheoretical(stage, strengths) {
+      if (!stage.usesAreaScores) return stage.theoretical;
+      const power = strengths || areaStrengths();
+      return Math.max(...stage.frontier.map(row => row[3] + row[0] * power.area_light.extra +
+        row[1] * power.area_enclosure.extra + row[2] * power.area_janken.extra));
+    }
+
+    function stoneRuleText(type, compact, strengths) {
+      if (!type.sourceAreaId) return (compact ? RULE_COMPACT[type.id] : RULE_TEXT[type.id]) ||
+        RULE_TEXT[type.id] || `${type.effect} ${type.condition} ${type.cost}`;
+      const power = (strengths || areaStrengths())[type.id];
+      const prefix = compact ? `合計${power.total}。` : `エリア合計${power.total}点。`;
+      const rules = {
+        area_light: compact
+          ? `遠い異種1個+${power.bonus}／隣の異種1個−6。`
+          : `空き1マス以上を挟んで見える異種1個に+${power.bonus}。隣の異種1個に−6。同種も光を遮る。`,
+        area_enclosure: compact
+          ? `空間1つ・2/4マス+${power.bonus}／複数−8。`
+          : `隣の空間が1つだけで、広さ2か4マスなら+${power.bonus}。2空間以上に触れると−8。ほかは基礎点のみ。`,
+        area_janken: compact
+          ? `隣の光1個だけ+${power.bonus}／隣の囲み1個−8。`
+          : `隣の光がちょうど1個なら+${power.bonus}。0個・2個以上は加点なし。隣の囲み1個につき−8。同種は影響なし。`
+      };
+      return prefix + rules[type.id];
+    }
+
+    function currentStage() { return STAGES[state.stageIndex]; }
+    function currentBoard() { return state.boards[state.stageIndex]; }
+    function typeById(stage, id) { return stage.types.find(type => type.id === id); }
+    function pieceDesign(stage, type) {
+      const skin = type.sourceAreaId || stage.areaId;
+      const colors = {
+        partition: "#465e55", smallgarden: "#246145", largegarden: "#7c511f",
+        rock: "#b53749", scissors: "#236258", paper: "#255eb2",
+        area_enclosure: "#426a49", area_janken: "#94323d"
+      };
+      return { skin, color: colors[type.id] || type.color };
+    }
+
+    function renderAreaTheme() {
+      const areaId = currentStage().areaId;
+      document.documentElement.dataset.area = areaId;
+      const colors = { light: "#101822", enclosure: "#eeeade", janken: "#f5dfbd", final: "#10101d" };
+      document.querySelector('meta[name="theme-color"]')?.setAttribute("content", colors[areaId]);
+    }
+
+    function rowOf(index) { return Math.floor(index / GRID_W); }
+    function colOf(index) { return index % GRID_W; }
+    function indexOf(row, col) { return row * GRID_W + col; }
+    function isInside(row, col) { return row >= 0 && row < GRID_H && col >= 0 && col < GRID_W; }
+
+    function neighborIndexes(index) {
+      const row = rowOf(index);
+      const col = colOf(index);
+      return [[row - 1, col], [row + 1, col], [row, col - 1], [row, col + 1]]
+        .filter(([r, c]) => isInside(r, c))
+        .map(([r, c]) => indexOf(r, c));
+    }
+
+
+    function fitBoardToSpace() {
+      const width = document.documentElement.clientWidth;
+      const viewport = window.visualViewport;
+      const height = Math.floor(viewport && Math.abs(viewport.scale - 1) < .01 ? viewport.height : window.innerHeight);
+      appElement.style.setProperty("--viewport-height", height + "px");
+      const configurations = [];
+      const densities = width >= 640 && height >= 500 ? ["full", "compact"] : ["compact"];
+      for (const density of densities) {
+        const add = (layout, cards = "rows", rail = 380, hud = 280) => configurations.push({ layout, cards, density, rail, hud });
+        add("stack");
+        if (width >= 440) add("stack", "columns");
+        if (width < 760 && height >= 380) add("side");
+        if (width >= 600) {
+          const rails = [...new Set([Math.min(400, Math.max(312, Math.round(width * .32))), 312, 360, 420])];
+          rails.filter(rail => rail < width - 140).forEach(rail => add("wide", "rows", rail));
+        }
+        if (width >= 440) {
+          const hudSizes = [...new Set([Math.min(360, Math.max(240, Math.round(width * .55))), 264, 300])];
+          hudSizes.filter(hud => hud < width - 140).forEach(hud => add("bands", "columns", 380, hud));
+        }
+      }
+      const apply = config => {
+        appElement.dataset.layout = config.layout;
+        appElement.dataset.density = config.density;
+        appElement.dataset.cards = config.cards;
+        appElement.style.setProperty("--rail-size", config.rail + "px");
+        appElement.style.setProperty("--hud-size", config.hud + "px");
+        appElement.style.setProperty("--page-pad", config.density === "compact" ? "4px" : "12px");
+        appElement.style.setProperty("--layout-gap", config.density === "compact" ? "4px" : "8px");
+      };
+      const overlaps = (a, b) => Math.min(a.right, b.right) - Math.max(a.left, b.left) > 1 &&
+        Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > 1;
+      const measured = configurations.map(config => {
+        apply(config);
+        const bounds = appElement.getBoundingClientRect();
+        const board = boardWrapElement.getBoundingClientRect();
+        const groups = [$(".topline"), paletteList, rulesCommon, $(".hud")].map(element => element.getBoundingClientRect());
+        const rectangles = [...groups, board];
+        let overflow = 0;
+        rectangles.forEach(rect => {
+          overflow += Math.max(0, bounds.left - rect.left) + Math.max(0, rect.right - bounds.right) +
+            Math.max(0, bounds.top - rect.top) + Math.max(0, rect.bottom - bounds.bottom);
+        });
+        for (let i = 0; i < rectangles.length; i++) {
+          for (let j = i + 1; j < rectangles.length; j++) if (overlaps(rectangles[i], rectangles[j])) overflow += 1000;
+        }
+        for (const button of paletteList.children) {
+          overflow += Math.max(0, button.scrollWidth - button.clientWidth - 1) +
+            Math.max(0, button.scrollHeight - button.clientHeight - 1);
+        }
+        const side = Math.max(0, Math.floor(Math.min(board.width, board.height)));
+        return { ...config, side, overflow, valid: overflow < 1 && side > 0 };
+      });
+      // Every candidate includes all descriptions; there is no hidden-rules layout.
+      const valid = measured.filter(candidate => candidate.valid);
+      const best = valid.sort((a, b) => b.side - a.side)[0] ||
+        measured.sort((a, b) => a.overflow - b.overflow || b.side - a.side)[0];
+      apply(best);
+      appElement.dataset.layoutFits = String(best.valid);
+      const area = boardWrapElement.getBoundingClientRect();
+      const side = Math.max(0, Math.floor(Math.min(area.width, area.height)));
+      const gap = Math.max(3, Math.min(12, Math.round(side * .016)));
+      const padding = Math.max(4, Math.min(18, Math.round(side * .02)));
+      const cellSize = (side - padding * 2 - gap * 3 - 2) / 4;
+      appElement.style.setProperty("--board-size", side + "px");
+      appElement.style.setProperty("--board-gap", gap + "px");
+      appElement.style.setProperty("--board-padding", padding + "px");
+      appElement.style.setProperty("--stone-font", Math.max(20, Math.min(54, cellSize * .43)) + "px");
+      appElement.dataset.smallCells = String(cellSize < 104);
+      appElement.dataset.effectLabels = String(cellSize >= 62);
+      renderBoardEffects();
+      if (infoSheet.open) paginateSheet(sheetPages[sheetPageIndex]?.key);
+    }
+
+    function scheduleBoardFit() {
+      if (boardFitFrame) return;
+      if (typeof requestAnimationFrame === "function") {
+        boardFitFrame = requestAnimationFrame(() => { boardFitFrame = 0; fitBoardToSpace(); });
+      } else {
+        fitBoardToSpace();
+      }
+    }
+
+    function boardCellAtIndex(index) {
+      return Array.from(boardElement.children).find(cell => cell.getAttribute && cell.getAttribute("data-cell-index") === String(index)) || null;
+    }
+
+    function cellIndexAtPoint(clientX, clientY) {
+      if (typeof document.elementFromPoint !== "function") return null;
+      const element = document.elementFromPoint(clientX, clientY);
+      const cell = element && element.closest ? element.closest("[data-cell-index]") : null;
+      if (!cell || !boardElement.contains(cell)) return null;
+      const index = Number(cell.getAttribute("data-cell-index"));
+      return Number.isInteger(index) ? index : null;
+    }
+
+    function clearDragPreview() {
+      Array.from(boardElement.children).forEach(cell => {
+        if (cell.classList) {
+          cell.classList.remove("drag-over");
+          cell.classList.remove("drag-blocked");
+        }
+      });
+    }
+
+    function showDragPreview(index) {
+      clearDragPreview();
+      if (index == null || !dragState || index === dragState.from) {
+        clearEffectPreview();
+        return;
+      }
+      const cell = boardCellAtIndex(index);
+      const valid = dragState.kind !== "palette" || canPlaceType(dragState.typeId, index);
+      if (cell && cell.classList) cell.classList.add(valid ? "drag-over" : "drag-blocked");
+      if (!valid) { clearEffectPreview(); return; }
+      if (effectPreview?.focus === index) return;
+      const board = currentBoard().slice();
+      if (dragState.kind === "palette") board[index] = dragState.typeId;
+      else [board[dragState.from], board[index]] = [board[index], board[dragState.from]];
+      effectPreview = { board, focus: index };
+      renderBoardEffects();
+    }
+
+    function beginStoneDrag(kind, from, typeId, event) {
+      if (dragState || infoSheet.open || event.isPrimary === false || (event.button != null && event.button !== 0)) return;
+      // A fresh pointer action must never inherit the previous drag's click guard.
+      suppressClickUntil = 0;
+      if (!typeId || !typeById(currentStage(), typeId)) return;
+      dragState = {
+        kind, from, typeId, stageIndex: state.stageIndex,
+        over: null,
+        pointerId: event.pointerId,
+        startX: event.clientX,
+        startY: event.clientY,
+        moved: false,
+        origin: event.currentTarget
+      };
+      if (event.currentTarget.setPointerCapture) {
+        try { event.currentTarget.setPointerCapture(event.pointerId); } catch (error) { /* captureできない環境でも続行 */ }
+      }
+    }
+
+    function beginCellDrag(index, event) {
+      if (currentBoard()[index] && event.isPrimary !== false && (event.button == null || event.button === 0)) {
+        effectFocus = index;
+        effectHover = null;
+        renderBoardEffects();
+      }
+      beginStoneDrag("board", index, currentBoard()[index], event);
+    }
+
+    function beginPaletteDrag(typeId, event) {
+      beginStoneDrag("palette", null, typeId, event);
+    }
+
+    function updateCellDrag(event) {
+      if (!dragState || event.pointerId !== dragState.pointerId) return;
+      const distance = Math.hypot(event.clientX - dragState.startX, event.clientY - dragState.startY);
+      if (!dragState.moved && distance < 6) return;
+      dragState.moved = true;
+      event.preventDefault();
+      dragState.origin.classList.add("dragging");
+      const type = typeById(currentStage(), dragState.typeId);
+      const design = pieceDesign(currentStage(), type);
+      dragPreview.className = "drag-preview piece-surface";
+      dragPreview.dataset.skin = design.skin;
+      dragPreview.dataset.stone = type.id;
+      dragPreview.innerHTML = `<span class="drag-letter">${escapeText(type.mark)}</span>`;
+      dragPreview.style.setProperty("--drag-color", design.color);
+      dragPreview.style.setProperty("--drag-x", `${Math.max(4, Math.min(window.innerWidth - 60, event.clientX - 28))}px`);
+      dragPreview.style.setProperty("--drag-y", `${Math.max(4, Math.min(window.innerHeight - 60, event.clientY - 68))}px`);
+      dragPreview.hidden = false;
+      const index = cellIndexAtPoint(event.clientX, event.clientY);
+      if (index == null) {
+        dragState.over = null;
+        clearDragPreview();
+        clearEffectPreview();
+      } else {
+        dragState.over = index;
+        showDragPreview(index);
+      }
+    }
+
+    function releaseCellDrag(event) {
+      if (!dragState || event.pointerId !== dragState.pointerId) return;
+      const activeDrag = dragState;
+      // Fast swipes can arrive at pointerup without an intermediate move event.
+      activeDrag.moved ||= Math.hypot(event.clientX - activeDrag.startX, event.clientY - activeDrag.startY) >= 6;
+      const dropIndex = activeDrag.moved ? cellIndexAtPoint(event.clientX, event.clientY) : null;
+      finishStoneDrag();
+      if (!activeDrag.moved) return;
+      suppressClickUntil = Date.now() + 500;
+      event.preventDefault();
+      if (activeDrag.stageIndex !== state.stageIndex || dropIndex == null) return;
+      if (activeDrag.kind === "palette") placeStone(activeDrag.typeId, dropIndex);
+      else if (dropIndex !== activeDrag.from) moveCell(activeDrag.from, dropIndex);
+    }
+
+    function finishStoneDrag() {
+      const activeDrag = dragState;
+      dragState = null;
+      if (!activeDrag) return;
+      activeDrag.origin.classList.remove("dragging");
+      clearDragPreview();
+      dragPreview.hidden = true;
+      clearEffectPreview();
+      // Clear state before releasing capture: lostpointercapture may fire here.
+      if (activeDrag.origin && activeDrag.origin.releasePointerCapture) {
+        try { activeDrag.origin.releasePointerCapture(activeDrag.pointerId); } catch (error) { /* 既に解放済み */ }
+      }
+    }
+
+    function cancelCellDrag(event) {
+      if (!dragState || (event && event.pointerId != null && event.pointerId !== dragState.pointerId)) return;
+      finishStoneDrag();
+      suppressClickUntil = Date.now() + 500;
+    }
+
+    function consumeDragClick(event) {
+      const ignored = event.detail !== 0 && Date.now() < suppressClickUntil;
+      suppressClickUntil = 0;
+      return ignored;
+    }
+
+    // Order: up, right, down, left. Empty cells transmit; every stone stops a ray.
+    function visibleInDirections(board, index) {
+      return [[-1, 0], [0, 1], [1, 0], [0, -1]].map(([dr, dc]) => {
+        for (let distance = 1; ; distance++) {
+          const row = rowOf(index) + dr * distance;
+          const col = colOf(index) + dc * distance;
+          if (!isInside(row, col)) return null;
+          const position = indexOf(row, col);
+          if (board[position]) return { id: board[position], index: position, distance };
+        }
+      });
+    }
+
+    function emptyRooms(board) {
+      const roomOf = Array(board.length).fill(-1), rooms = [];
+      board.forEach((stone, start) => {
+        if (stone || roomOf[start] !== -1) return;
+        const room = { id: rooms.length, cells: [], size: 0 }, queue = [start];
+        roomOf[start] = room.id;
+        for (let cursor = 0; cursor < queue.length; cursor++) {
+          const index = queue[cursor];
+          room.cells.push(index);
+          for (const next of neighborIndexes(index)) {
+            if (!board[next] && roomOf[next] === -1) {
+              roomOf[next] = room.id;
+              queue.push(next);
+            }
+          }
+        }
+        room.size = room.cells.length;
+        rooms.push(room);
+      });
+      return { roomOf, rooms };
+    }
+
+    function blockContext(stage, board, index, typeId, geometry, strengths) {
+      let rooms = [];
+      if (stage.usesRooms) {
+        const map = geometry || emptyRooms(board);
+        const ids = new Set(neighborIndexes(index).filter(next => !board[next]).map(next => map.roomOf[next]));
+        rooms = Array.from(ids, id => map.rooms[id]);
+      }
+      let matches = null;
+      if (stage.usesJanken) {
+        const opponents = neighborIndexes(index).map(next => board[next]).filter(Boolean);
+        matches = {
+          wins: opponents.filter(id => id === JANKEN_BEATS[typeId]).length,
+          losses: opponents.filter(id => JANKEN_BEATS[id] === typeId).length,
+          draws: opponents.filter(id => id === typeId).length
+        };
+      }
+      return { stage, board, index, typeId, rooms, matches,
+        strength: stage.usesAreaScores ? (strengths || areaStrengths())[typeId] : null,
+        sight: stage.usesSight ? visibleInDirections(board, index) : [] };
+    }
+
+    function scoreAreaLight({ board, index, typeId, sight, strength }) {
+      const far = sight.filter(hit => hit && hit.distance >= 2 && hit.id !== typeId).length;
+      const near = neighborIndexes(index).filter(next => board[next] && board[next] !== typeId).length;
+      const reasons = ["基礎4", `光の庭の合計${strength.total}点 → 加点+${strength.bonus}`,
+        `空き越しの異種${far}個 × +${strength.bonus}`];
+      if (near) reasons.push(`隣の異種${near}個 × −6`);
+      return { value: 4 + far * strength.bonus - near * 6, reasons };
+    }
+
+    function scoreAreaEnclosure({ rooms, strength }) {
+      const match = rooms.length === 1 && (rooms[0].size === 2 || rooms[0].size === 4);
+      const reasons = ["基礎4", `囲みの庭の合計${strength.total}点 → 加点+${strength.bonus}`];
+      if (rooms.length >= 2) reasons.push(`異なる空間${rooms.length}つに接触 −8`);
+      else if (match) reasons.push(`広さ${rooms[0].size}マスの空間だけに接触 +${strength.bonus}`);
+      else reasons.push(rooms.length ? `接する空間は${rooms[0].size}マス。必要な広さは2か4マス` : "接する空間なし");
+      return { value: 4 + (match ? strength.bonus : rooms.length >= 2 ? -8 : 0), reasons };
+    }
+
+    function scoreAreaJanken({ board, index, strength }) {
+      const neighbors = neighborIndexes(index).map(next => board[next]);
+      const wins = neighbors.filter(id => id === "area_light").length;
+      const losses = neighbors.filter(id => id === "area_enclosure").length;
+      const reasons = ["基礎4", `ジャンケンの合計${strength.total}点 → 加点+${strength.bonus}`,
+        wins === 1 ? `隣の光が1個だけ +${strength.bonus}` : `隣の光${wins}個。1個だけのときに加点`];
+      if (losses) reasons.push(`隣の囲み${losses}個 × −8`);
+      return { value: 4 + (wins === 1 ? strength.bonus : 0) - losses * 8, reasons };
+    }
+
+    function scoreJanken(matches) {
+      const { wins, losses, draws } = matches;
+      const winPoints = wins === 1 ? 30 : wins >= 2 ? 12 : 0;
+      const reasons = [`${wins}勝・${losses}敗・あいこ${draws}`, `${wins}勝で${winPoints}点`];
+      if (losses) reasons.push(`${losses}敗 × −10`);
+      return { value: winPoints - losses * 10, reasons };
+    }
+
+    function scoreGarden(rooms, wanted, bonus) {
+      const reasons = ["基礎4"];
+      if (rooms.length >= 2) {
+        reasons.push(`異なる空間${rooms.length}つに接触 −14（広さ${rooms.map(room => room.size).join("・")}マス）`);
+        return { value: -10, reasons };
+      }
+      if (rooms.length === 1 && rooms[0].size === wanted) {
+        reasons.push(`広さ${wanted}マスの空間だけに接触 +${bonus}`);
+        return { value: 4 + bonus, reasons };
+      }
+      reasons.push(rooms.length ? `接する空間は${rooms[0].size}マス。必要な広さは${wanted}マス` : "接する空間なし");
+      return { value: 4, reasons };
+    }
+
+    // Visual feedback uses the same contexts and score functions as grading.
+    // It only inspects a board copy during a drag; records and unlocks never change here.
+    function boardEffectModel(stage, board, focus = null) {
+      const geometry = stage.usesRooms ? emptyRooms(board) : null;
+      const strengths = stage.usesAreaScores ? areaStrengths() : null;
+      const stones = Array(board.length).fill(null), rays = [], matches = [], range = [];
+      const dirs = [[-1, 0], [0, 1], [1, 0], [0, -1]];
+      const tone = (positive, negative, warning = false) => warning ? "warn" : positive && negative ? "mixed" : negative ? "bad" : positive ? "good" : "off";
+      const addRay = (from, direction, kind, color) => {
+        const [dr, dc] = dirs[direction], path = [];
+        let to = null;
+        for (let distance = 1; ; distance++) {
+          const row = rowOf(from) + dr * distance, col = colOf(from) + dc * distance;
+          if (!isInside(row, col)) break;
+          const index = indexOf(row, col);
+          if (board[index]) { to = index; break; }
+          path.push(index);
+        }
+        if (to != null || path.length) rays.push({ from, to, path, direction, kind, color });
+      };
+      board.forEach((typeId, index) => {
+        if (!typeId) return;
+        const type = typeById(stage, typeId);
+        const ctx = blockContext(stage, board, index, typeId, geometry, strengths);
+        const computed = type.score(ctx);
+        let positive = false, negative = false, warning = false, hint = "条件待ち";
+        if (typeId === "beacon" || typeId === "area_light") {
+          const hits = ctx.sight.filter(hit => hit && (typeId === "beacon" ? hit.id === "photocell" : hit.id !== typeId));
+          const far = hits.filter(hit => hit.distance >= 2).length, near = hits.filter(hit => hit.distance === 1).length;
+          positive = far > 0; negative = near > 0;
+          hint = near ? `遠${far}・隣${near}` : `届く相手${far}`;
+        } else if (typeId === "photocell") {
+          const lit = ctx.sight.filter(hit => hit && hit.id === "beacon" && hit.distance >= 2).length;
+          positive = lit === 1; negative = lit >= 2; hint = `光${lit}方向`;
+        } else if (typeId === "shade") {
+          positive = computed.value > 8; hint = positive ? "遮光成立" : "組なし";
+        } else if (typeId === "partition") {
+          positive = ctx.rooms.length >= 2; negative = ctx.rooms.length === 0; hint = `空間${ctx.rooms.length}つ`;
+        } else if (typeId === "smallgarden" || typeId === "largegarden" || typeId === "area_enclosure") {
+          positive = computed.value > 4; negative = ctx.rooms.length >= 2;
+          hint = ctx.rooms.length === 1 ? `広さ${ctx.rooms[0].size}マス` : `空間${ctx.rooms.length}つ`;
+        } else {
+          const wins = ctx.matches ? ctx.matches.wins : neighborIndexes(index).filter(next => board[next] === "area_light").length;
+          const losses = ctx.matches ? ctx.matches.losses : neighborIndexes(index).filter(next => board[next] === "area_enclosure").length;
+          positive = wins === 1 || (stage.usesJanken && wins >= 2); negative = losses > 0; warning = wins >= 2;
+          hint = warning ? `${wins}勝・勝ち過ぎ` : `${wins}勝${losses}敗`;
+        }
+        stones[index] = { index, typeId, points: computed.value, tone: tone(positive, negative, warning), hint,
+          rooms: ctx.rooms.map(room => room.id), reasons: computed.reasons.join("。"), sight: ctx.sight };
+      });
+      stones.forEach(stone => {
+        if (!stone) return;
+        const { index, typeId, sight } = stone;
+        if (typeId === "beacon" || typeId === "area_light") {
+          sight.forEach((hit, direction) => {
+            let kind = "beam", color = "#ffd074";
+            if (hit && (typeId === "beacon" ? hit.id === "photocell" : hit.id !== typeId)) {
+              const bad = hit.distance === 1 || (typeId === "beacon" && stones[hit.index].tone === "bad");
+              kind = bad ? "bad" : "good"; color = bad ? "#ff998a" : "#77efb7";
+            }
+            addRay(index, direction, kind, color);
+          });
+        }
+        if (typeId === "shade") {
+          const covered = new Set();
+          [[0, 2], [1, 3]].forEach(([a, b]) => {
+            const x = sight[a], y = sight[b];
+            if (x && y && ((x.id === "beacon" && y.id === "photocell") || (y.id === "beacon" && x.id === "photocell"))) {
+              [a, b].forEach(direction => { covered.add(direction); addRay(index, direction, "shield", "#d3b2ff"); });
+            }
+          });
+          if (focus === index) sight.forEach((hit, direction) => { if (!covered.has(direction)) addRay(index, direction, "range", "#93bed4"); });
+        }
+        if (typeId === "photocell" && focus === index) sight.forEach((hit, direction) => {
+          if (!hit || hit.id !== "beacon") addRay(index, direction, "range", "#93bed4");
+        });
+        if (stage.usesJanken) neighborIndexes(index).filter(next => next > index && board[next]).forEach(next => {
+          if (board[next] === typeId) matches.push({ from: index, to: next, kind: "tie", color: "#b5cbd3" });
+          else {
+            const winner = JANKEN_BEATS[typeId] === board[next] ? index : next;
+            matches.push({ from: winner, to: winner === index ? next : index, kind: "win", color: stones[winner].tone === "warn" ? "#ffd074" : "#77efb7" });
+          }
+        });
+        if (typeId === "area_janken") neighborIndexes(index).forEach(next => {
+          if (board[next] === "area_light") matches.push({ from: index, to: next, kind: "win", color: stone.tone === "warn" ? "#ffd074" : "#77efb7" });
+          if (board[next] === "area_enclosure") matches.push({ from: next, to: index, kind: "win", color: "#ff998a" });
+        });
+      });
+      if (focus != null && (stage.usesJanken || board[focus] === "area_janken")) {
+        range.push(...neighborIndexes(focus).filter(index => !board[index]));
+      }
+      return { stones, rays, matches, range, geometry, board, focus };
+    }
+
+    function clearEffectPreview() {
+      if (!effectPreview) return;
+      effectPreview = null;
+      renderBoardEffects();
+    }
+
+    // Paint whole cells, keeping simultaneous relationships and first-stone stops.
+    function effectTileMap(model) {
+      const tiles = model.board.map(() => ({ signals: new Set(), active: new Set(), related: false, stopped: false }));
+      const mark = (index, signal, related, stopped = false) => {
+        if (!Number.isInteger(index) || !tiles[index]) return;
+        const tile = tiles[index];
+        tile.signals.add(signal);
+        if (related) tile.active.add(signal);
+        tile.related ||= related;
+        tile.stopped ||= stopped;
+      };
+      model.rays.forEach(ray => {
+        const related = model.focus == null || ray.from === model.focus || ray.to === model.focus;
+        ray.path.forEach(index => mark(index, ray.kind, related));
+        if (ray.to != null) mark(ray.to, ray.kind === "beam" ? "stop" : ray.kind, related, ray.kind === "beam");
+      });
+      model.matches.forEach(match => {
+        const related = model.focus == null || match.from === model.focus || match.to === model.focus;
+        if (match.kind === "tie") {
+          mark(match.from, "tie", related); mark(match.to, "tie", related);
+        } else {
+          mark(match.from, model.stones[match.from].tone === "warn" ? "warn" : "good", related);
+          mark(match.to, "bad", related);
+        }
+      });
+      model.range.forEach(index => mark(index, "range", true));
+      if (model.focus != null) mark(model.focus, "source", true);
+      return tiles.map((tile, index) => {
+        const signals = tile.active.size ? tile.active : tile.signals;
+        let signal = signals.has("good") && signals.has("bad") ? "mixed" :
+          ["bad", "warn", "stop", "good", "beam", "shield", "range", "tie", "source"].find(kind => signals.has(kind)) || null;
+        const focused = index === model.focus && model.stones[index];
+        if (focused && focused.tone !== "off") signal = focused.tone;
+        return { signal, related: tile.related, stopped: tile.stopped, signals: Array.from(tile.signals) };
+      });
+    }
+
+    function renderBoardEffects() {
+      const stage = currentStage(), actual = currentBoard();
+      const board = effectPreview ? effectPreview.board : actual;
+      const requestedFocus = effectPreview ? effectPreview.focus : effectHover ?? effectFocus;
+      const focus = board[requestedFocus] ? requestedFocus : null;
+      const model = boardEffectModel(stage, board, focus);
+      effectView = model;
+      const side = parseFloat(appElement.style.getPropertyValue("--board-size")) || 320;
+      const padding = (parseFloat(appElement.style.getPropertyValue("--board-padding")) || 4) + 1;
+      const gap = parseFloat(appElement.style.getPropertyValue("--board-gap")) || 3;
+      const cellSize = (side - padding * 2 - gap * 3) / 4;
+      const tiles = effectTileMap(model);
+      const roomHues = [192, 43, 277, 143, 335, 218, 85, 18];
+      const focusedRooms = new Set(model.stones[focus]?.rooms || []);
+      const markup = board.map((typeId, index) => {
+        const stone = model.stones[index], room = model.geometry && !typeId ? model.geometry.rooms[model.geometry.roomOf[index]] : null;
+        let classes = "effect-cell", content = "", attributes = ` data-occupied="${!!typeId}"`;
+        if (room) {
+          classes += ` effect-room${focusedRooms.has(room.id) ? " effect-related" : ""}`;
+          const hue = roomHues[room.id % roomHues.length];
+          attributes += ` style="--room-fill:hsla(${hue},62%,62%,${focusedRooms.has(room.id) ? .35 : .19});--room-edge:hsl(${hue},55%,${stage.areaId === "enclosure" ? 35 : 65}%)"`;
+          if (index === room.cells[0] && cellSize >= 34) content += `<span class="effect-room-size">${room.size}${cellSize >= 76 ? "マス" : ""}</span>`;
+        }
+        if (effectPreview && typeId && typeId !== actual[index]) {
+          const type = typeById(stage, typeId), design = pieceDesign(stage, type);
+          content += `<span class="effect-preview-stone piece-surface" data-skin="${design.skin}" data-stone="${typeId}" style="--cell-color:${design.color}"><span class="cell-letter">${escapeText(type.mark)}</span></span>`;
+        }
+        if (stone) {
+          attributes += ` data-tone="${stone.tone}"`;
+          if (index === focus) classes += " effect-focused";
+          content += `<span class="effect-ring"></span><span class="effect-value">${stone.points < 0 ? "−" + Math.abs(stone.points) : stone.points}</span>`;
+        }
+        const tile = tiles[index];
+        if (tile.signal) content += `<span class="effect-wash" data-signal="${tile.signal}" data-related="${tile.related}" data-stop="${tile.stopped}"></span>`;
+        const cell = boardCellAtIndex(index);
+        if (cell) {
+          cell.classList.remove("effect-vacated");
+          if (actual[index] && !typeId) cell.classList.add("effect-vacated");
+          if (!effectPreview) {
+            const position = `${rowOf(index) + 1}行${colOf(index) + 1}列`;
+            const text = stone ? `${visibleAreaText(typeById(stage, typeId).name)}、現在${stone.points}点。${visibleAreaText(stone.reasons)}`
+              : room ? `空きマス。つながる空間は${room.size}マス` : "空きマス";
+            cell.title = text;
+            cell.setAttribute("aria-label", `${position}、${text}。${stone ? "タップで戻す。ドラッグで移動" : "タップまたは石のボタンからドラッグで配置"}`);
+          }
+        }
+        return `<div class="${classes}" data-effect-index="${index}"${attributes}>${content}</div>`;
+      }).join("");
+      boardEffects.innerHTML = markup;
+      renderResult(state.result[state.stageIndex]);
+    }
+
+    function effectReadout() {
+      const stone = effectView?.stones[effectView.focus];
+      if (!stone) return ["緑＋ 赤−", "数字は石の点"];
+      const marks = { beacon: "光", photocell: "受", shade: "遮", partition: "壁", smallgarden: "小", largegarden: "大",
+        rock: "グー", scissors: "チョキ", paper: "パー", area_light: "光", area_enclosure: "囲", area_janken: "拳" };
+      return [`${effectPreview ? "仮" : ""}${marks[stone.typeId]} ${stone.points}点`, stone.hint];
+    }
+
+    function announceBoardEffect() {
+      const key = state.stageIndex + ":" + currentBoard().join(",");
+      if (effectAnnouncementKey === key) return;
+      effectAnnouncementKey = key;
+      const stone = effectView?.stones[effectFocus];
+      $("#effect-announcement").textContent = stone ? `${visibleAreaText(typeById(currentStage(), stone.typeId).name)}、${stone.points}点。${visibleAreaText(stone.reasons)}` : "";
+    }
+
+    function evaluate(stage, board) {
+      const breakdown = [];
+      let total = 0;
+      const used = board.filter(Boolean).length;
+      const geometry = stage.usesRooms ? emptyRooms(board) : null;
+      const strengths = stage.usesAreaScores ? areaStrengths() : null;
+      const theoretical = currentTheoretical(stage, strengths);
+
+      board.forEach((typeId, index) => {
+        if (!typeId) return;
+        const type = typeById(stage, typeId);
+        const computed = type.score(blockContext(stage, board, index, typeId, geometry, strengths));
+        total += computed.value;
+        breakdown.push({
+          piece: type.name,
+          mark: type.mark,
+          color: type.color,
+          points: computed.value,
+          why: computed.reasons.join(" ／ ")
+        });
+      });
+
+      const emptySlots = Math.max(0, stage.limit - used);
+      if (emptySlots) {
+        const penalty = emptySlots * stage.emptyPenalty;
+        total -= penalty;
+        breakdown.push({ piece: "空き枠", mark: "−", color: "#ff8f7f", points: -penalty, why: `未配置${emptySlots}枠 × −${stage.emptyPenalty}`, penalty: true });
+      }
+      return {
+        total,
+        used,
+        breakdown,
+        target: stage.target,
+        theoretical,
+        strengths,
+        growthLimited: !!stage.usesAreaScores && theoretical < stage.target,
+        cleared: total >= stage.target,
+        theoreticalReached: total >= theoretical
+      };
+    }
+
+    function renderStageSelect() {
+      const progress = campaignProgress();
+      if (!areaSelect.children.length) {
+        const choices = AREAS.map(area => ({ id: area.id,
+          label: progress.areas.has(area.id) ? `エリア：${area.name}` : `エリア${area.number}：？？？` }));
+        choices.forEach(choice => {
+          const option = document.createElement("option");
+          option.value = choice.id;
+          option.textContent = choice.label;
+          areaSelect.appendChild(option);
+        });
+      }
+      const stage = currentStage();
+      const area = AREAS.find(item => item.id === stage.areaId);
+      const areaKey = stage.areaId;
+      Array.from(areaSelect.children).forEach((option, index) => {
+        const member = AREAS[index], unlocked = progress.areas.has(member.id);
+        option.disabled = !unlocked;
+        option.textContent = unlocked ? `エリア：${member.name}` : `エリア${member.number}：？？？`;
+        option.title = unlocked ? `${progress.counts[member.id]}/10面クリア` : nextUnlockText(member.id, progress);
+      });
+      if (stageSelect.dataset.area !== areaKey) {
+        stageSelect.innerHTML = "";
+        STAGES.forEach((member, index) => {
+          if (member.areaId !== areaKey) return;
+          const option = document.createElement("option");
+          option.value = String(index);
+          option.textContent = `${member.number || member.id}面`;
+          option.title = `${member.title} ／ ☆${member.difficulty}`;
+          stageSelect.appendChild(option);
+        });
+        stageSelect.dataset.area = areaKey;
+      }
+      Array.from(stageSelect.children).forEach(option => {
+        const index = Number(option.value), member = STAGES[index], unlocked = isStageUnlocked(index, progress);
+        option.disabled = !unlocked;
+        option.textContent = unlocked ? `${member.number}面` : `${member.number}面（${UNLOCK_COUNTS[member.number - 1]}面クリアで解放）`;
+        option.title = visibleAreaText(`${member.title} ／ ☆${member.difficulty} ／ ${progress.cleared[index] ? "クリア済み" : unlocked ? "挑戦できます" : "未解放"}`, progress);
+      });
+      state.areaStages[areaKey] = state.stageIndex;
+      areaSelect.value = areaKey;
+      areaSelect.title = `エリア${area.number}：${area.name} ／ ${progress.counts[area.id]}/${area.stageIds.length}面クリア`;
+      stageSelect.value = String(state.stageIndex);
+      stageSelect.title = visibleAreaText(`${stage.number || stage.id}面：${stage.title}`, progress);
+      stageSelect.setAttribute("aria-label", visibleAreaText(`ステージを選ぶ。現在${stage.number || stage.id}面、${stage.title}`, progress));
+      const badge = $("#stage-difficulty");
+      badge.textContent = `☆${stage.difficulty}`;
+      badge.setAttribute("aria-label", `難易度${stage.difficulty}、10段階。${progress.cleared[state.stageIndex] ? "クリア済み" : "未クリア"}`);
+      badge.title = `難易度 ☆${stage.difficulty} / 10（目標点に届くまでの目安）`;
+    }
+
+    function renderObjective() {
+      const stage = currentStage();
+      const result = state.result[state.stageIndex];
+      const used = currentBoard().filter(Boolean).length;
+      $("#stage-title").textContent = visibleAreaText(stage.title);
+      $("#stage-description").textContent = visibleAreaText(stage.description);
+      $("#target-score").textContent = String(stage.target);
+      $("#placement-count").textContent = `${used}/${stage.limit}`;
+      $("#best-score").textContent = state.best[state.stageIndex] == null ? "—" : String(state.best[state.stageIndex]);
+      $("#undo-button").disabled = state.histories[state.stageIndex].length === 0;
+      $("#reset-button").disabled = used === 0;
+      renderResult(result);
+    }
+
+    function renderPalette() {
+      const stage = currentStage();
+      const board = currentBoard();
+      const strengths = stage.usesAreaScores ? areaStrengths() : null;
+      const usedCounts = {};
+      board.forEach(id => { if (id) usedCounts[id] = (usedCounts[id] || 0) + 1; });
+      paletteList.innerHTML = "";
+      stage.types.forEach(type => {
+        const remaining = type.max - (usedCounts[type.id] || 0);
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = `block-card${state.selected[state.stageIndex] === type.id ? " selected" : ""}`;
+        const design = pieceDesign(stage, type);
+        button.dataset.skin = design.skin;
+        button.dataset.stone = type.id;
+        button.style.setProperty("--block-color", design.color);
+        const name = visibleAreaText(type.name);
+        const fullRule = visibleAreaText(stoneRuleText(type, false, strengths));
+        const compactRule = visibleAreaText(stoneRuleText(type, true, strengths));
+        button.innerHTML = `<span class="block-heading"><span class="block-title">${escapeText(name)}</span><span class="remaining">残 ${remaining}</span></span><span class="rule-copy full">${escapeText(fullRule)}</span><span class="rule-copy condensed">${escapeText(compactRule)}</span>`;
+        button.setAttribute("aria-pressed", String(state.selected[state.stageIndex] === type.id));
+        button.setAttribute("aria-describedby", "rules-common");
+        button.setAttribute("aria-label", `${name}、残り${remaining}。${fullRule} タップで選択、盤面へドラッグで配置`);
+        button.draggable = false;
+        button.addEventListener("dragstart", event => event.preventDefault());
+        button.addEventListener("pointerdown", event => beginPaletteDrag(type.id, event));
+        button.addEventListener("pointermove", updateCellDrag);
+        button.addEventListener("pointerup", releaseCellDrag);
+        button.addEventListener("pointercancel", cancelCellDrag);
+        button.addEventListener("lostpointercapture", cancelCellDrag);
+        button.addEventListener("click", event => {
+          if (consumeDragClick(event)) return;
+          state.selected[state.stageIndex] = type.id;
+          effectHover = null;
+          if (state.tutorial.active && type.id === "photocell") state.tutorial.selected = true;
+          renderPalette();
+          renderResult(state.result[state.stageIndex]);
+          renderTutorial();
+          // All three descriptions stay together when the selected stone changes.
+          fitBoardToSpace();
+          paletteList.querySelector(`[data-type-id="${type.id}"]`)?.focus({ preventScroll: true });
+        });
+        button.setAttribute("data-type-id", type.id);
+        paletteList.appendChild(button);
+      });
+      rulesCommon.innerHTML = `<span class="full">${escapeText(commonRuleText(stage, false))}</span><span class="condensed">${escapeText(commonRuleText(stage, true))}</span>`;
+    }
+
+    function renderBoard() {
+      const stage = currentStage();
+      const board = currentBoard();
+      boardElement.innerHTML = "";
+      board.forEach((typeId, index) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = `cell ${typeId ? "filled" : "empty"}`;
+        button.setAttribute("data-cell-index", String(index));
+        button.setAttribute("role", "gridcell");
+        const position = `${rowOf(index) + 1}行${colOf(index) + 1}列`;
+        button.setAttribute("aria-label", typeId ? `${position}、${visibleAreaText(typeById(stage, typeId).name)}。タップで戻す。ドラッグで移動` : `${position}、空きマス。タップまたは石のボタンからドラッグで配置`);
+        if (typeId) {
+          const type = typeById(stage, typeId);
+          const design = pieceDesign(stage, type);
+          button.classList.add("piece-surface");
+          button.dataset.skin = design.skin;
+          button.dataset.stone = type.id;
+          button.style.setProperty("--cell-color", design.color);
+          button.innerHTML = `<span class="cell-letter">${type.mark}</span><span class="cell-name">${escapeText(visibleAreaText(type.name))}</span>`;
+        }
+        button.addEventListener("pointerdown", event => beginCellDrag(index, event));
+        button.addEventListener("pointermove", updateCellDrag);
+        button.addEventListener("pointerup", releaseCellDrag);
+        button.addEventListener("pointercancel", cancelCellDrag);
+        button.addEventListener("lostpointercapture", cancelCellDrag);
+        button.addEventListener("pointerenter", event => {
+          if (event.pointerType !== "mouse" || dragState || !currentBoard()[index]) return;
+          effectHover = index;
+          renderBoardEffects();
+        });
+        button.addEventListener("pointerleave", () => {
+          if (dragState || effectHover !== index) return;
+          effectHover = null;
+          renderBoardEffects();
+        });
+        button.addEventListener("focus", () => {
+          if (dragState || !currentBoard()[index]) return;
+          effectHover = index;
+          renderBoardEffects();
+        });
+        button.addEventListener("blur", () => {
+          if (dragState || effectHover !== index) return;
+          effectHover = null;
+          renderBoardEffects();
+        });
+        button.addEventListener("click", event => {
+          if (consumeDragClick(event)) return;
+          toggleCell(index);
+          boardCellAtIndex(index)?.focus({ preventScroll: true });
+        });
+        boardElement.appendChild(button);
+      });
+    }
+
+    function renderResult(result) {
+      const details = $("#result-details-button");
+      const step = tutorialStep();
+      resultElement.setAttribute("aria-live", effectPreview || (!result && !step) ? "off" : "polite");
+      resultElement.className = "";
+      if (step && !result) {
+        $("#result").className = "result";
+        details.disabled = false;
+        details.setAttribute("aria-label", `${step.label}。${step.hint}。押すと詳しい案内`);
+        details.title = "チュートリアルの案内。押すと詳しく表示";
+        resultElement.className = "tutorial-coach";
+        resultElement.innerHTML = `<span>${escapeText(step.label)}</span><span>${escapeText(step.hint)}</span>`;
+        return;
+      }
+      details.disabled = !result || !!effectPreview;
+      if (!result || effectPreview) {
+        $("#result").className = "result empty";
+        const readout = effectReadout();
+        details.setAttribute("aria-label", `${effectPreview ? "配置予定。" : ""}${readout.join("。")}。採点後に合計点と最高理論値を表示します`);
+        details.title = "盤面の数字は各石の現在の得点。緑は加点、赤は減点、橙は注意。合計点と理論値は採点後に表示";
+        resultElement.className = "effect-readout";
+        resultElement.innerHTML = readout.map(text => `<span>${escapeText(text)}</span>`).join("");
+        return;
+      }
+      const statusClass = result.cleared || (result.theoreticalReached && !result.growthLimited) ? "success" : "failure";
+      const status = result.growthLimited ? "強化が必要。先の3エリアの最高記録を伸ばそう" :
+        result.theoreticalReached ? "理論値到達" : result.cleared ? "目標達成" : "まだ届かない";
+      $("#result").className = `result ${statusClass}`;
+      details.setAttribute("aria-label", `${status}。得点${result.total}点、最高理論値${result.theoretical}点。タップで内訳を見る`);
+      details.title = `${status} ／ タップで内訳を見る`;
+      resultElement.innerHTML = `<span class="score-stat"><span>${result.growthLimited ? "要強化" : result.cleared ? "達成" : "得点"}</span><strong aria-label="${result.total}点">${result.total}</strong></span><span class="score-stat"><span title="現在の強さでの最高理論値">理論値</span><strong aria-label="${result.theoretical}点">${result.theoretical}</strong></span><span class="visually-hidden">${status}</span>`;
+    }
+
+    function escapeText(text) {
+      return String(text).replace(/[&<>"']/g, character => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[character]));
+    }
+
+    function sectionMarkup(sections) {
+      return sections.map(section => `<section class="sheet-section"><h3>${escapeText(section.label)}</h3><p>${escapeText(section.text)}</p></section>`).join("");
+    }
+
+    // 説明が一画面に入らなければ、文字を縮小せず続きのページを作る。
+    function paginateSheet(anchorKey) {
+      if (!infoSheet.open) return;
+      const pages = [];
+      for (const item of sheetItems) {
+        $("#sheet-title").textContent = item.title;
+        const fits = sections => {
+          sheetBody.innerHTML = sectionMarkup(sections);
+          return sheetBody.scrollHeight <= sheetBody.clientHeight + 1 && sheetBody.scrollWidth <= sheetBody.clientWidth + 1;
+        };
+        let pageSections = [];
+        const flush = () => {
+          if (pageSections.length) pages.push({ key: item.key, title: item.title, sections: pageSections });
+          pageSections = [];
+        };
+        for (const section of item.sections) {
+          if (fits([...pageSections, section])) {
+            pageSections.push(section);
+            continue;
+          }
+          flush();
+          let characters = Array.from(section.text);
+          while (characters.length) {
+            const remaining = { label: section.label, text: characters.join("") };
+            if (fits([remaining])) { pageSections.push(remaining); break; }
+            let low = 1;
+            let high = characters.length;
+            let count = 1;
+            while (low <= high) {
+              const mid = Math.floor((low + high) / 2);
+              if (fits([{ label: section.label, text: characters.slice(0, mid).join("") }])) {
+                count = mid;
+                low = mid + 1;
+              } else { high = mid - 1; }
+            }
+            pageSections.push({ label: section.label, text: characters.slice(0, count).join("") });
+            flush();
+            characters = characters.slice(count);
+          }
+        }
+        flush();
+      }
+      sheetPages = pages;
+      sheetPageIndex = Math.max(0, pages.findIndex(page => page.key === anchorKey));
+      renderSheetPage();
+    }
+
+    function renderSheetPage() {
+      const page = sheetPages[sheetPageIndex];
+      if (!page) return;
+      $("#sheet-title").textContent = page.title;
+      sheetBody.innerHTML = sectionMarkup(page.sections);
+      $("#sheet-page").innerHTML = `<span>ページ</span><span>${sheetPageIndex + 1} / ${sheetPages.length}</span>`;
+      const last = sheetPageIndex === sheetPages.length - 1;
+      $("#sheet-prev").textContent = sheetSkipAction ? "スキップ" : "前へ";
+      $("#sheet-prev").disabled = !sheetSkipAction && sheetPageIndex === 0;
+      $("#sheet-next").textContent = last && sheetPrimaryAction ? sheetPrimaryLabel : "次へ";
+      $("#sheet-next").disabled = last && !sheetPrimaryAction;
+    }
+
+    function showInfo(kind) {
+      if (kind !== "help" && kind !== "score") return;
+      const stage = currentStage();
+      const area = AREAS.find(item => item.id === stage.areaId);
+      const totalStages = area.stageIds.length;
+      const areaName = area.name;
+      let anchorKey;
+      if (kind === "score") {
+        const result = state.result[state.stageIndex];
+        if (!result) return;
+        sheetItems = result.breakdown.map((row, index) => ({ key: String(index), title: `${row.piece}の内訳`, sections: [
+          { label: `${row.points > 0 ? "+" : ""}${row.points}点`, text: row.why }
+        ] }));
+        if (stage.usesAreaScores) sheetItems.unshift({ key: "growth-score", title: "現在の強さでの採点", sections: [
+          { label: `${result.total}点 ／ 目標${result.target}点`, text: `今の強さで到達できる最高理論値は${result.theoretical}点です。${result.growthLimited
+            ? "今の強さでは目標に届きません。光の庭・囲みの庭・ジャンケンの最高記録を伸ばして、石の加点を強くしましょう。"
+            : result.cleared ? "目標達成です。ほかの配置やエリアの記録更新で、さらに高い得点を目指せます。" : "今の強さでも目標に届きます。石の配置を工夫してみましょう。"}` }
+        ] });
+      } else {
+        sheetItems = [
+          ...progressItems(),
+          { key: "place", title: "遊び方", sections: [
+            { label: `${areaName}は全${totalStages}面`, text: `全${totalStages}面のうち、現在は第${stage.number || stage.id}面です。上部のエリア欄と、その隣の面数欄から移動できます。` },
+            { label: "石を置く・戻す", text: "石のボタンから空きマスへ、マウスでドラッグ＆ドロップ、または指で押したままスワイプして離すと配置できます。石を選んでから空きマスをタップしても置けます。置いた石をタップすると戻せます。" },
+            { label: "説明を見ながら置く", text: "3種類の説明は、盤面と一緒に常に表示されています。説明カードをタップして石を選ぶか、カードから盤面へそのままドラッグして置けます。どの石を選んでも3種類すべての説明が見えます。" },
+            { label: "動かす・入れ替える", text: "置いた石を指やマウスでドラッグして移動。別の石へ重ねると入れ替わります。「戻す」で一手前に戻せます。" }
+          ] },
+          { key: "effects", title: "盤面で効果を見る", sections: [
+            { label: "配置すると、すぐ更新", text: "石の枠は緑が加点条件成立、赤の破線が減点、橙の二重線が加点と減点の両方または勝ち過ぎ、灰色の点線が条件待ち。石の数字は基礎点を含む、その石の現在の得点です。採点するまで合計点・理論値・記録は確定しません。" },
+            { label: "光が届くマス", text: "光の通る空きマスが光ります。加点につながる範囲は緑、減点に関わる範囲は赤、相手がまだいない通り道は黄色。光源の光は最初の石で止まります。水色は見ている石が参照する範囲、紫は遮光に関わるマスです。" },
+            { label: "囲みと勝敗もマスで確認", text: "同じ色の空きマスは一つの空間で、数字はその広さ。見ている石が触れる空間は明るくなります。ジャンケンは対戦関係にある石のマスが光り、勝つ側が緑、負ける側が赤、両方に関わる場合や勝ち過ぎは橙、あいこは灰色です。" },
+            { label: "置く前にも確かめる", text: "ドラッグ中は配置予定の石と効果を仮表示します。置いた石の移動や入れ替えにも対応。盤外へ離すと元の表示へ戻ります。石が小さい画面では点数を縮めず、マスの発光・枠と採点欄の表示で確認できます。石にマウスを重ねるか押したままにすると、その石に関わるマスが明るくなります。" }
+          ] },
+          { key: "theme", title: "このステージ", sections: [
+            { label: `${areaName}：全${totalStages}面 ／ 現在 第${stage.number || stage.id}面`, text: area.description },
+            { label: stage.title, text: stage.description },
+            { label: "採点", text: `目標は${stage.target}点。最大${stage.limit}個配置できます。未配置1枠につき−${stage.emptyPenalty}点。採点後に最高理論値と、一つずつの点数の内訳を確認できます。` }
+          ] },
+          ...(stage.usesAreaScores ? [{ key: "growth", title: "エリアの記録で石が育つ", sections: [
+            { label: "10面の最高記録の合計", text: "光の庭・囲みの庭・ジャンケン、それぞれ10面の最高記録を合計します。未採点やマイナスの記録は0点。同じ面を何度採点しても増えず、最高記録を更新した分だけ合計が伸びます。集大成の得点は強さに加算されません。" },
+            ...FINAL_TYPES.map(type => {
+              const power = areaStrengths()[type.id];
+              return { label: `${type.name}：合計${power.total}点`, text: `元のエリアを極めた合計は${power.maximum}点。現在の条件達成時の加点は+${power.bonus}。合計の達成割合×${type.maxExtra}を四捨五入し、初期加点${type.baseBonus}に足します。加点は+${type.baseBonus}〜+${type.baseBonus + type.maxExtra}です。` };
+            }),
+            { label: "加点が強まり、代償は一定", text: "強化されるのは各石の条件を満たしたときの加点です。基礎4点と接触などの減点は変わりません。元のエリアの最高記録を更新すると効果が変わり、集大成の採点表示を消します。配置は残るので、戻って採点し直してください。" },
+            { label: "目標と最高理論値", text: "各面の目標点は固定です。最高理論値は今の3種類の強さに応じて変わり、採点後に表示します。理論値が目標に届かない場合は「要強化」と表示されます。先のエリアの記録を伸ばして再挑戦しましょう。" }
+          ] }] : []),
+          { key: "difficulty", title: "ステージの難易度", sections: [
+            { label: `難易度 ☆${stage.difficulty} / 10`, text: "☆1（やさしい）〜☆10（とても難しい）の10段階。目標点に届くまでの目安です。上部の「エリア」でエリアを、その隣の「1面」などの欄でステージを選べます。各エリアは似たルールで☆1〜☆10を1面ずつ収録しています。" }
+          ] },
+          ...(stage.usesRooms ? [{ key: "rooms", title: "空間の数え方", sections: [
+            { label: "空きマスをつなぐ", text: "石を置いていないマスを上下左右につなげると、一つの空間になります。曲がってつながっても同じ空間。斜めだけではつながりません。盤外と石のマスは数えません。" },
+            { label: "同じ空間は一つ", text: "石が同じ空間に二方向から触れても、接する空間は一つ。同じ空間を複数の庭石で共有できます。離れた所に石を置いた結果、空間が分かれたり面積が変わることもあります。" },
+            { label: "3種類とも壁になる", text: stage.usesAreaScores
+              ? "光の庭・囲みの庭・ジャンケンの石は、すべて空間を区切る壁になります。囲みの石は、一つだけの空間に触れ、その広さが2か4マスのときに加点されます。二つ以上の空間に触れると−8点です。"
+              : "仕切石・小庭石・大庭石のすべてが空間を区切ります。庭石を境界に置いて減点を受けても、他の石の加点で全体の得点が増える場合があります。" }
+          ] }] : []),
+          ...(stage.usesJanken ? [{ key: "janken", title: "ジャンケンの数え方", sections: [
+            { label: "対戦する相手", text: "上下左右に隣り合う石すべてと対戦します。斜めと離れた石は相手になりません。グーはチョキに、チョキはパーに、パーはグーに勝ちます。あいこは勝敗に数えず、負けた石も残ります。" },
+            { label: "1勝ボーナスと負けの代償", text: "石1個ごとに、1勝なら30点、2〜4勝なら12点、0勝なら0点。そこから1敗につき10点引きます。1勝1敗は20点、0勝1敗は−10点。勝ちすぎると1勝ボーナスを失います。" },
+            { label: "同じ相手を分け合う", text: "一つの相手に複数の石が勝ってもかまいません。ただし、負ける側にも敗数分の減点があります。全員に勝ち相手を用意したいなら、勝ち負けのつながりをたどってみましょう。" }
+          ] }] : []),
+          { key: "hint", title: "考える順番", sections: [{ label: "ヒント", text: stage.note }] },
+          { key: "save", title: "記録について", sections: [{ label: "最高記録", text: `この面の最高記録：${state.best[state.stageIndex] == null ? "未採点" : `${state.best[state.stageIndex]}点`}。記録はこのブラウザ内に保存されます。ステージを切り替えても配置は残りますが、ページを閉じると配置はリセットされます。` }] }
+        ];
+      }
+      openSheet(kind, sheetItems);
+    }
+
+    function turnSheetPage(direction) {
+      sheetPageIndex = Math.max(0, Math.min(sheetPages.length - 1, sheetPageIndex + direction));
+      renderSheetPage();
+    }
+
+    function snapshot() { return currentBoard().slice(); }
+
+    function pushHistory() {
+      const history = state.histories[state.stageIndex];
+      history.push(snapshot());
+      if (history.length > 40) history.shift();
+    }
+
+    function moveCell(fromIndex, toIndex) {
+      const board = currentBoard();
+      if (!Number.isInteger(toIndex) || toIndex < 0 || toIndex >= board.length || !board[fromIndex] || fromIndex === toIndex) return;
+      pushHistory();
+      [board[fromIndex], board[toIndex]] = [board[toIndex], board[fromIndex]];
+      effectFocus = toIndex;
+      effectHover = null;
+      state.result[state.stageIndex] = null;
+      render();
+      boardCellAtIndex(toIndex)?.focus({ preventScroll: true });
+    }
+
+    function canPlaceType(typeId, index) {
+      const stage = currentStage();
+      const board = currentBoard();
+      const type = typeById(stage, typeId);
+      return Number.isInteger(index) && index >= 0 && index < board.length && !board[index] && !!type &&
+        board.filter(Boolean).length < stage.limit && board.filter(id => id === typeId).length < type.max;
+    }
+
+    function placeStone(typeId, index) {
+      if (!canPlaceType(typeId, index)) return false;
+      pushHistory();
+      currentBoard()[index] = typeId;
+      effectFocus = index;
+      effectHover = null;
+      state.selected[state.stageIndex] = typeId;
+      state.result[state.stageIndex] = null;
+      render();
+      boardCellAtIndex(index)?.focus({ preventScroll: true });
+      return true;
+    }
+
+    function toggleCell(index) {
+      const board = currentBoard();
+      if (!Number.isInteger(index) || index < 0 || index >= board.length) return;
+      if (board[index]) {
+        pushHistory();
+        board[index] = null;
+        effectFocus = null;
+        effectHover = null;
+      } else {
+        placeStone(state.selected[state.stageIndex], index);
+        return;
+      }
+      state.result[state.stageIndex] = null;
+      render();
+    }
+
+    function undo() {
+      const history = state.histories[state.stageIndex];
+      if (!history.length) return;
+      state.boards[state.stageIndex] = history.pop();
+      effectFocus = null;
+      effectHover = null;
+      state.result[state.stageIndex] = null;
+      render();
+    }
+
+    function reset() {
+      if (!currentBoard().some(Boolean)) return;
+      pushHistory();
+      state.boards[state.stageIndex] = Array(GRID_W * GRID_H).fill(null);
+      effectFocus = null;
+      effectHover = null;
+      state.result[state.stageIndex] = null;
+      render();
+    }
+
+    function check() {
+      const stage = currentStage();
+      const before = campaignProgress(), wasTutorial = state.tutorial.active;
+      const result = evaluate(stage, currentBoard());
+      state.result[state.stageIndex] = result;
+      if (state.best[state.stageIndex] == null || result.total > state.best[state.stageIndex]) {
+        state.best[state.stageIndex] = result.total;
+        if (!stage.usesAreaScores) {
+          STAGES.forEach((member, index) => { if (member.usesAreaScores) state.result[index] = null; });
+        }
+        saveBest();
+      }
+      if (result.cleared) endTutorial(false);
+      render();
+      if (result.cleared && (!before.cleared[state.stageIndex] || wasTutorial)) showClearNotice(before);
+    }
+
+    function switchStage(index) {
+      if (!isStageUnlocked(index)) { renderStageSelect(); return false; }
+      cancelCellDrag();
+      if (index !== state.stageIndex) endTutorial(false);
+      state.stageIndex = index;
+      effectFocus = null;
+      effectHover = null;
+      state.progress.lastStageId = currentStage().id;
+      saveProgress();
+      render();
+      return true;
+    }
+
+    function render() {
+      cancelCellDrag();
+      renderAreaTheme();
+      renderStageSelect();
+      renderObjective();
+      renderPalette();
+      renderBoard();
+      renderBoardEffects();
+      announceBoardEffect();
+      renderTutorial();
+      scheduleBoardFit();
+    }
+
+    $("#undo-button").addEventListener("click", undo);
+    $("#reset-button").addEventListener("click", reset);
+    $("#check-button").addEventListener("click", check);
+    stageSelect.addEventListener("change", event => switchStage(Number(event.target.value)));
+    areaSelect.addEventListener("change", event => {
+      const key = event.target.value;
+      const index = state.areaStages[key] ?? STAGES.findIndex(stage => (stage.areaId) === key);
+      switchStage(index);
+    });
+    $("#help-button").addEventListener("click", () => state.tutorial.active ? endTutorial() : showInfo("help"));
+    $("#result-details-button").addEventListener("click", () => {
+      if (state.result[state.stageIndex]) showInfo("score"); else showTutorialTip();
+    });
+    $("#sheet-tutorial").addEventListener("click", showTutorialIntro);
+    $("#sheet-close").addEventListener("click", closeSheet);
+    $("#sheet-prev").addEventListener("click", () => sheetSkipAction ? sheetSkipAction() : turnSheetPage(-1));
+    $("#sheet-next").addEventListener("click", () => {
+      if (sheetPageIndex === sheetPages.length - 1 && sheetPrimaryAction) sheetPrimaryAction();
+      else turnSheetPage(1);
+    });
+    infoSheet.addEventListener("cancel", event => { event.preventDefault(); closeSheet(); });
+    infoSheet.addEventListener("keydown", event => {
+      if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+        event.preventDefault();
+        turnSheetPage(event.key === "ArrowLeft" ? -1 : 1);
+      }
+    });
+    window.addEventListener("resize", scheduleBoardFit, { passive: true });
+    window.addEventListener("blur", cancelCellDrag);
+    if (window.visualViewport && typeof window.visualViewport.addEventListener === "function") {
+      window.visualViewport.addEventListener("resize", scheduleBoardFit, { passive: true });
+    }
+    if (typeof ResizeObserver === "function") {
+      new ResizeObserver(scheduleBoardFit).observe(appElement);
+    }
+    if (document.fonts) document.fonts.ready.then(scheduleBoardFit);
+    const savedStageIndex = STAGES.findIndex(stage => stage.id === state.progress.lastStageId);
+    state.stageIndex = isStageUnlocked(savedStageIndex) ? savedStageIndex : Math.max(0, recommendStage());
+    if (campaignProgress().cleared[0]) state.progress.tutorialSeen = true;
+    render();
+    if (!state.progress.tutorialSeen) showTutorialIntro();
+  </script>
+</body>
+</html>
