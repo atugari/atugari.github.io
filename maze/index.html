@@ -389,6 +389,36 @@ const MazeAudio=(()=>{
 'use strict';
 (() => {
 const $=id=>document.getElementById(id);
+// ===== プレイ人数カウント（同じブラウザ・端末は各ゲーム1回） =====
+const PLAYCOUNT_DB_URL = 'https://ad-game-7b40a-default-rtdb.asia-southeast1.firebasedatabase.app';
+const SITE_PLAYER_ID_KEY = 'marubasho_site_player_id_v1';
+function getSitePlayerId(){
+  try {
+    let id = localStorage.getItem(SITE_PLAYER_ID_KEY);
+    if(!id){
+      id = (globalThis.crypto && typeof crypto.randomUUID === 'function')
+        ? crypto.randomUUID()
+        : 'p_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,12);
+      localStorage.setItem(SITE_PLAYER_ID_KEY, id);
+    }
+    return id;
+  } catch(_) {
+    return 'session_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,12);
+  }
+}
+function recordUniquePlayer(gameKey){
+  const doneKey = 'marubasho_counted_' + gameKey + '_v1';
+  try { if(localStorage.getItem(doneKey) === '1') return; } catch(_) {}
+  const playerId = getSitePlayerId();
+  fetch(PLAYCOUNT_DB_URL + '/playCounts/' + gameKey + '/' + playerId + '.json', {
+    method: 'PUT',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ firstPlayedAt: { '.sv': 'timestamp' } }),
+    keepalive: true
+  }).then(r => {
+    if(r.ok){ try { localStorage.setItem(doneKey, '1'); } catch(_) {} }
+  }).catch(() => {});
+}
 const genNames={dfs:'深さ優先・穴掘り法',prim:'ランダム Prim 法',kruskal:'ランダム Kruskal 法',binary:'二分木法',sidewinder:'サイドワインダー法',hunt:'Hunt and Kill 法',aldous:'Aldous–Broder 法'};
 Object.assign(genNames,{boruvka:'ボルフカ法',growing:'成長木法（7：3）',growingOldest:'成長木法（最古）',wilson:'Wilson 法',eller:'Eller 法',division:'再帰的分割'});
 const solveNames={bfs:'幅優先探索',dfs:'深さ優先探索',dijkstra:'ダイクストラ法',astar:'A* 探索'};
@@ -563,7 +593,7 @@ function installTouchPointerFallback(target){
 }
 installTouchPointerFallback(canvas);installTouchPointerFallback(customWaveform);
 
-$('generate').addEventListener('click',()=>beginGeneration());$('solve').addEventListener('click',()=>{if(!operation)startSearch($('solver').value);});$('compare').addEventListener('click',()=>{if(operation||!model.complete)return;cancel();initAudio();batch=order.slice(1);startSearch(order[0],true);});$('pause').addEventListener('click',pauseToggle);$('step').addEventListener('click',()=>{if(operation&&paused){initAudio();advance();flushSound();if(operation){paused=true;if(raf)cancelAnimationFrame(raf);raf=0;status('一時停止中。1ステップ進めました。');}controls();scheduleDraw();}});
+$('generate').addEventListener('click',()=>{recordUniquePlayer('maze-lab');beginGeneration();});$('solve').addEventListener('click',()=>{if(!operation){recordUniquePlayer('maze-lab');startSearch($('solver').value);}});$('compare').addEventListener('click',()=>{if(operation||!model.complete)return;recordUniquePlayer('maze-lab');cancel();initAudio();batch=order.slice(1);startSearch(order[0],true);});$('pause').addEventListener('click',pauseToggle);$('step').addEventListener('click',()=>{if(operation&&paused){initAudio();advance();flushSound();if(operation){paused=true;if(raf)cancelAnimationFrame(raf);raf=0;status('一時停止中。1ステップ進めました。');}controls();scheduleDraw();}});
 $('results-body').addEventListener('click',e=>{const b=e.target.closest('[data-algorithm]');if(b)showResult(b.dataset.algorithm);});
 document.querySelectorAll('[data-size]').forEach(b=>b.addEventListener('click',()=>{const[w,h]=b.dataset.size.split(',');$('cols').value=w;$('rows').value=h;normalizedSize();markPending();}));for(const id of ['cols','rows'])$(id).addEventListener('change',()=>{normalizedSize();markPending();});$('generator').addEventListener('change',markPending);
 $('solver').addEventListener('change',()=>{describe();const a=$('solver').value;if(operation){$('solve-badge').textContent=solveNames[a];return;}if(results[a])showResult(a);else{view=null;current=-1;processed=0;activeAlgorithm=a;$('solve-badge').textContent=solveNames[a];table();scheduleDraw();status(`${solveNames[a]}を選択しました。「探索開始」で同じ迷路を解きます。`);}});
