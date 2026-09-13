@@ -237,6 +237,8 @@ button,select,input,summary,.check{touch-action:manipulation}
 </dialog>
 
 <noscript>このツールを使うには、ブラウザの JavaScript を有効にしてください。</noscript>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script id="maze-engine">
 'use strict';
 /* All algorithms operate on actual passage tiles, using four orthogonal moves. */
@@ -391,6 +393,41 @@ const MazeAudio=(()=>{
 const $=id=>document.getElementById(id);
 // ===== プレイ人数カウント（同じブラウザ・端末は各ゲーム1回） =====
 const PLAYCOUNT_DB_URL = 'https://ad-game-7b40a-default-rtdb.asia-southeast1.firebasedatabase.app';
+
+
+// ===== 広場に表示するプレイ人数・プレイ回数（Firestore） =====
+let _firestorePlayCountedThisPage = false;
+function recordFirestorePlay(gameKey){
+  if(_firestorePlayCountedThisPage) return;
+  _firestorePlayCountedThisPage = true;
+  try {
+    if(window.self !== window.top || location.search.indexOf('preview=1') >= 0) return;
+    if(typeof firebase === 'undefined') return;
+    if(!firebase.apps.length){
+      firebase.initializeApp({
+        apiKey:"AIzaSyCwIH0lXYNVYbcpmEDGXRRPxRueyOD0XoU",
+        authDomain:"ad-game-7b40a.firebaseapp.com",
+        projectId:"ad-game-7b40a",
+        storageBucket:"ad-game-7b40a.firebasestorage.app",
+        messagingSenderId:"5960938874",
+        appId:"1:5960938874:web:0fac17704f74f5f0f512c3"
+      });
+    }
+    const fdb = firebase.firestore();
+    const inc = firebase.firestore.FieldValue.increment(1);
+    const names = {'maze-lab':'迷路ラボ'};
+    fdb.collection('games').doc(gameKey).set({uses:inc,name:names[gameKey]||gameKey},{merge:true});
+    const personKey = 'marubasho_firestore_player_' + gameKey + '_v1';
+    let already = false;
+    try { already = localStorage.getItem(personKey) === '1'; } catch(_) {}
+    if(!already){
+      fdb.collection('games').doc(gameKey).set({people:inc,name:names[gameKey]||gameKey},{merge:true})
+        .then(()=>{ try { localStorage.setItem(personKey,'1'); } catch(_) {} })
+        .catch(()=>{});
+    }
+  } catch(_) {}
+}
+
 const SITE_PLAYER_ID_KEY = 'marubasho_site_player_id_v1';
 function getSitePlayerId(){
   try {
@@ -407,6 +444,7 @@ function getSitePlayerId(){
   }
 }
 function recordUniquePlayer(gameKey){
+  recordFirestorePlay(gameKey);
   const doneKey = 'marubasho_counted_' + gameKey + '_v1';
   try { if(localStorage.getItem(doneKey) === '1') return; } catch(_) {}
   const playerId = getSitePlayerId();
