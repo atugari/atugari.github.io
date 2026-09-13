@@ -502,17 +502,26 @@
     }
     .ad-wrap ins{ display:block; }
   /* 利用人数カウンター */
-  .visit-counter{ max-width:360px; margin:0 auto 18px; padding:14px 16px;
-    background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.18); border-radius:14px; }
-  .vc-head{ font-size:12px; opacity:.85; margin-bottom:8px; letter-spacing:.06em; }
-  .vc-nums{ display:flex; justify-content:center; gap:28px; margin-bottom:10px; }
+  .visit-counter{ max-width:360px; margin:0 auto 18px; padding:14px 14px 12px;
+    background:#fafafa; border:1px solid #e6e6e6; border-radius:14px; color:#444; }
+  .vc-head{ font-size:12px; color:#666; margin-bottom:8px; letter-spacing:.06em; }
+  .vc-nums{ display:flex; justify-content:center; gap:28px; margin-bottom:8px; }
   .vc-item{ display:flex; flex-direction:column; align-items:center; }
-  .vc-big{ font-size:30px; font-weight:900; line-height:1; }
-  .vc-lbl{ font-size:11px; opacity:.7; margin-top:4px; }
-  .vc-days{ display:flex; align-items:flex-end; justify-content:center; gap:4px; height:44px; margin-top:4px; }
-  .vc-bar{ width:14px; background:linear-gradient(180deg,#e0a53a,#c9822b); border-radius:3px 3px 0 0; position:relative; min-height:3px; }
-  .vc-bar span{ position:absolute; bottom:-15px; left:50%; transform:translateX(-50%); font-size:8px; opacity:.6; white-space:nowrap; }
-  .vc-note{ font-size:10px; opacity:.5; margin-top:20px; }
+  .vc-big{ font-size:30px; font-weight:900; line-height:1; color:#333; }
+  .vc-lbl{ font-size:11px; color:#888; margin-top:4px; }
+  .vc-days{ display:flex; align-items:flex-end; justify-content:flex-start; gap:6px; height:84px; margin-top:2px;
+    padding:5px 2px 3px; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x proximity;
+    scrollbar-width:thin; scrollbar-color:#d0d0d0 transparent; }
+  .vc-days::-webkit-scrollbar{ height:5px; }
+  .vc-days::-webkit-scrollbar-thumb{ background:#d0d0d0; border-radius:999px; }
+  .vc-day{ flex:0 0 40px; height:72px; display:grid; grid-template-rows:14px 42px 14px;
+    justify-items:center; align-items:end; scroll-snap-align:end; }
+  .vc-count{ align-self:end; font-size:9px; line-height:1; font-weight:700; color:#555; white-space:nowrap; }
+  .vc-bar{ align-self:end; width:16px; background:linear-gradient(180deg,#e0a53a,#c9822b); border-radius:3px 3px 0 0; min-height:3px; }
+  .vc-date{ align-self:end; font-size:8px; line-height:1; color:#999; white-space:nowrap; }
+  .vc-day.today .vc-count,.vc-day.today .vc-date{ color:#9b5d13; font-weight:900; }
+  .vc-day.today .vc-bar{ box-shadow:0 0 0 2px rgba(201,130,43,.18); }
+  .vc-note{ font-size:10px; color:#999; margin-top:6px; line-height:1.6; }
   .card-count{ position:absolute; bottom:8px; right:10px; z-index:2; font-size:10px; font-weight:700;
     background:rgba(0,0,0,.4); color:#fff; padding:3px 8px; border-radius:999px; letter-spacing:.02em; }
 </style>
@@ -690,15 +699,30 @@
   chain.then(refresh, refresh);
 
   var GMAP = { 'index.html':'maru', 'dungeon.html':'tobetobi', 'echo-dive.html':'echo', 'narabe100.html':'narabe', 'shopping-memo.html':'memo', 'timer-gauge.html':'timer', 'skins.html':'gallery' };
+  var RTDB_URL = 'https://ad-game-7b40a-default-rtdb.asia-southeast1.firebasedatabase.app';
+  var RMAP = { 'combination-blocks.html':'combination-blocks', './maze/':'maze-lab' };
   function showGameCounts(){
     document.querySelectorAll('.game-card[href]').forEach(function(card){
-      var gid = GMAP[card.getAttribute('href')]; if (!gid) return;
+      var href = card.getAttribute('href');
+      var gid = GMAP[href];
+      var rid = RMAP[href];
+      if (!gid && !rid) return;
       var badge = document.createElement('div'); badge.className = 'card-count'; badge.textContent = '…';
       card.appendChild(badge);
-      db.collection('games').doc(gid).get().then(function(d){
-        var o = d.exists ? d.data() : {};
-        badge.textContent = '👤 ' + Number(o.people||0).toLocaleString() + '人 ・ ▶ ' + Number(o.uses||0).toLocaleString() + '回';
-      }).catch(function(){ badge.textContent = ''; });
+      if (gid){
+        db.collection('games').doc(gid).get().then(function(d){
+          var o = d.exists ? d.data() : {};
+          badge.textContent = '👤 ' + Number(o.people||0).toLocaleString() + '人 ・ ▶ ' + Number(o.uses||0).toLocaleString() + '回';
+        }).catch(function(){ badge.textContent = ''; });
+      } else {
+        fetch(RTDB_URL + '/playCounts/' + encodeURIComponent(rid) + '.json', { cache:'no-store' })
+          .then(function(r){ if(!r.ok) throw new Error('count'); return r.json(); })
+          .then(function(o){
+            var people = (o && typeof o === 'object') ? Object.keys(o).length : 0;
+            badge.textContent = '👤 ' + Number(people).toLocaleString() + '人';
+          })
+          .catch(function(){ badge.textContent = ''; });
+      }
     });
   }
   showGameCounts();
@@ -721,13 +745,29 @@
     wrap.innerHTML='';
     var max=1; rows.forEach(function(r){ if(r.c>max) max=r.c; });
     rows.forEach(function(r){
-      var bar=document.createElement('div'); bar.className='vc-bar';
-      bar.style.height = Math.max(3, Math.round(r.c/max*40)) + 'px';
-      bar.title = r.d + '：' + r.c + '人';
-      var lbl=document.createElement('span'); lbl.textContent = r.d.slice(5).replace('-','/');
-      bar.appendChild(lbl); wrap.appendChild(bar);
+      var day=document.createElement('div');
+      day.className='vc-day' + (r.d===today ? ' today' : '');
+      day.title = r.d + '：' + Number(r.c||0).toLocaleString() + '人';
+
+      var count=document.createElement('span');
+      count.className='vc-count';
+      count.textContent=Number(r.c||0).toLocaleString() + '人';
+
+      var bar=document.createElement('div');
+      bar.className='vc-bar';
+      bar.style.height = Math.max(3, Math.round((Number(r.c||0)/max)*38)) + 'px';
+
+      var date=document.createElement('span');
+      date.className='vc-date';
+      date.textContent=r.d.slice(5).replace('-','/');
+
+      day.appendChild(count);
+      day.appendChild(bar);
+      day.appendChild(date);
+      wrap.appendChild(day);
     });
-    var note=document.getElementById('cntNote'); if(note) note.textContent='※同じ端末は1日1回カウント／棒グラフは直近14日。';
+    requestAnimationFrame(function(){ wrap.scrollLeft = wrap.scrollWidth; });
+    var note=document.getElementById('cntNote'); if(note) note.textContent='※同じ端末は1日1回カウント／棒の上に人数を表示。直近14日。';
   }
 })();
 </script>
