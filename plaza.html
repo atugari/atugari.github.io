@@ -6,11 +6,11 @@
   <meta name="theme-color" content="#ffffff">
   <title>幻実世界の電子遊戯 | 現電</title>
   <meta name="description" content="幻実世界（インターネット）の電子遊戯（ゲームソフト）。現電。丸場所記憶ゲーム・飛べ飛・感覚謎解き・ショッピング メモが使えるミニゲーム広場です。">
-  <meta name="keywords" content="現電,幻実世界,電子遊戯,現実世界の電子遊戯,ゲーム,ブラウザゲーム,無料ゲーム,ミニゲーム,株式会社ムダ∞,丸場所記憶ゲーム,飛べ飛,感覚謎解き,ショッピング メモ,買い物メモ">
+  <meta name="keywords" content="現電,幻実世界,電子遊戯,現実世界の電子遊戯,ゲーム,ブラウザゲーム,無料ゲーム,ミニゲーム,丸場所記憶ゲーム,飛べ飛,感覚謎解き,ショッピング メモ,買い物メモ">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://atugari.github.io/plaza.html">
   <meta property="og:title" content="幻実世界の電子遊戯 | 現電">
-  <meta property="og:description" content="現電 — 幻実世界（インターネット）の電子遊戯（ゲームソフト）。無料ブラウザゲームと便利ツールを収録。株式会社ムダ∞も公開中。">
+  <meta property="og:description" content="現電 — 幻実世界（インターネット）の電子遊戯（ゲームソフト）。無料ブラウザゲームと便利ツールを収録。">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://atugari.github.io/plaza.html">
   <meta property="og:locale" content="ja_JP">
@@ -524,26 +524,6 @@
   .vc-note{ font-size:10px; color:#999; margin-top:6px; line-height:1.6; }
   .card-count{ position:absolute; bottom:8px; right:10px; z-index:2; font-size:10px; font-weight:700;
     background:rgba(0,0,0,.4); color:#fff; padding:3px 8px; border-radius:999px; letter-spacing:.02em; }
-
-    /* 株式会社ムダ∞: 会社ビルと∞マーク */
-    .game-card.muda-bg { overflow: hidden; }
-    .game-card.muda-bg::before {
-      content: '∞';
-      position: absolute;
-      right: 8px;
-      top: 50%;
-      transform: translateY(-52%) rotate(-8deg);
-      font-family: Arial, sans-serif;
-      font-size: 94px;
-      line-height: 1;
-      font-weight: 900;
-      color: rgba(214, 66, 70, 0.08);
-      text-shadow:
-        -30px 18px 0 rgba(30, 30, 30, 0.035),
-        -30px 5px 0 rgba(30, 30, 30, 0.035);
-      pointer-events: none;
-    }
-
 </style>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=YOUR_PUBLISHER_ID" crossorigin="anonymous"></script>
 </head>
@@ -601,16 +581,7 @@
     </a>
 
     <div class="section-label pop"><span class="spark">✦</span> 新作 <span class="spark">✦</span></div>
-
-    <a class="game-card muda-bg" href="muda-infinity.html" id="card-11" data-published="2026-09-15">
-      <div class="card-tag">CLICKER / MANAGEMENT</div>
-      <div class="card-title">株式会社ムダ∞</div>
-      <div class="card-desc">ムダを稼いで会社を巨大化<br>決算・買収・宇宙経営まで続く会社ゲーム</div>
-    </a>
-
-    
-
-    <a class="game-card combo-bg" href="combination-blocks.html" id="card-10" data-published="2026-09-13">
+<a class="game-card combo-bg" href="combination-blocks.html" id="card-10" data-published="2026-09-13">
       <div class="card-tag">PUZZLE</div>
       <div class="card-title">Combine &amp; Discover</div>
       <div class="card-desc">3種類の石を4×4盤に配置<br>効果を組み合わせて目標点をめざす</div>
@@ -726,7 +697,7 @@
   }
   chain.then(refresh, refresh);
 
-  var GMAP = { 'muda-infinity.html':'muda-infinity', 'index.html':'maru', 'dungeon.html':'tobetobi', 'combination-blocks.html':'combination-blocks', './maze/':'maze-lab', 'echo-dive.html':'echo', 'narabe100.html':'narabe', 'shopping-memo.html':'memo', 'timer-gauge.html':'timer', 'skins.html':'gallery' };
+  var GMAP = { 'index.html':'maru', 'dungeon.html':'tobetobi', 'combination-blocks.html':'combination-blocks', './maze/':'maze-lab', 'echo-dive.html':'echo', 'narabe100.html':'narabe', 'shopping-memo.html':'memo', 'timer-gauge.html':'timer', 'skins.html':'gallery' };
   function showGameCounts(){
     document.querySelectorAll('.game-card[href]').forEach(function(card){
       var gid = GMAP[card.getAttribute('href')]; if (!gid) return;
@@ -810,7 +781,7 @@
     if (!hasNew) newLabel.style.display = 'none';
   })();
 
-  const CARDS = ['card-0', 'card-1', 'card-11', 'card-10', 'card-9', 'card-8', 'card-7', 'card-4', 'card-5', 'card-6', 'card-2', 'card-3'];
+  const CARDS = ['card-0', 'card-1', 'card-10', 'card-9', 'card-8', 'card-7', 'card-4', 'card-5', 'card-6', 'card-2', 'card-3'];
   let _cur = 0;
   let _gpConnected = false;
   let _prev = {};
