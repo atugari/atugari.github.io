@@ -351,6 +351,29 @@
       pointer-events: none;
     }
 
+    /* 黒白: リバーシ盤を薄く表示 */
+    .game-card.reversi-bg { overflow: hidden; }
+    .game-card.reversi-bg::before {
+      content: '';
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      width: 86px;
+      height: 86px;
+      transform: translateY(-50%) rotate(-4deg);
+      background:
+        radial-gradient(circle at 31% 31%, rgba(20,20,20,.72) 0 7px, transparent 8px),
+        radial-gradient(circle at 69% 69%, rgba(255,255,255,.96) 0 7px, transparent 8px),
+        linear-gradient(rgba(255,255,255,.12), rgba(255,255,255,.12)),
+        repeating-linear-gradient(0deg, rgba(20,20,20,.18) 0 1px, transparent 1px 21px),
+        repeating-linear-gradient(90deg, rgba(20,20,20,.18) 0 1px, transparent 1px 21px),
+        #bfe8c9;
+      border: 1px solid rgba(20,20,20,.14);
+      border-radius: 10px;
+      opacity: .26;
+      pointer-events: none;
+    }
+
     /* 作成中カード: 斜線で飛べないことを示す */    .game-card.wip {
       pointer-events: none;
       cursor: default;
@@ -501,29 +524,6 @@
       overflow:hidden;
     }
     .ad-wrap ins{ display:block; }
-  /* 利用人数カウンター */
-  .visit-counter{ max-width:360px; margin:0 auto 18px; padding:14px 14px 12px;
-    background:#fafafa; border:1px solid #e6e6e6; border-radius:14px; color:#444; }
-  .vc-head{ font-size:12px; color:#666; margin-bottom:8px; letter-spacing:.06em; }
-  .vc-nums{ display:flex; justify-content:center; gap:28px; margin-bottom:8px; }
-  .vc-item{ display:flex; flex-direction:column; align-items:center; }
-  .vc-big{ font-size:30px; font-weight:900; line-height:1; color:#333; }
-  .vc-lbl{ font-size:11px; color:#888; margin-top:4px; }
-  .vc-days{ display:flex; align-items:flex-end; justify-content:flex-start; gap:6px; height:84px; margin-top:2px;
-    padding:5px 2px 3px; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x proximity;
-    scrollbar-width:thin; scrollbar-color:#d0d0d0 transparent; }
-  .vc-days::-webkit-scrollbar{ height:5px; }
-  .vc-days::-webkit-scrollbar-thumb{ background:#d0d0d0; border-radius:999px; }
-  .vc-day{ flex:0 0 40px; height:72px; display:grid; grid-template-rows:14px 42px 14px;
-    justify-items:center; align-items:end; scroll-snap-align:end; }
-  .vc-count{ align-self:end; font-size:9px; line-height:1; font-weight:700; color:#555; white-space:nowrap; }
-  .vc-bar{ align-self:end; width:16px; background:linear-gradient(180deg,#e0a53a,#c9822b); border-radius:3px 3px 0 0; min-height:3px; }
-  .vc-date{ align-self:end; font-size:8px; line-height:1; color:#999; white-space:nowrap; }
-  .vc-day.today .vc-count,.vc-day.today .vc-date{ color:#9b5d13; font-weight:900; }
-  .vc-day.today .vc-bar{ box-shadow:0 0 0 2px rgba(201,130,43,.18); }
-  .vc-note{ font-size:10px; color:#999; margin-top:6px; line-height:1.6; }
-  .card-count{ position:absolute; bottom:8px; right:10px; z-index:2; font-size:10px; font-weight:700;
-    background:rgba(0,0,0,.4); color:#fff; padding:3px 8px; border-radius:999px; letter-spacing:.02em; }
 </style>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=YOUR_PUBLISHER_ID" crossorigin="anonymous"></script>
 </head>
@@ -581,6 +581,12 @@
     </a>
 
     <div class="section-label pop"><span class="spark">✦</span> 新作 <span class="spark">✦</span></div>
+    <a class="game-card reversi-bg" href="./kuroshiro/" id="card-11" data-published="2026-09-18">
+      <div class="card-tag">BOARD GAME</div>
+      <div class="card-title">黒白</div>
+      <div class="card-desc">AI対戦とオンライン対戦に対応したリバーシ<br>長い接続コードを共有して端末どうしで直接対戦</div>
+    </a>
+
 <a class="game-card combo-bg" href="combination-blocks.html" id="card-10" data-published="2026-09-13">
       <div class="card-tag">PUZZLE</div>
       <div class="card-title">Combine &amp; Discover</div>
@@ -651,110 +657,12 @@
   <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
 </div>
 <div class="footer">
-    <div class="visit-counter" id="visitCounter">
-      <div class="vc-head">🎮 このサイトののべ利用者数</div>
-      <div class="vc-nums">
-        <div class="vc-item"><span class="vc-big" id="cntToday">…</span><span class="vc-lbl">今日</span></div>
-        <div class="vc-item"><span class="vc-big" id="cntTotal">…</span><span class="vc-lbl">累計</span></div>
-      </div>
-      <div class="vc-days" id="cntDays"></div>
-      <div class="vc-note" id="cntNote"></div>
-    </div>
     <span class="footer-brand" data-text="現電 — 幻実世界の電子遊戯">現電 — 幻実世界の電子遊戯</span><br>
-    <span style="font-size:9px;letter-spacing:0.05em;">ver2026.09.13</span>
+    <span style="font-size:9px;letter-spacing:0.05em;">ver2026.09.18</span>
   </div>
 
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-<script>
-// ===== 利用人数カウンター（日毎・累計、誰でも閲覧可） =====
-(function(){
-  var db = null;
-  try {
-    if (typeof firebase !== 'undefined'){
-      if (!firebase.apps.length){
-        firebase.initializeApp({ apiKey:"AIzaSyCwIH0lXYNVYbcpmEDGXRRPxRueyOD0XoU", authDomain:"ad-game-7b40a.firebaseapp.com", projectId:"ad-game-7b40a", storageBucket:"ad-game-7b40a.firebasestorage.app", messagingSenderId:"5960938874", appId:"1:5960938874:web:0fac17704f74f5f0f512c3" });
-      }
-      db = firebase.firestore();
-    }
-  } catch(e){}
-  if (!db){ var n=document.getElementById('cntNote'); if(n) n.textContent='（オフラインのため人数を取得できませんでした）'; return; }
-
-  function todayStr(){ var d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
-  var today = todayStr();
-  var inc = firebase.firestore.FieldValue.increment(1);
-
-  var counted = false;
-  try { counted = (localStorage.getItem('siteVisitDate') === today); } catch(e){}
-  var chain = Promise.resolve();
-  if (!counted){
-    chain = Promise.all([
-      db.collection('visits').doc(today).set({ c: inc, d: today }, { merge:true }),
-      db.collection('meta').doc('plaza').set({ total: inc }, { merge:true })
-    ]).then(function(){ try { localStorage.setItem('siteVisitDate', today); } catch(e){} }).catch(function(){});
-  }
-  chain.then(refresh, refresh);
-
-  var GMAP = { 'index.html':'maru', 'dungeon.html':'tobetobi', 'combination-blocks.html':'combination-blocks', './maze/':'maze-lab', 'echo-dive.html':'echo', 'narabe100.html':'narabe', 'shopping-memo.html':'memo', 'timer-gauge.html':'timer', 'skins.html':'gallery' };
-  function showGameCounts(){
-    document.querySelectorAll('.game-card[href]').forEach(function(card){
-      var gid = GMAP[card.getAttribute('href')]; if (!gid) return;
-      var badge = document.createElement('div'); badge.className = 'card-count'; badge.textContent = '…';
-      card.appendChild(badge);
-      db.collection('games').doc(gid).get().then(function(d){
-        var o = d.exists ? d.data() : {};
-        badge.textContent = '👤 ' + Number(o.people||0).toLocaleString() + '人 ・ ▶ ' + Number(o.uses||0).toLocaleString() + '回';
-      }).catch(function(){ badge.textContent = '取得失敗'; });
-    });
-  }
-  showGameCounts();
-
-  function refresh(){
-    db.collection('meta').doc('plaza').get().then(function(d){
-      var t = (d.exists && d.data().total) ? d.data().total : 0;
-      var el=document.getElementById('cntTotal'); if(el) el.textContent = Number(t).toLocaleString();
-    }).catch(function(){});
-    db.collection('visits').orderBy('d','desc').limit(14).get().then(function(snap){
-      var rows=[]; snap.forEach(function(doc){ var o=doc.data(); rows.push({ d:(o.d||doc.id), c:(o.c||0) }); });
-      rows.reverse();
-      var tr = rows.filter(function(r){ return r.d===today; })[0];
-      var te=document.getElementById('cntToday'); if(te) te.textContent = Number(tr?tr.c:0).toLocaleString();
-      renderDays(rows);
-    }).catch(function(){});
-  }
-  function renderDays(rows){
-    var wrap=document.getElementById('cntDays'); if(!wrap) return;
-    wrap.innerHTML='';
-    var max=1; rows.forEach(function(r){ if(r.c>max) max=r.c; });
-    rows.forEach(function(r){
-      var day=document.createElement('div');
-      day.className='vc-day' + (r.d===today ? ' today' : '');
-      day.title = r.d + '：' + Number(r.c||0).toLocaleString() + '人';
-
-      var count=document.createElement('span');
-      count.className='vc-count';
-      count.textContent=Number(r.c||0).toLocaleString() + '人';
-
-      var bar=document.createElement('div');
-      bar.className='vc-bar';
-      bar.style.height = Math.max(3, Math.round((Number(r.c||0)/max)*38)) + 'px';
-
-      var date=document.createElement('span');
-      date.className='vc-date';
-      date.textContent=r.d.slice(5).replace('-','/');
-
-      day.appendChild(count);
-      day.appendChild(bar);
-      day.appendChild(date);
-      wrap.appendChild(day);
-    });
-    requestAnimationFrame(function(){ wrap.scrollLeft = wrap.scrollWidth; });
-    var note=document.getElementById('cntNote'); if(note) note.textContent='※同じ端末は1日1回カウント／棒の上に人数を表示。直近14日。';
-  }
-})();
-</script>
 <script>
   // ===== コントローラー操作 =====
   // Aボタン（buttons[1]）: 決定  Bボタン（buttons[0]）: 丸場所へ戻る
@@ -781,7 +689,7 @@
     if (!hasNew) newLabel.style.display = 'none';
   })();
 
-  const CARDS = ['card-0', 'card-1', 'card-10', 'card-9', 'card-8', 'card-7', 'card-4', 'card-5', 'card-6', 'card-2', 'card-3'];
+  const CARDS = ['card-0', 'card-1', 'card-11', 'card-10', 'card-9', 'card-8', 'card-7', 'card-4', 'card-5', 'card-6', 'card-2', 'card-3'];
   let _cur = 0;
   let _gpConnected = false;
   let _prev = {};
