@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#ffffff">
   <title>幻実世界の電子遊戯 | 現電</title>
-  <meta name="description" content="幻実世界（インターネット）の電子遊戯（ゲームソフト）。現電。丸場所記憶ゲーム・飛べ飛・感覚謎解き・ショッピング メモが使えるミニゲーム広場です。">
-  <meta name="keywords" content="現電,幻実世界,電子遊戯,現実世界の電子遊戯,ゲーム,ブラウザゲーム,無料ゲーム,ミニゲーム,丸場所記憶ゲーム,飛べ飛,感覚謎解き,ショッピング メモ,買い物メモ">
+  <meta name="description" content="幻実世界（インターネット）の電子遊戯（ゲームソフト）。現電。丸場所記憶ゲーム・飛べ飛・スピード・黒白・各種パズルやツールを遊べるミニゲーム広場です。">
+  <meta name="keywords" content="現電,幻実世界,電子遊戯,現実世界の電子遊戯,ゲーム,ブラウザゲーム,無料ゲーム,ミニゲーム,丸場所記憶ゲーム,飛べ飛,スピード,黒白,パズル,ショッピング メモ,買い物メモ">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://atugari.github.io/plaza.html">
   <meta property="og:title" content="幻実世界の電子遊戯 | 現電">
@@ -168,6 +168,128 @@
     .title-right {
       text-align: right;
       padding-right: 4%;
+    }
+
+
+    /* ===== 一覧の絞り込み・並び替え ===== */
+    .library-tools {
+      margin: -10px 0 18px;
+      padding: 14px;
+      border: 1px solid #ececec;
+      border-radius: 14px;
+      background: #fafafa;
+    }
+
+    .library-tools-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .library-tools-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #777;
+      letter-spacing: 0.12em;
+    }
+
+    .library-count {
+      font-size: 10px;
+      color: #aaa;
+      white-space: nowrap;
+    }
+
+    .genre-filters {
+      display: flex;
+      gap: 7px;
+      overflow-x: auto;
+      padding: 2px 0 8px;
+      scrollbar-width: thin;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .genre-filter {
+      flex: 0 0 auto;
+      min-height: 34px;
+      padding: 7px 11px;
+      border: 1px solid #dedede;
+      border-radius: 999px;
+      background: #fff;
+      color: #555;
+      font: inherit;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .genre-filter[aria-pressed="true"] {
+      color: #fff;
+      background: #1a1a1a;
+      border-color: #1a1a1a;
+    }
+
+    .sort-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-top: 8px;
+      border-top: 1px solid #ededed;
+    }
+
+    .sort-label {
+      font-size: 10px;
+      color: #999;
+      letter-spacing: 0.12em;
+      white-space: nowrap;
+    }
+
+    .sort-select {
+      width: min(210px, 62vw);
+      min-height: 36px;
+      padding: 7px 32px 7px 11px;
+      border: 1px solid #dedede;
+      border-radius: 9px;
+      background: #fff;
+      color: #333;
+      font: inherit;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .game-card[hidden],
+    .section-label[hidden] {
+      display: none !important;
+    }
+
+    /* スピード: 2枚のカードを薄く表示 */
+    .game-card.speed-bg { overflow: hidden; }
+    .game-card.speed-bg::before {
+      content: '';
+      position: absolute;
+      right: 17px;
+      top: 50%;
+      width: 70px;
+      height: 76px;
+      transform: translateY(-50%) rotate(7deg);
+      border: 2px solid rgba(26, 26, 26, 0.10);
+      border-radius: 8px;
+      box-shadow: -13px 8px 0 -2px #fff, -13px 8px 0 0 rgba(26, 26, 26, 0.08);
+      background:
+        radial-gradient(circle at 50% 43%, rgba(217, 43, 60, 0.16) 0 7px, transparent 8px),
+        #fff;
+      opacity: .9;
+      pointer-events: none;
+    }
+
+    @media (max-width: 380px) {
+      .library-tools { padding: 12px; }
+      .sort-row { align-items: stretch; flex-direction: column; gap: 6px; }
+      .sort-select { width: 100%; }
     }
 
     /* ===== カードリスト ===== */
@@ -566,64 +688,98 @@
   </div>
 
   <!-- ===== ゲームカード ===== -->
+
+  <!-- ===== 表示設定 ===== -->
+  <section class="library-tools" aria-label="ゲーム一覧の表示設定">
+    <div class="library-tools-head">
+      <div class="library-tools-title">ゲームを探す</div>
+      <div class="library-count" id="library-count" aria-live="polite"></div>
+    </div>
+    <div class="genre-filters" id="genre-filters" aria-label="ジャンル">
+      <button type="button" class="genre-filter" data-genre="all" aria-pressed="true">すべて</button>
+      <button type="button" class="genre-filter" data-genre="action" aria-pressed="false">アクション</button>
+      <button type="button" class="genre-filter" data-genre="puzzle" aria-pressed="false">パズル</button>
+      <button type="button" class="genre-filter" data-genre="card" aria-pressed="false">ボード・カード</button>
+      <button type="button" class="genre-filter" data-genre="explore" aria-pressed="false">探索</button>
+      <button type="button" class="genre-filter" data-genre="tool" aria-pressed="false">ツール</button>
+      <button type="button" class="genre-filter" data-genre="wip" aria-pressed="false">制作中</button>
+    </div>
+    <div class="sort-row">
+      <label class="sort-label" for="sort-select">並び替え</label>
+      <select class="sort-select" id="sort-select">
+        <option value="default">おすすめ順</option>
+        <option value="newest">新しい順</option>
+        <option value="oldest">古い順</option>
+        <option value="name">名前順</option>
+      </select>
+    </div>
+  </section>
+
   <div class="game-list">
 
-    <a class="game-card medal-bg" href="index.html" id="card-0">
+    <a class="game-card medal-bg" href="index.html" id="card-0" data-genre="puzzle" data-title="丸場所記憶ゲーム">
       <div class="card-tag">MEMORY</div>
       <div class="card-title">丸場所記憶ゲーム</div>
       <div class="card-desc">丸の場所を記憶して答える<br>金・銀・赤のメダルを目指せ</div>
     </a>
 
-    <a class="game-card tobe-bg" href="dungeon.html" id="card-1">
+    <a class="game-card tobe-bg" href="dungeon.html" id="card-1" data-genre="action" data-title="飛べ飛">
       <div class="card-tag">ACTION</div>
       <div class="card-title">飛べ飛</div>
       <div class="card-desc">漢字「飛」が「壁」の隙間をくぐる<br>100壁達成で無理ゲーモード解放</div>
     </a>
 
     <div class="section-label pop"><span class="spark">✦</span> 新作 <span class="spark">✦</span></div>
-    <a class="game-card reversi-bg" href="./kuroshiro/" id="card-11" data-published="2026-09-18">
+
+    <a class="game-card speed-bg" href="speed.html" id="card-12" data-published="2026-09-18" data-genre="card" data-title="スピード">
+      <div class="card-tag">CARD GAME</div>
+      <div class="card-title">スピード</div>
+      <div class="card-desc">トランプのスピードをAIと対戦<br>10段階の強さから相手を選べる</div>
+    </a>
+
+    <a class="game-card reversi-bg" href="./kuroshiro/" id="card-11" data-published="2026-09-18" data-genre="card" data-title="黒白">
       <div class="card-tag">BOARD GAME</div>
       <div class="card-title">黒白</div>
       <div class="card-desc">AI対戦とオンライン対戦に対応したリバーシ<br>長い接続コードを共有して端末どうしで直接対戦</div>
     </a>
 
-<a class="game-card combo-bg" href="combination-blocks.html" id="card-10" data-published="2026-09-13">
+<a class="game-card combo-bg" href="combination-blocks.html" id="card-10" data-published="2026-09-13" data-genre="puzzle" data-title="Combine &amp; Discover">
       <div class="card-tag">PUZZLE</div>
       <div class="card-title">Combine &amp; Discover</div>
       <div class="card-desc">3種類の石を4×4盤に配置<br>効果を組み合わせて目標点をめざす</div>
     </a>
 
-    <a class="game-card narabe-bg" href="narabe100.html" id="card-9" data-published="2026-09-12">
+    <a class="game-card narabe-bg" href="narabe100.html" id="card-9" data-published="2026-09-12" data-genre="puzzle" data-title="ならべパズル100">
       <div class="card-tag">PUZZLE</div>
       <div class="card-title">ならべパズル100</div>
       <div class="card-desc">ルールの違う並べ替えパズルが100段<br>スライドから魔方陣まで、少しずつ解放</div>
     </a>
 
-    <a class="game-card echo-bg" href="echo-dive.html" id="card-8" data-published="2026-09-12">
+    <a class="game-card echo-bg" href="echo-dive.html" id="card-8" data-published="2026-09-12" data-genre="explore" data-title="エコーダイブ">
       <div class="card-tag">STEALTH <span class="badge ai">100% AI制作</span></div>
       <div class="card-title">エコーダイブ</div>
       <div class="card-desc">まっくらな洞窟を音の反響で探る<br>企画・設計・コード・音 すべてAIが制作</div>
     </a>
 
-    <a class="game-card maze-bg" href="./maze/" id="card-7" data-published="2026-09-09">
+    <a class="game-card maze-bg" href="./maze/" id="card-7" data-published="2026-09-09" data-genre="tool" data-title="迷路ラボ">
       <div class="card-tag">PERFECT TOOL</div>
       <div class="card-title">迷路ラボ</div>
       <div class="card-desc">13種類の作り方で迷路をつくる<br>4種類の探索を動かして見くらべ</div>
     </a>
 
-    <a class="game-card memo-bg" href="shopping-memo.html" id="card-4" data-published="2026-07-13">
+    <a class="game-card memo-bg" href="shopping-memo.html" id="card-4" data-published="2026-07-13" data-genre="tool" data-title="ショッピング メモ">
       <div class="card-tag">PERFECT TOOL</div>
       <div class="card-title">ショッピング メモ</div>
       <div class="card-desc">買い物リストをさっと作れる<br>お店ごとにまとめて管理</div>
     </a>
 
-    <a class="game-card timer-bg" href="timer-gauge.html" id="card-5" data-published="2026-07-27">
+    <a class="game-card timer-bg" href="timer-gauge.html" id="card-5" data-published="2026-07-27" data-genre="tool" data-title="メータータイマー">
       <div class="card-tag">TOOL</div>
       <div class="card-title">メータータイマー</div>
       <div class="card-desc">メーター付きの多機能タイマー<br>色・音・配置を自由にカスタム</div>
     </a>
 
-    <a class="game-card gallery-bg" href="skins.html" id="card-6" data-published="2026-08-01">
+    <a class="game-card gallery-bg" href="skins.html" id="card-6" data-published="2026-08-01" data-genre="tool" data-title="きせかえギャラリー">
       <div class="card-tag">GALLERY</div>
       <div class="card-title">きせかえギャラリー</div>
       <div class="card-desc">タイマーのきせかえを公開・共有<br>みんなの着せ替えを使える</div>
@@ -631,13 +787,13 @@
 
     <div class="section-label">— 制作中 —</div>
 
-    <a class="game-card wip" id="card-2">
+    <a class="game-card wip" id="card-2" data-genre="puzzle wip" data-title="感覚謎解き">
       <div class="card-tag">PUZZLE <span class="badge">制作中</span></div>
       <div class="card-title">感覚謎解き</div>
       <div class="card-desc">言葉のない謎解き<br>現在制作中です</div>
     </a>
 
-    <a class="game-card wip" id="card-3">
+    <a class="game-card wip" id="card-3" data-genre="explore wip" data-title="四角迷宮">
       <div class="card-tag">RPG <span class="badge">制作中</span></div>
       <div class="card-title">四角迷宮</div>
       <div class="card-desc">四角いダンジョンを探索する<br>現在制作中です</div>
@@ -658,14 +814,12 @@
 </div>
 <div class="footer">
     <span class="footer-brand" data-text="現電 — 幻実世界の電子遊戯">現電 — 幻実世界の電子遊戯</span><br>
-    <span style="font-size:9px;letter-spacing:0.05em;">ver2026.09.18</span>
+    <span style="font-size:9px;letter-spacing:0.05em;">ver2026.09.18b</span>
   </div>
 
 </div>
 
 <script>
-  // ===== コントローラー操作 =====
-  // Aボタン（buttons[1]）: 決定  Bボタン（buttons[0]）: 丸場所へ戻る
   // ===== 新作の自動管理：公開から1ヶ月で「新作」から外す =====
   (function(){
     const newLabel = document.querySelector('.section-label.pop');
@@ -676,39 +830,125 @@
       const d = new Date(card.getAttribute('data-published') + 'T00:00:00');
       if (isNaN(d.getTime())) return;
       if (now - d.getTime() > MONTH){
-        // 1ヶ月を過ぎたら新作ラベルの前（通常エリア）へ移動
         newLabel.parentNode.insertBefore(card, newLabel);
       }
     });
-    // 新作セクションにカードが1枚も残らなければラベルを隠す
     let n = newLabel.nextElementSibling, hasNew = false;
     while (n && !(n.classList && n.classList.contains('section-label'))){
       if (n.classList && n.classList.contains('game-card')){ hasNew = true; break; }
       n = n.nextElementSibling;
     }
-    if (!hasNew) newLabel.style.display = 'none';
+    if (!hasNew) newLabel.hidden = true;
   })();
 
-  const CARDS = ['card-0', 'card-1', 'card-11', 'card-10', 'card-9', 'card-8', 'card-7', 'card-4', 'card-5', 'card-6', 'card-2', 'card-3'];
+  // ===== 絞り込み・並び替え =====
+  const gameList = document.querySelector('.game-list');
+  const defaultNodes = gameList ? Array.from(gameList.children) : [];
+  const allCards = gameList ? Array.from(gameList.querySelectorAll('.game-card')) : [];
+  const sectionLabels = gameList ? Array.from(gameList.querySelectorAll('.section-label')) : [];
+  const genreButtons = Array.from(document.querySelectorAll('.genre-filter'));
+  const sortSelect = document.getElementById('sort-select');
+  const libraryCount = document.getElementById('library-count');
+  let activeGenre = 'all';
+
+  function cardMatches(card){
+    if(activeGenre === 'all') return true;
+    return (card.dataset.genre || '').split(/\s+/).includes(activeGenre);
+  }
+
+  function publishedTime(card){
+    const raw = card.dataset.published;
+    if(!raw) return null;
+    const t = new Date(raw + 'T00:00:00').getTime();
+    return Number.isFinite(t) ? t : null;
+  }
+
+  function applyLibraryView(){
+    if(!gameList) return;
+    const sort = sortSelect ? sortSelect.value : 'default';
+
+    if(sort === 'default'){
+      defaultNodes.forEach(node => gameList.appendChild(node));
+    } else {
+      const sorted = [...allCards].sort((a,b) => {
+        if(sort === 'name'){
+          return (a.dataset.title || '').localeCompare(b.dataset.title || '', 'ja');
+        }
+        const at = publishedTime(a), bt = publishedTime(b);
+        if(at == null && bt == null) return 0;
+        if(at == null) return 1;
+        if(bt == null) return -1;
+        return sort === 'newest' ? bt - at : at - bt;
+      });
+      sorted.forEach(card => gameList.appendChild(card));
+    }
+
+    const specialView = activeGenre !== 'all' || sort !== 'default';
+    sectionLabels.forEach(label => {
+      label.hidden = specialView || (label.classList.contains('pop') && label.hidden);
+    });
+
+    let shown = 0;
+    allCards.forEach(card => {
+      const show = cardMatches(card);
+      card.hidden = !show;
+      if(show) shown++;
+    });
+
+    if(!specialView){
+      // 「新作」ラベルは、直後の制作中ラベルまでに表示カードがある時だけ表示。
+      const newLabel = document.querySelector('.section-label.pop');
+      if(newLabel){
+        let n = newLabel.nextElementSibling, hasNew = false;
+        while(n && !(n.classList && n.classList.contains('section-label'))){
+          if(n.classList && n.classList.contains('game-card') && !n.hidden){ hasNew = true; break; }
+          n = n.nextElementSibling;
+        }
+        newLabel.hidden = !hasNew;
+      }
+      const wipLabel = sectionLabels.find(x => !x.classList.contains('pop'));
+      if(wipLabel) wipLabel.hidden = false;
+    }
+
+    genreButtons.forEach(btn => btn.setAttribute('aria-pressed', String(btn.dataset.genre === activeGenre)));
+    if(libraryCount) libraryCount.textContent = `${shown}件表示`;
+
+    _cur = 0;
+    if(_gpConnected) updateCursor();
+  }
+
+  genreButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeGenre = btn.dataset.genre || 'all';
+      applyLibraryView();
+    });
+  });
+  if(sortSelect) sortSelect.addEventListener('change', applyLibraryView);
+
+  // ===== コントローラー操作 =====
+  // Aボタン（buttons[1]）: 決定
+  // Bボタン（buttons[0]）: 丸場所記憶ゲームへ
   let _cur = 0;
   let _gpConnected = false;
   let _prev = {};
 
   function _btnOn(b){ return b && (b.value > 0.08 || b.pressed); }
 
+  function currentCards(){
+    return Array.from(document.querySelectorAll('.game-card'))
+      .filter(el => !el.hidden && el.getAttribute('href'));
+  }
+
   function updateCursor(){
-    CARDS.forEach((id, i) => {
-      const el = document.getElementById(id);
-      if(!el) return;
-      el.classList.toggle('gp-focus', i === _cur);
-    });
-    // 画面外に出たらスクロール
-    const el = document.getElementById(CARDS[_cur]);
-    if(el){
-      const rect = el.getBoundingClientRect();
-      if(rect.bottom > window.innerHeight - 40) window.scrollBy(0, rect.bottom - window.innerHeight + 60);
-      else if(rect.top < 40) window.scrollBy(0, rect.top - 60);
-    }
+    const cards = currentCards();
+    document.querySelectorAll('.game-card').forEach(el => el.classList.remove('gp-focus'));
+    if(!cards.length) return;
+    _cur = Math.max(0, Math.min(_cur, cards.length - 1));
+    const el = cards[_cur];
+    el.classList.add('gp-focus');
+    const rect = el.getBoundingClientRect();
+    if(rect.bottom > window.innerHeight - 40) window.scrollBy(0, rect.bottom - window.innerHeight + 60);
+    else if(rect.top < 40) window.scrollBy(0, rect.top - 60);
   }
 
   function _onConnected(){
@@ -723,22 +963,20 @@
       if(!gp) continue;
       _onConnected();
       const idx = gp.index;
+      const cards = currentCards();
 
-      // Aボタン（buttons[1]）: 決定
       const bA = _btnOn(gp.buttons[1]);
       if(bA && !_prev[idx+'_A']){
-        const el = document.getElementById(CARDS[_cur]);
+        const el = cards[_cur];
         const href = el ? el.getAttribute('href') : null;
         if(href) window.location.href = href;
       }
       _prev[idx+'_A'] = bA;
 
-      // Bボタン（buttons[0]）: 丸場所へ戻る
       const bB = _btnOn(gp.buttons[0]);
       if(bB && !_prev[idx+'_B']) window.location.href = 'index.html';
       _prev[idx+'_B'] = bB;
 
-      // 上: カーソル上
       const up = _btnOn(gp.buttons[12]) || (gp.axes[1] < -0.3);
       if(up && !_prev[idx+'_up']){
         _cur = Math.max(0, _cur - 1);
@@ -746,27 +984,30 @@
       }
       _prev[idx+'_up'] = up;
 
-      // 下: カーソル下
       const dn = _btnOn(gp.buttons[13]) || (gp.axes[1] > 0.3);
       if(dn && !_prev[idx+'_dn']){
-        _cur = Math.min(CARDS.length - 1, _cur + 1);
+        _cur = Math.min(Math.max(0, cards.length - 1), _cur + 1);
         updateCursor();
       }
       _prev[idx+'_dn'] = dn;
 
-      // 右スティック・左スティック: スクロール
       const ly = gp.axes[1], ry = gp.axes[3];
       const sy = Math.abs(ry) > 0.15 ? ry : (Math.abs(ly) > 0.15 ? ly : 0);
       if(sy !== 0) window.scrollBy(0, sy * 12);
     }
   }
 
+  applyLibraryView();
   setInterval(pollGamepad, 8);
   window.addEventListener('gamepadconnected', _onConnected);
 
-  // 接続済み検出
-  function _detect(){ const g = navigator.getGamepads?.(); if(g && [...g].some(x=>x)) _onConnected(); }
-  setTimeout(_detect, 0); setTimeout(_detect, 200); setTimeout(_detect, 600);
+  function _detect(){
+    const g = navigator.getGamepads?.();
+    if(g && [...g].some(x=>x)) _onConnected();
+  }
+  setTimeout(_detect, 0);
+  setTimeout(_detect, 200);
+  setTimeout(_detect, 600);
 </script>
 </body>
 </html>
