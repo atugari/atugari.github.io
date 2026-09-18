@@ -3,6 +3,7 @@ import { ChevronLeft, Flag, Lightbulb, Undo2, Volume2, VolumeX, Copy, Check, Cli
 import { Board } from "@/components/board";
 import { Button } from "@/components/ui/button";
 import { useManualP2P } from "@/lib/multiplayer/use-manual-p2p";
+import { buildShareLink, clearRelayedAnswer, extractSignalCode, subscribeAnswerRelay } from "@/lib/multiplayer/share-link";
 import { chooseMove, chooseMoveAsync, DIFFICULTY_LABEL, type Difficulty } from "@/lib/reversi/ai";
 import { playFlips, playSound, setMuted, unlockAudio } from "@/lib/reversi/audio";
 import {
@@ -22,7 +23,7 @@ import { cn } from "@/lib/utils";
 
 export type PlayConfig =
   | { mode: "ai"; difficulty: Difficulty; myColor: Color; playerName: string }
-  | { mode: "online"; playerName: string; isHost: boolean };
+  | { mode: "online"; playerName: string; isHost: boolean; linkMode?: boolean; shareSessionId?: string; initialSignal?: string };
 
 function animMs(): number {
   if (typeof window === "undefined") return 480;
@@ -658,13 +659,13 @@ function SignalInput({
 
 function ConnectionProgress({
   step,
-  isHost,
+  linkMode,
 }: {
   step: 1 | 2 | 3;
-  isHost: boolean;
+  linkMode: boolean;
 }) {
-  const labels = isHost
-    ? ["招待コード", "返答コード", "直接接続"]
+  const labels = linkMode
+    ? ["招待リンク", "返答リンク", "直接接続"]
     : ["招待コード", "返答コード", "直接接続"];
   return (
     <div className="mt-5 grid grid-cols-3 gap-2" aria-label="接続の進行状況">
@@ -719,6 +720,8 @@ function OnlinePlay({
   const startPayloadRef = useRef<{ blackId: string; whiteId: string } | null>(null);
   const startAckedRef = useRef(false);
   const overRef = useRef(false);
+  const initialSignalHandledRef = useRef(false);
+  const relayedAnswerApplyingRef = useRef(false);
   const commitMove = game.commitMove;
   const reset = game.reset;
   const resign = game.resign;
@@ -731,6 +734,40 @@ function OnlinePlay({
 
   const connectedPeer = p2p.peers.find((peer) => peer.connectionState === "connected");
   const anyPeer = p2p.peers[0];
+  const linkMode = Boolean(config.linkMode && config.shareSessionId);
+  const inviteLink = linkMode && config.isHost && p2p.offerCode && config.shareSessionId
+    ? buildShareLink("invite", p2p.offerCode, config.shareSessionId)
+    : "";
+  const answerLink = linkMode && !config.isHost && p2p.answerCode && config.shareSessionId
+    ? buildShareLink("answer", p2p.answerCode, config.shareSessionId)
+    : "";
+
+  useEffect(() => {
+    if (config.isHost || !config.initialSignal || initialSignalHandledRef.current) return;
+    initialSignalHandledRef.current = true;
+    setSignalError(null);
+    void p2p.acceptOffer(config.initialSignal).catch((reason: unknown) => {
+      setSignalError(reason instanceof Error ? reason.message : "招待リンクを読み込めませんでした");
+    });
+  }, [config.isHost, config.initialSignal, p2p.acceptOffer]);
+
+  useEffect(() => {
+    if (!config.isHost || !linkMode || !config.shareSessionId) return;
+    return subscribeAnswerRelay(config.shareSessionId, (code) => {
+      if (relayedAnswerApplyingRef.current || startedRef.current) return;
+      relayedAnswerApplyingRef.current = true;
+      setSignalError(null);
+      void p2p.acceptAnswer(code)
+        .then(() => {
+          clearRelayedAnswer(config.shareSessionId!);
+          playSound("ui");
+        })
+        .catch((reason: unknown) => {
+          relayedAnswerApplyingRef.current = false;
+          setSignalError(reason instanceof Error ? reason.message : "返答リンクを読み込めませんでした");
+        });
+    });
+  }, [config.isHost, config.shareSessionId, linkMode, p2p.acceptAnswer]);
 
   useEffect(() => {
     return onMessage((_from, data, channel) => {
@@ -874,7 +911,7 @@ function OnlinePlay({
   const copyCode = async (kind: "offer" | "answer", value: string) => {
     const ok = await copyTextCompat(value);
     if (!ok) {
-      setSignalError("自動コピーできませんでした。コード欄を長押し／全選択してコピーしてください。");
+      setSignalError("自動コピーできませんでした。リンク／コード欄を長押し・全選択してコピーしてください。");
       return;
     }
     setCopied(kind);
@@ -899,19 +936,30 @@ function OnlinePlay({
   };
 
   const applySignal = async () => {
-    const value = signalInput.trim();
-    if (!value) {
-      setSignalError(config.isHost ? "相手から届いた返答コードを貼り付けてください" : "招待コードを貼り付けてください");
+    const raw = signalInput.trim();
+    if (!raw) {
+      setSignalError(
+        config.isHost
+          ? linkMode ? "相手から届いた返答リンクを貼り付けてください" : "相手から届いた返答コードを貼り付けてください"
+          : linkMode ? "招待リンクを貼り付けてください" : "招待コードを貼り付けてください",
+      );
       return;
     }
     try {
       setSignalError(null);
-      if (config.isHost) await p2p.acceptAnswer(value);
-      else await p2p.acceptOffer(value);
+      const value = extractSignalCode(raw, config.isHost ? "answer" : "invite");
+      if (config.isHost) {
+        relayedAnswerApplyingRef.current = true;
+        await p2p.acceptAnswer(value);
+        if (config.shareSessionId) clearRelayedAnswer(config.shareSessionId);
+      } else {
+        await p2p.acceptOffer(value);
+      }
       setSignalInput("");
       playSound("ui");
     } catch (reason) {
-      setSignalError(reason instanceof Error ? reason.message : "接続コードを読み込めませんでした");
+      if (config.isHost) relayedAnswerApplyingRef.current = false;
+      setSignalError(reason instanceof Error ? reason.message : "接続情報を読み込めませんでした");
     }
   };
 
@@ -927,11 +975,14 @@ function OnlinePlay({
   };
 
   const retryConnection = () => {
+    if (config.shareSessionId) clearRelayedAnswer(config.shareSessionId);
     startedRef.current = false;
     seqRef.current = 0;
     opponentIdRef.current = null;
     startPayloadRef.current = null;
     startAckedRef.current = false;
+    initialSignalHandledRef.current = false;
+    relayedAnswerApplyingRef.current = false;
     setSignalInput("");
     setSignalError(null);
     setCopied(null);
@@ -977,7 +1028,7 @@ function OnlinePlay({
               <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-center">
                 <Button onClick={retryConnection}>
                   <RotateCcw className="size-4" />
-                  新しいコードでやり直す
+                  新しくやり直す
                 </Button>
                 <Button variant="secondary" onClick={onExit}>メニューへ</Button>
               </div>
@@ -986,13 +1037,90 @@ function OnlinePlay({
             <div className="rise-in mx-auto mt-3 w-full max-w-xl rounded-3xl border border-line bg-ink-2 p-5 shadow-board sm:mt-8 sm:p-8">
               <div className="text-left">
                 <p className="text-xs tracking-[0.18em] text-faint">P2P DIRECT MATCH</p>
-                <h1 className="font-display mt-2 text-3xl">{config.isHost ? "対戦を作っています" : "対戦に参加します"}</h1>
-                <p className="mt-2 text-sm leading-6 text-mute">コードは長くて正常です。コピーして相手と送り合ってください。</p>
+                <h1 className="font-display mt-2 text-3xl">
+                  {linkMode ? (config.isHost ? "対戦相手を募集しています" : "招待リンクから参加します") : (config.isHost ? "対戦を作っています" : "対戦に参加します")}
+                </h1>
+                <p className="mt-2 text-sm leading-6 text-mute">
+                  {linkMode ? "リンクは長くて正常です。対戦データではなく接続情報が入っています。" : "コードは長くて正常です。コピーして相手と送り合ってください。"}
+                </p>
               </div>
 
-              <ConnectionProgress step={connectionStep} isHost={config.isHost} />
+              <ConnectionProgress step={connectionStep} linkMode={linkMode} />
 
-              {config.isHost ? (
+              {linkMode ? (
+                config.isHost ? (
+                  <>
+                    <div className="mt-5 rounded-xl bg-ink-3 px-4 py-3 text-sm leading-7 text-mute">
+                      <b className="text-paper">1.</b> 招待リンクを相手へ送る<br />
+                      <b className="text-paper">2.</b> 相手が返答リンクを送り返したら、この画面を開いたまま受け取る
+                    </div>
+                    {p2p.preparing && !inviteLink ? (
+                      <p className="shimmer mt-7 text-center text-sm font-medium">招待リンクを作っています</p>
+                    ) : (
+                      <ConnectionCode
+                        label="① 相手へ送る招待リンク"
+                        value={inviteLink}
+                        copied={copied === "offer"}
+                        onCopy={() => void copyCode("offer", inviteLink)}
+                        onShare={() => void shareCode("offer", inviteLink)}
+                      />
+                    )}
+                    <div className="mt-5 rounded-xl border border-line bg-ink px-4 py-3 text-sm leading-6 text-mute">
+                      <p className="font-medium text-paper">返答リンクを待っています</p>
+                      <p className="mt-1 text-xs leading-6">
+                        相手から届いた返答リンクを同じブラウザの別タブで開けば、自動でこの画面へ返答を渡せます。
+                        自動でつながらない場合だけ、下へ貼り付けてください。
+                      </p>
+                    </div>
+                    <SignalInput
+                      label="② 返答リンクを貼り付け（予備）"
+                      value={signalInput}
+                      onChange={setSignalInput}
+                      placeholder="https://…/kuroshiro/#answer=… をここへ貼り付け"
+                      onPasteRequest={() => void pasteSignal()}
+                    />
+                    <Button className="mt-3 w-full" disabled={p2p.preparing || !signalInput.trim()} onClick={() => void applySignal()}>
+                      {p2p.preparing ? "読み込み中…" : "返答リンクを読み込んで接続"}
+                    </Button>
+                  </>
+                ) : !p2p.answerCode ? (
+                  <>
+                    <div className="mt-5 rounded-xl bg-ink-3 px-4 py-3 text-sm leading-7 text-mute">
+                      招待リンクを読み込み、返答リンクを作っています。通常はそのまま待つだけで大丈夫です。
+                    </div>
+                    {p2p.preparing || (config.initialSignal && !connectionError) ? (
+                      <p className="shimmer mt-7 text-center text-sm font-medium">接続情報を作っています</p>
+                    ) : (
+                      <>
+                        <SignalInput
+                          label="招待リンク"
+                          value={signalInput}
+                          onChange={setSignalInput}
+                          placeholder="https://…/kuroshiro/#invite=… をここへ貼り付け"
+                          onPasteRequest={() => void pasteSignal()}
+                        />
+                        <Button className="mt-3 w-full" disabled={!signalInput.trim()} onClick={() => void applySignal()}>
+                          招待リンクを読み込む
+                        </Button>
+                      </>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <div className="mt-5 rounded-xl bg-ink-3 px-4 py-3 text-sm leading-7 text-mute">
+                      返答リンクができました。下の「共有」から、招待リンクを送ってくれた相手へ返してください。
+                    </div>
+                    <ConnectionCode
+                      label="② 相手へ送り返す返答リンク"
+                      value={answerLink}
+                      copied={copied === "answer"}
+                      onCopy={() => void copyCode("answer", answerLink)}
+                      onShare={() => void shareCode("answer", answerLink)}
+                    />
+                    <p className="shimmer mt-5 text-center text-sm font-medium">相手が返答を受け取るのを待っています</p>
+                  </>
+                )
+              ) : config.isHost ? (
                 <>
                   <div className="mt-5 rounded-xl bg-ink-3 px-4 py-3 text-sm leading-7 text-mute">
                     <b className="text-paper">1.</b> 下の招待コードを相手へ送る<br />
@@ -1062,7 +1190,7 @@ function OnlinePlay({
               ) : null}
               <p className="mt-5 border-t border-line pt-4 text-xs leading-6 text-faint">
                 対戦内容を保存する外部ゲームサーバーは使いません。接続成立後の対局通信はブラウザ同士で直接行われます。
-                接続コードには通信経路情報が含まれるため、対戦相手以外には公開しないでください。
+                {linkMode ? "招待・返答リンク" : "接続コード"}には通信経路情報が含まれるため、対戦相手以外には公開しないでください。
               </p>
             </div>
           )}
@@ -1082,7 +1210,7 @@ function OnlinePlay({
         <div className="mt-5 flex flex-col gap-2">
           <Button onClick={retryConnection}>
             <RotateCcw className="size-4" />
-            新しいコードでやり直す
+            新しくやり直す
           </Button>
           <Button variant="secondary" onClick={onExit}>メニューへ</Button>
         </div>
@@ -1092,7 +1220,7 @@ function OnlinePlay({
     overlay = (
       <Overlay>
         <h2 className="font-display text-2xl">切断しました</h2>
-        <p className="mt-2 text-sm leading-6 text-mute">相手との直接通信が切れました。新しい接続コードを作って対局を最初からやり直せます。</p>
+        <p className="mt-2 text-sm leading-6 text-mute">相手との直接通信が切れました。新しい接続情報を作って対局を最初からやり直せます。</p>
         <div className="mt-5 flex flex-col gap-2">
           <Button onClick={retryConnection}>
             <RotateCcw className="size-4" />

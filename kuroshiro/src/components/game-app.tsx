@@ -1,5 +1,5 @@
-import { useEffect, useState, type ReactNode } from "react";
-import { Bot, ChevronRight, KeyRound, Radio, Volume2, VolumeX } from "lucide-react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { Bot, ChevronRight, KeyRound, Link2, Radio, Share2, Volume2, VolumeX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PlayScreen, type PlayConfig } from "@/components/play-screen";
@@ -7,6 +7,7 @@ import { DIFFICULTY_LABEL, type Difficulty } from "@/lib/reversi/ai";
 import { playSound, setMuted, unlockAudio } from "@/lib/reversi/audio";
 import { BLACK, WHITE, type Color } from "@/lib/reversi/engine";
 import { cn } from "@/lib/utils";
+import { buildShareLink, makeShareSessionId, parseShareSignal, publishAnswerRelay } from "@/lib/multiplayer/share-link";
 
 const NAME_KEY = "kuroshiro-name";
 const SOUND_KEY = "kuroshiro-sound";
@@ -32,6 +33,7 @@ type Screen =
   | { id: "home" }
   | { id: "ai-setup" }
   | { id: "room-setup" }
+  | { id: "answer-relay"; sessionId: string; answerCode: string }
   | { id: "play"; config: PlayConfig };
 
 function BrandMark() {
@@ -52,13 +54,36 @@ function Shell({ children }: { children: ReactNode }) {
 }
 
 export function GameApp() {
-  const [name, setName] = useState("");
-  const [soundOn, setSoundOn] = useState(true);
+  const [name, setName] = useState(() => storageGet(NAME_KEY) ?? "");
+  const [soundOn, setSoundOn] = useState(() => storageGet(SOUND_KEY) !== "0");
   const [screen, setScreen] = useState<Screen>({ id: "home" });
+  const shareLinkHandled = useRef(false);
 
   useEffect(() => {
-    setName(storageGet(NAME_KEY) ?? "");
-    setSoundOn(storageGet(SOUND_KEY) !== "0");
+    if (shareLinkHandled.current) return;
+    const incoming = parseShareSignal(window.location.href);
+    if (!incoming) return;
+    shareLinkHandled.current = true;
+    const currentName = ((storageGet(NAME_KEY) ?? "").trim() || "ゲスト").slice(0, 12);
+    // Remove the signaling payload from the address bar after reading it. The
+    // live RTCPeerConnection remains in memory; this only keeps accidental
+    // re-sharing/history screenshots cleaner.
+    window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
+    if (incoming.kind === "invite") {
+      setScreen({
+        id: "play",
+        config: {
+          mode: "online",
+          playerName: currentName,
+          isHost: false,
+          linkMode: true,
+          shareSessionId: incoming.sessionId,
+          initialSignal: incoming.code,
+        },
+      });
+      return;
+    }
+    setScreen({ id: "answer-relay", sessionId: incoming.sessionId, answerCode: incoming.code });
   }, []);
 
   useEffect(() => {
@@ -87,6 +112,9 @@ export function GameApp() {
     setScreen({ id: "home" });
   };
 
+  if (screen.id === "answer-relay") {
+    return <AnswerRelay sessionId={screen.sessionId} answerCode={screen.answerCode} onBack={goHome} />;
+  }
   if (screen.id === "play") {
     return <PlayScreen config={screen.config} onExit={goHome} soundOn={soundOn} />;
   }
@@ -107,11 +135,24 @@ export function GameApp() {
       <RoomSetup
         playerName={playerName}
         onBack={goHome}
-        onHost={() => {
+        onLinkHost={() => {
+          playSound("ui");
+          setScreen({
+            id: "play",
+            config: {
+              mode: "online",
+              playerName,
+              isHost: true,
+              linkMode: true,
+              shareSessionId: makeShareSessionId(),
+            },
+          });
+        }}
+        onManualHost={() => {
           playSound("ui");
           setScreen({ id: "play", config: { mode: "online", playerName, isHost: true } });
         }}
-        onJoin={() => {
+        onManualJoin={() => {
           playSound("ui");
           setScreen({ id: "play", config: { mode: "online", playerName, isHost: false } });
         }}
@@ -174,7 +215,7 @@ export function GameApp() {
         <ModeButton
           icon={<Radio className="size-5" />}
           title="オンライン対戦"
-          desc="長い接続コードを共有して、端末どうしで直接対戦"
+          desc="募集リンクを送って、端末どうしで直接対戦"
           onClick={() => {
             playSound("ui");
             setScreen({ id: "room-setup" });
@@ -311,17 +352,96 @@ function AiSetup({
   );
 }
 
+async function copyCompat(value: string): Promise<boolean> {
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(value);
+      return true;
+    }
+  } catch {
+    // Fall back to execCommand below.
+  }
+  try {
+    const area = document.createElement("textarea");
+    area.value = value;
+    area.readOnly = true;
+    area.style.position = "fixed";
+    area.style.opacity = "0";
+    document.body.appendChild(area);
+    area.select();
+    const ok = document.execCommand("copy");
+    area.remove();
+    return ok;
+  } catch {
+    return false;
+  }
+}
+
+function AnswerRelay({
+  sessionId,
+  answerCode,
+  onBack,
+}: {
+  sessionId: string;
+  answerCode: string;
+  onBack: () => void;
+}) {
+  const [copied, setCopied] = useState(false);
+  const answerLink = buildShareLink("answer", answerCode, sessionId);
+
+  useEffect(() => {
+    // If the original host tab is still open in this browser, this delivers
+    // the answer automatically through BroadcastChannel/localStorage.
+    publishAnswerRelay(sessionId, answerCode);
+    const timer = window.setInterval(() => publishAnswerRelay(sessionId, answerCode), 1200);
+    return () => window.clearInterval(timer);
+  }, [sessionId, answerCode]);
+
+  return (
+    <Shell>
+      <div className="rise-in mt-10 rounded-3xl border border-line bg-ink-2 p-6 text-center shadow-board sm:p-8">
+        <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-ink-3 text-stone">
+          <Share2 className="size-6" />
+        </span>
+        <p className="mt-5 text-xs tracking-[0.18em] text-faint">RETURN LINK</p>
+        <h1 className="font-display mt-2 text-3xl font-medium">返答を送りました</h1>
+        <p className="mt-3 text-sm leading-7 text-mute">
+          元の対戦画面がこのブラウザの別タブで開いたままなら、自動で返答を渡します。元の「黒白」の対戦画面へ戻ってください。
+        </p>
+        <div className="mt-5 rounded-xl bg-ink-3 px-4 py-3 text-left text-xs leading-6 text-mute">
+          自動でつながらない場合は、この返答リンクをコピーして、元の対戦画面の「返答リンクを貼り付け」に貼ってください。
+        </div>
+        <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:justify-center">
+          <Button
+            onClick={async () => {
+              const ok = await copyCompat(answerLink);
+              setCopied(ok);
+              if (ok) playSound("ui");
+            }}
+          >
+            {copied ? "コピーしました" : "返答リンクをコピー"}
+          </Button>
+          <Button variant="secondary" onClick={onBack}>ゲームを開く</Button>
+        </div>
+      </div>
+    </Shell>
+  );
+}
+
 function RoomSetup({
   playerName,
   onBack,
-  onHost,
-  onJoin,
+  onLinkHost,
+  onManualHost,
+  onManualJoin,
 }: {
   playerName: string;
   onBack: () => void;
-  onHost: () => void;
-  onJoin: () => void;
+  onLinkHost: () => void;
+  onManualHost: () => void;
+  onManualJoin: () => void;
 }) {
+  const [manualOpen, setManualOpen] = useState(false);
   const webrtcAvailable = typeof window !== "undefined" && "RTCPeerConnection" in window;
   return (
     <Shell>
@@ -330,47 +450,68 @@ function RoomSetup({
       </Button>
       <div className="rise-in mt-6">
         <div className="inline-flex items-center gap-2 rounded-full border border-line bg-ink-2 px-3 py-1.5 text-xs text-stone shadow-sm">
-          <KeyRound className="size-3.5" />
-          サーバー不要の直接通信
+          <Link2 className="size-3.5" />
+          GitHub Pagesだけで対戦
         </div>
         <h1 className="font-display mt-4 text-3xl font-medium">オンライン対戦</h1>
         <p className="mt-2 text-sm text-mute">{playerName}として対局します</p>
       </div>
 
-      <div className="mt-8 rounded-2xl border border-line bg-ink-2 p-4 shadow-sm">
-        <p className="text-sm font-medium text-paper">接続方法</p>
-        <p className="mt-2 text-sm leading-7 text-mute">
-          作る側が長い「招待コード」を相手へ送り、参加側が長い「返答コード」を送り返します。
-          接続後はブラウザ同士で直接通信するので、GitHub Pagesに対戦サーバーは必要ありません。
-        </p>
+      <button
+        type="button"
+        onClick={onLinkHost}
+        disabled={!webrtcAvailable}
+        className="mode-card mt-8 rounded-3xl border border-stone/25 bg-ink-2 p-5 text-left shadow-board transition duration-200 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-45 sm:p-6"
+      >
+        <span className="grid size-12 place-items-center rounded-2xl bg-stone text-ink">
+          <Share2 className="size-5" />
+        </span>
+        <span className="mt-4 block text-lg font-medium text-paper">対戦を募集する</span>
+        <span className="mt-1 block text-sm leading-6 text-mute">
+          招待リンクを作ります。相手はリンクを開くだけで参加できます。
+        </span>
+        <span className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-stone">
+          いちばん簡単 <ChevronRight className="size-3.5" />
+        </span>
+      </button>
+
+      <div className="mt-4 rounded-2xl border border-line bg-ink-2 p-4 text-sm leading-7 text-mute">
+        <p className="font-medium text-paper">参加する人は操作不要</p>
+        <p className="mt-1">届いた招待リンクを開くと、自動で参加画面になります。返答リンクを作成したら相手へ送り返します。</p>
       </div>
 
-      <div className="mt-5 grid gap-3 sm:grid-cols-2">
-        <button
-          type="button"
-          onClick={onHost}
-          disabled={!webrtcAvailable}
-          className="mode-card rounded-2xl disabled:cursor-not-allowed disabled:opacity-45 border border-line bg-ink-2 p-5 text-left shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0"
-        >
-          <span className="grid size-11 place-items-center rounded-xl bg-ink-3 text-stone">
-            <Radio className="size-5" />
-          </span>
-          <span className="mt-4 block font-medium text-paper">対戦を作る</span>
-          <span className="mt-1 block text-xs leading-5 text-mute">招待コードを作って相手に送ります</span>
-        </button>
-        <button
-          type="button"
-          onClick={onJoin}
-          disabled={!webrtcAvailable}
-          className="mode-card rounded-2xl disabled:cursor-not-allowed disabled:opacity-45 border border-line bg-ink-2 p-5 text-left shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0"
-        >
-          <span className="grid size-11 place-items-center rounded-xl bg-ink-3 text-stone">
-            <KeyRound className="size-5" />
-          </span>
-          <span className="mt-4 block font-medium text-paper">対戦に参加</span>
-          <span className="mt-1 block text-xs leading-5 text-mute">相手から届いた招待コードを貼ります</span>
-        </button>
-      </div>
+      <button
+        type="button"
+        className="mt-6 self-start text-xs text-faint underline-offset-4 hover:text-mute hover:underline"
+        onClick={() => setManualOpen((value) => !value)}
+      >
+        {manualOpen ? "手動接続を閉じる" : "うまくいかない時の手動接続"}
+      </button>
+
+      {manualOpen ? (
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <button
+            type="button"
+            onClick={onManualHost}
+            disabled={!webrtcAvailable}
+            className="mode-card rounded-2xl border border-line bg-ink-2 p-4 text-left shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-45"
+          >
+            <span className="grid size-10 place-items-center rounded-xl bg-ink-3 text-stone"><Radio className="size-4" /></span>
+            <span className="mt-3 block font-medium text-paper">コードを作る</span>
+            <span className="mt-1 block text-xs leading-5 text-mute">従来の長いコード方式</span>
+          </button>
+          <button
+            type="button"
+            onClick={onManualJoin}
+            disabled={!webrtcAvailable}
+            className="mode-card rounded-2xl border border-line bg-ink-2 p-4 text-left shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-45"
+          >
+            <span className="grid size-10 place-items-center rounded-xl bg-ink-3 text-stone"><KeyRound className="size-4" /></span>
+            <span className="mt-3 block font-medium text-paper">コードで参加</span>
+            <span className="mt-1 block text-xs leading-5 text-mute">相手の招待コードを貼る</span>
+          </button>
+        </div>
+      ) : null}
 
       {!webrtcAvailable ? (
         <p role="alert" className="mt-5 rounded-xl border border-danger/20 bg-danger/5 px-3 py-2.5 text-sm leading-6 text-danger">
@@ -379,7 +520,7 @@ function RoomSetup({
       ) : null}
 
       <p className="mt-6 text-xs leading-5 text-faint">
-        ※ 普通の家庭回線・モバイル回線では直接つながることが多いですが、会社・学校など通信制限の強い回線では接続できない場合があります。
+        ※ 対戦サーバーは使いません。接続後は端末同士の直接通信です。会社・学校など通信制限の強い回線では接続できない場合があります。
       </p>
     </Shell>
   );
