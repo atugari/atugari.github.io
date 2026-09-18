@@ -1,0 +1,26 @@
+【白画面を直すための配置】
+
+リポジトリの一番上を次の形にします。
+
+.github/
+  workflows/
+    deploy-site.yml
+kuroshiro/
+  index.html
+  package.json
+  vite.pages.config.ts
+  tsconfig.json
+  public/
+  src/
+plaza.html
+（ほかの既存ゲームファイル）
+
+重要：
+・.github フォルダは kuroshiro の中ではなく、リポジトリ最上位です。
+・kuroshiro の中の src は開発用ソースです。公開時にGitHub Actionsが自動でビルドします。
+・GitHub → Settings → Pages → Build and deployment → Source を「GitHub Actions」にしてください。
+・その後 main/master に変更を保存すると Actions が走ります。
+・成功後は plaza.html → ./kuroshiro/ でゲームが開きます。
+
+白画面だった理由：
+GitHub Pagesは src/main.tsx を直接実行できません。ViteでJavaScript/CSSへ変換する必要があります。
