@@ -522,12 +522,34 @@
     :root[data-area="enclosure"] .board-effects, :root[data-area="janken"] .board-effects {
       --fx-good: #227151; --fx-bad: #b33b2e; --fx-warn: #956112; --fx-off: #596d73;
     }
+  
+    #learning{width:min(550px,calc(100vw - 20px));max-height:calc(100dvh - 20px);padding:0;border:1px solid #506b80;border-radius:18px;background:#101d29;color:#f0eee5;overflow:auto;overscroll-behavior:contain}
+    #learning .ui-button{color:#f0eee5;background:#1b2b3a;border-color:#486277;border-radius:10px}
+    #learning .ui-button.primary{background:#e8b866;color:#221b11;border-color:#e8b866}
+    #learning .ui-button:hover:not(:disabled){background:#293e4f}
+    #learning .ui-button.primary:hover:not(:disabled){background:#ffdc98}
+    #learning::backdrop{background:#03080ed9;backdrop-filter:blur(5px)}
+    .learn-head{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid #304556;position:sticky;top:0;background:#101d29;z-index:3}
+    .learn-head h2{font-size:17px;flex:1}.learn-body{padding:14px 16px 18px}
+    .learn-kicker{font-size:12px;color:#ffdc98;margin-bottom:5px;font-weight:750}.learn-body h3{font-size:18px;line-height:1.4}
+    .learn-text{font-size:14px;line-height:1.7;margin:8px 0;color:#c7d5df}.learn-actions{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}
+    .learn-actions button{flex:1;min-height:42px}.learn-list{display:grid;gap:8px;margin-top:14px}.learn-item{padding:11px;border:1px solid #304556;border-radius:12px;background:#172838}.learn-item strong{font-size:14px}.learn-item .learn-actions{margin-bottom:0}
+    .learn-board-wrap{position:relative;width:min(100%,clamp(210px,calc(100dvh - 385px),320px));margin:12px auto}
+    .learn-board{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;width:100%;aspect-ratio:1}
+    .learn-cell{position:relative;min-width:0;padding:0;display:flex;flex-direction:column;justify-content:center;align-items:center;border:1px solid #3d586b;border-radius:9px;background:#172838;aspect-ratio:1;font-size:24px;font-weight:800}
+    .learn-cell:disabled{opacity:1;cursor:default}
+    .learn-cell small{font-size:11px;font-weight:500;color:#c7d5df}.learn-cell em{position:absolute;top:3px;left:5px;font-size:9px;font-style:normal;color:#829bab}
+    .learn-cell.target{outline:3px solid #ffdc98;outline-offset:-3px;background:#3b3420}.learn-cell.selected{box-shadow:inset 0 0 0 3px #78d5dc}.learn-cell.good small{color:#83e1b0}.learn-cell.bad small{color:#ff9a8a}
+    .learn-rays{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.75}
+    .learn-feedback{padding:10px 12px;border-radius:10px;background:#1e3041;min-height:64px;font-size:14px;line-height:1.65}.learn-feedback.success{background:#14372c;border:1px solid #43866a;color:#b7f9d3}
+    .learn-controls{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}.learn-controls button{flex:1;min-height:42px;font-size:13px}.learn-controls .primary{flex:2}
+    #learning button.active{border-color:#ffdc98;background:#3b3420}.learn-room{font-size:11px!important;font-weight:500}
   </style>
 </head>
 <body>
   <main class="app" data-layout="side" data-density="compact" data-cards="rows">
     <header class="topline">
-      <div class="brand"><span class="brand-symbol" aria-hidden="true">▦</span><h1 id="stage-title"></h1></div>
+      <div class="brand"><span class="brand-symbol" aria-hidden="true">▦</span><h1 id="stage-title"></h1><button id="learn-button" class="ui-button" type="button" style="margin-left:auto;font-size:13px;white-space:nowrap">デモ・練習</button></div>
       <p id="stage-description" class="visually-hidden"></p>
       <nav class="stage-navigation" aria-label="エリアとステージを選ぶ">
         <select id="area-select" aria-label="エリアを選ぶ"></select>
@@ -571,6 +593,7 @@
     </div>
   </main>
 
+  <dialog id="learning" aria-labelledby="learn-title"><header class="learn-head"><h2 id="learn-title">デモ・練習</h2><button id="learn-close" class="ui-button" type="button">本編へ</button></header><div id="learn-body" class="learn-body"></div></dialog>
   <div id="drag-preview" class="drag-preview" aria-hidden="true" hidden></div>
   <div id="effect-announcement" class="visually-hidden" role="status" aria-live="polite" aria-atomic="true"></div>
   <div id="clear-flash" class="clear-flash" role="status" aria-live="assertive" aria-atomic="true" hidden>
@@ -674,8 +697,7 @@
     const GRID_H = 4;
     const STORAGE_KEY = "combination-blocks-best-v2";
     const PROGRESS_KEY = "combination-blocks-progress-v1";
-    const UNLOCK_COUNTS = [0, 1, 1, 2, 2, 4, 4, 6, 6, 8];
-    const NEXT_AREA_CLEARS = 4;
+    const AREA_GATE_STAGES = [2, 4, 6];
     const GAME_GOAL = "すべてのゲームを遊びつくそう！";
 
     const LIGHT_TYPES = [
@@ -1355,12 +1377,14 @@
       cleared.forEach((yes, index) => { if (yes) counts[STAGES[index].areaId]++; });
       const areas = new Set(), stages = new Set();
       AREAS.forEach((area, index) => {
-        // Already-cleared areas from older editions remain accessible.
-        if (index === 0 || counts[area.id] > 0 ||
-          (areas.has(AREAS[index - 1].id) && counts[AREAS[index - 1].id] >= NEXT_AREA_CLEARS)) areas.add(area.id);
+        const previous = index > 0 ? AREAS[index - 1] : null;
+        const gate = previous && STAGES.findIndex(stage => stage.areaId === previous.id && stage.number === AREA_GATE_STAGES[index - 1]);
+        // Preserve already-earned records from previous editions.
+        if (index === 0 || counts[area.id] > 0 || (areas.has(previous.id) && cleared[gate])) areas.add(area.id);
       });
       STAGES.forEach((stage, index) => {
-        if (areas.has(stage.areaId) && (cleared[index] || counts[stage.areaId] >= UNLOCK_COUNTS[stage.number - 1])) stages.add(stage.id);
+        const previous = STAGES.findIndex(member => member.areaId === stage.areaId && member.number === stage.number - 1);
+        if (areas.has(stage.areaId) && (cleared[index] || stage.number === 1 || cleared[previous])) stages.add(stage.id);
       });
       return { cleared, counts, areas, stages, total: cleared.filter(Boolean).length };
     }
@@ -1383,22 +1407,17 @@
     }
 
     function nextUnlockText(areaId, progress = campaignProgress()) {
-      const count = progress.counts[areaId], areaIndex = AREAS.findIndex(area => area.id === areaId);
-      if (!progress.areas.has(areaId)) return visibleAreaText(`「${AREAS[areaIndex - 1].name}」で${NEXT_AREA_CLEARS}面クリアすると解放。`, progress);
-      const required = UNLOCK_COUNTS.find(value => value > count);
-      const messages = [];
-      if (required != null) {
-        const numbers = UNLOCK_COUNTS.map((value, index) => value === required ? index + 1 : null).filter(Boolean);
-        messages.push(`あと${required - count}面クリアで${numbers.join("・")}面が解放`);
-      }
-      const next = AREAS[areaIndex + 1];
-      if (next && !progress.areas.has(next.id)) messages.push(`あと${NEXT_AREA_CLEARS - count}面クリアで次のエリアが解放`);
-      return messages.length ? messages.join("。") + "。" : count === 10 ? "このエリアは全10面クリア！" : "全10面を解放済み。残った面にも挑戦しよう。";
+      const areaIndex = AREAS.findIndex(area => area.id === areaId), area = AREAS[areaIndex];
+      if (!progress.areas.has(areaId)) return `${areaIndex}-${AREA_GATE_STAGES[areaIndex - 1]}クリアで${areaIndex + 1}-1が解放。`;
+      const messages = [], nextStage = STAGES.find(stage => stage.areaId === areaId && !progress.stages.has(stage.id));
+      if (nextStage) messages.push(`${area.number}-${nextStage.number - 1}クリアで${area.number}-${nextStage.number}が解放`);
+      if (AREAS[areaIndex + 1] && !progress.areas.has(AREAS[areaIndex + 1].id)) messages.push(`${area.number}-${AREA_GATE_STAGES[areaIndex]}クリアで${area.number + 1}-1が解放`);
+      return messages.length ? messages.join("。") + "。" : progress.counts[areaId] === 10 ? "このエリアは全10面クリア！" : "全10面を解放済み。残った面にも挑戦しよう。";
     }
 
     function progressItems(progress = campaignProgress()) {
       return [{ key: "goal", title: "目的と進み具合", sections: [
-        { label: GAME_GOAL, text: `4エリア・全${STAGES.length}面の目標点を達成しよう！ 現在${progress.total}/${STAGES.length}面クリア。${progress.total === STAGES.length ? "すべてのゲームをクリアしました！" : "最高記録が目標点に届くとクリア。クリア数で難しい面と次のエリアが開きます。"}` },
+        { label: GAME_GOAL, text: `4エリア・全${STAGES.length}面の目標点を達成しよう！ 現在${progress.total}/${STAGES.length}面クリア。${progress.total === STAGES.length ? "すべてのゲームをクリアしました！" : "最高記録が目標点に届くとクリア。本編の指定ステージをクリアすると、次の面やエリアが開きます。練習では解放されません。"}` },
         { label: "次の解放", text: nextUnlockText(currentStage().areaId, progress) }
       ] }, ...AREAS.map(area => {
         const members = STAGES.map((stage, index) => ({ stage, index })).filter(({ stage }) => stage.areaId === area.id);
@@ -1408,10 +1427,10 @@
             text: `クリア：${list(({ index }) => progress.cleared[index])}\n挑戦可：${list(({ stage, index }) => progress.stages.has(stage.id) && !progress.cleared[index])}\n未解放：${list(({ stage }) => !progress.stages.has(stage.id))}\n${nextUnlockText(area.id, progress)}` }
         ] };
       }), { key: "unlock-rules", title: "ステージの解放", sections: [
-        { label: "エリアごとに少しずつ", text: "最初は光の庭の1面だけ。各エリアで1面クリア→2・3面、2面クリア→4・5面、4面クリア→6・7面、6面クリア→8・9面、8面クリア→10面が開きます。4面クリアで次のエリアの1面も開きます。同じ面を繰り返してもクリア数は増えません。" },
+        { label: "エリアごとに少しずつ", text: "最初は1-1だけ。各エリアでは直前の面をクリアすると次の1面が開きます。1-2クリアで2-1、2-4クリアで3-1、3-6クリアで4-1が解放されます。練習・デモでは解放されません。" },
         { label: "好きな挑戦を選ぼう", text: "解放後は、難しい面に挑むか次のエリアへ進むかを選べます。全40面が最終目標です。" +
           (progress.areas.has("final") ? "集大成で強さが足りないときは、先の3エリアの記録を伸ばしましょう。" : "エリアの名前は解放してからのお楽しみです。") + "過去の最高記録とクリアは引き継ぎます。" },
-        { label: "チュートリアル", text: "最初の面で、石を選ぶ・置く・動かす・採点する操作を練習できます。上の「練習」から何度でも開始でき、練習中の「終了」でいつでも案内を飛ばせます。スキップではクリアになりません。" }
+        { label: "チュートリアル", text: "「デモ・練習」では、本編で解放済みの内容だけ練習できます。本編の進行に応じて練習も増えます。「本編へ」でいつでも戻れます。練習・デモを終えても本編はクリア扱いになりません。" }
       ] }];
     }
 
@@ -1458,13 +1477,7 @@
         next >= 0 ? () => { closeSheet(); switchStage(next); } : () => closeSheet(), next >= 0 ? "進む" : "続ける");
     }
 
-    function showTutorialIntro() {
-      openSheet("tutorial-intro", [{ key: "intro", title: "チュートリアル", sections: [
-        { label: GAME_GOAL, text: "4エリア・全40面に挑戦しよう。まずは「光の庭」の1面で、石を置いて得点を作る操作を練習します。" },
-        { label: "自分で動かして覚える", text: "光るカードやマスが次の操作の目印です。3種類の説明を見ながら、石を選ぶ・置く・動かす・採点する流れを試します。" },
-        { label: "いつでもスキップ", text: "「スキップ」で説明なしで遊べます。開始後も「終了」で案内を飛ばせます。練習は1面を初期配置に戻して始めますが、最高記録は残ります。" }
-      ] }], startTutorial, "始める", () => closeSheet());
-    }
+    function showTutorialIntro() { learnMenu(); }
 
     function startTutorial() {
       closeSheet();
@@ -1502,14 +1515,14 @@
       if (board[5] !== "shade") return { label: "④遮光を置く", hint: "2行2列へ", typeId: "shade", target: 5,
         detail: "遮光石のカードを選び、2行2列へ置こう。光源石と受光石の間に置くと光を遮ります。説明を比べながら、三つの石を組み合わせよう。" };
       return { label: "⑤採点しよう", hint: "目標44点", action: "check-button",
-        detail: "「採点」を押そう。目標の44点以上ならクリアです。採点後に最高理論値も表示され、2・3面が解放されます。やり直したいときは「戻す」「全戻す」を使えます。" };
+        detail: "「採点」を押そう。目標の44点以上ならクリアです。採点後に最高理論値も表示され、次の2面が解放されます。やり直したいときは「戻す」「全戻す」を使えます。" };
     }
 
     function renderTutorial() {
       const controls = [...paletteList.children, ...boardElement.children, ...$(".actions").children];
       controls.forEach(control => control.classList.remove("tutorial-target"));
       const step = tutorialStep(), help = $("#help-button");
-      help.textContent = step ? "終了" : "進み方";
+      help.textContent = step ? "終了" : "デモ・練習";
       help.setAttribute("aria-label", step ? "チュートリアルを終了して自由に遊ぶ" : "目的・進み具合・遊び方");
       if (!step) return;
       if (step.typeId) {
@@ -2208,7 +2221,7 @@
           const option = document.createElement("option");
           option.value = String(index);
           option.textContent = `${member.number || member.id}面`;
-          option.title = `${member.title} ／ ☆${member.difficulty}`;
+          option.title = "未解放";
           stageSelect.appendChild(option);
         });
         stageSelect.dataset.area = areaKey;
@@ -2217,7 +2230,7 @@
         const index = Number(option.value), member = STAGES[index], unlocked = isStageUnlocked(index, progress);
         option.disabled = !unlocked;
         option.textContent = progress.cleared[index] ? `✓ ${member.number}面 ☆${member.difficulty}` : unlocked ? `${member.number}面 ☆${member.difficulty}` : `— ${member.number}面`;
-        option.title = visibleAreaText(`${member.title} ／ ☆${member.difficulty} ／ ${progress.cleared[index] ? "CLEAR・クリア済み" : unlocked ? "未クリア・挑戦できます" : "未解放"}`, progress);
+        option.title = unlocked ? `${member.title} ／ ☆${member.difficulty} ／ ${progress.cleared[index] ? "CLEAR・クリア済み" : "未クリア・挑戦できます"}` : `${member.number}面：未解放`;
       });
       state.areaStages[areaKey] = state.stageIndex;
       areaSelect.value = areaKey;
@@ -2485,7 +2498,8 @@
           { key: "effects", title: "盤面で効果を見る", sections: [
             { label: "配置すると、すぐ更新", text: "石の枠は緑が加点条件成立、赤の破線が減点、橙の二重線が加点と減点の両方または勝ち過ぎ、灰色の点線が条件待ち。石の数字は基礎点を含む、その石の現在の得点です。採点するまで合計点・理論値・記録は確定しません。" },
             { label: "光が届くマス", text: "光の通る空きマスが光ります。加点につながる範囲は緑、減点に関わる範囲は赤、相手がまだいない通り道は黄色。光源の光は最初の石で止まります。水色は見ている石が参照する範囲、紫は遮光に関わるマスです。" },
-            { label: "囲みと勝敗もマスで確認", text: "同じ色の空きマスは一つの空間で、数字はその広さ。見ている石が触れる空間は明るくなります。ジャンケンは対戦関係にある石のマスが光り、勝つ側が緑、負ける側が赤、両方に関わる場合や勝ち過ぎは橙、あいこは灰色です。" },
+            ...(campaignProgress().areas.has("enclosure") ? [{ label: "空間をマスで確認", text: "同じ色の空きマスは一つの空間で、数字はその広さ。見ている石が触れる空間は明るくなります。" }] : []),
+            ...(campaignProgress().areas.has("janken") ? [{ label: "勝敗をマスで確認", text: "対戦関係にある石のマスが光り、勝つ側が緑、負ける側が赤、両方に関わる場合や勝ち過ぎは橙、あいこは灰色です。" }] : []),
             { label: "置く前にも確かめる", text: "ドラッグ中は配置予定の石と効果を仮表示します。置いた石の移動や入れ替えにも対応。盤外へ離すと元の表示へ戻ります。石が小さい画面では点数を縮めず、マスの発光・枠と採点欄の表示で確認できます。石にマウスを重ねるか押したままにすると、その石に関わるマスが明るくなります。" }
           ] },
           { key: "theme", title: "このステージ", sections: [
@@ -2671,6 +2685,146 @@
       scheduleBoardFit();
     }
 
+
+    // Separate tutorial boards: lessons never modify campaign boards or records.
+    const lessonBoard = pieces => { const b=Array(16).fill(null);for(const [i,t] of pieces)b[i]=t;return b; };
+    const LESSONS = [
+      {title:"光を届ける",area:"light",pieces:[[0,"beacon"]],type:"photocell",target:2,
+       task:"「受光石」を選び、黄色い1行3列をタップ。光源との間に、空きマスを1つ挟もう。",
+       why:"受光石は光が1方向から届くと4＋32＝36点。光源石も18点になりました。斜めには届きません。",
+       goal:b=>b[0]==="beacon"&&b[2]==="photocell",steps:[["select","photocell"],["cell",2]]},
+      {title:"近すぎる石を離す",area:"light",pieces:[[0,"beacon"],[1,"photocell"]],type:null,target:3,
+       task:"近すぎる「受」をタップし、次に黄色い1行4列をタップして移動。練習では2回タップで動かせます。",
+       why:"隣り合うだけでは光を受け取れず、光源も減点されます。空きを挟むと受光石が4点→36点に変わります。本編ではドラッグで移動します。",
+       goal:b=>b[0]==="beacon"&&b[3]==="photocell",steps:[["cell",1],["cell",3]]},
+      {title:"遮られた光を通す",area:"light",pieces:[[0,"beacon"],[1,"shade"],[3,"photocell"]],target:1,
+       task:"「消す」を選んで、黄色い「遮」をタップ。受光石まで光が通るようにしよう。",
+       why:"光は最初の石で止まります。遮光石を取り除くと、奥の受光石に届きます。光源・受光石自身も、その先の光を遮ります。",
+       goal:b=>b[0]==="beacon"&&b[3]==="photocell"&&!b[1],steps:[["erase"],["cell",1]]},
+      {title:"3種類を置いて採点",area:"light",pieces:[[0,"beacon"],[3,"photocell"]],type:"shade",target:5,requireCheck:true,
+       task:"「遮光石」を選び、黄色い2行2列へ置く。その後「採点」を押そう。光の通り道は空けておこう。",
+       why:"光源18＋受光36＋遮光8＝62点。1面の目標44点を超えました。本編では置かない枠に減点があるため、残りの石も上手に置くことが大切です。",
+       goal:b=>b[0]==="beacon"&&b[3]==="photocell"&&b[5]==="shade",steps:[["select","shade"],["cell",5],["check"]]},
+      {title:"空きマスを2つの空間に分ける",area:"enclosure",pieces:[[4,"partition"],[6,"partition"],[7,"partition"]],type:"partition",target:5,
+       task:"「仕切石」を選び、黄色いすき間に置こう。上下の空きマスのつながりを断つと、2つの空間になります。",
+       why:"同じ色の空きマスは1つの空間。仕切石は異なる2空間に触れると24点です。同じ空間を何方向から触っても1つと数えます。",
+       goal:b=>b[5]==="partition"&&lessonStoneScore(b,"partition",5,"enclosure").value===24,
+       steps:[["select","partition"],["cell",5]]},
+      {title:"2マスの小さな庭を作る",area:"enclosure",pieces:[[3,"partition"],[4,"partition"],[5,"partition"],[6,"partition"],[7,"partition"]],type:"smallgarden",target:2,
+       task:"「小庭石」を選び、黄色い1行3列へ置く。左に残る空きマスが、ちょうど2マスの空間になります。",
+       why:"小庭石は「触れる空間が1つだけ・その広さが2マス」で36点。大庭石は同じ考え方で4マスを狙います。斜めはつながりません。",
+       goal:b=>b[2]==="smallgarden"&&lessonStoneScore(b,"smallgarden",2,"enclosure").value===36,
+       steps:[["select","smallgarden"],["cell",2]]},
+      {title:"ジャンケンで1勝する",area:"janken",pieces:[[1,"scissors"],[5,"paper"]],type:"rock",target:0,
+       task:"「グー」を選び、黄色い左上へ置く。隣のチョキに勝ち、斜めのパーとは対戦しません。",
+       why:"対戦は上下左右の隣だけ。グーはチョキに勝ち、パーに負けます。このグーは1勝0敗で30点。負けた石も消えません。",
+       goal:b=>b[0]==="rock"&&lessonStoneScore(b,"rock",0,"janken").value===30,
+       steps:[["select","rock"],["cell",0]]},
+      {title:"勝ちすぎを直す",area:"janken",pieces:[[5,"rock"],[4,"scissors"],[6,"scissors"]],target:0,
+       task:"中央の「グー」をタップし、次に黄色い左上をタップ。2勝から、ちょうど1勝になる場所へ移そう。",
+       why:"2勝以上は12点、ちょうど1勝は30点。1敗ごとに10点引かれます。「たくさん勝つ」より「全員にちょうど1勝」を作るのがコツです。",
+       goal:b=>b[0]==="rock"&&lessonStoneScore(b,"rock",0,"janken").value===30,
+       steps:[["cell",5],["cell",0]]}
+    ];
+    const LESSON_STAGE_NUMBERS = [1, 1, 3, 1, 1, 2, 1, 3];
+    function availableLessons(progress=campaignProgress()){
+      return LESSONS.map((lesson,index)=>({lesson,index})).filter(({lesson,index})=>{
+        const stage=STAGES.find(member=>member.areaId===lesson.area&&member.number===LESSON_STAGE_NUMBERS[index]);
+        return stage&&progress.stages.has(stage.id);
+      }).map(item=>item.index);
+    }
+    function nextLessonIndex(){const ids=availableLessons();return ids[ids.indexOf(LEARN.index)+1]??-1;}
+    const LEARN={index:0,board:[],selected:null,source:null,erase:false,done:false,mode:"practice",step:0,auto:false,timer:0,token:0,history:[],note:""};
+    const learning=$("#learning"),learnBody=$("#learn-body");
+    function lessonStage(area,board){
+      const base=area==="light"?LIGHT_STAGES[0]:area==="enclosure"?ENCLOSURE_STAGES[0]:JANKEN_STAGES[0];
+      return {...base,limit:board.filter(Boolean).length,emptyPenalty:0};
+    }
+    function lessonStoneScore(board,type,index,area){const stage=lessonStage(area,board);return typeById(stage,type).score(blockContext(stage,board,index,type,null,null));}
+    function stopLearnAuto(){clearTimeout(LEARN.timer);LEARN.timer=0;LEARN.token++;}
+    function openLearn(){if(infoSheet.open)closeSheet();if(!learning.open)learning.showModal();}
+    function closeLearn(){stopLearnAuto();LEARN.auto=false;learning.close();state.progress.tutorialSeen=true;saveProgress();}
+    function learnMenu(){
+      stopLearnAuto();LEARN.auto=false;openLearn();$("#learn-title").textContent="まずは見て・触って覚えよう";
+      learnBody.innerHTML=`<p class="learn-text">目的は、石の配置を工夫して目標点を超えること。本編で解放された内容だけを練習できます。本編をクリアすると、対応する練習とお手本も増えます。練習は配置・記録・解放に影響しません。</p><div class="learn-actions"><button class="ui-button primary" data-start="practice">最初から練習する</button><button class="ui-button" data-start="demo">お手本を見る</button></div><button class="ui-button" data-full-help style="width:100%">詳しいルール・進み方を読む</button><p class="learn-text">練習：黄色い枠が次の操作の目印。<br>お手本：一手ずつ進めるか、自動再生できます。</p><div class="learn-list">${availableLessons().map((i,n)=>{const l=LESSONS[i];return `<section class="learn-item"><strong>${n+1}. ${l.title}</strong><div class="learn-actions"><button class="ui-button" data-lesson="${i}" data-mode="practice">練習</button><button class="ui-button" data-lesson="${i}" data-mode="demo">お手本</button></div></section>`}).join("")}</div><p class="learn-text">先の練習は、本編の進行に合わせて公開されます。</p>`;
+    }
+    function beginLesson(index,mode){
+      if(!availableLessons().includes(index)){learnMenu();return false}
+      stopLearnAuto();openLearn();const l=LESSONS[index];
+      Object.assign(LEARN,{index,mode,board:lessonBoard(l.pieces),selected:null,source:null,erase:false,done:false,step:0,history:[],note:"",auto:false});renderLesson();
+    }
+    function renderLesson(){
+      const l=LESSONS[LEARN.index],b=LEARN.board,stage=lessonStage(l.area,b),geo=l.area==="enclosure"?emptyRooms(b):null;
+      const types=stage.types,selected=LEARN.selected&&typeById(stage,LEARN.selected),total=evaluate(stage,b).total;
+      const demo=LEARN.mode==="demo";$("#learn-title").textContent=demo?"お手本プレイ":"練習ミッション";
+      let rays="";
+      if(l.area==="light")b.forEach((id,i)=>{if(id!=="beacon")return;visibleInDirections(b,i).forEach(hit=>{if(!hit)return;const color=hit.id==="photocell"&&hit.distance>=2?"#83e1b0":"#c19af2";rays+=`<line x1="${colOf(i)*25+12.5}" y1="${rowOf(i)*25+12.5}" x2="${colOf(hit.index)*25+12.5}" y2="${rowOf(hit.index)*25+12.5}" stroke="${color}" stroke-width="1.3" stroke-dasharray="2 2"/>`})});
+      learnBody.innerHTML=`<div class="learn-kicker">${availableLessons().indexOf(LEARN.index)+1} / ${availableLessons().length}　${demo?"見るモード":"触るモード"}</div><h3>${l.title}</h3><p class="learn-text">${l.task}</p>
+      <div class="learn-actions">${l.type?`<button class="ui-button ${LEARN.selected===l.type?"active":""}" data-pick="${l.type}" ${demo||LEARN.done?"disabled":""}>${typeById(stage,l.type).name}を選ぶ</button>`:""}<button class="ui-button ${LEARN.erase?"active":""}" data-erase ${demo||LEARN.done?"disabled":""}>消す</button>${l.requireCheck?`<button class="ui-button primary" data-check ${demo||LEARN.done?"disabled":""}>採点</button>`:""}</div>
+      <div class="learn-board-wrap"><div class="learn-board" role="grid" aria-label="練習用4×4盤面">${b.map((id,i)=>{
+        const type=id?typeById(stage,id):null,score=id?lessonStoneScore(b,id,i,l.area):null,room=geo&&!id?geo.rooms[geo.roomOf[i]]:null;
+        const r=room?`background:hsl(${[195,38,280,140][room.id%4]} 28% 21%)`:"";
+        return `<button class="learn-cell ${i===l.target&&!LEARN.done?"target":""} ${i===LEARN.source?"selected":""} ${score?score.value>4?"good":score.value<0?"bad":"":""}" style="${r}" data-lcell="${i}" ${demo||LEARN.done?"disabled":""} aria-label="${rowOf(i)+1}行${colOf(i)+1}列、${type?type.name+score.value+"点":"空き"}${i===l.target?"、目印":""}"><em>${rowOf(i)+1}-${colOf(i)+1}</em>${type?`<span style="color:${type.color}">${type.mark}</span><small>${score.value}点</small>`:room?`<span class="learn-room">空間${room.id+1}<br>${room.size}マス</span>`:""}</button>`;
+      }).join("")}</div><svg class="learn-rays" viewBox="0 0 100 100" aria-hidden="true">${rays}</svg></div>
+      <div class="learn-feedback ${LEARN.done?"success":""}" role="status" aria-live="polite">${LEARN.done?"✓ ミッション達成！<br>"+l.why:LEARN.note|| (LEARN.source!=null?"石を選びました。黄色い移動先をタップ。":LEARN.erase?"消すモードです。取り除く石をタップ。":selected?selected.name+"を選びました。置くマスをタップ。":"まず上の説明どおりに操作してみよう。石の下の数字は、その石の得点です。")}</div>
+      <p class="learn-text" style="font-size:12px">${l.requireCheck?"この配置の合計："+total+"点 ／ 目標44点":"練習中は未配置の減点なし。配置ごとの効果だけを比べます。"}</p>
+      <div class="learn-controls">${demo?`<button class="ui-button" data-practice>自分で練習</button><button class="ui-button" data-demo-step ${LEARN.done?"disabled":""}>次の動きを見る</button><button class="ui-button ${LEARN.auto?"active":""}" data-auto>${LEARN.auto?"自動を止める":"自動再生"}</button>`:`<button class="ui-button" data-demo>お手本に切替</button><button class="ui-button" data-undo ${!LEARN.history.length||LEARN.done?"disabled":""}>一手戻す</button>`}<button class="ui-button" data-retry>やり直す</button><button class="ui-button" data-menu>一覧</button><button class="ui-button primary" data-next ${!LEARN.done?"disabled":""}>${nextLessonIndex()<0?"本編へ戻る":"次のミッション"}</button></div>`;
+    }
+    function lessonComplete(check=false){
+      const l=LESSONS[LEARN.index];if(l.goal(LEARN.board)&&(!l.requireCheck||check))LEARN.done=true;
+    }
+    function lessonCell(i){
+      if(LEARN.done)return;const b=LEARN.board;
+      if(LEARN.erase){if(!b[i]){LEARN.note="ここは空きマスです。取り除く石をタップ。";renderLesson();return}LEARN.history.push(b.slice());b[i]=null;LEARN.source=null;}
+      else if(LEARN.source!=null){LEARN.history.push(b.slice());[b[LEARN.source],b[i]]=[b[i],b[LEARN.source]];LEARN.source=null;}
+      else if(b[i]){LEARN.source=i;LEARN.selected=null;renderLesson();return;}
+      else if(LEARN.selected){
+        if(b.filter(x=>x===LEARN.selected).length>=LESSONS[LEARN.index].pieces.filter(x=>x[1]===LEARN.selected).length+1){LEARN.note="その石はもう盤面にあります。置いた石をタップし、移動先をタップして動かそう。";renderLesson();return}
+        LEARN.history.push(b.slice());b[i]=LEARN.selected;
+      }else{LEARN.note="先に石を選ぼう。動かすときは、置いてある石を先にタップ。";renderLesson();return}
+      LEARN.note="配置を変えました。石の点数を見てみよう。黄色い枠が次の目印です。";lessonComplete();renderLesson();
+    }
+    function lessonDemoStep(){
+      if(LEARN.done)return;const l=LESSONS[LEARN.index],step=l.steps[LEARN.step++];if(!step)return;
+      const [action,arg]=step;
+      if(action==="select"){LEARN.selected=arg;LEARN.erase=false;LEARN.source=null;LEARN.note=typeById(lessonStage(l.area,LEARN.board),arg).name+"のボタンを押して選びます。";renderLesson()}
+      else if(action==="erase"){LEARN.erase=true;LEARN.source=null;LEARN.note="消すモードを選びます。次は遮光石を取り除きます。";renderLesson()}
+      else if(action==="cell")lessonCell(arg);
+      else if(action==="check"){lessonComplete(true);renderLesson()}
+    }
+    function queueLearnAuto(){
+      clearTimeout(LEARN.timer);if(!LEARN.auto||!learning.open)return;const token=LEARN.token;
+      LEARN.timer=setTimeout(()=>{if(token!==LEARN.token||!learning.open||!LEARN.auto)return;
+        if(LEARN.done){LEARN.auto=false;renderLesson();return}lessonDemoStep();queueLearnAuto();},1800);
+    }
+    function lessonFinish(){
+      stopLearnAuto();LEARN.auto=false;
+      const progress=campaignProgress();
+      const tips=["光は空きマスを通す。石を動かしたら、得点の変化を見てみよう。"];
+      if(progress.areas.has("enclosure"))tips.push("庭は空間の広さと、触れる空間の数を整えよう。");
+      if(progress.areas.has("janken"))tips.push("ジャンケンは、ちょうど1勝を狙おう。");
+      if(progress.areas.has("final"))tips.push("集大成では前のエリアの最高記録を伸ばすと石が強くなります。");
+      learnBody.innerHTML=`<div class="learn-kicker">今遊べる練習はここまで</div><h3>本編で試してみよう！</h3><p class="learn-text">${tips.join("<br>")}</p><p class="learn-text">本編では「石を選ぶ → 空きマスをタップ → 採点」。置いた石はドラッグで移動・交換でき、タップすると取り除けます。</p><p class="learn-text">${nextUnlockText(currentStage().areaId,progress)}<br>先の練習は、その内容が本編で解放されたときに公開されます。</p><div class="learn-actions"><button class="ui-button primary" data-main-current>本編の続きを遊ぶ</button><button class="ui-button" data-menu>もう一度練習</button></div>`;
+    }
+    learnBody.addEventListener("click",e=>{
+      const btn=e.target.closest("button");if(!btn||btn.disabled)return;const d=btn.dataset;
+      if("fullHelp"in d){closeLearn();showInfo("help");return}if("practice"in d){beginLesson(LEARN.index,"practice");return}if(d.start){beginLesson(0,d.start);return}if(d.lesson!=null){beginLesson(+d.lesson,d.mode);return}
+      if("mainCurrent"in d){closeLearn();return}if("menu"in d){learnMenu();return}if("mainFirst"in d){closeLearn();switchStage(0);return}
+      if("retry"in d){beginLesson(LEARN.index,LEARN.mode);return}if("demo"in d){beginLesson(LEARN.index,"demo");return}
+      if("next"in d){if(!LEARN.done)return;const next=nextLessonIndex();if(next<0)lessonFinish();else beginLesson(next,LEARN.mode);return}
+      if("auto"in d){LEARN.auto=!LEARN.auto;stopLearnAuto();renderLesson();queueLearnAuto();return}
+      if("demoStep"in d){stopLearnAuto();LEARN.auto=false;lessonDemoStep();return}
+      if(LEARN.mode==="demo"||LEARN.done)return;
+      if(d.pick){LEARN.selected=d.pick;LEARN.source=null;LEARN.erase=false;LEARN.note="";renderLesson();return}
+      if("erase"in d){LEARN.erase=!LEARN.erase;LEARN.source=null;LEARN.selected=null;LEARN.note="";renderLesson();return}
+      if("undo"in d){if(LEARN.history.length)LEARN.board=LEARN.history.pop();LEARN.source=null;LEARN.note="一手戻しました。";renderLesson();return}
+      if("check"in d){lessonComplete(true);LEARN.note="まだ目標の配置になっていません。黄色いマスに遮光石を置こう。";renderLesson();return}
+      if(d.lcell!=null)lessonCell(+d.lcell);
+    });
+    $("#learn-button").addEventListener("click",learnMenu);
+    $("#learn-close").addEventListener("click",closeLearn);
+    learning.addEventListener("cancel",e=>{e.preventDefault();closeLearn()});
+
     $("#undo-button").addEventListener("click", undo);
     $("#reset-button").addEventListener("click", reset);
     $("#check-button").addEventListener("click", check);
@@ -2680,7 +2834,7 @@
       const index = state.areaStages[key] ?? STAGES.findIndex(stage => (stage.areaId) === key);
       switchStage(index);
     });
-    $("#help-button").addEventListener("click", () => state.tutorial.active ? endTutorial() : showInfo("help"));
+    $("#help-button").addEventListener("click", () => state.tutorial.active ? endTutorial() : learnMenu());
     $("#result-details-button").addEventListener("click", () => {
       if (state.result[state.stageIndex]) showInfo("score"); else showTutorialTip();
     });
