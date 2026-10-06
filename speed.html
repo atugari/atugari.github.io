@@ -498,6 +498,16 @@ button:focus-visible{outline:3px solid rgba(255,159,47,.92);outline-offset:3px}
 .site-back:active{transform:scale(.98)}
 a.btn{text-decoration:none;text-align:center}
 
+
+.rule-picker{width:100%;margin-top:22px;text-align:left}
+.rule-picker label{display:block;font-size:13px;font-weight:900;margin-bottom:8px}
+.rule-picker select{width:100%;padding:12px;border:1px solid #78d9ff66;border-radius:12px;background:#102e48;color:#fff;font:700 16px var(--fui);touch-action:manipulation}
+.rule-desc{font-size:13px;line-height:1.7;color:var(--mut);margin:8px 2px 0;min-height:44px}
+#rule-status{font-size:11px;font-weight:900;margin-right:auto;margin-left:10px;white-space:nowrap}
+#btn-pair{font-size:12px;padding:5px 9px;background:#102e48;border:1px solid #78d9ff88;border-radius:8px}
+#btn-pair.on{background:#ff8b2b;color:#071d34}
+.pile[data-direction]::after{content:attr(data-direction);position:absolute;bottom:-23px;left:0;right:0;text-align:center;font-size:13px;font-weight:900;color:#78d9ff}
+.combo-label{position:absolute;left:4px;right:4px;top:43%;text-align:center;font-size:calc(var(--cw)*.17);font-weight:900;background:#fff;color:#123a6c}
 </style>
 </head>
 <body>
@@ -508,6 +518,7 @@ a.btn{text-decoration:none;text-align:center}
     <a class="site-back" href="plaza.html" aria-label="メインサイトへ戻る">← メインサイトへ</a>
     <h1 class="logo">スピード</h1>
     <p class="sub">トランプの「スピード」を AIと たいせん</p>
+    <div class="rule-picker"><label for="rule-select">ルールをえらぶ → 下でAIの強さをえらぶ</label><select id="rule-select"><option value="normal">通常のスピード</option><option value="jump">② 跳び越しスピード</option><option value="reverse">① 反転スピード</option><option value="exchange">③ 入れ替えスピード</option><option value="sum">④ 足し算スピード</option></select><p class="rule-desc" id="rule-desc"></p></div>
     <div class="levels" id="levels"></div>
     <div class="opts">
       <button class="tg" data-set="sound">おと</button>
@@ -533,7 +544,7 @@ a.btn{text-decoration:none;text-align:center}
     <div class="msg" id="msg"><div class="big"></div><div class="sm"></div></div>
   </div>
   <div class="row hand" id="hand-you"><div class="slot" data-i="0"></div><div class="slot" data-i="1"></div><div class="slot" data-i="2"></div><div class="slot" data-i="3"></div></div>
-  <footer class="hud bottom">
+  <footer class="hud bottom"><span id="rule-status"></span><button id="btn-pair" hidden>2枚出し</button>
     <button class="ib" id="btn-sound" title="おと">♪</button>
     <button class="ib" id="btn-menu" title="ポーズ">≡</button>
   </footer>
@@ -564,15 +575,15 @@ a.btn{text-decoration:none;text-align:center}
 
 <div class="ov" id="ov-rules"><div class="panel rules">
   <h2>あそびかた</h2>
-  <h3>ルール</h3>
+  <h3 id="active-rule-name">ルール</h3><p id="active-rule-desc"></p>
   <ul>
-    <li>赤のカードが <b>あなた</b>、黒のカードが <b>AI</b>。26まいずつ。</li>
-    <li>まんなかの2まいが <b>だいふだ</b>。だいふだの数字と <b>1つちがい</b> のカードを、自分の <b>てふだ</b>（4まい）から出せる。A と K も つながる。</li>
+    <li><span id="deal-rule">通常は赤があなた、黒がAI。追加ルールでは全マークを混ぜて26まいずつ配る。</span></li>
+    <li>まんなかの2まいが <b>だいふだ</b>。基本は、だいふだの数字と <b>1つちがい</b> のカードを、自分の <b>てふだ</b>（4まい）から出せる。A と K も つながる。</li>
     <li>出したところには、<b>やまふだ</b>から1まい ほじゅうされる。</li>
     <li>おたがい 出せなくなったら <b>スピード！</b> やまふだから1まいずつ、同時に だいふだへ。やまふだが ないときは てふだから1まい えらぶ。</li>
     <li>さきに 手もとのカードが ぜんぶ なくなったほうの <b>かち</b>。</li>
   </ul>
-  <h3>そうさ</h3>
+  <h3>そうさ</h3><p>足し算では「2枚出し」を押し、手札を2枚タップしてから出す先のだいふだをタップ。選んだカードを再タップすると解除。「2枚出し」をもう一度押すと通常操作に戻る。</p>
   <ul>
     <li><b>てふだをタップ</b>：すぐ出る。左右どちらにも出せるときは、えらんでから だいふだをタップ（ドラッグでもOK）。</li>
     <li><b>だいふだをタップ</b>：そこに出せるカードが1まいだけなら、それが出る。</li>
@@ -612,8 +623,24 @@ const LEVELS=[null,
 const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const settings=Object.assign({sound:true,hint:false,auto:false},store.get('speed.settings',{}));
 const stats=store.get('speed.stats',{});
+const RULES={
+ normal:{name:'通常',desc:'数字が±1のカードを出す。AとKもつながる。あなたは赤、AIは黒。'},
+ jump:{name:'跳び越し',desc:'数字が±1なら出せる。同じマークなら±2もOK！例：♥7には♥5・♥9も出せる。K↔2、Q↔Aも跳び越せる。'},
+ reverse:{name:'反転',desc:'左は＋1、右は−1。手札からJ・Q・Kを出すたび、両方の方向が逆転！矢印で現在の方向を確認。'},
+ exchange:{name:'入れ替え',desc:'通常どおり出す。手札からQを出すと少し停止し、表向きの手札を相手と丸ごと交換。その後4枚まで補充して再開。山札は交換しない。最後のQも交換後に勝敗判定。'},
+ sum:{name:'足し算',desc:'通常の1枚出しに加え、2枚の合計が場札の±1ならまとめて出せる！A=1、J=11、Q=12、K=13。合計は13まで。出した後は合計を場札の数字として扱う。'}
+};
+let chosenRule=store.get('speed.rule','jump');if(!RULES[chosenRule])chosenRule='jump';
+function statKey(level){return chosenRule==='normal'?String(level):chosenRule+':'+level}
+function syncRuleUI(){
+ $('#rule-select').value=chosenRule;$('#rule-desc').textContent=RULES[chosenRule].desc;
+ $('#active-rule-name').textContent=RULES[chosenRule].name+'スピード';$('#active-rule-desc').textContent=RULES[chosenRule].desc;
+ $('#deal-rule').textContent=chosenRule==='normal'?'赤があなた、黒がAI。26まいずつ。':'全マークを混ぜて26まいずつ。下の4枚があなた、上の4枚がAI。';
+}
+
 
 const S={phase:'title',level:4,gen:0,paused:false,piles:[[],[]],you:null,ai:null,sel:null,sp:null,inFlight:new Set(),t0:0,tAcc:0,timerOn:false,lastChange:0,rt:{you:[],ai:[]},played:{you:0,ai:0},stuckTimer:null,spTimer:null,autoTimer:null,over:null};
+S.dir=[1,-1];S.pair=[];S.pairMode=false;
 const AI={timer:null,plan:null,cont:false};
 let LV=LEVELS[4],drag=null;
 
@@ -624,17 +651,29 @@ function P(id){return id==='you'?S.you:S.ai}
 function total(p){return p.deck.length+p.hand.filter(Boolean).length}
 function top(k){const a=S.piles[k];return a.length?a[a.length-1]:null}
 function adj(a,b){const d=Math.abs(a-b);return d===1||d===12}
-function fits(c,k){const t=top(k);return!!(t&&adj(c.r,t.r))}
-function legal(p){const m=[];p.hand.forEach((c,i)=>{if(!c)return;for(let k=0;k<2;k++)if(fits(c,k))m.push({slot:i,pile:k,id:c.id})});return m}
+function value(c){return c.value||c.r}
+function matches(c,t,k,dir=S.dir){
+ if(!c||!t)return false;const d=(c.r-value(t)+13)%13;
+ if(chosenRule==='reverse')return d===(dir[k]===1?1:12);
+ return d===1||d===12||(chosenRule==='jump'&&c.s===t.s&&(d===2||d===11));
+}
+function fits(c,k){return matches(c,top(k),k)}
+function pairFits(a,b,t){const n=a.r+b.r;return n<=13&&adj(n,value(t))}
+function movesFor(hand,tops,dir=S.dir){
+ const m=[];hand.forEach((c,i)=>{if(!c)return;for(let k=0;k<2;k++)if(matches(c,tops[k],k,dir))m.push({slot:i,pile:k,id:c.id});});
+ if(chosenRule==='sum')for(let i=0;i<4;i++)for(let j=i+1;j<4;j++)if(hand[i]&&hand[j])for(let k=0;k<2;k++)if(tops[k]&&pairFits(hand[i],hand[j],tops[k]))m.push({slot:i,second:j,pile:k,id:hand[i].id,id2:hand[j].id});
+ return m;
+}
+function legal(p){return movesFor(p.hand,[top(0),top(1)])}
 function jitter(ms,j){return ms*(1+(Math.random()*2-1)*j)}
 function rot(c){return((c.id*37)%9)-4}
 function fmt(ms){ms=Math.max(0,ms);const s=Math.floor(ms/1000),t=Math.floor(ms/100)%10;return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')+'.'+t}
 
 function cardHTML(c,extra){
-  const col=(c.s==='h'||c.s==='d')?'r':'k',rk=RANK[c.r],su=SUIT[c.s];
+  const col=(c.s==='h'||c.s==='d')?'r':'k',rk=RANK[value(c)],su=c.parts?'Σ':SUIT[c.s];
   const ix=`<div class="ix"><span class="rk${c.r===10?' w':''}">${rk}</span><span class="su">${su}</span></div>`;
   const mid=c.r>10?`<div class="mid f"><span>${rk}</span><small>${su}</small></div>`:`<div class="mid${c.r===1?' a':''}">${su}</div>`;
-  return`<div class="card ${col}${extra?' '+extra:''}" data-id="${c.id}">${ix}${mid}${ix.replace('class="ix"','class="ix b"')}</div>`;
+  return`<div class="card ${col}${extra?' '+extra:''}" data-id="${c.id}">${ix}${mid}${c.parts?`<span class="combo-label">${c.parts.map(x=>RANK[x.r]).join("＋")}＝${value(c)}</span>`:""}${ix.replace('class="ix"','class="ix b"')}</div>`;
 }
 function backHTML(pid){return`<div class="card back ${pid}"></div>`}
 
@@ -670,8 +709,8 @@ function renderHand(pid){
     if(el.dataset.k!==key){el.innerHTML=c?cardHTML(c):'';el.dataset.k=key}
     if(!c)continue;
     const ce=el.firstElementChild,mine=pid==='you',sp=S.phase==='speed'&&S.sp;
-    ce.classList.toggle('sel',mine&&S.sel===c.id);
-    ce.classList.toggle('can',mine&&settings.hint&&S.phase==='play'&&(fits(c,0)||fits(c,1)));
+    ce.classList.toggle('sel',mine&&(S.sel===c.id||S.pair.includes(i))); 
+    ce.classList.toggle('can',mine&&settings.hint&&S.phase==='play'&&legal(p).some(m=>m.slot===i||m.second===i));
     ce.classList.toggle('spsel',!!(sp&&S.sp[pid]&&S.sp[pid].from==='hand'&&S.sp[pid].slot===i));
     ce.classList.toggle('ghost',!!(drag&&drag.el&&drag.id===c.id));
     ce.classList.toggle('pickable',!!(mine&&sp&&!S.sp.you&&!S.you.deck.length));
@@ -682,7 +721,9 @@ function renderPiles(){
   for(let k=0;k<2;k++){
     const el=E.pile[k],vis=S.piles[k].filter(c=>!S.inFlight.has(c.id)),sh=vis.slice(-3),key=sh.map(c=>c.id).join(',');
     if(el.dataset.k!==key){el.innerHTML=sh.map((c,i)=>`<div class="pc" style="transform:rotate(${rot(c)}deg)">${cardHTML(c,i<sh.length-1?'under':'')}</div>`).join('');el.dataset.k=key}
-    el.classList.toggle('ok',S.phase==='play'&&!!sc&&fits(sc,k));
+    const pairOK=S.pair.length===2&&top(k)&&pairFits(S.you.hand[S.pair[0]],S.you.hand[S.pair[1]],top(k));
+    el.classList.toggle('ok',S.phase==='play'&&(S.pairMode?pairOK:!!sc&&fits(sc,k)));
+    if(chosenRule==='reverse')el.dataset.direction=S.dir[k]===1?'↑ ＋1':'↓ −1';else delete el.dataset.direction;
   }
 }
 function renderDecks(){
@@ -700,6 +741,8 @@ function renderDecks(){
   }
 }
 function renderHud(){
+  $('#rule-status').textContent=RULES[chosenRule].name+'スピード';
+  $('#btn-pair').hidden=chosenRule!=='sum';$('#btn-pair').classList.toggle('on',S.pairMode);$('#btn-pair').textContent=S.pairMode?'2枚を選ぶ '+S.pair.length+'/2':'2枚出し';
   $('#ai-tag').textContent='Lv.'+S.level;$('#ai-name').textContent=LV.name;
   $('#ai-count').textContent=S.ai?total(S.ai):'';$('#you-count').textContent=S.you?total(S.you):'';
 }
@@ -737,10 +780,11 @@ function clearTimers(){clearTimeout(AI.timer);AI.timer=null;AI.plan=null;AI.cont
 function elapsed(){return S.tAcc+(S.timerOn&&!S.paused?now()-S.t0:0)}
 
 function startGame(level){
-  S.level=level;LV=LEVELS[level];clearTimers();$$('.fly').forEach(e=>e.remove());drag=null;S.gen++;
+  S.dir=[1,-1];S.pair=[];S.pairMode=false;syncRuleUI();S.level=level;LV=LEVELS[level];clearTimers();$$('.fly').forEach(e=>e.remove());drag=null;S.gen++;
   Object.assign(S,{phase:'deal',paused:false,piles:[[],[]],sel:null,sp:null,t0:0,tAcc:0,timerOn:false,lastChange:0,rt:{you:[],ai:[]},played:{you:0,ai:0},over:null});
   S.inFlight.clear();S.you=newPlayer('you');S.ai=newPlayer('ai');
   let id=0;for(const s of 'hdsc')for(let r=1;r<=13;r++){const c={id:id++,s,r};(s==='h'||s==='d'?S.you:S.ai).deck.push(c)}
+  if(chosenRule!=='normal'){const all=shuffle([...S.you.deck,...S.ai.deck]);S.you.deck=all.slice(0,26);S.ai.deck=all.slice(26)}
   shuffle(S.you.deck);shuffle(S.ai.deck);
   ['ov-menu','ov-result','ov-rules'].forEach(i=>ov(i,false));
   [...E.hand.you,...E.hand.ai,...E.pile,E.deck.you,E.deck.ai].forEach(el=>{el.dataset.k='x';el.innerHTML=''});
@@ -778,19 +822,33 @@ function afterSpeed(){
   if(document.hidden){openMenu();return}
   aiWake('change');checkStuck();
 }
-function playCard(pid,slot,pile){
+function playCard(pid,slot,pile,second){
   if(S.phase!=='play'||S.paused)return false;
   const p=P(pid),c=p.hand[slot];
-  if(!c||!fits(c,pile))return false;
+  const d=second!=null?p.hand[second]:null;
+  if(!c||(second!=null?chosenRule!=='sum'||second===slot||!d||!top(pile)||!pairFits(c,d,top(pile)):!fits(c,pile)))return false;
   const from=rect(E.hand[pid][slot]),t=now();
-  S.piles[pile].push(c);p.hand[slot]=p.deck.length?p.deck.pop():null;
-  S.inFlight.add(c.id);S.played[pid]++;S.rt[pid].push(t-S.lastChange);
+  const played=d?{...c,value:c.r+d.r,parts:[c,d]}:c;
+  S.piles[pile].push(played);p.hand[slot]=p.deck.length?p.deck.pop():null;
+  if(d)p.hand[second]=p.deck.length?p.deck.pop():null;
+  if(chosenRule==='reverse'&&c.r>=11)S.dir=S.dir.map(x=>-x);
+  if(pid==='you')S.pair=[];
+  S.inFlight.add(c.id);S.played[pid]+=d?2:1;S.rt[pid].push(t-S.lastChange);
   if(pid==='you')S.sel=null;
   render();
-  fly(pid,c,from,rect(E.pile[pile]),{flip:false,dur:FLY,r1:rot(c)},()=>{S.inFlight.delete(c.id);renderPiles()});
+  if(d){fly(pid,d,rect(E.hand[pid][second]),rect(E.pile[pile]),{flip:false,dur:FLY,r1:rot(d)});if(p.hand[second])animateRefill(pid,second)}
+  fly(pid,played,from,rect(E.pile[pile]),{flip:false,dur:FLY,r1:rot(c)},()=>{S.inFlight.delete(c.id);renderPiles()});
   if(p.hand[slot])animateRefill(pid,slot);
   sfx('play',pid);
-  onChanged(pid);
+  if(chosenRule==='exchange'&&c.r===12){
+    // Exchange remaining visible hands before refilling the slot just used.
+    if(p.hand[slot]){p.deck.push(p.hand[slot]);p.hand[slot]=null}
+    [S.you.hand,S.ai.hand]=[S.ai.hand,S.you.hand];
+    for(const q of [S.you,S.ai])for(let i=0;i<4;i++)if(!q.hand[i]&&q.deck.length)q.hand[i]=q.deck.pop();
+    S.sel=null;S.pair=[];if(drag&&drag.el)drag.el.remove();drag=null;
+    clearTimers();S.phase='exchange';render();flashMsg('手札を交換！','せーの…',1000);
+    const g=S.gen;setTimeout(()=>{if(S.gen!==g||S.phase!=='exchange')return;S.phase='play';hideMsg();render();if(document.hidden){openMenu();return}onChanged(pid)},1100);
+  }else onChanged(pid);
   return true;
 }
 function onChanged(by){
@@ -838,15 +896,15 @@ function speedReady(pid,ch){
 }
 function endGame(res){
   S.phase='over';S.over=res;S.tAcc=elapsed();S.timerOn=false;clearTimers();hideMsg();S.sel=null;drag=null;
-  const t=S.tAcc,st=stats[S.level]||(stats[S.level]={w:0,l:0,d:0,best:null});let nb=false;
+  const t=S.tAcc,st=stats[statKey(S.level)]||(stats[statKey(S.level)]={w:0,l:0,d:0,best:null});let nb=false;
   if(res==='win'){st.w++;if(st.best==null||t<st.best){st.best=t;nb=true}}else if(res==='lose')st.l++;else st.d++;
   store.set('speed.stats',stats);
   setTimeout(()=>{if(S.phase!=='over')return;render();sfx(res);showResult(res,t,nb)},750);
 }
 function showResult(res,t,nb){
-  const st=stats[S.level],h=$('#res-title');
+  const st=stats[statKey(S.level)],h=$('#res-title');
   h.textContent=res==='win'?'かち！':res==='lose'?'まけ…':'ひきわけ';h.className=res;
-  $('#res-sub').textContent=`Lv.${S.level} ${LV.name} ${res==='win'?'に かった！':res==='lose'?'に まけた':'と ひきわけ'}`;
+  $('#res-sub').textContent=RULES[chosenRule].name+'スピード ／ '+`Lv.${S.level} ${LV.name} ${res==='win'?'に かった！':res==='lose'?'に まけた':'と ひきわけ'}`;
   const avg=a=>a.length?(a.reduce((x,y)=>x+y,0)/a.length/1000).toFixed(2)+'秒':'—';
   $('#res-stat').innerHTML=[
     ['タイム',fmt(t)],
@@ -873,39 +931,44 @@ function aiWake(kind){
   AI.plan=aiDecide(moves);
   clearTimeout(AI.timer);AI.timer=setTimeout(aiAct,jitter(base,LV.jit));
 }
-function legalPlan(m){const c=S.ai.hand[m.slot];return!!(c&&c.id===m.id&&fits(c,m.pile))}
+function legalPlan(m){return legal(S.ai).some(x=>x.slot===m.slot&&x.pile===m.pile&&x.id===m.id&&x.second===m.second&&x.id2===m.id2)}
 function aiAct(){
   AI.timer=null;
   if(S.phase!=='play'||S.paused)return;
   const m=AI.plan;AI.plan=null;
   if(!m||m.miss||!legalPlan(m)){AI.cont=false;aiWake('change');return}
   AI.cont=!!m.cont;
-  playCard('ai',m.slot,m.pile);
+  playCard('ai',m.slot,m.pile,m.second);
+}
+function simulateMove(hand,tops,dir,m){
+ const c=hand[m.slot],d=m.second!=null?hand[m.second]:null,nt=tops.slice(),nh=hand.slice();
+ nt[m.pile]=d?{...c,value:c.r+d.r}:c;nh[m.slot]=null;if(d)nh[m.second]=null;
+ const nd=chosenRule==='reverse'&&c.r>=11?dir.map(x=>-x):dir;
+ return {hand:nh,tops:nt,dir:nd};
 }
 function aiDecide(moves){
-  if(Math.random()<LV.miss)return{miss:true};
-  const me=S.ai,op=S.you,tops=[top(0).r,top(1).r];
-  if(LV.strat===0){const m=moves[(Math.random()*moves.length)|0];return{...m,cont:false}}
-  let best=null,bs=-Infinity;
-  for(const m of moves){
-    const c=me.hand[m.slot],nt=tops.slice();nt[m.pile]=c.r;
-    const rest=me.hand.map((x,i)=>i===m.slot?null:x);
-    const ch=bestChain(rest,nt);
-    let s=10*(1+ch.len);
-    if(LV.strat>=2)s-=4*playable(op.hand,nt);
-    if(LV.strat>=3)s-=1.5*playable(op.hand,nt)+3*playable(op.hand,ch.tops);
-    s+=Math.random()*(LV.strat===1?4:LV.strat===2?2:.8);
-    if(s>bs){bs=s;best={...m,cont:ch.len>0}}
-  }
-  return best;
+ if(Math.random()<LV.miss)return{miss:true};
+ if(LV.strat===0)return {...moves[(Math.random()*moves.length)|0],cont:false};
+ let best=null,bs=-Infinity;const tops=[top(0),top(1)];
+ for(const m of moves){
+  const next=simulateMove(S.ai.hand,tops,S.dir,m),ch=bestChain(next.hand,next.tops,next.dir);
+  let score=10*((m.second!=null?2:1)+ch.len);
+  if(LV.strat>=2)score-=4*playable(S.you.hand,next.tops,next.dir);
+  if(chosenRule==='exchange'&&S.ai.hand[m.slot].r===12)score=10+12*playable(S.you.hand,next.tops)-4*playable(next.hand,next.tops);
+  score+=Math.random()*4/LV.strat;
+  if(score>bs){bs=score;best={...m,cont:ch.len>0}}
+ }
+ return best;
 }
-function bestChain(hand,tops){
-  let best={len:0,tops};
-  for(let i=0;i<hand.length;i++){const c=hand[i];if(!c)continue;
-    for(let k=0;k<2;k++){if(!adj(c.r,tops[k]))continue;const nt=tops.slice();nt[k]=c.r;const nh=hand.slice();nh[i]=null;const r=bestChain(nh,nt);if(r.len+1>best.len)best={len:r.len+1,tops:r.tops}}}
-  return best;
+function bestChain(hand,tops,dir=S.dir){
+ let best={len:0,tops};
+ for(const m of movesFor(hand,tops,dir)){
+  const next=simulateMove(hand,tops,dir,m),r=bestChain(next.hand,next.tops,next.dir),n=(m.second!=null?2:1)+r.len;
+  if(n>best.len)best={len:n,tops:r.tops};
+ }
+ return best;
 }
-function playable(hand,tops){let n=0;for(const c of hand)if(c&&(adj(c.r,tops[0])||adj(c.r,tops[1])))n++;return n}
+function playable(hand,tops,dir=S.dir){return new Set(movesFor(hand,tops,dir).flatMap(m=>m.second!=null?[m.slot,m.second]:[m.slot])).size}
 function aiPickSpeedCard(){
   const me=S.ai,op=S.you,idx=[];me.hand.forEach((c,i)=>{if(c)idx.push(i)});
   if(LV.strat===0)return idx[(Math.random()*idx.length)|0];
@@ -928,6 +991,7 @@ function youTap(slot){
     return;
   }
   if(S.phase!=='play'||!c)return;
+  if(S.pairMode){const n=S.pair.indexOf(slot);if(n>=0)S.pair.splice(n,1);else if(S.pair.length<2)S.pair.push(slot);S.sel=null;render();return}
   const ok=[0,1].filter(k=>fits(c,k));
   if(!ok.length){S.sel=null;render();shake(E.hand.you[slot].firstElementChild);sfx('bad');return}
   if(ok.length===1){playCard('you',slot,ok[0]);return}
@@ -935,6 +999,7 @@ function youTap(slot){
 }
 function youTapPile(k){
   if(S.phase!=='play'||S.paused||!top(k))return;
+  if(S.pairMode){if(S.pair.length===2&&playCard('you',S.pair[0],k,S.pair[1]))return;shake(E.pile[k]);sfx('bad');return}
   if(S.sel!=null){const i=S.you.hand.findIndex(c=>c&&c.id===S.sel);if(i>=0&&fits(S.you.hand[i],k)){playCard('you',i,k);return}}
   const cand=[];S.you.hand.forEach((c,i)=>{if(c&&fits(c,k))cand.push(i)});
   if(cand.length===1){playCard('you',cand[0],k);return}
@@ -951,6 +1016,7 @@ function youDeck(){
 
 $('#hand-you').addEventListener('pointerdown',e=>{
   if(!e.isPrimary||e.button>0||drag)return;
+  if(S.pairMode&&S.phase==='play'){const slotEl=e.target.closest('.slot');if(slotEl){e.preventDefault();youTap(+slotEl.dataset.i)}return}
   const ce=e.target.closest('.card');if(!ce)return;
   e.preventDefault();unlockAudio();
   const slot=+ce.parentElement.dataset.i,c=S.you.hand[slot];if(!c)return;
@@ -997,7 +1063,7 @@ document.addEventListener('keydown',e=>{
   if(e.repeat||S.phase==='title')return;
   const m=/^(?:Digit|Numpad)([1-4])$/.exec(e.code);
   if(m){e.preventDefault();unlockAudio();const slot=+m[1]-1;
-    if(S.phase==='speed'){youTap(slot);return}
+    if(S.phase==='speed'||S.pairMode){youTap(slot);return}
     if(S.phase!=='play'||S.paused)return;
     const c=S.you.hand[slot];if(!c)return;
     const a=e.shiftKey?1:0;
@@ -1031,16 +1097,18 @@ function closeMenu(){ov('ov-menu',false);resumeGame()}
 function toTitle(){clearTimers();$$('.fly').forEach(e=>e.remove());S.phase='title';S.paused=false;S.timerOn=false;drag=null;['ov-menu','ov-result','ov-rules'].forEach(i=>ov(i,false));hideMsg();renderLevels();show('title')}
 function syncToggles(){$$('.tg[data-set]').forEach(b=>b.classList.toggle('on',!!settings[b.dataset.set]));$('#btn-sound').classList.toggle('off',!settings.sound)}
 
-function recommended(){let hi=0;for(let i=1;i<=10;i++)if(stats[i]&&stats[i].w>0)hi=i;return hi?Math.min(10,hi+1):4}
+function recommended(){let hi=0;for(let i=1;i<=10;i++)if(stats[statKey(i)]&&stats[statKey(i)].w>0)hi=i;return hi?Math.min(10,hi+1):4}
 function renderLevels(){
   const rc=recommended();
   $('#levels').innerHTML=LEVELS.map((L,i)=>{if(!L)return'';
-    const st=stats[i];
+    const st=stats[statKey(i)];
     const rec=st?`かち ${st.w}・まけ ${st.l}${st.d?'・ひきわけ '+st.d:''}<br>${st.best!=null?'ベスト '+fmt(st.best):'&nbsp;'}`:'まだ あそんでない';
     return`<button class="lv${i===rc?' rc':''}" data-lv="${i}"><span class="n">${i}</span><span><span class="nm">${L.name}</span>${i===rc?'<span class="pill">おすすめ</span>':''}<span class="ds">${L.desc}／はんのう 約${(L.react/1000).toFixed(1)}秒</span></span><span class="rec">${rec}</span></button>`;
   }).join('');
 }
 
+$('#rule-select').addEventListener('change',e=>{chosenRule=e.target.value;store.set('speed.rule',chosenRule);syncRuleUI();renderLevels()});
+$('#btn-pair').addEventListener('click',()=>{if(S.phase!=='play'||S.paused)return;S.pairMode=!S.pairMode;S.pair=[];S.sel=null;render()});
 $('#levels').addEventListener('click',e=>{const b=e.target.closest('.lv');if(!b)return;unlockAudio();startGame(+b.dataset.lv)});
 $('#btn-menu').addEventListener('click',()=>{unlockAudio();openMenu()});
 $('#btn-resume').addEventListener('click',closeMenu);
@@ -1080,7 +1148,7 @@ function sfx(k,pid){
 
 /* ---------- init ---------- */
 (function tick(){if(S.phase!=='title')E.timer.textContent=fmt(elapsed());requestAnimationFrame(tick)})();
-fit();syncToggles();renderLevels();show('title');
+syncRuleUI();fit();syncToggles();renderLevels();show('title');
 })();
 </script>
 </body>
