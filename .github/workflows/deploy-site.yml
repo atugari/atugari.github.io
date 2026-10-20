@@ -49,6 +49,9 @@ jobs:
           cp -a kuroshiro/dist-pages/. _site/kuroshiro/
           touch _site/.nojekyll
 
+      - name: Bundle Nanpure help and contact
+        run: python3 scripts/enhance-nanpure.py _site
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
