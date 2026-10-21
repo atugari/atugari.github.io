@@ -1,0 +1,2 @@
+# Audio is unpacked and SHA-256 verified by the Pages build, then served locally.
+nanpure/releases/*/audio/*.mp3
