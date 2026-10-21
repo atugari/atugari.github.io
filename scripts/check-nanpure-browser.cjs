@@ -5,7 +5,12 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');const fs=r
  const root=path.resolve(process.argv[2]||'_site');const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp','.mp3':'audio/mpeg','.ogg':'audio/ogg','.wav':'audio/wav'};
  await page.route('https://atugari.github.io/nanpure/**',async route=>{const u=new URL(route.request().url()),file=path.join(root,u.pathname.endsWith('/')?u.pathname+'index.html':u.pathname);if(!file.startsWith(root)||!fs.existsSync(file))return route.fulfill({status:404,body:'Missing asset'});await route.fulfill({status:200,contentType:types[path.extname(file)]||'application/octet-stream',body:fs.readFileSync(file)})});
  for(const view of['','daily','ranking','calendar','contact','replies','backup','privacy','manage']){
-  await page.goto('https://atugari.github.io/nanpure/'+(view?'?view='+view:''),{waitUntil:'networkidle'});
+  const apiPath={daily:'/api/daily',ranking:'/api/ranking',calendar:'/api/daily/archive',contact:'/api/contact',replies:'/api/contact',backup:'/api/cloud'}[view];
+  const response=apiPath?page.waitForResponse(r=>{const u=new URL(r.url());return u.hostname==='puzzle-api.puzzle-hub-4826.workers.dev'&&u.pathname===apiPath&&!u.searchParams.has('summary')&&r.request().method()==='GET'},{timeout:20000}):null;
+  await page.goto('https://atugari.github.io/nanpure/'+(view?'?view='+view:''),{waitUntil:'domcontentloaded'});
+  if(response){const r=await response;assert.equal(r.status(),200,'API status for '+view)}
+  await page.locator('#root > *').first().waitFor();
+  await page.waitForTimeout(300);
   const selector={'':'.main-choice',daily:'.challenge-grid, .daily-choice, .challenge-list',ranking:'.ranking',calendar:'.daily-calendar',contact:'.contact-form',replies:'.contact-history',backup:'.cloud-save',privacy:'.legal',manage:'.legal'}[view];
   // Main feature headings must render and errors must not be hidden behind a redirect.
   if(['ranking','contact','backup','privacy','manage'].includes(view))await page.locator(selector).waitFor({timeout:20000});
