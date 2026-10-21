@@ -1,0 +1,2 @@
+import test from'node:test';import assert from'node:assert/strict';import{generatorEngine}from'../scripts/stock-generator-engine.js';
+test('isolated generator includes globalThis-based Killer engine without global pollution',()=>{const before=globalThis.Killer2;const engine=generatorEngine();assert.equal(typeof engine.Killer2.setup,'function');assert.equal(engine.Killer2.setup(16).n,16);assert.equal(globalThis.Killer2,before);assert.equal(generatorEngine(),engine)});
