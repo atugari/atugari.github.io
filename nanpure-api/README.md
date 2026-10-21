@@ -12,16 +12,18 @@ GitHub Actions + Wrangler による公開へ切り替えています。
 
 1. Cloudflare の対象アカウントで API トークンを作ります。
    必要な権限は `Workers Scripts: Edit` と `D1: Edit` です。
-   D1 の編集権限は、今後のスキーマ初期化にも使用します。
+   D1 の編集権限は、スキーマ初期化にも使用します。
 2. GitHub の **Settings → Secrets and variables → Actions → New repository secret** に、
    名前 `CLOUDFLARE_API_TOKEN`、値にトークンを保存します。
    アカウント ID はワークフローで設定済みのため、別の Secret は不要です。
 3. **Actions → Deploy Nanpure API to Cloudflare → Run workflow** で実行します。
-   以降は `main` の API 関連ファイルを更新すると、自動でテスト・公開・接続確認を行います。
+   以降は `main` の API 関連ファイルを更新すると、自動でテスト・DB マイグレーション・公開・接続確認を行います。
 
 トークン未登録時はテストだけ実行し、公開をスキップします。
 このワークフローは既存の `puzzle-api` を更新します。
-現時点では DB マイグレーションを自動実行しません。
+公開前に `puzzle-db` の未適用マイグレーションを実行します。
+初期マイグレーションは 6 テーブルとインデックスの作成だけで、既存データを削除しません。
+適用履歴を D1 に記録するため、適用済みのファイルを再実行しません。
 トークンをチャット、公開ファイル、スクリーンショットに含めないでください。
 
 参考: https://developers.cloudflare.com/workers/ci-cd/external-cicd/github-actions/
@@ -55,10 +57,9 @@ database_id はリソースの識別番号です。API トークンや認証情�
 `migrations/0001_initial.sql` は新しい空 DB 用の追加だけの初期化です。
 旧サーバーのランキング・お問い合わせ・バックアップは自動では移りません。
 
-テーブル作成は Cloudflare の D1 → puzzle-db → Console でこの SQL を実行するか、
-D1 編集権限を持つローカル環境で `npm run db:migrate` を実行します。
-通常の Workers Builds のトークンには D1 編集権限が含まれないため、
-初期設定のデプロイコマンドに DB マイグレーションを含めていません。
+テーブル作成は GitHub Actions で `wrangler d1 migrations apply puzzle-db --remote` を実行します。
+D1 編集権限を持つローカル環境では `npm run db:migrate` でも適用できます。
+Workers Builds は別方式であり、その通常のトークンには D1 編集権限が含まれません。
 
 ## 移植前に対応する点
 

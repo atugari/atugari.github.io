@@ -47,7 +47,7 @@ jobs:
             echo 'ready=true' >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Deploy existing puzzle-api Worker
+      - name: Apply D1 migrations and deploy puzzle-api
         if: steps.credential.outputs.ready == 'true'
         uses: cloudflare/wrangler-action@v4
         with:
@@ -57,7 +57,9 @@ jobs:
           workingDirectory: nanpure-api
           wranglerVersion: '4.92.0'
           packageManager: npm
-          command: deploy
+          command: |
+            d1 migrations apply puzzle-db --remote
+            deploy
 
       - name: Verify Worker and D1 connection
         if: steps.credential.outputs.ready == 'true'
@@ -69,7 +71,7 @@ jobs:
             try {
               const response = await fetch(url, { signal: AbortSignal.timeout(10000) });
               const result = await response.json();
-              if (response.ok && result.ok === true && result.service === 'puzzle-api' && result.database === 'connected') {
+              if (response.ok && result.ok === true && result.service === 'puzzle-api' && result.database === 'connected' && result.schema === 'installed') {
                 appendFileSync(process.env.GITHUB_STEP_SUMMARY,
                   `Worker deployed and D1 connected.\n\nHealth check: ${url}\n\nSchema: ${result.schema}; game API: ${result.gameApi}.\n`);
                 process.exit(0);
@@ -79,5 +81,5 @@ jobs:
             }
             if (attempt < 9) await new Promise(resolve => setTimeout(resolve, 3000));
           }
-          throw new Error('Deployment finished, but Worker/D1 health verification failed.');
+          throw new Error('Deployment finished, but Worker/D1/schema health verification failed.');
           NODE
