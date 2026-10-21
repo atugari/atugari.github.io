@@ -12,5 +12,8 @@
       "database_id": "7bb28b61-5fe2-47ce-b71b-b0e04fc3747b",
       "migrations_dir": "migrations"
     }
-  ]
+  ],
+  "vars": {
+    "OWNER_KEY_HASH": "52e16ad28f95ef010e4eac362d982d280be868fe273a486f9f845243d0ad938b"
+  }
 }

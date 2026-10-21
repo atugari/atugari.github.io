@@ -7,6 +7,8 @@ on:
       - 'nanpure-api/**'
       - '.github/workflows/deploy-nanpure-api.yml'
   workflow_dispatch:
+  schedule:
+    - cron: "27 6,18 * * *"
 
 permissions:
   contents: read
@@ -19,7 +21,7 @@ jobs:
   deploy:
     if: github.repository == 'atugari/atugari.github.io' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -82,4 +84,21 @@ jobs:
             if (attempt < 9) await new Promise(resolve => setTimeout(resolve, 3000));
           }
           throw new Error('Deployment finished, but Worker/D1/schema health verification failed.');
+          NODE
+
+      - name: Prepare 21 days of private daily puzzles
+        if: steps.credential.outputs.ready == 'true'
+        working-directory: nanpure-api
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: node scripts/refill.mjs
+
+      - name: Verify daily menus contain three puzzles and no solutions
+        if: steps.credential.outputs.ready == 'true'
+        run: |
+          node --input-type=module <<'NODE'
+          const r=await fetch('https://puzzle-api.puzzle-hub-4826.workers.dev/api/daily');
+          const d=await r.json();
+          if(!r.ok||d.challenges?.length!==3||JSON.stringify(d).includes('solution'))throw Error('Daily menu verification failed');
+          console.log('Three daily puzzles are ready.');
           NODE

@@ -1,0 +1,5 @@
+import{DatabaseSync}from'node:sqlite';import fs from'node:fs';
+export function database(){const raw=new DatabaseSync(':memory:');for(const file of fs.readdirSync(new URL('../migrations/',import.meta.url)).sort())raw.exec(fs.readFileSync(new URL('../migrations/'+file,import.meta.url),'utf8'));let before=0;
+ function prepare(sql,params=[]){const perform=()=>{const stmt=raw.prepare(sql),args=params.map(v=>v instanceof ArrayBuffer?new Uint8Array(v):v),rows=stmt.all(...args);const changes=raw.prepare('SELECT changes() AS n').get().n;return{results:rows.map(r=>Object.fromEntries(Object.entries(r).map(([k,v])=>[k,v instanceof Uint8Array?Array.from(v):v]))),success:true,meta:{changes}}};return{bind:(...p)=>prepare(sql,p),all:async()=>perform(),run:async()=>perform(),first:async()=>perform().results[0]||null,_perform:perform}}
+ return{prepare,raw,batch:async list=>{raw.exec('BEGIN');try{const result=list.map(x=>x._perform());raw.exec('COMMIT');return result}catch(e){raw.exec('ROLLBACK');throw e}}};
+}

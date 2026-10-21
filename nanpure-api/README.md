@@ -1,72 +1,34 @@
-# ナンプレ帳 Cloudflare API
+# Nanpure Cloudflare API
 
-GitHub Pages のナンプレ帳から利用する API の移行準備用です。
-現段階は Worker の配信と D1 の接続確認までで、ゲーム用 API は未移植です。
-既存の GitHub Pages のリンク・セーブデータはまだ変更していません。
+GitHub Pages client: https://atugari.github.io/nanpure/
+API: https://puzzle-api.puzzle-hub-4826.workers.dev/
 
-## GitHub Actions からの公開（現在の手順）
+## Deployment
 
-Cloudflare の GitHub 連携がリポジトリ選択へ進まないため、公式の
-GitHub Actions + Wrangler による公開へ切り替えています。
-`.github/workflows/deploy-nanpure-api.yml` を用意済みです。
+The main branch workflow uses the repository secret `CLOUDFLARE_API_TOKEN`
+(Workers Scripts Write and D1 Write, scoped to this Cloudflare account).
+It runs the tests, applies additive D1 migrations, deploys, generates 21 days
+of daily puzzles, and verifies the public menu. Twice-daily Actions runs replenish
+inventory and remove expired upload reservations. Generation runs on the runner;
+future solutions are sent directly to D1 and never committed, logged or uploaded
+as artifacts. Assignments have unique canonical fingerprints and immutable slots.
 
-1. Cloudflare の対象アカウントで API トークンを作ります。
-   必要な権限は `Workers Scripts: Edit` と `D1: Edit` です。
-   D1 の編集権限は、スキーマ初期化にも使用します。
-2. GitHub の **Settings → Secrets and variables → Actions → New repository secret** に、
-   名前 `CLOUDFLARE_API_TOKEN`、値にトークンを保存します。
-   アカウント ID はワークフローで設定済みのため、別の Secret は不要です。
-3. **Actions → Deploy Nanpure API to Cloudflare → Run workflow** で実行します。
-   以降は `main` の API 関連ファイルを更新すると、自動でテスト・DB マイグレーション・公開・接続確認を行います。
+## Identity and private data
 
-トークン未登録時はテストだけ実行し、公開をスキップします。
-このワークフローは既存の `puzzle-api` を更新します。
-公開前に `puzzle-db` の未適用マイグレーションを実行します。
-初期マイグレーションは 6 テーブルとインデックスの作成だけで、既存データを削除しません。
-適用履歴を D1 に記録するため、適用済みのファイルを再実行しません。
-トークンをチャット、公開ファイル、スクリーンショットに含めないでください。
+Cross-origin API calls use random 256-bit device credentials in headers, not
+third-party cookies. Only their SHA-256-derived identifiers are stored in D1.
+Cloud backups use a separate transferable sync key, 128 KiB chunks, a 20 MiB
+per-save limit, a 200 MiB aggregate reservation limit and optimistic revisions.
+No R2 activation or paid plan is required. Incomplete uploads expire after an hour
+and the twice-daily job removes them. Receipt keys and owner credentials are never
+included in public bundles. Only a hash of the random owner key is configured.
+The owner-only import endpoint accepts bounded records, never arbitrary SQL.
 
-参考: https://developers.cloudflare.com/workers/ci-cd/external-cicd/github-actions/
+Keep the private owner access file outside this public repository. Neither
+Cloudflare's deployment token nor the owner key belongs in browser source.
 
-## Cloudflare Workers Builds との連携（別方式）
+## Tests
 
-既存の `puzzle-api` Worker の **Settings → Builds → GitHub** から接続します。
-
-| 設定 | 値 |
-|---|---|
-| Repository | `atugari/atugari.github.io` |
-| Production branch | `main` |
-| Root directory | `nanpure-api` |
-| Build command | `npm run build` |
-| Deploy command | `npm run deploy` |
-| Non-production branch builds | 無効（本番 DB と分離するまでは作らない） |
-
-接続後の確認先:
-`https://puzzle-api.puzzle-hub-4826.workers.dev/api/health`
-
-`database: connected` は D1 の読み取り成功です。
-`schema: pending` はまだテーブルが作られていない状態です。
-`gameApi: pending` は日替わり・ランキングなどの移植が未完了という意味です。
-この確認 API から SQL の実行やデータの変更はできません。
-
-## データベース
-
-`wrangler.jsonc` に、作成済みの `puzzle-db` を `DB` として設定しています。
-database_id はリソースの識別番号です。API トークンや認証情報は含みません。
-スキーマは元アプリの `db/schema.ts`（commit `1222640`）に合わせています。
-`migrations/0001_initial.sql` は新しい空 DB 用の追加だけの初期化です。
-旧サーバーのランキング・お問い合わせ・バックアップは自動では移りません。
-
-テーブル作成は GitHub Actions で `wrangler d1 migrations apply puzzle-db --remote` を実行します。
-D1 編集権限を持つローカル環境では `npm run db:migrate` でも適用できます。
-Workers Builds は別方式であり、その通常のトークンには D1 編集権限が含まれません。
-
-## 移植前に対応する点
-
-- Cookie に依存する日替わり参加者・お問い合わせの識別を、別ドメインの API に対応させる。
-- ChatGPT ログインと R2 に依存するクラウド保存の移行方式を確定する。
-- 元の問題生成は最大数秒の CPU 処理があるため、そのまま Workers 無料枠へ載せない。
-- 日替わり問題の未使用ストック、重複防止、回答確認を移し、GitHub 側のリンクを切り替える。
-- 将来問題の解答・利用者データ・認証用秘密情報を公開リポジトリへ追加しない。
-
-ローカル確認: `npm test`。Cloudflare のログイン情報はチャットやリポジトリへ貼り付けないでください。
+`npm run build` uses Node 22+ with real SQLite for daily ranking eligibility,
+concurrent backup revisions, private receipts, owner authorization and CORS.
+Production smoke tests must use disposable credentials and avoid public rankings.
