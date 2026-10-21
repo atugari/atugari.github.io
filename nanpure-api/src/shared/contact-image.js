@@ -11,8 +11,8 @@ export function parseContactImage(value) {
         return null;
     let bytes;
     try {
-        const raw = atob(m[2]);
-        bytes = Uint8Array.from(raw, c => c.charCodeAt(0));
+        if (typeof Uint8Array.fromBase64 === 'function') bytes = Uint8Array.fromBase64(m[2]);
+        else { const raw = atob(m[2]); bytes = new Uint8Array(raw.length); for (let i=0;i<raw.length;i++) bytes[i]=raw.charCodeAt(i); }
     }
     catch {
         return null;
