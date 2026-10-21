@@ -33,7 +33,7 @@ try {
  fs.symlinkSync(path.join(source,'node_modules'),path.join(scratch,'node_modules'),'dir');
  // Keep the verified client and switch its API transport to the Cloudflare Worker.
  for(const name of ['api-client.ts','cloud-save.tsx','pages-manager.tsx'])write('app/'+name,fs.readFileSync(path.join(repo,'nanpure-api/client',name),'utf8'));
- patch('app/game.tsx',"['ranking','backup','calendar','personal'].includes(view||'')","['ranking','backup','calendar','personal','updates','contact','replies'].includes(view||'')");
+ patch('app/game.tsx',"['ranking','backup','calendar','personal'].includes(view||'')","['ranking','backup','calendar','personal','updates','contact','replies','tutorial'].includes(view||'')");
  patch('app/update-news.tsx',"fetch('/api/version'","fetch('/nanpure/version.json'");
  patch('app/update-news.tsx','href="/updates"','href="/nanpure/?view=updates"');
  patch('app/site-menu.tsx','href="/privacy"','href="/nanpure/?view=privacy"');
@@ -47,12 +47,12 @@ try {
  news=news.replace(/currentVersion\s*=\s*['"][^'"]+['"]/,`currentVersion='${version}'`);
  news=news.replace(/(export const releases[^=]*=\s*\[)/,`$1\n{version:'${version}',date:'2026-10-21',kind:'feature',title:'GitHub版でオンライン機能が使えるようになりました',items:['日替わり問題・ランキング・カレンダー・お問い合わせをこの画面で利用できます。','クラウド保存は引き継ぎコードで端末をつなげます。ChatGPTへのログインは不要です。','このブラウザに保存した問題・設定・個人記録はそのまま使えます。']},`);fs.writeFileSync(releasePath,news);
  for(const f of walk(path.join(scratch,'app')).filter(f=>/\.tsx?$/.test(f)&&!f.endsWith('/api-client.ts'))){let text=fs.readFileSync(f,'utf8');if(/\bfetch\((['"])\/api\//.test(text)){text=text.replace(/\bfetch\((['"])\/api\//g,'apiFetch($1/api/');let rel=path.relative(path.dirname(f),path.join(scratch,'app/api-client')).replaceAll('\\','/');if(!rel.startsWith('.'))rel='./'+rel;text=`import {apiFetch} from '${rel}';\n`+text;fs.writeFileSync(f,text)}}
- for(const file of walk(scratch).filter(f=>/\.(tsx?|css)$/.test(f)))fs.writeFileSync(file,rewrite(fs.readFileSync(file,'utf8')));
+ for(const file of walk(scratch).filter(f=>/\.(tsx?|css)$/.test(f)))fs.writeFileSync(file,rewrite(fs.readFileSync(file,'utf8')).replace(/https:\/\/nanpure-chou-online\.[a-z0-9-]+\.chatgpt\.site/g,'https://atugari.github.io/nanpure').replace("host+'/learn?lang='","host+'/?view=tutorial&lang='"));
  // Only public assets enter the repository, never API routes, DB, credentials or answer banks.
  for(const name of ['notebook','audio','themes','site-theme.js','site-audio.js','tap-aid.js','furigana.js','ui-text.css','ui-text.js','favicon.svg']){
   fs.cpSync(path.join(source,'public',name),path.join(output,name),{recursive:true});
  }
- for(const file of walk(output).filter(f=>/\.(html|js|css)$/.test(f)))fs.writeFileSync(file,rewrite(fs.readFileSync(file,'utf8')));
+ for(const file of walk(output).filter(f=>/\.(html|js|css)$/.test(f)))fs.writeFileSync(file,rewrite(fs.readFileSync(file,'utf8')).replace(/https:\/\/nanpure-chou-online\.[a-z0-9-]+\.chatgpt\.site/g,'https://atugari.github.io/nanpure').replace("host+'/learn?lang='","host+'/?view=tutorial&lang='"));
  const cssDir=path.join(source,'dist/client/_next/static/css');
  const styles=fs.readdirSync(cssDir).filter(f=>f.endsWith('.css'));
  if(styles.length!==1)throw Error('Expected one verified framework stylesheet');
