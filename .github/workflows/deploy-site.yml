@@ -53,6 +53,14 @@ jobs:
       - name: Bundle Nanpure help and contact
         run: python3 scripts/enhance-nanpure.py _site
 
+      - name: Check Nanpure mobile client before publication
+        shell: bash
+        run: |
+          npm install --prefix "$RUNNER_TEMP/nanpure-browser" --no-audit --no-fund playwright@1.62.1
+          export PLAYWRIGHT_MODULE="$RUNNER_TEMP/nanpure-browser/node_modules/playwright"
+          export CHROME_BIN="$(command -v google-chrome || command -v chromium)"
+          node scripts/check-nanpure-browser.cjs _site
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
