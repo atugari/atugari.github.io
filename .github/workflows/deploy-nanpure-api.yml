@@ -1,0 +1,83 @@
+name: Deploy Nanpure API to Cloudflare
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'nanpure-api/**'
+      - '.github/workflows/deploy-nanpure-api.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cloudflare-puzzle-api
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.repository == 'atugari/atugari.github.io' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Check syntax and test API
+        working-directory: nanpure-api
+        run: npm run build
+
+      - name: Check deployment credential
+        id: credential
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo 'ready=false' >> "$GITHUB_OUTPUT"
+            echo 'Tests passed. Deployment is waiting for the CLOUDFLARE_API_TOKEN repository secret.' >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'ready=true' >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Deploy existing puzzle-api Worker
+        if: steps.credential.outputs.ready == 'true'
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          # An account ID identifies the destination; it is not a credential.
+          accountId: '3fb1db1d33caddf96fec77fac7d571e6'
+          workingDirectory: nanpure-api
+          wranglerVersion: '4.92.0'
+          packageManager: npm
+          command: deploy
+
+      - name: Verify Worker and D1 connection
+        if: steps.credential.outputs.ready == 'true'
+        run: |
+          node --input-type=module <<'NODE'
+          import { appendFileSync } from 'node:fs';
+          const url = 'https://puzzle-api.puzzle-hub-4826.workers.dev/api/health';
+          for (let attempt = 0; attempt < 10; attempt++) {
+            try {
+              const response = await fetch(url, { signal: AbortSignal.timeout(10000) });
+              const result = await response.json();
+              if (response.ok && result.ok === true && result.service === 'puzzle-api' && result.database === 'connected') {
+                appendFileSync(process.env.GITHUB_STEP_SUMMARY,
+                  `Worker deployed and D1 connected.\n\nHealth check: ${url}\n\nSchema: ${result.schema}; game API: ${result.gameApi}.\n`);
+                process.exit(0);
+              }
+            } catch {
+              // Retry during deployment propagation; do not print response bodies.
+            }
+            if (attempt < 9) await new Promise(resolve => setTimeout(resolve, 3000));
+          }
+          throw new Error('Deployment finished, but Worker/D1 health verification failed.');
+          NODE

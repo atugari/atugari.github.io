@@ -4,7 +4,29 @@ GitHub Pages のナンプレ帳から利用する API の移行準備用です�
 現段階は Worker の配信と D1 の接続確認までで、ゲーム用 API は未移植です。
 既存の GitHub Pages のリンク・セーブデータはまだ変更していません。
 
-## Cloudflare との連携
+## GitHub Actions からの公開（現在の手順）
+
+Cloudflare の GitHub 連携がリポジトリ選択へ進まないため、公式の
+GitHub Actions + Wrangler による公開へ切り替えています。
+`.github/workflows/deploy-nanpure-api.yml` を用意済みです。
+
+1. Cloudflare の対象アカウントで API トークンを作ります。
+   必要な権限は `Workers Scripts: Edit` と `D1: Edit` です。
+   D1 の編集権限は、今後のスキーマ初期化にも使用します。
+2. GitHub の **Settings → Secrets and variables → Actions → New repository secret** に、
+   名前 `CLOUDFLARE_API_TOKEN`、値にトークンを保存します。
+   アカウント ID はワークフローで設定済みのため、別の Secret は不要です。
+3. **Actions → Deploy Nanpure API to Cloudflare → Run workflow** で実行します。
+   以降は `main` の API 関連ファイルを更新すると、自動でテスト・公開・接続確認を行います。
+
+トークン未登録時はテストだけ実行し、公開をスキップします。
+このワークフローは既存の `puzzle-api` を更新します。
+現時点では DB マイグレーションを自動実行しません。
+トークンをチャット、公開ファイル、スクリーンショットに含めないでください。
+
+参考: https://developers.cloudflare.com/workers/ci-cd/external-cicd/github-actions/
+
+## Cloudflare Workers Builds との連携（別方式）
 
 既存の `puzzle-api` Worker の **Settings → Builds → GitHub** から接続します。
 
