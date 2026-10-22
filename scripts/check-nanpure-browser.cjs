@@ -7,7 +7,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');const fs=r
  for(const view of['','daily','ranking','calendar','contact','replies','backup','privacy','manage']){
   const apiPath={daily:'/api/daily',ranking:'/api/ranking',calendar:'/api/daily/archive',contact:'/api/contact',replies:'/api/contact',backup:'/api/cloud'}[view];
   const response=apiPath?page.waitForResponse(r=>{const u=new URL(r.url());return u.hostname==='puzzle-api.puzzle-hub-4826.workers.dev'&&u.pathname===apiPath&&!u.searchParams.has('summary')&&r.request().method()==='GET'},{timeout:20000}):null;
-  await page.goto('https://atugari.github.io/nanpure/'+(view?'?view='+view:''),{waitUntil:'domcontentloaded'});
+  await page.goto('https://atugari.github.io/nanpure/?lang=ja'+(view?'&view='+view:''),{waitUntil:'domcontentloaded'});
   if(response){const r=await response;assert.equal(r.status(),200,'API status for '+view)}
   await page.locator('#root > *').first().waitFor();
   await page.waitForTimeout(300);
@@ -20,6 +20,21 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');const fs=r
   if(view==='daily')assert((await page.locator('body').innerText()).includes('日替わり'));
   if(view==='backup')assert((await page.locator('body').innerText()).includes('別の端末とつなぐ'));
   console.log('PASS mobile view:',view||'home');
+ }
+ // Translation layout uses deterministic fixtures after the live API gate.
+ // No POST requests or ranking submissions are needed for these checks.
+ await page.route('https://puzzle-api.puzzle-hub-4826.workers.dev/api/**',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({items:[],records:[],rows:[],days:[],challenges:[],save:null,signedIn:true,unread:0})}));
+ for(const lang of ['en','zh-Hans','zh-Hant','ko','es','fr','de','pt'])for(const view of ['', 'contact','backup','privacy']){
+  await page.goto('https://atugari.github.io/nanpure/?lang='+lang+(view?'&view='+view:''),{waitUntil:'domcontentloaded'});
+  await page.locator({'':'.main-choice',contact:'.contact-form',backup:'.cloud-save',privacy:'.legal'}[view]).waitFor();
+  await page.waitForTimeout(300);
+  const result=await page.evaluate(()=>{
+   const bad=[],walk=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n;
+   while(n=walk.nextNode())if(n.parentElement&&!n.parentElement.closest('script,style,textarea,[translate="no"],noscript')&&/[\u3041-\u3096\u30a1-\u30fa]/.test(n.nodeValue))bad.push(n.nodeValue.trim());
+   return {locale:document.documentElement.dataset.locale,overflow:document.documentElement.scrollWidth>innerWidth+1,bad:[...new Set(bad)]};
+  });
+  assert.equal(result.locale,lang);assert.equal(result.overflow,false,'Mobile overflow: '+lang+' '+view);assert.deepEqual(result.bad,[],'Japanese interface text: '+lang+' '+view);
+  console.log('PASS translated mobile view:',lang,view||'home');
  }
  assert.deepEqual(errors,[]);await context.close();
  console.log('PASS native routes, mobile layout, live Cloudflare reads and no private legacy URLs');

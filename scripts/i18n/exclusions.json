@@ -1,0 +1,74 @@
+{
+  "查看我的记录": {
+    "index": 25,
+    "category": "existing_translation_value",
+    "reason": "既存翻訳辞書中の中国語訳であり、日本語の表示原文ではありません。source/public/notebook/context-entry.js の「自分の記録を見る」の zh-Hans 値。"
+  },
+  "查看我的記錄": {
+    "index": 26,
+    "category": "existing_translation_value",
+    "reason": "既存翻訳辞書中の中国語訳であり、日本語の表示原文ではありません。source/public/notebook/context-entry.js の「自分の記録を見る」の zh-Hant 値。"
+  },
+  "查看排行榜": {
+    "index": 27,
+    "category": "existing_translation_value",
+    "reason": "既存翻訳辞書中の中国語訳であり、日本語の表示原文ではありません。source/public/notebook/context-entry.js の「ランキングを見る」の中国語値。"
+  },
+  "分期记录": {
+    "index": 28,
+    "category": "existing_translation_value",
+    "reason": "既存翻訳辞書中の中国語訳であり、日本語の表示原文ではありません。source/public/notebook/context-entry.js の「期間別の記録」の zh-Hans 値。"
+  },
+  "分期記錄": {
+    "index": 29,
+    "category": "existing_translation_value",
+    "reason": "既存翻訳辞書中の中国語訳であり、日本語の表示原文ではありません。source/public/notebook/context-entry.js の「期間別の記録」の zh-Hant 値。"
+  },
+  "アイウエオツヤユヨワカケ": {
+    "index": 40,
+    "category": "internal_game_data",
+    "reason": "小書き仮名を通常サイズの仮名に正規化する内部対応表です。表示文言ではなく、日本語クロスワードの判定に必要なデータです。"
+  },
+  "ァィゥェォッャュョヮヵヶ": {
+    "index": 41,
+    "category": "internal_game_data",
+    "reason": "小書き仮名を通常サイズの仮名に正規化する内部対応表です。表示文言ではなく、日本語クロスワードの判定に必要なデータです。"
+  },
+  "type=\"button\" aria-label=\"前のカギ\"": {
+    "index": 68,
+    "category": "html_fragment",
+    "reason": "button の属性文字列の断片です。実際の aria-label「前のカギ」は notebook-complete.json で全8言語翻訳済みです。"
+  },
+  "type=\"button\" aria-label=\"次のカギ\"": {
+    "index": 69,
+    "category": "html_fragment",
+    "reason": "button の属性文字列の断片です。実際の aria-label「次のカギ」は notebook-complete.json で全8言語翻訳済みです。"
+  },
+  "」と「": {
+    "index": 111,
+    "category": "concatenation_glue",
+    "reason": "引用符と助詞からなる文字列連結用の断片です。独立した表示文言ではありません。文全体の動的テンプレートで処理します。"
+  },
+  ") rotate(-90)\" text-anchor=\"middle\" font-size=\"2.4\">のりしろ": {
+    "index": 359,
+    "category": "svg_fragment",
+    "reason": "SVG の transform/text 要素にまたがる断片です。実際の表示「のりしろ」は new-audit-complete.json / new-audit-normalized-complete.json で全8言語翻訳済みです。"
+  },
+  "問クリア\">": {
+    "index": 419,
+    "category": "html_fragment",
+    "reason": "HTML の属性値末尾の断片です。実際の表示全体は「{4}問クリア」で全8言語翻訳済みです。"
+  },
+  "の音量\">": {
+    "index": 444,
+    "category": "html_fragment",
+    "reason": "HTML の属性値末尾の断片です。実際の表示全体は「{5}の音量」で全8言語翻訳済みです。"
+  },
+  "の盤面\" class=\"sudoku-svg\">": "Malformed HTML fragment, not a standalone text node; full accessible label is covered by {2}の盤面.",
+  "\" placeholder=\"例：家族用　週末に印刷\">": "Malformed attribute HTML fragment; placeholder is separately covered by 例：家族用　週末に印刷.",
+  "マス\">": "Malformed tail of an HTML attribute ending in マス; not a standalone DOM text node. Complete size labels are translated separately.",
+  "\" placeholder=\"例：家族用、紙の問題ID\">": "Malformed placeholder attribute HTML fragment; the actual placeholder text 例：家族用、紙の問題ID is translated separately.",
+  "\" placeholder=\"例：家族用　9×9\">": "Malformed placeholder attribute HTML fragment; the actual placeholder text 例：家族用　9×9 is translated separately.",
+  "svg viewBox=\"0 0 104 108\" role=\"img\" aria-label=\"縦": "Malformed SVG markup, not text content. The full accessible label 縦{0}・横{1}の配置 is translated separately.",
+  "xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"印刷 {0}ページ目\" font-family=\"sans-serif\" fill=\"#111\"": "SVG attribute serialization fragment; its rendered aria-label is covered by 印刷 {0}ページ目."
+}
