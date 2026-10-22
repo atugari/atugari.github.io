@@ -58,7 +58,7 @@ def main():
     run([
         "java", "-jar", str(signer), "sign", "--ks", str(keystore),
         "--ks-key-alias", "nanpure-owner", "--ks-pass", "file:" + str(password_file),
-        "--key-pass", "file:" + str(password_file), "--v1-signing-enabled", "true",
+        "--v1-signing-enabled", "true",
         "--v2-signing-enabled", "true", "--v3-signing-enabled", "true",
         "--v4-signing-enabled", "false", "--out", str(output), str(source),
     ])

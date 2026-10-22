@@ -163,6 +163,9 @@ async function checkResponsiveDailyPlay(browser,root,viewport,n){
  const session={...summary,id:'ci-native-daily-'+n,started:1792627200000,serverNow:1792627200000,finished:false,solved:false,elapsed:0,ranked:false,resumed:true,puzzle,solution,regions:Array.from({length:n*n},(_,i)=>Math.floor(Math.floor(i/n)/block)*block+Math.floor((i%n)/block))};
  const saved={session,grid:puzzle.slice(),notes:{},elapsed:0,misses:0,hints:0,runId:session.id};
  await context.addInitScript(saved=>{
+  // Gameplay fixtures opt out of visit analytics. Keep the strict no-write
+  // assertion below; visit counting and opt-out behavior have their own gate.
+  Object.defineProperty(navigator,'doNotTrack',{get:()=> '1',configurable:true});
   localStorage.setItem('np-practice-resume-v1',JSON.stringify(saved));
   localStorage.setItem('np-daily-settings-v1',JSON.stringify({cellSize:100,digitSize:100,noteSize:100,keypadSize:100,keypadLayout:'auto',remaining:true,autoComplete:false,sound:false,vibration:false}));
  },saved);
