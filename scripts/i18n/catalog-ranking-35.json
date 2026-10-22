@@ -1,0 +1,362 @@
+{
+  "{rank}位": {
+    "en": "Rank {rank}",
+    "zh-Hans": "第{rank}名",
+    "zh-Hant": "第{rank}名",
+    "ko": "{rank}위",
+    "es": "Puesto {rank}",
+    "fr": "Rang {rank}",
+    "de": "Platz {rank}",
+    "pt": "Posição {rank}"
+  },
+  "クリアタイム": {
+    "en": "Completion time",
+    "zh-Hans": "完成用时",
+    "zh-Hant": "完成時間",
+    "ko": "완료 시간",
+    "es": "Tiempo de resolución",
+    "fr": "Temps de résolution",
+    "de": "Lösezeit",
+    "pt": "Tempo de resolução"
+  },
+  "合計スコア": {
+    "en": "Total score",
+    "zh-Hans": "总分",
+    "zh-Hant": "總分",
+    "ko": "총점",
+    "es": "Puntuación total",
+    "fr": "Score total",
+    "de": "Gesamtpunktzahl",
+    "pt": "Pontuação total"
+  },
+  "集計開始から今日まで": {
+    "en": "From the first record to today",
+    "zh-Hans": "从首条记录至今",
+    "zh-Hant": "從首筆紀錄至今",
+    "ko": "첫 기록부터 오늘까지",
+    "es": "Desde el primer registro hasta hoy",
+    "fr": "Depuis le premier résultat jusqu’à aujourd’hui",
+    "de": "Seit dem ersten Eintrag bis heute",
+    "pt": "Do primeiro registro até hoje"
+  },
+  "世界ランキング": {
+    "en": "World rankings",
+    "zh-Hans": "世界排行榜",
+    "zh-Hant": "世界排行榜",
+    "ko": "세계 순위",
+    "es": "Clasificación mundial",
+    "fr": "Classement mondial",
+    "de": "Weltrangliste",
+    "pt": "Classificação mundial"
+  },
+  "世界中の参加者が公開した日替わり記録を集計します。": {
+    "en": "Based on daily puzzle results published by players worldwide.",
+    "zh-Hans": "根据世界各地玩家公开的每日谜题成绩排名。",
+    "zh-Hant": "根據世界各地玩家公開的每日謎題成績排名。",
+    "ko": "전 세계 참가자가 공개한 일일 퍼즐 기록을 집계합니다.",
+    "es": "Se clasifican los resultados diarios publicados por jugadores de todo el mundo.",
+    "fr": "Le classement regroupe les résultats quotidiens publiés par les joueurs du monde entier.",
+    "de": "Gewertet werden veröffentlichte Tagesrätsel-Ergebnisse von Teilnehmenden aus aller Welt.",
+    "pt": "A classificação reúne os resultados diários publicados por jogadores de todo o mundo."
+  },
+  "ランキングの種類": {
+    "en": "Ranking type",
+    "zh-Hans": "排行榜类型",
+    "zh-Hant": "排行榜類型",
+    "ko": "순위 유형",
+    "es": "Tipo de clasificación",
+    "fr": "Type de classement",
+    "de": "Ranglistentyp",
+    "pt": "Tipo de classificação"
+  },
+  "世界タイム": {
+    "en": "World times",
+    "zh-Hans": "世界用时榜",
+    "zh-Hant": "世界時間榜",
+    "ko": "세계 시간 순위",
+    "es": "Tiempos mundiales",
+    "fr": "Temps mondiaux",
+    "de": "Weltweite Zeiten",
+    "pt": "Tempos mundiais"
+  },
+  "スコア": {
+    "en": "Score",
+    "zh-Hans": "分数",
+    "zh-Hant": "分數",
+    "ko": "점수",
+    "es": "Puntuación",
+    "fr": "Score",
+    "de": "Punkte",
+    "pt": "Pontuação"
+  },
+  "同じ日の同じ問題で、クリアタイムを競います。": {
+    "en": "Compare completion times for the same puzzle on the same day.",
+    "zh-Hans": "比较同一天同一道题的完成用时。",
+    "zh-Hant": "比較同一天同一道題的完成時間。",
+    "ko": "같은 날의 같은 문제에서 완료 시간을 겨룹니다.",
+    "es": "Compara los tiempos de resolución del mismo puzle del mismo día.",
+    "fr": "Comparez les temps de résolution du même puzzle du même jour.",
+    "de": "Verglichen werden die Lösezeiten für dasselbe Rätsel desselben Tages.",
+    "pt": "Compare os tempos de resolução do mesmo quebra-cabeça do mesmo dia."
+  },
+  "公開した日替わり問題の得点を合計します。": {
+    "en": "Adds up points from your published daily puzzle results.",
+    "zh-Hans": "累计已公开的每日谜题成绩得分。",
+    "zh-Hant": "累計已公開的每日謎題成績得分。",
+    "ko": "공개한 일일 퍼즐 기록의 점수를 합산합니다.",
+    "es": "Suma los puntos de tus resultados diarios publicados.",
+    "fr": "Additionne les points de vos résultats quotidiens publiés.",
+    "de": "Die Punkte deiner veröffentlichten Tagesrätsel-Ergebnisse werden addiert.",
+    "pt": "Soma os pontos dos seus resultados diários publicados."
+  },
+  "集計期間": {
+    "en": "Scoring period",
+    "zh-Hans": "统计期间",
+    "zh-Hant": "統計期間",
+    "ko": "집계 기간",
+    "es": "Periodo de puntuación",
+    "fr": "Période du classement",
+    "de": "Wertungszeitraum",
+    "pt": "Período de pontuação"
+  },
+  "ランキングを読み込んでいます…": {
+    "en": "Loading rankings…",
+    "zh-Hans": "正在加载排行榜…",
+    "zh-Hant": "正在載入排行榜…",
+    "ko": "순위를 불러오는 중…",
+    "es": "Cargando la clasificación…",
+    "fr": "Chargement du classement…",
+    "de": "Rangliste wird geladen…",
+    "pt": "Carregando a classificação…"
+  },
+  "ランキングを読み込めませんでした。通信を確認して再試行してください。": {
+    "en": "Could not load rankings. Check your connection and try again.",
+    "zh-Hans": "无法加载排行榜。请检查网络连接后重试。",
+    "zh-Hant": "無法載入排行榜。請檢查網路連線後重試。",
+    "ko": "순위를 불러오지 못했습니다. 인터넷 연결을 확인한 뒤 다시 시도하세요.",
+    "es": "No se pudo cargar la clasificación. Comprueba la conexión e inténtalo de nuevo.",
+    "fr": "Impossible de charger le classement. Vérifiez votre connexion et réessayez.",
+    "de": "Die Rangliste konnte nicht geladen werden. Prüfe deine Verbindung und versuche es erneut.",
+    "pt": "Não foi possível carregar a classificação. Verifique a conexão e tente novamente."
+  },
+  "参加者 {count}人": {
+    "en": "{count} participants",
+    "zh-Hans": "{count}位参与者",
+    "zh-Hant": "{count}位參與者",
+    "ko": "참가자 {count}명",
+    "es": "{count} participantes",
+    "fr": "{count} participants",
+    "de": "{count} Teilnehmende",
+    "pt": "{count} participantes"
+  },
+  "あなたの順位": {
+    "en": "Your rank",
+    "zh-Hans": "你的排名",
+    "zh-Hant": "你的排名",
+    "ko": "내 순위",
+    "es": "Tu puesto",
+    "fr": "Votre rang",
+    "de": "Dein Rang",
+    "pt": "Sua posição"
+  },
+  "{count}問クリア": {
+    "en": "{count} puzzles solved",
+    "zh-Hans": "完成{count}题",
+    "zh-Hant": "完成{count}題",
+    "ko": "{count}문제 완료",
+    "es": "{count} puzles resueltos",
+    "fr": "{count} puzzles résolus",
+    "de": "{count} Rätsel gelöst",
+    "pt": "{count} quebra-cabeças resolvidos"
+  },
+  "この期間の公開記録はまだありません。": {
+    "en": "You have no published results for this period yet.",
+    "zh-Hans": "你在此期间尚无公开成绩。",
+    "zh-Hant": "你在此期間尚無公開成績。",
+    "ko": "이 기간에 공개한 기록이 아직 없습니다.",
+    "es": "Aún no tienes resultados publicados en este periodo.",
+    "fr": "Vous n’avez pas encore de résultat publié pour cette période.",
+    "de": "Du hast in diesem Zeitraum noch keine Ergebnisse veröffentlicht.",
+    "pt": "Você ainda não tem resultados publicados neste período."
+  },
+  "順位・表示名": {
+    "en": "Rank / display name",
+    "zh-Hans": "排名／显示名称",
+    "zh-Hant": "排名／顯示名稱",
+    "ko": "순위·표시 이름",
+    "es": "Puesto / nombre público",
+    "fr": "Rang / nom affiché",
+    "de": "Rang / Anzeigename",
+    "pt": "Posição / nome público"
+  },
+  "上位50人": {
+    "en": "Top 50 players",
+    "zh-Hans": "前50名玩家",
+    "zh-Hant": "前50名玩家",
+    "ko": "상위 50명",
+    "es": "Los 50 primeros",
+    "fr": "Les 50 premiers",
+    "de": "Top 50",
+    "pt": "50 primeiros"
+  },
+  "あなた": {
+    "en": "You",
+    "zh-Hans": "你",
+    "zh-Hant": "你",
+    "ko": "나",
+    "es": "Tú",
+    "fr": "Vous",
+    "de": "Du",
+    "pt": "Você"
+  },
+  "上位50人を表示。同じ記録は同順位です。": {
+    "en": "Showing the top 50 players. Equal results share the same rank.",
+    "zh-Hans": "显示前50名玩家，成绩相同则排名相同。",
+    "zh-Hant": "顯示前50名玩家，成績相同則排名相同。",
+    "ko": "상위 50명을 표시합니다. 같은 기록은 같은 순위입니다.",
+    "es": "Se muestran los 50 primeros. Los resultados iguales comparten puesto.",
+    "fr": "Les 50 premiers sont affichés. Les résultats égaux partagent le même rang.",
+    "de": "Die Top 50 werden angezeigt. Gleiche Ergebnisse teilen sich einen Rang.",
+    "pt": "São exibidos os 50 primeiros. Resultados iguais ficam na mesma posição."
+  },
+  "日替わり問題をクリアしたあと、表示名を入力して参加できます。": {
+    "en": "After solving a daily puzzle, enter a display name to join the rankings.",
+    "zh-Hans": "完成每日谜题后，输入显示名称即可参加排名。",
+    "zh-Hant": "完成每日謎題後，輸入顯示名稱即可參加排名。",
+    "ko": "일일 퍼즐을 완료한 뒤 표시 이름을 입력하면 순위에 참여할 수 있습니다.",
+    "es": "Tras resolver un puzle diario, introduce un nombre público para participar.",
+    "fr": "Après avoir résolu un puzzle quotidien, saisissez un nom pour participer au classement.",
+    "de": "Löse ein Tagesrätsel und gib danach einen Anzeigenamen ein, um an der Rangliste teilzunehmen.",
+    "pt": "Depois de resolver um quebra-cabeça diário, informe um nome público para participar."
+  },
+  "集計とスコアのしくみ": {
+    "en": "How rankings and scores work",
+    "zh-Hans": "排名与计分方式",
+    "zh-Hant": "排名與計分方式",
+    "ko": "집계 및 점수 안내",
+    "es": "Cómo se calculan los puestos y puntos",
+    "fr": "Calcul du classement et des points",
+    "de": "So funktionieren Rangliste und Punkte",
+    "pt": "Como funcionam a classificação e os pontos"
+  },
+  "集計は日本時間。今週は月曜から、今月は1日からです。": {
+    "en": "Periods use Japan time. Weeks start on Monday; months start on the 1st.",
+    "zh-Hans": "统计以日本时间为准。本周从周一开始，本月从1日开始。",
+    "zh-Hant": "統計以日本時間為準。本週從週一開始，本月從1日開始。",
+    "ko": "일본 시간 기준입니다. 이번 주는 월요일부터, 이번 달은 1일부터 집계합니다.",
+    "es": "Se usa la hora de Japón. Las semanas empiezan el lunes y los meses, el día 1.",
+    "fr": "Les périodes suivent l’heure du Japon. La semaine commence le lundi et le mois le 1er.",
+    "de": "Es gilt die japanische Zeit. Wochen beginnen am Montag, Monate am 1.",
+    "pt": "Os períodos seguem o horário do Japão. A semana começa na segunda-feira e o mês, no dia 1."
+  },
+  "同じ問題は1人1記録。練習や公開していない記録は含みません。": {
+    "en": "One result per player per puzzle. Practice and unpublished results do not count.",
+    "zh-Hans": "每位玩家每道题只计一条成绩。练习和未公开的成绩不计入。",
+    "zh-Hant": "每位玩家每道題只計一筆成績。練習和未公開的成績不計入。",
+    "ko": "같은 문제는 한 사람당 한 기록만 집계합니다. 연습과 비공개 기록은 포함하지 않습니다.",
+    "es": "Se cuenta un resultado por persona y puzle. No se incluyen prácticas ni resultados sin publicar.",
+    "fr": "Un seul résultat par personne et par puzzle. Les entraînements et résultats non publiés sont exclus.",
+    "de": "Pro Person und Rätsel zählt ein Ergebnis. Übungen und unveröffentlichte Ergebnisse zählen nicht.",
+    "pt": "Conta um resultado por jogador e por quebra-cabeça. Treinos e resultados não publicados não entram na contagem."
+  },
+  "自分の順位は、このブラウザの記録で判定します。": {
+    "en": "Your rank is identified using results from this browser.",
+    "zh-Hans": "你的排名根据此浏览器的记录识别。",
+    "zh-Hant": "你的排名根據此瀏覽器的紀錄識別。",
+    "ko": "내 순위는 이 브라우저의 기록으로 확인합니다.",
+    "es": "Tu puesto se identifica con los registros de este navegador.",
+    "fr": "Votre rang est identifié à partir des résultats de ce navigateur.",
+    "de": "Dein Rang wird anhand der Ergebnisse dieses Browsers zugeordnet.",
+    "pt": "Sua posição é identificada pelos registros deste navegador."
+  },
+  "スコアは基本点＋速さボーナス。基本点は簡単1,000点・普通2,000点・難問3,000点です。": {
+    "en": "Score = base points + speed bonus. Base points: Easy 1,000; Normal 2,000; Hard 3,000.",
+    "zh-Hans": "得分＝基础分＋速度奖励。简单基础分为1,000分，普通为2,000分，难题为3,000分。",
+    "zh-Hant": "得分＝基本分＋速度獎勵。簡單基本分為1,000分，普通為2,000分，難題為3,000分。",
+    "ko": "점수는 기본 점수+속도 보너스입니다. 기본 점수는 쉬움 1,000점, 보통 2,000점, 어려움 3,000점입니다.",
+    "es": "Puntuación = puntos base + bonificación por rapidez. Base: Fácil 1.000; Normal 2.000; Difícil 3.000.",
+    "fr": "Score = points de base + bonus de rapidité. Base : Facile 1 000 ; Normal 2 000 ; Difficile 3 000.",
+    "de": "Punkte = Grundpunkte + Zeitbonus. Grundpunkte: Leicht 1.000, Normal 2.000, Schwer 3.000.",
+    "pt": "Pontuação = pontos base + bônus de rapidez. Base: Fácil 1.000; Normal 2.000; Difícil 3.000."
+  },
+  "基準時間はマス数×5秒。速さボーナスは「基本点の半分×基準時間÷（基準時間＋クリア時間）」の小数点以下切り捨てです。": {
+    "en": "Reference time is the number of cells × 5 seconds. The speed bonus is half the base points × reference time ÷ (reference time + completion time), rounded down.",
+    "zh-Hans": "基准时间为格子总数×5秒。速度奖励＝基础分的一半×基准时间÷（基准时间＋完成用时），结果向下取整。",
+    "zh-Hant": "基準時間為格子總數×5秒。速度獎勵＝基本分的一半×基準時間÷（基準時間＋完成時間），結果無條件捨去小數。",
+    "ko": "기준 시간은 전체 칸 수×5초입니다. 속도 보너스는 기본 점수의 절반×기준 시간÷(기준 시간+완료 시간)에서 소수점 이하를 버린 값입니다.",
+    "es": "Tiempo de referencia = número de casillas × 5 segundos. La bonificación es la mitad de los puntos base × tiempo de referencia ÷ (tiempo de referencia + tiempo de resolución), redondeada hacia abajo.",
+    "fr": "Le temps de référence est le nombre de cases × 5 secondes. Le bonus vaut la moitié des points de base × temps de référence ÷ (temps de référence + temps de résolution), arrondi à l’entier inférieur.",
+    "de": "Referenzzeit = Anzahl der Felder × 5 Sekunden. Der Zeitbonus ist die Hälfte der Grundpunkte × Referenzzeit ÷ (Referenzzeit + Lösezeit), abgerundet.",
+    "pt": "Tempo de referência = número de casas × 5 segundos. O bônus é metade dos pontos base × tempo de referência ÷ (tempo de referência + tempo de resolução), arredondado para baixo."
+  },
+  "例：9×9の簡単を6分45秒でクリアすると、1,250点です。": {
+    "en": "Example: solve an Easy 9×9 puzzle in 6 min 45 sec to earn 1,250 points.",
+    "zh-Hans": "例如：用6分45秒完成9×9简单题，可得1,250分。",
+    "zh-Hant": "例如：用6分45秒完成9×9簡單題，可得1,250分。",
+    "ko": "예: 9×9 쉬움 문제를 6분 45초에 완료하면 1,250점입니다.",
+    "es": "Ejemplo: resolver un 9×9 Fácil en 6 min 45 s da 1.250 puntos.",
+    "fr": "Exemple : résoudre un 9×9 Facile en 6 min 45 s rapporte 1 250 points.",
+    "de": "Beispiel: Ein leichtes 9×9-Rätsel in 6 Min. 45 Sek. ergibt 1.250 Punkte.",
+    "pt": "Exemplo: resolver um 9×9 Fácil em 6 min 45 s rende 1.250 pontos."
+  },
+  "累計": {
+    "en": "All time",
+    "zh-Hans": "全部",
+    "zh-Hant": "全部",
+    "ko": "전체",
+    "es": "Histórico",
+    "fr": "Depuis le début",
+    "de": "Gesamt",
+    "pt": "Todo o período"
+  },
+  "世界タイムとスコアのランキングを追加しました": {
+    "en": "Added worldwide time and score rankings",
+    "zh-Hans": "新增世界用时与得分排行榜",
+    "zh-Hant": "新增世界時間與得分排行榜",
+    "ko": "세계 시간 순위와 점수 순위를 추가했습니다",
+    "es": "Se añadieron clasificaciones mundiales de tiempos y puntos",
+    "fr": "Ajout des classements mondiaux par temps et par score",
+    "de": "Weltweite Zeit- und Punkteranglisten hinzugefügt",
+    "pt": "Adicionadas classificações mundiais de tempos e pontos"
+  },
+  "同じ日替わり問題のタイムを、世界中の参加者と比べられます。": {
+    "en": "Compare your time on the same daily puzzle with players worldwide.",
+    "zh-Hans": "可与世界各地的玩家比较同一道每日谜题的用时。",
+    "zh-Hant": "可與世界各地的玩家比較同一道每日謎題的時間。",
+    "ko": "같은 일일 퍼즐의 시간을 전 세계 참가자와 비교할 수 있습니다.",
+    "es": "Compara tu tiempo en el mismo puzle diario con jugadores de todo el mundo.",
+    "fr": "Comparez votre temps sur le même puzzle quotidien avec les joueurs du monde entier.",
+    "de": "Vergleiche deine Zeit beim selben Tagesrätsel mit Teilnehmenden aus aller Welt.",
+    "pt": "Compare seu tempo no mesmo quebra-cabeça diário com jogadores de todo o mundo."
+  },
+  "公開したクリア記録のスコアを、今日・今週・今月・累計で確認できます。": {
+    "en": "View scores from your published results for today, this week, this month, or all time.",
+    "zh-Hans": "可按今天、本周、本月或全部期间查看已公开成绩的总分。",
+    "zh-Hant": "可按今天、本週、本月或全部期間查看已公開成績的總分。",
+    "ko": "공개한 완료 기록의 점수를 오늘·이번 주·이번 달·전체 기간별로 확인할 수 있습니다.",
+    "es": "Consulta los puntos de tus resultados publicados de hoy, esta semana, este mes o de todo el historial.",
+    "fr": "Consultez les scores publiés pour aujourd’hui, cette semaine, ce mois ou depuis le début.",
+    "de": "Sieh dir die Punkte veröffentlichter Ergebnisse für heute, diese Woche, diesen Monat oder insgesamt an.",
+    "pt": "Veja os pontos dos resultados publicados de hoje, desta semana, deste mês ou de todo o período."
+  },
+  "上位50人と自分の順位を表示し、同じ成績は同じ順位にしました。": {
+    "en": "The top 50 and your own rank are shown. Equal results share the same rank.",
+    "zh-Hans": "显示前50名及自己的排名，成绩相同则排名相同。",
+    "zh-Hant": "顯示前50名及自己的排名，成績相同則排名相同。",
+    "ko": "상위 50명과 내 순위를 표시하며, 같은 성적은 같은 순위로 표시합니다.",
+    "es": "Se muestran los 50 primeros y tu puesto. Los resultados iguales comparten posición.",
+    "fr": "Les 50 premiers et votre rang sont affichés. Les résultats égaux partagent le même rang.",
+    "de": "Die Top 50 und dein eigener Rang werden angezeigt. Gleiche Ergebnisse teilen sich einen Rang.",
+    "pt": "São exibidos os 50 primeiros e sua posição. Resultados iguais ficam na mesma posição."
+  },
+  "ランキングへの参加は、クリア後に表示名を入力して選べます。": {
+    "en": "After solving a puzzle, you can choose to join the rankings by entering a display name.",
+    "zh-Hans": "完成后可选择输入显示名称参加排行榜。",
+    "zh-Hant": "完成後可選擇輸入顯示名稱參加排行榜。",
+    "ko": "완료 후 표시 이름을 입력하여 순위 참여를 선택할 수 있습니다.",
+    "es": "Después de resolver el puzle, puedes elegir participar introduciendo un nombre público.",
+    "fr": "Après la résolution, vous pouvez choisir de participer au classement en saisissant un nom.",
+    "de": "Nach dem Lösen kannst du durch Eingabe eines Anzeigenamens an der Rangliste teilnehmen.",
+    "pt": "Após resolver, você pode escolher participar da classificação informando um nome público."
+  }
+}

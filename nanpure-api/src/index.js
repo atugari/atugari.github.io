@@ -21,7 +21,7 @@ export default {async fetch(request,env){let response;const url=new URL(request.
     const rows=await env.DB.prepare('SELECT name FROM sqlite_master WHERE type=?').bind('table').all();const names=new Set(rows.results.map(r=>r.name));
     response=json({ok:true,service:'puzzle-api',version:apiVersion,siteVersion:env.SITE_VERSION||null,database:'connected',schema:tables.every(t=>names.has(t))?'installed':'pending',gameApi:'ready'});
    }else if(url.pathname==='/api/daily')response=await daily(request,env.DB);
-   else if(url.pathname==='/api/ranking'&&request.method==='GET')response=await ranking(url,env.DB);
+   else if(url.pathname==='/api/ranking'&&request.method==='GET')response=await ranking(url,env.DB,request);
    else if(url.pathname==='/api/daily/archive'&&request.method==='GET')response=await archive(url,env.DB);
    else if(url.pathname==='/api/contact')response=await contact(request,env,url);
    else if(url.pathname==='/api/contact/image'&&request.method==='GET')response=await contactImage(request,env,url);

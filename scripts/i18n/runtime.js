@@ -80,7 +80,7 @@
         if(value&&!numericLiteral(value)&&!reverse.has(value))reverse.set(value,key);
       }
       const tokens = [...source.matchAll(/\{([a-zA-Z0-9_]+)\}/g)];
-      const numericUnit=/^(?:\{[a-zA-Z0-9_]+\}\s*(?:問|件|回|個|枚|面|秒|分|行|列|枠)|枠\{[a-zA-Z0-9_]+\})$/.test(source);
+      const numericUnit=/^(?:\{[a-zA-Z0-9_]+\}\s*(?:問|件|回|個|枚|面|秒|分|行|列|枠|位)|枠\{[a-zA-Z0-9_]+\})$/.test(source);
       const numericCoordinates=/^(?:座標)?\{[a-zA-Z0-9_]+\}行\s*\{[a-zA-Z0-9_]+\}列(?:の\{[a-zA-Z0-9_]+\})?$/.test(source);
       if (tokens.length && !/\}\{/.test(source) && (numericUnit||source.replace(/\{[a-zA-Z0-9_]+\}/g,'').length >= 2)) {
         let offset=0, expression='^'; const slots=[];
@@ -132,7 +132,7 @@
     if(!japanese.test(key)||depth>5) return raw;
     // Generated labels may add a space between a number and its Japanese unit.
     // Resolve the compact form first so an exact singular entry stays singular.
-    const spacedCount=key.match(/^([0-9０-９]+)\s+(問|件|回|個|枚|面|秒|分|行|列|枠|ページ|マス)$/u);
+    const spacedCount=key.match(/^([0-9０-９]+)\s+(問|件|回|個|枚|面|秒|分|行|列|枠|位|ページ|マス)$/u);
     if(spacedCount)return translate(spacedCount[1]+spacedCount[2],locale,params,depth+1);
     const coordinateList=key.split('、');
     if(coordinateList.length>1&&coordinateList.every(part=>/^(?:座標)?\d+行\d+列の\d+$/.test(part)))return coordinateList.map(part=>translate(part,locale,{},depth+1)).join(locale.startsWith('zh')?'、':', ');
