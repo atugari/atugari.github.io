@@ -1,0 +1,191 @@
+[
+  {
+    "id": "shirupure-course-help",
+    "selector": "#dialog > p",
+    "template": "今の難易度を{0}遊んだら、一つ上の難易度に{1}挑戦。",
+    "sampleHtml": "<p>今の難易度を<strong>10問</strong>遊んだら、一つ上の難易度に<strong>1問</strong>挑戦。</p>"
+  },
+  {
+    "id": "shirupure-help-room-size",
+    "selector": "#dialog ol > li",
+    "template": "線を引いて、盤面を{0}に分けます。",
+    "sampleHtml": "<li>線を引いて、盤面を<strong>6マスずつの部屋</strong>に分けます。</li>"
+  },
+  {
+    "id": "shirupure-help-symbols",
+    "selector": "#dialog ol > li",
+    "template": "各部屋に{0}入れます。",
+    "sampleHtml": "<li>各部屋に<strong>○ △ □を一つずつ</strong>入れます。</li>"
+  },
+  {
+    "id": "shirupure-help-connectivity",
+    "selector": "#dialog ol > li",
+    "template": "部屋は上下左右に繋がる形。{0}を使います。",
+    "sampleHtml": "<li>部屋は上下左右に繋がる形。<strong>すべてのマス</strong>を使います。</li>"
+  },
+  {
+    "id": "shirupure-game-brief",
+    "selector": "#app p.rule-brief",
+    "template": "ひと部屋に {0} を一つずつ · {1}",
+    "sampleHtml": "<p class=\"rule-brief\">ひと部屋に <b>○ △ □</b> を一つずつ · <b>6マス</b></p>"
+  },
+  {
+    "id": "shirupure-lesson-brief",
+    "selector": "#app .tutorial-game p.rule-brief",
+    "template": "各部屋は {0}・{1}",
+    "sampleHtml": "<p class=\"rule-brief\">各部屋は <b>6マス</b>・<b>○ △ □ を一つずつ</b></p>"
+  },
+  {
+    "id": "shirupure-new-board-size",
+    "selector": "#dialog > p",
+    "template": "{0}の盤面です。",
+    "sampleHtml": "<p><strong>6行 × 8列、48マス</strong>の盤面です。</p>"
+  },
+  {
+    "id": "shirupure-new-board-rules",
+    "selector": "#dialog > p",
+    "template": "一つの部屋は{0}。{1}を一つずつ入れます。",
+    "sampleHtml": "<p>一つの部屋は<strong>8マス</strong>。<strong>○ △ □ ✕</strong>を一つずつ入れます。</p>"
+  },
+  {
+    "id": "prototype-path-endpoints",
+    "selector": "#app .proto-rules > li",
+    "template": "{0}、マスの中心を通る道を引きます。途中で{1}通ります。",
+    "sampleHtml": "<li><strong>○から□まで</strong>、マスの中心を通る道を引きます。途中で<strong>△を一つ</strong>通ります。</li>"
+  },
+  {
+    "id": "prototype-path-length",
+    "selector": "#app .proto-rules > li",
+    "template": "どの道も、○と□を含めて{0}。上下左右に進みます。",
+    "sampleHtml": "<li>どの道も、○と□を含めて<strong>6マス</strong>。上下左右に進みます。</li>"
+  },
+  {
+    "id": "prototype-path-once",
+    "selector": "#app .proto-rules > li",
+    "template": "{0}使います。道の交差・枝分かれ・合流はできません。",
+    "sampleHtml": "<li><strong>全マスを一度ずつ</strong>使います。道の交差・枝分かれ・合流はできません。</li>"
+  },
+  {
+    "id": "prototype-room-size",
+    "selector": "#app .proto-rules > li",
+    "template": "どの部屋も{0}。上下左右につながる形にします。",
+    "sampleHtml": "<li>どの部屋も<strong>6マス</strong>。上下左右につながる形にします。</li>"
+  },
+  {
+    "id": "prototype-room-symbols",
+    "selector": "#app .proto-rules > li",
+    "template": "どの部屋にも{0}入れ、全マスを使います。",
+    "sampleHtml": "<li>どの部屋にも<strong>1〜3を一つずつ</strong>入れ、全マスを使います。</li>"
+  },
+  {
+    "id": "prototype-path-brief",
+    "selector": "#app p.proto-brief",
+    "template": "{0} · 一つの道は {1}",
+    "sampleHtml": "<p class=\"proto-brief\"><b>○ → △ → □</b> · 一つの道は <b>6マス</b></p>"
+  },
+  {
+    "id": "prototype-room-brief",
+    "selector": "#app p.proto-brief",
+    "template": "各部屋は {0}・{1}",
+    "sampleHtml": "<p class=\"proto-brief\">各部屋は <b>8マス</b>・<b>1〜6 を一つずつ</b></p>"
+  },
+  {
+    "id": "tenbin-balanced-example",
+    "selector": "#dialog > p",
+    "template": "上の天秤はつり合っています。{0}なので、▲ひとつは ●ふたつ分の重さです。",
+    "sampleHtml": "<p>上の天秤はつり合っています。<b>●● と ▲ は同じ重さ</b>なので、▲ひとつは ●ふたつ分の重さです。</p>"
+  },
+  {
+    "id": "sudoku-cross-equation",
+    "selector": "#app .neighbor-rules > p",
+    "template": "×印のすぐ周りの4マスは、{0}になるようにします。",
+    "sampleHtml": "<p>×印のすぐ周りの4マスは、<b>左上＋右下＝右上＋左下</b>になるようにします。</p>"
+  },
+  {
+    "id": "sudoku-saved-count",
+    "selector": "#app p",
+    "template": "保存している問題：{0}",
+    "sampleHtml": "<p>保存している問題：<b>12 問</b></p>"
+  },
+  {
+    "id": "print-selection-empty",
+    "selector": "p.selection-count",
+    "template": "条件に合う問題 {0} ／ この中で選択済み {1}",
+    "sampleHtml": "<p class=\"selection-count\" role=\"status\">条件に合う問題 <b>0問</b> ／ この中で選択済み <span>0問</span></p>",
+    "expectedEnglishLines": [
+      "Matching: 0 puzzles · Selected from these: 0 puzzles"
+    ],
+    "expectedBrCount": 0,
+    "matchingCount": 0,
+    "selectedMatchingCount": 0,
+    "selectedOutsideCount": 0
+  },
+  {
+    "id": "print-selection-single",
+    "selector": "p.selection-count",
+    "template": "条件に合う問題 {0} ／ この中で選択済み {1}",
+    "sampleHtml": "<p class=\"selection-count\" role=\"status\">条件に合う問題 <b>1問</b> ／ この中で選択済み <span>1問</span></p>",
+    "expectedEnglishLines": [
+      "Matching: 1 puzzle · Selected from these: 1 puzzle"
+    ],
+    "expectedBrCount": 0,
+    "matchingCount": 1,
+    "selectedMatchingCount": 1,
+    "selectedOutsideCount": 0
+  },
+  {
+    "id": "print-selection-plural",
+    "selector": "p.selection-count",
+    "template": "条件に合う問題 {0} ／ この中で選択済み {1}",
+    "sampleHtml": "<p class=\"selection-count\" role=\"status\">条件に合う問題 <b>12問</b> ／ この中で選択済み <span>4問</span></p>",
+    "expectedEnglishLines": [
+      "Matching: 12 puzzles · Selected from these: 4 puzzles"
+    ],
+    "expectedBrCount": 0,
+    "matchingCount": 12,
+    "selectedMatchingCount": 4,
+    "selectedOutsideCount": 0
+  },
+  {
+    "id": "print-selection-outside-single",
+    "selector": "p.selection-count",
+    "template": "条件に合う問題 {0} ／ この中で選択済み {1}{2}条件の外でも {3} 選択中",
+    "sampleHtml": "<p class=\"selection-count\" role=\"status\">条件に合う問題 <b>5問</b> ／ この中で選択済み <span>1問</span><br>条件の外でも <span>1問</span> 選択中</p>",
+    "expectedEnglishLines": [
+      "Matching: 5 puzzles · Selected from these: 1 puzzle",
+      "Also selected outside these filters: 1 puzzle"
+    ],
+    "expectedBrCount": 1,
+    "matchingCount": 5,
+    "selectedMatchingCount": 1,
+    "selectedOutsideCount": 1
+  },
+  {
+    "id": "print-selection-outside-plural",
+    "selector": "p.selection-count",
+    "template": "条件に合う問題 {0} ／ この中で選択済み {1}{2}条件の外でも {3} 選択中",
+    "sampleHtml": "<p class=\"selection-count\" role=\"status\">条件に合う問題 <b>12問</b> ／ この中で選択済み <span>4問</span><br>条件の外でも <span>3問</span> 選択中</p>",
+    "expectedEnglishLines": [
+      "Matching: 12 puzzles · Selected from these: 4 puzzles",
+      "Also selected outside these filters: 3 puzzles"
+    ],
+    "expectedBrCount": 1,
+    "matchingCount": 12,
+    "selectedMatchingCount": 4,
+    "selectedOutsideCount": 3
+  },
+  {
+    "id": "print-selection-only-outside",
+    "selector": "p.selection-count",
+    "template": "条件に合う問題 {0} ／ この中で選択済み {1}{2}条件の外でも {3} 選択中",
+    "sampleHtml": "<p class=\"selection-count\" role=\"status\">条件に合う問題 <b>0問</b> ／ この中で選択済み <span>0問</span><br>条件の外でも <span>1問</span> 選択中</p>",
+    "expectedEnglishLines": [
+      "Matching: 0 puzzles · Selected from these: 0 puzzles",
+      "Also selected outside these filters: 1 puzzle"
+    ],
+    "expectedBrCount": 1,
+    "matchingCount": 0,
+    "selectedMatchingCount": 0,
+    "selectedOutsideCount": 1
+  }
+]

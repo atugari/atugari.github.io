@@ -7,13 +7,14 @@ import crypto from 'node:crypto';
 import {createRequire} from 'node:module';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
+import {patchNotebook} from './i18n/patch-notebook.mjs';
 
 const repo=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const source=path.resolve(process.argv[2]||'');
 const require=createRequire(path.join(source,'package.json'));
 const esbuild=createRequire(require.resolve('vite'))('esbuild');
 const release=fs.readFileSync(path.join(source,'lib/releases.ts'),'utf8');
-const version='2026.10.22.28';
+const version='2026.10.22.29';
 if(!version||!/^\d{4}\.\d{2}\.\d{2}\.\d+$/.test(version))throw Error('Missing verified release version');
 const base=`/nanpure/releases/${version}/`;
 const output=path.join(repo,base);
@@ -46,8 +47,11 @@ try {
   fs.writeFileSync(f,text);
  }
  const releasePath=path.join(scratch,'lib/releases.ts');let news=fs.readFileSync(releasePath,'utf8');
+ const sourceVersion=news.match(/currentVersion\s*=\s*['"]([^'"]+)['"]/)?.[1];
+ if(!sourceVersion)throw Error('Missing source release version');
+ news=news.replace('{version:currentVersion,',`{version:'${sourceVersion}',`);
  news=news.replace(/currentVersion\s*=\s*['"][^'"]+['"]/,`currentVersion='${version}'`);
- news=news.replace(/(export const releases[^=]*=\s*\[)/,`$1\n{version:'${version}',date:'2026-10-22',kind:'feature',title:'表示や説明を8言語で見直しました',items:['ボタン・設定・ルール・ヒント・印刷・エラーの翻訳を追加しました。','日本語以外を選んだときに、画面の一部だけ日本語に戻る問題を修正しました。','言語を切り替えても、問題や入力内容はそのままです。']},\n{version:'2026.10.21.27',date:'2026-10-21',kind:'feature',title:'GitHub版でオンライン機能が使えるようになりました',items:['日替わり問題・ランキング・カレンダー・お問い合わせをこの画面で利用できます。','クラウド保存は引き継ぎコードで端末をつなげます。ChatGPTへのログインは不要です。','このブラウザに保存した問題・設定・個人記録はそのまま使えます。']},`);fs.writeFileSync(releasePath,news);
+ news=news.replace(/(export const releases[^=]*=\s*\[)/,`$1\n{version:'${version}',date:'2026-10-22',kind:'fix',title:'作成画面とルール説明の翻訳を修正しました',items:['領域の複雑さ・問題数・旧基準の表示を修正しました。','ルール説明を文章全体で翻訳し、強調表示と数値を保つようにしました。','メモ欄の読み上げラベルと、言語切り替え後のヒント表示を修正しました。']},\n{version:'2026.10.22.28',date:'2026-10-22',kind:'feature',title:'表示や説明を8言語で見直しました',items:['ボタン・設定・ルール・ヒント・印刷・エラーの翻訳を追加しました。','日本語以外を選んだときに、画面の一部だけ日本語に戻る問題を修正しました。','言語を切り替えても、問題や入力内容はそのままです。']},\n{version:'2026.10.21.27',date:'2026-10-21',kind:'feature',title:'GitHub版でオンライン機能が使えるようになりました',items:['日替わり問題・ランキング・カレンダー・お問い合わせをこの画面で利用できます。','クラウド保存は引き継ぎコードで端末をつなげます。ChatGPTへのログインは不要です。','このブラウザに保存した問題・設定・個人記録はそのまま使えます。']},`);fs.writeFileSync(releasePath,news);
  for(const f of walk(path.join(scratch,'app')).filter(f=>/\.tsx?$/.test(f)&&!f.endsWith('/api-client.ts'))){let text=fs.readFileSync(f,'utf8');if(/\bfetch\((['"])\/api\//.test(text)){text=text.replace(/\bfetch\((['"])\/api\//g,'apiFetch($1/api/');let rel=path.relative(path.dirname(f),path.join(scratch,'app/api-client')).replaceAll('\\','/');if(!rel.startsWith('.'))rel='./'+rel;text=`import {apiFetch} from '${rel}';\n`+text;fs.writeFileSync(f,text)}}
  for(const file of walk(scratch).filter(f=>/\.(tsx?|css)$/.test(f)))fs.writeFileSync(file,rewrite(fs.readFileSync(file,'utf8')).replace(/https:\/\/nanpure-chou-online\.[a-z0-9-]+\.chatgpt\.site/g,'https://atugari.github.io/nanpure').replace("host+'/learn?lang='","host+'/?view=tutorial&lang='"));
  // Only public assets enter the repository, never API routes, DB, credentials or answer banks.
@@ -55,7 +59,8 @@ try {
   fs.cpSync(path.join(source,'public',name),path.join(output,name),{recursive:true});
  }
  fs.copyFileSync(path.join(repo,'scripts/i18n/runtime.js'),path.join(output,'notebook/i18n.js'));
- fs.writeFileSync(path.join(output,'notebook/i18n-data.js'),'window.NPTranslations='+fs.readFileSync(path.join(repo,'scripts/i18n/catalog.json'),'utf8').trim()+';\n');
+ fs.writeFileSync(path.join(output,'notebook/i18n-data.js'),'window.NPTranslations='+fs.readFileSync(path.join(repo,'scripts/i18n/catalog.json'),'utf8').trim()+';\nwindow.NPInlineMessages='+fs.readFileSync(path.join(repo,'scripts/i18n/inline-messages.json'),'utf8').trim()+';\n');
+ patchNotebook(path.join(output,'notebook'));
  for(const file of walk(output).filter(f=>/\.(html|js|css)$/.test(f)))fs.writeFileSync(file,rewrite(fs.readFileSync(file,'utf8')).replace(/https:\/\/nanpure-chou-online\.[a-z0-9-]+\.chatgpt\.site/g,'https://atugari.github.io/nanpure').replace("host+'/learn?lang='","host+'/?view=tutorial&lang='"));
  const cssDir=path.join(source,'dist/client/_next/static/css');
  const styles=fs.readdirSync(cssDir).filter(f=>f.endsWith('.css'));

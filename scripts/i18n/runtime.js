@@ -45,14 +45,15 @@
       }
       const tokens = [...source.matchAll(/\{([a-zA-Z0-9_]+)\}/g)];
       const numericUnit=/^(?:\{[a-zA-Z0-9_]+\}\s*(?:問|件|回|個|枚|面|秒|分|行|列|枠)|枠\{[a-zA-Z0-9_]+\})$/.test(source);
+      const numericCoordinates=/^(?:座標)?\{[a-zA-Z0-9_]+\}行\s*\{[a-zA-Z0-9_]+\}列(?:の\{[a-zA-Z0-9_]+\})?$/.test(source);
       if (tokens.length && !/\}\{/.test(source) && (numericUnit||source.replace(/\{[a-zA-Z0-9_]+\}/g,'').length >= 2)) {
         let offset=0, expression='^'; const slots=[];
         for(const token of tokens) {
-          expression+=escapeRE(source.slice(offset,token.index)).replace(/ /g,'\\s+')+(numericUnit?'([0-9０-９][0-9０-９.,、・×/：:〜～−—–\\s-]*)':'(.+?)');
+          expression+=escapeRE(source.slice(offset,token.index)).replace(/ /g,'\\s+')+(numericCoordinates?'([0-9０-９]+)':numericUnit?'([0-9０-９][0-9０-９.,、・×/：:〜～−—–\\s-]*)':'(.+?)');
           slots.push(token[1]); offset=token.index+token[0].length;
         }
         expression+=escapeRE(source.slice(offset)).replace(/ /g,'\\s+')+'$';
-        patterns.push({expression:new RegExp(expression,'u'),slots,translations,weight:source.length-tokens.length*3});
+        patterns.push({expression:new RegExp(expression,'u'),slots,translations,weight:source.replace(/\{[a-zA-Z0-9_]+\}/g,'').length});
       }
     }
     patterns.sort((a,b)=>b.weight-a.weight);
@@ -92,6 +93,10 @@
       return raw.slice(0,raw.length-raw.trimStart().length)+result+raw.slice(raw.trimEnd().length);
     }
     if(!japanese.test(key)||depth>5) return raw;
+    // Generated labels may add a space between a number and its Japanese unit.
+    // Resolve the compact form first so an exact singular entry stays singular.
+    const spacedCount=key.match(/^([0-9０-９]+)\s+(問|件|回|個|枚|面|秒|分|行|列|枠|ページ|マス)$/u);
+    if(spacedCount)return translate(spacedCount[1]+spacedCount[2],locale,params,depth+1);
     const coordinateList=key.split('、');
     if(coordinateList.length>1&&coordinateList.every(part=>/^(?:座標)?\d+行\d+列の\d+$/.test(part)))return coordinateList.map(part=>translate(part,locale,{},depth+1)).join(locale.startsWith('zh')?'、':', ');
     for(const pattern of patterns) {
@@ -102,6 +107,12 @@
       pattern.slots.forEach((name,index)=>{if(own(values,name)&&String(values[name])!==match[index+1])valid=false;values[name]=match[index+1]});
       if(valid) return substitute(pattern.translations[locale],values,locale,depth);
     }
+    // Numbered choices and legacy qualifiers are assembled by several screens.
+    // Keep the number and translate only a known label or a known qualifier.
+    const numbered=key.match(/^([0-9０-９]+)\s*[：:]\s*(.+)$/u);
+    if(numbered){const label=translate(numbered[2],locale,params,depth+1);if(label!==numbered[2])return numbered[1]+(locale.startsWith('zh')?'：':locale==='fr'?' : ':': ')+label}
+    const qualified=key.match(/^(.+?)([（(][^（）()]+[）)])$/u);
+    if(qualified){const qualifier=translatedExact(qualified[2],locale);if(qualifier)return translate(qualified[1],locale,params,depth+1)+(locale.startsWith('zh')?'':' ')+qualifier}
     // Decorative arrows, bullets and brackets do not change a label's meaning.
     const decorated=key.match(/^([‹›←→↗★☆○●✓✔☑☰♫⚙︎\s]+)(.*?)([×↗›\s]*)$/u);
     if(decorated) {
@@ -129,11 +140,78 @@
   }
 
   // These are puzzle answers or text written by a player, not application copy.
-  const skip='script,style,textarea,[contenteditable="true"],[translate="no"],[data-i18n-skip],#recovery-person option[value]:not([value=""]),#profile-select option,.cluelist button,.paper-clues p,.clue-head span,[data-action="finder-use"]';
+  const protectedContent='script,style,[translate="no"],[data-i18n-skip],#recovery-person option[value]:not([value=""]),#profile-select option,.cluelist button,.paper-clues p,.clue-head span,[data-action="finder-use"]';
+  const skip=protectedContent+',textarea,[contenteditable="true"]';
   const attributes=['placeholder','aria-label','aria-description','title','alt','data-tooltip'];
+  // A small reviewed set of sentences spans emphasis nodes. Translate the whole
+  // sentence, moving those same nodes into the target language's word order.
+  // Inputs, links, arbitrary markup and React-owned content are never rewritten.
+  const inlineMessages=w.NPInlineMessages||[],inlineEntries=new WeakMap(),inlineOwned=new WeakSet();
+  const inlineSelector=[...new Set(inlineMessages.map(item=>item.selector))].join(',');
+  function captureInline(source,template) {
+    let offset=0,expression='^';const keys=[];
+    for(const token of template.matchAll(/\{([a-zA-Z0-9_]+)\}/g)){
+      expression+=escapeRE(template.slice(offset,token.index)).replace(/ /g,'\\s+')+'(.+?)';
+      keys.push(token[1]);offset=token.index+token[0].length;
+    }
+    expression+=escapeRE(template.slice(offset)).replace(/ /g,'\\s+')+'$';
+    const match=new RegExp(expression,'u').exec(normalized(source));if(!match)return null;
+    const values={};for(let i=0;i<keys.length;i++){if(own(values,keys[i])&&values[keys[i]]!==match[i+1])return null;values[keys[i]]=match[i+1]}
+    return values;
+  }
+  function inlineMessage(element) {
+    if(!inlineSelector||element.closest(skip+',#root'))return false;
+    let entry=inlineEntries.get(element);
+    if(entry){
+      const nodes=[...element.childNodes];
+      if(nodes.length!==entry.renderedNodes.length||nodes.some((node,i)=>node!==entry.renderedNodes[i])||entry.staticNodes.some(([node,value])=>node.nodeValue!==value)||entry.slots.some(slot=>slot.node.children.length)){
+        for(const node of entry.owned)inlineOwned.delete(node);inlineEntries.delete(element);entry=null;
+      }
+    }
+    if(!entry){
+      const nodes=[...element.childNodes],children=[...element.children];
+      if(!children.length||children.some(child=>!['B','STRONG','EM','SPAN','BR'].includes(child.tagName)||child.children.length)||nodes.some(node=>![1,3].includes(node.nodeType)))return false;
+      const template=normalized(nodes.map(node=>node.nodeType===3?node.nodeValue:'{'+children.indexOf(node)+'}').join(''));
+      const message=inlineMessages.find(item=>normalized(item.template)===template&&element.matches(item.selector)&&item.children.length===children.length&&item.children.every((child,i)=>child.tag.toUpperCase()===children[i].tagName&&captureInline(children[i].textContent,child.sourceTextTemplate)));
+      if(!message)return false;
+      entry={message,originalNodes:nodes,originalText:nodes.filter(node=>node.nodeType===3).map(node=>[node,node.nodeValue]),slots:children.map((node,i)=>({node,source:node.textContent,rendered:node.textContent,rule:message.children[i]})),owned:[],renderedNodes:nodes,staticNodes:[],locale:null};
+      inlineEntries.set(element,entry);
+    }
+    let changed=entry.locale!==current;
+    for(const slot of entry.slots)if(slot.node.textContent!==slot.rendered){
+      const source=canonical(slot.node.textContent,slot.node);
+      if(!captureInline(source,slot.rule.sourceTextTemplate))return false;
+      slot.source=source;changed=true;
+    }
+    if(!changed)return true;
+    const sentence=current==='ja'?entry.message.template:catalog[entry.message.template]?.[current];
+    if(!sentence)return false;
+    const tokens=[...sentence.matchAll(/\{([0-9]+)\}/g)],indices=tokens.map(token=>Number(token[1]));
+    if(indices.length!==entry.slots.length||new Set(indices).size!==indices.length||indices.some(i=>!entry.slots[i]))return false;
+    for(const node of entry.owned)inlineOwned.delete(node);entry.owned=[];
+    for(const slot of entry.slots){
+      const context=slot.rule.contextTextTranslations?.[current],params=captureInline(slot.source,slot.rule.sourceTextTemplate);
+      const value=current==='ja'?slot.source:context?substitute(context,params||{},current,0):translate(slot.source);
+      if(slot.node.textContent!==value)slot.node.textContent=value;
+      slot.rendered=value;entry.owned.push(...slot.node.childNodes);
+    }
+    let nodes;
+    if(current==='ja'){
+      for(const[node,value]of entry.originalText)node.nodeValue=value;
+      nodes=entry.originalNodes;
+    }else{
+      nodes=[];let offset=0;
+      for(const token of tokens){if(token.index>offset)nodes.push(document.createTextNode(sentence.slice(offset,token.index)));nodes.push(entry.slots[Number(token[1])].node);offset=token.index+token[0].length}
+      if(offset<sentence.length)nodes.push(document.createTextNode(sentence.slice(offset)));
+    }
+    element.replaceChildren(...nodes);
+    entry.renderedNodes=[...element.childNodes];entry.staticNodes=entry.renderedNodes.filter(node=>node.nodeType===3).map(node=>[node,node.nodeValue]);
+    entry.owned.push(...entry.staticNodes.map(([node])=>node));for(const node of entry.owned)inlineOwned.add(node);
+    entry.locale=current;return true;
+  }
   function textNode(node) {
     const parent=node.parentElement;
-    if(!parent||parent.closest(skip))return;
+    if(!parent||parent.closest(skip)||inlineOwned.has(node))return;
     let entry=sourceText.get(node);
     if(!entry||node.nodeValue!==entry.rendered)entry={source:canonical(node.nodeValue,parent),rendered:node.nodeValue};
     if(parent.tagName==='OPTION'&&!parent.hasAttribute('value'))parent.setAttribute('value',parent.value||parent.textContent);
@@ -142,7 +220,7 @@
     entry.rendered=value;sourceText.set(node,entry);
   }
   function elementAttributes(element) {
-    if(element.closest(skip))return;
+    if(element.closest(protectedContent))return;
     const entries=sourceAttributes.get(element)||{};
     for(const name of attributes) {
       if(!element.hasAttribute(name))continue;
@@ -163,9 +241,12 @@
     sourceAttributes.set(element,entries);
   }
   function walk(root) {
+    // Child-only mutation records must still update their whole mapped sentence.
+    if(inlineSelector){const parent=root.nodeType===3?root.parentElement:root.nodeType===1?root:null;const sentence=parent?.closest(inlineSelector);if(sentence)root=sentence}
     if(root.nodeType===3){textNode(root);return}
     if(root.nodeType!==1&&root.nodeType!==9)return;
-    if(root.nodeType===1){if(root.closest(skip))return;elementAttributes(root)}
+    if(root.nodeType===1){if(root.closest(protectedContent))return;elementAttributes(root);if(root.matches('textarea,[contenteditable="true"]'))return}
+    if(inlineSelector){if(root.nodeType===1&&root.matches(inlineSelector))inlineMessage(root);root.querySelectorAll?.(inlineSelector).forEach(inlineMessage)}
     const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
     let node;while(node=walker.nextNode())textNode(node);
     root.querySelectorAll?.('[placeholder],[aria-label],[aria-description],[title],[alt],[data-tooltip],input[type="submit"],input[type="button"],input[type="reset"]').forEach(elementAttributes);
