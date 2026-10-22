@@ -88,6 +88,50 @@ body.storage-unsaved{padding-bottom:130px}
 /* 5.7: route drawing prototype */
 .path-board{background-color:#fffefa;background-image:linear-gradient(to right,#d9ded6 1px,transparent 1px),linear-gradient(to bottom,#d9ded6 1px,transparent 1px);background-size:calc(100% / 6) calc(100% / 4)}.path-board svg{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}.path-board svg line{stroke:#285849;stroke-width:7;stroke-linecap:round}.path-cell{position:absolute;z-index:2;display:flex;align-items:center;justify-content:center;border:0;border-radius:0;background:transparent;padding:0;min-height:0;min-width:0;touch-action:manipulation;color:#263e35;font-size:clamp(20px,6vw,36px)}.path-cell.selected{background:#d5e8f166;box-shadow:inset 0 0 0 3px #3976a1}.path-symbol{display:flex;align-items:center;justify-content:center;background:#fffefa;border-radius:50%;width:70%;height:70%;line-height:1}.path-dot{width:5px;height:5px;border-radius:50%;background:#9aa89b}.prototype-screen .choice strong{font-size:19px}.prototype-screen .choice small{line-height:1.6}
 
+/* Selection identity stays separate from matching digits and related cells.
+   Hint annotations retain their own colors; the selected cell never gains
+   the former non-color double outline or decorative corner brackets. */
+@media screen{
+html[data-np-selection-design]{--np-selection-base:#fff;--np-selection-related:#f1f5ed;--np-selection-same:#e2ecd9;--np-selection-guide:#dfedfb;--np-selection-guide-active:#fff1d6;--np-selection-frame:#185caa;--np-selection-outline:#edf5ff;--np-selection-solid:#174f86;--np-selection-solid-ink:#fff;--np-selection-ink:#202d26;--np-selection-error:#a12520;--np-selection-solid-error:#ffe0d8}
+html[data-np-selection-design][data-palette=cream]{--np-selection-base:#fff9eb}
+html[data-np-selection-design][data-palette=mint]{--np-selection-base:#f0fff4}
+html[data-np-selection-design]:is([data-display=dark],[data-palette=purple]){--np-selection-base:#233229;--np-selection-related:#2d3b32;--np-selection-same:#3b4d3e;--np-selection-guide:#25445d;--np-selection-guide-active:#47371f;--np-selection-frame:#9dcaff;--np-selection-outline:#173d5d;--np-selection-solid:#a6d0ff;--np-selection-solid-ink:#102c49;--np-selection-ink:#f0f5f0;--np-selection-error:#ffb9ac;--np-selection-solid-error:#801c17}
+html[data-np-selection-design][data-palette=purple]{--np-selection-base:#30283e}
+html[data-np-selection-design] #board.play-board .cell.peer:not(:where(.selected,.wrong,.vh-unit,.vh-witness,.vh-focus,.vh-cut)){background:var(--np-selection-related)}
+html[data-np-selection-design=guide] #board.play-board .cell.peer:not(:where(.selected,.wrong,.vh-unit,.vh-witness,.vh-focus,.vh-cut)){background:var(--np-selection-base)}
+html[data-np-selection-design=guide] #board.play-board .cell.guide:not(:where(.selected,.wrong,.vh-unit,.vh-witness,.vh-focus,.vh-cut)){background:var(--np-selection-guide)}
+html[data-np-selection-design] #board.play-board .cell.same:not(:where(.selected,.wrong,.vh-unit,.vh-witness,.vh-focus,.vh-cut)){background:var(--np-selection-same)}
+html[data-np-selection-design] #board.play-board .cell[aria-pressed=true]:not(:focus-visible){outline:0}
+html[data-np-selection-design] #board.play-board .cell.selected:not(:where(.vh-unit,.vh-witness,.vh-focus,.vh-cut)){background:var(--np-selection-guide-active);box-shadow:none;color:var(--np-selection-ink);text-decoration:none}
+html[data-np-selection-design=outline] #board.play-board .cell.selected:not(:where(.vh-unit,.vh-witness,.vh-focus,.vh-cut)){background:var(--np-selection-outline);box-shadow:inset 0 0 0 2px var(--np-selection-frame)}
+html[data-np-selection-design=solid] #board.play-board .cell.selected:not(:where(.vh-unit,.vh-witness,.vh-focus,.vh-cut)){background:var(--np-selection-solid);color:var(--np-selection-solid-ink)}
+html[data-np-selection-design] #board.play-board .cell.selected.wrong:not(:where(.vh-unit,.vh-witness,.vh-focus,.vh-cut)){color:var(--np-selection-error)}
+html[data-np-selection-design=solid] #board.play-board .cell.selected.wrong:not(:where(.vh-unit,.vh-witness,.vh-focus,.vh-cut)){color:var(--np-selection-solid-error)}
+html[data-np-selection-design] #board.play-board .cell.selected:not(:where(.vh-unit,.vh-witness,.vh-focus,.vh-cut)) :is(.notes,.hundred-notes,.cage-label){color:inherit}
+html[data-np-selection-design=solid] #board.play-board .cell.selected:not(:where(.vh-unit,.vh-witness,.vh-focus,.vh-cut)) .cage-border{border-color:var(--np-selection-solid-ink)}
+.np-selection-design{display:grid;gap:6px;margin:14px 0;font-weight:700}
+html[data-np-selection-design] .np-access-preview .np-sample-grid{background:var(--np-selection-base);color:var(--np-selection-ink)}
+html[data-np-selection-design] .np-access-preview .np-sample-grid b{height:40px;box-sizing:border-box;display:grid;place-items:center}
+html[data-np-selection-design] .np-access-preview .np-preview-related{background:var(--np-selection-related)}
+html[data-np-selection-design=guide] .np-access-preview .np-preview-related{background:var(--np-selection-base)}
+html[data-np-selection-design=guide] .np-access-preview .np-preview-guide{background:var(--np-selection-guide)}
+html[data-np-selection-design] .np-access-preview .np-preview-same{background:var(--np-selection-same);text-decoration:underline}
+html[data-np-selection-design] .np-access-preview .np-sample-grid b.np-preview-selected{outline:0;background:var(--np-selection-guide-active);box-shadow:none;color:var(--np-selection-ink);text-decoration:none}
+html[data-np-selection-design=outline] .np-access-preview .np-sample-grid b.np-preview-selected{background:var(--np-selection-outline);box-shadow:inset 0 0 0 2px var(--np-selection-frame)}
+html[data-np-selection-design=solid] .np-access-preview .np-sample-grid b.np-preview-selected{background:var(--np-selection-solid);color:var(--np-selection-solid-ink)}
+/* Linked Sudoku draws its numbers and cells in one SVG. Preserve its geometry
+   and the existing dark-mode SVG filter while applying the same light scheme. */
+html[data-np-selection-design] #board.np-linked-board .np-linked-cell.np-linked-peer:not(.np-linked-wrong,.np-linked-selected){fill:#f1f5ed}
+html[data-np-selection-design=guide] #board.np-linked-board .np-linked-cell.np-linked-peer:not(.np-linked-wrong,.np-linked-selected){fill:#fff}
+html[data-np-selection-design=guide] #board.np-linked-board .np-linked-cell.np-linked-guide:not(.np-linked-wrong,.np-linked-selected){fill:#dfedfb}
+html[data-np-selection-design] #board.np-linked-board .np-linked-cell.np-linked-same:not(.np-linked-wrong,.np-linked-selected){fill:#e2ecd9}
+html[data-np-selection-design] #board.np-linked-board .np-linked-cell.np-linked-selected{fill:#fff1d6}
+html[data-np-selection-design=outline] #board.np-linked-board .np-linked-cell.np-linked-selected{fill:#edf5ff;stroke:#185caa;stroke-width:2px}
+html[data-np-selection-design=solid] #board.np-linked-board .np-linked-cell.np-linked-selected{fill:#174f86}
+html[data-np-selection-design=solid] #board.np-linked-board .np-linked-selected-ink{fill:#fff}
+html[data-np-selection-design=solid] #board.np-linked-board .np-linked-selected-ink.np-linked-wrong-ink{fill:#ffe0d8}
+}
+
 .finder-quick{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.finder-quick button{flex:1;min-height:48px;padding:10px 8px;font-size:14px}.finder-card{border:1px solid #d7dfd5;border-radius:16px;overflow:hidden;background:#fffefa}.finder-card .library-card{border:0;border-radius:0;width:100%}.finder-card>.quiet{min-height:48px;width:100%;text-align:right;padding:10px 18px}.finder-card small{overflow-wrap:anywhere}.finder-preset{display:flex;gap:8px}.finder-preset>button:first-child{flex:1}.finder-jump{display:flex;gap:12px;align-items:end;margin-top:12px}.finder-jump label{flex:1}.finder-jump button{min-height:48px}.prototype-screen select{display:block;width:100%;min-height:48px;margin:8px 0 18px}.prototype-screen .proto-board{max-width:420px}.prototype-screen .proto-mark{font-size:clamp(18px,5vw,28px)}
 
 .finder-search{display:flex;align-items:end;gap:8px}.finder-search label{flex:1;min-width:0}.finder-search input{width:100%;min-width:0}.finder-search button{min-height:48px;margin-bottom:0}

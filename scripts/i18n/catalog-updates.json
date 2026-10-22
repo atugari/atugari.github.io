@@ -239,6 +239,86 @@
     "de": "Der Hinweistext unter den Zahlentasten wurde entfernt, damit das Gitter mehr Platz hat.",
     "pt": "Removemos o texto informativo abaixo das teclas numéricas para dar mais espaço ao tabuleiro."
   },
+  "選択マスのデザイン": {
+    "en": "Selected cell style",
+    "zh-Hans": "所选格子样式",
+    "zh-Hant": "所選格子樣式",
+    "ko": "선택한 칸 스타일",
+    "es": "Estilo de la casilla seleccionada",
+    "fr": "Style de la case sélectionnée",
+    "de": "Stil der ausgewählten Zelle",
+    "pt": "Estilo da célula selecionada"
+  },
+  "行・列ガイド": {
+    "en": "Row and column guide",
+    "zh-Hans": "行列引导",
+    "zh-Hant": "橫列與直欄導引",
+    "ko": "행·열 가이드",
+    "es": "Guía de fila y columna",
+    "fr": "Repères de ligne et de colonne",
+    "de": "Zeilen- und Spaltenhilfe",
+    "pt": "Guia de linha e coluna"
+  },
+  "くっきり枠": {
+    "en": "Distinct outline",
+    "zh-Hans": "清晰边框",
+    "zh-Hant": "清晰邊框",
+    "ko": "선명한 테두리",
+    "es": "Borde marcado",
+    "fr": "Contour marqué",
+    "de": "Deutlicher Rahmen",
+    "pt": "Contorno nítido"
+  },
+  "濃い色で選択": {
+    "en": "Solid highlight",
+    "zh-Hans": "深色高亮",
+    "zh-Hant": "深色醒目顯示",
+    "ko": "진한 색으로 강조",
+    "es": "Resaltado intenso",
+    "fr": "Surbrillance intense",
+    "de": "Kräftige Hervorhebung",
+    "pt": "Destaque intenso"
+  },
+  "選択マスの見やすさを改善しました": {
+    "en": "Made selected cells easier to see",
+    "zh-Hans": "改进了所选格子的可见性",
+    "zh-Hant": "改善了所選格子的可見性",
+    "ko": "선택한 칸이 더 잘 보이도록 개선했습니다",
+    "es": "Mejoramos la visibilidad de la casilla seleccionada",
+    "fr": "La case sélectionnée est plus facile à repérer",
+    "de": "Ausgewählte Zellen sind jetzt besser erkennbar",
+    "pt": "Melhoramos a visibilidade da célula selecionada"
+  },
+  "行・列ガイドを標準にし、選択したマスを見つけやすくしました。": {
+    "en": "Row and column guides are now the default, making the selected cell easier to find.",
+    "zh-Hans": "默认启用行列引导，让所选格子更容易找到。",
+    "zh-Hant": "預設啟用橫列與直欄導引，讓所選格子更容易找到。",
+    "ko": "행·열 가이드를 기본으로 설정해 선택한 칸을 더 쉽게 찾을 수 있도록 했습니다.",
+    "es": "La guía de fila y columna es ahora la opción predeterminada para encontrar más fácilmente la casilla seleccionada.",
+    "fr": "Les repères de ligne et de colonne sont désormais activés par défaut pour mieux repérer la case sélectionnée.",
+    "de": "Die Zeilen- und Spaltenhilfe ist jetzt die Standardeinstellung, damit die ausgewählte Zelle leichter zu finden ist.",
+    "pt": "O guia de linha e coluna agora é o padrão, facilitando a identificação da célula selecionada."
+  },
+  "選択マスのデザインを3種類から選べるようにしました。": {
+    "en": "You can now choose from three selected-cell styles.",
+    "zh-Hans": "现在可以从三种所选格子样式中选择。",
+    "zh-Hant": "現在可以從三種所選格子樣式中選擇。",
+    "ko": "선택한 칸의 스타일을 세 가지 중에서 고를 수 있게 했습니다.",
+    "es": "Ahora puedes elegir entre tres estilos para la casilla seleccionada.",
+    "fr": "Vous pouvez désormais choisir parmi trois styles pour la case sélectionnée.",
+    "de": "Für die ausgewählte Zelle stehen jetzt drei Stile zur Auswahl.",
+    "pt": "Agora você pode escolher entre três estilos para a célula selecionada."
+  },
+  "選んだデザインは日替わり問題と自由に遊ぶで共通に保存します。": {
+    "en": "Your chosen style is saved and shared between daily puzzles and Free Play.",
+    "zh-Hans": "所选样式会保存，并在每日谜题和自由游玩中共用。",
+    "zh-Hant": "所選樣式會儲存，並在每日謎題和自由遊玩中共用。",
+    "ko": "선택한 스타일을 저장해 일일 퍼즐과 자유 플레이에서 함께 사용합니다.",
+    "es": "El estilo elegido se guarda y se comparte entre los puzles diarios y el juego libre.",
+    "fr": "Le style choisi est enregistré et partagé entre les grilles du jour et le jeu libre.",
+    "de": "Dein gewählter Stil wird gespeichert und für Tagesrätsel und freies Spiel gemeinsam verwendet.",
+    "pt": "O estilo escolhido é salvo e compartilhado entre os desafios diários e o jogo livre."
+  },
   "盤面を動かしたあとの誤入力を防ぐようにしました。": {
     "en": "Prevented accidental entries after dragging or zooming the grid.",
     "zh-Hans": "防止拖动或缩放棋盘后意外输入数字。",

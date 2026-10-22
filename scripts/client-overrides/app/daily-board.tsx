@@ -100,10 +100,10 @@ export default function DailyBoard({session,grid,notes,selected,onSelect,zoom,fi
   '--minimum-board':`${renderEdge}px`,'--render-edge':`${renderEdge}px`,
  } as CSSProperties;
  return <div ref={viewport} style={{width:viewportWidth,height:viewportHeight,flex:'0 0 auto'}} className="board-viewport" data-board-fit={fit?'true':'false'} data-board-scale={renderEdge/standardEdge*100} data-scrollable={scrollable?'true':'false'} tabIndex={scrollable?0:undefined} aria-label={scrollable?t('拡大盤面。スクロールして移動できます'):undefined}>
-  <div ref={board} role="grid" aria-rowcount={n} aria-colcount={n} aria-label={t('{rule} {n}×{n} 盤面',{rule:ruleLabel(locale,session.kind),n})} className={`board variable-board size-${n} kind-${session.kind}`} style={style}>
+  <div ref={board} role="grid" aria-rowcount={n} aria-colcount={n} aria-label={t('{rule} {n}×{n} 盤面',{rule:ruleLabel(locale,session.kind),n})} className={`board variable-board size-${n} kind-${session.kind}`} data-selection-design={settings.selectionDesign} style={style}>
    {grid.map((v,i)=>{
     const r=Math.floor(i/n),c=i%n,cage=cages.get(i),sameCage=(j:number)=>cage?.cells.includes(j);
-    const related=settings.area&&selected>=0&&(r===Math.floor(selected/n)||c===selected%n||region(selected)>=0&&region(selected)===region(i));
+    const related=settings.area&&selected>=0&&(r===Math.floor(selected/n)||c===selected%n||settings.selectionDesign!=='guide'&&region(selected)>=0&&region(selected)===region(i));
     const edgeStyle:CSSProperties={borderRightWidth:c<n-1&&region(i)!==region(i+1)?'2px':undefined,
      borderBottomWidth:r<n-1&&region(i)!==region(i+n)?'2px':undefined};
     return <button role="gridcell" key={i} data-cell={i} tabIndex={i===(selected<0?0:selected)?0:-1} aria-rowindex={r+1} aria-colindex={c+1}

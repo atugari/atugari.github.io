@@ -16,6 +16,7 @@ import DailyRuleChoice from './daily-rule-choice';
 import {BoardScaleControls} from './daily-view-controls';
 import NumberPressPreview from './number-press-preview';
 import PlaySettings,{defaultSettings,readSettings,type PlayOptions} from './play-settings';
+import {readSelectionDesign,saveSelectionDesign,watchSelectionDesign} from './selection-design';
 import {formatTime,pruneNotes,conflicts} from '../lib/daily-play';
 import type {DailyPuzzle,DailySummary} from '../lib/daily-types';
 import {dailyTitle,dailyRules,ruleLabel,levelLabel} from '../lib/locale';
@@ -128,8 +129,9 @@ export default function Game({initialChallenges}:{initialChallenges:DailySummary
  useEffect(()=>{setDailyFit(false);setDailyScale(undefined)},[session?.id,settings.cellSize]);
  const [dismissedPlayNotice,setDismissedPlayNotice]=useState('');
  useEffect(()=>{setDismissedPlayNotice('');if(!message)return;const id=setTimeout(()=>setDismissedPlayNotice(message),6000);return()=>clearTimeout(id)},[message]);
- const updateSettings=(v:PlayOptions)=>{SET(v);try{localStorage.setItem('np-daily-settings-v1',JSON.stringify(v))}catch{}};
+ const updateSettings=(v:PlayOptions)=>{const next=readSettings(v);SET(next);try{localStorage.setItem('np-daily-settings-v1',JSON.stringify(next))}catch{}if(next.selectionDesign!==settings.selectionDesign)saveSelectionDesign(next.selectionDesign)};
  useEffect(()=>{try{SET(readSettings(JSON.parse(localStorage.getItem('np-daily-settings-v1')||'null')));const st=JSON.parse(localStorage.getItem('np-daily-stats-v1')||'null');if(st&&Object.keys(stats).every(k=>Number.isFinite(st[k])))STATS(st)}catch{}try{RESUME(readPractice(JSON.parse(localStorage.getItem('np-practice-resume-v1')||'null')));const seen=JSON.parse(localStorage.getItem('np-seen-rules-v1')||'[]');if(Array.isArray(seen))SEEN(seen.filter(x=>typeof x==='string'));TD(localStorage.getItem('np-tutorial-v1')==='done')}catch{}statsReady.current=true},[]);
+ useEffect(()=>{const apply=(selectionDesign:PlayOptions['selectionDesign'])=>SET(current=>current.selectionDesign===selectionDesign?current:{...current,selectionDesign});apply(readSelectionDesign());return watchSelectionDesign(apply)},[]);
  useEffect(()=>{if(statsReady.current)try{localStorage.setItem('np-daily-stats-v1',JSON.stringify(stats))}catch{}},[stats]);
  useEffect(()=>{const media=matchMedia('(prefers-color-scheme: dark)');const apply=()=>{document.documentElement.dataset.playPalette=settings.systemTheme?(media.matches?'dark':'light'):settings.palette};apply();media.addEventListener('change',apply);return()=>media.removeEventListener('change',apply)},[settings.palette,settings.systemTheme]);
  useEffect(()=>{const unload=(event:BeforeUnloadEvent)=>{if(guard.current){event.preventDefault();event.returnValue=''}};window.addEventListener('beforeunload',unload);return()=>window.removeEventListener('beforeunload',unload)},[]);
