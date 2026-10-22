@@ -444,6 +444,7 @@ async function checkJigsawCreationAndPrint(page,lang,expected){
    await frame.locator('.print-proof .puzzle-digit').first().waitFor();await twoAnimationFrames(frame);
    await checkPrintedDigits(frame,printFixture.solution,lang+' solution preview');
    await frame.locator('[data-action="preview-prev"]').click();
+   await twoAnimationFrames(frame);
   }
   await checkNotebookInterface(frame,lang,'print confirmation '+answers);
   console.log('PASS translated print confirmation:',lang,'answers',answers);
