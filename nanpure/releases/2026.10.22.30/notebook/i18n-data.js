@@ -1,0 +1,39 @@
+(function bootstrap(config) {
+  const w = window;
+  w.NPTranslations = w.NPTranslations || {};
+  w.NPInlineMessages = config.inlineMessages;
+  try {
+    const parent = w.parent !== w && w.parent.NPTranslationAssets;
+    if (parent && parent.version === config.version) {
+      w.NPTranslationAssets = parent;
+      return;
+    }
+  } catch (_) { /* A separately hosted frame cannot share its parent's cache. */ }
+  const base = new URL('./i18n/', document.currentScript.src);
+  const loaded = new Map(), pending = new Map();
+  function load(locale) {
+    if (locale === 'ja') return Promise.resolve({});
+    if (!config.locales.includes(locale)) return Promise.reject(new Error('Unknown language'));
+    if (loaded.has(locale)) return Promise.resolve(loaded.get(locale));
+    if (pending.has(locale)) return pending.get(locale);
+    const request = fetch(new URL(locale + '.json', base), {credentials:'same-origin',cache:'force-cache'})
+      .then(response => {
+        if (!response.ok) throw new Error('Translation download failed: ' + response.status);
+        return response.json();
+      })
+      .then(pack => {
+        if (!pack || Array.isArray(pack) || typeof pack !== 'object' || !Object.keys(pack).length || Object.values(pack).some(value => typeof value !== 'string')) throw new Error('Invalid translation pack');
+        loaded.set(locale, Object.freeze(pack));
+        pending.delete(locale);
+        return pack;
+      }, error => {
+        pending.delete(locale);
+        throw error;
+      });
+    pending.set(locale, request);
+    // Validation errors must also permit a retry.
+    request.catch(() => pending.delete(locale));
+    return request;
+  }
+  w.NPTranslationAssets = {version:config.version,load,has:locale=>locale==='ja'||loaded.has(locale),messages:config.messages};
+})({"version":"2026.10.22.30","locales":["en","zh-Hans","zh-Hant","ko","es","fr","de","pt"],"inlineMessages":[{"selector":"#dialog > p","template":"今の難易度を{0}遊んだら、一つ上の難易度に{1}挑戦。","children":[{"tag":"strong","sourceTextTemplate":"10問"},{"tag":"strong","sourceTextTemplate":"1問"}]},{"selector":"#dialog ol > li","template":"線を引いて、盤面を{0}に分けます。","children":[{"tag":"strong","sourceTextTemplate":"{0}マスずつの部屋","contextTextTranslations":{"en":"rooms of {0} cells each","zh-Hans":"每个区域{0}格","zh-Hant":"每個區域{0}格","ko":"각각 {0}칸인 방","es":"regiones de {0} casillas cada una","fr":"pièces de {0} cases chacune","de":"Räume mit je {0} Zellen","pt":"regiões de {0} células cada"}}]},{"selector":"#dialog ol > li","template":"各部屋に{0}入れます。","children":[{"tag":"strong","sourceTextTemplate":"{0}を一つずつ","contextTextTranslations":{"en":"one of each ({0})","zh-Hans":"{0}各一个","zh-Hant":"{0}各一個","ko":"각 항목을 하나씩({0})","es":"un ejemplar de cada elemento ({0})","fr":"un exemplaire de chaque élément ({0})","de":"von jedem dieser Zeichen genau eines ({0})","pt":"um exemplar de cada elemento ({0})"}}]},{"selector":"#dialog ol > li","template":"部屋は上下左右に繋がる形。{0}を使います。","children":[{"tag":"strong","sourceTextTemplate":"すべてのマス","contextTextTranslations":{"en":"every cell","zh-Hans":"所有格子","zh-Hant":"所有格子","ko":"모든 칸","es":"todas las casillas","fr":"toutes les cases","de":"alle Zellen","pt":"todas as células"}}]},{"selector":"#app p.rule-brief","template":"ひと部屋に {0} を一つずつ · {1}","children":[{"tag":"b","sourceTextTemplate":"{0}"},{"tag":"b","sourceTextTemplate":"{1}マス"}]},{"selector":"#app .tutorial-game p.rule-brief","template":"各部屋は {0}・{1}","children":[{"tag":"b","sourceTextTemplate":"{0}マス"},{"tag":"b","sourceTextTemplate":"{1} を一つずつ","contextTextTranslations":{"en":"one of each ({1})","zh-Hans":"{1}各一个","zh-Hant":"{1}各一個","ko":"각 항목이 하나씩({1})","es":"un ejemplar de cada elemento ({1})","fr":"un exemplaire de chaque élément ({1})","de":"von jedem dieser Zeichen genau eines ({1})","pt":"um exemplar de cada elemento ({1})"}}]},{"selector":"#dialog > p","template":"{0}の盤面です。","children":[{"tag":"strong","sourceTextTemplate":"{0}行 × {1}列、{2}マス"}]},{"selector":"#dialog > p","template":"一つの部屋は{0}。{1}を一つずつ入れます。","children":[{"tag":"strong","sourceTextTemplate":"{0}マス"},{"tag":"strong","sourceTextTemplate":"{1}"}]},{"selector":"#app .proto-rules > li","template":"{0}、マスの中心を通る道を引きます。途中で{1}通ります。","children":[{"tag":"strong","sourceTextTemplate":"○から□まで"},{"tag":"strong","sourceTextTemplate":"△を一つ"}]},{"selector":"#app .proto-rules > li","template":"どの道も、○と□を含めて{0}。上下左右に進みます。","children":[{"tag":"strong","sourceTextTemplate":"6マス"}]},{"selector":"#app .proto-rules > li","template":"{0}使います。道の交差・枝分かれ・合流はできません。","children":[{"tag":"strong","sourceTextTemplate":"全マスを一度ずつ","contextTextTranslations":{"en":"every cell exactly once","zh-Hans":"所有格子，且每格恰好一次","zh-Hant":"所有格子，且每格恰好一次","ko":"모든 칸을 정확히 한 번씩","es":"cada casilla exactamente una vez","fr":"chaque case exactement une fois","de":"jede Zelle genau einmal","pt":"cada célula exatamente uma vez"}}]},{"selector":"#app .proto-rules > li","template":"どの部屋も{0}。上下左右につながる形にします。","children":[{"tag":"strong","sourceTextTemplate":"{0}マス"}]},{"selector":"#app .proto-rules > li","template":"どの部屋にも{0}入れ、全マスを使います。","children":[{"tag":"strong","sourceTextTemplate":"{0}を一つずつ","contextTextTranslations":{"en":"one of each ({0})","zh-Hans":"{0}各一个","zh-Hant":"{0}各一個","ko":"각 항목을 하나씩({0})","es":"un ejemplar de cada elemento ({0})","fr":"un exemplaire de chaque élément ({0})","de":"von jedem dieser Zeichen genau eines ({0})","pt":"um exemplar de cada elemento ({0})"}}]},{"selector":"#app p.proto-brief","template":"{0} · 一つの道は {1}","children":[{"tag":"b","sourceTextTemplate":"○ → △ → □"},{"tag":"b","sourceTextTemplate":"6マス"}]},{"selector":"#app p.proto-brief","template":"各部屋は {0}・{1}","children":[{"tag":"b","sourceTextTemplate":"{0}マス"},{"tag":"b","sourceTextTemplate":"{1} を一つずつ","contextTextTranslations":{"en":"one of each ({1})","zh-Hans":"{1}各一个","zh-Hant":"{1}各一個","ko":"각 항목이 하나씩({1})","es":"un ejemplar de cada elemento ({1})","fr":"un exemplaire de chaque élément ({1})","de":"von jedem dieser Zeichen genau eines ({1})","pt":"um exemplar de cada elemento ({1})"}}]},{"selector":"#dialog > p","template":"上の天秤はつり合っています。{0}なので、▲ひとつは ●ふたつ分の重さです。","children":[{"tag":"b","sourceTextTemplate":"●● と ▲ は同じ重さ"}]},{"selector":"#app .neighbor-rules > p","template":"×印のすぐ周りの4マスは、{0}になるようにします。","children":[{"tag":"b","sourceTextTemplate":"左上＋右下＝右上＋左下"}]},{"selector":"#app p","template":"保存している問題：{0}","children":[{"tag":"b","sourceTextTemplate":"{0} 問"}]},{"selector":"p.selection-count","template":"条件に合う問題 {0} ／ この中で選択済み {1}","children":[{"tag":"b","sourceTextTemplate":"{0}問"},{"tag":"span","sourceTextTemplate":"{0}問"}]},{"selector":"p.selection-count","template":"条件に合う問題 {0} ／ この中で選択済み {1}{2}条件の外でも {3} 選択中","children":[{"tag":"b","sourceTextTemplate":"{0}問"},{"tag":"span","sourceTextTemplate":"{0}問"},{"tag":"br","sourceTextTemplate":""},{"tag":"span","sourceTextTemplate":"{0}問"}]}],"messages":{"読み込み中…":{"ja":"読み込み中…","en":"Loading…","zh-Hans":"正在加载…","zh-Hant":"正在載入…","ko":"불러오는 중…","es":"Cargando…","fr":"Chargement…","de":"Wird geladen…","pt":"Carregando…"},"表示を読み込めませんでした。通信を確認して、もう一度お試しください。":{"ja":"表示を読み込めませんでした。通信を確認して、もう一度お試しください。","en":"The display could not be loaded. Check your connection and try again.","zh-Hans":"无法加载界面。请检查网络连接后重试。","zh-Hant":"無法載入畫面。請檢查網路連線後再試一次。","ko":"화면을 불러오지 못했습니다. 인터넷 연결을 확인한 후 다시 시도해 주세요.","es":"No se pudo cargar la pantalla. Comprueba la conexión e inténtalo de nuevo.","fr":"Impossible de charger l’affichage. Vérifiez votre connexion et réessayez.","de":"Die Anzeige konnte nicht geladen werden. Prüfe deine Verbindung und versuche es erneut.","pt":"Não foi possível carregar a tela. Verifique a conexão e tente novamente."},"もう一度読み込む":{"ja":"もう一度読み込む","en":"Try loading again","zh-Hans":"重新加载","zh-Hant":"重新載入","ko":"다시 불러오기","es":"Volver a cargar","fr":"Réessayer le chargement","de":"Erneut laden","pt":"Carregar novamente"}}});

@@ -5,12 +5,20 @@
   const names = {ja:'日本語',en:'English','zh-Hans':'简体中文','zh-Hant':'繁體中文',ko:'한국어',es:'Español',fr:'Français',de:'Deutsch',pt:'Português'};
   const htmlLanguage = value => value === 'zh-Hans' ? 'zh-CN' : value === 'zh-Hant' ? 'zh-TW' : value;
   const normalized = value => String(value).replace(/\s+/g, ' ').trim();
+  // Literal puzzle values, counts and identifiers are data. In particular, the
+  // decorative logo translation 数 → 9 must never reverse-map a real digit.
+  const numericLiteral = value => /^[+−-]?[0-9０-９]+(?:[.,．，][0-9０-９]+)*(?:\s*[%％])?$/u.test(normalized(value));
   const japanese = /[\u3040-\u30ff\u3400-\u9fff]/;
   const sourceText = new WeakMap(), sourceAttributes = new WeakMap();
   const pending = new Set(), missing = new Set();
   const reactSources = new Map();
   const catalog = w.NPTranslations || {};
+  const assets = w.NPTranslationAssets;
+  const loaded = new Set(assets ? ['ja'] : Object.keys(names)), loading = new Map();
   let current = 'ja', observer, scheduled = false, dirty = true;
+  let requestNumber = 0, initialComplete = false, loadingFailed = false;
+  let resolveReady;
+  const ready = new Promise(resolve => { resolveReady = resolve; });
   let exact = new Map(), reverse = new Map(), patterns = [];
   const own = (object,key) => Object.prototype.hasOwnProperty.call(object,key);
   const language = value => {
@@ -32,6 +40,34 @@
       target[key] = {...value,...target[key]}; dirty = true; return true;
     }
   });
+  function load(value) {
+    const next=language(value);if(!next)return Promise.reject(new Error('Unknown language'));
+    if(loaded.has(next))return Promise.resolve();
+    if(loading.has(next))return loading.get(next);
+    const request=assets.load(next).then(pack=>{
+      // A reviewed pack takes priority over late English-only registrations.
+      for(const[key,text]of Object.entries(pack))catalog[key]={...catalog[key],[next]:text};
+      loaded.add(next);dirty=true;loading.delete(next);
+    },error=>{loading.delete(next);throw error});
+    loading.set(next,request);return request;
+  }
+  function loadingMessage(source) {
+    return assets?.messages?.[source]?.[current]||source;
+  }
+  function showLoading() {
+    document.documentElement.setAttribute('data-i18n-loading','');
+    if(!document.body)return;
+    let panel=document.getElementById('np-i18n-load');
+    if(!panel){panel=document.createElement('section');panel.id='np-i18n-load';panel.setAttribute('translate','no');panel.setAttribute('role','status');document.body.appendChild(panel)}
+    panel.replaceChildren();
+    const message=document.createElement('p');message.textContent=loadingMessage(loadingFailed?'表示を読み込めませんでした。通信を確認して、もう一度お試しください。':'読み込み中…');panel.appendChild(message);
+    if(loadingFailed){const retry=document.createElement('button');retry.type='button';retry.textContent=loadingMessage('もう一度読み込む');retry.onclick=()=>{loadingFailed=false;showLoading();set(current)};panel.appendChild(retry)}
+  }
+  function finishLoading() {
+    if(!loaded.has(current))return;
+    apply();document.documentElement.removeAttribute('data-i18n-loading');document.getElementById('np-i18n-load')?.remove();
+    if(!initialComplete){initialComplete=true;resolveReady()}
+  }
   const escapeRE = value => value.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
   function rebuild() {
     if (!dirty) return;
@@ -41,7 +77,7 @@
       exact.set(source,{source:key,translations});
       for(const translated of Object.values(translations)) {
         const value=normalized(translated);
-        if(value&&!reverse.has(value))reverse.set(value,key);
+        if(value&&!numericLiteral(value)&&!reverse.has(value))reverse.set(value,key);
       }
       const tokens = [...source.matchAll(/\{([a-zA-Z0-9_]+)\}/g)];
       const numericUnit=/^(?:\{[a-zA-Z0-9_]+\}\s*(?:問|件|回|個|枚|面|秒|分|行|列|枠)|枠\{[a-zA-Z0-9_]+\})$/.test(source);
@@ -60,6 +96,7 @@
     dirty=false;
   }
   function canonical(value,element) {
+    if(numericLiteral(value))return value;
     rebuild();const key=normalized(value);
     const source=element?.closest('#root')?reactSources.get(current)?.get(key):undefined;
     if(source!==undefined)return String(value).replace(key,source);
@@ -135,7 +172,7 @@
         if(values.some((part,index)=>part!==parts[index]))return values.join(separator.source.includes('n')?'\n':' · ');
       }
     }
-    if(missing.size<3000)missing.add(key);
+    if(loaded.has(locale)&&missing.size<3000)missing.add(key);
     return raw;
   }
 
@@ -252,42 +289,65 @@
     root.querySelectorAll?.('[placeholder],[aria-label],[aria-description],[title],[alt],[data-tooltip],input[type="submit"],input[type="button"],input[type="reset"]').forEach(elementAttributes);
   }
   function watch() {
-    observer?.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:attributes});
+    if(document.body)observer?.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:attributes});
+  }
+  function failed(error) {
+    // Keep failures inspectable even when a parent catches a frame's exception.
+    document.documentElement.dataset.i18nError=error?.stack||String(error);
   }
   function apply() {
-    if(!document.body)return;
-    observer?.disconnect();rebuild();
-    document.documentElement.lang=htmlLanguage(current);
-    document.documentElement.dataset.locale=current;
-    const languageButton=document.getElementById('np-language-open');
-    if(languageButton){languageButton.textContent='🌐 '+translate('言語');languageButton.setAttribute('translate','no')}
-    walk(document.body);
-    const title=document.querySelector('title');
-    if(title){let entry=sourceText.get(title);if(!entry||entry.rendered!==title.textContent)entry={source:title.textContent};title.textContent=translate(entry.source);entry.rendered=title.textContent;sourceText.set(title,entry)}
-    const description=document.querySelector('meta[name="description"]');
-    if(description){let entry=sourceText.get(description);if(!entry||entry.rendered!==description.content)entry={source:description.content};description.content=translate(entry.source);entry.rendered=description.content;sourceText.set(description,entry)}
-    watch();
+    if(!document.body||!loaded.has(current))return;
+    observer?.disconnect();
+    try{
+      rebuild();document.documentElement.lang=htmlLanguage(current);
+      document.documentElement.dataset.locale=current;
+      const languageButton=document.getElementById('np-language-open');
+      if(languageButton){languageButton.textContent='🌐 '+translate('言語');languageButton.setAttribute('translate','no')}
+      walk(document.body);
+      const title=document.querySelector('title');
+      if(title){let entry=sourceText.get(title);if(!entry||entry.rendered!==title.textContent)entry={source:title.textContent};title.textContent=translate(entry.source);entry.rendered=title.textContent;sourceText.set(title,entry)}
+      const description=document.querySelector('meta[name="description"]');
+      if(description){let entry=sourceText.get(description);if(!entry||entry.rendered!==description.content)entry={source:description.content};description.content=translate(entry.source);entry.rendered=description.content;sourceText.set(description,entry)}
+    }catch(error){failed(error);throw error}finally{watch()}
   }
-  function changed(records) {
+  function queue(records) {
     for(const record of records) {
       if(record.type==='childList')for(const node of record.addedNodes)pending.add(node);
       else pending.add(record.target);
     }
-    if(scheduled)return;scheduled=true;
+  }
+  function changed(records) {
+    queue(records);
+    if(scheduled||!pending.size)return;scheduled=true;
     requestAnimationFrame(()=>{
-      scheduled=false;observer?.disconnect();
-      for(const node of pending)if(node.isConnected)walk(node);
-      pending.clear();watch();
+      scheduled=false;
+      // Another render callback can write attributes before this frame runs.
+      // Preserve those queued records before disconnect() would discard them.
+      queue(observer?.takeRecords()||[]);observer?.disconnect();
+      const nodes=[...pending];pending.clear();
+      try{for(const node of nodes)if(node.isConnected)walk(node)}
+      catch(error){failed(error);throw error}finally{watch()}
     });
   }
-  function set(value) {
-    const next=language(value);if(!next)throw new Error('Unknown language');
+  function commit(next) {
     w.NPFurigana?.beforeLanguageChange();current=next;missing.clear();
     try{localStorage.setItem(languageKey,next)}catch(_){}
     if(w.NPStorage?.meta){w.NPStorage.meta.setItem(languageKey,next);w.NPStorage.flush().catch(()=>{})}
-    apply();
+    finishLoading();
     w.dispatchEvent(new CustomEvent('np-language-change',{detail:{locale:next}}));
     for(const frame of document.querySelectorAll('iframe'))try{if(frame.contentWindow?.NPI18n&&frame.contentWindow.NPI18n.get()!==next)frame.contentWindow.NPI18n.set(next)}catch(_){}
+    return true;
+  }
+  function set(value) {
+    const next=language(value);if(!next)throw new Error('Unknown language');
+    const request=++requestNumber;
+    if(loaded.has(next))return commit(next);
+    return load(next).then(()=>request===requestNumber?commit(next):false,error=>{
+      if(request!==requestNumber)return false;
+      if(!initialComplete){loadingFailed=true;showLoading()}
+      else w.alert?.(translate('表示を読み込めませんでした。通信を確認して、もう一度お試しください。'));
+      return false;
+    });
   }
   function show() {
     let dialog=document.getElementById('np-language-dialog');
@@ -297,7 +357,7 @@
     const label=document.createElement('label');label.htmlFor='np-language-select';label.textContent=translate('言語');dialog.appendChild(label);
     const select=document.createElement('select');select.id='np-language-select';select.setAttribute('translate','no');
     for(const [code,name]of Object.entries(names)){const option=document.createElement('option');option.value=code;option.textContent=name;option.lang=htmlLanguage(code);select.appendChild(option)}
-    select.value=current;select.onchange=()=>{set(select.value);show()};dialog.appendChild(select);
+    select.value=current;select.onchange=()=>{select.disabled=true;Promise.resolve(set(select.value)).then(()=>{if(dialog.open)show()})};dialog.appendChild(select);
     for(const source of ['この設定は端末に保存されます。','クロスワードの単語・ヒントは日本語です。']){const p=document.createElement('p');p.textContent=translate(source);dialog.appendChild(p)}
     const close=document.createElement('button');close.type='button';close.textContent=translate('閉じる');close.onclick=()=>dialog.close();dialog.appendChild(close);
     if(!dialog.open)dialog.showModal();
@@ -310,9 +370,9 @@
   function start() {
     const style=document.createElement('style');
     style.textContent='#np-language-bar{box-sizing:border-box;max-width:1040px;margin:0 auto;padding:8px 14px;display:flex;justify-content:flex-end}#np-language-bar button{width:auto;min-height:44px;padding:8px 14px;border:1px solid #cbd8ce;border-radius:12px;background:#fff;color:#285849;font:600 15px/1.4 system-ui;cursor:pointer}#np-language-dialog{box-sizing:border-box;max-width:520px;width:calc(100% - 24px);max-height:88dvh;overflow:auto;border:1px solid #bdd0c3;border-radius:20px;padding:24px;background:#fffef9;color:#243c34;font:17px/1.6 system-ui}#np-language-dialog select,#np-language-dialog button{width:100%;min-height:48px;padding:10px;font:inherit;box-sizing:border-box}#np-language-dialog::backdrop{background:#0006}html:not([data-locale="ja"]) .choice .text,html:not([data-locale="ja"]) button{overflow-wrap:anywhere;min-width:0}html:not([data-locale="ja"]) .choice strong{font-size:clamp(18px,4.8vw,24px);line-height:1.35}html:not([data-locale="ja"]) .top{flex-wrap:wrap}html:not([data-locale="ja"]) .top .back{white-space:normal}@media print{#np-language-bar,#np-language-dialog{display:none!important}}';
-    document.head.appendChild(style);addBar();observer=new MutationObserver(changed);apply();
+    document.head.appendChild(style);addBar();observer=new MutationObserver(changed);if(loaded.has(current))finishLoading();else showLoading();
   }
-  w.NPI18n={t:translate,react:reactTranslate,set,get:()=>current,names,apply,show,htmlLanguage,missing:()=>[...missing],closeIfOpen:()=>{const dialog=document.getElementById('np-language-dialog');if(!dialog?.open)return false;dialog.close();return true}};
+  w.NPI18n={t:translate,react:reactTranslate,set,load,ready,get:()=>current,names,apply,show,htmlLanguage,missing:()=>[...missing],closeIfOpen:()=>{const dialog=document.getElementById('np-language-dialog');if(!dialog?.open)return false;dialog.close();return true}};
   // Alerts and canvas labels do not pass through a DOM text node.
   for(const method of ['alert','confirm','prompt']) {
     const original=w[method]?.bind(w);
@@ -324,5 +384,12 @@
   }
   w.addEventListener('beforeprint',apply);
   w.addEventListener('storage',event=>{if(event.key===languageKey&&language(event.newValue)&&current!==language(event.newValue))set(event.newValue)});
+  if(!loaded.has(current)){
+    // Installed while parsing the head, before untranslated content can paint.
+    const style=document.createElement('style');style.textContent='html[data-i18n-loading] body>*:not(#np-i18n-load){visibility:hidden!important}#np-i18n-load{box-sizing:border-box;max-width:36rem;margin:10vh auto;padding:24px;font:17px/1.6 system-ui;color:#243c34;background:#fffef9;border:1px solid #cbd8ce;border-radius:16px;text-align:center}#np-i18n-load button{min-height:44px;padding:10px 18px;font:inherit;cursor:pointer}';document.head.appendChild(style);
+    document.documentElement.setAttribute('data-i18n-loading','');
+    const request=++requestNumber;
+    load(current).then(()=>{if(request===requestNumber)finishLoading()},()=>{if(request===requestNumber){loadingFailed=true;showLoading()}});
+  }else finishLoading();
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })(window);

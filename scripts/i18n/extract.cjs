@@ -2,7 +2,7 @@ const fs=require('fs'),path=require('path'),cp=require('child_process');
 // node scripts/i18n/extract.cjs /path/to/source /tmp/nanpure-string-audit
 const source=path.resolve(process.argv[2]||''),work=path.resolve(process.argv[3]||'/tmp/nanpure-string-audit'),repo=path.resolve(__dirname,'../..');fs.mkdirSync(work,{recursive:true});
 const ts=require(path.join(source,'node_modules/typescript'));
-const catalog=JSON.parse(fs.readFileSync(path.join(__dirname,'catalog.json'),'utf8'));
+const catalog=require('./catalog.cjs');
 const references={};
 const jp=/[ぁ-ゖァ-ヺ一-鿿]/;
 const fresh={},dynamic={},fragments=[],excluded=[],normalization=[];

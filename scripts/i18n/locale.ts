@@ -1,4 +1,3 @@
-import catalog from './ui-translations.json';
 import type {DailyKind,DailySummary} from './daily-types';
 export const languageNames={ja:'日本語',en:'English','zh-Hans':'简体中文','zh-Hant':'繁體中文',ko:'한국어',es:'Español',fr:'Français',de:'Deutsch',pt:'Português'} as const;
 export type Locale=keyof typeof languageNames;
@@ -18,8 +17,9 @@ export function detectLocale(header:string):Locale{
 export function translate(locale:Locale,source:string,params:Record<string,string|number>={}){
  const runtime=typeof window!=='undefined'?(window as any).NPI18n:null;
  if(runtime)return (runtime.react||runtime.t)(source,locale,params);
- const values=(catalog as Record<string,Partial<Record<Locale,string>>>)[source];const text=locale==='ja'?source:values?.[locale]||source;
- return text.replace(/\{(\w+)\}/g,(all,key)=>Object.hasOwn(params,key)?String(params[key]):all);
+ // The static export waits for NPI18n.ready before rendering. Keeping the full
+ // legacy catalog here would put every language back into the main bundle.
+ return source.replace(/\{(\w+)\}/g,(all,key)=>Object.hasOwn(params,key)?String(params[key]):all);
 }
 export function levelLabel(locale:Locale,level:number){return translate(locale,['簡単','普通','難問'][level-1]||'普通')}
 export function ruleLabel(locale:Locale,kind:DailyKind){return translate(locale,({normal:'通常ナンプレ',jigsaw:'ジグソー',killer:'キラー',neighbor:'おとなり'})[kind])}

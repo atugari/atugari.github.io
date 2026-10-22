@@ -1,0 +1,212 @@
+{
+  "もう一度読み込む": {
+    "en": "Try loading again",
+    "zh-Hans": "重新加载",
+    "zh-Hant": "重新載入",
+    "ko": "다시 불러오기",
+    "es": "Volver a cargar",
+    "fr": "Réessayer le chargement",
+    "de": "Erneut laden",
+    "pt": "Carregar novamente"
+  },
+  "盤面を縮小する": {
+    "en": "Zoom out",
+    "zh-Hans": "缩小棋盘",
+    "zh-Hant": "縮小盤面",
+    "ko": "판 축소",
+    "es": "Alejar el tablero",
+    "fr": "Réduire la grille",
+    "de": "Gitter verkleinern",
+    "pt": "Diminuir o tabuleiro"
+  },
+  "盤面を拡大する": {
+    "en": "Zoom in",
+    "zh-Hans": "放大棋盘",
+    "zh-Hant": "放大盤面",
+    "ko": "판 확대",
+    "es": "Acercar el tablero",
+    "fr": "Agrandir la grille",
+    "de": "Gitter vergrößern",
+    "pt": "Ampliar o tabuleiro"
+  },
+  "一時停止": {
+    "en": "Paused",
+    "zh-Hans": "已暂停",
+    "zh-Hant": "已暫停",
+    "ko": "일시 정지됨",
+    "es": "En pausa",
+    "fr": "En pause",
+    "de": "Pausiert",
+    "pt": "Em pausa"
+  },
+  "一時停止する": {
+    "en": "Pause",
+    "zh-Hans": "暂停",
+    "zh-Hant": "暫停",
+    "ko": "일시 정지",
+    "es": "Pausar",
+    "fr": "Mettre en pause",
+    "de": "Pausieren",
+    "pt": "Pausar"
+  },
+  "倍率を100%に戻す": {
+    "en": "Reset zoom to 100%",
+    "zh-Hans": "将缩放重置为100%",
+    "zh-Hant": "將縮放重設為100%",
+    "ko": "배율을 100%로 초기화",
+    "es": "Restablecer el zoom al 100%",
+    "fr": "Rétablir le zoom à 100 %",
+    "de": "Zoom auf 100 % zurücksetzen",
+    "pt": "Redefinir o zoom para 100%"
+  },
+  "盤面全体を表示する": {
+    "en": "Fit the whole grid on screen",
+    "zh-Hans": "将整个棋盘适配到屏幕",
+    "zh-Hant": "將整個盤面縮放至螢幕內",
+    "ko": "판 전체를 화면에 맞추기",
+    "es": "Ajustar todo el tablero a la pantalla",
+    "fr": "Adapter toute la grille à l’écran",
+    "de": "Gesamtes Gitter an den Bildschirm anpassen",
+    "pt": "Ajustar todo o tabuleiro à tela"
+  },
+  "全体を表示": {
+    "en": "Fit board",
+    "zh-Hans": "显示全盘",
+    "zh-Hant": "顯示全盤",
+    "ko": "전체 보기",
+    "es": "Ajustar tablero",
+    "fr": "Vue entière",
+    "de": "Ganzes Gitter",
+    "pt": "Ver tabuleiro inteiro"
+  },
+  "100%は標準の大きさです。盤面がはみ出すときは「全体を表示」で画面に合わせられます。": {
+    "en": "100% is the standard size. If the grid extends beyond the screen, choose “Fit board” to see the whole grid.",
+    "zh-Hans": "100%为标准大小。如果棋盘超出屏幕，可选择“显示全盘”以适配屏幕。",
+    "zh-Hant": "100%為標準大小。如果盤面超出螢幕，可選擇「顯示全盤」以配合螢幕大小。",
+    "ko": "100%는 기본 크기입니다. 판이 화면을 벗어나면 “전체 보기”를 선택해 화면에 맞출 수 있습니다.",
+    "es": "El 100% es el tamaño estándar. Si el tablero no cabe en la pantalla, elige «Ajustar tablero» para verlo completo.",
+    "fr": "100 % correspond à la taille standard. Si la grille dépasse l’écran, choisissez « Vue entière » pour la voir en entier.",
+    "de": "100 % entspricht der Standardgröße. Wenn das Gitter über den Bildschirm hinausragt, wähle „Ganzes Gitter“, um es vollständig zu sehen.",
+    "pt": "100% é o tamanho padrão. Se o tabuleiro ultrapassar a tela, escolha “Ver tabuleiro inteiro” para ajustá-lo."
+  },
+  "マウスホイールはスクロール、Ctrlまたは⌘を押しながら回すと拡大・縮小します。": {
+    "en": "Use the mouse wheel to scroll. Hold Ctrl or ⌘ while scrolling to zoom.",
+    "zh-Hans": "滚动鼠标滚轮可移动视图。按住Ctrl或⌘并滚动可缩放。",
+    "zh-Hant": "滾動滑鼠滾輪可移動視圖。按住Ctrl或⌘並滾動可縮放。",
+    "ko": "마우스 휠로 스크롤합니다. Ctrl 또는 ⌘를 누른 채 휠을 돌리면 확대·축소됩니다.",
+    "es": "Usa la rueda del ratón para desplazarte. Mantén pulsado Ctrl o ⌘ al girarla para ampliar o reducir.",
+    "fr": "La molette de la souris fait défiler la vue. Maintenez Ctrl ou ⌘ en la tournant pour zoomer.",
+    "de": "Mit dem Mausrad scrollst du. Halte beim Scrollen Strg oder ⌘ gedrückt, um zu zoomen.",
+    "pt": "Use a roda do mouse para rolar. Segure Ctrl ou ⌘ enquanto rola para ampliar ou reduzir."
+  },
+  "表示を読み込めませんでした。通信を確認して、もう一度お試しください。": {
+    "en": "The display could not be loaded. Check your connection and try again.",
+    "zh-Hans": "无法加载界面。请检查网络连接后重试。",
+    "zh-Hant": "無法載入畫面。請檢查網路連線後再試一次。",
+    "ko": "화면을 불러오지 못했습니다. 인터넷 연결을 확인한 후 다시 시도해 주세요.",
+    "es": "No se pudo cargar la pantalla. Comprueba la conexión e inténtalo de nuevo.",
+    "fr": "Impossible de charger l’affichage. Vérifiez votre connexion et réessayez.",
+    "de": "Die Anzeige konnte nicht geladen werden. Prüfe deine Verbindung und versuche es erneut.",
+    "pt": "Não foi possível carregar a tela. Verifique a conexão e tente novamente."
+  },
+  "問題帳を読み込んでいます…": {
+    "en": "Loading the puzzle book…",
+    "zh-Hans": "正在加载题集…",
+    "zh-Hant": "正在載入題集…",
+    "ko": "문제집을 불러오는 중…",
+    "es": "Cargando el cuaderno de puzles…",
+    "fr": "Chargement du cahier de grilles…",
+    "de": "Rätselheft wird geladen…",
+    "pt": "Carregando o caderno de passatempos…"
+  },
+  "読み込みに時間がかかっています。": {
+    "en": "Loading is taking longer than usual.",
+    "zh-Hans": "加载时间比平时长。",
+    "zh-Hant": "載入時間比平常長。",
+    "ko": "불러오는 데 평소보다 오래 걸리고 있습니다.",
+    "es": "La carga está tardando más de lo habitual.",
+    "fr": "Le chargement prend plus de temps que prévu.",
+    "de": "Das Laden dauert länger als üblich.",
+    "pt": "O carregamento está demorando mais que o normal."
+  },
+  "再読み込み": {
+    "en": "Reload",
+    "zh-Hans": "重新加载",
+    "zh-Hant": "重新載入",
+    "ko": "새로고침",
+    "es": "Volver a cargar",
+    "fr": "Recharger",
+    "de": "Neu laden",
+    "pt": "Recarregar"
+  },
+  "数字表示と操作性・読み込みを改善しました": {
+    "en": "Improved number display, controls and loading",
+    "zh-Hans": "改进了数字显示、操作和加载",
+    "zh-Hant": "改善了數字顯示、操作與載入",
+    "ko": "숫자 표시, 조작 및 로딩을 개선했습니다",
+    "es": "Mejoras en la visualización de números, los controles y la carga",
+    "fr": "Amélioration de l’affichage des chiffres, des commandes et du chargement",
+    "de": "Zahlenanzeige, Bedienung und Ladezeiten verbessert",
+    "pt": "Melhorias na exibição de números, nos controles e no carregamento"
+  },
+  "言語を切り替えても、盤面・数字ボタン・印刷の数字が変わらないようにしました。": {
+    "en": "Numbers on the grid, number buttons and printouts now stay the same when you change languages.",
+    "zh-Hans": "切换语言时，棋盘、数字按钮和打印内容中的数字现在会保持不变。",
+    "zh-Hant": "切換語言時，盤面、數字按鈕與列印內容中的數字現在會保持不變。",
+    "ko": "언어를 바꾸어도 판, 숫자 버튼, 인쇄물의 숫자가 그대로 유지되도록 했습니다.",
+    "es": "Los números del tablero, los botones numéricos y las impresiones ahora se mantienen al cambiar de idioma.",
+    "fr": "Les chiffres de la grille, des touches numériques et des impressions restent désormais inchangés lorsque vous changez de langue.",
+    "de": "Beim Sprachwechsel bleiben die Zahlen im Gitter, auf den Zahlentasten und auf Ausdrucken jetzt unverändert.",
+    "pt": "Os números no tabuleiro, nos botões numéricos e nas impressões agora permanecem iguais ao mudar de idioma."
+  },
+  "ヒントの重なりをなくし、設定と拡大表示を整理しました。": {
+    "en": "Hints no longer overlap, and settings and zoom controls are easier to use.",
+    "zh-Hans": "修复了提示重叠的问题，并整理了设置和缩放控件。",
+    "zh-Hant": "修正了提示重疊的問題，並整理了設定與縮放控制。",
+    "ko": "힌트가 겹치지 않도록 수정하고 설정과 확대·축소 기능을 정리했습니다.",
+    "es": "Las pistas ya no se superponen y los ajustes y controles de zoom son más fáciles de usar.",
+    "fr": "Les indices ne se chevauchent plus, et les réglages ainsi que les commandes de zoom sont plus faciles à utiliser.",
+    "de": "Hinweise überlappen sich nicht mehr. Einstellungen und Zoom-Steuerung wurden übersichtlicher gestaltet.",
+    "pt": "As dicas não se sobrepõem mais, e as configurações e os controles de zoom ficaram mais fáceis de usar."
+  },
+  "問題帳は必要なときに読み込み、大きな盤面の入力を軽くしました。": {
+    "en": "The puzzle book now loads when needed, and entering numbers on large grids is faster.",
+    "zh-Hans": "题集现在仅在需要时加载，大棋盘上的数字输入也更加流畅。",
+    "zh-Hant": "題集現在只在需要時載入，大型盤面上的數字輸入也更加流暢。",
+    "ko": "문제집은 필요할 때 불러오며, 큰 판에서 숫자를 입력할 때의 반응 속도를 개선했습니다.",
+    "es": "El cuaderno de puzles ahora se carga cuando hace falta y la introducción de números en tableros grandes es más rápida.",
+    "fr": "Le cahier de grilles se charge désormais à la demande, et la saisie de chiffres sur les grandes grilles est plus rapide.",
+    "de": "Das Rätselheft wird jetzt bei Bedarf geladen. Die Zahleneingabe in großen Gittern ist schneller.",
+    "pt": "O caderno de passatempos agora é carregado quando necessário, e a entrada de números em tabuleiros grandes ficou mais rápida."
+  },
+  "プレイ画面を整理し、数字ボタンを正方形に近い形にしました。": {
+    "en": "Simplified the play screen and made the number keys nearly square.",
+    "zh-Hans": "简化了游戏画面，并将数字按键调整为接近正方形。",
+    "zh-Hant": "簡化了遊戲畫面，並將數字按鍵調整為接近正方形。",
+    "ko": "플레이 화면을 정리하고 숫자 버튼을 정사각형에 가깝게 바꿨습니다.",
+    "es": "Simplificamos la pantalla de juego e hicimos que las teclas numéricas sean casi cuadradas.",
+    "fr": "L’écran de jeu a été simplifié et les touches numériques sont désormais presque carrées.",
+    "de": "Der Spielbildschirm wurde vereinfacht und die Zahlentasten sind jetzt nahezu quadratisch.",
+    "pt": "Simplificamos a tela de jogo e deixamos as teclas numéricas quase quadradas."
+  },
+  "数字の下の残り個数をなくし、長押し中はキーの上に数字を表示します。": {
+    "en": "Removed the remaining counts below the numbers. Holding a key shows its number above it.",
+    "zh-Hans": "移除了数字下方的剩余数量。长按按键时，会在按键上方显示数字。",
+    "zh-Hant": "移除了數字下方的剩餘數量。長按按鍵時，會在按鍵上方顯示數字。",
+    "ko": "숫자 아래의 남은 개수 표시를 없앴습니다. 버튼을 길게 누르면 위쪽에 숫자가 표시됩니다.",
+    "es": "Quitamos las cantidades restantes bajo los números. Al mantener pulsada una tecla, su número aparece encima.",
+    "fr": "Les quantités restantes sous les chiffres ont été retirées. Un appui long affiche le chiffre au-dessus de la touche.",
+    "de": "Die Restanzahl unter den Zahlen wurde entfernt. Bei langem Drücken erscheint die Zahl über der Taste.",
+    "pt": "Removemos as quantidades restantes abaixo dos números. Ao manter uma tecla pressionada, o número aparece acima dela."
+  },
+  "16×16以上の日替わり盤面を、数字が読みやすい大きさにしました。": {
+    "en": "Daily boards of 16×16 and larger now use a size that makes the numbers easier to read.",
+    "zh-Hans": "将16×16及更大的每日棋盘调整为更便于阅读数字的尺寸。",
+    "zh-Hant": "將16×16及更大的每日棋盤調整為更便於閱讀數字的尺寸。",
+    "ko": "16×16 이상의 일일 퍼즐은 숫자를 읽기 쉬운 크기로 표시합니다.",
+    "es": "Los tableros diarios de 16×16 o más ahora tienen un tamaño que facilita la lectura de los números.",
+    "fr": "Les grilles quotidiennes de 16×16 ou plus s’affichent désormais à une taille qui facilite la lecture des chiffres.",
+    "de": "Tägliche Rätsel ab 16×16 werden jetzt so groß angezeigt, dass die Zahlen leichter lesbar sind.",
+    "pt": "Os tabuleiros diários de 16×16 ou maiores agora usam um tamanho que facilita a leitura dos números."
+  }
+}

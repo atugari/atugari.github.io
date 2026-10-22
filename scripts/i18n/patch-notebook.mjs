@@ -9,11 +9,13 @@ export function patchNotebook(directory) {
     if(source.split(from).length!==2)throw new Error(`Localization patch must match once: ${file}: ${from.slice(0,80)}`);
     fs.writeFileSync(target,source.replace(from,to));
   }
+  // The notebook home inlines a copy of KIND, while print.html uses common.js.
+  // A type label must not reuse the difficulty key "ふつう" (Medium).
+  replace('index.html','normal:{name:"ふつうのナンプレ",short:"ふつう"','normal:{name:"ふつうのナンプレ",short:"通常ナンプレ"');
   replace('visual-hints.js','const n=t=>e.NPI18n?e.NPI18n.t(t):t','const n=t=>t');
   replace('access-tools.js','const t=s=>window.NPI18n?.t(s)||s;','const t=s=>s;');
   replace('play-options.js','function t(s){return window.NPI18n?.t(s)||s}','function t(s){return s}');
   replace('app.js','u(window.NPI18n?NPI18n.t("ミス"):"ミス")','u("ミス")');
-  replace('app.js','u(window.NPI18n?NPI18n.t("残り"):"残り")','u("残り")');
   replace('app.js','Ue(e+" <small>問</small>","pick-count"','Ue(e+" 問","pick-count"');
 
   // Keep the variable print counts inside preserved inline slots.
