@@ -73,6 +73,7 @@ public final class MainActivity extends Activity {
     private static final int AMBER = 0xffa36a1f, AMBER_BG = 0xfffff2d9, ERROR = 0xffa24338;
     private static final NumberFormat NUM = NumberFormat.getIntegerInstance(Locale.JAPAN);
     private static final ZoneId TOKYO = ZoneId.of("Asia/Tokyo");
+    private static final ZoneId UTC = ZoneId.of("UTC");
     private static final DateTimeFormatter DATE = DateTimeFormatter.ofPattern("M/d HH:mm", Locale.JAPAN).withZone(TOKYO);
     private static final Pattern OWNER_KEY = Pattern.compile("(?<![a-fA-F0-9])[a-fA-F0-9]{64}(?![a-fA-F0-9])");
 
@@ -86,7 +87,7 @@ public final class MainActivity extends Activity {
     private JSONObject overview;
     private JSONArray inquiries = new JSONArray();
     private int tab = 0, generation = 0;
-    private boolean busy, destroyed;
+    private boolean busy, destroyed, resumed, versionStale;
     private long fetchedAt;
     private String inquiryFilter = "open";
     private JSONObject detail;
@@ -99,9 +100,14 @@ public final class MainActivity extends Activity {
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
         if (state != null) tab = Math.max(0, Math.min(4, state.getInt("tab", 0)));
         try { ownerKey = readSavedKey(); } catch (Exception ignored) { ownerKey = ""; }
-        if (ownerKey.isEmpty()) showLogin(""); else { render(); refresh(false); }
+        if (ownerKey.isEmpty()) showLogin(""); else render();
     }
 
+    @Override public void onResume() {
+        super.onResume(); resumed = true;
+        if (!ownerKey.isEmpty()) { if (!busy && overviewExpired()) refresh(false); else render(); }
+    }
+    @Override public void onPause() { resumed = false; super.onPause(); }
     @Override public void onSaveInstanceState(Bundle out) { out.putInt("tab", tab); super.onSaveInstanceState(out); }
     @Override public void onDestroy() { destroyed = true; generation++; network.shutdownNow(); main.removeCallbacksAndMessages(null); super.onDestroy(); }
     @Override public void onBackPressed() {
@@ -157,11 +163,36 @@ public final class MainActivity extends Activity {
     private String when(long ms) { return ms > 0 ? DATE.format(Instant.ofEpochMilli(ms)) : "未取得"; }
     private String whenIso(String iso) { try { return DATE.format(Instant.parse(iso)); } catch (Exception ignored) { return "未取得"; } }
     private long epoch(JSONObject o, String key) { return o == null || o.isNull(key) ? 0 : o.optLong(key); }
+    private boolean sameDay(long first, long second, ZoneId zone) {
+        return first > 0 && second > 0 && Instant.ofEpochMilli(first).atZone(zone).toLocalDate().equals(Instant.ofEpochMilli(second).atZone(zone).toLocalDate());
+    }
+    private boolean overviewExpired() {
+        long now = System.currentTimeMillis(), snapshotAt = epoch(overview, "generatedAt");
+        return overview == null || fetchedAt <= 0 || now - fetchedAt >= 60000 || !sameDay(snapshotAt, now, TOKYO) || !sameDay(snapshotAt, now, UTC);
+    }
+    private boolean trafficIsToday(JSONObject traffic) {
+        return str(traffic, "day", "").equals(Instant.now().atZone(TOKYO).toLocalDate().toString());
+    }
+    private boolean snapshotIsToday() { return sameDay(epoch(overview, "generatedAt"), System.currentTimeMillis(), TOKYO); }
+    private String metricStatus(JSONObject metric) {
+        if (!metric.has("used") || metric.isNull("used")) return "unavailable";
+        String reported = str(metric, "status", "unavailable");
+        if (!"ready".equals(reported)) return reported;
+        long measured = epoch(metric, "measuredAt"), now = System.currentTimeMillis();
+        if (measured <= 0 || now - measured > 2 * 60 * 60 * 1000L || (metric.optBoolean("daily", false) && !sameDay(measured, now, UTC))) return "stale";
+        return "ready";
+    }
+    private void updateVersion(String manifestVersion, JSONObject freshOverview) {
+        String fresh = manifestVersion.trim();
+        if (fresh.isEmpty()) fresh = str(obj(freshOverview, "site"), "version", "").trim();
+        if (!fresh.isEmpty()) { version = fresh; versionStale = false; }
+        else versionStale = !version.isEmpty();
+    }
     private String bytes(double n) {
-        if (n < 1024) return String.format(Locale.JAPAN, "%.0f B", n);
-        if (n < 1024 * 1024) return String.format(Locale.JAPAN, "%.1f KB", n / 1024);
-        if (n < 1024 * 1024 * 1024) return String.format(Locale.JAPAN, "%.1f MB", n / 1024 / 1024);
-        return String.format(Locale.JAPAN, "%.2f GB", n / 1024 / 1024 / 1024);
+        if (n < 1000) return String.format(Locale.JAPAN, "%.0f B", n);
+        if (n < 1000 * 1000) return String.format(Locale.JAPAN, "%.1f KB", n / 1000);
+        if (n < 1000 * 1000 * 1000) return String.format(Locale.JAPAN, "%.1f MB", n / 1000 / 1000);
+        return String.format(Locale.JAPAN, "%.2f GB", n / 1000 / 1000 / 1000);
     }
 
     private void showLogin(String message) {
@@ -193,16 +224,21 @@ public final class MainActivity extends Activity {
         busy = true; loginButton.setEnabled(false); loginButton.setText("接続を確認中…"); loginError.setText("");
         final int current = ++generation;
         network.execute(() -> {
-            JSONObject data = null; String error = "";
-            try { data = request(API + "/api/owner/overview", key); saveKey(key); }
+            JSONObject data = null; JSONArray items = null; String error = "", contactError = "", siteVersion = ""; long receivedAt = 0;
+            try { data = request(API + "/api/owner/overview", key); receivedAt = System.currentTimeMillis(); saveKey(key); }
             catch (Exception ex) { error = friendly(ex); }
-            final JSONObject result = data; final String message = error;
+            if (error.isEmpty() && data != null) {
+                try { items = request(API + "/api/admin", key).optJSONArray("items"); } catch (Exception ex) { contactError = "お問い合わせを取得できませんでした。更新で再試行できます。"; }
+                try { siteVersion = str(request(VERSION, null), "version", ""); } catch (Exception ignored) {}
+            }
+            final JSONObject result = data; final JSONArray newItems = items; final String message = error, contactFailure = contactError, newVersion = siteVersion; final long overviewReceivedAt = receivedAt;
             main.post(() -> {
                 if (destroyed || current != generation) return; busy = false;
                 if (!message.isEmpty()) { loginButton.setEnabled(true); loginButton.setText("接続する"); loginError.setText(message); return; }
-                ownerKey = key; overview = result; fetchedAt = System.currentTimeMillis(); problem = "";
+                ownerKey = key; overview = result; fetchedAt = overviewReceivedAt; problem = ""; inquiryProblem = contactFailure;
+                if (newItems != null) inquiries = newItems; updateVersion(newVersion, result);
                 InputMethodManager im = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE); im.hideSoftInputFromWindow(keyInput.getWindowToken(),0);
-                keyInput.setText(""); render(); refresh(false);
+                keyInput.setText(""); if (resumed) render();
             });
         });
     }
@@ -250,19 +286,22 @@ public final class MainActivity extends Activity {
     private void showHome(LinearLayout page) {
         title(page,"いまのサイト", "最終取得 " + when(fetchedAt) + " · 日本時間");
         JSONObject site=obj(overview,"site"), traffic=obj(overview,"traffic"), today=obj(traffic,"today"), contacts=obj(overview,"inquiries"), stock=obj(overview,"stock");
-        LinearLayout release=card(page); LinearLayout state=row(); TextView dot=text(!problem.isEmpty()?"● 前回の取得内容":busy?"● 更新中":"● 接続できています",13,problem.isEmpty()?GREEN:AMBER,true);state.addView(dot);add(release,state);gap(release,12);
+        boolean oldOverview = !problem.isEmpty() || (!busy && overviewExpired());
+        LinearLayout release=card(page); LinearLayout state=row(); TextView dot=text(busy?"● 更新中":oldOverview?"● 前回の取得内容":"● 接続できています",13,oldOverview?AMBER:GREEN,true);state.addView(dot);add(release,state);gap(release,12);
         add(release,text("公開バージョン",12,MUTED,false));gap(release,4);
         String currentVersion = version.isEmpty()?str(site,"version","取得できません"):version;
         TextView v=text(currentVersion,24,INK,true);v.setTextIsSelectable(true);add(release,v);gap(release,12);
+        if(versionStale)note(release,"前回確認したバージョンです。今回は最新の版を確認できませんでした。",true);
         add(release,button("サイトを開く",false,()->open(SITE)));
-        LinearLayout numbers=row(); stats(numbers,"今日の訪問端末",number(today,"browsers"),"台",false);stats(numbers,"未完了のお問い合わせ",number(contacts,"open"),"件",true);add(page,numbers);gap(page,14);
+        LinearLayout numbers=row(); stats(numbers,trafficIsToday(traffic)?"今日の訪問端末":str(traffic,"day","取得時")+"の訪問端末",number(today,"browsers"),"台",false);stats(numbers,"未完了のお問い合わせ",number(contacts,"open"),"件",true);add(page,numbers);gap(page,14);
         LinearLayout daily=card(page);add(daily,text("日替わり問題の準備",16,INK,true));gap(daily,12);
-        pair(daily,"今日の問題",number(stock,"todayCount")+" / 3問");pair(daily,"用意できている日数",number(stock,"readyDays")+"日");
+        pair(daily,snapshotIsToday()?"今日の問題":"前回取得日の問題",number(stock,"todayCount")+" / 3問");pair(daily,"用意できている日数",number(stock,"readyDays")+"日");
         pair(daily,"準備済みの日付",str(stock,"through","未取得"));
-        if(stock!=null&&stock.optInt("todayCount",-1)<3)note(daily,"今日の問題が3問そろっていません。公開処理を確認してください。",true);
+        if(!snapshotIsToday())note(daily,"日付が変わりました。今日の準備状況は更新して確認してください。",true);
+        else if(stock!=null&&stock.optInt("todayCount",-1)<3)note(daily,"今日の問題が3問そろっていません。公開処理を確認してください。",true);
         JSONObject usage=obj(overview,"usage");JSONArray metrics=usage==null?null:usage.optJSONArray("metrics");boolean near=false,missing=false;
-        if(metrics!=null)for(int i=0;i<metrics.length();i++){JSONObject m=metrics.optJSONObject(i);if(m==null)continue;if(!"ready".equals(m.optString("status"))||m.isNull("used"))missing=true;else if(m.optDouble("limit",0)>0&&m.optDouble("used",0)/m.optDouble("limit")>=.8)near=true;}
-        actionRow(page,near?"無料枠が残り少なくなっています":"無料枠の使用状況",missing?"取得できない項目があります。使用量画面で確認できます。":"サーバー・データの利用状況を確認",()->{tab=2;render();});
+        if(metrics!=null)for(int i=0;i<metrics.length();i++){JSONObject m=metrics.optJSONObject(i);if(m==null)continue;if(!"ready".equals(metricStatus(m)))missing=true;else if(m.optDouble("limit",0)>0&&m.optDouble("used",0)/m.optDouble("limit")>=.8)near=true;}
+        actionRow(page,near?"無料枠が残り少なくなっています":"無料枠の使用状況",missing?"未取得・前回の値を含みます。使用量画面で確認できます。":"サーバー・データの利用状況を確認",()->{tab=2;render();});
         actionRow(page,"お問い合わせを確認",number(contacts,"received")+"件の新着 · 全"+number(contacts,"total")+"件",()->{tab=3;render();});
         note(page,"訪問端末は、同じ日のブラウザーをまとめた目安です。人数そのものではありません。",false);
     }
@@ -277,7 +316,8 @@ public final class MainActivity extends Activity {
 
     private void showTraffic(LinearLayout page){
         JSONObject traffic=obj(overview,"traffic"),today=obj(traffic,"today");title(page,"訪問のようす",str(traffic,"day","今日")+" · 日本時間で日付を集計");
-        LinearLayout r=row();stats(r,"今日の訪問端末",number(today,"browsers"),"台",true);stats(r,"今日の訪問回数",number(today,"visits"),"回",false);add(page,r);gap(page,18);
+        boolean currentDay=trafficIsToday(traffic);LinearLayout r=row();stats(r,currentDay?"今日の訪問端末":"表示日の訪問端末",number(today,"browsers"),"台",true);stats(r,currentDay?"今日の訪問回数":"表示日の訪問回数",number(today,"visits"),"回",false);add(page,r);gap(page,18);
+        if(!currentDay)note(page,"前回取得した日の記録です。今日の訪問は更新して確認してください。",true);
         note(page,str(traffic,"note","訪問端末は同日のブラウザー単位の目安です。人数とは異なります。"),false);
         section(page,"日ごとの記録");JSONArray days=traffic==null?null:traffic.optJSONArray("history");
         if(days==null||days.length()==0){empty(page,"これから記録がたまります","計測開始後の訪問をここに表示します。過去の訪問はさかのぼって集計できません。");return;}
@@ -310,7 +350,7 @@ public final class MainActivity extends Activity {
         String id=m.optString("id"),label=m.optString("label","使用量");
         if(id.equals("workersRequests"))label="サーバーへの呼び出し";else if(id.equals("d1RowsRead"))label="データの読み取り";else if(id.equals("d1RowsWritten"))label="データの書き込み";else if(id.equals("d1StorageBytes"))label="データ保存容量";else if(id.equals("d1DatabaseBytes"))label="このデータベースの容量";
         LinearLayout c=card(page);add(c,text(label,16,INK,true));gap(c,4);add(c,text("database".equals(m.optString("scope"))?"このサイトのデータベース":"Cloudflareアカウント全体",11,MUTED,false));gap(c,14);
-        String unit=m.optString("unit"),status=m.optString("status","unavailable");double limit=m.optDouble("limit",0);boolean has=m.has("used")&&!m.isNull("used");
+        String unit=m.optString("unit"),status=metricStatus(m);double limit=m.optDouble("limit",0);boolean has=m.has("used")&&!m.isNull("used");
         if(!has){add(c,text("未取得",25,AMBER,true));gap(c,8);add(c,text("0としては扱いません。",12,MUTED,false));}
         else{double used=m.optDouble("used",0),ratio=limit>0?used/limit:0;add(c,text(unit.equals("bytes")?bytes(used):NUM.format(used)+(unit.equals("rows")?" 行":" 回"),25,INK,true));gap(c,8);
             meter(c,ratio,ratio>=.8?AMBER:GREEN);gap(c,8);String cap=unit.equals("bytes")?bytes(limit):NUM.format(limit)+(unit.equals("rows")?"行":"回");
@@ -364,7 +404,7 @@ public final class MainActivity extends Activity {
 
     private void showSettings(LinearLayout page){
         title(page,"作者室の設定","接続と管理先へのショートカット");
-        LinearLayout c=card(page);pair(c,"作者室アプリ","1.0.0");pair(c,"サイト",version.isEmpty()?str(obj(overview,"site"),"version","未取得"):version);pair(c,"サーバー",str(obj(overview,"site"),"apiVersion","未取得"));
+        LinearLayout c=card(page);pair(c,"作者室アプリ","1.0.0");pair(c,"サイト",(version.isEmpty()?str(obj(overview,"site"),"version","未取得"):version)+(versionStale?"（前回確認）":""));pair(c,"サーバー",str(obj(overview,"site"),"apiVersion","未取得"));
         add(c,text("管理用キーはこの端末内で暗号化しています。お問い合わせの内容を端末のファイルへ保存しません。",12,MUTED,false));
         actionRow(page,"ナンプレ帳を開く","公開中のサイト",()->open(SITE));
         actionRow(page,"Cloudflareを開く","無料枠・サーバー・データベース",()->open(CLOUDFLARE));
@@ -375,16 +415,16 @@ public final class MainActivity extends Activity {
     }
 
     private void refresh(boolean requested){
-        if(busy||ownerKey.isEmpty())return;busy=true;final String key=ownerKey;final int current=++generation;render();
+        if(!resumed||busy||ownerKey.isEmpty())return;busy=true;final String key=ownerKey;final int current=++generation;render();
         network.execute(()->{
-            JSONObject data=null;JSONArray items=null;String error="",contactError="",siteVersion="";
-            try{data=request(API+"/api/owner/overview",key);}catch(Exception ex){error=friendly(ex);}
+            JSONObject data=null;JSONArray items=null;String error="",contactError="",siteVersion="";long receivedAt=0;
+            try{data=request(API+"/api/owner/overview",key);receivedAt=System.currentTimeMillis();}catch(Exception ex){error=friendly(ex);}
             if(data!=null){try{items=request(API+"/api/admin",key).optJSONArray("items");}catch(Exception ex){contactError="お問い合わせを取得できませんでした。更新で再試行できます。";}
-                try{siteVersion=request(VERSION,null).optString("version","");}catch(Exception ignored){}}
-            final JSONObject result=data;final JSONArray newItems=items;final String failure=error,contactFailure=contactError,newVersion=siteVersion;
+                try{siteVersion=str(request(VERSION,null),"version","");}catch(Exception ignored){}}
+            final JSONObject result=data;final JSONArray newItems=items;final String failure=error,contactFailure=contactError,newVersion=siteVersion;final long overviewReceivedAt=receivedAt;
             main.post(()->{if(destroyed||current!=generation)return;busy=false;problem=failure;
-                if(result!=null){overview=result;fetchedAt=System.currentTimeMillis();inquiryProblem=contactFailure;if(newItems!=null){inquiries=newItems;if(detail!=null){String id=detail.optString("id");for(int i=0;i<inquiries.length();i++){JSONObject item=inquiries.optJSONObject(i);if(item!=null&&id.equals(item.optString("id"))){detail=item;break;}}}}if(!newVersion.isEmpty())version=newVersion;}
-                render();if(requested&&failure.isEmpty())toast("最新の状況に更新しました");});
+                if(result!=null){overview=result;fetchedAt=overviewReceivedAt;inquiryProblem=contactFailure;if(newItems!=null){inquiries=newItems;if(detail!=null){String id=detail.optString("id");for(int i=0;i<inquiries.length();i++){JSONObject item=inquiries.optJSONObject(i);if(item!=null&&id.equals(item.optString("id"))){detail=item;break;}}}}updateVersion(newVersion,result);}
+                if(resumed){render();if(requested&&failure.isEmpty())toast("最新の状況に更新しました");}});
         });
     }
 
@@ -421,7 +461,7 @@ public final class MainActivity extends Activity {
         SharedPreferences p=getSharedPreferences(PREFS,MODE_PRIVATE);String encrypted=p.getString("ciphertext",null),iv=p.getString("iv",null);if(encrypted==null||iv==null)return "";
         Cipher c=Cipher.getInstance("AES/GCM/NoPadding");c.init(Cipher.DECRYPT_MODE,storageKey(),new GCMParameterSpec(128,Base64.decode(iv,Base64.NO_WRAP)));String key=new String(c.doFinal(Base64.decode(encrypted,Base64.NO_WRAP)),StandardCharsets.UTF_8);return key.matches("[a-f0-9]{64}")?key:"";
     }
-    private void logout(){generation++;busy=false;ownerKey="";overview=null;inquiries=new JSONArray();detail=null;version="";problem="";getSharedPreferences(PREFS,MODE_PRIVATE).edit().clear().apply();
+    private void logout(){generation++;busy=false;ownerKey="";overview=null;inquiries=new JSONArray();detail=null;version="";versionStale=false;problem="";getSharedPreferences(PREFS,MODE_PRIVATE).edit().clear().apply();
         try{KeyStore store=KeyStore.getInstance("AndroidKeyStore");store.load(null);store.deleteEntry(KEY_ALIAS);}catch(Exception ignored){}showLogin("");}
     private void open(String address){if(!address.equals(SITE)&&!address.equals(MANAGE)&&!address.equals(CLOUDFLARE)&&!address.equals(GITHUB))return;
         try{startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(address)));}catch(Exception ignored){toast("ブラウザーを開けませんでした。");}}
