@@ -158,7 +158,9 @@ async function checkJigsawCreationAndPrint(page,lang,expected){
   assert.equal(result.locale,lang);assert.equal(result.overflow,false,'Mobile overflow: '+lang+' '+view);assert.deepEqual(result.bad,[],'Japanese interface text: '+lang+' '+view);
   console.log('PASS translated mobile view:',lang,view||'home');
  }
- for(const [lang,expected] of Object.entries(jigsawLocales))await checkJigsawCreationAndPrint(page,lang,expected);
+ const localizedFlowFailures=[];
+ for(const [lang,expected] of Object.entries(jigsawLocales))try{await checkJigsawCreationAndPrint(page,lang,expected)}catch(error){localizedFlowFailures.push({lang,error:error.stack||error.message});console.error('FAIL localized notebook flow:',lang,error.message)}
+ assert.deepEqual(localizedFlowFailures,[],'Localized notebook flow failures');
  assert.deepEqual(errors,[]);await context.close();
  console.log('PASS native routes, mobile layout, live Cloudflare reads, 32 Jigsaw creation flows, 24 print confirmations and no private legacy URLs');
  }finally{await browser.close()}})().catch(e=>{console.error(e);process.exit(1)});
