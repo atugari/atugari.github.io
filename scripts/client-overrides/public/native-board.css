@@ -2,7 +2,10 @@
 .mode-daily .game-layout{overflow:auto;overscroll-behavior:contain;align-items:flex-start}
 .mode-daily .play-card{height:auto;min-height:100%;min-width:0}
 .mode-daily .daily-workspace{flex:0 0 auto;overflow:visible}
-.mode-daily .board-viewport{min-width:0;max-width:100%;overscroll-behavior:auto;touch-action:pan-x pan-y pinch-zoom}
+.mode-daily .board-viewport{min-width:0;max-width:100%;overscroll-behavior:auto;touch-action:none}
+.mode-daily .board-viewport *{touch-action:none!important}
+.mode-daily .board-viewport[data-gesturing="true"]{cursor:grabbing}
+.mode-daily .variable-board .cell{font-size:var(--cell-font)}
 .mode-daily .daily-controls{max-height:none;overflow:visible;min-width:0}
 .mode-daily .keypad{grid-template-columns:repeat(var(--native-pad-columns,var(--pad-columns)),minmax(44px,1fr))}
 .mode-daily .keypad button,.mode-daily.big-keys .keypad button{display:grid;place-items:center;min-width:44px;min-height:44px;height:auto;aspect-ratio:1;padding:0}
@@ -16,3 +19,8 @@
 .mode-daily .board-scale-controls .reset-board output{min-width:0;white-space:normal}
 .native-number-preview{position:fixed;z-index:2147483646;display:grid;place-items:center;height:52px;border-radius:13px;background:#245a43;color:#fff;font:750 32px/1 system-ui,sans-serif;font-variant-numeric:tabular-nums;filter:drop-shadow(0 3px 4px #13291d55);pointer-events:none;user-select:none}
 .native-number-preview::after{content:"";position:absolute;top:50px;left:var(--stem-left);width:36px;height:12px;transform:translateX(-50%);background:inherit;clip-path:polygon(0 0,100% 0,80% 100%,20% 100%)}
+.native-play-notice{position:fixed;z-index:80;top:calc(env(safe-area-inset-top,0px) + 66px);left:12px;right:12px;max-width:620px;margin:0 auto;padding:10px 12px;display:flex;align-items:center;gap:8px;border:1px solid #c8bca4;border-radius:12px;background:#fffaf0;box-shadow:0 3px 14px #26382b26;color:#62452b;font-size:max(14px,var(--ui-min-font,0px));line-height:1.5}
+.native-play-notice p{flex:1;margin:0}
+.native-play-notice button{flex:none;min-height:44px;border:1px solid #c8bca4;border-radius:8px;padding:6px 10px;background:#fff;color:inherit}
+.native-play-notice .notice-close{width:44px;padding:0;font-size:24px}
+.play-settings-status p{font-size:max(14px,var(--ui-min-font,0px));line-height:1.6;margin:8px 0}

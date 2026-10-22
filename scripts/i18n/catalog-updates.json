@@ -208,5 +208,45 @@
     "fr": "Les grilles quotidiennes de 16×16 ou plus s’affichent désormais à une taille qui facilite la lecture des chiffres.",
     "de": "Tägliche Rätsel ab 16×16 werden jetzt so groß angezeigt, dass die Zahlen leichter lesbar sind.",
     "pt": "Os tabuleiros diários de 16×16 ou maiores agora usam um tamanho que facilita a leitura dos números."
+  },
+  "盤面の2本指操作と表示領域を改善しました": {
+    "en": "Improved two-finger board controls and made more room for the grid",
+    "zh-Hans": "改进了棋盘的双指操作，并扩大了显示区域",
+    "zh-Hant": "改善了盤面的雙指操作，並擴大了顯示區域",
+    "ko": "두 손가락으로 판을 조작하는 기능과 판의 표시 영역을 개선했습니다",
+    "es": "Mejoramos los gestos de dos dedos y ampliamos el espacio para el tablero",
+    "fr": "Les gestes à deux doigts ont été améliorés et la grille dispose de plus d’espace",
+    "de": "Zwei-Finger-Bedienung verbessert und mehr Platz für das Gitter geschaffen",
+    "pt": "Melhoramos os gestos com dois dedos e ampliamos o espaço para o tabuleiro"
+  },
+  "スマートフォンでは、盤面を2本指で拡大・縮小できます。": {
+    "en": "On a smartphone, pinch with two fingers to zoom the grid in or out.",
+    "zh-Hans": "在智能手机上，可用双指捏合或张开来缩小或放大棋盘。",
+    "zh-Hant": "在智慧型手機上，可用雙指捏合或張開來縮小或放大盤面。",
+    "ko": "스마트폰에서는 두 손가락을 모으거나 벌려 판을 축소하거나 확대할 수 있습니다.",
+    "es": "En el móvil, junta o separa dos dedos para reducir o ampliar el tablero.",
+    "fr": "Sur smartphone, rapprochez ou écartez deux doigts pour réduire ou agrandir la grille.",
+    "de": "Auf dem Smartphone kannst du das Gitter durch Zusammenziehen oder Spreizen von zwei Fingern verkleinern oder vergrößern.",
+    "pt": "No celular, junte ou afaste dois dedos para diminuir ou ampliar o tabuleiro."
+  },
+  "数字ボタンの下の案内をなくし、盤面を広く表示するようにしました。": {
+    "en": "Removed the informational text below the number keys to give the grid more space.",
+    "zh-Hans": "移除了数字按键下方的说明，为棋盘留出更多显示空间。",
+    "zh-Hant": "移除了數字按鍵下方的說明，為盤面留出更多顯示空間。",
+    "ko": "숫자 버튼 아래의 안내 문구를 없애 판을 더 넓게 표시하도록 했습니다.",
+    "es": "Quitamos el texto informativo bajo las teclas numéricas para dejar más espacio al tablero.",
+    "fr": "Le texte d’information sous les touches numériques a été retiré pour laisser plus de place à la grille.",
+    "de": "Der Hinweistext unter den Zahlentasten wurde entfernt, damit das Gitter mehr Platz hat.",
+    "pt": "Removemos o texto informativo abaixo das teclas numéricas para dar mais espaço ao tabuleiro."
+  },
+  "盤面を動かしたあとの誤入力を防ぐようにしました。": {
+    "en": "Prevented accidental entries after dragging or zooming the grid.",
+    "zh-Hans": "防止拖动或缩放棋盘后意外输入数字。",
+    "zh-Hant": "避免拖曳或縮放盤面後意外輸入數字。",
+    "ko": "판을 이동하거나 확대·축소한 뒤 실수로 숫자가 입력되지 않도록 했습니다.",
+    "es": "Evitamos las entradas accidentales después de arrastrar o cambiar el zoom del tablero.",
+    "fr": "Les saisies accidentelles après un déplacement ou un zoom de la grille ont été évitées.",
+    "de": "Versehentliche Eingaben nach dem Verschieben oder Zoomen des Gitters werden verhindert.",
+    "pt": "Evitamos entradas acidentais após arrastar ou alterar o zoom do tabuleiro."
   }
 }

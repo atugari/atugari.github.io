@@ -60,6 +60,83 @@ async function checkPrintedDigits(frame,values,label){
 async function twoAnimationFrames(target){
  await target.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
 }
+async function checkBoardPinch(page,target,{boardSelector,viewportSelector,label}){
+ // CDP delivers real Chromium touch/pointer events, including implicit capture
+ // and compatibility clicks. DOM-dispatched events cannot exercise those paths.
+ // https://chromedevtools.github.io/devtools-protocol/tot/Input/#method-dispatchTouchEvent
+ const cdp=await page.context().newCDPSession(page),screen=page.viewportSize();
+ const read=async()=>{
+  const [data,box]=await Promise.all([
+   target.evaluate(({boardSelector,viewportSelector})=>{
+    const board=document.querySelector(boardSelector),viewport=document.querySelector(viewportSelector),b=board.getBoundingClientRect(),v=viewport.getBoundingClientRect();
+    const cells=[...board.querySelectorAll('[data-cell]')];
+    return{board:{left:b.left,top:b.top,width:b.width,height:b.height},viewport:{left:v.left,top:v.top,width:viewport.clientWidth,height:viewport.clientHeight,scrollLeft:viewport.scrollLeft,scrollTop:viewport.scrollTop,maxX:viewport.scrollWidth-viewport.clientWidth,maxY:viewport.scrollHeight-viewport.clientHeight},values:cells.map(cell=>cell.textContent.trim()),selected:cells.filter(cell=>cell.getAttribute('aria-selected')==='true'||cell.getAttribute('aria-pressed')==='true'||cell.classList.contains('selected')).map(cell=>cell.getAttribute('data-cell'))};
+   },{boardSelector,viewportSelector}),
+   target.locator(viewportSelector).boundingBox()
+  ]);
+  assert(box,'Pinch viewport is visible: '+label);
+  // Locator bounds use the main-frame viewport, even for the notebook iframe.
+  const dx=box.x-data.viewport.left,dy=box.y-data.viewport.top;
+  data.board.left+=dx;data.board.top+=dy;data.viewport.left+=dx;data.viewport.top+=dy;
+  data.pageScale=await page.evaluate(()=>visualViewport.scale);
+  return data;
+ };
+ let touching=false;
+ try{
+  await target.locator(boardSelector+' [data-cell="0"]').tap();await twoAnimationFrames(target);
+  await target.locator(viewportSelector).evaluate(viewport=>{
+   const audit={maxTouches:0,trustedMoves:0,untrusted:0};
+   const record=event=>{audit.maxTouches=Math.max(audit.maxTouches,event.touches.length);if(!event.isTrusted)audit.untrusted++;if(event.isTrusted&&event.type==='touchmove')audit.trustedMoves++;};
+   for(const type of ['touchstart','touchmove'])viewport.addEventListener(type,record,{capture:true,passive:true});
+   window.__npPinchAudit={audit,stop:()=>{for(const type of ['touchstart','touchmove'])viewport.removeEventListener(type,record,true);}};
+  });
+  const original=await read();assert.deepEqual(original.selected,['0'],'A normal touch selects the initial cell: '+label);
+  const widthHistory=[original.board.width];
+  for(const grow of [true,false]){
+   const before=await read(),b=before.board,v=before.viewport;
+   const left=Math.max(8,b.left,v.left),right=Math.min(screen.width-8,b.left+b.width,v.left+v.width);
+   const top=Math.max(8,b.top,v.top),bottom=Math.min(screen.height-8,b.top+b.height,v.top+v.height);
+   const center={x:(left+right)/2,y:(top+bottom)/2},wide=Math.min(80,(right-left)/2-16);
+   assert(wide>=32&&bottom-top>=60,'Two fingers fit inside the visible board: '+label);
+   const start=grow?wide/1.5:wide,end=grow?wide:wide/1.5;
+   const points=half=>[{id:11,x:center.x-half,y:center.y,radiusX:5,radiusY:5},{id:12,x:center.x+half,y:center.y,radiusX:5,radiusY:5}];
+   touching=true;await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:points(start)});
+   for(let step=1;step<=8;step++){
+    await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:points(start+(end-start)*step/8)});
+    await twoAnimationFrames(target);
+   }
+   // An empty touchEnd releases both points in Chromium. This also exercises
+   // the transient one-finger remainder and any synthesized final click.
+   await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});touching=false;
+   await twoAnimationFrames(target);
+   const after=await read(),phase=(grow?'pinch out':'pinch in')+': '+label;
+   assert(grow?after.board.width>before.board.width*1.2:after.board.width<before.board.width*.85,'Board responds throughout '+phase+' '+JSON.stringify({before:before.board.width,after:after.board.width}));
+   assert(Math.abs(after.pageScale-original.pageScale)<.01,'Only the board zooms, not the page: '+phase);
+   assert.deepEqual(after.values,original.values,'Pinching and releasing never write a grid value or note: '+phase);
+   assert.deepEqual(after.selected,original.selected,'Pinching and releasing never select another cell: '+phase);
+   for(const [axis,size,scroll,max] of [['left','width','scrollLeft','maxX'],['top','height','scrollTop','maxY']]){
+    const middle=axis==='left'?center.x:center.y,anchor=(middle-before.board[axis])/before.board[size];
+    const wanted=after.board[axis]+after.viewport[scroll]+anchor*after.board[size]-middle;
+    const clamped=Math.max(0,Math.min(after.viewport[max],wanted)),tolerance=Math.max(6,Math.min(12,after.board[size]*.015));
+    assert(Math.abs(after.viewport[scroll]-clamped)<=tolerance,'Pinch center stays anchored or clamps at the board edge ('+axis+'): '+phase+' '+JSON.stringify({actual:after.viewport[scroll],expected:clamped,tolerance}));
+   }
+   widthHistory.push(after.board.width);
+  }
+  const audit=await target.evaluate(()=>window.__npPinchAudit.audit);
+  assert.equal(audit.maxTouches,2,'Both real fingers reach the board: '+label);
+  assert(audit.trustedMoves>=4&&audit.untrusted===0,'Pinch uses trusted Chromium multitouch movement: '+label+' '+JSON.stringify(audit));
+  // A fresh tap must work immediately; do not sleep past a stale click guard.
+  await target.locator(boardSelector+' [data-cell="1"]').tap();await twoAnimationFrames(target);
+  const tapped=await read();
+  assert.deepEqual(tapped.selected,['1'],'A fresh single-finger tap works after pinching: '+label);
+  assert.deepEqual(tapped.values,original.values,'Selecting after pinching does not alter puzzle data: '+label);
+  console.log('PASS real two-finger pinch:',label,'board widths',widthHistory.map(value=>Math.round(value)).join(' → '),'stable page scale, anchored midpoint, no ghost input and tap recovery');
+ }finally{
+  if(touching)await cdp.send('Input.dispatchTouchEvent',{type:'touchCancel',touchPoints:[]}).catch(()=>{});
+  await target.evaluate(()=>{window.__npPinchAudit?.stop();delete window.__npPinchAudit;}).catch(()=>{});
+  await cdp.detach();
+ }
+}
 async function settleDailyLayout(page){
  // The first frame can still use the old workspace height. Wait for the
  // ResizeObserver and translated controls to stop changing the actual sizes.
@@ -76,13 +153,14 @@ async function settleDailyLayout(page){
 }
 async function checkResponsiveDailyPlay(browser,root,viewport,n){
  const label=n+'×'+n+' at '+viewport.width+'×'+viewport.height;
- const context=await browser.newContext({viewport}),page=await context.newPage(),errors=[],apiWrites=[];
+ const pinchCase=n===16&&viewport.width===375;
+ const context=await browser.newContext({viewport,...(pinchCase?{isMobile:true,hasTouch:true}:{})}),page=await context.newPage(),errors=[],apiWrites=[];
  const block=Math.sqrt(n),solution=Array.from({length:n*n},(_,i)=>{const row=Math.floor(i/n),col=i%n;return(row*block+Math.floor(row/block)+col)%n+1;});
  // Leave two rows empty: exercising input can never complete this fixture or
  // submit a result. Resume is local to this disposable browser context.
  const puzzle=solution.map((value,i)=>i<n||i>=n*n-n?0:value);
  const summary={day:'2026-10-22',level:1,n,kind:'normal',ruleName:'通常ナンプレ',title:'通常ナンプレ',rules:''};
- const session={...summary,id:'ci-native-daily-'+n,started:1792627200000,serverNow:1792627200000,finished:false,solved:false,elapsed:0,ranked:false,puzzle,solution,regions:Array.from({length:n*n},(_,i)=>Math.floor(Math.floor(i/n)/block)*block+Math.floor((i%n)/block))};
+ const session={...summary,id:'ci-native-daily-'+n,started:1792627200000,serverNow:1792627200000,finished:false,solved:false,elapsed:0,ranked:false,resumed:true,puzzle,solution,regions:Array.from({length:n*n},(_,i)=>Math.floor(Math.floor(i/n)/block)*block+Math.floor((i%n)/block))};
  const saved={session,grid:puzzle.slice(),notes:{},elapsed:0,misses:0,hints:0,runId:session.id};
  await context.addInitScript(saved=>{
   localStorage.setItem('np-practice-resume-v1',JSON.stringify(saved));
@@ -126,6 +204,17 @@ async function checkResponsiveDailyPlay(browser,root,viewport,n){
    assert(initial.cellWidth>=39&&initial.font>=21,'Large daily starts with readable cells and digits: '+label+' '+JSON.stringify(initial));
    assert(initial.viewportWidth>=Math.min(280,viewport.width-32)-2&&initial.viewportHeight>=Math.min(280,initial.viewportWidth)-2,'Short screens retain a useful board viewport: '+label+' '+JSON.stringify(initial));
    assert.equal(initial.fit,'false','Large daily starts in readable view: '+label);
+  }
+  if(pinchCase){
+   const room=await page.evaluate(()=>{
+    const layout=document.querySelector('.game-layout'),viewport=document.querySelector('.board-viewport'),controls=document.querySelector('.daily-controls'),workspace=document.querySelector('.daily-workspace');
+    const l=layout.getBoundingClientRect(),v=viewport.getBoundingClientRect(),c=controls.getBoundingClientRect();
+    return{height:viewport.clientHeight,available:l.top+layout.clientHeight-v.top-c.height-(parseFloat(getComputedStyle(workspace).rowGap)||0)-(parseFloat(getComputedStyle(layout).paddingBottom)||0),messages:[...document.querySelectorAll('.play-card > .message')].filter(node=>node.getBoundingClientRect().height>0).map(node=>node.textContent.trim())};
+   });
+   assert.deepEqual(room.messages,[],'Routine resume notes take no space below the native keys: '+label);
+   assert(room.height>=Math.min(n*40,Math.max(280,room.available-12)),'Native board uses the height reclaimed from routine notes: '+label+' '+JSON.stringify(room));
+   await checkBoardPinch(page,page,{boardSelector:'.variable-board',viewportSelector:'.board-viewport',label:'native '+label});
+   await settleDailyLayout(page);
   }
   const cell=index=>page.locator('.variable-board [data-cell="'+index+'"]');
   const number=value=>page.locator('.daily-controls .keypad > button').nth(value-1);
@@ -208,7 +297,8 @@ async function checkResponsiveDailyPlay(browser,root,viewport,n){
 }
 async function checkResponsiveFreePlay(browser,root,viewport){
  const label=viewport.width+'×'+viewport.height;
- const context=await browser.newContext({viewport}),page=await context.newPage(),errors=[];
+ const pinchCase=viewport.width===375;
+ const context=await browser.newContext({viewport,...(pinchCase?{isMobile:true,hasTouch:true}:{})}),page=await context.newPage(),errors=[];
  page.on('pageerror',error=>errors.push(error.message));
  let releaseNotebook,indexRequests=0,notebookRequests=0;
  const notebookGate=new Promise(resolve=>{releaseNotebook=resolve;});
@@ -267,6 +357,10 @@ async function checkResponsiveFreePlay(browser,root,viewport){
    return{width:board.getBoundingClientRect().width,height:board.getBoundingClientRect().height,availableWidth:viewport.clientWidth,availableHeight:viewport.clientHeight};
   });
   assert(initial.width<=initial.availableWidth+2&&initial.height<=initial.availableHeight+2,'First9×9 render fits without a correcting input: '+label+' '+JSON.stringify(initial));
+  if(pinchCase){
+   await checkBoardPinch(page,frame,{boardSelector:'#board',viewportSelector:'#board-scroll',label:'Free Play 9×9 at '+label});
+   await frame.locator('#np-play-settings-button').click();await frame.locator('.np-pan-fit').click();await frame.locator('.np-settings-close').click();await twoAnimationFrames(frame);
+  }
   await expectNotebookText(frame,'#app .screen > h1','Classic Sudoku',label+' classic type heading',{contains:true});
   await expectNotebookText(frame,'[data-video="pause"]','Pause',label+' pause action');
   await frame.locator('[data-video="pause"]').click();
@@ -506,5 +600,5 @@ async function checkJigsawCreationAndPrint(page,lang,expected){
  for(const viewport of [{width:390,height:844},{width:375,height:667},{width:320,height:568}])await checkResponsiveFreePlay(browser,root,viewport);
  for(const viewport of [{width:390,height:844},{width:375,height:667},{width:320,height:568}])await checkResponsiveDailyPlay(browser,root,viewport,16);
  for(const n of [9,25])await checkResponsiveDailyPlay(browser,root,{width:390,height:844},n);
- console.log('PASS native routes,3responsive Free Play sizes,5native daily cases, live Cloudflare reads,32Jigsaw creation flows,24print confirmations with numeric SVG checks and no private legacy URLs');
+ console.log('PASS native routes,3responsive Free Play sizes,5native daily cases,2real multitouch pinch cases, live Cloudflare reads,32Jigsaw creation flows,24print confirmations with numeric SVG checks and no private legacy URLs');
  }finally{await browser.close()}})().catch(e=>{console.error(e);process.exit(1)});

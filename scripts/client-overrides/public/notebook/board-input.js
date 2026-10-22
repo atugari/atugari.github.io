@@ -65,11 +65,20 @@
    return values[0]?{x:values[0].x,y:values[0].y,d:0}:null;
   }
   function finish(event){
+   // Touch starts with implicit capture on a cell. Moving that capture to the
+   // viewport emits a bubbling loss on the cell, not the end of the gesture.
+   if(event.type==='lostpointercapture'&&event.target!==viewport)return;
    if(!pointers.has(event.pointerId))return;
-   if(moved||event.type==='pointercancel')ignoreUntil=Date.now()+600;
+   if(moved||event.type!=='pointerup')ignoreUntil=Date.now()+600;
    pointers.delete(event.pointerId);previous=pointerCenter();
    try{viewport.releasePointerCapture(event.pointerId);}catch{}
   }
+  function cancelPointers(){
+   if(pointers.size){moved=true;ignoreUntil=Date.now()+600;}
+   const ids=[...pointers.keys()];pointers.clear();previous=null;
+   for(const id of ids){try{viewport.releasePointerCapture(id);}catch{}}
+  }
+  function hidden(){if(document.hidden)cancelPointers();}
   function scrollParent(delta){
    let remaining=delta;
    for(let parent=viewport.parentElement;parent&&Math.abs(remaining)>.5;parent=parent.parentElement){
@@ -106,15 +115,16 @@
     if(Math.hypot(point.x-point.sx,point.y-point.sy)>7)moved=true;
     if(moved&&previous){const delta=previous.y-center.y,before=viewport.scrollTop;viewport.scrollLeft+=previous.x-center.x;viewport.scrollTop+=delta;if(event.pointerType!=='mouse')scrollParent(delta-(viewport.scrollTop-before));}
    }
-   if(moved){try{viewport.setPointerCapture(event.pointerId);}catch{}event.preventDefault();ignoreUntil=Date.now()+600;}
+   if(moved){try{viewport.setPointerCapture(event.pointerId);}catch{}event.preventDefault();ignoreUntil=Date.now()+600;state.x=viewport.scrollLeft;state.y=viewport.scrollTop;}
    previous=center;
   },{passive:false});
   viewport.addEventListener('pointerup',finish);viewport.addEventListener('pointercancel',finish);viewport.addEventListener('lostpointercapture',finish);
+  w.addEventListener('blur',cancelPointers);w.addEventListener('pagehide',cancelPointers);document.addEventListener('visibilitychange',hidden);
   viewport.addEventListener('click',event=>{if(event.detail!==0&&(moved||Date.now()<ignoreUntil)){event.preventDefault();event.stopImmediatePropagation();}},{capture:true});
   viewport.addEventListener('scroll',()=>{state.x=viewport.scrollLeft;state.y=viewport.scrollTop;},{passive:true});
   paint();viewport.scrollLeft=state.x;viewport.scrollTop=state.y;
   if(w.ResizeObserver){observer=new ResizeObserver(paint);observer.observe(board);observer.observe(viewport);}
-  controllers.add({board,refresh:paint,fit,placeTools,dispose:()=>{observer?.disconnect();tools.remove();}});
+  controllers.add({board,refresh:paint,fit,placeTools,dispose:()=>{cancelPointers();w.removeEventListener('blur',cancelPointers);w.removeEventListener('pagehide',cancelPointers);document.removeEventListener('visibilitychange',hidden);observer?.disconnect();tools.remove();}});
  }
  function scan(){
   queued=false;
