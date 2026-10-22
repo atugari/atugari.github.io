@@ -27,8 +27,67 @@ The owner-only import endpoint accepts bounded records, never arbitrary SQL.
 Keep the private owner access file outside this public repository. Neither
 Cloudflare's deployment token nor the owner key belongs in browser source.
 
+## Author app and monitoring
+
+`GET /api/owner/overview` uses the existing owner bearer key. It returns site/API
+versions, 30 days of visit totals, inquiry status counts, contiguous daily-puzzle
+inventory, backup reservations, and provider usage. It does not return inquiry
+messages, visitor identifiers, future puzzle answers, or backup contents. The
+unchanged owner-only `GET /api/admin` supplies inquiry details for the app. Owner
+responses and public health checks use `Cache-Control: no-store`.
+
+`POST /api/visits` accepts exactly `{visitor, session}`, each a random 64-character
+lowercase hex token. The site rotates the browser token daily, sends one session
+visit at startup, and respects Do Not Track / Global Privacy Control. Japan time
+defines a visit day. The API hashes both tokens with that day, deduplicates each
+session transactionally, and limits new visits to 120 per IP-derived hash per
+hour. It stores no IP address, referrer, player identity, or device details in
+the visit tables. Browser counts are approximate, not a count of people; data
+only exists after collection begins. A scheduled job deletes pseudonym records
+whose Japan date is more than 35 days old. Daily totals remain; scheduled-job
+delays can postpone deletion. Existing rate-limit expiry cleanup runs with the
+twice-daily refill job.
+
+The separate `nanpure-owner-metrics.yml` workflow attempts a private usage
+snapshot every 30 minutes without generating puzzles. GitHub schedules can be
+delayed. Only sanitized numeric results enter D1. Unavailable readings stay
+`null`, never zero; retained old values are explicitly marked stale. Values
+older than two hours or from the previous UTC quota day are also stale.
+
+The snapshot tries the existing deployment token. GraphQL analytics requires
+**Account / Account Analytics / Read**, which is not part of the usual deployment
+permissions. To enable those readings, add an optional repository secret
+`CLOUDFLARE_ANALYTICS_TOKEN` containing an account-scoped read-only analytics
+token. No broader deployment access or app-bundled Cloudflare credential is
+needed. If that secret is absent or access fails, the author app provides the
+Cloudflare dashboard link and labels the missing measurements. D1 capacity uses
+the existing D1 permission and the Worker can read its own current database size
+from D1 query metadata.
+
+Free-plan reference limits (checked 2026-10-22):
+
+| Metric ID | Scope | Reference allowance |
+| --- | --- | --- |
+| `workersRequests` | All Workers in this account | 100,000 requests per UTC day |
+| `d1RowsRead` | All D1 databases in this account | 5,000,000 rows per UTC day |
+| `d1RowsWritten` | All D1 databases in this account | 100,000 rows per UTC day |
+| `d1StorageBytes` | All D1 databases in this account | 5 GB |
+| `d1DatabaseBytes` | This database only | 500 MB |
+
+Daily provider allowances reset at 00:00 UTC (09:00 Japan time), independently
+of visitor-day totals. Limits are references, not an assertion about the current
+subscription. An incomplete account database listing is not shown as a full
+account total. See the official [Workers limits](https://developers.cloudflare.com/workers/platform/limits/),
+[D1 pricing](https://developers.cloudflare.com/d1/platform/pricing/),
+[D1 limits](https://developers.cloudflare.com/d1/platform/limits/), and
+[analytics token permissions](https://developers.cloudflare.com/analytics/graphql-api/getting-started/authentication/api-token-auth/).
+
 ## Tests
 
 `npm run build` uses Node 22+ with real SQLite for daily ranking eligibility,
-concurrent backup revisions, private receipts, owner authorization and CORS.
+concurrent backup revisions, private receipts, owner authorization, visit
+deduplication/privacy, monitoring aggregates, provider failures and CORS.
+Provider tests use fake credentials and mock responses. Deployment smoke checks
+verify live versions/schema and that owner endpoints reject unauthenticated
+requests; they do not retrieve private inquiries or production credentials.
 Production smoke tests must use disposable credentials and avoid public rankings.

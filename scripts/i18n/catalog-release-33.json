@@ -1,0 +1,212 @@
+{
+  "プレイ中の設定": {
+    "en": "In-game settings",
+    "zh-Hans": "游戏中设置",
+    "zh-Hant": "遊戲中設定",
+    "ko": "플레이 설정",
+    "es": "Ajustes de la partida",
+    "fr": "Réglages de la partie",
+    "de": "Spieleinstellungen",
+    "pt": "Configurações da partida"
+  },
+  "盤面の見え方": {
+    "en": "Board appearance",
+    "zh-Hans": "棋盘外观",
+    "zh-Hant": "盤面外觀",
+    "ko": "판 표시",
+    "es": "Aspecto del tablero",
+    "fr": "Affichage de la grille",
+    "de": "Darstellung des Gitters",
+    "pt": "Aparência do tabuleiro"
+  },
+  "入力・候補メモ": {
+    "en": "Input and pencil marks",
+    "zh-Hans": "输入与候选数",
+    "zh-Hant": "輸入與候選數",
+    "ko": "입력·후보 메모",
+    "es": "Entrada y notas",
+    "fr": "Saisie et notes",
+    "de": "Eingabe und Notizen",
+    "pt": "Entrada e anotações"
+  },
+  "音・表示": {
+    "en": "Sound and display",
+    "zh-Hans": "声音与显示",
+    "zh-Hant": "音效與顯示",
+    "ko": "소리·표시",
+    "es": "Sonido y visualización",
+    "fr": "Son et affichage",
+    "de": "Ton und Anzeige",
+    "pt": "Som e exibição"
+  },
+  "ルール・保存": {
+    "en": "Rules and saving",
+    "zh-Hans": "规则与保存",
+    "zh-Hant": "規則與儲存",
+    "ko": "규칙·저장",
+    "es": "Reglas y guardado",
+    "fr": "Règles et sauvegarde",
+    "de": "Regeln und Speichern",
+    "pt": "Regras e salvamento"
+  },
+  "色・選択マス・数字の大きさ": {
+    "en": "Colors, selected cell and digit size",
+    "zh-Hans": "颜色、选中格与数字大小",
+    "zh-Hant": "顏色、選取格與數字大小",
+    "ko": "색상·선택한 칸·숫자 크기",
+    "es": "Colores, casilla seleccionada y tamaño de los números",
+    "fr": "Couleurs, case sélectionnée et taille des chiffres",
+    "de": "Farben, ausgewähltes Feld und Zahlengröße",
+    "pt": "Cores, célula selecionada e tamanho dos números"
+  },
+  "入力の順番・メモ・ミス上限": {
+    "en": "Input order, notes and mistake limit",
+    "zh-Hans": "输入顺序、候选数与错误次数上限",
+    "zh-Hant": "輸入順序、候選數與錯誤次數上限",
+    "ko": "입력 순서·메모·실수 한도",
+    "es": "Orden de entrada, notas y límite de errores",
+    "fr": "Ordre de saisie, notes et limite d’erreurs",
+    "de": "Eingabereihenfolge, Notizen und Fehlerlimit",
+    "pt": "Ordem de entrada, anotações e limite de erros"
+  },
+  "タイマー・音・演出": {
+    "en": "Timer, sound and effects",
+    "zh-Hans": "计时器、声音与动画",
+    "zh-Hant": "計時器、音效與動畫",
+    "ko": "타이머·소리·효과",
+    "es": "Temporizador, sonido y efectos",
+    "fr": "Chronomètre, son et animations",
+    "de": "Timer, Ton und Effekte",
+    "pt": "Cronômetro, som e efeitos"
+  },
+  "ルール・記録・問題の操作": {
+    "en": "Rules, records and puzzle actions",
+    "zh-Hans": "规则、记录与题目操作",
+    "zh-Hant": "規則、紀錄與題目操作",
+    "ko": "규칙·기록·문제 조작",
+    "es": "Reglas, estadísticas y acciones del rompecabezas",
+    "fr": "Règles, statistiques et actions sur la grille",
+    "de": "Regeln, Statistiken und Rätselaktionen",
+    "pt": "Regras, registros e ações do quebra-cabeça"
+  },
+  "項目を選んで設定できます。変更はすぐに反映されます。": {
+    "en": "Choose a category to change its settings. Changes apply immediately.",
+    "zh-Hans": "选择类别即可调整设置。更改会立即生效。",
+    "zh-Hant": "選擇分類即可調整設定。變更會立即生效。",
+    "ko": "항목을 선택해 설정을 바꿀 수 있습니다. 변경 사항은 즉시 적용됩니다.",
+    "es": "Elige una categoría para ajustar sus opciones. Los cambios se aplican al instante.",
+    "fr": "Choisissez une catégorie pour modifier ses réglages. Les changements s’appliquent immédiatement.",
+    "de": "Wähle eine Kategorie, um die Einstellungen zu ändern. Änderungen werden sofort übernommen.",
+    "pt": "Escolha uma categoria para ajustar as opções. As alterações são aplicadas imediatamente."
+  },
+  "設定一覧に戻る": {
+    "en": "Back to settings",
+    "zh-Hans": "返回设置列表",
+    "zh-Hant": "返回設定列表",
+    "ko": "설정 목록으로 돌아가기",
+    "es": "Volver a los ajustes",
+    "fr": "Retour aux réglages",
+    "de": "Zurück zu den Einstellungen",
+    "pt": "Voltar às configurações"
+  },
+  "サイトのバージョン": {
+    "en": "Site version",
+    "zh-Hans": "网站版本",
+    "zh-Hant": "網站版本",
+    "ko": "사이트 버전",
+    "es": "Versión del sitio",
+    "fr": "Version du site",
+    "de": "Website-Version",
+    "pt": "Versão do site"
+  },
+  "バージョンをコピー": {
+    "en": "Copy version",
+    "zh-Hans": "复制版本号",
+    "zh-Hant": "複製版本號",
+    "ko": "버전 복사",
+    "es": "Copiar versión",
+    "fr": "Copier la version",
+    "de": "Version kopieren",
+    "pt": "Copiar versão"
+  },
+  "バージョンをコピーしました": {
+    "en": "Version copied",
+    "zh-Hans": "已复制版本号",
+    "zh-Hant": "已複製版本號",
+    "ko": "버전을 복사했습니다",
+    "es": "Versión copiada",
+    "fr": "Version copiée",
+    "de": "Version kopiert",
+    "pt": "Versão copiada"
+  },
+  "表示されたバージョンを選択してコピーしてください": {
+    "en": "Select and copy the displayed version.",
+    "zh-Hans": "请选择并复制显示的版本号。",
+    "zh-Hant": "請選取並複製顯示的版本號。",
+    "ko": "표시된 버전을 선택하여 복사해 주세요.",
+    "es": "Selecciona y copia la versión que aparece.",
+    "fr": "Sélectionnez et copiez la version affichée.",
+    "de": "Markiere und kopiere die angezeigte Version.",
+    "pt": "Selecione e copie a versão exibida."
+  },
+  "プレイ中の設定を分かりやすく整理しました": {
+    "en": "In-game settings are now easier to navigate",
+    "zh-Hans": "游戏中设置更清晰易用了",
+    "zh-Hant": "遊戲中設定更清楚易用了",
+    "ko": "플레이 설정을 더 알기 쉽게 정리했습니다",
+    "es": "Los ajustes de la partida son más claros",
+    "fr": "Les réglages de la partie sont plus clairs",
+    "de": "Die Spieleinstellungen sind jetzt übersichtlicher",
+    "pt": "As configurações da partida ficaram mais claras"
+  },
+  "プレイ中の設定を4つの項目から選べるようにし、スイッチと現在の設定を見やすくしました。": {
+    "en": "In-game settings are organized into four categories, with clearer switches and current values.",
+    "zh-Hans": "游戏中设置分为四个类别，开关和当前设置值更清晰。",
+    "zh-Hant": "遊戲中設定分為四個分類，開關與目前的設定值更清楚。",
+    "ko": "플레이 설정을 네 가지 항목으로 나누고 스위치와 현재 설정을 보기 쉽게 바꿨습니다.",
+    "es": "Los ajustes de la partida se organizan en cuatro categorías, con interruptores y valores actuales más claros.",
+    "fr": "Les réglages de la partie sont répartis en quatre catégories, avec des interrupteurs et des valeurs actuelles plus lisibles.",
+    "de": "Die Spieleinstellungen sind in vier Kategorien gegliedert. Schalter und aktuelle Werte sind leichter zu erkennen.",
+    "pt": "As configurações da partida foram organizadas em quatro categorias, com opções e valores atuais mais fáceis de ver."
+  },
+  "サイトのバージョンをホームとメニューで確認し、更新のお知らせからコピーできるようにしました。": {
+    "en": "The site version is shown on the home screen and menu, and can be copied from the update notices.",
+    "zh-Hans": "首页和菜单中可查看网站版本，并可在更新通知中复制版本号。",
+    "zh-Hant": "首頁與選單中可查看網站版本，並可在更新通知中複製版本號。",
+    "ko": "홈 화면과 메뉴에서 사이트 버전을 확인하고 업데이트 안내에서 복사할 수 있습니다.",
+    "es": "La versión del sitio aparece en el inicio y el menú, y se puede copiar desde las novedades.",
+    "fr": "La version du site s’affiche sur l’accueil et dans le menu. Vous pouvez la copier depuis les nouveautés.",
+    "de": "Die Website-Version wird auf der Startseite und im Menü angezeigt und lässt sich in den Update-Hinweisen kopieren.",
+    "pt": "A versão do site aparece na tela inicial e no menu e pode ser copiada nos avisos de atualização."
+  },
+  "作者用アプリから訪問状況・使用量・お問い合わせを確認できる仕組みを追加しました。": {
+    "en": "Added support for checking visits, resource usage and inquiries in the creator app.",
+    "zh-Hans": "新增了通过作者专用应用查看访问情况、资源用量和咨询内容的功能。",
+    "zh-Hant": "新增了透過作者專用應用程式查看造訪情況、資源用量與詢問內容的功能。",
+    "ko": "제작자 앱에서 방문 현황, 사용량, 문의를 확인할 수 있는 기능을 추가했습니다.",
+    "es": "Se ha añadido la consulta de visitas, uso de recursos y consultas desde la aplicación del creador.",
+    "fr": "L’application du créateur permet désormais de consulter les visites, l’utilisation des ressources et les demandes.",
+    "de": "Die Ersteller-App kann jetzt Besuche, Ressourcenverbrauch und Anfragen anzeigen.",
+    "pt": "Foi adicionado suporte para consultar visitas, uso de recursos e mensagens no aplicativo do criador."
+  },
+  "訪問状況の集計": {
+    "en": "Visit statistics",
+    "zh-Hans": "访问情况统计",
+    "zh-Hant": "造訪情況統計",
+    "ko": "방문 통계",
+    "es": "Estadísticas de visitas",
+    "fr": "Statistiques de visites",
+    "de": "Besuchsstatistik",
+    "pt": "Estatísticas de visitas"
+  },
+  "サイトの改善と運営状況の確認のため、日ごとに変わるランダムな識別子で訪問数を集計します。氏名、メールアドレス、閲覧内容は送信しません。ブラウザの追跡拒否設定が有効な場合は集計しません。": {
+    "en": "To improve the site and monitor its operation, visits are counted using random identifiers that change daily. Names, email addresses and viewed content are not sent. Visits are not counted when the browser’s tracking protection preference is enabled.",
+    "zh-Hans": "为改进网站并了解运营情况，我们使用每天变化的随机标识统计访问次数。不会发送姓名、电子邮件地址或浏览内容。浏览器启用拒绝跟踪设置时不进行统计。",
+    "zh-Hant": "為改善網站並了解營運情況，我們使用每日更換的隨機識別碼統計造訪次數。不會傳送姓名、電子郵件地址或瀏覽內容。瀏覽器啟用拒絕追蹤設定時不進行統計。",
+    "ko": "사이트 개선과 운영 현황 확인을 위해 매일 바뀌는 무작위 식별자로 방문 수를 집계합니다. 이름, 이메일 주소, 열람 내용은 전송하지 않습니다. 브라우저의 추적 거부 설정이 켜져 있으면 집계하지 않습니다.",
+    "es": "Para mejorar el sitio y supervisar su funcionamiento, contamos las visitas con identificadores aleatorios que cambian cada día. No se envían nombres, direcciones de correo ni contenido consultado. No se cuentan las visitas si está activada la preferencia de no seguimiento del navegador.",
+    "fr": "Pour améliorer le site et suivre son fonctionnement, les visites sont comptées avec des identifiants aléatoires renouvelés chaque jour. Les noms, adresses e-mail et contenus consultés ne sont pas transmis. Les visites ne sont pas comptées si le refus du suivi est activé dans le navigateur.",
+    "de": "Zur Verbesserung und Überwachung des Betriebs zählen wir Besuche mit täglich wechselnden Zufallskennungen. Namen, E-Mail-Adressen und angesehene Inhalte werden nicht gesendet. Ist die Einstellung zur Ablehnung von Tracking im Browser aktiviert, werden Besuche nicht gezählt.",
+    "pt": "Para melhorar o site e acompanhar seu funcionamento, contamos as visitas com identificadores aleatórios que mudam diariamente. Nomes, endereços de e-mail e conteúdo visualizado não são enviados. As visitas não são contadas quando a preferência de não rastreamento do navegador está ativada."
+  }
+}

@@ -67,15 +67,21 @@ jobs:
         if: steps.credential.outputs.ready == 'true'
         run: |
           node --input-type=module <<'NODE'
-          import { appendFileSync } from 'node:fs';
+          import { appendFileSync, readFileSync } from 'node:fs';
           const url = 'https://puzzle-api.puzzle-hub-4826.workers.dev/api/health';
+          const expectedApi = JSON.parse(readFileSync('nanpure-api/package.json', 'utf8')).version;
+          const expectedSite = JSON.parse(readFileSync('nanpure-version.json', 'utf8')).version;
           for (let attempt = 0; attempt < 10; attempt++) {
             try {
               const response = await fetch(url, { signal: AbortSignal.timeout(10000) });
               const result = await response.json();
-              if (response.ok && result.ok === true && result.service === 'puzzle-api' && result.database === 'connected' && result.schema === 'installed') {
+              if (response.ok && result.ok === true && result.service === 'puzzle-api' && result.database === 'connected' && result.schema === 'installed' && result.version === expectedApi && result.siteVersion === expectedSite) {
+                for (const path of ['/api/owner/overview', '/api/admin']) {
+                  const privateResponse = await fetch(new URL(path, url), { signal: AbortSignal.timeout(10000) });
+                  if (privateResponse.status !== 403) throw new Error('Private endpoint authorization check failed.');
+                }
                 appendFileSync(process.env.GITHUB_STEP_SUMMARY,
-                  `Worker deployed and D1 connected.\n\nHealth check: ${url}\n\nSchema: ${result.schema}; game API: ${result.gameApi}.\n`);
+                  `Worker deployed and D1 connected.\n\nHealth check: ${url}\n\nSchema: ${result.schema}; API: ${result.version}; site: ${result.siteVersion}. Owner endpoints reject unauthenticated requests.\n`);
                 process.exit(0);
               }
             } catch {
@@ -92,6 +98,14 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: node scripts/refill.mjs
+
+      - name: Refresh private owner usage snapshot
+        if: steps.credential.outputs.ready == 'true'
+        working-directory: nanpure-api
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ANALYTICS_TOKEN: ${{ secrets.CLOUDFLARE_ANALYTICS_TOKEN }}
+        run: node scripts/owner-usage.mjs
 
       - name: Verify daily menus contain three puzzles and no solutions
         if: steps.credential.outputs.ready == 'true'

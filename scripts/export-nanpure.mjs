@@ -15,7 +15,9 @@ const source=path.resolve(process.argv[2]||'');
 const require=createRequire(path.join(source,'package.json'));
 const esbuild=createRequire(require.resolve('vite'))('esbuild');
 const release=fs.readFileSync(path.join(source,'lib/releases.ts'),'utf8');
-const version='2026.10.22.32';
+const version='2026.10.22.33';
+const publicUpdates=JSON.parse(fs.readFileSync(path.join(repo,'scripts/release-notes.json'),'utf8'));
+if(publicUpdates[0]?.version!==version)throw Error('Release notes must match the release version');
 const overrides=path.join(repo,'scripts/client-overrides');
 if(!version||!/^\d{4}\.\d{2}\.\d{2}\.\d+$/.test(version))throw Error('Missing verified release version');
 const base=`/nanpure/releases/${version}/`;
@@ -53,7 +55,7 @@ try {
  if(!sourceVersion)throw Error('Missing source release version');
  news=news.replace('{version:currentVersion,',`{version:'${sourceVersion}',`);
  news=news.replace(/currentVersion\s*=\s*['"][^'"]+['"]/,`currentVersion='${version}'`);
- news=news.replace(/(export const releases[^=]*=\s*\[)/,`$1\n{version:'${version}',date:'2026-10-22',kind:'feature',title:'選択マスの見やすさを改善しました',items:['行・列ガイドを標準にし、選択したマスを見つけやすくしました。','選択マスのデザインを3種類から選べるようにしました。','選んだデザインは日替わり問題と自由に遊ぶで共通に保存します。']},\n{version:'2026.10.22.31',date:'2026-10-22',kind:'fix',title:'盤面の2本指操作と表示領域を改善しました',items:['スマートフォンでは、盤面を2本指で拡大・縮小できます。','数字ボタンの下の案内をなくし、盤面を広く表示するようにしました。','盤面を動かしたあとの誤入力を防ぐようにしました。']},\n{version:'2026.10.22.30',date:'2026-10-22',kind:'fix',title:'数字表示と操作性・読み込みを改善しました',items:['言語を切り替えても、盤面・数字ボタン・印刷の数字が変わらないようにしました。','ヒントの重なりをなくし、設定と拡大表示を整理しました。','問題帳は必要なときに読み込み、大きな盤面の入力を軽くしました。','プレイ画面を整理し、数字ボタンを正方形に近い形にしました。','数字の下の残り個数をなくし、長押し中はキーの上に数字を表示します。','16×16以上の日替わり盤面を、数字が読みやすい大きさにしました。']},\n{version:'2026.10.22.29',date:'2026-10-22',kind:'fix',title:'作成画面とルール説明の翻訳を修正しました',items:['領域の複雑さ・問題数・旧基準の表示を修正しました。','ルール説明を文章全体で翻訳し、強調表示と数値を保つようにしました。','メモ欄の読み上げラベルと、言語切り替え後のヒント表示を修正しました。']},\n{version:'2026.10.22.28',date:'2026-10-22',kind:'feature',title:'表示や説明を8言語で見直しました',items:['ボタン・設定・ルール・ヒント・印刷・エラーの翻訳を追加しました。','日本語以外を選んだときに、画面の一部だけ日本語に戻る問題を修正しました。','言語を切り替えても、問題や入力内容はそのままです。']},\n{version:'2026.10.21.27',date:'2026-10-21',kind:'feature',title:'GitHub版でオンライン機能が使えるようになりました',items:['日替わり問題・ランキング・カレンダー・お問い合わせをこの画面で利用できます。','クラウド保存は引き継ぎコードで端末をつなげます。ChatGPTへのログインは不要です。','このブラウザに保存した問題・設定・個人記録はそのまま使えます。']},`);fs.writeFileSync(releasePath,news);
+ news=news.replace(/(export const releases[^=]*=\s*\[)/,'$1\n'+publicUpdates.map(entry=>JSON.stringify(entry)).join(',\n')+',');fs.writeFileSync(releasePath,news);
  for(const f of walk(path.join(scratch,'app')).filter(f=>/\.tsx?$/.test(f)&&!f.endsWith('/api-client.ts'))){let text=fs.readFileSync(f,'utf8');if(/\bfetch\((['"])\/api\//.test(text)){text=text.replace(/\bfetch\((['"])\/api\//g,'apiFetch($1/api/');let rel=path.relative(path.dirname(f),path.join(scratch,'app/api-client')).replaceAll('\\','/');if(!rel.startsWith('.'))rel='./'+rel;text=`import {apiFetch} from '${rel}';\n`+text;fs.writeFileSync(f,text)}}
  for(const file of walk(scratch).filter(f=>/\.(tsx?|css)$/.test(f)))fs.writeFileSync(file,rewrite(fs.readFileSync(file,'utf8')).replace(/https:\/\/nanpure-chou-online\.[a-z0-9-]+\.chatgpt\.site/g,'https://atugari.github.io/nanpure').replace("host+'/learn?lang='","host+'/?view=tutorial&lang='"));
  // Only public assets enter the repository, never API routes, DB, credentials or answer banks.
@@ -72,19 +74,20 @@ try {
  write('main.tsx',`import React from 'react';import{createRoot}from'react-dom/client';import Game from './app/game';import Privacy from './app/privacy/page';import PagesManager from './app/pages-manager';import{LocaleProvider}from './app/locale-context';import{ReadingRuntime}from './app/reading-settings';import InputAidRuntime from './app/input-aid-runtime';Promise.resolve((window as any).NPI18n?.ready).then(()=>{createRoot(document.getElementById('root')!).render(<LocaleProvider initialLocale="ja"><ReadingRuntime/><InputAidRuntime/>{new URLSearchParams(location.search).get('view')==='privacy'?<Privacy/>:new URLSearchParams(location.search).get('view')==='manage'?<PagesManager/>:<Game initialChallenges={[]}/>}</LocaleProvider>);});`);
  fs.rmSync(path.join(output,'shell'),{recursive:true,force:true});
  await esbuild.build({entryPoints:[path.join(scratch,'main.tsx')],outdir:path.join(output,'shell'),bundle:true,format:'esm',splitting:true,jsx:'automatic',target:['es2022'],minify:true,sourcemap:false,metafile:true,define:{'process.env.NODE_ENV':'"production"'},logLevel:'warning'});
- fs.appendFileSync(path.join(output,'shell.css'),'\n'+fs.readFileSync(path.join(overrides,'public/native-board.css'),'utf8'));
+ fs.appendFileSync(path.join(output,'shell.css'),'\n'+fs.readFileSync(path.join(overrides,'public/native-board.css'),'utf8')+'\n'+fs.readFileSync(path.join(overrides,'public/release-info.css'),'utf8'));
  const protection=spawnSync(process.execPath,[path.join(source,'scripts/protect-client.mjs'),output],{cwd:source,stdio:'inherit'});
  if(protection.status!==0)throw Error('Distribution protection failed');
- const html=`<!doctype html><html lang="ja" data-site-theme="notebook"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="referrer" content="no-referrer"><meta name="theme-color" content="#f4efe3"><title>ナンプレ帳 — 無料でいろいろなルールを何問でも</title><meta name="description" content="いろいろなルールのナンプレを何問でも無料で。クロスワード、シルプレ660問、印刷にも対応。"><link rel="icon" href="${base}favicon.svg"><script src="${base}site-theme.js"></script><script src="${base}notebook/i18n-data.js"></script><script src="${base}notebook/i18n.js"></script><script src="${base}ui-text.js"></script><link rel="stylesheet" href="${base}shell.css"></head><body><div id="root"></div><noscript>ナンプレ帳を遊ぶにはJavaScriptを有効にしてください。</noscript><script type="module" src="${base}shell/main.js"></script></body></html>`;
+ const html=`<!doctype html><html lang="ja" data-site-theme="notebook"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="referrer" content="no-referrer"><meta name="theme-color" content="#f4efe3"><title>ナンプレ帳 — 無料でいろいろなルールを何問でも</title><meta name="description" content="いろいろなルールのナンプレを何問でも無料で。クロスワード、シルプレ660問、印刷にも対応。"><link rel="icon" href="${base}favicon.svg"><script src="${base}site-theme.js"></script><script src="${base}notebook/i18n-data.js"></script><script src="${base}notebook/i18n.js"></script><script src="${base}ui-text.js"></script><link rel="stylesheet" href="${base}shell.css"></head><body><div id="root"></div><noscript>ナンプレ帳を遊ぶにはJavaScriptを有効にしてください。</noscript><script type="module" src="${base}shell/main.js"></script><script defer src="${base}visit-stats.js"></script></body></html>`;
  fs.writeFileSync(path.join(repo,'nanpure/index.html'),html);
  fs.writeFileSync(path.join(repo,'nanpure.html'),'<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ナンプレ帳</title><meta http-equiv="refresh" content="0;url=/nanpure/"><script>location.replace("/nanpure/"+location.search+location.hash)</script><a href="/nanpure/">ナンプレ帳を開く</a></html>');
  const overrideHash=crypto.createHash('sha256').update(walk(overrides).sort().map(file=>path.relative(overrides,file)+'\0'+fs.readFileSync(file)).join('\0')).digest('hex');
  const revision=spawnSync('git',['rev-parse','HEAD'],{cwd:source,encoding:'utf8'}).stdout.trim();
  fs.writeFileSync(path.join(repo,'nanpure/version.json'),JSON.stringify({version,sourceCommit:revision,clientOverridesSha256:overrideHash}));
  fs.writeFileSync(path.join(repo,'nanpure-version.json'),JSON.stringify({version}));
+ fs.writeFileSync(path.join(repo,'nanpure/releases.json'),JSON.stringify({version,releases:publicUpdates},null,2)+'\n');
  const audioPackage=spawnSync('python3',[path.join(repo,'scripts/pack-nanpure-audio.py'),version],{stdio:'inherit'});
  if(audioPackage.status!==0)throw Error('Audio packaging failed');
- const files=[path.join(repo,'nanpure/index.html'),path.join(repo,'nanpure.html'),path.join(repo,'nanpure/version.json'),...walk(output)];
+ const files=[path.join(repo,'nanpure/index.html'),path.join(repo,'nanpure.html'),path.join(repo,'nanpure/version.json'),path.join(repo,'nanpure/releases.json'),...walk(output)];
  const manifest={version,sourceCommit:revision,clientOverridesSha256:overrideHash,base,online,files:Object.fromEntries(files.map(file=>[path.relative(repo,file),crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex')]))};
  fs.writeFileSync(path.join(repo,'nanpure/release-manifest.json'),JSON.stringify(manifest,null,2)+'\n');
  console.log('Exported',version,files.length,'files from',revision);

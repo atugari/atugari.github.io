@@ -3,7 +3,8 @@ import{daily,ranking,archive}from'./daily.js';
 import{contact,contactImage,admin}from'./contact.js';
 import{cloud}from'./cloud.js';
 import{importLegacy}from'./import.js';
-const tables=['attempts','daily_stock','daily_assignments','daily_maintenance','inquiries','cloud_saves','rate_limits','contact_images','cloud_uploads','cloud_chunks'];
+import{visit,overview,apiVersion}from'./owner.js';
+const tables=['attempts','daily_stock','daily_assignments','daily_maintenance','inquiries','cloud_saves','rate_limits','contact_images','cloud_uploads','cloud_chunks','visit_sessions','visit_browsers','visit_days','owner_usage_snapshots'];
 export default {async fetch(request,env){let response;const url=new URL(request.url),origin=request.headers.get('origin');
  try{
   if(origin!==null&&origin!==siteOrigin&&origin!==url.origin)fail(403,'送信元を確認できません。');
@@ -18,7 +19,7 @@ export default {async fetch(request,env){let response;const url=new URL(request.
    if(url.pathname==='/'||url.pathname==='/api/health'){
     if(request.method!=='GET')fail(405,'この操作は利用できません。');
     const rows=await env.DB.prepare('SELECT name FROM sqlite_master WHERE type=?').bind('table').all();const names=new Set(rows.results.map(r=>r.name));
-    response=json({ok:true,service:'puzzle-api',version:'1.0.0',database:'connected',schema:tables.every(t=>names.has(t))?'installed':'pending',gameApi:'ready'});
+    response=json({ok:true,service:'puzzle-api',version:apiVersion,siteVersion:env.SITE_VERSION||null,database:'connected',schema:tables.every(t=>names.has(t))?'installed':'pending',gameApi:'ready'});
    }else if(url.pathname==='/api/daily')response=await daily(request,env.DB);
    else if(url.pathname==='/api/ranking'&&request.method==='GET')response=await ranking(url,env.DB);
    else if(url.pathname==='/api/daily/archive'&&request.method==='GET')response=await archive(url,env.DB);
@@ -27,6 +28,8 @@ export default {async fetch(request,env){let response;const url=new URL(request.
    else if(url.pathname==='/api/cloud')response=await cloud(request,env.DB,url);
    else if(url.pathname==='/api/admin')response=await admin(request,env);
    else if(url.pathname==='/api/admin/import'&&request.method==='POST')response=await importLegacy(request,env);
+   else if(url.pathname==='/api/visits')response=await visit(request,env);
+   else if(url.pathname==='/api/owner/overview')response=await overview(request,env);
    else fail(404,'ページがありません。');
   }
  }catch(error){response=json({error:error instanceof Problem?error.message:'通信できませんでした。少し待って再試行してください。'},error instanceof Problem?error.status:503)}

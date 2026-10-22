@@ -239,6 +239,7 @@ async function checkResponsiveDailyPlay(browser,root,viewport,n){
   if(n>9){
    const displaySetting=async action=>{
     await page.locator('.header .play-settings-button').click();
+    await page.locator('.game-dialog .ps-category[aria-controls="daily-settings-view"]').click();
     await action(page.locator('.game-dialog'));
     await page.locator('.game-dialog .dialog-close').click();
     await settleDailyLayout(page);
@@ -359,7 +360,7 @@ async function checkResponsiveFreePlay(browser,root,viewport){
   assert(initial.width<=initial.availableWidth+2&&initial.height<=initial.availableHeight+2,'First9×9 render fits without a correcting input: '+label+' '+JSON.stringify(initial));
   if(pinchCase){
    await checkBoardPinch(page,frame,{boardSelector:'#board',viewportSelector:'#board-scroll',label:'Free Play 9×9 at '+label});
-   await frame.locator('#np-play-settings-button').click();await frame.locator('.np-pan-fit').click();await frame.locator('.np-settings-close').click();await twoAnimationFrames(frame);
+   await frame.locator('#np-play-settings-button').click();await frame.locator('[aria-controls="np-settings-page-view"]').click();await frame.locator('.np-pan-fit').click();await frame.locator('.np-settings-close').click();await twoAnimationFrames(frame);
   }
   await expectNotebookText(frame,'#app .screen > h1','Classic Sudoku',label+' classic type heading',{contains:true});
   await expectNotebookText(frame,'[data-video="pause"]','Pause',label+' pause action');
@@ -395,7 +396,18 @@ async function checkResponsiveFreePlay(browser,root,viewport){
   assert.equal(await frame.locator('#np-play-settings .np-pan-tools').count(),1,'Board sizing remains available in settings: '+label);
   for(const selector of ['#video-score','[data-video="favorite"]','#video-flash'])assert.equal(await frame.locator('#np-play-settings '+selector).count(),1,'Secondary play details remain available '+selector+': '+label);
   for(const selector of ['#display-mode','#memo-prune','[data-action="check"]','[data-action="restart"]','[data-action="play-print"]'])assert.equal(await frame.locator('#np-play-settings '+selector).count(),1,'Setting/action retained '+selector+': '+label);
-  assert((await frame.locator('#np-play-settings > details').count())>=4,'Rules and operations retain their sections: '+label);
+  assert.equal(await frame.locator('#np-play-settings .np-settings-category').count(),4,'Four settings categories: '+label);
+  assert(await frame.locator('#np-play-settings .np-settings-menu').isVisible(),'Settings open at the short category list: '+label);
+  assert.equal(await frame.locator('#np-play-settings .np-settings-page:visible').count(),0,'Details stay hidden until a category is selected: '+label);
+  await frame.locator('[aria-controls="np-settings-page-view"]').click();
+  assert(await frame.locator('#np-play-settings #display-mode').isVisible(),'Appearance controls are reachable from their category: '+label);
+  await frame.locator('.np-settings-back').click();
+  await frame.locator('[aria-controls="np-settings-page-input"]').click();
+  assert(await frame.locator('#np-play-settings #play-input-mode').isVisible(),'Input controls are reachable from their category: '+label);
+  await frame.locator('.np-settings-back').click();
+  await frame.locator('[aria-controls="np-settings-page-help"]').click();
+  assert.equal(await frame.locator('#np-play-settings .np-settings-page:visible').count(),1,'Only the chosen settings page is visible: '+label);
+  assert((await frame.locator('#np-play-settings .np-settings-page details').count())>=4,'Original rules, memo assistance, operations and access settings retain their sections: '+label);
   const operations=frame.locator('#np-play-settings details').filter({has:frame.locator('[data-action="play-print"]')});
   await operations.locator('summary').first().click();
   assert(await frame.locator('#np-play-settings [data-action="play-print"]').isVisible(),'Print remains reachable in settings: '+label);
@@ -449,6 +461,7 @@ async function checkResponsiveFreePlay(browser,root,viewport){
    await expectNotebookText(frame,'#board [data-cell="0"]','1',label+' holding a key does not write into the selected cell');
   }
   await frame.locator('#np-play-settings-button').click();
+  await frame.locator('[aria-controls="np-settings-page-view"]').click();
   await frame.locator('.np-pan-fit').click();
   await frame.locator('.np-settings-close').click();await twoAnimationFrames(frame);
   const fitted=await frame.evaluate(()=>{
@@ -457,7 +470,7 @@ async function checkResponsiveFreePlay(browser,root,viewport){
   });
   assert(fitted.base>=875,'Large board retains its readable base size: '+label);
   assert(fitted.scale<1&&fitted.width<=fitted.availableWidth+2&&fitted.height<=fitted.availableHeight+2,'Fit shows the whole25×25board: '+label+' '+JSON.stringify(fitted));
-  await frame.locator('#np-play-settings-button').click();await frame.locator('.np-pan-tools button').nth(1).click();await frame.locator('.np-settings-close').click();
+  await frame.locator('#np-play-settings-button').click();await frame.locator('[aria-controls="np-settings-page-view"]').click();await frame.locator('.np-pan-tools button').nth(1).click();await frame.locator('.np-settings-close').click();
   assert.equal(await frame.locator('#board-scroll').getAttribute('data-scale'),'1','100% resets to base size: '+label);
   await checkNotebookInterface(frame,'en','responsive play '+label);
   assert.deepEqual(errors,[],'Responsive page errors: '+label);

@@ -44,3 +44,56 @@
 .mode-daily .variable-board[data-selection-design] .cell:focus-visible{outline:2px dashed currentColor;outline-offset:-3px}
 .selection-design-setting{display:block;margin:8px 0 16px}
 .settings-preview[data-selection-design]:not(.noncolor) .preview-same{text-decoration:none}
+
+/* In-game settings: short category rows and right-aligned switches, as in the
+   supplied app recordings. These rules do not change the site-wide menu. */
+.game-dialog.play-settings-dialog{width:min(96vw,620px);max-height:calc(100dvh - 20px);padding:0 16px 18px;background:#f3f5f2;color:#1d332a}
+.ps-organized .ps-header{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:8px;min-height:66px;padding:8px 0;background:#f3f5f2}
+.ps-organized .ps-close{flex:none;min-height:44px;margin:0;padding:8px 12px;white-space:nowrap;font-size:max(14px,var(--ui-min-font,0px))}
+.ps-organized .ps-header h2{flex:1;min-width:0;margin:0;font-size:max(20px,var(--ui-min-font,0px));line-height:1.35;outline:none}
+.ps-organized .ps-back{flex:none;min-width:40px;min-height:44px;padding:0;border:0;background:transparent;color:#245a43;font-size:34px;line-height:1}
+.ps-organized .ps-intro{margin:2px 0 16px;font-size:max(14px,var(--ui-min-font,0px));line-height:1.6;color:#596d60}
+.ps-organized .ps-category-list{display:grid;gap:10px}
+.ps-organized .ps-category{display:grid;grid-template-columns:36px minmax(0,1fr) 16px;align-items:center;gap:12px;width:100%;min-height:82px;padding:14px 12px;border:1px solid #dce5dc;border-radius:13px;background:#fff;color:#1d332a;text-align:left;font:inherit;box-shadow:0 1px 2px #173b2610}
+.ps-organized .ps-category strong{display:block;font-size:max(16px,var(--ui-min-font,0px));line-height:1.4;font-weight:750}
+.ps-organized .ps-category small{display:block;margin-top:4px;color:#65766c;font-size:max(12px,var(--ui-min-font,0px));line-height:1.45}
+.ps-organized .ps-category-icon{display:grid;place-items:center;width:36px;height:36px;border-radius:10px;background:#edf4ee;color:#2b6651}
+.ps-organized .ps-chevron{font-size:25px;color:#7b8e82}
+.ps-organized .ps-menu[hidden],.ps-organized .ps-page[hidden]{display:none!important}
+.ps-organized .ps-page{padding-top:2px}
+.ps-organized .ps-card,.ps-organized .keypad-settings,.ps-organized .ps-page>fieldset{display:block;min-width:0;margin:12px 0;padding:8px 14px;border:1px solid #dce5dc;border-radius:13px;background:#fff}
+.ps-organized fieldset.ps-card{padding-top:8px}
+.ps-organized .ps-card legend,.ps-organized .keypad-settings legend{padding:0 5px;font-size:max(14px,var(--ui-min-font,0px));font-weight:700;color:#506c59}
+.ps-organized .ps-switch-row{display:flex;align-items:center;justify-content:space-between;gap:18px;min-height:58px;margin:0;padding:12px 0;border-bottom:1px solid #eaf0e8;line-height:1.5;font-size:max(15px,var(--ui-min-font,0px));font-weight:500;cursor:pointer}
+.ps-organized .ps-switch-row:last-child{border-bottom:0}
+.ps-organized .ps-row-title{display:block}
+.ps-organized .ps-switch-row small{display:block;margin-top:4px;color:#6a7b70;font-size:max(12px,var(--ui-min-font,0px));line-height:1.5;font-weight:400}
+.ps-organized .ps-switch-row input[type=checkbox]{appearance:none;-webkit-appearance:none;position:relative;flex:0 0 46px;width:46px;height:28px;min-width:46px;min-height:28px;margin:0;padding:0;border:1px solid #97a69b;border-radius:16px;background:#aab5ad;transition:background .12s;cursor:pointer}
+.ps-organized .ps-switch-row input[type=checkbox]::after{content:"";position:absolute;width:22px;height:22px;left:2px;top:2px;border-radius:50%;background:#fff;box-shadow:0 1px 3px #0002;transition:transform .12s}
+.ps-organized .ps-switch-row input[type=checkbox]:checked{background:#28634b;border-color:#28634b}
+.ps-organized .ps-switch-row input[type=checkbox]:checked::after{transform:translateX(18px)}
+.ps-organized .ps-switch-row input[type=checkbox]:focus-visible{outline:3px solid #bb862f;outline-offset:3px}
+.ps-organized .ps-switch-row input:disabled{opacity:.5;cursor:default}
+.ps-organized .ps-choice,.ps-organized .keypad-settings label{display:grid;grid-template-columns:minmax(0,1fr) minmax(116px,48%);align-items:center;gap:12px;margin:0;padding:12px 0;min-height:58px;font-size:max(15px,var(--ui-min-font,0px));font-weight:600;border-bottom:1px solid #eaf0e8}
+.ps-organized .ps-choice select,.ps-organized .keypad-settings select{width:100%;min-width:0;min-height:44px;margin:0;padding:8px 10px;font-size:max(14px,var(--ui-min-font,0px));color:#285943;background:#f6f8f4;border-color:#c8d6ca}
+.ps-organized .selection-design-setting{margin:0}
+.ps-organized .ps-card>.secondary-action{margin:12px 0 6px;min-height:46px}
+.ps-organized .ps-card>summary{min-height:48px;padding:12px 0;font-size:max(15px,var(--ui-min-font,0px))}
+.ps-organized .ps-page .settings-preview{position:static;width:fit-content;max-width:100%;margin:6px auto 14px;padding:12px;border-radius:13px}
+.ps-organized .ps-page .preview-cells{width:144px;height:144px;grid-template-rows:repeat(4,minmax(0,1fr));line-height:1}
+.ps-organized .ps-page .settings-preview>small{display:block;margin-top:8px;line-height:1.5}
+.ps-organized .ps-page .palette-options{padding:10px 0;gap:10px}
+.ps-organized .ps-page .palette-options button{min-height:44px}
+.ps-organized .ps-range{display:flex;flex-wrap:wrap;align-items:center;gap:8px;min-height:64px;margin:6px 0;padding:12px 0;border-bottom:1px solid #eaf0e8;font-size:max(15px,var(--ui-min-font,0px))}
+.ps-organized .ps-range output{margin-left:auto;color:#285943}
+.ps-organized .ps-range input{width:100%;min-height:32px}
+.ps-organized .ps-card small,.ps-organized .ps-note{font-size:max(12px,var(--ui-min-font,0px));line-height:1.6;color:#617167}
+.ps-organized .ps-link-row{display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;min-height:54px;padding:12px 0;background:transparent;border:0;border-bottom:1px solid #eaf0e8;text-align:left;color:#245a43;font:600 max(15px,var(--ui-min-font,0px))/1.5 system-ui,sans-serif}
+.ps-organized .ps-link-row:last-child{border-bottom:0}
+.ps-organized .ps-reset{display:block;margin:20px auto 4px;min-height:44px;color:#6a5b4c}
+.home-version{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px 8px;width:100%;min-height:36px;margin:4px 0 0;padding:7px 8px;background:transparent;border:0;color:var(--muted,#657568);font:500 12px/1.5 system-ui,sans-serif;font-variant-numeric:tabular-nums}
+.home-version:hover{text-decoration:underline}
+@media(max-width:360px){.ps-organized .ps-category{gap:9px;padding:12px 10px}.ps-organized .ps-card,.ps-organized .keypad-settings{padding-inline:10px}.ps-organized .ps-choice,.ps-organized .keypad-settings label{grid-template-columns:minmax(0,1fr) minmax(100px,48%);gap:8px}}
+@media(max-width:480px){.ps-organized .selection-design-setting.ps-choice{grid-template-columns:minmax(0,1fr);gap:8px}}
+@media(prefers-reduced-motion:reduce){.ps-organized .ps-switch-row input,.ps-organized .ps-switch-row input::after{transition:none!important}}
+@media(forced-colors:active){.ps-organized .ps-switch-row input[type=checkbox]{appearance:auto;-webkit-appearance:auto}.ps-organized .ps-switch-row input[type=checkbox]::after{display:none}}
