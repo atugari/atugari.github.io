@@ -1,0 +1,53 @@
+name: Build Nanpure author Android app
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'owner-app/**'
+      - '.github/workflows/build-owner-app.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nanpure-owner-android
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Install matching Android SDK
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - name: Build unsigned release
+        working-directory: owner-app
+        run: gradle --no-daemon :app:assembleRelease :app:lintRelease
+      - name: Prepare artifact for private local signing
+        shell: bash
+        run: |
+          mkdir -p owner-app-artifact
+          cp owner-app/app/build/outputs/apk/release/app-release-unsigned.apk owner-app-artifact/nanpure-owner-1.0.0-unsigned.apk
+          cp "$ANDROID_HOME/build-tools/35.0.0/lib/apksigner.jar" owner-app-artifact/apksigner.jar
+          cp owner-app/app/build/reports/lint-results-release.html owner-app-artifact/lint-results.html
+          cp owner-app/README.md owner-app-artifact/README.md
+          sha256sum owner-app-artifact/nanpure-owner-1.0.0-unsigned.apk owner-app-artifact/apksigner.jar > owner-app-artifact/SHA256SUMS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nanpure-owner-android-1.0.0-unsigned
+          path: owner-app-artifact/
+          retention-days: 30
+          if-no-files-found: error
