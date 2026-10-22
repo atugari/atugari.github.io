@@ -4,4 +4,5 @@ module.exports = {
   ...require('./catalog.json'),
   ...require('./catalog-updates.json'),
   ...require('./catalog-release-33.json'),
+  ...require('./catalog-seo-34.json'),
 };

@@ -15,7 +15,8 @@ export function LocaleProvider({initialLocale,children}:{initialLocale:Locale;ch
  useEffect(()=>{const hint=new URLSearchParams(window.location.search).get('lang');let saved;try{saved=localStorage.getItem(languageKey)}catch{}if(isLocale(hint))setLocale(hint);else if(isLocale(saved))setLocale(saved)},[]);
  useEffect(()=>{
   (window as any).NPFurigana?.beforeLanguageChange();document.documentElement.lang=htmlLanguage(locale);document.documentElement.dataset.locale=locale;
-  document.title=translate(locale,'ナンプレ帳')+' | '+translate(locale,window.location.pathname==='/privacy'||new URLSearchParams(window.location.search).get('view')==='privacy'?'利用案内・プライバシー':'日替わり問題帳');
+  const privacy=window.location.pathname==='/privacy'||new URLSearchParams(window.location.search).get('view')==='privacy';
+  document.title=privacy?translate(locale,'ナンプレ帳')+' | '+translate(locale,'利用案内・プライバシー'):translate(locale,'ナンプレ帳｜無料ナンプレ・数独、日替わり問題と印刷');
   try{localStorage.setItem(languageKey,locale)}catch{}
   document.cookie=`${languageCookie}=${locale};Path=/;Max-Age=31536000;SameSite=Lax`;
  },[locale]);

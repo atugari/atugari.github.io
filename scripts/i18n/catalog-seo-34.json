@@ -1,0 +1,172 @@
+{
+  "ナンプレ帳｜無料ナンプレ・数独、日替わり問題と印刷": {
+    "en": "Nanpure Cho | Free Sudoku, Daily Puzzles and Printing",
+    "zh-Hans": "Nanpure Cho｜免费数独、每日题目与打印",
+    "zh-Hant": "Nanpure Cho｜免費數獨、每日題目與列印",
+    "ko": "Nanpure Cho | 무료 스도쿠, 일일 문제와 인쇄",
+    "es": "Nanpure Cho | Sudoku gratis, puzles diarios e impresión",
+    "fr": "Nanpure Cho | Sudoku gratuit, grilles quotidiennes et impression",
+    "de": "Nanpure Cho | Kostenloses Sudoku, tägliche Rätsel und Drucken",
+    "pt": "Nanpure Cho | Sudoku grátis, desafios diários e impressão"
+  },
+  "ナンプレ帳でできること": {
+    "en": "What You Can Do with Nanpure Cho",
+    "zh-Hans": "Nanpure Cho 的功能",
+    "zh-Hant": "Nanpure Cho 的功能",
+    "ko": "Nanpure Cho에서 할 수 있는 것",
+    "es": "Qué puedes hacer con Nanpure Cho",
+    "fr": "Ce que vous pouvez faire avec Nanpure Cho",
+    "de": "Was du mit Nanpure Cho machen kannst",
+    "pt": "O que você pode fazer com o Nanpure Cho"
+  },
+  "ナンプレ帳は、スマホやパソコンで遊べる無料のナンプレ（数独）です。登録不要で、好きな条件の問題づくり、毎日3問の日替わり、途中保存、印刷を利用できます。": {
+    "en": "Nanpure Cho lets you play Sudoku for free on your phone or computer. Without signing up, you can create puzzles with your preferred settings, play three new puzzles each day, save your progress, and print.",
+    "zh-Hans": "Nanpure Cho 是可在手机或电脑上玩的免费数独。无需注册，即可按喜欢的条件生成题目、玩每天更新的 3 道题、保存进度和打印。",
+    "zh-Hant": "Nanpure Cho 是可在手機或電腦上玩的免費數獨。不必註冊，即可依喜好的條件產生題目、玩每天更新的 3 道題、儲存進度及列印。",
+    "ko": "Nanpure Cho는 스마트폰이나 컴퓨터에서 즐기는 무료 스도쿠입니다. 가입 없이 원하는 조건으로 문제를 만들고, 매일 새로운 3문제를 풀고, 진행 상황을 저장하고 인쇄할 수 있습니다.",
+    "es": "Nanpure Cho es un sudoku gratuito para jugar en el móvil o el ordenador. Sin registrarte, puedes crear puzles con las opciones que prefieras, jugar a tres puzles nuevos cada día, guardar tu progreso e imprimir.",
+    "fr": "Nanpure Cho est un jeu de Sudoku gratuit sur téléphone ou ordinateur. Sans inscription, vous pouvez créer des grilles selon vos préférences, résoudre trois nouvelles grilles chaque jour, sauvegarder votre progression et imprimer.",
+    "de": "Nanpure Cho ist ein kostenloses Sudoku für Smartphone und Computer. Ohne Anmeldung kannst du Rätsel mit deinen Wunschoptionen erstellen, täglich drei neue Rätsel lösen, deinen Fortschritt speichern und Rätsel ausdrucken.",
+    "pt": "Nanpure Cho é um Sudoku gratuito para jogar no celular ou computador. Sem cadastro, você pode criar desafios com as opções que preferir, jogar três novos desafios por dia, salvar seu progresso e imprimir."
+  },
+  "ナンプレ帳のガイド": {
+    "en": "Nanpure Cho Guides",
+    "zh-Hans": "Nanpure Cho 指南",
+    "zh-Hant": "Nanpure Cho 指南",
+    "ko": "Nanpure Cho 가이드",
+    "es": "Guías de Nanpure Cho",
+    "fr": "Guides de Nanpure Cho",
+    "de": "Anleitungen für Nanpure Cho",
+    "pt": "Guias do Nanpure Cho"
+  },
+  "遊び方と保存": {
+    "en": "How to Play and Save",
+    "zh-Hans": "玩法与保存",
+    "zh-Hant": "玩法與儲存",
+    "ko": "게임 방법과 저장",
+    "es": "Cómo jugar y guardar",
+    "fr": "Jouer et sauvegarder",
+    "de": "Spielen und Speichern",
+    "pt": "Como jogar e salvar"
+  },
+  "基本ルール・始め方・引き継ぎ": {
+    "en": "Basic rules, getting started, and transferring data",
+    "zh-Hans": "基本规则、入门与数据转移",
+    "zh-Hant": "基本規則、入門與資料轉移",
+    "ko": "기본 규칙·시작하기·데이터 이전",
+    "es": "Reglas básicas, primeros pasos y transferencia de datos",
+    "fr": "Règles de base, premiers pas et transfert de données",
+    "de": "Grundregeln, Einstieg und Datenübertragung",
+    "pt": "Regras básicas, primeiros passos e transferência de dados"
+  },
+  "種類とサイズ": {
+    "en": "Types and Sizes",
+    "zh-Hans": "类型与尺寸",
+    "zh-Hant": "類型與尺寸",
+    "ko": "종류와 크기",
+    "es": "Tipos y tamaños",
+    "fr": "Types et tailles",
+    "de": "Varianten und Größen",
+    "pt": "Tipos e tamanhos"
+  },
+  "ジグソー・キラーなどの違い": {
+    "en": "How Jigsaw, Killer, and other variants differ",
+    "zh-Hans": "不规则数独、杀手数独等的区别",
+    "zh-Hant": "不規則數獨、殺手數獨等的差異",
+    "ko": "직소·킬러 등 유형별 차이",
+    "es": "Diferencias entre sudoku irregular, killer y otras variantes",
+    "fr": "Différences entre Sudoku irrégulier, Killer et autres variantes",
+    "de": "Unterschiede zwischen Jigsaw-, Killer- und anderen Sudokus",
+    "pt": "Diferenças entre Sudoku irregular, killer e outras variantes"
+  },
+  "印刷の使い方": {
+    "en": "How to Print",
+    "zh-Hans": "打印使用方法",
+    "zh-Hant": "列印使用方式",
+    "ko": "인쇄 사용법",
+    "es": "Cómo imprimir",
+    "fr": "Comment imprimer",
+    "de": "Anleitung zum Drucken",
+    "pt": "Como imprimir"
+  },
+  "A4・A3・PDF保存": {
+    "en": "A4, A3, and saving as PDF",
+    "zh-Hans": "A4、A3 与保存为 PDF",
+    "zh-Hant": "A4、A3 與另存為 PDF",
+    "ko": "A4·A3·PDF 저장",
+    "es": "A4, A3 y guardar como PDF",
+    "fr": "A4, A3 et enregistrement en PDF",
+    "de": "A4, A3 und als PDF speichern",
+    "pt": "A4, A3 e salvar como PDF"
+  },
+  "シルプレの遊び方": {
+    "en": "How to Play Shirupure",
+    "zh-Hans": "Shirupure 的玩法",
+    "zh-Hant": "Shirupure 的玩法",
+    "ko": "Shirupure 게임 방법",
+    "es": "Cómo jugar a Shirupure",
+    "fr": "Comment jouer à Shirupure",
+    "de": "So spielst du Shirupure",
+    "pt": "Como jogar Shirupure"
+  },
+  "記号を仕切る660問": {
+    "en": "660 puzzles to separate symbols",
+    "zh-Hans": "660 道分隔符号的题目",
+    "zh-Hant": "660 道分隔符號的題目",
+    "ko": "기호를 나누는 660문제",
+    "es": "660 puzles para separar símbolos",
+    "fr": "660 grilles où séparer des symboles",
+    "de": "660 Rätsel zum Trennen von Symbolen",
+    "pt": "660 desafios para separar símbolos"
+  },
+  "ガイド本文は日本語です。": {
+    "en": "The guides are written in Japanese.",
+    "zh-Hans": "指南正文为日语。",
+    "zh-Hant": "指南正文為日文。",
+    "ko": "가이드 본문은 일본어입니다.",
+    "es": "El contenido de las guías está en japonés.",
+    "fr": "Le contenu des guides est en japonais.",
+    "de": "Die Anleitungen sind auf Japanisch verfasst.",
+    "pt": "O conteúdo dos guias está em japonês."
+  },
+  "検索から見つけやすい案内を整えました": {
+    "en": "Updated guides to make them easier to find in search",
+    "zh-Hans": "完善指南，让搜索更容易找到",
+    "zh-Hant": "完善指南，讓搜尋更容易找到",
+    "ko": "검색으로 더 쉽게 찾을 수 있도록 안내를 정비했습니다",
+    "es": "Guías actualizadas para encontrarlas más fácilmente en los buscadores",
+    "fr": "Des guides actualisés pour être plus faciles à trouver dans les recherches",
+    "de": "Anleitungen überarbeitet, damit sie über die Suche leichter zu finden sind",
+    "pt": "Guias atualizados para facilitar sua descoberta nas buscas"
+  },
+  "サイトの紹介と遊び方を、読み込み前から読めるようにしました。": {
+    "en": "The site introduction and play instructions are now available before loading finishes.",
+    "zh-Hans": "网站介绍和玩法说明现在无需等待加载完成即可阅读。",
+    "zh-Hant": "網站介紹和玩法說明現在不必等到載入完成即可閱讀。",
+    "ko": "로딩이 끝나기 전에도 사이트 소개와 게임 방법을 읽을 수 있도록 했습니다.",
+    "es": "Ahora puedes leer la presentación del sitio y las instrucciones antes de que termine de cargar.",
+    "fr": "La présentation du site et les instructions de jeu sont désormais lisibles avant la fin du chargement.",
+    "de": "Die Website-Vorstellung und Spielanleitung sind jetzt schon vor Abschluss des Ladens lesbar.",
+    "pt": "Agora você pode ler a apresentação do site e as instruções antes de o carregamento terminar."
+  },
+  "ナンプレの種類・印刷・シルプレの案内ページを追加しました。": {
+    "en": "Added guide pages for Sudoku variants, printing, and Shirupure.",
+    "zh-Hans": "新增了数独类型、打印和 Shirupure 的指南页面。",
+    "zh-Hant": "新增了數獨類型、列印和 Shirupure 的指南頁面。",
+    "ko": "스도쿠 종류·인쇄·Shirupure 안내 페이지를 추가했습니다.",
+    "es": "Hemos añadido páginas de ayuda sobre las variantes de sudoku, la impresión y Shirupure.",
+    "fr": "Nous avons ajouté des pages de guide sur les variantes de Sudoku, l’impression et Shirupure.",
+    "de": "Anleitungsseiten zu Sudoku-Varianten, zum Drucken und zu Shirupure wurden hinzugefügt.",
+    "pt": "Adicionamos páginas de orientação sobre variantes de Sudoku, impressão e Shirupure."
+  },
+  "検索向けのタイトル・説明・サイトマップを整えました。": {
+    "en": "Updated titles, descriptions, and the sitemap for search engines.",
+    "zh-Hans": "完善了面向搜索引擎的标题、描述和网站地图。",
+    "zh-Hant": "完善了供搜尋引擎使用的標題、描述和網站地圖。",
+    "ko": "검색 엔진용 제목·설명·사이트맵을 정비했습니다.",
+    "es": "Hemos actualizado los títulos, las descripciones y el mapa del sitio para los buscadores.",
+    "fr": "Nous avons revu les titres, les descriptions et le plan du site pour les moteurs de recherche.",
+    "de": "Titel, Beschreibungen und Sitemap wurden für Suchmaschinen überarbeitet.",
+    "pt": "Atualizamos os títulos, as descrições e o mapa do site para os mecanismos de busca."
+  }
+}

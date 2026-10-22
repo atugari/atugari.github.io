@@ -6,6 +6,28 @@ const {parseHTML}=require(process.argv[2]||'linkedom');
 const repo=path.resolve(__dirname,'..'),manifest=require('../nanpure/release-manifest.json');
 const base=path.join(repo,manifest.base),html=fs.readFileSync(path.join(repo,'nanpure/index.html'),'utf8');
 const {window:w}=parseHTML(html),values=new Map(),requests=[],errors=[],intervals=[];
+// Search crawlers and readers without JavaScript must receive useful public content.
+// Check before running any client script so an empty app shell cannot regress unnoticed.
+assert(w.document.querySelector('#root h1')?.textContent.includes('ナンプレ帳'),'Missing pre-rendered home heading');
+const initialIntro=w.document.querySelector('#root .site-intro');
+assert(initialIntro&&initialIntro.textContent.includes('数独')&&initialIntro.textContent.includes('無料'),'Missing visible public introduction');
+assert.equal(w.document.querySelector('link[rel="canonical"]')?.getAttribute('href'),'https://atugari.github.io/nanpure/');
+const guideLinks=[...initialIntro.querySelectorAll('a[href]')];
+assert(guideLinks.length>=3,'Missing crawlable guide links');
+const titles=new Set();
+for(const link of guideLinks){
+ const href=link.getAttribute('href');assert(/^\/nanpure\/[a-z-]+\/$/.test(href),'Invalid stable guide URL');
+ const {document}=parseHTML(fs.readFileSync(path.join(repo,href,'index.html'),'utf8'));
+ assert.equal(document.querySelectorAll('h1').length,1,'Guide must have one useful heading');
+ assert(document.querySelector('article')?.textContent.length>300,'Guide is missing useful static content');
+ assert.equal(document.querySelector('link[rel="canonical"]')?.getAttribute('href'),'https://atugari.github.io'+href);
+ const title=document.querySelector('title')?.textContent;assert(title&&!titles.has(title),'Guide titles must be distinct');titles.add(title);
+ assert(document.querySelector('meta[name="description"]')?.getAttribute('content'));
+ for(const script of document.querySelectorAll('script[type="application/ld+json"]'))JSON.parse(script.textContent);
+ assert([...document.querySelectorAll('a[href]')].some(a=>a.getAttribute('href')==='/nanpure/'),'Guide has no route back to the game');
+}
+assert(fs.readFileSync(path.join(repo,'robots.txt'),'utf8').includes('Sitemap: https://atugari.github.io/sitemap.xml'));
+assert(!fs.readFileSync(path.join(repo,'robots.txt'),'utf8').includes('Disallow: /nanpure/releases/'),'Do not block rendering assets');
 Object.assign(w,{window:w,self:w,Headers,sessionStorage:{getItem:()=>null,setItem(){},removeItem(){}},localStorage:{getItem:k=>values.get(k)||null,setItem:(k,v)=>values.set(k,String(v)),removeItem:k=>values.delete(k)},location:{origin:'https://atugari.github.io',href:'https://atugari.github.io/nanpure/',pathname:'/nanpure/',search:'',hash:''},history:{replaceState(){},pushState(){},go(){}},performance,URL,URLSearchParams,TextEncoder,TextDecoder,AbortController,structuredClone,queueMicrotask,setTimeout,clearTimeout,setInterval:(_,ms)=>{intervals.push(ms);return intervals.length},clearInterval(){},requestAnimationFrame:()=>0,cancelAnimationFrame(){},scrollTo(){},matchMedia:()=>({matches:false,addEventListener(){},removeEventListener(){}}),fetch:async url=>{requests.push(url);if(url==='/nanpure/version.json')return{ok:true,json:async()=>({version:manifest.version})};assert(String(url).startsWith(manifest.online+'/api/'),'Unexpected endpoint '+url);return {ok:true,json:async()=>({day:'2026-10-21',serverNow:Date.now(),challenges:[{day:'2026-10-21',level:1,n:9,kind:'normal',title:'Test',rules:'Test'}],records:[],rows:[],items:[],days:[],signedIn:true,save:null})}},console:{...console,error:(...e)=>errors.push(e.map(String).join(' '))}});
 w.parent=w;w.HTMLElement.prototype.showModal=function(){this.open=true};w.HTMLElement.prototype.close=function(){this.open=false};
 Object.defineProperty(w.document,'hidden',{value:false});

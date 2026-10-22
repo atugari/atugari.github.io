@@ -9,13 +9,14 @@ import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {patchNotebook} from './i18n/patch-notebook.mjs';
 import {buildTranslationAssets} from './i18n/build-assets.mjs';
+import {readSiteContent,searchHead,applicationData,buildSearchPages} from './seo/build-seo.mjs';
 
 const repo=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const source=path.resolve(process.argv[2]||'');
 const require=createRequire(path.join(source,'package.json'));
 const esbuild=createRequire(require.resolve('vite'))('esbuild');
 const release=fs.readFileSync(path.join(source,'lib/releases.ts'),'utf8');
-const version='2026.10.22.33';
+const version='2026.10.22.34';
 const publicUpdates=JSON.parse(fs.readFileSync(path.join(repo,'scripts/release-notes.json'),'utf8'));
 if(publicUpdates[0]?.version!==version)throw Error('Release notes must match the release version');
 const overrides=path.join(repo,'scripts/client-overrides');
@@ -67,6 +68,12 @@ try {
  buildTranslationAssets(path.join(output,'notebook'),version);
  patchNotebook(path.join(output,'notebook'));
  for(const file of walk(output).filter(f=>/\.(html|js|css)$/.test(f)))fs.writeFileSync(file,rewrite(fs.readFileSync(file,'utf8')).replace(/https:\/\/nanpure-chou-online\.[a-z0-9-]+\.chatgpt\.site/g,'https://atugari.github.io/nanpure').replace("host+'/learn?lang='","host+'/?view=tutorial&lang='"));
+ // Versioned iframe documents are application assets; stable guide URLs are the search entry points.
+ // Do not block their directory in robots.txt: crawlers still need the scripts and styles.
+ for(const file of walk(path.join(output,'notebook')).filter(file=>file.endsWith('.html'))){
+  const text=fs.readFileSync(file,'utf8');
+  if(!/<meta[^>]+name=["']robots["']/i.test(text))fs.writeFileSync(file,text.replace(/<head([^>]*)>/i,'<head$1><meta name="robots" content="noindex, follow">'));
+ }
  const cssDir=path.join(source,'dist/client/_next/static/css');
  const styles=fs.readdirSync(cssDir).filter(f=>f.endsWith('.css'));
  if(styles.length!==1)throw Error('Expected one verified framework stylesheet');
@@ -75,19 +82,32 @@ try {
  fs.rmSync(path.join(output,'shell'),{recursive:true,force:true});
  await esbuild.build({entryPoints:[path.join(scratch,'main.tsx')],outdir:path.join(output,'shell'),bundle:true,format:'esm',splitting:true,jsx:'automatic',target:['es2022'],minify:true,sourcemap:false,metafile:true,define:{'process.env.NODE_ENV':'"production"'},logLevel:'warning'});
  fs.appendFileSync(path.join(output,'shell.css'),'\n'+fs.readFileSync(path.join(overrides,'public/native-board.css'),'utf8')+'\n'+fs.readFileSync(path.join(overrides,'public/release-info.css'),'utf8'));
+ fs.appendFileSync(path.join(output,'shell.css'),'\n'+fs.readFileSync(path.join(overrides,'public/site-intro.css'),'utf8'));
+ // Render the same public home component at build time. It remains visible to users
+ // after the client starts; there is no crawler-specific or hidden alternative copy.
+ write('render-home.tsx',`import React from 'react';import {renderToStaticMarkup} from 'react-dom/server';import Game from './app/game';import {LocaleProvider} from './app/locale-context';process.stdout.write(renderToStaticMarkup(<LocaleProvider initialLocale="ja"><Game initialChallenges={[]}/></LocaleProvider>));`);
+ await esbuild.build({entryPoints:[path.join(scratch,'render-home.tsx')],outfile:path.join(scratch,'render-home.cjs'),bundle:true,platform:'node',format:'cjs',jsx:'automatic',target:['node22'],define:{'process.env.NODE_ENV':'"production"'},logLevel:'warning'});
+ const prerender=spawnSync(process.execPath,[path.join(scratch,'render-home.cjs')],{cwd:scratch,encoding:'utf8',maxBuffer:4*1024*1024});
+ if(prerender.error||prerender.status!==0)throw Error('Home pre-render failed: '+(prerender.error?.message||prerender.stderr));
+ const homeHTML=prerender.stdout.trim();
+ if(!homeHTML.includes('<h1>')||!homeHTML.includes('/nanpure/guide/'))throw Error('Home pre-render is missing public content');
  const protection=spawnSync(process.execPath,[path.join(source,'scripts/protect-client.mjs'),output],{cwd:source,stdio:'inherit'});
- if(protection.status!==0)throw Error('Distribution protection failed');
- const html=`<!doctype html><html lang="ja" data-site-theme="notebook"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="referrer" content="no-referrer"><meta name="theme-color" content="#f4efe3"><title>ナンプレ帳 — 無料でいろいろなルールを何問でも</title><meta name="description" content="いろいろなルールのナンプレを何問でも無料で。クロスワード、シルプレ660問、印刷にも対応。"><link rel="icon" href="${base}favicon.svg"><script src="${base}site-theme.js"></script><script src="${base}notebook/i18n-data.js"></script><script src="${base}notebook/i18n.js"></script><script src="${base}ui-text.js"></script><link rel="stylesheet" href="${base}shell.css"></head><body><div id="root"></div><noscript>ナンプレ帳を遊ぶにはJavaScriptを有効にしてください。</noscript><script type="module" src="${base}shell/main.js"></script><script defer src="${base}visit-stats.js"></script></body></html>`;
+ if(protection.error||protection.status!==0)throw Error('Distribution protection failed: '+(protection.error?.message||protection.status));
+ const siteContent=readSiteContent(repo);
+ const html=`<!doctype html><html lang="ja" data-site-theme="notebook"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="referrer" content="no-referrer"><meta name="theme-color" content="#f4efe3">${searchHead({title:siteContent.title,description:siteContent.description,icon:base+'favicon.svg',graph:[applicationData(siteContent)]})}<script>if(['manage','backup','personal','contact','replies'].includes(new URLSearchParams(location.search).get('view')))document.querySelector('meta[name="robots"]').content='noindex, follow';</script><script src="${base}site-theme.js"></script><script src="${base}notebook/i18n-data.js"></script><script src="${base}notebook/i18n.js"></script><script src="${base}ui-text.js"></script><link rel="stylesheet" href="${base}shell.css"></head><body><div id="root">${homeHTML}</div><noscript><p>問題をプレイするにはJavaScriptを有効にしてください。遊び方の案内は、そのまま読むことができます。</p></noscript><script type="module" src="${base}shell/main.js"></script><script defer src="${base}visit-stats.js"></script></body></html>`;
  fs.writeFileSync(path.join(repo,'nanpure/index.html'),html);
- fs.writeFileSync(path.join(repo,'nanpure.html'),'<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ナンプレ帳</title><meta http-equiv="refresh" content="0;url=/nanpure/"><script>location.replace("/nanpure/"+location.search+location.hash)</script><a href="/nanpure/">ナンプレ帳を開く</a></html>');
+ fs.writeFileSync(path.join(repo,'nanpure.html'),'<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ナンプレ帳</title><link rel="canonical" href="https://atugari.github.io/nanpure/"><meta http-equiv="refresh" content="0;url=/nanpure/"><script>location.replace("/nanpure/"+location.search+location.hash)</script></head><body><a href="/nanpure/">ナンプレ帳を開く</a></body></html>');
+ const searchFiles=buildSearchPages(repo,version,base);
  const overrideHash=crypto.createHash('sha256').update(walk(overrides).sort().map(file=>path.relative(overrides,file)+'\0'+fs.readFileSync(file)).join('\0')).digest('hex');
- const revision=spawnSync('git',['rev-parse','HEAD'],{cwd:source,encoding:'utf8'}).stdout.trim();
+ const sourceGit=spawnSync('git',['rev-parse','HEAD'],{cwd:source,encoding:'utf8'});
+ if(sourceGit.error||sourceGit.status!==0)throw Error('Source revision check failed: '+(sourceGit.error?.message||sourceGit.stderr));
+ const revision=sourceGit.stdout.trim();
  fs.writeFileSync(path.join(repo,'nanpure/version.json'),JSON.stringify({version,sourceCommit:revision,clientOverridesSha256:overrideHash}));
  fs.writeFileSync(path.join(repo,'nanpure-version.json'),JSON.stringify({version}));
  fs.writeFileSync(path.join(repo,'nanpure/releases.json'),JSON.stringify({version,releases:publicUpdates},null,2)+'\n');
  const audioPackage=spawnSync('python3',[path.join(repo,'scripts/pack-nanpure-audio.py'),version],{stdio:'inherit'});
- if(audioPackage.status!==0)throw Error('Audio packaging failed');
- const files=[path.join(repo,'nanpure/index.html'),path.join(repo,'nanpure.html'),path.join(repo,'nanpure/version.json'),path.join(repo,'nanpure/releases.json'),...walk(output)];
+ if(audioPackage.error||audioPackage.status!==0)throw Error('Audio packaging failed: '+(audioPackage.error?.message||audioPackage.status));
+ const files=[path.join(repo,'nanpure/index.html'),path.join(repo,'nanpure.html'),path.join(repo,'nanpure/version.json'),path.join(repo,'nanpure/releases.json'),...searchFiles,...walk(output)];
  const manifest={version,sourceCommit:revision,clientOverridesSha256:overrideHash,base,online,files:Object.fromEntries(files.map(file=>[path.relative(repo,file),crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex')]))};
  fs.writeFileSync(path.join(repo,'nanpure/release-manifest.json'),JSON.stringify(manifest,null,2)+'\n');
  console.log('Exported',version,files.length,'files from',revision);
