@@ -14,6 +14,7 @@ module.exports = {
   ...require('./catalog-audio-41.json'),
   ...require('./catalog-magic-42.json'),
   ...require('./catalog-magic-library-43.json'),
+  ...require('./catalog-wado-44.cjs'),
 };
 // Additional languages are split by locale to keep updates reviewable.
 // Visitors receive one generated language pack, never this combined catalog.

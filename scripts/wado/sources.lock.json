@@ -1,0 +1,61 @@
+{
+  "reviewedOn": "2026-10-23",
+  "sha256": {
+    "jmdict": "12c39ce51f2e257d04968e5557f4e30249998bb13a7ae07420066a309e6b3a9a",
+    "sudachiSmall": "dfe6480f7264bf8a9810aeec29d0e7da571e46316532526e24e80970c71314fd",
+    "sudachiCore": "35e81e2b520b2b0f6bda4ded3a0c250d1e14e313fede4dea5db60391ba29bbd9",
+    "juman": "30d411a91c91be5ad0b356c3bee273399e07a71ba1b77ff3b228b7e7c805b017",
+    "wordfreq": "e6ab743b939c1802fc03791f1d58dee2861e822ceecdcdee3f0e05b863ef26d8"
+  },
+  "sources": [
+    {
+      "id": "jmdict",
+      "bit": 1,
+      "title": "JMdict / EDRDG",
+      "version": "3.6.2+20261019180022",
+      "date": "2026-10-19",
+      "url": "https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project",
+      "downloadUrl": "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261019180022",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://www.edrdg.org/edrdg/licence.html",
+      "copyright": "James William BREEN and The Electronic Dictionary Research and Development Group; JSON conversion by scriptin"
+    },
+    {
+      "id": "sudachi",
+      "bit": 2,
+      "title": "SudachiDict (UniDic系統)",
+      "version": "20261015",
+      "date": "2026-10-15",
+      "url": "https://github.com/WorksApplications/SudachiDict",
+      "downloadUrls": [
+        "https://d2ej7fkh96fzlu.cloudfront.net/sudachidict-raw/v0/20261015/small_lex.zip",
+        "https://d2ej7fkh96fzlu.cloudfront.net/sudachidict-raw/v1/20261015/core_lex.zip"
+      ],
+      "license": "Apache-2.0 + BSD-3-Clause / retained upstream notices",
+      "licenseUrl": "https://github.com/WorksApplications/SudachiDict/blob/830bf9e1313f6f75235ba87ee041e144dbcad8c1/LEGAL",
+      "copyright": "Works Applications Co., Ltd.; The UniDic Consortium; Toshinori Sato and other attributed providers (see notices)"
+    },
+    {
+      "id": "juman",
+      "bit": 4,
+      "title": "JUMAN / 京都大学",
+      "version": "82ac584202dda36da30751ef3a9c5418ff2ca48d",
+      "date": "2020-03-10 (ContentW.dic header)",
+      "url": "https://github.com/ku-nlp/juman",
+      "downloadUrl": "https://github.com/ku-nlp/juman/blob/82ac584202dda36da30751ef3a9c5418ff2ca48d/dic/ContentW.dic",
+      "license": "BSD-3-Clause",
+      "licenseUrl": "https://github.com/ku-nlp/juman/blob/82ac584202dda36da30751ef3a9c5418ff2ca48d/COPYING",
+      "copyright": "Copyright (c) 2012 Kyoto University"
+    },
+    {
+      "id": "wordfreq",
+      "title": "wordfreq (親しみやすさの補助指標)",
+      "version": "3.1.1",
+      "date": "usage through approximately 2021; not a current dictionary",
+      "url": "https://github.com/rspeer/wordfreq",
+      "license": "data CC BY-SA 4.0; code Apache-2.0",
+      "licenseUrl": "https://github.com/rspeer/wordfreq/blob/master/NOTICE.md",
+      "copyright": "Copyright 2022 Robyn Speer; SUBTLEX authors Marc Brysbaert et al. and upstream providers; SUBTLEX is freely available data"
+    }
+  ]
+}

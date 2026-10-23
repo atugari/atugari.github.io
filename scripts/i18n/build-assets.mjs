@@ -34,6 +34,7 @@ function bootstrap(config) {
       })
       .then(pack => {
         if (!pack || Array.isArray(pack) || typeof pack !== 'object' || !Object.keys(pack).length || Object.values(pack).some(value => typeof value !== 'string')) throw new Error('Invalid translation pack');
+        if(config.additions?.[locale])pack = Object.assign({}, pack, config.additions[locale]);
         loaded.set(locale, Object.freeze(pack));
         pending.delete(locale);
         return pack;
@@ -49,21 +50,28 @@ function bootstrap(config) {
   w.NPTranslationAssets = {version:config.version,names:config.names,load,has:locale=>locale==='ja'||loaded.has(locale),messages:config.messages};
 }
 
-export function buildTranslationAssets(outputDirectory, version) {
+export function buildTranslationAssets(outputDirectory, version, {previousDirectory} = {}) {
   const inlineMessages = JSON.parse(fs.readFileSync(path.join(directory,'inline-messages.json'),'utf8'));
   fs.mkdirSync(path.join(outputDirectory,'i18n'),{recursive:true});
-  const bytes = {};
+  const bytes = {}, additions = {};
   for (const locale of translationLocales) {
     const pack = Object.fromEntries(Object.entries(catalog).map(([key,translations]) => {
       if (typeof translations[locale] !== 'string' || !translations[locale]) throw new Error('Missing '+locale+' translation: '+key);
       return [key,translations[locale]];
     }));
-    const source = JSON.stringify(pack)+'\n';
+    const previousFile=previousDirectory && path.join(previousDirectory,'i18n',locale+'.json');
+    let source;
+    if(previousFile && fs.existsSync(previousFile)){
+      const previous=JSON.parse(fs.readFileSync(previousFile,'utf8'));
+      if(Object.keys(previous).some(key=>!Object.hasOwn(pack,key)))throw Error('Cannot reuse a pack with removed messages');
+      additions[locale]=Object.fromEntries(Object.entries(pack).filter(([key,value])=>previous[key]!==value));
+      source=fs.readFileSync(previousFile,'utf8');
+    }else source=JSON.stringify(pack)+'\n';
     fs.writeFileSync(path.join(outputDirectory,'i18n',locale+'.json'),source);
     bytes[locale] = Buffer.byteLength(source);
   }
   const messages = Object.fromEntries(['読み込み中…','表示を読み込めませんでした。通信を確認して、もう一度お試しください。','もう一度読み込む'].map(key=>[key,{ja:key,...catalog[key]}]));
-  const source = '('+bootstrap.toString()+')('+JSON.stringify({version,names:languageNames,locales:translationLocales,inlineMessages,messages})+');\n';
+  const source = '('+bootstrap.toString()+')('+JSON.stringify({version,names:languageNames,locales:translationLocales,inlineMessages,messages,additions})+');\n';
   fs.writeFileSync(path.join(outputDirectory,'i18n-data.js'),source);
   return {bootstrapBytes:Buffer.byteLength(source),localeBytes:bytes};
 }
