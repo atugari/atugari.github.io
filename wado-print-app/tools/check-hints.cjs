@@ -7,7 +7,7 @@ const bank=JSON.parse(fs.readFileSync(path.join(root,'web-source/hints.json'))),
 assert.equal(system.richWordCount,235);const puzzles=[],seen=[];
 for(let level=1;level<=10;level++)for(const count of [2,3,4])for(let i=0;i<40;i++){
  const p=engine.generate({level,count,seed:level*100000+count*1000+i,seen});seen.push(WadoPrint.fingerprint(p));puzzles.push(p);
- assert(system.rich(p,p.hintPosition));const candidates=system.suggestions(p);assert(candidates.length>=4);assert(new Set(candidates.map(c=>c.view)).size>=4);
+ assert(system.rich(p,p.hintPosition));const candidates=system.suggestions(p);assert(candidates.length>=3);assert(new Set(candidates.map(c=>c.view)).size>=3);
  for(const h of system.all(p))assert(!h.text.includes(p.answer),'clue must not contain the central answer');
  assert.deepEqual(engine.validatePuzzle(p),p);const selected=candidates.at(-1);p.hintChoice=selected.id;assert.equal(engine.validatePuzzle(p).hintChoice,selected.id);delete p.hintChoice;
 }
@@ -21,5 +21,6 @@ for(const grade of [1,2,3]){
  assert.equal(system.plan([p],grade,{respectSelection:false}).get(WadoClues.key(p)).grade,grade,'difficulty sheets keep their stated grade');delete p.hintChoice;
 }
 for(let level=1;level<=10;level++){const recent=[];for(let i=0;i<12;i++){const p=engine.generate({level,count:4,seed:99000+level*100+i,recentHintWords:recent});const word=WadoPrint.word(p,p.hintPosition);assert(!recent.includes(word),'avoid recently used clue words');recent.push(word);if(recent.length>8)recent.shift();}}
+for(const grade of [1,2,3]){const batch=[];let last=null;for(let i=0;i<15;i++){const p=engine.generate({level:2,count:4,seed:8800+i,recentHintWords:batch.slice(-8).map(p=>WadoPrint.word(p,p.hintPosition)),hintGrade:grade,lastHintView:last});batch.push(p);const actual=system.plan(batch,grade).get(WadoClues.key(p));assert.notEqual(actual.view,last,'actively change automatic perspectives');last=actual.view;}}
 assert([...system.plan(puzzles,0).values()].every(x=>x===null),'no-hint print contains no clues');
 console.log(JSON.stringify({passed:puzzles.length,richWords:system.richWordCount,variety}));

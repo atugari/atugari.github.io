@@ -26,7 +26,7 @@
   for(const w of words.values()){if(w.text[0]===w.text[1])continue;add(w.text[1],'before',w);add(w.text[0],'after',w);}
   function clue(p,position=p.hintPosition){const h=hints.get(word(p,position));return h&&[h.broad,h.category,h.detail].every(s=>typeof s==='string'&&s.length>2&&!s.includes(p.answer))?h:null;}
   function config(level,count){const key=level+':'+count;if(configs.has(key))return configs.get(key);const c=levels[level-1],ok=w=>w.rank<=c.maxRank&&w.zipf>=c.minZipf;const values=[...pool].map(([answer,e])=>({answer,before:e.before.filter(ok),after:e.after.filter(ok)})).filter(e=>e.before.length>=(count===4?2:1)&&e.after.length>=(count===4?2:1));configs.set(key,values);return values;}
-  function generate({level=2,count=4,seed=Date.now(),seen=[],recentHintWords=[]}={}){
+  function generate({level=2,count=4,seed=Date.now(),seen=[],recentHintWords=[],hintGrade=1,lastHintView=null}={}){
    if(!Number.isInteger(level)||level<1||level>10||![2,3,4].includes(count)||!Number.isSafeInteger(seed))throw Error('生成条件を確認してください。');
    const c=levels[level-1],rng=random(seed),entries=config(level,count),known=new Set(seen);
    for(let attempt=0;attempt<40000&&entries.length;attempt++){
@@ -37,7 +37,7 @@
     const p={schema:1,level,count,arms,answer:e.answer};
     const used=positions.filter(k=>arms[k]);if(used.reduce((sum,k)=>sum+words.get(word(p,k)).rank,0)/count<c.minAverage||known.has(fingerprint(p)))continue;
     const targets=used.filter(k=>clue(p,k)&&hintSystem.rich(p,k));if(!targets.length)continue;
-    const fresh=targets.filter(k=>!recentHintWords.includes(word(p,k)));if(!fresh.length&&attempt<4000)continue;const candidates=fresh.length?fresh:targets;p.hintPosition=candidates[Math.floor(rng()*candidates.length)];return p;
+    const fresh=targets.filter(k=>!recentHintWords.includes(word(p,k))&&hintSystem.all(p).some(h=>h.position===k&&h.preferred&&h.grade===hintGrade&&h.view!==lastHintView));if(!fresh.length&&attempt<4000)continue;const candidates=fresh.length?fresh:targets;p.hintPosition=candidates[Math.floor(rng()*candidates.length)];return p;
    }
    throw Error('この条件で新しい問題が見つかりませんでした。問題数を減らすか、難しさ・熟語の数を変えてください。');
   }
