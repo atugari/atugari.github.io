@@ -16,12 +16,21 @@ export function patchNotebook(directory) {
   replace('access-tools.js','const t=s=>window.NPI18n?.t(s)||s;','const t=s=>s;');
   replace('play-options.js','function t(s){return window.NPI18n?.t(s)||s}','function t(s){return s}');
 
+  // Replace the former no-op settings adapter with the shared audio bridge.
+  replace('shirupure.html','<script>window.ShiruAudio={available:()=>!!window.NPSiteAudio,settings:()=>{},gesture:()=>window.NPSiteAudio?.unlock(),effect:name=>window.NPSiteAudio?.effect(({clear:"complete",draw:"input",join:"note",color:"note",erase:"erase",undo:"undo",next:"next"})[name]||"input")};</script>','<script src="shirupure-audio.js"></script>');
+  replace('shirupure.html','g.ShiruGame={valid,edges};applyTheme();audio.settings(data.settings);home();','g.ShiruGame={valid,edges};applyTheme();audio.connect(data.settings);home();');
+  replace('shirupure.html','save();applyTheme();audio.settings(data.settings);home();','save();applyTheme();audio.connect(data.settings);home();');
+  replace('shirupure.html',"else window.NPSiteAudio?.openPanel();}","else legacySound();}");
+
   patchNotebookApp(directory);
 
   // Translate only a new task's default name. Player-edited and saved names
   // remain input values and retain their explicit data-i18n-skip protection.
   replace('portable.js','value="分担生成"',`value="'+o(window.NPI18n?.t("分担生成")||"分担生成")+'"`);
   replace('portable.js','P("name").value.trim()||"分担生成"','P("name").value.trim()||(window.NPI18n?.t("分担生成")||"分担生成")');
+
+  // A top-level notebook has no parent shell to activate its background music.
+  replace('context-entry.js',"parent.postMessage({type:'np-notebook-playing',playing},location.origin)","if(parent===w)w.NPSiteAudio?.setActive(playing);else parent.postMessage({type:'np-notebook-playing',playing},location.origin)");
 
   // Read completion state independently of the displayed language.
   replace("context-entry.js","document.querySelector('.proto-status')?.textContent.includes('完成しました')","w.NPPrototype?.exportData?.()?.states?.[w.NPPrototype?.getRoute?.()?.id]?.done===true");
