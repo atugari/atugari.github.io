@@ -21,7 +21,7 @@
  function shuffle(list,rng){const a=list.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
  function create(data,bank){
   if(data?.revision!=='whole-lexicon-2'||!Array.isArray(data.words)||bank?.version!==1||!Array.isArray(bank.words))throw Error('同梱データを読み込めませんでした。元のHTMLファイルを開き直してください。');
-  const words=new Map(data.words.map(w=>[w.text,w])),hints=new Map(bank.words.map(h=>[h.text,h])),pool=new Map(),configs=new Map();
+  const words=new Map(data.words.map(w=>[w.text,w])),hints=new Map(bank.words.map(h=>[h.text,h])),hintSystem=WadoClues.create(bank),pool=new Map(),configs=new Map();
   function add(char,side,item){if(!pool.has(char))pool.set(char,{before:[],after:[]});pool.get(char)[side].push(item);}
   for(const w of words.values()){if(w.text[0]===w.text[1])continue;add(w.text[1],'before',w);add(w.text[0],'after',w);}
   function clue(p,position=p.hintPosition){const h=hints.get(word(p,position));return h&&[h.broad,h.category,h.detail].every(s=>typeof s==='string'&&s.length>2&&!s.includes(p.answer))?h:null;}
@@ -36,7 +36,7 @@
     if(new Set(Object.values(arms)).size!==count)continue;
     const p={schema:1,level,count,arms,answer:e.answer};
     const used=positions.filter(k=>arms[k]);if(used.reduce((sum,k)=>sum+words.get(word(p,k)).rank,0)/count<c.minAverage||known.has(fingerprint(p)))continue;
-    const targets=used.filter(k=>clue(p,k));if(!targets.length)continue;
+    const targets=used.filter(k=>clue(p,k)&&hintSystem.rich(p,k));if(!targets.length)continue;
     p.hintPosition=targets[Math.floor(rng()*targets.length)];return p;
    }
    throw Error('この条件で新しい問題が見つかりませんでした。問題数を減らすか、難しさ・熟語の数を変えてください。');
@@ -49,9 +49,10 @@
    const p={schema:1,level:input.level,count:input.count,answer:input.answer,arms:Object.fromEntries(positions.filter(k=>input.arms[k]).map(k=>[k,input.arms[k]])),hintPosition:input.hintPosition};
    if(input.id!==undefined){if(typeof input.id!=='string'||!/^WA-[A-Z0-9-]{5,48}$/.test(input.id))throw Error('問題番号を確認してください。');p.id=input.id;}
    if(input.created!==undefined){if(!Number.isSafeInteger(input.created)||input.created<0)throw Error('作成日時を確認してください。');p.created=input.created;}
+   if(input.hintChoice!==undefined){if(typeof input.hintChoice!=='string'||!/^\w+\.[0-9]{1,2}$/.test(input.hintChoice))throw Error('選んだヒントを確認してください。');if(hintSystem.validChoice(p,input.hintChoice))p.hintChoice=input.hintChoice;}
    return p;
   }
-  return{generate,validatePuzzle,clue,entry:text=>words.get(text),hintWordCount:hints.size};
+  return{generate,validatePuzzle,clue,hintSystem,entry:text=>words.get(text),hintWordCount:hints.size};
  }
  global.WadoPrint={create,levels,positions,labels,word,fingerprint};
 })(typeof window==='undefined'?globalThis:window);

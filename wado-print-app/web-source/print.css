@@ -46,3 +46,6 @@
  .page-canvas .sheet{break-after:auto;page-break-after:auto}
  .preview-tools{display:none}
 }
+
+.hint-picker{margin-top:10px;font-size:12px}.hint-picker summary{min-height:36px;padding:7px 0}.hint-picker fieldset{margin:0;padding:0;border:0}.hint-guide{font-size:11px;color:#657268}.hint-option{display:flex;align-items:flex-start;gap:8px;font-size:12px;min-width:0;font-weight:400;margin:8px 0;padding:9px;border:1px solid #dce2d8;border-radius:8px;background:#fafbf7}.hint-option input{flex:none;width:18px;height:18px;margin:3px 0;accent-color:#285849}.hint-option span{min-width:0;overflow-wrap:anywhere}.hint-option b{display:block;font-size:11px;margin-bottom:3px}.hint-option:has(input:checked){border-color:#285849;background:#edf4ee}.sr-only{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+@media print{.hint-picker{display:none!important}}
