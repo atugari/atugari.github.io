@@ -1,6 +1,7 @@
 // Regression checks for the real notebook input functions and stable cell DOM.
 // node scripts/check-nanpure-input.cjs /path/to/app.js /path/to/linkedom
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const path=require('node:path'),{stripTypeScriptTypes}=require('node:module');
 const appPath=process.argv[2];
 if(!appPath)throw Error('Pass the unobfuscated notebook app.js path.');
 const {parseHTML}=require(process.argv[3]||'linkedom');
@@ -44,6 +45,21 @@ function renderEnvironment(n=25){
   w.NPCompactPlay={layout(){layouts++;if(layoutWidth!==null)width=layoutWidth}};
   vm.createContext(ctx);vm.runInContext(helpers+renderer,ctx);
   return {ctx,w,board,viewport,get current(){return current},set current(value){current=value},get width(){return width},set width(value){width=value},set layoutWidth(value){layoutWidth=value},get measurements(){return measurements},get layouts(){return layouts}};
+}
+function keyboardEnvironment(n=9){
+  const env=renderEnvironment(n),{ctx,w,board}=env,document=w.document,entries=[];
+  let active=document.body;
+  Object.defineProperty(document,'activeElement',{configurable:true,get:()=>active});
+  w.HTMLElement.prototype.focus=function(){active=this;};
+  Object.assign(ctx,{C:null,oe:'cell',re:null,O:null,Mt:()=>false,zt:()=>'',Kt(value){entries.push({index:ctx.A,value});}});
+  ctx.NPVideo.paused=()=>false;ctx.Tt();
+  function cell(index){return board.querySelector('[data-action="cell"][data-cell="'+index+'"]');}
+  function key(value,options={}){
+    const event={key:value,target:document.activeElement,prevented:false,preventDefault(){this.prevented=true;},...options};
+    ctx.handlePlayKey(event);return event;
+  }
+  function focus(index){ctx.A=index;ctx.Tt();cell(index).focus();}
+  return {env,ctx,w,board,document,entries,cell,key,focus};
 }
 (async()=>{
   await check('routine save confirmation can collapse while pending saves, failures and operation feedback become visible',()=>{
@@ -131,6 +147,71 @@ function renderEnvironment(n=25){
     const cell=e.board.querySelector('.cell');assert.equal(cell.querySelector('.cage-label').textContent,'3');assert(cell.querySelector('.cage-border'));
     e.current.grid[0]=1;e.ctx.A=0;e.ctx.Tt();assert.equal(e.board.querySelector('.cell'),cell);assert.equal(cell.querySelector('.cage-label').textContent,'3');assert(cell.classList.contains('killer'));
     e.current=puzzle(4);e.current.kind='kropki';e.ctx.Tt();assert(e.board.querySelector('.board-lines [data-test-mark]'));
+  });
+  await check('keyboard arrows move a single tab stop without entering a locked number',()=>{
+    const e=keyboardEnvironment();e.ctx.oe='number';e.ctx.re=4;e.focus(10);
+    assert.equal(e.key('ArrowRight').prevented,true);assert.equal(e.ctx.A,11);
+    assert.equal(e.document.activeElement,e.cell(11));assert.equal(e.entries.length,0);assert.equal(e.ctx.re,4);
+    assert.deepEqual([...e.board.querySelectorAll('[data-action="cell"]')].filter(cell=>cell.getAttribute('tabindex')==='0').map(cell=>Number(cell.dataset.cell)),[11]);
+    assert.equal(e.key('Tab').prevented,false);assert.equal(e.key('Tab',{shiftKey:true}).prevented,false);
+    e.focus(8);e.key('ArrowRight');assert.equal(e.ctx.A,8,'right arrow cannot wrap to the next row');
+    e.key('Home');assert.equal(e.ctx.A,0);e.key('End');assert.equal(e.ctx.A,8);
+  });
+  await check('keyboard input follows number-first mode and keeps large alphabet digits available',()=>{
+    const e=keyboardEnvironment(36);e.focus(1);e.key('A');e.key('z');
+    assert.deepEqual(e.entries,[{index:1,value:10},{index:1,value:35}]);
+    e.ctx.oe='number';e.key('M');assert.equal(e.ctx.re,22);assert.equal(e.entries.length,2);
+    e.key('ArrowDown');assert.equal(e.ctx.A,37);assert.equal(e.entries.length,2);
+    e.key('Delete');assert.deepEqual(e.entries.at(-1),{index:37,value:0});
+  });
+  await check('modifiers, composition, toolbar focus and open dialogs cannot edit the notebook board',()=>{
+    const e=keyboardEnvironment();e.focus(0);
+    for(const extra of [{ctrlKey:true},{altKey:true},{metaKey:true},{isComposing:true},{keyCode:229},{defaultPrevented:true}]){
+      assert.equal(e.key('3',extra).prevented,false);assert.equal(e.key('ArrowRight',extra).prevented,false);
+    }
+    const toolbar=e.document.createElement('button');e.document.body.append(toolbar);toolbar.focus();assert.equal(e.key('3').prevented,false);
+    e.focus(0);const dialog=e.document.createElement('dialog');dialog.setAttribute('open','');e.document.body.append(dialog);
+    assert.equal(e.key('3').prevented,false);assert.equal(e.key('Delete').prevented,false);dialog.remove();
+    assert.equal(e.entries.length,0);assert.equal(e.ctx.A,0);
+    e.key('3');assert.deepEqual(e.entries,[{index:0,value:3}]);
+  });
+  await check('100 by 100 arrows cross rendered blocks and retain the active cell after redraw',()=>{
+    const e=keyboardEnvironment(100);e.focus(9);const before=e.document.activeElement;
+    assert.equal(e.cell(10),null);e.key('ArrowRight');assert.equal(e.ctx.A,10);
+    assert(e.cell(10));assert.equal(e.document.activeElement,e.cell(10));assert.notEqual(e.document.activeElement,before);
+    e.focus(910);e.key('ArrowDown');assert.equal(e.ctx.A,1010);assert.equal(e.document.activeElement,e.cell(1010));
+    e.ctx.Tt();assert.equal(e.document.activeElement,e.cell(1010));
+    assert.equal([...e.board.querySelectorAll('[data-action="cell"]')].filter(cell=>cell.getAttribute('tabindex')==='0').length,1);
+  });
+  await check('linked cells navigate their visible coordinates and retain focus when their SVG is rebuilt',()=>{
+    const e=keyboardEnvironment(6),cells=[{x:0,y:0},{x:1,y:0},{x:3,y:0},{x:3,y:1}];
+    Object.assign(e.env.current,{linked:{width:4,height:2,cells},grid:[0,0,0,0],puzzle:[0,0,0,0]});
+    e.ctx.NP.linkedArt=()=>cells.map(()=>'<rect/>').join('');e.ctx.NPMemo={groups:()=>[[0,1,2],[2,3]]};
+    e.focus(1);e.key('ArrowRight');assert.equal(e.ctx.A,2);assert.equal(e.document.activeElement,e.cell(2));
+    e.key('ArrowDown');assert.equal(e.ctx.A,3);assert.equal(e.document.activeElement,e.cell(3));
+    e.ctx.Tt();assert.equal(e.document.activeElement,e.cell(3));assert.equal(e.entries.length,0);
+  });
+  await check('number and range buttons keep focus when the keypad markup changes',()=>{
+    const e=keyboardEnvironment(100),controls=e.document.createElement('div');e.document.body.append(controls);
+    const markup=pressed=>'<button data-action="number-range" data-range="4">81–100</button><button data-action="number" data-number="100" aria-pressed="'+pressed+'">100</button>';
+    e.ctx.updateNumberControls(controls,markup(false));controls.querySelector('[data-number]').focus();
+    e.ctx.updateNumberControls(controls,markup(true));assert.equal(e.document.activeElement.dataset.number,'100');assert(e.document.activeElement.isConnected);
+    controls.querySelector('[data-range]').focus();e.ctx.updateNumberControls(controls,markup(false));assert.equal(e.document.activeElement.dataset.range,'4');assert(e.document.activeElement.isConnected);
+  });
+  await check('native daily keys use focused cells and leave modifiers, composition and external controls alone',()=>{
+    const e=keyboardEnvironment(16),game=fs.readFileSync(path.join(__dirname,'client-overrides/app/game.tsx'),'utf8');
+    e.env.viewport.classList.add('board-viewport');
+    const start=game.indexOf('const handler=(e:KeyboardEvent)=>{',game.indexOf("if(tab!=='daily'||panel||!session)return"));
+    const end=game.indexOf(';window.addEventListener',start);assert(start>=0&&end>start);
+    const selected=[],entries=[],numbers=[],ctx={n:16,done:false,busy:false,settings:{numberFirst:false},C:value=>selected.push(value),enter:(value,index)=>entries.push({value,index}),number:value=>numbers.push(value)};
+    vm.createContext(ctx);vm.runInContext(stripTypeScriptTypes(game.slice(start,end))+';this.handle=handler;',ctx);
+    e.focus(15);const key=(key,extra={})=>{const event={key,target:e.document.activeElement,prevented:false,preventDefault(){this.prevented=true;},...extra};ctx.handle(event);return event;};
+    key('ArrowRight');assert.equal(selected.at(-1),15);key('ArrowDown');assert.equal(selected.at(-1),31);
+    key('G');assert.deepEqual(entries,[{value:16,index:15}]);
+    ctx.settings.numberFirst=true;key('A');assert.deepEqual(numbers,[10]);assert.equal(entries.length,1);
+    for(const extra of [{ctrlKey:true},{altKey:true},{metaKey:true},{isComposing:true},{keyCode:229},{defaultPrevented:true}])assert.equal(key('3',extra).prevented,false);
+    const button=e.document.createElement('button');e.document.body.append(button);button.focus();assert.equal(key('Delete').prevented,false);assert.equal(key('ArrowLeft').prevented,false);
+    assert.equal(key('Tab').prevented,false);assert.equal(key('Tab',{shiftKey:true}).prevented,false);
   });
   console.log(JSON.stringify({passed,failed:0}));
 })().catch(error=>{console.error(error);process.exitCode=1});

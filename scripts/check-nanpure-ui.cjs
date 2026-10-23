@@ -102,7 +102,7 @@ check('larger saved number-key sizes reduce columns so square keys retain their 
   Ce:()=>current,Mt:()=>false,Pe:async(_library,value)=>saved.push(value),
   updateSourceMarkup:(target,markup)=>{target.innerHTML=markup;},Tt:()=>w.NPCompactPlay.layout(),Ft(){},
   setTimeout:(callback,delay)=>{timers.push({callback,delay});return timers.length;},clearTimeout(){},NPWebAccess:{holdMs:()=>500}});
- vm.runInContext(part('function Ue(','function We(')+part('let St=null,It=null;','function Lt(e){')+part('function zt(){','function At(e){'),ctx);
+ vm.runInContext(part('function Ue(','function We(')+part('let St=null,It=null;','function Lt(e){')+part('function zt(){','function At(e){')+part('function updateNumberControls(','function Tt(){'),ctx);
  const key=w.document.querySelector('[data-action=number][data-number="25"]');
  pointer('pointerdown',key);const bubble=w.document.querySelector('.np-key-preview');assert(bubble);assert.equal(timers.length,1);assert.equal(timers[0].delay,500);
  await timers[0].callback();

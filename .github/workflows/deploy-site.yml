@@ -55,12 +55,13 @@ jobs:
       - name: Bundle Nanpure help and contact
         run: python3 scripts/enhance-nanpure.py _site
 
-      - name: Check Nanpure mobile client before publication
+      - name: Check Nanpure keyboard and mobile client before publication
         shell: bash
         run: |
           npm install --prefix "$RUNNER_TEMP/nanpure-browser" --no-audit --no-fund playwright@1.62.1 linkedom@0.18.13
           node scripts/check-nanpure-i18n.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
           node scripts/check-nanpure-input.cjs scripts/client-overrides/public/notebook/app.js "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
+          node scripts/check-nanpure-special-keyboard.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
           node scripts/check-nanpure-ui.cjs scripts/client-overrides/public/notebook "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
           node scripts/check-nanpure-selection.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
           node scripts/check-nanpure-visit-stats.cjs
@@ -70,7 +71,9 @@ jobs:
           node --experimental-vm-modules scripts/check-nanpure-ranking.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
           export PLAYWRIGHT_MODULE="$RUNNER_TEMP/nanpure-browser/node_modules/playwright"
           export CHROME_BIN="$(command -v google-chrome || command -v chromium)"
+          node scripts/check-nanpure-keyboard-dialogs.cjs
           node scripts/check-nanpure-browser.cjs _site
+          node scripts/check-nanpure-keyboard-browser.cjs _site
 
       - name: Configure Pages
         uses: actions/configure-pages@v5

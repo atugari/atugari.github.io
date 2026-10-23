@@ -1,0 +1,312 @@
+{
+  "キーボード操作": {
+    "en": "Keyboard controls",
+    "zh-Hans": "键盘操作",
+    "zh-Hant": "鍵盤操作",
+    "ko": "키보드 조작",
+    "es": "Controles del teclado",
+    "fr": "Commandes au clavier",
+    "de": "Tastatursteuerung",
+    "pt": "Controles do teclado"
+  },
+  "Tab・矢印キー・数字キーの使い方": {
+    "en": "How to use Tab, arrow keys and number keys",
+    "zh-Hans": "Tab、方向键和数字键的用法",
+    "zh-Hant": "Tab、方向鍵和數字鍵的用法",
+    "ko": "Tab·방향키·숫자 키 사용법",
+    "es": "Cómo usar Tab, las flechas y las teclas numéricas",
+    "fr": "Utiliser Tab, les flèches et les touches numériques",
+    "de": "Tabulator-, Pfeil- und Zahlentasten verwenden",
+    "pt": "Como usar Tab, setas e teclas numéricas"
+  },
+  "画面の移動": {
+    "en": "Navigating the interface",
+    "zh-Hans": "界面导航",
+    "zh-Hant": "介面導覽",
+    "ko": "화면 이동",
+    "es": "Navegar por la interfaz",
+    "fr": "Naviguer dans l’interface",
+    "de": "In der Oberfläche navigieren",
+    "pt": "Navegar na interface"
+  },
+  "次の項目 / 前の項目": {
+    "en": "Next control / previous control",
+    "zh-Hans": "下一个项目 / 上一个项目",
+    "zh-Hant": "下一個項目 / 上一個項目",
+    "ko": "다음 항목 / 이전 항목",
+    "es": "Control siguiente / anterior",
+    "fr": "Commande suivante / précédente",
+    "de": "Nächstes / vorheriges Bedienelement",
+    "pt": "Controle seguinte / anterior"
+  },
+  "選択・実行": {
+    "en": "Select or activate",
+    "zh-Hans": "选择或执行",
+    "zh-Hant": "選取或執行",
+    "ko": "선택·실행",
+    "es": "Seleccionar o activar",
+    "fr": "Sélectionner ou activer",
+    "de": "Auswählen oder ausführen",
+    "pt": "Selecionar ou ativar"
+  },
+  "設定・確認画面を閉じる": {
+    "en": "Close settings or a dialog",
+    "zh-Hans": "关闭设置或确认窗口",
+    "zh-Hant": "關閉設定或確認視窗",
+    "ko": "설정·확인 창 닫기",
+    "es": "Cerrar ajustes o un diálogo",
+    "fr": "Fermer les réglages ou une boîte de dialogue",
+    "de": "Einstellungen oder Dialog schließen",
+    "pt": "Fechar configurações ou uma caixa de diálogo"
+  },
+  "操作一覧を開く": {
+    "en": "Open the keyboard controls",
+    "zh-Hans": "打开键盘操作说明",
+    "zh-Hant": "開啟鍵盤操作說明",
+    "ko": "키보드 조작 목록 열기",
+    "es": "Abrir los controles del teclado",
+    "fr": "Afficher les commandes au clavier",
+    "de": "Tastatursteuerung anzeigen",
+    "pt": "Abrir os controles do teclado"
+  },
+  "メモ・ヒント・設定・印刷も、Tabでボタンを選んで操作できます。": {
+    "en": "Use Tab to reach the buttons for notes, hints, settings and printing.",
+    "zh-Hans": "也可以用Tab选择候选数、提示、设置和打印按钮。",
+    "zh-Hant": "也可以用Tab選取候選數、提示、設定和列印按鈕。",
+    "ko": "메모·힌트·설정·인쇄 버튼도 Tab으로 선택해 조작할 수 있습니다.",
+    "es": "Usa Tab para acceder a los botones de notas, pistas, ajustes e impresión.",
+    "fr": "Utilisez Tab pour accéder aux boutons des notes, des indices, des réglages et de l’impression.",
+    "de": "Mit Tab erreichen Sie auch die Schaltflächen für Notizen, Hinweise, Einstellungen und Drucken.",
+    "pt": "Use Tab para acessar os botões de notas, dicas, configurações e impressão."
+  },
+  "数字の盤面": {
+    "en": "Number grids",
+    "zh-Hans": "数字棋盘",
+    "zh-Hant": "數字盤面",
+    "ko": "숫자 퍼즐판",
+    "es": "Cuadrículas numéricas",
+    "fr": "Grilles de chiffres",
+    "de": "Zahlenraster",
+    "pt": "Grades numéricas"
+  },
+  "マスを移動": {
+    "en": "Move between cells",
+    "zh-Hans": "移动到其他格子",
+    "zh-Hant": "移動到其他格子",
+    "ko": "칸 이동",
+    "es": "Moverse entre casillas",
+    "fr": "Se déplacer entre les cases",
+    "de": "Zwischen Feldern wechseln",
+    "pt": "Mover entre as casas"
+  },
+  "行の先頭 / 末尾": {
+    "en": "Start / end of the row",
+    "zh-Hans": "本行开头 / 末尾",
+    "zh-Hant": "本列開頭 / 結尾",
+    "ko": "행의 처음 / 끝",
+    "es": "Inicio / final de la fila",
+    "fr": "Début / fin de la ligne",
+    "de": "Zeilenanfang / Zeilenende",
+    "pt": "Início / fim da linha"
+  },
+  "数字を入力": {
+    "en": "Enter a number",
+    "zh-Hans": "输入数字",
+    "zh-Hant": "輸入數字",
+    "ko": "숫자 입력",
+    "es": "Introducir un número",
+    "fr": "Saisir un chiffre",
+    "de": "Zahl eingeben",
+    "pt": "Inserir um número"
+  },
+  "入力した数字を消す": {
+    "en": "Erase the entered number",
+    "zh-Hans": "删除输入的数字",
+    "zh-Hant": "刪除輸入的數字",
+    "ko": "입력한 숫자 지우기",
+    "es": "Borrar el número introducido",
+    "fr": "Effacer le chiffre saisi",
+    "de": "Eingegebene Zahl löschen",
+    "pt": "Apagar o número inserido"
+  },
+  "Tabで盤面に入り、矢印キーで移動します。Tabで盤面から出られます。": {
+    "en": "Use Tab to enter the grid, then use the arrow keys to move. Press Tab to leave the grid.",
+    "zh-Hans": "用Tab进入棋盘，再用方向键移动。按Tab可离开棋盘。",
+    "zh-Hant": "用Tab進入盤面，再用方向鍵移動。按Tab可離開盤面。",
+    "ko": "Tab으로 퍼즐판에 들어간 뒤 방향키로 이동합니다. Tab을 누르면 퍼즐판에서 나갑니다.",
+    "es": "Entra en la cuadrícula con Tab y muévete con las flechas. Pulsa Tab para salir de la cuadrícula.",
+    "fr": "Entrez dans la grille avec Tab, puis déplacez-vous avec les flèches. Appuyez sur Tab pour quitter la grille.",
+    "de": "Mit Tab gelangen Sie ins Raster, mit den Pfeiltasten bewegen Sie sich darin. Mit Tab verlassen Sie das Raster.",
+    "pt": "Entre na grade com Tab e mova-se com as setas. Pressione Tab para sair da grade."
+  },
+  "10〜35はA〜Z。36以上は数字ボタンをTabで選び、Enterで入力します。": {
+    "en": "A–Z enter 10–35. For 36 and above, use Tab to select a number button, then press Enter.",
+    "zh-Hans": "A–Z对应10–35。输入36及以上的数字时，用Tab选中数字按钮，再按Enter。",
+    "zh-Hant": "A–Z對應10–35。輸入36以上的數字時，用Tab選取數字按鈕，再按Enter。",
+    "ko": "A–Z는 10–35에 해당합니다. 36 이상은 Tab으로 숫자 버튼을 선택한 뒤 Enter로 입력합니다.",
+    "es": "A–Z corresponden a 10–35. Para 36 o más, selecciona el botón del número con Tab y pulsa Enter.",
+    "fr": "A–Z correspondent à 10–35. À partir de 36, sélectionnez le bouton du nombre avec Tab, puis appuyez sur Entrée.",
+    "de": "A–Z entsprechen 10–35. Ab 36 wählen Sie die Zahlenschaltfläche mit Tab und drücken Enter.",
+    "pt": "A–Z correspondem a 10–35. Para 36 ou mais, selecione o botão do número com Tab e pressione Enter."
+  },
+  "数字先行モードでは、数字を選んだあとマスへ移動し、EnterまたはSpaceで入力します。": {
+    "en": "In number-first mode, select a number, move to a cell, then press Enter or Space to enter it.",
+    "zh-Hans": "在先选数字模式下，选好数字后移动到格子，再按Enter或Space输入。",
+    "zh-Hant": "在先選數字模式下，選好數字後移動到格子，再按Enter或Space輸入。",
+    "ko": "숫자 우선 모드에서는 숫자를 선택하고 원하는 칸으로 이동한 뒤 Enter 또는 Space로 입력합니다.",
+    "es": "En el modo número primero, selecciona un número, ve a una casilla y pulsa Enter o Espacio para introducirlo.",
+    "fr": "En mode chiffre d’abord, sélectionnez un chiffre, allez sur une case, puis appuyez sur Entrée ou Espace pour le saisir.",
+    "de": "Im Modus „Zahl zuerst“ wählen Sie eine Zahl, bewegen sich zu einem Feld und drücken Enter oder die Leertaste.",
+    "pt": "No modo número primeiro, selecione um número, vá até uma casa e pressione Enter ou Espaço para inseri-lo."
+  },
+  "シルプレ・こみち": {
+    "en": "Shirupure and Komichi",
+    "zh-Hans": "Shirupure与小路谜题",
+    "zh-Hant": "Shirupure與小路謎題",
+    "ko": "시루프레·코미치",
+    "es": "Shirupure y Komichi",
+    "fr": "Shirupure et Komichi",
+    "de": "Shirupure und Komichi",
+    "pt": "Shirupure e Komichi"
+  },
+  "線やマスを移動": {
+    "en": "Move between edges or cells",
+    "zh-Hans": "在边界线或格子之间移动",
+    "zh-Hant": "在邊界線或格子之間移動",
+    "ko": "경계선이나 칸 이동",
+    "es": "Moverse entre bordes o casillas",
+    "fr": "Se déplacer entre les bordures ou les cases",
+    "de": "Zwischen Kanten oder Feldern wechseln",
+    "pt": "Mover entre bordas ou casas"
+  },
+  "印を切り替える": {
+    "en": "Change the mark",
+    "zh-Hans": "切换标记",
+    "zh-Hant": "切換標記",
+    "ko": "표시 전환",
+    "es": "Cambiar la marca",
+    "fr": "Changer la marque",
+    "de": "Markierung wechseln",
+    "pt": "Alterar a marca"
+  },
+  "こみちは、移動だけでは線を引きません。EnterかSpaceでマスを選んでつなぎます。": {
+    "en": "In Komichi, moving alone does not draw a line. Use Enter or Space to select and connect cells.",
+    "zh-Hans": "在小路谜题中，仅移动不会画线。用Enter或Space选择格子并连接。",
+    "zh-Hant": "在小路謎題中，僅移動不會畫線。用Enter或Space選取格子並連接。",
+    "ko": "코미치는 이동만으로 선이 그어지지 않습니다. Enter 또는 Space로 칸을 선택해 연결합니다.",
+    "es": "En Komichi, moverse no dibuja líneas. Usa Enter o Espacio para seleccionar y conectar casillas.",
+    "fr": "Dans Komichi, se déplacer ne trace pas de ligne. Utilisez Entrée ou Espace pour sélectionner et relier les cases.",
+    "de": "In Komichi zeichnet eine Bewegung allein keine Linie. Mit Enter oder der Leertaste wählen und verbinden Sie Felder.",
+    "pt": "Em Komichi, mover-se não desenha linhas. Use Enter ou Espaço para selecionar e conectar casas."
+  },
+  "白マスを移動": {
+    "en": "Move between white cells",
+    "zh-Hans": "在白格之间移动",
+    "zh-Hant": "在白格之間移動",
+    "ko": "흰 칸 이동",
+    "es": "Moverse entre casillas blancas",
+    "fr": "Se déplacer entre les cases blanches",
+    "de": "Zwischen weißen Feldern wechseln",
+    "pt": "Mover entre casas brancas"
+  },
+  "タテ・ヨコのカギを切り替える": {
+    "en": "Switch between down and across clues",
+    "zh-Hans": "切换纵向和横向提示",
+    "zh-Hant": "切換直向和橫向提示",
+    "ko": "세로·가로 힌트 전환",
+    "es": "Cambiar entre pistas verticales y horizontales",
+    "fr": "Alterner entre les indices verticaux et horizontaux",
+    "de": "Zwischen senkrechten und waagerechten Hinweisen wechseln",
+    "pt": "Alternar entre pistas verticais e horizontais"
+  },
+  "文字入力欄へ移動・入力を確定": {
+    "en": "Go to the answer field / confirm the answer",
+    "zh-Hans": "移至文字输入框 / 确认输入",
+    "zh-Hant": "移至文字輸入欄 / 確認輸入",
+    "ko": "문자 입력란으로 이동·입력 확정",
+    "es": "Ir al campo de respuesta / confirmar",
+    "fr": "Accéder au champ de réponse / valider",
+    "de": "Zum Eingabefeld wechseln / Eingabe bestätigen",
+    "pt": "Ir ao campo de resposta / confirmar"
+  },
+  "記号を移動": {
+    "en": "Move between symbols",
+    "zh-Hans": "在符号之间移动",
+    "zh-Hant": "在符號之間移動",
+    "ko": "기호 이동",
+    "es": "Moverse entre símbolos",
+    "fr": "Se déplacer entre les symboles",
+    "de": "Zwischen Symbolen wechseln",
+    "pt": "Mover entre símbolos"
+  },
+  "記号を選ぶ": {
+    "en": "Select a symbol",
+    "zh-Hans": "选择符号",
+    "zh-Hant": "選取符號",
+    "ko": "기호 선택",
+    "es": "Seleccionar un símbolo",
+    "fr": "Sélectionner un symbole",
+    "de": "Symbol auswählen",
+    "pt": "Selecionar um símbolo"
+  },
+  "記号を選んだら、Tabで「答える」へ進み、Enterで回答します。": {
+    "en": "After selecting a symbol, use Tab to reach Answer, then press Enter to submit.",
+    "zh-Hans": "选好符号后，用Tab移至“回答”，再按Enter提交。",
+    "zh-Hant": "選好符號後，用Tab移至「回答」，再按Enter送出。",
+    "ko": "기호를 선택한 뒤 Tab으로 ‘답하기’로 이동하고 Enter로 답을 제출합니다.",
+    "es": "Tras seleccionar un símbolo, ve a Responder con Tab y pulsa Enter para enviar la respuesta.",
+    "fr": "Après avoir sélectionné un symbole, allez sur Répondre avec Tab, puis appuyez sur Entrée pour valider.",
+    "de": "Nach der Symbolauswahl gelangen Sie mit Tab zu „Antworten“ und bestätigen mit Enter.",
+    "pt": "Depois de selecionar um símbolo, use Tab para chegar a Responder e pressione Enter para enviar."
+  },
+  "キーボードだけで操作できるようにしました": {
+    "en": "Added keyboard-only controls",
+    "zh-Hans": "新增全键盘操作支持",
+    "zh-Hant": "新增全鍵盤操作支援",
+    "ko": "키보드만으로 조작할 수 있도록 개선했습니다",
+    "es": "Ahora puedes jugar solo con el teclado",
+    "fr": "Vous pouvez désormais jouer entièrement au clavier",
+    "de": "Bedienung ausschließlich per Tastatur hinzugefügt",
+    "pt": "Agora você pode jogar usando apenas o teclado"
+  },
+  "数字の盤面・シルプレ・クロスワード・天秤を、キーボードで操作できます。": {
+    "en": "Use the keyboard to play number grids, Shirupure, crosswords and balance puzzles.",
+    "zh-Hans": "可以用键盘操作数字棋盘、Shirupure、填字和天平谜题。",
+    "zh-Hant": "可以用鍵盤操作數字盤面、Shirupure、填字和天平謎題。",
+    "ko": "숫자 퍼즐·시루프레·크로스워드·천칭 퍼즐을 키보드로 조작할 수 있습니다.",
+    "es": "Juega con el teclado a cuadrículas numéricas, Shirupure, crucigramas y puzles de balanzas.",
+    "fr": "Jouez au clavier aux grilles de chiffres, à Shirupure, aux mots croisés et aux énigmes de balances.",
+    "de": "Zahlenraster, Shirupure, Kreuzworträtsel und Waagenrätsel lassen sich per Tastatur spielen.",
+    "pt": "Use o teclado para jogar grades numéricas, Shirupure, palavras cruzadas e quebra-cabeças de balanças."
+  },
+  "設定・確認画面を開いた後も、Tab・Enter・Escで操作できます。": {
+    "en": "Use Tab, Enter and Esc in settings and confirmation dialogs too.",
+    "zh-Hans": "设置和确认窗口也支持Tab、Enter和Esc操作。",
+    "zh-Hant": "設定和確認視窗也支援Tab、Enter和Esc操作。",
+    "ko": "설정·확인 창에서도 Tab·Enter·Esc로 조작할 수 있습니다.",
+    "es": "Usa Tab, Enter y Esc también en los ajustes y diálogos de confirmación.",
+    "fr": "Utilisez aussi Tab, Entrée et Échap dans les réglages et les boîtes de confirmation.",
+    "de": "Auch Einstellungen und Bestätigungsdialoge lassen sich mit Tab, Enter und Esc bedienen.",
+    "pt": "Use Tab, Enter e Esc também nas configurações e nas caixas de confirmação."
+  },
+  "移動だけで数字が入る動作や、画面を閉じた後に選択位置が消える動作を直しました。": {
+    "en": "Fixed accidental number entry while moving and lost focus after closing a dialog.",
+    "zh-Hans": "修复了仅移动就输入数字，以及关闭窗口后焦点丢失的问题。",
+    "zh-Hant": "修正了僅移動就輸入數字，以及關閉視窗後焦點遺失的問題。",
+    "ko": "이동만 해도 숫자가 입력되거나 창을 닫은 뒤 선택 위치가 사라지는 문제를 수정했습니다.",
+    "es": "Corregimos la entrada accidental de números al moverse y la pérdida de foco al cerrar un diálogo.",
+    "fr": "Correction des chiffres saisis lors des déplacements et de la perte de focus après la fermeture d’une boîte de dialogue.",
+    "de": "Unbeabsichtigte Zahleneingaben beim Bewegen und Fokusverlust nach dem Schließen eines Dialogs wurden behoben.",
+    "pt": "Corrigimos a inserção acidental de números ao mover e a perda de foco após fechar uma caixa de diálogo."
+  },
+  "メニューと「?」キーからキーボード操作の一覧を開けます。": {
+    "en": "Open the keyboard controls from the menu or with the ? key.",
+    "zh-Hans": "可从菜单或按?键打开键盘操作说明。",
+    "zh-Hant": "可從選單或按?鍵開啟鍵盤操作說明。",
+    "ko": "메뉴 또는 ? 키로 키보드 조작 목록을 열 수 있습니다.",
+    "es": "Abre los controles del teclado desde el menú o con la tecla ?.",
+    "fr": "Ouvrez la liste des commandes depuis le menu ou avec la touche ?.",
+    "de": "Die Tastatursteuerung können Sie im Menü oder mit der Taste ? anzeigen.",
+    "pt": "Abra os controles do teclado pelo menu ou com a tecla ?."
+  }
+}

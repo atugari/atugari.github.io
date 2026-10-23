@@ -16,7 +16,7 @@ const source=path.resolve(process.argv[2]||'');
 const require=createRequire(path.join(source,'package.json'));
 const esbuild=createRequire(require.resolve('vite'))('esbuild');
 const release=fs.readFileSync(path.join(source,'lib/releases.ts'),'utf8');
-const version='2026.10.23.35';
+const version='2026.10.23.36';
 const publicUpdates=JSON.parse(fs.readFileSync(path.join(repo,'scripts/release-notes.json'),'utf8'));
 if(publicUpdates[0]?.version!==version)throw Error('Release notes must match the release version');
 const overrides=path.join(repo,'scripts/client-overrides');
@@ -71,8 +71,10 @@ try {
  // Versioned iframe documents are application assets; stable guide URLs are the search entry points.
  // Do not block their directory in robots.txt: crawlers still need the scripts and styles.
  for(const file of walk(path.join(output,'notebook')).filter(file=>file.endsWith('.html'))){
-  const text=fs.readFileSync(file,'utf8');
-  if(!/<meta[^>]+name=["']robots["']/i.test(text))fs.writeFileSync(file,text.replace(/<head([^>]*)>/i,'<head$1><meta name="robots" content="noindex, follow">'));
+  let text=fs.readFileSync(file,'utf8');
+  if(!/<meta[^>]+name=["']robots["']/i.test(text))text=text.replace(/<head([^>]*)>/i,'<head$1><meta name="robots" content="noindex, follow">');
+  text=text.replace('</head>',`<script defer src="${base}keyboard-access.js"></script></head>`);
+  fs.writeFileSync(file,text);
  }
  const cssDir=path.join(source,'dist/client/_next/static/css');
  const styles=fs.readdirSync(cssDir).filter(f=>f.endsWith('.css'));
@@ -95,7 +97,7 @@ try {
  const protection=spawnSync(process.execPath,[path.join(source,'scripts/protect-client.mjs'),output],{cwd:source,stdio:'inherit'});
  if(protection.error||protection.status!==0)throw Error('Distribution protection failed: '+(protection.error?.message||protection.status));
  const siteContent=readSiteContent(repo);
- const html=`<!doctype html><html lang="ja" data-site-theme="notebook"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="referrer" content="no-referrer"><meta name="theme-color" content="#f4efe3">${searchHead({title:siteContent.title,description:siteContent.description,icon:base+'favicon.svg',graph:[applicationData(siteContent)]})}<script>if(['manage','backup','personal','contact','replies'].includes(new URLSearchParams(location.search).get('view')))document.querySelector('meta[name="robots"]').content='noindex, follow';</script><script src="${base}site-theme.js"></script><script src="${base}notebook/i18n-data.js"></script><script src="${base}notebook/i18n.js"></script><script src="${base}ui-text.js"></script><link rel="stylesheet" href="${base}shell.css"></head><body><div id="root">${homeHTML}</div><noscript><p>問題をプレイするにはJavaScriptを有効にしてください。遊び方の案内は、そのまま読むことができます。</p></noscript><script type="module" src="${base}shell/main.js"></script><script defer src="${base}visit-stats.js"></script></body></html>`;
+ const html=`<!doctype html><html lang="ja" data-site-theme="notebook"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="referrer" content="no-referrer"><meta name="theme-color" content="#f4efe3">${searchHead({title:siteContent.title,description:siteContent.description,icon:base+'favicon.svg',graph:[applicationData(siteContent)]})}<script>if(['manage','backup','personal','contact','replies'].includes(new URLSearchParams(location.search).get('view')))document.querySelector('meta[name="robots"]').content='noindex, follow';</script><script src="${base}site-theme.js"></script><script src="${base}notebook/i18n-data.js"></script><script src="${base}notebook/i18n.js"></script><script src="${base}ui-text.js"></script><link rel="stylesheet" href="${base}shell.css"></head><body><div id="root">${homeHTML}</div><noscript><p>問題をプレイするにはJavaScriptを有効にしてください。遊び方の案内は、そのまま読むことができます。</p></noscript><script type="module" src="${base}shell/main.js"></script><script defer src="${base}visit-stats.js"></script><script defer src="${base}keyboard-access.js"></script></body></html>`;
  fs.writeFileSync(path.join(repo,'nanpure/index.html'),html);
  fs.writeFileSync(path.join(repo,'nanpure.html'),'<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ナンプレ帳</title><link rel="canonical" href="https://atugari.github.io/nanpure/"><meta http-equiv="refresh" content="0;url=/nanpure/"><script>location.replace("/nanpure/"+location.search+location.hash)</script></head><body><a href="/nanpure/">ナンプレ帳を開く</a></body></html>');
  const searchFiles=buildSearchPages(repo,version,base);

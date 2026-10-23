@@ -7,9 +7,9 @@ import {defaultSettings,type PlayOptions} from './play-settings';
 import {attachBoardGestures} from './board-gestures';
 import type { DailyPuzzle } from '../lib/daily-types';
 
-export default function DailyBoard({session,grid,notes,selected,onSelect,zoom,fit=false,settings=defaultSettings,chosen=0,viewScale,onScaleChange,onMinimumScaleChange}:{
+export default function DailyBoard({session,grid,notes,selected,onSelect,onFocusCell,zoom,fit=false,settings=defaultSettings,chosen=0,viewScale,onScaleChange,onMinimumScaleChange}:{
  session:DailyPuzzle;grid:number[];notes:Record<number,number[]>;
- selected:number;onSelect:(index:number)=>void;zoom:boolean;fit?:boolean;settings?:PlayOptions;chosen?:number;
+ selected:number;onSelect:(index:number)=>void;onFocusCell?:(index:number)=>void;zoom:boolean;fit?:boolean;settings?:PlayOptions;chosen?:number;
  viewScale?:number;onScaleChange?:(scale:number,fit:boolean)=>void;onMinimumScaleChange?:(minimum:number)=>void;
 }) {
  const {locale,t}=useLocale();const n=session.n;const viewport=useRef<HTMLDivElement>(null),board=useRef<HTMLDivElement>(null);
@@ -99,7 +99,7 @@ export default function DailyBoard({session,grid,notes,selected,onSelect,zoom,fi
   '--cell-font':`${digitFont}px`,'--digit-scale':settings.digitSize/100,'--note-scale':settings.noteSize/100,
   '--minimum-board':`${renderEdge}px`,'--render-edge':`${renderEdge}px`,
  } as CSSProperties;
- return <div ref={viewport} style={{width:viewportWidth,height:viewportHeight,flex:'0 0 auto'}} className="board-viewport" data-board-fit={fit?'true':'false'} data-board-scale={renderEdge/standardEdge*100} data-scrollable={scrollable?'true':'false'} tabIndex={scrollable?0:undefined} aria-label={scrollable?t('拡大盤面。スクロールして移動できます'):undefined}>
+ return <div ref={viewport} style={{width:viewportWidth,height:viewportHeight,flex:'0 0 auto'}} className="board-viewport" data-board-fit={fit?'true':'false'} data-board-scale={renderEdge/standardEdge*100} data-scrollable={scrollable?'true':'false'} aria-label={scrollable?t('拡大盤面。スクロールして移動できます'):undefined}>
   <div ref={board} role="grid" aria-rowcount={n} aria-colcount={n} aria-label={t('{rule} {n}×{n} 盤面',{rule:ruleLabel(locale,session.kind),n})} className={`board variable-board size-${n} kind-${session.kind}`} data-selection-design={settings.selectionDesign} style={style}>
    {grid.map((v,i)=>{
     const r=Math.floor(i/n),c=i%n,cage=cages.get(i),sameCage=(j:number)=>cage?.cells.includes(j);
@@ -110,7 +110,7 @@ export default function DailyBoard({session,grid,notes,selected,onSelect,zoom,fi
      aria-label={t('{r}行{c}列 {value}{fixed}{sum}',{r:r+1,c:c+1,value:v||((notes[i]?.length?t('メモ')+' '+notes[i].join('・'):t('空白'))),fixed:session.puzzle[i]?t(' 固定'):'',sum:cage&&i===cage.cells[0]?t(' 合計{sum}',{sum:cage.sum}):''})}
      aria-selected={i===selected} style={edgeStyle}
      className={`cell ${session.puzzle[i]?'given':''} ${related?'related':''} ${settings.same&&(chosen||grid[selected])===v&&v?'same':''} ${i===selected?'selected':''} ${v&&conflicts(session,grid,i,v)?'conflict':''} ${c===n-1?'last-column':''} ${r===n-1?'last-row':''}`}
-     onClick={()=>onSelect(i)}>
+     onFocus={()=>onFocusCell?.(i)} onClick={()=>onSelect(i)}>
      {cage&&<><span aria-hidden="true" className="cage-outline" style={{borderTopWidth:r===0||!sameCage(i-n)?'1px':'0',borderBottomWidth:r===n-1||!sameCage(i+n)?'1px':'0',borderLeftWidth:c===0||!sameCage(i-1)?'1px':'0',borderRightWidth:c===n-1||!sameCage(i+1)?'1px':'0'}}/>{i===cage.cells[0]&&<span className="cage-sum" aria-hidden="true">{cage.sum}</span>}</>}
      {v?<span className="cell-value">{v}{conflicts(session,grid,i,v)&&<span className="conflict-mark" aria-label={t('重複またはルールの矛盾')}>!</span>}</span>:<span className="notes">{Array.from({length:n},(_,j)=><span key={j} className={`${settings.noteFocus&&(chosen||grid[selected])===j+1?'note-focus':''} ${settings.noteWarning&&notes[i]?.includes(j+1)&&conflicts(session,grid,i,j+1)?'note-conflict':''}`}>{notes[i]?.includes(j+1)?j+1:''}</span>)}</span>}
     </button>;
