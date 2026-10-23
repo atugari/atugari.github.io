@@ -1,4 +1,17 @@
 // Executed only by platform UI tests, never bundled into the user-facing app.
+window.__workspaceTest=()=>{
+ const get=id=>document.getElementById(id),click=id=>get(id).click(),assert=(ok,why)=>{if(!ok)throw Error(why);};
+ assert(document.querySelectorAll('.puzzle-card').length===4,'Four questions per screen');
+ assert(get('workspace-create').hidden&&!get('workspace-library').hidden,'Generation opens selection');
+ click('workspace-tab-print');assert(!get('workspace-print').hidden&&get('workspace-library').hidden,'Print tab');
+ assert(!get('workspace-type-settings').open&&!get('workspace-paper-settings').open,'Detailed settings start closed');
+ click('workspace-open-settings');assert(get('workspace-settings').open,'Settings dialog opens');
+ assert(window.WadoAppBack()&&!get('workspace-settings').open,'Android back closes settings');
+ get('workspace-tab-print').dispatchEvent(new KeyboardEvent('keydown',{key:'Home',bubbles:true}));
+ assert(!get('workspace-create').hidden&&get('workspace-tab-create').getAttribute('aria-selected')==='true','Keyboard navigation');
+ click('workspace-tab-library');assert([...document.querySelectorAll('[data-workspace-selected]')].every(n=>n.textContent==='20'),'Selected count is shared');
+ return {navigation:true,settings:true,pagination:4};
+};
 window.__paperTest=(size,text,kind,hide=false)=>{
  const get=id=>document.getElementById(id),set=(id,value)=>{const n=get(id);n.value=value;n.dispatchEvent(new Event('change',{bubbles:true}));};
  if(!get('preview').hidden)get('close-preview').click();

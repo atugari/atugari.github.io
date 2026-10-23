@@ -36,6 +36,7 @@ public class PrintSmokeTest {
             js("const b=document.getElementById('batch');b.value='20';b.dispatchEvent(new Event('change',{bubbles:true}));document.getElementById('generate').click()");
             waitTrue("document.getElementById('book-count').textContent==='20問'&&!document.getElementById('preview-questions').disabled");
             try(java.io.InputStream stream=InstrumentationRegistry.getInstrumentation().getContext().getAssets().open("paper-smoke.js")){js(new String(stream.readAllBytes(),StandardCharsets.UTF_8));}
+            assertNotEquals("Workspace navigation","null",js("window.__workspaceTest()"));
             for(String size:new String[]{"compact","small","medium","large","largest"})for(String text:new String[]{"normal","largest"})for(String kind:new String[]{"questions","answers","hints"})assertNotEquals("Automatic paper "+size+" / "+text+" / "+kind,"null",js("window.__paperTest('"+size+"','"+text+"','"+kind+"')"));
             js("window.__paperTest('compact','normal','questions',true)");
             waitTrue("document.querySelectorAll('.page-frame').length>0&&document.querySelector('.page-frame').offsetWidth>0");
