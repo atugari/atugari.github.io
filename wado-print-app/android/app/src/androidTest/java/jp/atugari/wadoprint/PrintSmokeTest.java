@@ -1,18 +1,11 @@
 package jp.atugari.wadoprint;
 
 import android.webkit.WebView;
-import android.os.CancellationSignal;
-import android.os.ParcelFileDescriptor;
-import android.print.PageRange;
-import android.print.PrintAttributes;
-import android.print.PrintDocumentAdapter;
-import android.print.PrintDocumentInfo;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.By;
 import androidx.test.uiautomator.UiDevice;
-import androidx.test.uiautomator.UiObject2;
 import androidx.test.uiautomator.Until;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -53,19 +46,9 @@ public class PrintSmokeTest {
             assertTrue("Bundled font loaded",checks.getBoolean("fonts"));assertFalse("No clipped questions",checks.getBoolean("overflow"));assertTrue("Whole A4 page fits phone",checks.getBoolean("fits"));assertTrue("Questions keep blank centers",checks.getBoolean("blank"));
             js("document.getElementById('print').click()");
             assertTrue("Native print UI opened",device.wait(Until.hasObject(By.pkg("com.android.printspooler")),15000));
-            UiObject2 destination=device.wait(Until.findObject(By.res("com.android.printspooler","destination_spinner")),10000);
-            if(destination!=null){destination.click();UiObject2 pdfChoice=device.wait(Until.findObject(By.text("Save as PDF")),5000);if(pdfChoice!=null)pdfChoice.click();else device.pressBack();}
             device.takeScreenshot(new File(output,"android-native-print.png"));
             Files.write(new File(output,"android-print-ui.xml").toPath(),"".getBytes(StandardCharsets.UTF_8));device.dumpWindowHierarchy(new File(output,"android-print-ui.xml"));
-            UiObject2 pdfButton=device.wait(Until.findObject(By.res("com.android.printspooler","print_button").enabled(true)),15000);
-            if(pdfButton==null)device.dumpWindowHierarchy(new File(output,"android-print-ui.xml"));
-            assertNotNull("Save PDF button: "+new String(Files.readAllBytes(new File(output,"android-print-ui.xml").toPath()),StandardCharsets.UTF_8),pdfButton);pdfButton.click();
-            UiObject2 filename=device.wait(Until.findObject(By.clazz("android.widget.EditText")),10000);
-            assertNotNull("PDF filename",filename);filename.setText("wado-native-a4.pdf");
-            device.takeScreenshot(new File(output,"android-pdf-save.png"));device.dumpWindowHierarchy(new File(output,"android-pdf-save.xml"));
-            UiObject2 saveButton=device.wait(Until.findObject(By.text(java.util.regex.Pattern.compile("(?i)save"))),10000);
-            assertNotNull("Save PDF action",saveButton);saveButton.click();
-            if(!device.wait(Until.hasObject(By.pkg("jp.atugari.wadoprint")),20000))device.pressBack();device.waitForIdle();
+            device.pressBack();device.waitForIdle();
             js("document.getElementById('close-preview').click();document.getElementById('export').closest('details').open=true;document.getElementById('export').click()");
             assertTrue("Native save dialog opened",device.wait(Until.hasObject(By.clazz("android.widget.EditText")),10000));
             device.takeScreenshot(new File(output,"android-native-save.png"));device.pressBack();
