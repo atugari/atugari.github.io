@@ -53,9 +53,10 @@ const types={'.html':'text/html','.js':'text/javascript','.json':'application/js
  assert((await page.locator('.hint').first().evaluate(n=>parseFloat(getComputedStyle(n).fontSize)))>=28,'help text grows');assert.equal(await page.locator('.wado-cell').first().evaluate(n=>getComputedStyle(n).fontSize),cellFont,'screen setting leaves puzzle glyphs unchanged');
  await page.reload();await page.waitForFunction(()=>!document.querySelector('#wado-generate').disabled);assert.equal(await page.locator('#wado-ui-size').inputValue(),'largest');assert.equal(await page.locator('#wado-print-text').inputValue(),'largest');
  await page.evaluate(()=>window.print=()=>{});await page.locator('#wado-select-all').click();
- for(const id of ['wado-print-questions','wado-print-answers','wado-print-hints']){
+ for(const layout of ['1','2','4','6'])for(const id of ['wado-print-questions','wado-print-answers','wado-print-hints']){
+  await page.locator('#wado-layout').selectOption(layout);
   await page.locator('#'+id).click();await page.emulateMedia({media:'print'});await page.setViewportSize({width:704,height:1017});
-  const clipped=await page.locator('#wado-print-root .wado-question,#wado-print-root .wado-sheet').evaluateAll(nodes=>nodes.filter(n=>n.scrollWidth>n.clientWidth+2||n.scrollHeight>n.clientHeight+2).map(n=>({class:n.className,w:n.scrollWidth-n.clientWidth,h:n.scrollHeight-n.clientHeight})));assert.deepEqual(clipped,[],'large printed text fits: '+id);await page.emulateMedia({media:'screen'});
+  const clipped=await page.locator('#wado-print-root .wado-question,#wado-print-root .wado-sheet').evaluateAll(nodes=>nodes.filter(n=>n.scrollWidth>n.clientWidth+2||n.scrollHeight>n.clientHeight+2).map(n=>({class:n.className,w:n.scrollWidth-n.clientWidth,h:n.scrollHeight-n.clientHeight})));assert.deepEqual(clipped,[],'large printed text fits: '+id+' layout '+layout);await page.emulateMedia({media:'screen'});
  }
  await page.locator('#wado-select-none').click();await page.locator('.wado-question input[type=checkbox]').first().check();
  const raw=await page.evaluate(key=>localStorage.getItem(key),key);
