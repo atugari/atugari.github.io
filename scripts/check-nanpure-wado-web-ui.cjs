@@ -1,8 +1,8 @@
 // DOM integration checks with fixture network responses; no live API or key.
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict'),{parseHTML}=require(process.argv[2]||'linkedom');
-require('./client-overrides/public/notebook/wado-engine.js');
+require('./client-overrides/public/notebook/wado-engine.js');require('./client-overrides/public/notebook/wado-clues.js');
 (async()=>{
- const web=await import('../nanpure-api/src/shared/wado-web.js'),data=JSON.parse(fs.readFileSync('scripts/client-overrides/public/notebook/wado-data.json')),engine=NPWado.create(data),p=engine.generate({level:1,count:4,seed:721}),key='np-wado-v1';
+ const web=await import('../nanpure-api/src/shared/wado-web.js'),data=JSON.parse(fs.readFileSync('scripts/client-overrides/public/notebook/wado-data.json')),engine=NPWado.create(data),bank=JSON.parse(fs.readFileSync('scripts/client-overrides/public/notebook/wado-hints.json')),clues=WadoClues.create(bank),key='np-wado-v1';let p;for(let seed=721;seed<1721;seed++){const candidate=engine.generate({level:1,count:4,seed});if(clues.rich(candidate)){p=candidate;break;}}assert(p,'fixture has semantic hints');
  const {window,document}=parseHTML(fs.readFileSync('scripts/client-overrides/public/notebook/wado.html','utf8'));
  for(const select of document.querySelectorAll('select')){
   select.add=option=>select.append(option);
@@ -13,7 +13,7 @@ require('./client-overrides/public/notebook/wado-engine.js');
  const storage=new Map([[key,JSON.stringify({version:1,items:[p],preferences:{level:1,wordCount:4,batch:1,layout:2}})]]),before=storage.get(key),requests=[];
  let mode='positive',enabled=true,pendingResolve;
  const fetch=async(url,options={})=>{
-  if(url==='wado-data.json')return Response.json(data);
+  if(url==='wado-data.json')return Response.json(data);if(url==='wado-hints.json')return Response.json(bank);
   if(options.method!=='POST')return Response.json({enabled});
   requests.push(JSON.parse(options.body));
   if(mode==='pending')return new Promise(resolve=>{pendingResolve=resolve;});
@@ -21,7 +21,7 @@ require('./client-overrides/public/notebook/wado-engine.js');
   const entries=web.words(requests.at(-1),'龘').map(w=>({...w,sources:[{title:'Fixture source <img src=x>',url:mode==='unsafe'?'javascript:alert(1)':'https://example.test/source'}]}));
   return Response.json({version:1,provider:'Tavily',checkedAt:Date.now(),status:mode==='empty'?'no-candidates-found':'candidates-found',exhaustive:false,candidates:mode==='empty'?[]:[{answer:'龘',words:entries,allWordsFound:true}],queries:[],failedQueries:0,truncated:false});
  };
- const context=vm.createContext({window,document,NPWado,NPWadoWeb:web,fetch,navigator:{},localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)},location:{replace(){}},Option:function(text,value){const node=document.createElement('option');node.textContent=text;node.value=String(value);return node;},AbortController,AbortSignal,Worker:class{},Date,setTimeout,clearTimeout,console});
+ const context=vm.createContext({window,document,NPWado,WadoClues,NPWadoWeb:web,fetch,navigator:{},localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)},location:{replace(){}},Option:function(text,value){const node=document.createElement('option');node.textContent=text;node.value=String(value);return node;},AbortController,AbortSignal,Worker:class{},Date,setTimeout,clearTimeout,console});
  const settle=async()=>{for(let i=0;i<4;i++)await new Promise(setImmediate);};
  const click=node=>node.dispatchEvent(new window.Event('click',{bubbles:true}));
  vm.runInContext(fs.readFileSync('scripts/client-overrides/public/notebook/wado-ui.js','utf8'),context);await settle();
@@ -39,5 +39,8 @@ require('./client-overrides/public/notebook/wado-engine.js');
  window.print=()=>{};checkbox.checked=true;checkbox.dispatchEvent(new window.Event('change',{bubbles:true}));click(document.querySelector('#wado-print-questions'));assert.equal(document.querySelectorAll('#wado-print-root .wado-question').length,1);assert.equal(document.querySelector('#wado-print-root .wado-center').textContent,'');assert.equal(document.querySelector('#wado-print-root .wado-web-panel'),null,'network results and links never enter question print sheets');
  const form=document.querySelector('#wado-check-form');form.querySelector('[name=top]').value='感';form.querySelector('[name=right]').value='配';click(document.querySelector('#wado-web-manual-open'));assert(document.querySelector('#wado-web-manual a'),'manual network search does not require dictionary inspection');
  assert.equal(storage.get(key),before);
+ const candidate=[...document.querySelectorAll('[data-wado-hint]')].find(n=>n.value);assert(candidate,'different semantic hints offered');const value=candidate.value;candidate.checked=true;candidate.dispatchEvent(new window.Event('change',{bubbles:true}));await settle();assert.equal(JSON.parse(storage.get(key)).items[0].hintChoice,value,'one chosen hint is saved');
+ click(document.querySelector('#wado-print-questions'));assert.equal(document.querySelector('#wado-print-root .wado-hint-picker'),null);assert(document.querySelector('#wado-print-root .wado-hint-current'),'selected hint is printed');click(document.querySelector('#wado-print-hints'));assert.equal(document.querySelectorAll('#wado-print-root .wado-hint-sheet').length,3);for(const label of ['難しめ','ふつう','やさしめ'])assert(document.querySelector('#wado-print-root').textContent.includes(label));
+ const preserved={...JSON.parse(storage.get(key)).items[0]};delete preserved.hintChoice;assert.deepEqual(preserved,JSON.parse(JSON.stringify(p)),'hint choice keeps the original puzzle');
  console.log('PASS Wado network UI: external query links, arbitrary candidates, fixture automatic results, accepted alternatives and print selection, empty/error/unsafe/late responses, manual network search and storage isolation. Live provider connectivity is not tested.');
 })().catch(error=>{console.error(error);process.exit(1);});

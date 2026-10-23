@@ -5,3 +5,6 @@
 
 .wado-web-after{display:flex;align-items:center;gap:10px;min-height:48px;margin:14px 0}.wado-web-after input{width:24px;height:24px;accent-color:#285849;flex:none}
 .wado-web-links a{display:inline-block;min-height:44px;padding:5px 0;box-sizing:border-box}
+
+.wado-hints{display:block}.wado-hint-current{margin:6px 0}.wado-hint-current>strong{display:block;font-size:.85em}.wado-hint-current>span{display:block}.wado-hint-picker{margin:8px 0}.wado-hint-picker fieldset{border:0;padding:0;margin:0}.wado-hint-picker legend{font-weight:700}.wado-hint-option{display:flex;gap:10px;align-items:flex-start;padding:10px;border:1px solid #b6c6bd;border-radius:8px;margin:8px 0;font-size:14px;line-height:1.6}.wado-hint-option>input{flex:none;width:20px;height:20px;margin:3px 0}.wado-hint-option>span{min-width:0}.wado-hint-option b{display:block;font-size:12px}.wado-hint-option:has(input:checked){border-color:#285849;background:#edf4ee}.wado-hint-sheet .wado-question{justify-content:flex-start}.wado-hint-sheet .wado-hint-current{font-size:12pt;line-height:1.7}
+@media print{.wado-hint-picker{display:none!important}.wado-hint-current>strong{font-size:.82em}}

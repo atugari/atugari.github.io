@@ -1,6 +1,6 @@
 (function(w){
  'use strict';
- const levels=[
+ const legacyLevels=[
   {name:'1 · いちばんやさしい',choices:2,readings:4,maxRank:1,minAverage:1,help:'身近な熟語・2択・すべての読みつき'},
   {name:'2 · とてもやさしい',choices:3,readings:4,maxRank:1,minAverage:1,help:'身近な熟語・3択・すべての読みつき'},
   {name:'3 · やさしい',choices:4,readings:4,maxRank:1,minAverage:1,help:'身近な熟語・4択・すべての読みつき'},
@@ -12,6 +12,18 @@
   {name:'9 · むずかしい',choices:0,readings:0,maxRank:3,minAverage:2,help:'抽象的な熟語も使用・選択肢と読みなし'},
   {name:'10 · いちばんむずかしい',choices:0,readings:0,maxRank:3,minAverage:2.75,help:'幅広い語彙が必要な熟語を中心に・選択肢と読みなし'}
  ];
+ const levels=[
+  ['1 · いちばんやさしい',1,4.2,1,'特によく使われる熟語だけで作ります。'],
+  ['2 · とてもやさしい',1,4.0,1,'よく使われる熟語を中心に作ります。'],
+  ['3 · やさしい',1,3.7,1,'身近な熟語の範囲を少し広げます。'],
+  ['4 · 日常のことば',1,3.4,1,'日常で見かける熟語を幅広く使います。'],
+  ['5 · 少し背伸び',2,0,1.25,'やや見かけにくい熟語も交ぜます。'],
+  ['6 · ことばを広げる',2,0,1.5,'やや見かけにくい熟語の割合を増やします。'],
+  ['7 · 手ごたえあり',2,0,1.75,'やや見かけにくい熟語を中心に作ります。'],
+  ['8 · むずかしい',3,0,2,'使用頻度の低い熟語も使います。'],
+  ['9 · かなりむずかしい',3,0,2.5,'使用頻度の低い熟語の割合を増やします。'],
+  ['10 · いちばんむずかしい',3,0,2.75,'使用頻度の低い熟語を中心に作ります。']
+ ].map(([name,maxRank,minZipf,minAverage,help])=>({name,maxRank,minZipf,minAverage,choices:0,readings:0,help}));
  const positions=['top','left','right','bottom'],kanji=/^[\u3400-\u9fff]$/;
  const word=(p,position,answer=p.answer)=>['top','left'].includes(position)?p.arms[position]+answer:answer+p.arms[position];
  function rng(seed){let state=seed>>>0;return()=>{state=(state+0x6d2b79f5)>>>0;let x=Math.imul(state^(state>>>15),state|1);x^=x+Math.imul(x^(x>>>7),x|61);return((x^(x>>>14))>>>0)/4294967296;};}
@@ -50,7 +62,7 @@
   }
   function configuration(level,count){
    const key=level+':'+count;if(configurations.has(key))return configurations.get(key);
-   const config=levels[level-1],answerPool=[...pool].map(([answer,entry])=>({answer,before:entry.before.filter(w=>w.rank<=config.maxRank),after:entry.after.filter(w=>w.rank<=config.maxRank)})).filter(e=>e.before.length>=(count===4?2:1)&&e.after.length>=(count===4?2:1));
+   const config=levels[level-1],answerPool=[...pool].map(([answer,entry])=>({answer,before:entry.before.filter(w=>w.rank<=config.maxRank&&w.zipf>=config.minZipf),after:entry.after.filter(w=>w.rank<=config.maxRank&&w.zipf>=config.minZipf)})).filter(e=>e.before.length>=(count===4?2:1)&&e.after.length>=(count===4?2:1));
    configurations.set(key,answerPool);return answerPool;
   }
   function generate({level=1,count=4,seed=Date.now(),seen=[]}={}){
@@ -62,7 +74,7 @@
     const arms={top:before[0].text[0],right:after[0].text[1]};
     if(useLeft)arms.left=before[1].text[0];if(useBottom)arms.bottom=after[1].text[1];
     if(new Set(Object.values(arms)).size!==count)continue;
-    const p={version:2,level,count,arms,answer:entry.answer,choices:[]};
+    const p={version:3,level,count,arms,answer:entry.answer,choices:[]};
     const average=positions.filter(k=>arms[k]).reduce((sum,k)=>sum+words.get(word(p,k)).rank,0)/count;
     if(average<config.minAverage||known.has(fingerprint(p)))continue;
     if(config.choices)p.choices=shuffle([p.answer,...shuffle(choicePool.filter(c=>c!==p.answer),random).slice(0,config.choices-1)],random);
@@ -71,15 +83,15 @@
    throw Error('この条件で新しい問題が見つかりませんでした。難易度や熟語の数を変えてください。');
   }
   function validate(p){
-   if(![1,2].includes(p?.version)||!Number.isInteger(p.level)||p.level<1||p.level>10||![2,3,4].includes(p.count)||!kanji.test(p.answer)||!p.arms||typeof p.arms!=='object'||Array.isArray(p.arms))throw Error('問題データを確認してください。');
-   const keys=Object.keys(p.arms),config=levels[p.level-1];
+   if(![1,2,3].includes(p?.version)||!Number.isInteger(p.level)||p.level<1||p.level>10||![2,3,4].includes(p.count)||!kanji.test(p.answer)||!p.arms||typeof p.arms!=='object'||Array.isArray(p.arms))throw Error('問題データを確認してください。');
+   const keys=Object.keys(p.arms),config=(p.version<3?legacyLevels:levels)[p.level-1];
    if(keys.length!==p.count||!p.arms.top||!p.arms.right||keys.some(k=>!positions.includes(k)||!kanji.test(p.arms[k]))||new Set(Object.values(p.arms)).size!==p.count)throw Error('問題の配置を確認してください。');
-   const entries=keys.map(k=>entry(word(p,k),p));if(entries.some(e=>!e||e.rank>config.maxRank)||entries.reduce((s,e)=>s+e.rank,0)/p.count<config.minAverage)throw Error('熟語を確認してください。');
+   const entries=keys.map(k=>entry(word(p,k),p));if(entries.some(e=>!e||e.rank>config.maxRank||p.version===3&&e.zipf<config.minZipf)||entries.reduce((s,e)=>s+e.rank,0)/p.count<config.minAverage)throw Error('熟語を確認してください。');
    if(!candidates(p).includes(p.answer))throw Error('解答例の熟語を確認してください。');
    if(!Array.isArray(p.choices)||p.choices.length!==config.choices||p.choices.some(c=>!kanji.test(c))||new Set(p.choices).size!==p.choices.length||config.choices&&!p.choices.includes(p.answer))throw Error('選択肢を確認してください。');
    if(p.created!==undefined&&(!Number.isSafeInteger(p.created)||p.created<0))throw Error('保存日時を確認してください。');return p;
   }
-  function hints(p){return positions.filter(k=>p.arms[k]).slice(0,levels[p.level-1].readings).map(position=>({position,reading:entry(word(p,position),p).reading}));}
+  function hints(p){return positions.filter(k=>p.arms[k]).slice(0,(p.version<3?legacyLevels:levels)[p.level-1].readings).map(position=>({position,reading:entry(word(p,position),p).reading}));}
   return{generate,validate,candidates,inspect,evidence,fingerprint,word,hints,levels,positions,entry,sourceDate:data.sourceDate,checkedWords:checks.size,revision:data.revision,stats:data.stats,coverage:data.coverage};
  }
  w.NPWado={create,levels,positions,word,fingerprint};

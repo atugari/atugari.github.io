@@ -10,8 +10,8 @@ for(let level=1;level<=10;level++)for(const count of [2,3,4]){
  for(let seed=0;seed<40;seed++){
   const p=engine.generate({level,count,seed,seen:[...seen]});engine.validate(p);
   assert.equal(Object.keys(p.arms).length,count);assert(alternatives(p).includes(p.answer),'example answer is a valid dictionary answer');
-  assert.equal(p.choices.length,[2,3,4,6,0,0,0,0,0,0][level-1]);
-  assert.equal(engine.hints(p).length,Math.min(count,level<=5?4:level===6?1:0));
+  assert.equal(p.version,3);assert.equal(p.choices.length,0);
+  assert.equal(engine.hints(p).length,0);
   assert.deepEqual(engine.generate({level,count,seed,seen:[...seen]}),p);
   seen.add(engine.fingerprint(p));answers.add(p.answer);total++;
  }
