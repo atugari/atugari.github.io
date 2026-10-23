@@ -51,14 +51,14 @@ jobs:
         shell: bash
         run: |
           mkdir -p wado-android-artifact/qa
-          cp wado-print-app/android/app/build/outputs/apk/release/app-release-unsigned.apk wado-android-artifact/wado-print-2.2.0-unsigned.apk
+          cp wado-print-app/android/app/build/outputs/apk/release/app-release-unsigned.apk wado-android-artifact/wado-print-2.3.0-unsigned.apk
           cp "$ANDROID_HOME/build-tools/35.0.0/lib/apksigner.jar" wado-android-artifact/apksigner.jar
           adb pull /sdcard/Android/data/jp.atugari.wadoprint/files/. wado-android-artifact/qa/ || true
           cp -r wado-print-app/android/app/build/reports/androidTests wado-android-artifact/qa/ || true
-          sha256sum wado-android-artifact/wado-print-2.2.0-unsigned.apk wado-android-artifact/apksigner.jar > wado-android-artifact/SHA256SUMS
+          sha256sum wado-android-artifact/wado-print-2.3.0-unsigned.apk wado-android-artifact/apksigner.jar > wado-android-artifact/SHA256SUMS
       - uses: actions/upload-artifact@v4
         if: always()
-        with: {name: wado-print-android-2.2.0-unsigned, path: wado-android-artifact/, retention-days: 14, if-no-files-found: error}
+        with: {name: wado-print-android-2.3.0-unsigned, path: wado-android-artifact/, retention-days: 14, if-no-files-found: error}
   windows:
     runs-on: windows-2022
     timeout-minutes: 20
@@ -91,4 +91,4 @@ jobs:
           Get-Content "$evidence/windows-smoke.json"
       - uses: actions/upload-artifact@v4
         if: always()
-        with: {name: wado-print-windows-2.2.0, path: wado-windows-artifact/, retention-days: 14, if-no-files-found: error}
+        with: {name: wado-print-windows-2.3.0, path: wado-windows-artifact/, retention-days: 14, if-no-files-found: error}
