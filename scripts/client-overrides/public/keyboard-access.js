@@ -112,6 +112,8 @@
     title.id = 'np-keyboard-help-title'; title.textContent = t('キーボード操作');
     close.type = 'button'; close.textContent = t('閉じる') + ' ×'; close.addEventListener('click', () => dialog.close());
     header.append(title,close); dialog.append(header);
+    const bindings=document.createElement('button');bindings.type='button';bindings.className='np-keyboard-entry';bindings.textContent=t('キーの割り当て');bindings.setAttribute('data-np-key-bindings','');bindings.addEventListener('click',()=>window.NPKeyBindings?.show());dialog.append(bindings);
+    const standard=document.createElement('p');standard.textContent=t('以下は標準のキーです。変更したキーは「キーの割り当て」で確認できます。');dialog.append(standard);
     const section = (heading,rows,paragraphs = []) => {
       const container = document.createElement('section'), h = document.createElement('h3'); h.textContent = t(heading);
       container.append(h); if (rows.length) container.append(table(rows));
@@ -137,6 +139,10 @@
     dialog.showModal();
   }
   function addSettingsHelp() {
+    for(const input of document.querySelectorAll('#np-play-settings [data-settings-panel="input"],#daily-settings-input')){
+      if(input.querySelector('[data-np-key-bindings]'))continue;
+      const bindings=document.createElement('button');bindings.type='button';bindings.className='np-keyboard-entry';bindings.setAttribute('data-np-key-bindings','');bindings.textContent=t('キーの割り当て');bindings.addEventListener('click',()=>window.NPKeyBindings?.show());input.prepend(bindings);
+    }
     const panel = document.querySelector('#np-play-settings [data-settings-panel="help"]');
     if (!panel || panel.querySelector('[data-np-keyboard-help]')) return;
     const button = document.createElement('button'); button.type = 'button'; button.className = 'np-keyboard-entry';
@@ -157,6 +163,7 @@
   // Capture at window before legacy document handlers (for example Pause).
   // Only modal navigation and the help key are intercepted here.
   window.addEventListener('keydown', event => {
+    if(window.NPKeyBindings?.handle(event))return;
     if (event.isComposing || event.keyCode === 229) return;
     keyboard = true;
     if (!event.ctrlKey && !event.metaKey && !event.altKey && event.key === '?' && !editable(event.target)) {

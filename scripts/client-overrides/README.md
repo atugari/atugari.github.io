@@ -7,3 +7,5 @@ The exporter records a SHA-256 of this directory in the release metadata. Keep t
 Regression gates: `check-nanpure-input.cjs`, `check-nanpure-ui.cjs`, `check-nanpure-i18n.cjs`, `check-nanpure-pages.cjs`, `check-nanpure-shell-lifecycle.cjs`, `check-nanpure-special-keyboard.cjs`, `check-nanpure-keyboard-browser.cjs`, and the Chromium mobile checks.
 
 `public/keyboard-access.js` supplies keyboard help, dialog containment, focus visibility and focus recovery to the shell and each notebook document. Game-specific arrow movement belongs to the game renderer so focus changes never act as puzzle input. Keep browser shortcuts, editable fields and IME composition outside puzzle key handlers.
+
+`public/key-bindings.js` is bundled before `keyboard-access.js` in the same public runtime. It stores key assignments under `np-key-bindings-v1`, including backup/restore, and routes custom keys through the existing focused-board input paths. Tab, Escape, browser shortcuts, text editing and IME remain outside gameplay bindings. Keep `check-nanpure-keybindings.cjs` and `check-nanpure-keybindings-browser.cjs` in the publication checks.

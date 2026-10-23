@@ -8,4 +8,5 @@ module.exports = {
   ...require('./catalog-ranking-35.json'),
   ...require('./catalog-keyboard-36.json'),
   ...require('./catalog-smooth-37.json'),
+  ...require('./catalog-keybindings-38.json'),
 };

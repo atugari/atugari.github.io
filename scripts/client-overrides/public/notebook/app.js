@@ -84,6 +84,7 @@ function handlePlayKey(event){
   if(document.querySelector('dialog[open],#modal,#proof-viewer')||NPVideo.paused())return;
   const cell=target.closest('#board [data-action="cell"]'),puzzle=Ce();if(!cell||!puzzle)return;
   const index=Number(cell.dataset.cell);if(!Number.isInteger(index)||index<0||index>=puzzle.grid.length)return;
+  if(event.npKeyMapped&&event.key==='NPFocusCell'){A=index;return;}
   if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End'].includes(event.key)){
     event.preventDefault();A=playKeyIndex(puzzle,index,event.key);Tt();focusPlayCell(A);return;
   }

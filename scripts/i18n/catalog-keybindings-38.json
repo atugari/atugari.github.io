@@ -1,0 +1,272 @@
+{
+  "入力する数字": {
+    "en": "Number to enter",
+    "zh-Hans": "输入的数字",
+    "zh-Hant": "輸入的數字",
+    "ko": "입력할 숫자",
+    "es": "Número que introducir",
+    "fr": "Nombre à saisir",
+    "de": "Einzugebende Zahl",
+    "pt": "Número a inserir"
+  },
+  "割り当てなし": {
+    "en": "Unassigned",
+    "zh-Hans": "未分配",
+    "zh-Hant": "未指派",
+    "ko": "할당 없음",
+    "es": "Sin asignar",
+    "fr": "Non attribuée",
+    "de": "Nicht zugewiesen",
+    "pt": "Não atribuída"
+  },
+  "使いたいキーを押してください。Escで取り消せます。": {
+    "en": "Press the key you want to use. Esc cancels.",
+    "zh-Hans": "请按要使用的键。按 Esc 可取消。",
+    "zh-Hant": "請按要使用的鍵。按 Esc 可取消。",
+    "ko": "사용할 키를 누르세요. Esc로 취소할 수 있습니다.",
+    "es": "Pulsa la tecla que quieras usar. Esc cancela.",
+    "fr": "Appuyez sur la touche à utiliser. Échap annule.",
+    "de": "Drücke die gewünschte Taste. Esc bricht ab.",
+    "pt": "Pressione a tecla que deseja usar. Esc cancela."
+  },
+  "保存すると変更が反映されます。": {
+    "en": "Changes take effect when you save.",
+    "zh-Hans": "保存后更改才会生效。",
+    "zh-Hant": "儲存後變更才會生效。",
+    "ko": "저장하면 변경 사항이 적용됩니다.",
+    "es": "Los cambios se aplican al guardar.",
+    "fr": "Les modifications s’appliquent après l’enregistrement.",
+    "de": "Die Änderungen gelten nach dem Speichern.",
+    "pt": "As alterações entram em vigor ao salvar."
+  },
+  "重複する割り当てを解除しました。": {
+    "en": "Conflicting assignments were removed.",
+    "zh-Hans": "已解除重复的按键分配。",
+    "zh-Hant": "已解除重複的按鍵指派。",
+    "ko": "중복된 키 할당을 해제했습니다.",
+    "es": "Se han eliminado las asignaciones en conflicto.",
+    "fr": "Les attributions en conflit ont été supprimées.",
+    "de": "Doppelte Zuweisungen wurden entfernt.",
+    "pt": "As atribuições em conflito foram removidas."
+  },
+  "キーの割り当て": {
+    "en": "Key assignments",
+    "zh-Hans": "按键分配",
+    "zh-Hant": "按鍵指派",
+    "ko": "키 할당",
+    "es": "Asignación de teclas",
+    "fr": "Attribution des touches",
+    "de": "Tastenbelegung",
+    "pt": "Atribuição de teclas"
+  },
+  "「変更」を押して、使いたいキーを押してください。保存すると全ての問題で使えます。": {
+    "en": "Select Change, then press the key you want. Save to use it across puzzles.",
+    "zh-Hans": "选择“更改”后，按要使用的键。保存后即可用于所有谜题。",
+    "zh-Hant": "選擇「變更」後，按要使用的鍵。儲存後即可用於所有謎題。",
+    "ko": "변경을 선택한 뒤 사용할 키를 누르세요. 저장하면 모든 문제에서 사용할 수 있습니다.",
+    "es": "Selecciona Cambiar y pulsa la tecla que quieras. Guarda para usarla en los puzles.",
+    "fr": "Choisissez Modifier, puis appuyez sur la touche voulue. Enregistrez pour l’utiliser dans les grilles.",
+    "de": "Wähle Ändern und drücke die gewünschte Taste. Nach dem Speichern gilt sie für die Rätsel.",
+    "pt": "Selecione Alterar e pressione a tecla desejada. Salve para usá-la nos quebra-cabeças."
+  },
+  "Tab・Escとブラウザーの標準ショートカットは変更できません。文字入力中は割り当てを使いません。": {
+    "en": "Tab, Esc and standard browser shortcuts cannot be reassigned. Assignments are inactive while typing in text fields.",
+    "zh-Hans": "Tab、Esc 和浏览器的标准快捷键无法更改。在文本框内输入时，按键分配不会生效。",
+    "zh-Hant": "Tab、Esc 和瀏覽器的標準快速鍵無法變更。在文字欄位內輸入時，按鍵指派不會生效。",
+    "ko": "Tab·Esc와 브라우저 기본 단축키는 변경할 수 없습니다. 텍스트 입력 중에는 키 할당이 작동하지 않습니다.",
+    "es": "Tab, Esc y los atajos estándar del navegador no se pueden reasignar. Las asignaciones no actúan al escribir en campos de texto.",
+    "fr": "Tab, Échap et les raccourcis standard du navigateur ne peuvent pas être réattribués. Les attributions sont inactives dans les champs de texte.",
+    "de": "Tab, Esc und Standard-Browserkürzel können nicht neu belegt werden. In Textfeldern sind die Belegungen inaktiv.",
+    "pt": "Tab, Esc e os atalhos padrão do navegador não podem ser reatribuídos. As atribuições ficam inativas nos campos de texto."
+  },
+  "盤面を選んでから、割り当てたキーを使います。": {
+    "en": "Focus the board, then use your assigned keys.",
+    "zh-Hans": "先选中棋盘，再使用分配的按键。",
+    "zh-Hant": "先選取盤面，再使用指派的按鍵。",
+    "ko": "보드를 선택한 뒤 할당한 키를 사용하세요.",
+    "es": "Selecciona el tablero y usa las teclas asignadas.",
+    "fr": "Sélectionnez le plateau, puis utilisez les touches attribuées.",
+    "de": "Wähle das Spielfeld aus und verwende die zugewiesenen Tasten.",
+    "pt": "Selecione o tabuleiro e use as teclas atribuídas."
+  },
+  "設定する数字の範囲": {
+    "en": "Number range to configure",
+    "zh-Hans": "要设置的数字范围",
+    "zh-Hant": "要設定的數字範圍",
+    "ko": "설정할 숫자 범위",
+    "es": "Rango de números que configurar",
+    "fr": "Plage de nombres à configurer",
+    "de": "Einzustellender Zahlenbereich",
+    "pt": "Intervalo de números a configurar"
+  },
+  "設定を保存できませんでした。もう一度お試しください。": {
+    "en": "Could not save the settings. Please try again.",
+    "zh-Hans": "无法保存设置。请重试。",
+    "zh-Hant": "無法儲存設定。請再試一次。",
+    "ko": "설정을 저장하지 못했습니다. 다시 시도해 주세요.",
+    "es": "No se han podido guardar los ajustes. Inténtalo de nuevo.",
+    "fr": "Impossible d’enregistrer les réglages. Réessayez.",
+    "de": "Die Einstellungen konnten nicht gespeichert werden. Bitte erneut versuchen.",
+    "pt": "Não foi possível salvar as configurações. Tente novamente."
+  },
+  "取り消しました。": {
+    "en": "Canceled.",
+    "zh-Hans": "已取消。",
+    "zh-Hant": "已取消。",
+    "ko": "취소했습니다.",
+    "es": "Cancelado.",
+    "fr": "Annulé.",
+    "de": "Abgebrochen.",
+    "pt": "Cancelado."
+  },
+  "このキーは標準操作に使うため、割り当てられません。": {
+    "en": "This key is reserved for a standard action and cannot be assigned.",
+    "zh-Hans": "此键用于标准操作，无法分配。",
+    "zh-Hant": "此鍵用於標準操作，無法指派。",
+    "ko": "이 키는 기본 조작에 사용되므로 할당할 수 없습니다.",
+    "es": "Esta tecla está reservada para una acción estándar y no se puede asignar.",
+    "fr": "Cette touche est réservée à une action standard et ne peut pas être attribuée.",
+    "de": "Diese Taste ist für eine Standardaktion reserviert und kann nicht zugewiesen werden.",
+    "pt": "Esta tecla é reservada para uma ação padrão e não pode ser atribuída."
+  },
+  "以下は標準のキーです。変更したキーは「キーの割り当て」で確認できます。": {
+    "en": "The keys below are the defaults. View your changes in Key assignments.",
+    "zh-Hans": "以下是默认按键。更改后的按键可在“按键分配”中查看。",
+    "zh-Hant": "以下是預設按鍵。變更後的按鍵可在「按鍵指派」中查看。",
+    "ko": "아래는 기본 키입니다. 변경한 키는 키 할당에서 확인할 수 있습니다.",
+    "es": "Estas son las teclas predeterminadas. Consulta tus cambios en Asignación de teclas.",
+    "fr": "Les touches ci-dessous sont celles par défaut. Consultez vos modifications dans Attribution des touches.",
+    "de": "Unten stehen die Standardtasten. Änderungen findest du unter Tastenbelegung.",
+    "pt": "As teclas abaixo são as padrão. Consulte suas alterações em Atribuição de teclas."
+  },
+  "上へ移動": {
+    "en": "Move up",
+    "zh-Hans": "向上移动",
+    "zh-Hant": "向上移動",
+    "ko": "위로 이동",
+    "es": "Mover arriba",
+    "fr": "Déplacer vers le haut",
+    "de": "Nach oben bewegen",
+    "pt": "Mover para cima"
+  },
+  "下へ移動": {
+    "en": "Move down",
+    "zh-Hans": "向下移动",
+    "zh-Hant": "向下移動",
+    "ko": "아래로 이동",
+    "es": "Mover abajo",
+    "fr": "Déplacer vers le bas",
+    "de": "Nach unten bewegen",
+    "pt": "Mover para baixo"
+  },
+  "左へ移動": {
+    "en": "Move left",
+    "zh-Hans": "向左移动",
+    "zh-Hant": "向左移動",
+    "ko": "왼쪽으로 이동",
+    "es": "Mover a la izquierda",
+    "fr": "Déplacer vers la gauche",
+    "de": "Nach links bewegen",
+    "pt": "Mover para a esquerda"
+  },
+  "右へ移動": {
+    "en": "Move right",
+    "zh-Hans": "向右移动",
+    "zh-Hant": "向右移動",
+    "ko": "오른쪽으로 이동",
+    "es": "Mover a la derecha",
+    "fr": "Déplacer vers la droite",
+    "de": "Nach rechts bewegen",
+    "pt": "Mover para a direita"
+  },
+  "行の先頭": {
+    "en": "Start of row",
+    "zh-Hans": "行首",
+    "zh-Hant": "列首",
+    "ko": "행의 시작",
+    "es": "Inicio de fila",
+    "fr": "Début de ligne",
+    "de": "Zeilenanfang",
+    "pt": "Início da linha"
+  },
+  "行の末尾": {
+    "en": "End of row",
+    "zh-Hans": "行末",
+    "zh-Hant": "列尾",
+    "ko": "행의 끝",
+    "es": "Final de fila",
+    "fr": "Fin de ligne",
+    "de": "Zeilenende",
+    "pt": "Fim da linha"
+  },
+  "操作": {
+    "en": "Actions",
+    "zh-Hans": "操作",
+    "zh-Hant": "操作",
+    "ko": "조작",
+    "es": "Acciones",
+    "fr": "Actions",
+    "de": "Aktionen",
+    "pt": "Ações"
+  },
+  "解除": {
+    "en": "Clear",
+    "zh-Hans": "解除",
+    "zh-Hant": "解除",
+    "ko": "해제",
+    "es": "Quitar",
+    "fr": "Supprimer",
+    "de": "Aufheben",
+    "pt": "Remover"
+  },
+  "初期値に戻す": {
+    "en": "Restore defaults",
+    "zh-Hans": "恢复默认值",
+    "zh-Hant": "還原預設值",
+    "ko": "기본값으로 복원",
+    "es": "Restaurar valores predeterminados",
+    "fr": "Rétablir les valeurs par défaut",
+    "de": "Standardwerte wiederherstellen",
+    "pt": "Restaurar padrões"
+  },
+  "保存して閉じる": {
+    "en": "Save and close",
+    "zh-Hans": "保存并关闭",
+    "zh-Hant": "儲存並關閉",
+    "ko": "저장 후 닫기",
+    "es": "Guardar y cerrar",
+    "fr": "Enregistrer et fermer",
+    "de": "Speichern und schließen",
+    "pt": "Salvar e fechar"
+  },
+  "キーボードのキーを自由に設定できます。": {
+    "en": "Customize your keyboard controls.",
+    "zh-Hans": "可以自由设置键盘按键。",
+    "zh-Hant": "可以自由設定鍵盤按鍵。",
+    "ko": "키보드 키를 자유롭게 설정할 수 있습니다.",
+    "es": "Personaliza los controles del teclado.",
+    "fr": "Personnalisez les commandes du clavier.",
+    "de": "Passe die Tastatursteuerung an.",
+    "pt": "Personalize os controles do teclado."
+  },
+  "数字入力・移動・メモなどを好きなキーに割り当てられます。": {
+    "en": "Assign your own keys for numbers, movement, notes and other actions.",
+    "zh-Hans": "可为数字输入、移动、笔记等操作分配喜欢的按键。",
+    "zh-Hant": "可為數字輸入、移動、筆記等操作指派喜歡的按鍵。",
+    "ko": "숫자 입력·이동·메모 등의 조작에 원하는 키를 할당할 수 있습니다.",
+    "es": "Asigna tus propias teclas para números, movimiento, notas y otras acciones.",
+    "fr": "Attribuez vos touches aux nombres, déplacements, notes et autres actions.",
+    "de": "Lege eigene Tasten für Zahlen, Bewegung, Notizen und weitere Aktionen fest.",
+    "pt": "Atribua suas próprias teclas a números, movimentos, notas e outras ações."
+  },
+  "キーの重複を確認でき、初期値にも戻せます。": {
+    "en": "Review conflicting keys and restore the defaults at any time.",
+    "zh-Hans": "可以检查重复的按键，也能恢复默认值。",
+    "zh-Hant": "可以檢查重複的按鍵，也能還原預設值。",
+    "ko": "중복된 키를 확인하고 기본값으로 복원할 수 있습니다.",
+    "es": "Revisa las teclas en conflicto y restaura los valores predeterminados.",
+    "fr": "Vérifiez les touches en conflit et rétablissez les valeurs par défaut.",
+    "de": "Prüfe doppelte Belegungen und stelle die Standardwerte wieder her.",
+    "pt": "Confira teclas em conflito e restaure os padrões."
+  }
+}

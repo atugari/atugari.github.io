@@ -16,7 +16,7 @@ const source=path.resolve(process.argv[2]||'');
 const require=createRequire(path.join(source,'package.json'));
 const esbuild=createRequire(require.resolve('vite'))('esbuild');
 const release=fs.readFileSync(path.join(source,'lib/releases.ts'),'utf8');
-const version='2026.10.23.37';
+const version='2026.10.23.38';
 const publicUpdates=JSON.parse(fs.readFileSync(path.join(repo,'scripts/release-notes.json'),'utf8'));
 if(publicUpdates[0]?.version!==version)throw Error('Release notes must match the release version');
 const overrides=path.join(repo,'scripts/client-overrides');
@@ -64,6 +64,7 @@ try {
   fs.cpSync(path.join(source,'public',name),path.join(output,name),{recursive:true});
  }
  if(fs.existsSync(path.join(overrides,'public')))fs.cpSync(path.join(overrides,'public'),output,{recursive:true});
+ fs.writeFileSync(path.join(output,'keyboard-access.js'),['key-bindings.js','keyboard-access.js'].map(name=>fs.readFileSync(path.join(overrides,'public',name),'utf8')).join('\n'));
  fs.copyFileSync(path.join(repo,'scripts/i18n/runtime.js'),path.join(output,'notebook/i18n.js'));
  buildTranslationAssets(path.join(output,'notebook'),version);
  patchNotebook(path.join(output,'notebook'));
