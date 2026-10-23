@@ -46,6 +46,18 @@ const types={'.html':'text/html','.js':'text/javascript','.json':'application/js
  await panel.locator('input').fill('受');await panel.locator('form button').click();assert((await panel.locator('.wado-web-candidate-links a').count())>=3);
  await panel.locator('.wado-web-auto').click();await page.waitForFunction(()=>document.querySelector('#wado-web-stop').hidden);assert.match(await panel.locator('.wado-web-result').textContent(),/別解候補が見つかりました/);assert.match(await page.locator('#wado-selected').textContent(),/1問/,'another answer preserves print selection');
  networkMode='empty';await panel.locator('.wado-web-auto').click();await page.waitForFunction(()=>document.querySelector('#wado-web-stop').hidden);assert.match(await panel.locator('.wado-web-result').textContent(),/唯一解の証明ではありません/);
+ // Screen and paper text grow independently, with automatic paper capacity.
+ await page.setViewportSize({width:390,height:844});const cellFont=await page.locator('.wado-cell').first().evaluate(n=>getComputedStyle(n).fontSize);
+ await page.locator('#wado-ui-size').selectOption('largest');await page.locator('#wado-print-text').selectOption('largest');
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'large screen text fits phone');
+ assert((await page.locator('.hint').first().evaluate(n=>parseFloat(getComputedStyle(n).fontSize)))>=28,'help text grows');assert.equal(await page.locator('.wado-cell').first().evaluate(n=>getComputedStyle(n).fontSize),cellFont,'screen setting leaves puzzle glyphs unchanged');
+ await page.reload();await page.waitForFunction(()=>!document.querySelector('#wado-generate').disabled);assert.equal(await page.locator('#wado-ui-size').inputValue(),'largest');assert.equal(await page.locator('#wado-print-text').inputValue(),'largest');
+ await page.evaluate(()=>window.print=()=>{});await page.locator('#wado-select-all').click();
+ for(const id of ['wado-print-questions','wado-print-answers','wado-print-hints']){
+  await page.locator('#'+id).click();await page.emulateMedia({media:'print'});await page.setViewportSize({width:704,height:1017});
+  const clipped=await page.locator('#wado-print-root .wado-question,#wado-print-root .wado-sheet').evaluateAll(nodes=>nodes.filter(n=>n.scrollWidth>n.clientWidth+2||n.scrollHeight>n.clientHeight+2).map(n=>({class:n.className,w:n.scrollWidth-n.clientWidth,h:n.scrollHeight-n.clientHeight})));assert.deepEqual(clipped,[],'large printed text fits: '+id);await page.emulateMedia({media:'screen'});
+ }
+ await page.locator('#wado-select-none').click();await page.locator('.wado-question input[type=checkbox]').first().check();
  const raw=await page.evaluate(key=>localStorage.getItem(key),key);
  await page.evaluate(key=>{window.__set=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){if(k===key)throw new DOMException('full','QuotaExceededError');return __set.call(this,k,v);};},key);await page.locator('#wado-generate').click();await page.locator('#wado-error:not([hidden])').waitFor();assert.equal(await page.evaluate(key=>localStorage.getItem(key),key),raw,'quota failure preserves all saved questions');await page.evaluate(()=>Storage.prototype.setItem=window.__set);
  await page.evaluate(key=>localStorage.setItem(key,'{"broken":true}'),key);await page.reload();await page.locator('#wado-error:not([hidden])').waitFor();assert(await page.locator('#wado-generate').isDisabled());assert.equal(await page.evaluate(key=>localStorage.getItem(key),key),'{"broken":true}','malformed data preserved');
