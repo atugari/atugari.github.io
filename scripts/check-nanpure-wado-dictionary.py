@@ -9,6 +9,27 @@ spec.loader.exec_module(builder)
 
 
 class DictionaryChecks(unittest.TestCase):
+    def test_all_spelling_decisions_without_a_whitelist(self):
+        from collections import defaultdict
+        lexicons = {name: defaultdict(set) for name in ['jmdict', 'sudachi', 'juman']}
+        lexicons['sudachi']['掃除'].add('そうじ')
+        lexicons['juman']['掃除'].add('そうじ')
+        status, reason, word = builder.classify('掃除', lexicons, set(), {'掃除': .00001}, {})
+        self.assertEqual(status, 'adopted')
+        self.assertEqual(word['readingSources'], ['sudachi', 'juman'])
+        self.assertEqual(word['rank'], 1)
+        lexicons['jmdict']['別語'].add('べつご')
+        self.assertEqual(builder.classify('別語', lexicons, set(), {}, {})[:2], ('pending', 'single-family'))
+        lexicons['sudachi']['別語'].add('べつよみ')
+        self.assertEqual(builder.classify('別語', lexicons, set(), {}, {})[:2], ('pending', 'reading-unconfirmed'))
+        self.assertEqual(builder.classify('断片', lexicons, set(), {}, {})[:2], ('excluded', 'no-ordinary-reading'))
+
+    def test_reference_absence_stays_unconfirmed(self):
+        report = builder.reference_audit(['学校', '未知'], {'学校': 1}, [('学校', 'adopted', 'reading-supported', {})], {})
+        self.assertEqual(report['dictionaryMatches'], 1)
+        self.assertEqual(report['unmatched'], ['未知'])
+        self.assertEqual(report['entries'][1]['decision'], 'unconfirmed')
+
     def test_sense_and_reading_must_match_together(self):
         spelling = {'text': '学校', 'tags': []}
         entry = {'kana': [

@@ -464,3 +464,10 @@ Apache License 2.0 (SudachiDict and wordfreq code)
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+
+
+Coverage reference (not an existence vote):
+国立国語研究所（1984）『日本語教育のための基本語彙調査』データ。
+https://mmsrv.ninjal.ac.jp/bvjsl84/
+CC BY 4.0: https://creativecommons.org/licenses/by/4.0/
+二字表記の抽出・重複除去・辞書照合は本プロジェクトによる加工。現代の日常語全体の網羅率ではありません。

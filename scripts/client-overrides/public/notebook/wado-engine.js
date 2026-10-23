@@ -18,14 +18,15 @@
  function shuffle(values,random){const a=values.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
  function fingerprint(p){const before=['top','left'].filter(k=>p.arms[k]).map(k=>p.arms[k]).sort().join(''),after=['right','bottom'].filter(k=>p.arms[k]).map(k=>p.arms[k]).sort().join('');return before+'>'+after;}
  function create(data){
-  if(data?.version!==1||data.revision!=='multi-lexicon-1'||!Array.isArray(data.words)||typeof data.checks!=='string'||!Array.isArray(data.sources))throw Error('辞書を読み込めませんでした。');
+  if(data?.version!==2||data.revision!=='whole-lexicon-2'||!Array.isArray(data.words)||!Array.isArray(data.legacyWords)||typeof data.checks!=='string'||!Array.isArray(data.sources))throw Error('辞書を読み込めませんでした。');
   const spellings=data.checks.split(' '),sourceBits={jmdict:1,sudachi:2,juman:4},sources=data.sources.filter(s=>s.bit),masks=new Map();
   if(typeof data.checkSources!=='string'||data.checkSources.length!==spellings.length||!/^[1-7]+$/.test(data.checkSources)||sources.length!==3||sources.some(s=>sourceBits[s.id]!==s.bit)||new Set(sources.map(s=>s.id)).size!==3||new Set(spellings).size!==spellings.length)throw Error('辞書の出典情報を確認してください。');
-  const words=new Map(),checks=new Set(spellings),inIndex=new Map(),outIndex=new Map(),pool=new Map();
+  const words=new Map(),legacy=new Map(),checks=new Set(spellings),inIndex=new Map(),outIndex=new Map(),pool=new Map();
   spellings.forEach((text,index)=>masks.set(text,Number(data.checkSources[index])));
   function add(map,key,value){if(!map.has(key))map.set(key,new Set());map.get(key).add(value);}
   for(const text of checks){if(!/^[\u3400-\u9fff]{2}$/.test(text))throw Error('辞書の形式を確認してください。');add(inIndex,text[0],text[1]);add(outIndex,text[1],text[0]);}
-  for(const item of data.words){if(!checks.has(item.text)||words.has(item.text)||![1,2,3].includes(item.rank)||!/^[ぁ-ゖー]+$/.test(item.reading)||!Array.isArray(item.readingSources)||item.readingSources.length<2||new Set(item.readingSources).size!==item.readingSources.length||!item.readingSources.includes('jmdict')||item.readingSources.some(id=>!sourceBits[id]||!(masks.get(item.text)&sourceBits[id])))throw Error('熟語データを確認してください。');words.set(item.text,Object.freeze({...item,readingSources:Object.freeze([...item.readingSources])}));}
+  for(const [items,map]of [[data.words,words],[data.legacyWords,legacy]])for(const item of items){if(!checks.has(item.text)||map.has(item.text)||![1,2,3].includes(item.rank)||!/^[ぁ-ゖー]+$/.test(item.reading)||!Array.isArray(item.readingSources)||item.readingSources.length<2||new Set(item.readingSources).size!==item.readingSources.length||item.readingSources.some(id=>!sourceBits[id]||!(masks.get(item.text)&sourceBits[id])))throw Error('熟語データを確認してください。');map.set(item.text,Object.freeze({...item,readingSources:Object.freeze([...item.readingSources])}));}
+  const entry=(text,p)=>p?.version===1?legacy.get(text):words.get(text);
   for(const entry of words.values()){
    const [a,b]=entry.text;
    if(a===b)continue;
@@ -61,26 +62,25 @@
     const arms={top:before[0].text[0],right:after[0].text[1]};
     if(useLeft)arms.left=before[1].text[0];if(useBottom)arms.bottom=after[1].text[1];
     if(new Set(Object.values(arms)).size!==count)continue;
-    const p={version:1,level,count,arms,answer:entry.answer,choices:[]};
+    const p={version:2,level,count,arms,answer:entry.answer,choices:[]};
     const average=positions.filter(k=>arms[k]).reduce((sum,k)=>sum+words.get(word(p,k)).rank,0)/count;
     if(average<config.minAverage||known.has(fingerprint(p)))continue;
-    const answers=candidates(p);if(answers.length!==1||answers[0]!==p.answer)continue;
     if(config.choices)p.choices=shuffle([p.answer,...shuffle(choicePool.filter(c=>c!==p.answer),random).slice(0,config.choices-1)],random);
     return p;
    }
    throw Error('この条件で新しい問題が見つかりませんでした。難易度や熟語の数を変えてください。');
   }
   function validate(p){
-   if(p?.version!==1||!Number.isInteger(p.level)||p.level<1||p.level>10||![2,3,4].includes(p.count)||!kanji.test(p.answer)||!p.arms||typeof p.arms!=='object'||Array.isArray(p.arms))throw Error('問題データを確認してください。');
+   if(![1,2].includes(p?.version)||!Number.isInteger(p.level)||p.level<1||p.level>10||![2,3,4].includes(p.count)||!kanji.test(p.answer)||!p.arms||typeof p.arms!=='object'||Array.isArray(p.arms))throw Error('問題データを確認してください。');
    const keys=Object.keys(p.arms),config=levels[p.level-1];
    if(keys.length!==p.count||!p.arms.top||!p.arms.right||keys.some(k=>!positions.includes(k)||!kanji.test(p.arms[k]))||new Set(Object.values(p.arms)).size!==p.count)throw Error('問題の配置を確認してください。');
-   const entries=keys.map(k=>words.get(word(p,k)));if(entries.some(e=>!e||e.rank>config.maxRank)||entries.reduce((s,e)=>s+e.rank,0)/p.count<config.minAverage)throw Error('熟語を確認してください。');
-   const answers=candidates(p);if(answers.length!==1||answers[0]!==p.answer)throw Error('答えが一つに定まりません。');
+   const entries=keys.map(k=>entry(word(p,k),p));if(entries.some(e=>!e||e.rank>config.maxRank)||entries.reduce((s,e)=>s+e.rank,0)/p.count<config.minAverage)throw Error('熟語を確認してください。');
+   if(!candidates(p).includes(p.answer))throw Error('解答例の熟語を確認してください。');
    if(!Array.isArray(p.choices)||p.choices.length!==config.choices||p.choices.some(c=>!kanji.test(c))||new Set(p.choices).size!==p.choices.length||config.choices&&!p.choices.includes(p.answer))throw Error('選択肢を確認してください。');
    if(p.created!==undefined&&(!Number.isSafeInteger(p.created)||p.created<0))throw Error('保存日時を確認してください。');return p;
   }
-  function hints(p){return positions.filter(k=>p.arms[k]).slice(0,levels[p.level-1].readings).map(position=>({position,reading:words.get(word(p,position)).reading}));}
-  return{generate,validate,candidates,inspect,evidence,fingerprint,word,hints,levels,positions,entry:text=>words.get(text),sourceDate:data.sourceDate,checkedWords:checks.size,revision:data.revision};
+  function hints(p){return positions.filter(k=>p.arms[k]).slice(0,levels[p.level-1].readings).map(position=>({position,reading:entry(word(p,position),p).reading}));}
+  return{generate,validate,candidates,inspect,evidence,fingerprint,word,hints,levels,positions,entry,sourceDate:data.sourceDate,checkedWords:checks.size,revision:data.revision,stats:data.stats,coverage:data.coverage};
  }
  w.NPWado={create,levels,positions,word,fingerprint};
 })(typeof window==='undefined'?globalThis:window);

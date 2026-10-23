@@ -157,6 +157,59 @@ def juman_lines(lines):
                 yield text, reading
 
 
+def classify(text, lexicons, common, frequency, preferred):
+    """Every extracted spelling receives one decision; no vocabulary whitelist."""
+    readings = set().union(*(entries.get(text, set()) for entries in lexicons.values()))
+    options = [(reading, [name for name, entries in lexicons.items()
+                          if reading in entries.get(text, set())]) for reading in readings]
+    supported = [option for option in options if len(option[1]) >= 2]
+    if text in preferred:
+        supported = [option for option in supported if option[0] == preferred[text]]
+    if not readings:
+        return 'excluded', 'no-ordinary-reading', None
+    if not supported:
+        families = sum(bool(entries.get(text)) for entries in lexicons.values())
+        return 'pending', ('single-family' if families == 1 else 'reading-unconfirmed'), None
+    supported.sort(key=lambda item: ((text, item[0]) not in common, -len(item[1]), item[0]))
+    reading, support = supported[0]
+    zipf = round(9 + math.log10(frequency[text]), 2) if frequency.get(text) else 0
+    rank = 1 if zipf >= 3.5 else 2 if zipf >= 2.8 else 3
+    return 'adopted', 'reading-supported', {'text': text, 'reading': reading, 'rank': rank,
+                                           'readingSources': support, 'zipf': zipf}
+
+
+def basic_terms(path, expected_sha):
+    import openpyxl
+    if sha(path.read_bytes()) != expected_sha:
+        raise ValueError('Basic-vocabulary reference differs from reviewed snapshot')
+    workbook = openpyxl.load_workbook(path, read_only=True, data_only=True)
+    try:
+        rows = workbook['4_意味分類体語彙表'].iter_rows(values_only=True)
+        if next(rows)[5] != '見出し語':
+            raise ValueError('Basic-vocabulary reference columns changed')
+        # Exact written forms only. No kana guessing, substring extraction,
+        # annotations or phonetic-guide text become two-kanji words.
+        candidates = [row for row in rows if isinstance(row[5], str) and HAN.fullmatch(row[5])]
+        raw = {row[5] for row in candidates}
+        eligible = {row[5] for row in candidates if row[6] in (None, '')}
+        return {'raw': sorted(raw), 'terms': sorted(eligible), 'withOkurigana': sorted(raw - eligible)}
+    finally:
+        workbook.close()
+
+
+def reference_audit(terms, checks, decisions, source):
+    choices = {text: (decision, reason) for text, decision, reason, _ in decisions}
+    entries = [{'text': text, 'inDictionary': text in checks,
+                'decision': choices[text][0] if text in choices else 'unconfirmed',
+                'reason': choices[text][1] if text in choices else 'not-in-current-corpus'} for text in terms]
+    return {'source': source, 'scope': 'Exact distinct two-BMP-Han forms in the 1984 survey, not all modern daily words.',
+            'total': len(entries), 'dictionaryMatches': sum(e['inDictionary'] for e in entries),
+            'generationMatches': sum(e['decision'] == 'adopted' for e in entries),
+            'unmatched': [e['text'] for e in entries if not e['inDictionary']],
+            'notice': 'Unmatched means unconfirmed in this corpus, never nonexistent or an incorrect answer.',
+            'entries': entries}
+
+
 def build(args):
     import wordfreq
     lock = json.loads((HERE / 'sources.lock.json').read_text())
@@ -169,20 +222,11 @@ def build(args):
     }
     if version('wordfreq') != '3.1.1' or actual != lock['sha256']:
         raise ValueError('Source snapshot differs from sources.lock.json; review the update before rebuilding')
+    reference_source = lock['coverageReference']
+    reference = basic_terms(args.basic_vocabulary, reference_source['sha256'])
     archive, member = zip_member(args.jmdict, '.json')
     with archive:
         data = json.loads(archive.read(member))
-    ranks = {}
-    rank = 1
-    for line in (HERE / 'vocabulary.txt').read_text().splitlines():
-        if not line or line.startswith('#'):
-            continue
-        if line.isdigit():
-            rank = int(line)
-        else:
-            for text in line.split():
-                if HAN.fullmatch(text):
-                    ranks[text] = min(ranks.get(text, rank), rank)
     lexicons = {name: defaultdict(set) for name in ('jmdict', 'sudachi', 'juman')}
     checks = defaultdict(int)
     common = set()
@@ -207,49 +251,68 @@ def build(args):
         checks[text] |= 4
     frequency = wordfreq.get_frequency_dict('ja')
     preferred = json.loads((HERE / 'preferred-readings.json').read_text())
-    words, omitted, demoted = [], [], []
-    for text, rank in sorted(ranks.items()):
-        options = []
-        for reading in lexicons['jmdict'][text]:
-            support = [name for name, entries in lexicons.items() if reading in entries[text]]
-            if len(support) >= 2:
-                options.append((reading, support))
-        if text in preferred:
-            options = [item for item in options if item[0] == preferred[text]]
-        if not options:
-            omitted.append(text)
-            continue
-        options.sort(key=lambda item: ((text, item[0]) not in common, -len(item[1]), item[0]))
-        reading, support = options[0]
-        zipf = round(9 + math.log10(frequency[text]), 2) if frequency.get(text) else 0
-        # Frequency can only make manually rated words harder, never promote them.
-        effective = max(rank, 1 if zipf >= 3.5 else 2 if zipf >= 2.8 else 3)
-        if effective != rank:
-            demoted.append({'text': text, 'from': rank, 'to': effective, 'zipf': zipf})
-        words.append({'text': text, 'reading': reading, 'rank': effective,
-                      'readingSources': support, 'zipf': zipf})
     spellings = sorted(checks)
+    words, decisions = [], []
+    from collections import Counter
+    totals, reasons = Counter(), Counter()
+    for text in spellings:
+        decision, reason, entry = classify(text, lexicons, common, frequency, preferred)
+        totals[decision] += 1
+        reasons[reason] += 1
+        if entry:
+            words.append(entry)
+        decisions.append((text, decision, reason, entry))
+    legacy = json.loads((HERE / 'legacy-v1.json').read_text())['words']
+    assert all(w['text'] in checks for w in legacy), 'Legacy vocabulary lost from checking corpus'
+    stats = {'generationWords': len(words), 'alternativeWords': len(checks),
+             'classification': dict(totals), 'reasons': dict(reasons),
+             'byRank': {str(rank): sum(w['rank'] == rank for w in words) for rank in [1, 2, 3]},
+             'bySource': {name: sum(bool(mask & bit) for mask in checks.values())
+                          for name, bit in [('jmdict', 1), ('sudachi', 2), ('juman', 4)]}}
+    coverage = reference_audit(reference['terms'], checks, decisions, reference_source)
+    coverage.update(rawTwoHanForms=len(reference['raw']), outsideScopeWithOkurigana=reference['withOkurigana'])
+    coverage['scope'] = 'Distinct two-BMP-Han headwords in the 1984 survey with at least one row having no separate okurigana. Numerals and unusual original forms are retained. Not modern daily-word coverage.'
     result = {
-        'version': 1, 'revision': 'multi-lexicon-1',
+        'version': 2, 'revision': 'whole-lexicon-2',
         'source': 'JMdict + SudachiDict (UniDic family) + JUMAN; wordfreq familiarity',
         'sourceDate': data['dictDate'], 'sources': lock['sources'], 'sourceSha256': actual,
         'copyright': 'See wado-licenses.txt for all retained upstream notices and attribution.',
         'license': 'CC BY-SA 4.0', 'licenseUrl': 'https://creativecommons.org/licenses/by-sa/4.0/',
         'noticeUrl': 'wado-licenses.txt',
-        'words': words, 'checks': ' '.join(spellings),
+        'words': words, 'legacyWords': legacy, 'checks': ' '.join(spellings),
         # One source bitmask per spelling, in exactly the same order as checks.
         'checkSources': ''.join(str(checks[text]) for text in spellings),
-        'stats': {'generationWords': len(words), 'alternativeWords': len(checks),
-                  'bySource': {name: sum(bool(mask & bit) for mask in checks.values())
-                               for name, bit in [('jmdict', 1), ('sudachi', 2), ('juman', 4)]}},
+        'stats': stats,
+        'coverage': {k: v for k, v in coverage.items() if k not in {'entries', 'unmatched'}},
     }
     output = ROOT / 'scripts/client-overrides/public/notebook/wado-data.json'
     output.write_text(json.dumps(result, ensure_ascii=False, separators=(',', ':')) + '\n')
+    audit = ROOT / 'scripts/client-overrides/public/notebook/wado-audit.tsv'
+    with audit.open('w') as stream:
+        stream.write('# Derived lexicon: CC BY-SA 4.0. Attribution and full notices: wado-licenses.txt\n')
+        stream.write('text\tdecision\treason\treading\treadingSources\tzipf\trank\tfoundIn\teligibleReadings\n')
+        for text, decision, reason, entry in decisions:
+            row = [text, decision, reason, entry['reading'] if entry else '',
+                   ','.join(entry['readingSources']) if entry else '',
+                   str(entry['zipf']) if entry else '', str(entry['rank']) if entry else '',
+                   ','.join(name for name, bit in [('jmdict', 1), ('sudachi', 2), ('juman', 4)] if checks[text] & bit),
+                   ';'.join(name + ':' + '/'.join(sorted(entries.get(text, set())))
+                            for name, entries in lexicons.items() if entries.get(text))]
+            stream.write('\t'.join(row) + '\n')
     report = {'revision': result['revision'], 'stats': result['stats'],
-              'omittedVocabulary': omitted, 'demotedVocabulary': demoted}
+              'scope': 'All two-BMP-Han spellings extracted from the three pinned lexical families.',
+              'completion': 'Every extracted spelling has exactly one adopted, pending or excluded decision.',
+              'reasonDescriptions': {'reading-supported': 'Same spelling and hiragana reading in at least two lexical families.',
+                                     'no-ordinary-reading': 'No eligible current independent-word reading after source filters; not a claim of nonexistence.',
+                                     'single-family': 'Eligible reading available from one family only; not a claim of invalidity.',
+                                     'reading-unconfirmed': 'No reading corroborated by two families, or reviewed preference not corroborated.'},
+              'auditSha256': sha(audit.read_bytes())}
+    report['coverage'] = coverage
+    (ROOT / 'scripts/client-overrides/public/notebook/wado-coverage.json').write_text(
+        json.dumps(coverage, ensure_ascii=False, separators=(',', ':')) + '\n')
     (HERE / 'dictionary-report.json').write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
     print(json.dumps(result['stats'], ensure_ascii=False))
-    print('Omitted:', len(omitted), 'Demoted:', len(demoted), 'Output bytes:', output.stat().st_size)
+    print('Processed:', len(decisions), 'Output bytes:', output.stat().st_size)
 
 
 if __name__ == '__main__':
@@ -258,4 +321,5 @@ if __name__ == '__main__':
     parser.add_argument('--sudachi-small', required=True, type=Path)
     parser.add_argument('--sudachi-core', required=True, type=Path)
     parser.add_argument('--juman', required=True, type=Path)
+    parser.add_argument('--basic-vocabulary', required=True, type=Path)
     build(parser.parse_args())

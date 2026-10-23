@@ -57,5 +57,16 @@
       "licenseUrl": "https://github.com/rspeer/wordfreq/blob/master/NOTICE.md",
       "copyright": "Copyright 2022 Robyn Speer; SUBTLEX authors Marc Brysbaert et al. and upstream providers; SUBTLEX is freely available data"
     }
-  ]
+  ],
+  "coverageReference": {
+    "id": "ninjal-basic-1984",
+    "title": "国立国語研究所報告78 日本語教育のための基本語彙調査（1984）データ・意味分類体語彙表",
+    "url": "https://mmsrv.ninjal.ac.jp/bvjsl84/",
+    "downloadUrl": "https://mmsrv.ninjal.ac.jp/bvjsl84/2_nihongokyoiku02.xlsx",
+    "sha256": "b02cfd507452916a0ac9de4d9e645dcd457a448f901e328e53b927f420eca4e9",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": "国立国語研究所（1984）『日本語教育のための基本語彙調査』データ。二字表記の抽出・重複除去・辞書照合は本プロジェクトによる加工。",
+    "purpose": "Bounded independent coverage audit only; not evidence of modern-day vocabulary completeness or word validity."
+  }
 }
