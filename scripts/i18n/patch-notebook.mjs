@@ -15,11 +15,8 @@ export function patchNotebook(directory) {
   replace('visual-hints.js','const n=t=>e.NPI18n?e.NPI18n.t(t):t','const n=t=>t');
   replace('access-tools.js','const t=s=>window.NPI18n?.t(s)||s;','const t=s=>s;');
   replace('play-options.js','function t(s){return window.NPI18n?.t(s)||s}','function t(s){return s}');
-  replace('app.js','u(window.NPI18n?NPI18n.t("ミス"):"ミス")','u("ミス")');
-  replace('app.js','Ue(e+" <small>問</small>","pick-count"','Ue(e+" 問","pick-count"');
 
-  // Keep the variable print counts inside preserved inline slots.
-  replace("app.js","d+='<p class=\"selection-count\" role=\"status\">条件に合う問題 <b>'+t.length+\"問</b> ／ この中で選択済み \"+l+\"問\"+(L.ids.length>l?\"<br>条件の外でも \"+(L.ids.length-l)+\"問 選択中\":\"\")+\"</p>\"","d+='<p class=\"selection-count\" role=\"status\">条件に合う問題 <b>'+t.length+\"問</b> ／ この中で選択済み <span>\"+l+\"問</span>\"+(L.ids.length>l?\"<br>条件の外でも <span>\"+(L.ids.length-l)+\"問</span> 選択中\":\"\")+\"</p>\"");
+  patchNotebookApp(directory);
 
   // Translate only a new task's default name. Player-edited and saved names
   // remain input values and retain their explicit data-i18n-skip protection.
@@ -33,4 +30,16 @@ export function patchNotebook(directory) {
   // player invokes Share; this does not initiate a share or copy by itself.
   replace('video-features.js','!async function(e){try{navigator.share?','!async function(e){e=window.NPI18n?.t(e)||e;try{navigator.share?');
   replace('video-features.js','title:"ナンプレ帳の統計"','title:window.NPI18n?.t("ナンプレ帳の統計")||"ナンプレ帳の統計"');
+}
+
+// Also used by notebook-only releases that reuse the verified shell.
+export function patchNotebookApp(directory) {
+  function replace(file, from, to) {
+    const target=path.join(directory,file),source=fs.readFileSync(target,'utf8');
+    if(source.split(from).length!==2)throw new Error(`Localization patch must match once: ${file}: ${from.slice(0,80)}`);
+    fs.writeFileSync(target,source.replace(from,to));
+  }
+  replace('app.js','u(window.NPI18n?NPI18n.t("ミス"):"ミス")','u("ミス")');
+  replace('app.js','Ue(e+" <small>問</small>","pick-count"','Ue(e+" 問","pick-count"');
+  replace("app.js","d+='<p class=\"selection-count\" role=\"status\">条件に合う問題 <b>'+t.length+\"問</b> ／ この中で選択済み \"+l+\"問\"+(L.ids.length>l?\"<br>条件の外でも \"+(L.ids.length-l)+\"問 選択中\":\"\")+\"</p>\"","d+='<p class=\"selection-count\" role=\"status\">条件に合う問題 <b>'+t.length+\"問</b> ／ この中で選択済み <span>\"+l+\"問</span>\"+(L.ids.length>l?\"<br>条件の外でも <span>\"+(L.ids.length-l)+\"問</span> 選択中\":\"\")+\"</p>\"");
 }

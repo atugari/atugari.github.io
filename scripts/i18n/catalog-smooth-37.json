@@ -1,0 +1,42 @@
+{
+  "プレイ中の画面の揺れを直しました": {
+    "en": "Fixed screen jumps during play",
+    "zh-Hans": "修复了游玩时画面跳动的问题",
+    "zh-Hant": "修正了遊玩時畫面跳動的問題",
+    "ko": "플레이 중 화면이 흔들리던 문제를 수정했습니다",
+    "es": "Corregidos los saltos de pantalla al jugar",
+    "fr": "Correction des sauts d’affichage pendant le jeu",
+    "de": "Springende Anzeige beim Spielen behoben",
+    "pt": "Corrigidos os saltos de tela durante o jogo"
+  },
+  "数字入力や保存の案内で、盤面や数字ボタンの位置が動く不具合を直しました。": {
+    "en": "Fixed the board and number buttons shifting when entering numbers or showing save messages.",
+    "zh-Hans": "修复了输入数字或显示保存提示时，棋盘和数字按钮位置移动的问题。",
+    "zh-Hant": "修正了輸入數字或顯示儲存提示時，盤面和數字按鈕位置移動的問題。",
+    "ko": "숫자를 입력하거나 저장 안내가 표시될 때 보드와 숫자 버튼의 위치가 움직이던 문제를 수정했습니다.",
+    "es": "Se ha corregido el movimiento del tablero y de los botones numéricos al introducir números o mostrar avisos de guardado.",
+    "fr": "Le plateau et les touches numériques ne se déplacent plus lors de la saisie ou de l’affichage des messages de sauvegarde.",
+    "de": "Das Spielfeld und die Zahlentasten verschieben sich bei Eingaben oder Speicherhinweisen nicht mehr.",
+    "pt": "O tabuleiro e os botões numéricos não se movem mais ao inserir números ou exibir mensagens de salvamento."
+  },
+  "候補メモの警告が出ても、盤面の大きさを保つようにしました。": {
+    "en": "The board now keeps its size when a candidate note warning appears.",
+    "zh-Hans": "显示候选数笔记警告时，棋盘现在会保持原有大小。",
+    "zh-Hant": "顯示候選數筆記警告時，盤面現在會保持原有大小。",
+    "ko": "후보 메모 경고가 표시되어도 보드 크기가 유지됩니다.",
+    "es": "El tablero mantiene su tamaño cuando aparece un aviso sobre las notas de candidatos.",
+    "fr": "Le plateau conserve sa taille lorsqu’un avertissement sur les notes de candidats apparaît.",
+    "de": "Das Spielfeld behält seine Größe, wenn eine Warnung zu Kandidatennotizen erscheint.",
+    "pt": "O tabuleiro mantém o tamanho quando aparece um aviso sobre as notas de candidatos."
+  },
+  "選択マスの更新処理を減らし、大きな盤面の操作を軽くしました。": {
+    "en": "Reduced unnecessary cell updates to make large boards more responsive.",
+    "zh-Hans": "减少了不必要的单元格更新，让大棋盘操作更流畅。",
+    "zh-Hant": "減少了不必要的儲存格更新，讓大盤面操作更流暢。",
+    "ko": "불필요한 칸 업데이트를 줄여 큰 보드에서 더 가볍게 조작할 수 있습니다.",
+    "es": "Se han reducido las actualizaciones innecesarias de las casillas para mejorar la respuesta de los tableros grandes.",
+    "fr": "Les mises à jour inutiles des cases ont été réduites pour rendre les grands plateaux plus réactifs.",
+    "de": "Weniger unnötige Zellenaktualisierungen sorgen für flüssigere Bedienung großer Spielfelder.",
+    "pt": "As atualizações desnecessárias das células foram reduzidas para melhorar a resposta de tabuleiros grandes."
+  }
+}

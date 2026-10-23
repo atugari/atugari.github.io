@@ -45,7 +45,7 @@ function isCurrentPlayEdit(puzzle,revision){
 function syncPlayTabStops(board){
   const cells=Array.from(board.querySelectorAll('[data-action="cell"]'));
   const selected=cells.find(cell=>Number(cell.dataset.cell)===A)||cells[0];
-  for(const cell of cells)cell.tabIndex=cell===selected?0:-1;
+  for(const cell of cells){const next=cell===selected?0:-1;if(cell.getAttribute('tabindex')!==String(next))cell.tabIndex=next;}
 }
 function focusPlayCell(index){
   const board=document.getElementById('board');if(!board)return;

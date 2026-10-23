@@ -56,8 +56,15 @@
    window.NPPlaySettings?.sync();
    window.NPBoardInput?.scan();
    const screen=board.closest('.screen')||app;
-   const status=document.getElementById('play-status');
-   if(status&&status.parentElement!==dock)dock.append(status);
+   // Feedback is allowed to grow below the keypad, without changing the space
+   // reserved for the board. Saving and note warnings otherwise resize it on
+   // every input, moving the next key away from the user's finger.
+   let feedback=screen.querySelector('.play-feedback');
+   if(!feedback){feedback=document.createElement('div');feedback.className='play-feedback';dock.after(feedback);}
+   for(const id of ['note-conflict-summary','play-status']){
+    const notice=document.getElementById(id);
+    if(notice&&notice.parentElement!==feedback)feedback.append(notice);
+   }
    const viewportHeight=Math.max(120,Math.floor(window.visualViewport?.height||window.innerHeight));
    const appStyle=getComputedStyle(app);
    const availableW=Math.max(80,app.clientWidth-px(appStyle.paddingLeft)-px(appStyle.paddingRight));
@@ -75,7 +82,7 @@
    const ratio=current?.linked?current.linked.width/current.linked.height:1;
    let used=0;
    for(const el of screen.children){
-    if(el===board||el.tagName==='DIALOG')continue;
+    if(el===board||el===feedback||el.tagName==='DIALOG')continue;
     const style=getComputedStyle(el);
     if(style.display==='none'||style.position==='fixed'||style.position==='absolute')continue;
     used+=el.getBoundingClientRect().height+px(style.marginTop)+px(style.marginBottom);
@@ -101,7 +108,7 @@
  function resize(){if(heldKey&&heldKey.viewport!==viewportSize())clearPreview();schedule();}
  function relevant(record){
   const target=record.target.nodeType===1?record.target:record.target.parentElement;
-  return !target?.closest('#board,#timer,#video-score,#video-flash,.np-pan-tools');
+  return !target?.closest('#board,#timer,#video-score,#video-flash,.np-pan-tools,.play-feedback');
  }
  function start(){
   const app=document.getElementById('app');if(!app)return;

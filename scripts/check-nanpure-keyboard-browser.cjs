@@ -63,6 +63,9 @@ async function setup(browser,{daily=false}={}){
 async function openNotebook(page,kind){
  await page.goto(home,{waitUntil:'domcontentloaded'});
  await activate(page,page.locator('.main-choice'),'Space');
+ // The notebook globals can exist while the parent is still opening its
+ // initial route. Wait for the same ready state that exposes it to players.
+ await page.waitForFunction(()=>{const frame=document.querySelector('iframe.notebook');return frame&&getComputedStyle(frame).visibility==='visible';});
  const frame=await (await page.locator('iframe.notebook').elementHandle()).contentFrame();
  assert(frame,'Notebook frame mounts after keyboard activation');
  await frame.waitForFunction(()=>!!window.NanpureAppTest&&window.NPI18n?.get()==='ja');

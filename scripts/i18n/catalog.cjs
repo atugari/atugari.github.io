@@ -7,4 +7,5 @@ module.exports = {
   ...require('./catalog-seo-34.json'),
   ...require('./catalog-ranking-35.json'),
   ...require('./catalog-keyboard-36.json'),
+  ...require('./catalog-smooth-37.json'),
 };
