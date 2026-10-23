@@ -16,7 +16,7 @@ const source=path.resolve(process.argv[2]||'');
 const require=createRequire(path.join(source,'package.json'));
 const esbuild=createRequire(require.resolve('vite'))('esbuild');
 const release=fs.readFileSync(path.join(source,'lib/releases.ts'),'utf8');
-const version='2026.10.23.38';
+const version='2026.10.23.39';
 const publicUpdates=JSON.parse(fs.readFileSync(path.join(repo,'scripts/release-notes.json'),'utf8'));
 if(publicUpdates[0]?.version!==version)throw Error('Release notes must match the release version');
 const overrides=path.join(repo,'scripts/client-overrides');
@@ -65,6 +65,7 @@ try {
  }
  if(fs.existsSync(path.join(overrides,'public')))fs.cpSync(path.join(overrides,'public'),output,{recursive:true});
  fs.writeFileSync(path.join(output,'keyboard-access.js'),['key-bindings.js','keyboard-access.js'].map(name=>fs.readFileSync(path.join(overrides,'public',name),'utf8')).join('\n'));
+ await esbuild.build({entryPoints:[path.join(overrides,'lib/board-appearance.ts')],outfile:path.join(output,'notebook/board-appearance.js'),bundle:true,format:'iife',globalName:'NPBoardAppearance',target:['es2022'],minify:true,logLevel:'warning'});
  fs.copyFileSync(path.join(repo,'scripts/i18n/runtime.js'),path.join(output,'notebook/i18n.js'));
  buildTranslationAssets(path.join(output,'notebook'),version);
  patchNotebook(path.join(output,'notebook'));
@@ -75,6 +76,7 @@ try {
   let text=fs.readFileSync(file,'utf8');
   if(!/<meta[^>]+name=["']robots["']/i.test(text))text=text.replace(/<head([^>]*)>/i,'<head$1><meta name="robots" content="noindex, follow">');
   text=text.replace('</head>',`<script defer src="${base}keyboard-access.js"></script></head>`);
+  if(text.includes('access-tools.js'))text=text.replace('<script src="access-tools.js"></script>','<script src="board-appearance.js"></script><script src="access-tools.js"></script><script src="appearance-controls.js"></script>');
   fs.writeFileSync(file,text);
  }
  const cssDir=path.join(source,'dist/client/_next/static/css');
@@ -87,6 +89,8 @@ try {
  fs.appendFileSync(path.join(output,'shell.css'),'\n'+fs.readFileSync(path.join(overrides,'public/native-board.css'),'utf8')+'\n'+fs.readFileSync(path.join(overrides,'public/release-info.css'),'utf8'));
  fs.appendFileSync(path.join(output,'shell.css'),'\n'+fs.readFileSync(path.join(overrides,'public/site-intro.css'),'utf8'));
  fs.appendFileSync(path.join(output,'shell.css'),'\n'+fs.readFileSync(path.join(overrides,'public/ranking.css'),'utf8'));
+ const appearanceCSS=fs.readFileSync(path.join(overrides,'public/board-appearance.css'),'utf8');
+ fs.appendFileSync(path.join(output,'shell.css'),'\n'+appearanceCSS);fs.appendFileSync(path.join(output,'notebook/app.css'),'\n'+appearanceCSS);
  // Render the same public home component at build time. It remains visible to users
  // after the client starts; there is no crawler-specific or hidden alternative copy.
  write('render-home.tsx',`import React from 'react';import {renderToStaticMarkup} from 'react-dom/server';import Game from './app/game';import {LocaleProvider} from './app/locale-context';process.stdout.write(renderToStaticMarkup(<LocaleProvider initialLocale="ja"><Game initialChallenges={[]}/></LocaleProvider>));`);

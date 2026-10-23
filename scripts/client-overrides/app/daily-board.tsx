@@ -104,8 +104,8 @@ export default function DailyBoard({session,grid,notes,selected,onSelect,onFocus
    {grid.map((v,i)=>{
     const r=Math.floor(i/n),c=i%n,cage=cages.get(i),sameCage=(j:number)=>cage?.cells.includes(j);
     const related=settings.area&&selected>=0&&(r===Math.floor(selected/n)||c===selected%n||settings.selectionDesign!=='guide'&&region(selected)>=0&&region(selected)===region(i));
-    const edgeStyle:CSSProperties={borderRightWidth:c<n-1&&region(i)!==region(i+1)?'2px':undefined,
-     borderBottomWidth:r<n-1&&region(i)!==region(i+n)?'2px':undefined};
+    const edgeStyle:CSSProperties={borderRightWidth:c<n-1?(region(i)!==region(i+1)?'var(--np-region-line,2px)':'var(--np-cell-line,1px)'):undefined,
+     borderBottomWidth:r<n-1?(region(i)!==region(i+n)?'var(--np-region-line,2px)':'var(--np-cell-line,1px)'):undefined};
     return <button role="gridcell" key={i} data-cell={i} tabIndex={i===(selected<0?0:selected)?0:-1} aria-rowindex={r+1} aria-colindex={c+1}
      aria-label={t('{r}行{c}列 {value}{fixed}{sum}',{r:r+1,c:c+1,value:v||((notes[i]?.length?t('メモ')+' '+notes[i].join('・'):t('空白'))),fixed:session.puzzle[i]?t(' 固定'):'',sum:cage&&i===cage.cells[0]?t(' 合計{sum}',{sum:cage.sum}):''})}
      aria-selected={i===selected} style={edgeStyle}

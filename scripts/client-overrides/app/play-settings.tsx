@@ -1,5 +1,6 @@
 'use client';
 import {useRef,useState,type ReactNode} from 'react';
+import {useBoardAppearance,AppearanceChoices,HighlightChoice} from './board-appearance-settings';
 import {normalizeSelectionDesign,type SelectionDesign} from './selection-design';
 import TextSizeSetting from './text-size-setting';
 import {KeypadSettings} from './daily-view-controls';
@@ -16,6 +17,8 @@ const settingsPages=[
 type SettingsPage=typeof settingsPages[number][0];
 export default function PlaySettings({value,onChange,ranked,onPractice,onStats,boardControls,gameInfo,onReset,onGuide,onAudio,onClose}:{value:PlayOptions;onChange:(v:PlayOptions)=>void;ranked:boolean;onPractice:()=>void;onStats:()=>void;boardControls?:ReactNode;gameInfo?:ReactNode;onReset?:()=>void;onGuide?:()=>void;onAudio?:()=>void;onClose?:()=>void}){
  const{t}=useLocale();
+ const appearance=useBoardAppearance();
+ const highlight=(key:'area'|'same',label:string)=><HighlightChoice label={label} kind={key==='area'?'areaStrength':'sameStrength'} enabled={value[key]} strength={appearance.value[key==='area'?'areaStrength':'sameStrength']} onChange={n=>{if(!n||appearance.change(key==='area'?'areaStrength':'sameStrength',n))set(key,!!n)}}/>;
  const[page,setPage]=useState<SettingsPage|null>(null);
  const root=useRef<HTMLElement>(null),heading=useRef<HTMLHeadingElement>(null);
  const set=(key:keyof PlayOptions,v:any)=>onChange({...value,[key]:v});
@@ -31,8 +34,9 @@ export default function PlaySettings({value,onChange,ranked,onPractice,onStats,b
   <div id="daily-settings-view" className="ps-page" hidden={page!=='view'}>
    <div className={`settings-preview palette-${value.palette} ${value.nonColor?'noncolor':''}`} data-selection-design={value.selectionDesign} aria-label={t('見え方の見本')}><div className="preview-cells" style={{fontSize:22*value.digitSize/100}}>{[1,2,0,4,0,4,1,0,2,0,4,3,4,3,0,1].map((n,i)=><span key={i} className={i===5?'preview-selected':value.same&&n===4?'preview-same':value.area&&(Math.floor(i/4)===1||i%4===1||value.selectionDesign!=='guide'&&Math.floor(i/4)<2&&i%4<2)?'preview-related':''}>{n||<small style={{fontSize:10*value.noteSize/100}}>1 3</small>}</span>)}</div><small>{t('見え方の見本')}</small></div>
    <div className="ps-card"><label className="selection-design-setting ps-choice"><span>{t('選択マスのデザイン')}</span><select value={value.selectionDesign} onChange={e=>set('selectionDesign',normalizeSelectionDesign(e.target.value))}>{[['guide','行・列ガイド'],['outline','くっきり枠'],['solid','濃い色で選択']].map(([design,label])=><option key={design} value={design}>{t(label)}</option>)}</select></label>
-    {check('area','行・列・枠を強調表示')}{check('same','同じ数字を強調表示')}{check('nonColor','色だけでなく枠・下線でも区別する')}
+    {highlight('area','行・列・枠を強調表示')}{highlight('same','同じ数字を強調表示')}{check('nonColor','色だけでなく枠・下線でも区別する')}
    </div>
+   <AppearanceChoices value={appearance.value} onChange={appearance.change}/>{appearance.error&&<p role="status">{t(appearance.error)}</p>}
    <fieldset className="ps-card"><legend>{t('画面の配色')}</legend><div className="palette-options">{['light','cream','mint','sky','rose','purple','dark'].map((p,i)=><button type="button" key={p} className={'palette-'+p} aria-pressed={value.palette===p} onClick={()=>set('palette',p)}>{t(['白','クリーム','ミント','青','ピンク','紫','暗い表示'][i])}</button>)}</div>{check('systemTheme','端末のダークモードに合わせる')}</fieldset>
    <fieldset className="ps-card"><legend>{t('色と大きさ')}</legend>{boardControls||range('cellSize','盤面の倍率',100,180)}<small>{t('100%は標準の大きさです。盤面がはみ出すときは「全体を表示」で画面に合わせられます。')}</small>{range('digitSize','数字の大きさ',70,150)}{range('noteSize','メモの大きさ',80,160)}</fieldset>
    <TextSizeSetting/>
@@ -51,7 +55,7 @@ export default function PlaySettings({value,onChange,ranked,onPractice,onStats,b
    {gameInfo&&<div className="ps-card">{gameInfo}</div>}
    <div className="ps-card">{onGuide&&<button className="ps-link-row" type="button" onClick={onGuide}><span>{t('解き方図鑑を開く')}</span><span aria-hidden="true">›</span></button>}<button className="ps-link-row" type="button" onClick={onStats}><span>{t('日替わりの記録')}</span><span aria-hidden="true">›</span></button></div>
    <p className="ps-note">{t('解き方図鑑・高度なヒント・統計の共有は「自由に遊ぶ」の設定から利用できます。')}</p>
-   <button className="text-button ps-reset" type="button" onClick={()=>{onChange({...defaultSettings});onReset?.()}}>{t('設定を初期値に戻す')}</button>
+   <button className="text-button ps-reset" type="button" onClick={()=>{if(appearance.reset()){onChange({...defaultSettings});onReset?.()}}}>{t('設定を初期値に戻す')}</button>
   </div>
  </section>
 }

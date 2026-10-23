@@ -1,0 +1,182 @@
+{
+  "枠線の太さ": {
+    "en": "Region border thickness",
+    "zh-Hans": "区域边框粗细",
+    "zh-Hant": "區域邊框粗細",
+    "ko": "영역 테두리 두께",
+    "es": "Grosor de los bordes de región",
+    "fr": "Épaisseur des bordures de région",
+    "de": "Dicke der Bereichsrahmen",
+    "pt": "Espessura das bordas das regiões"
+  },
+  "マス線の太さ": {
+    "en": "Cell line thickness",
+    "zh-Hans": "单元格线条粗细",
+    "zh-Hant": "儲存格線條粗細",
+    "ko": "칸 구분선 두께",
+    "es": "Grosor de las líneas de casilla",
+    "fr": "Épaisseur des lignes des cases",
+    "de": "Dicke der Zelllinien",
+    "pt": "Espessura das linhas das casas"
+  },
+  "数字の太さ": {
+    "en": "Number weight",
+    "zh-Hans": "数字粗细",
+    "zh-Hant": "數字粗細",
+    "ko": "숫자 굵기",
+    "es": "Grosor de los números",
+    "fr": "Graisse des chiffres",
+    "de": "Strichstärke der Zahlen",
+    "pt": "Espessura dos números"
+  },
+  "線と数字の見やすさ": {
+    "en": "Grid lines and numbers",
+    "zh-Hans": "线条与数字显示",
+    "zh-Hant": "線條與數字顯示",
+    "ko": "선과 숫자 표시",
+    "es": "Líneas y números",
+    "fr": "Lignes et chiffres",
+    "de": "Linien und Zahlen",
+    "pt": "Linhas e números"
+  },
+  "太め": {
+    "en": "Thicker",
+    "zh-Hans": "较粗",
+    "zh-Hant": "較粗",
+    "ko": "굵게",
+    "es": "Más grueso",
+    "fr": "Plus épais",
+    "de": "Dicker",
+    "pt": "Mais espesso"
+  },
+  "とても太い": {
+    "en": "Extra thick",
+    "zh-Hans": "很粗",
+    "zh-Hant": "很粗",
+    "ko": "아주 굵게",
+    "es": "Muy grueso",
+    "fr": "Très épais",
+    "de": "Sehr dick",
+    "pt": "Muito espesso"
+  },
+  "極太": {
+    "en": "Heavy",
+    "zh-Hans": "超粗",
+    "zh-Hant": "超粗",
+    "ko": "매우 굵게",
+    "es": "Extragrueso",
+    "fr": "Très gras",
+    "de": "Extradick",
+    "pt": "Extraespesso"
+  },
+  "最大": {
+    "en": "Maximum",
+    "zh-Hans": "最粗",
+    "zh-Hant": "最粗",
+    "ko": "최대",
+    "es": "Máximo",
+    "fr": "Maximum",
+    "de": "Maximum",
+    "pt": "Máximo"
+  },
+  "細め": {
+    "en": "Light",
+    "zh-Hans": "较细",
+    "zh-Hant": "較細",
+    "ko": "가늘게",
+    "es": "Fino",
+    "fr": "Fin",
+    "de": "Dünn",
+    "pt": "Fino"
+  },
+  "中くらい": {
+    "en": "Medium",
+    "zh-Hans": "中等",
+    "zh-Hant": "中等",
+    "ko": "중간",
+    "es": "Medio",
+    "fr": "Moyen",
+    "de": "Mittel",
+    "pt": "Médio"
+  },
+  "なし": {
+    "en": "None",
+    "zh-Hans": "无",
+    "zh-Hant": "無",
+    "ko": "없음",
+    "es": "Ninguno",
+    "fr": "Aucun",
+    "de": "Keine",
+    "pt": "Nenhum"
+  },
+  "弱め": {
+    "en": "Subtle",
+    "zh-Hans": "较弱",
+    "zh-Hant": "較弱",
+    "ko": "약하게",
+    "es": "Suave",
+    "fr": "Discret",
+    "de": "Dezent",
+    "pt": "Suave"
+  },
+  "強め": {
+    "en": "Strong",
+    "zh-Hans": "较强",
+    "zh-Hant": "較強",
+    "ko": "강하게",
+    "es": "Intenso",
+    "fr": "Intense",
+    "de": "Kräftig",
+    "pt": "Forte"
+  },
+  "枠線は、マスのまとまりやジグソーの領域を囲む線です。": {
+    "en": "Region borders enclose blocks of cells or jigsaw regions.",
+    "zh-Hans": "区域边框是围住一组单元格或不规则区域的线条。",
+    "zh-Hant": "區域邊框是圍住一組儲存格或不規則區域的線條。",
+    "ko": "영역 테두리는 칸 묶음이나 직소 영역을 둘러싸는 선입니다.",
+    "es": "Los bordes de región delimitan bloques de casillas o regiones irregulares.",
+    "fr": "Les bordures délimitent les blocs de cases ou les régions irrégulières.",
+    "de": "Bereichsrahmen umschließen Zellenblöcke oder unregelmäßige Bereiche.",
+    "pt": "As bordas delimitam blocos de casas ou regiões irregulares."
+  },
+  "盤面の線と強調を細かく選べます。": {
+    "en": "Choose grid thickness and highlight strength.",
+    "zh-Hans": "可详细设置盘面线条与高亮强度。",
+    "zh-Hant": "可詳細設定盤面線條與醒目提示強度。",
+    "ko": "격자선 두께와 강조 강도를 선택할 수 있습니다.",
+    "es": "Elige el grosor de las líneas y la intensidad del resaltado.",
+    "fr": "Choisissez l’épaisseur des lignes et l’intensité du surlignage.",
+    "de": "Linienstärke und Hervorhebung lassen sich genauer einstellen.",
+    "pt": "Escolha a espessura das linhas e a intensidade dos destaques."
+  },
+  "枠線を5段階、マス線を3段階から選べます。": {
+    "en": "Choose from 5 region border thicknesses and 3 cell line thicknesses.",
+    "zh-Hans": "区域边框有5档粗细，单元格线条有3档粗细可选。",
+    "zh-Hant": "區域邊框有5段粗細，儲存格線條有3段粗細可選。",
+    "ko": "영역 테두리는 5단계, 칸 구분선은 3단계로 선택할 수 있습니다.",
+    "es": "Elige entre 5 grosores para los bordes y 3 para las líneas de casilla.",
+    "fr": "Choisissez parmi 5 épaisseurs de bordure et 3 épaisseurs de ligne de case.",
+    "de": "Bereichsrahmen haben 5 Stufen, Zelllinien 3 Stufen.",
+    "pt": "Escolha entre 5 espessuras de borda e 3 espessuras de linha das casas."
+  },
+  "行・列と同じ数字の強調を、なし・弱め・標準・強めから選べます。": {
+    "en": "Row, column and matching-number highlights have None, Subtle, Standard and Strong options.",
+    "zh-Hans": "行列与相同数字的高亮可选无、较弱、标准或较强。",
+    "zh-Hant": "行列與相同數字的醒目提示可選無、較弱、標準或較強。",
+    "ko": "행·열과 같은 숫자의 강조를 없음·약하게·표준·강하게 중에서 선택할 수 있습니다.",
+    "es": "El resaltado de filas, columnas y números iguales ofrece cuatro intensidades, incluida la desactivación.",
+    "fr": "Quatre niveaux sont proposés pour les lignes, colonnes et chiffres identiques, dont la désactivation.",
+    "de": "Zeilen, Spalten und gleiche Zahlen lassen sich gar nicht, dezent, standardmäßig oder kräftig hervorheben.",
+    "pt": "O destaque de linhas, colunas e números iguais tem quatro opções, incluindo desativado."
+  },
+  "数字の太さも5段階から選べ、日替わりと自由に遊ぶで使えます。": {
+    "en": "Number weight also has 5 options, available in Daily Puzzles and Free Play.",
+    "zh-Hans": "数字粗细也有5档，可用于每日题目和自由游玩。",
+    "zh-Hant": "數字粗細也有5段，可用於每日題目和自由遊玩。",
+    "ko": "숫자 굵기도 5단계로 선택할 수 있으며 오늘의 퍼즐과 자유 플레이에서 사용할 수 있습니다.",
+    "es": "Los números tienen 5 grosores, disponibles en los retos diarios y el juego libre.",
+    "fr": "Les chiffres ont aussi 5 graisses, disponibles dans les défis quotidiens et le jeu libre.",
+    "de": "Auch die Zahlen haben 5 Strichstärken, für Tagesrätsel und freies Spielen.",
+    "pt": "Os números também têm 5 espessuras, nos desafios diários e no jogo livre."
+  }
+}
