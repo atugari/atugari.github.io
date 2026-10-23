@@ -21,9 +21,11 @@ require('./client-overrides/public/notebook/wado-engine.js');require('./client-o
   const entries=web.words(requests.at(-1),'龘').map(w=>({...w,sources:[{title:'Fixture source <img src=x>',url:mode==='unsafe'?'javascript:alert(1)':'https://example.test/source'}]}));
   return Response.json({version:1,provider:'Tavily',checkedAt:Date.now(),status:mode==='empty'?'no-candidates-found':'candidates-found',exhaustive:false,candidates:mode==='empty'?[]:[{answer:'龘',words:entries,allWordsFound:true}],queries:[],failedQueries:0,truncated:false});
  };
+ window.scrollTo=()=>{};for(const node of document.querySelectorAll('*'))node.focus=()=>{};
  const context=vm.createContext({window,document,NPWado,WadoClues,WadoPaper,NPWadoWeb:web,fetch,navigator:{},localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)},location:{replace(){}},Option:function(text,value){const node=document.createElement('option');node.textContent=text;node.value=String(value);return node;},AbortController,AbortSignal,Worker:class{},Date,setTimeout,clearTimeout,console});
  const settle=async()=>{for(let i=0;i<4;i++)await new Promise(setImmediate);};
  const click=node=>node.dispatchEvent(new window.Event('click',{bubbles:true}));
+ vm.runInContext(fs.readFileSync('scripts/client-overrides/public/notebook/wado-workspace.js','utf8'),context);
  vm.runInContext(fs.readFileSync('scripts/client-overrides/public/notebook/wado-ui.js','utf8'),context);await settle();
  assert.equal(document.querySelector('[data-wado-play]'),null,'screen play entry is removed');
  assert(document.querySelector('.wado-question'),'saved puzzle loads');assert.equal(document.querySelector('#wado-web-after').disabled,false);
@@ -41,5 +43,8 @@ require('./client-overrides/public/notebook/wado-engine.js');require('./client-o
  const candidate=[...document.querySelectorAll('[data-wado-hint]')].find(n=>n.value);assert(candidate,'different semantic hints offered');const value=candidate.value;candidate.checked=true;candidate.dispatchEvent(new window.Event('change',{bubbles:true}));await settle();assert.equal(JSON.parse(storage.get(key)).items[0].hintChoice,value,'one chosen hint is saved');
  const preserved={...JSON.parse(storage.get(key)).items[0]};delete preserved.hintChoice;assert.deepEqual(preserved,JSON.parse(JSON.stringify(p)),'hint choice keeps the original puzzle');
  for(const id of ['wado-ui-size','wado-print-text']){const n=document.getElementById(id);n.value='largest';n.dispatchEvent(new window.Event('change',{bubbles:true}));}await settle();const prefs=JSON.parse(storage.get(key)).preferences;assert.equal(prefs.uiSize,'largest');assert.equal(prefs.printText,'largest');assert.equal(document.getElementById('wado-layout'),null);
+ click(document.querySelector('#workspace-tab-print'));assert.equal(document.querySelector('#workspace-create').hidden,true);assert.equal(document.querySelector('#workspace-print').hidden,false);assert.equal(document.querySelector('#workspace-tab-print').getAttribute('aria-selected'),'true');
+ click(document.querySelector('[data-workspace-go=library]'));assert.equal(document.querySelector('#workspace-library').hidden,false);
+ assert.equal(document.querySelector('#workspace-type-settings').hasAttribute('open'),false);assert.equal(document.querySelector('#workspace-paper-settings').hasAttribute('open'),false);
  console.log('PASS Wado network UI: external query links, arbitrary candidates, fixture automatic results, accepted alternatives and print selection, empty/error/unsafe/late responses, manual network search and storage isolation. Live provider connectivity is not tested.');
 })().catch(error=>{console.error(error);process.exit(1);});
