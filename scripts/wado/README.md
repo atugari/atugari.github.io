@@ -1,23 +1,53 @@
-# Kanji fill-in (Wado Kaichin)
+# 漢字穴埋め（和同開珎）
 
-The Japanese-only generator is entered through Free play → Prototypes → Create kanji puzzles, or Tools. It generates and saves print-ready questions; this is not a timed game.
+自由に遊ぶ → 試作品 → 漢字穴埋めを作る、またはツールから開く、日本語の生成・保存・印刷ページです。
 
-- Ten difficulty presets vary vocabulary and aids. Levels 1–4 use 2/3/4/6 choices and readings; 5 requires recall with all readings; 6 has one reading; 7 has familiar words without aids; 8–10 broaden vocabulary. These are descriptive presets, not clinically validated ratings. Individual familiarity varies.
-- Independently choose 2, 3, or 4 two-kanji compounds. Top and left read toward the center; right and bottom read away. Two-word questions use top and right. Three-word questions add left or bottom. Four use all sides.
-- Candidates come from manually selected vocabulary. Alternative answers are checked against **all 58,373 two-kanji spellings** in the pinned JMdict snapshot, including spellings outside the generation pool. Uniqueness is relative to this corpus, not every possible Japanese usage.
-- Canonical fingerprints treat swapped incoming/outgoing words as the same question. Saved questions and settings use `np-wado-v1`, included in website backup/transfer; generation re-reads storage under a Web Lock before each save. Corrupt data and failed writes never reset existing data. Limit: 500 puzzles.
-- The real Worker prevents search from blocking input. Stop terminates pending generation and ignores late worker messages. Only the current library page enters the DOM.
-- Printing builds separate question/answer sheets at the user's request. A4: 1/2/4/6 puzzles, with 2 per page as the larger default. Screen-open answers cannot leak into question sheets.
+- 難易度10段階と、熟語2・3・4個を独立に選べます。1〜4は2・3・4・6択と読み、5は読みのみ、6は読み1つ、7はヒントなし、8〜10は語彙を広げます。難易度は目安で、個人の馴染みや臨床的な評価を示しません。
+- 上・左は「周り→中央」、右・下は「中央→周り」。2語は上と右、3語は左または下を追加、4語は全方向を使います。
+- 出題用は選定語彙のうち **2,045語**。JMdictで表記・読み・語義の適用制限を合わせ、SudachiDictまたはJUMANとも**同じ表記・読み**が一致する語を使います。地名・人名だけの見出しや、接辞・分割構成語だけの見出しは他辞書の裏付けに数えません。
+- 別解は出題用語彙より広い **87,353表記**（JMdict 58,373、SudachiDict 72,745、JUMAN 15,779の和集合）で照合します。同一表記は重複して数えません。SudachiDict・UniDic・NEologd由来分は一系統として扱います。語彙の使用頻度は辞書の票に数えません。
+- JMdictの珍しい・古い表記も別解検出には保守的に残します。未収録語・固有名詞・新語・BMP範囲外の漢字などを含めた「日本語全体での唯一解」は保証できません。画面にもこの範囲を明記しています。
+- `手元の問題の別解を調べる` は周囲の漢字2〜4か所を受け取り、交差する候補を**すべて**表示します。候補ごとに成立する熟語と収録元を示します。0件は未収録の可能性があり、不成立の断定ではありません。入力変更で古い結果を消します。生成した各問の解答欄にも候補数・照合語数・収録元があります。
+- 低頻度の語が「いちばんやさしい」に混ざらないよう、wordfreqの日本語表記のZipf頻度が3.5未満ならrank 2以上、2.8未満ならrank 3とします。手作業の難易度を易しくする補正には使いません。語義・読みごとの頻度ではなく、約2021年までの表記の用例に基づく補助値です。
+- 複数読みは一般的な読みを優先します。`preferred-readings.json` の確認済みヒントも**2系統以上で一致する場合だけ**使います（今朝→けさ、下手→へた等の熟字訓も維持）。一致しない指定は黙って置き換えず、出題候補から除外しレポートに残します。
+- 保存上限500問。`np-wado-v1` はバックアップ・引き継ぎ対象で、Web Lock内で毎回再読込して保存します。壊れたデータや保存失敗で既存内容をリセットしません。Workerが生成し、停止後の遅延メッセージは無視します。
+- 問題・解答は別々にA4印刷（1/2/4/6問、初期値2問）。問題の中央は空欄。画面で解答・別解確認を開いても問題用紙に混入しません。
 
-## Dictionary attribution and updates
+## 出典の調査と採用判断（2026-10-23確認）
 
-JMdict copyright James William BREEN and the Electronic Dictionary Research and Development Group. JSON conversion by scriptin/jmdict-simplified. Dictionary extracts and generated vocabulary data are distributed under **CC BY-SA 4.0**, separately from application code. Source links and a downloadable extract are available through the page's Sources disclosure.
+閲覧可能であることと、収集・加工・配布・商用利用を許可されていることは別です。以下は公式の許諾・提供資料を確認して判断しました。一般の辞書サイトの検索結果や検索エンジンの件数は、利用許諾にも唯一解の証明にも使っていません。
 
-- https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project
-- https://www.edrdg.org/edrdg/licence.html
-- https://creativecommons.org/licenses/by-sa/4.0/
-- https://github.com/scriptin/jmdict-simplified
+| 資源・公式条件 | 判断・用途 | 条件と留意点 |
+| --- | --- | --- |
+| [JMdict / EDRDG](https://www.edrdg.org/edrdg/licence.html) | 採用。熟語・読み・別解照合 | CC BY-SA 4.0。商用利用可、表示・加工データの継承。JSON変換元scriptinも表示 |
+| [SudachiDict](https://github.com/WorksApplications/SudachiDict/blob/develop/LEGAL) | 採用。Small＋Coreの普通語を抽出 | Apache 2.0と内包UniDic BSD等の表示を保持。固有名詞専用・接辞・連接IDが負の構成語専用行を除外 |
+| [UniDicの商用利用案内](https://clrd.ninjal.ac.jp/unidic/commerce_use.html) | Sudachiに内包された版として利用。独立した照合票にはしない | 現代語版のBSD選択は商用利用可。すべての特殊版が同条件とは限らないため、任意の版を混ぜない |
+| [京都大学JUMAN](https://github.com/ku-nlp/juman/blob/master/COPYING) | 採用。ContentW.dicの普通語による別系統の確認 | BSD 3-Clause。著作権・条件・免責を保持、京都大学による推奨を示さない |
+| [wordfreq](https://github.com/rspeer/wordfreq/blob/master/NOTICE.md) | 採用。難易度の親しみやすさの補助のみ | データCC BY-SA 4.0、コードApache 2.0。Robyn Speer、SUBTLEX著者・自由利用可能性と各提供元を表示。出典を失う単独CSVにはしない |
+| [NAIST Japanese Dictionary](https://github.com/kazuma-t/naist-jdic/blob/main/COPYING) | 今回は未採用 | BSD 3-Clauseの条件は確認。現在の公式Gitリポジトリから再現可能な実データを取得できなかったため、裏付けに数えない |
+| [mecab-ipadic-NEologd](https://github.com/neologd/mecab-ipadic-neologd/blob/master/COPYING) | 単独では未採用 | Apache 2.0ほか出典表示を確認。Sudachiにも由来語があり、二重に独立票と数えない。固有名詞が多く初心者向け出題には選別が必要 |
+| [Wiktionary / Wikimedia利用条件](https://foundation.wikimedia.org/wiki/Policy:Terms_of_Use) | 今回は未採用 | CC BY-SA等に従った再利用は可能。ただし版・項目ごとの帰属と日本語・語義・古語等の選別が必要。ページのタイトルだけを正しい日本語熟語と扱わない |
 
-Pinned snapshot: `3.6.2+20261019180022`, dictionary date 2026-10-19. The extract records the full source JSON SHA-256. No dictionary network call is needed while generating questions.
+`wado-data.json`の加工辞書は**CC BY-SA 4.0**で配布し、コードとは分けて扱います。全文の上流表示・BSD・Apache条件は、ページから読める `wado-licenses.txt` に同梱しています。許諾のない外部サイトを実行時に巡回しません。生成・照合は端末内で完結します。
 
-**Refresh at least monthly** and whenever vocabulary changes: download the current `jmdict-eng-*.json.zip` from the upstream releases, run `python3 scripts/wado/build-dictionary.py /absolute/path/to/download.zip`, review omitted vocabulary and the resulting word/reading changes, run `node scripts/check-nanpure-wado.cjs`, export the site, and run the browser checks in Pages CI. Check existing saved questions remain valid before publishing a dictionary change; preserve older dictionary versions or migrate explicitly if upstream removes entries. No automatic dictionary update is performed at runtime.
+## 再現・更新
+
+`wado-data.json` と `sources.lock.json` に提供元・版・日付・URL・入力ファイルのSHA-256を記録しています。JUMANは固定コミット、Sudachiは20261015、JMdictは3.6.2+20261019180022、wordfreqは3.1.1です。JUMANの日付は辞書先頭の版記載で、取得日や最新性を表すものではありません。
+
+ビルド時だけ `python3 -m pip install -r scripts/wado/requirements-build.txt` を使います。ロックのURLからJMdict/Sudachiを取得し、JUMANを指定コミットで取得した後：
+
+```sh
+python3 scripts/wado/build-dictionary.py \
+  --jmdict /absolute/path/jmdict-eng.json.zip \
+  --sudachi-small /absolute/path/small_lex.zip \
+  --sudachi-core /absolute/path/core_lex.zip \
+  --juman /absolute/path/juman
+python3 scripts/check-nanpure-wado-dictionary.py
+node scripts/check-nanpure-wado.cjs
+```
+
+SmallのV0とCoreのV1は別々のCSVとして公開仕様の共通語彙カラムを読みます。バイナリ辞書を混ぜて利用する処理ではありません。ヘッダー・列数・ZIP整合性・内容ハッシュが違えば、成果物を上書きする前に停止します。
+
+**少なくとも月1回**、および語彙変更時に更新を確認します。新しい版の利用条件を再確認してからロックを手動更新し、`dictionary-report.json` の除外語・難易度変更・読みの差分をレビューしてください。既存保存問題が再検証で不成立になる場合は旧辞書保持または明示的移行が必要です。利用中の保存を自動削除しません。今回は未公開の機能なので新データで初回公開します。
+
+検証は全10段階×3語数の1,200問を別実装の全漢字列挙でも確認します。`alternative-fixtures.json` は旧JMdict単独では一候補だったのに、追加辞書で別解が現れる実例6問です。CIのブラウザ検証は実Worker、手動別解チェック、モバイル表示、保存・印刷を対象とします。

@@ -1,0 +1,683 @@
+[
+  {
+    "arms": {
+      "top": "安",
+      "right": "血"
+    },
+    "oldAnswer": "心",
+    "answers": [
+      {
+        "answer": "住",
+        "words": [
+          {
+            "position": "top",
+            "text": "安住",
+            "sources": [
+              {
+                "id": "jmdict",
+                "title": "JMdict / EDRDG"
+              },
+              {
+                "id": "sudachi",
+                "title": "SudachiDict (UniDic系統)"
+              },
+              {
+                "id": "juman",
+                "title": "JUMAN / 京都大学"
+              }
+            ]
+          },
+          {
+            "position": "right",
+            "text": "住血",
+            "sources": [
+              {
+                "id": "sudachi",
+                "title": "SudachiDict (UniDic系統)"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "answer": "全",
+        "words": [
+          {
+            "position": "top",
+            "text": "安全",
+            "sources": [
+              {
+                "id": "jmdict",
+                "title": "JMdict / EDRDG"
+              },
+              {
+                "id": "sudachi",
+                "title": "SudachiDict (UniDic系統)"
+              }
+            ]
+          },
+          {
+            "position": "right",
+            "text": "全血",
+            "sources": [
+              {
+                "id": "sudachi",
+                "title": "SudachiDict (UniDic系統)"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "answer": "売",
+        "words": [
+          {
+            "position": "top",
+            "text": "安売",
+            "sources": [
+              {
+                "id": "sudachi",
+                "title": "SudachiDict (UniDic系統)"
+              }
+            ]
+          },
+          {
+            "position": "right",
+            "text": "売血",
+            "sources": [
+              {
+                "id": "jmdict",
+                "title": "JMdict / EDRDG"
+              },
+              {
+                "id": "sudachi",
+                "title": "SudachiDict (UniDic系統)"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "answer": "心",
+        "words": [
+          {
+            "position": "top",
+            "text": "安心",
+            "sources": [
+              {
+                "id": "jmdict",
+                "title": "JMdict / EDRDG"
+              },
+              {
+                "id": "sudachi",
+                "title": "SudachiDict (UniDic系統)"
+              },
+              {
+                "id": "juman",
+                "title": "JUMAN / 京都大学"
+              }
+            ]
+          },
+          {
+            "position": "right",
+            "text": "心血",
+            "sources": [
+              {
+                "id": "jmdict",
+                "title": "JMdict / EDRDG"
+              },
+              {
+                "id": "sudachi",
+                "title": "SudachiDict (UniDic系統)"
+              },
+              {
+                "id": "juman",
+                "title": "JUMAN / 京都大学"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "answer": "排",
+        "words": [
+          {
+            "position": "top",
+            "text": "安排",
+            "sources": [
+              {
+                "id": "jmdict",
+                "title": "JMdict / EDRDG"
+              }
+            ]
+          },
+          {
+            "position": "right",
+            "text": "排血",
+            "sources": [
+              {
+                "id": "sudachi",
+                "title": "SudachiDict (UniDic系統)"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "answer": "気",
+        "words": [
+          {
+            "position": "top",
+            "text": "安気",
+            "sources": [
+              {
+                "id": "jmdict",
+                "title": "JMdict / EDRDG"
+              },
+              {
+                "id": "sudachi",
+                "title": "SudachiDict (UniDic系統)"
+              }
+            ]
+          },
+          {
+            "position": "right",
+            "text": "気血",
+            "sources": [
+              {
+                "id": "sudachi",
+                "title": "SudachiDict (UniDic系統)"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "arms": {
+      "top": "専",
+      "right": "象"
+    },
+    "oldAnswer": "心",
+    "answers": [
+      {
+        "answer": "心",
+        "words": [
+          {
+            "position": "top",
+            "text": "専心",
+            "sources": [
+              {
+                "id": "jmdict",
+                "title": "JMdict / EDRDG"
+              },
+              {
+                "id": "sudachi",
+                "title": "SudachiDict (UniDic系統)"
+              },
+              {
+                "id": "juman",
+                "title": "JUMAN / 京都大学"
+              }
+            ]
+          },
+          {
+            "position": "right",
+            "text": "心象",
+            "sources": [
+              {
+                "id": "jmdict",
+                "title": "JMdict / EDRDG"
+              },
+              {
+                "id": "sudachi",
+                "title": "SudachiDict (UniDic系統)"
+              },
+              {
+                "id": "juman",
+                "title": "JUMAN / 京都大学"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "answer": "意",
+        "words": [
+          {
+            "position": "top",
+            "text": "専意",
+            "sources": [
+              {
+                "id": "sudachi",
+                "title": "SudachiDict (UniDic系統)"
+              }
+            ]
+          },
+          {
+            "position": "right",
+            "text": "意象",
+            "sources": [
+              {
+                "id": "sudachi",
+                "title": "SudachiDict (UniDic系統)"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "answer": "有",
+        "words": [
+          {
+            "position": "top",
+            "text": "専有",
+            "sources": [
+              {
+                "id": "jmdict",
+                "title": "JMdict / EDRDG"
+              },
+              {
+                "id": "sudachi",
+                "title": "SudachiDict (UniDic系統)"
+              },
+              {
+                "id": "juman",
+                "title": "JUMAN / 京都大学"
+              }
+            ]
+          },
+          {
+            "position": "right",
+            "text": "有象",
+            "sources": [
+              {
+                "id": "sudachi",
+                "title": "SudachiDict (UniDic系統)"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "arms": {
+      "top": "感",
+      "right": "境"
+    },
+    "oldAnswer": "心",
+    "answers": [
+      {
+        "answer": "心",
+        "words": [
+          {
+            "position": "top",
+            "text": "感心",
+            "sources": [
+              {
+                "id": "jmdict",
+                "title": "JMdict / EDRDG"
+              },
+              {
+                "id": "sudachi",
+                "title": "SudachiDict (UniDic系統)"
+              },
+              {
+                "id": "juman",
+                "title": "JUMAN / 京都大学"
+              }
+            ]
+          },
+          {
+            "position": "right",
+            "text": "心境",
+            "sources": [
+              {
+                "id": "jmdict",
+                "title": "JMdict / EDRDG"
+              },
+              {
+                "id": "sudachi",
+                "title": "SudachiDict (UniDic系統)"
+              },
+              {
+                "id": "juman",
+                "title": "JUMAN / 京都大学"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "answer": "色",
+        "words": [
+          {
+            "position": "top",
+            "text": "感色",
+            "sources": [
+              {
+                "id": "sudachi",
+                "title": "SudachiDict (UniDic系統)"
+              }
+            ]
+          },
+          {
+            "position": "right",
+            "text": "色境",
+            "sources": [
+              {
+                "id": "sudachi",
+                "title": "SudachiDict (UniDic系統)"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "arms": {
+      "top": "感",
+      "right": "血"
+    },
+    "oldAnswer": "心",
+    "answers": [
+      {
+        "answer": "心",
+        "words": [
+          {
+            "position": "top",
+            "text": "感心",
+            "sources": [
+              {
+                "id": "jmdict",
+                "title": "JMdict / EDRDG"
+              },
+              {
+                "id": "sudachi",
+                "title": "SudachiDict (UniDic系統)"
+              },
+              {
+                "id": "juman",
+                "title": "JUMAN / 京都大学"
+              }
+            ]
+          },
+          {
+            "position": "right",
+            "text": "心血",
+            "sources": [
+              {
+                "id": "jmdict",
+                "title": "JMdict / EDRDG"
+              },
+              {
+                "id": "sudachi",
+                "title": "SudachiDict (UniDic系統)"
+              },
+              {
+                "id": "juman",
+                "title": "JUMAN / 京都大学"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "answer": "泣",
+        "words": [
+          {
+            "position": "top",
+            "text": "感泣",
+            "sources": [
+              {
+                "id": "jmdict",
+                "title": "JMdict / EDRDG"
+              },
+              {
+                "id": "sudachi",
+                "title": "SudachiDict (UniDic系統)"
+              }
+            ]
+          },
+          {
+            "position": "right",
+            "text": "泣血",
+            "sources": [
+              {
+                "id": "sudachi",
+                "title": "SudachiDict (UniDic系統)"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "answer": "温",
+        "words": [
+          {
+            "position": "top",
+            "text": "感温",
+            "sources": [
+              {
+                "id": "sudachi",
+                "title": "SudachiDict (UniDic系統)"
+              }
+            ]
+          },
+          {
+            "position": "right",
+            "text": "温血",
+            "sources": [
+              {
+                "id": "jmdict",
+                "title": "JMdict / EDRDG"
+              },
+              {
+                "id": "sudachi",
+                "title": "SudachiDict (UniDic系統)"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "answer": "熱",
+        "words": [
+          {
+            "position": "top",
+            "text": "感熱",
+            "sources": [
+              {
+                "id": "sudachi",
+                "title": "SudachiDict (UniDic系統)"
+              }
+            ]
+          },
+          {
+            "position": "right",
+            "text": "熱血",
+            "sources": [
+              {
+                "id": "jmdict",
+                "title": "JMdict / EDRDG"
+              },
+              {
+                "id": "sudachi",
+                "title": "SudachiDict (UniDic系統)"
+              },
+              {
+                "id": "juman",
+                "title": "JUMAN / 京都大学"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "arms": {
+      "top": "感",
+      "right": "象"
+    },
+    "oldAnswer": "心",
+    "answers": [
+      {
+        "answer": "光",
+        "words": [
+          {
+            "position": "top",
+            "text": "感光",
+            "sources": [
+              {
+                "id": "jmdict",
+                "title": "JMdict / EDRDG"
+              },
+              {
+                "id": "sudachi",
+                "title": "SudachiDict (UniDic系統)"
+              },
+              {
+                "id": "juman",
+                "title": "JUMAN / 京都大学"
+              }
+            ]
+          },
+          {
+            "position": "right",
+            "text": "光象",
+            "sources": [
+              {
+                "id": "sudachi",
+                "title": "SudachiDict (UniDic系統)"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "answer": "心",
+        "words": [
+          {
+            "position": "top",
+            "text": "感心",
+            "sources": [
+              {
+                "id": "jmdict",
+                "title": "JMdict / EDRDG"
+              },
+              {
+                "id": "sudachi",
+                "title": "SudachiDict (UniDic系統)"
+              },
+              {
+                "id": "juman",
+                "title": "JUMAN / 京都大学"
+              }
+            ]
+          },
+          {
+            "position": "right",
+            "text": "心象",
+            "sources": [
+              {
+                "id": "jmdict",
+                "title": "JMdict / EDRDG"
+              },
+              {
+                "id": "sudachi",
+                "title": "SudachiDict (UniDic系統)"
+              },
+              {
+                "id": "juman",
+                "title": "JUMAN / 京都大学"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "arms": {
+      "top": "感",
+      "right": "配"
+    },
+    "oldAnswer": "心",
+    "answers": [
+      {
+        "answer": "受",
+        "words": [
+          {
+            "position": "top",
+            "text": "感受",
+            "sources": [
+              {
+                "id": "jmdict",
+                "title": "JMdict / EDRDG"
+              },
+              {
+                "id": "sudachi",
+                "title": "SudachiDict (UniDic系統)"
+              }
+            ]
+          },
+          {
+            "position": "right",
+            "text": "受配",
+            "sources": [
+              {
+                "id": "sudachi",
+                "title": "SudachiDict (UniDic系統)"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "answer": "心",
+        "words": [
+          {
+            "position": "top",
+            "text": "感心",
+            "sources": [
+              {
+                "id": "jmdict",
+                "title": "JMdict / EDRDG"
+              },
+              {
+                "id": "sudachi",
+                "title": "SudachiDict (UniDic系統)"
+              },
+              {
+                "id": "juman",
+                "title": "JUMAN / 京都大学"
+              }
+            ]
+          },
+          {
+            "position": "right",
+            "text": "心配",
+            "sources": [
+              {
+                "id": "jmdict",
+                "title": "JMdict / EDRDG"
+              },
+              {
+                "id": "sudachi",
+                "title": "SudachiDict (UniDic系統)"
+              },
+              {
+                "id": "juman",
+                "title": "JUMAN / 京都大学"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
