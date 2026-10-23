@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ja">
+<head>
+ <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow">
+ <meta name="theme-color" content="#285849"><title>漢字穴埋め・作者用試遊｜ナンプレ帳</title>
+ <link rel="stylesheet" href="assets/player.css"><script src="assets/wado-engine.js" defer></script><script src="assets/player.js" defer></script>
+</head>
+<body>
+ <header><a href="https://atugari.github.io/nanpure/">戻る</a><strong>漢字穴埋め <small>作者用試遊</small></strong><form action="logout" method="post"><button class="quiet" type="submit">終了</button></form></header>
+ <main>
+  <h1>真ん中に、どの漢字？</h1>
+  <p class="intro">矢印の向きに読んで、すべての熟語を完成させましょう。</p>
+  <details id="settings" open><summary>出題の条件</summary><form id="start-form"><div class="settings-grid"><label>難易度<select id="level" disabled></select></label><label>使う熟語<select id="count" disabled><option value="2">2個</option><option value="3">3個</option><option value="4" selected>4個</option></select></label></div><p id="level-help" class="muted"></p><button id="start" type="submit" disabled>この条件で始める</button></form></details>
+  <p id="loading" role="status">試遊の準備をしています…</p>
+  <div id="error" role="alert" hidden></div><button id="ephemeral" class="secondary" type="button" hidden>途中経過を保存せず試す</button>
+  <section id="game" aria-labelledby="question-label" hidden>
+   <div class="question-top"><h2 id="question-label"></h2><span id="score"></span></div>
+   <form id="answer-form">
+    <div class="board" aria-label="漢字穴埋めの問題">
+     <span class="cell top" data-arm="top"></span><span class="arrow arrow-top" data-arrow="top" aria-hidden="true">↓</span>
+     <span class="cell left" data-arm="left"></span><span class="arrow arrow-left" data-arrow="left" aria-hidden="true">→</span>
+     <label class="center"><span class="sr-only">中央に入る漢字</span><input id="answer" type="text" maxlength="1" autocomplete="off" spellcheck="false" inputmode="text" enterkeyhint="done" disabled></label>
+     <span class="arrow arrow-right" data-arrow="right" aria-hidden="true">→</span><span class="cell right" data-arm="right"></span>
+     <span class="arrow arrow-bottom" data-arrow="bottom" aria-hidden="true">↓</span><span class="cell bottom" data-arm="bottom"></span>
+    </div>
+    <div id="readings" class="readings"></div><div id="choices" class="choices" aria-label="解答例の選択肢"></div>
+    <p id="choice-note" class="muted small" hidden>読み・選択肢は解答例のヒントです。ほかの漢字でも熟語が成立すれば正解です。</p>
+    <button id="check" type="submit">答えを確認する</button>
+   </form>
+   <div id="feedback" role="status" aria-live="polite" tabindex="-1"></div>
+   <div id="unknown" hidden><p class="muted">未収録の熟語もあります。言葉の実在を確認できた場合は、別解として記録できます。</p><details><summary>熟語をネットで確かめる</summary><ul id="search-links"></ul><p class="muted small">外部の検索画面が開きます。検索結果の原文で意味と使い方を確認してください。</p></details><button id="accept" class="secondary" type="button">確認した言葉を別解として記録</button></div>
+   <div class="tools"><button id="erase" class="secondary" type="button">消す</button><button id="hint" class="secondary" type="button">読みのヒント</button><button id="reveal" class="secondary" type="button">解答例を見る</button><button id="next" type="button">次の問題へ</button></div>
+   <p id="save-status" class="muted small" role="status"></p>
+  </section>
+  <section id="locked" hidden><p>作者認証の有効時間が切れました。</p><a class="button" href="./">もう一度認証する</a></section>
+  <footer><p>一般向けのプレイは準備中です。</p><details><summary>判定と辞書について</summary><p>3系統・87,353表記の収録辞書で、すべての熟語が成立する漢字を正解にします。辞書で確認できない答えは、実在しない言葉とは判定しません。自分で確認した別解は、辞書での正解と分けて記録します。</p><p>出題は10段階。馴染みのある言葉には個人差があります。</p><a href="assets/wado-licenses.txt" target="_blank" rel="noopener">熟語辞書・出典・利用条件</a></details></footer>
+ </main>
+</body></html>

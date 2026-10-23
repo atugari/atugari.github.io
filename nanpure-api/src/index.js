@@ -5,7 +5,8 @@ import{cloud}from'./cloud.js';
 import{importLegacy}from'./import.js';
 import{visit,overview,apiVersion}from'./owner.js';
 import{wadoWeb}from'./wado-web.js';
-const tables=['attempts','daily_stock','daily_assignments','daily_maintenance','inquiries','cloud_saves','rate_limits','contact_images','cloud_uploads','cloud_chunks','visit_sessions','visit_browsers','visit_days','owner_usage_snapshots'];
+import{wadoOwner}from'./wado-owner.js';
+const tables=['attempts','daily_stock','daily_assignments','daily_maintenance','inquiries','cloud_saves','rate_limits','contact_images','cloud_uploads','cloud_chunks','visit_sessions','visit_browsers','visit_days','owner_usage_snapshots','wado_owner_sessions'];
 export default {async fetch(request,env){let response;const url=new URL(request.url),origin=request.headers.get('origin');
  try{
   if(origin!==null&&origin!==siteOrigin&&origin!==url.origin)fail(403,'送信元を確認できません。');
@@ -17,7 +18,8 @@ export default {async fetch(request,env){let response;const url=new URL(request.
    if(!['GET','POST'].includes(request.method))fail(405,'この操作は利用できません。');
    if(request.method==='POST'&&!origin)fail(403,'送信元を確認できません。');
    if(!env.DB)fail(503,'サーバーに接続できません。');
-   if(url.pathname==='/'||url.pathname==='/api/health'){
+   if(url.pathname==='/owner/wado'||url.pathname.startsWith('/owner/wado/'))response=await wadoOwner(request,env,url);
+   else if(url.pathname==='/'||url.pathname==='/api/health'){
     if(request.method!=='GET')fail(405,'この操作は利用できません。');
     const rows=await env.DB.prepare('SELECT name FROM sqlite_master WHERE type=?').bind('table').all();const names=new Set(rows.results.map(r=>r.name));
     response=json({ok:true,service:'puzzle-api',version:apiVersion,siteVersion:env.SITE_VERSION||null,database:'connected',schema:tables.every(t=>names.has(t))?'installed':'pending',gameApi:'ready'});

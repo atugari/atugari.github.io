@@ -82,6 +82,7 @@ jobs:
           export CHROME_BIN="$(command -v google-chrome || command -v chromium)"
           node scripts/check-nanpure-keyboard-dialogs.cjs
           node scripts/check-nanpure-wado-browser.cjs _site
+          node scripts/check-nanpure-wado-owner-browser.cjs
           node scripts/check-nanpure-magic-browser.cjs _site
           node scripts/check-nanpure-audio-browser.cjs _site
           node scripts/check-nanpure-languages-browser.cjs _site
