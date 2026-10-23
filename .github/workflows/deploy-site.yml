@@ -3,6 +3,8 @@ name: Build and deploy GitHub Pages
 on:
   push:
     branches: [main, master]
+  pull_request:
+    branches: [main, master]
   workflow_dispatch:
 
 permissions:
@@ -11,7 +13,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
+  group: pages-${{ github.event_name == 'pull_request' && github.ref || 'production' }}
   cancel-in-progress: true
 
 jobs:
@@ -59,6 +61,7 @@ jobs:
         shell: bash
         run: |
           npm install --prefix "$RUNNER_TEMP/nanpure-browser" --no-audit --no-fund playwright@1.62.1 linkedom@0.18.13
+          npm run build --prefix nanpure-api
           node scripts/check-nanpure-i18n-delta.cjs
           python3 scripts/check-nanpure-wado-dictionary.py
           node scripts/check-nanpure-wado.cjs
@@ -89,14 +92,17 @@ jobs:
           node scripts/check-nanpure-appearance-browser.cjs _site
 
       - name: Configure Pages
+        if: github.event_name != 'pull_request'
         uses: actions/configure-pages@v5
 
       - name: Upload Pages artifact
+        if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v3
         with:
           path: _site
 
   deploy:
+    if: github.event_name != 'pull_request'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
