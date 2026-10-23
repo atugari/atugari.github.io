@@ -14,7 +14,7 @@
     }
   ],
   "vars": {
-    "SITE_VERSION": "2026.10.23.44",
+    "SITE_VERSION": "2026.10.23.45",
     "WADO_WEB_ENABLED": "false",
     "WADO_WEB_DAILY_QUERIES": "40",
     "WADO_WEB_MONTHLY_QUERIES": "900",

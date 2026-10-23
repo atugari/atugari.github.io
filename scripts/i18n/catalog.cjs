@@ -30,3 +30,5 @@ for(const [key,translations]of Object.entries(require('./additional-overrides.js
  if(!Object.hasOwn(module.exports,key))throw Error('Unknown correction source: '+key);
  for(const [locale,value]of Object.entries(translations))if(Object.hasOwn(require('./languages.json'),locale))module.exports[key][locale]=value;
 }
+
+Object.assign(module.exports,require('./catalog-wado-45.cjs'));

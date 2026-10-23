@@ -103,7 +103,7 @@ check missing compounds. It returns URLs/titles for human review, never an
 assertion of uniqueness. No result, a provider error, or an unsearched candidate
 must not become a unique-answer verdict. Finding each compound on the Web also
 does not establish that it is a suitable ordinary compound rather than a typo,
-name, quotation or unrelated sequence; inspect the sources before printing.
+name, quotation or unrelated sequence; inspect the sources when reviewing an alternative. Valid alternative answers do not remove a problem from the print selection.
 
 The browser offers ordinary, user-initiated Google search links even while the
 automatic API is disabled. It does not scrape Google's results. These links can
