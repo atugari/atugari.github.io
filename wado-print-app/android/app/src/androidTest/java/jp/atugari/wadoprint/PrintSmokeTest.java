@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import org.json.JSONObject;
 import org.junit.Test;
+import org.junit.After;
 import org.junit.runner.RunWith;
 import static org.junit.Assert.*;
 
@@ -30,6 +31,10 @@ public class PrintSmokeTest {
     WebView web;
     String js(String script)throws Exception{CountDownLatch done=new CountDownLatch(1);AtomicReference<String> result=new AtomicReference<>();InstrumentationRegistry.getInstrumentation().runOnMainSync(()->web.evaluateJavascript(script,value->{result.set(value);done.countDown();}));assertTrue("JavaScript callback",done.await(10,TimeUnit.SECONDS));return result.get();}
     void waitTrue(String code)throws Exception{for(int i=0;i<160;i++){if("true".equals(js(code)))return;Thread.sleep(250);}fail("Timed out: "+code);}
+    @After public void retainEvidence()throws Exception{
+        UiDevice device=UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());File output=InstrumentationRegistry.getInstrumentation().getTargetContext().getExternalFilesDir(null);
+        if(output!=null){device.dumpWindowHierarchy(new File(output,"android-final-ui.xml"));device.takeScreenshot(new File(output,"android-final-ui.png"));device.executeShellCommand("mkdir -p /sdcard/Download/wado-qa");device.executeShellCommand("cp -R "+output.getAbsolutePath()+"/. /sdcard/Download/wado-qa/");}
+    }
     @Test public void nativePreviewAndPrint()throws Exception{
         UiDevice device=UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         try(ActivityScenario<MainActivity> scenario=ActivityScenario.launch(MainActivity.class)){
@@ -47,10 +52,13 @@ public class PrintSmokeTest {
             assertTrue("Bundled font loaded",checks.getBoolean("fonts"));assertFalse("No clipped questions",checks.getBoolean("overflow"));assertTrue("Whole A4 page fits phone",checks.getBoolean("fits"));assertTrue("Questions keep blank centers",checks.getBoolean("blank"));
             js("document.getElementById('print').click()");
             assertTrue("Native print UI opened",device.wait(Until.hasObject(By.pkg("com.android.printspooler")),15000));
+            UiObject2 destination=device.wait(Until.findObject(By.res("com.android.printspooler","destination_spinner")),10000);
+            if(destination!=null){destination.click();UiObject2 pdfChoice=device.wait(Until.findObject(By.text("Save as PDF")),5000);if(pdfChoice!=null)pdfChoice.click();else device.pressBack();}
             device.takeScreenshot(new File(output,"android-native-print.png"));
             Files.write(new File(output,"android-print-ui.xml").toPath(),"".getBytes(StandardCharsets.UTF_8));device.dumpWindowHierarchy(new File(output,"android-print-ui.xml"));
             UiObject2 pdfButton=device.wait(Until.findObject(By.res("com.android.printspooler","print_button").enabled(true)),15000);
-            assertNotNull("Save PDF button",pdfButton);pdfButton.click();
+            if(pdfButton==null)device.dumpWindowHierarchy(new File(output,"android-print-ui.xml"));
+            assertNotNull("Save PDF button: "+new String(Files.readAllBytes(new File(output,"android-print-ui.xml").toPath()),StandardCharsets.UTF_8),pdfButton);pdfButton.click();
             UiObject2 filename=device.wait(Until.findObject(By.clazz("android.widget.EditText")),10000);
             assertNotNull("PDF filename",filename);filename.setText("wado-native-a4.pdf");
             device.takeScreenshot(new File(output,"android-pdf-save.png"));device.dumpWindowHierarchy(new File(output,"android-pdf-save.xml"));
