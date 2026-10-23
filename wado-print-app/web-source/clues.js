@@ -18,6 +18,7 @@
    return result.filter((c,i,a)=>a.findIndex(x=>x.text===c.text&&x.grade===c.grade)===i);
   }
   function rich(p,position){const list=all(p).filter(c=>c.preferred&&(!position||c.position===position));return grades.every(g=>list.some(c=>c.grade===g.value));}
+  function richWords(p){return [...new Set(all(p).filter(c=>c.preferred).map(c=>c.word))].filter(w=>grades.every(g=>all(p).some(c=>c.preferred&&c.word===w&&c.grade===g.value)));}
   function suggestions(p){
    const list=all(p),chosen=[],usedViews=new Set(),usedIds=new Set();
    const order=(a,b)=>Number(!!b.preferred)-Number(!!a.preferred)||(a.view==='field')-(b.view==='field')||hash(key(p)+a.id)-hash(key(p)+b.id);
@@ -29,17 +30,17 @@
    return chosen.sort((a,b)=>a.grade-b.grade||order(a,b));
   }
   function plan(puzzles,grade,{respectSelection=true}={}){
-   const result=new Map(),viewCounts=new Map(),textCounts=new Map();
+   const result=new Map(),viewCounts=new Map(),textCounts=new Map(),recent=[];
    for(const p of puzzles){if(!grade){result.set(key(p),null);continue;}const list=all(p),manual=respectSelection&&list.find(c=>c.id===p.hintChoice);let options=list.filter(c=>c.grade===grade);
-    if(options.some(c=>c.preferred))options=options.filter(c=>c.preferred);
+    if(options.some(c=>c.preferred&&!textCounts.get(c.text)))options=options.filter(c=>c.preferred&&!textCounts.get(c.text));
     const score=c=>(textCounts.get(c.text)||0)*1000+(viewCounts.get(c.view)||0)*20+(hash(key(p)+c.id)%1000)/1000;
     const chosen=manual||options.sort((a,b)=>score(a)-score(b))[0]||null;result.set(key(p),chosen);
-    if(chosen){viewCounts.set(chosen.view,(viewCounts.get(chosen.view)||0)+1);textCounts.set(chosen.text,(textCounts.get(chosen.text)||0)+1);}
+    if(chosen){viewCounts.set(chosen.view,(viewCounts.get(chosen.view)||0)+1);textCounts.set(chosen.text,(textCounts.get(chosen.text)||0)+1);recent.push(chosen);if(recent.length>8){const old=recent.shift();viewCounts.set(old.view,viewCounts.get(old.view)-1);textCounts.set(old.text,textCounts.get(old.text)-1);}}
    }
    return result;
   }
   function validChoice(p,id){return typeof id==='string'&&all(p).some(c=>c.id===id);}
-  return{all,rich,suggestions,plan,validChoice,key,wordCount:words.size,richWordCount:[...words.values()].filter(w=>w.variants?.length>=3).length};
+  return{all,rich,richWords,suggestions,plan,validChoice,key,wordCount:words.size,richWordCount:[...words.values()].filter(w=>w.variants?.length>=3).length};
  }
  g.WadoClues={create,grades,views,labels,key};
 })(typeof window==='undefined'?globalThis:window);

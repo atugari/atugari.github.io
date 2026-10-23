@@ -603,4 +603,4 @@ FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
 OTHER DEALINGS IN THE FONT SOFTWARE.
 
 追加ヒント（2.2.0）
-熟語185語に対する555件の場面・用途・特徴・連想・対比などの説明は独自作成。難しさは手がかりの具体性による目安です。
+熟語235語に対する705件の場面・用途・特徴・連想・対比などの説明は独自作成。難しさは手がかりの具体性による目安です。
