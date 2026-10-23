@@ -1,0 +1,2533 @@
+{
+  "言語": {
+    "it": "Lingua",
+    "nl": "Taal",
+    "sv": "Språk",
+    "pl": "Język",
+    "cs": "Jazyk",
+    "ru": "Язык",
+    "id": "Bahasa",
+    "vi": "Ngôn ngữ",
+    "th": "ภาษา",
+    "hi": "भाषा",
+    "ar": "اللغة"
+  },
+  "閉じる": {
+    "it": "Chiudi",
+    "nl": "Sluiten",
+    "sv": "Stäng",
+    "pl": "Zamknij",
+    "cs": "Zavřít",
+    "ru": "Закрыть",
+    "id": "Tutup",
+    "vi": "Đóng",
+    "th": "ปิด",
+    "hi": "बंद करें",
+    "ar": "إغلاق"
+  },
+  "戻る": {
+    "it": "Indietro",
+    "nl": "Terug",
+    "sv": "Tillbaka",
+    "pl": "Wstecz",
+    "cs": "Zpět",
+    "ru": "Назад",
+    "id": "Kembali",
+    "vi": "Quay lại",
+    "th": "ย้อนกลับ",
+    "hi": "वापस",
+    "ar": "رجوع"
+  },
+  "はじめに": {
+    "it": "Home",
+    "nl": "Startpagina",
+    "sv": "Startsida",
+    "pl": "Strona główna",
+    "cs": "Úvod",
+    "ru": "Главная",
+    "id": "Beranda",
+    "vi": "Trang chủ",
+    "th": "หน้าหลัก",
+    "hi": "मुखपृष्ठ",
+    "ar": "الرئيسية"
+  },
+  "自由に遊ぶ": {
+    "it": "Gioco libero",
+    "nl": "Vrij spelen",
+    "sv": "Spela fritt",
+    "pl": "Gra swobodna",
+    "cs": "Volná hra",
+    "ru": "Свободная игра",
+    "id": "Bermain bebas",
+    "vi": "Chơi tự do",
+    "th": "เล่นอิสระ",
+    "hi": "स्वतंत्र खेल",
+    "ar": "لعب حر"
+  },
+  "日替わり問題帳": {
+    "it": "Puzzle del giorno",
+    "nl": "Dagelijkse puzzels",
+    "sv": "Dagens pussel",
+    "pl": "Codzienne łamigłówki",
+    "cs": "Denní hlavolamy",
+    "ru": "Ежедневные головоломки",
+    "id": "Teka-teki harian",
+    "vi": "Câu đố hằng ngày",
+    "th": "ปริศนาประจำวัน",
+    "hi": "दैनिक पहेलियाँ",
+    "ar": "ألغاز يومية"
+  },
+  "設定": {
+    "it": "Impostazioni",
+    "nl": "Instellingen",
+    "sv": "Inställningar",
+    "pl": "Ustawienia",
+    "cs": "Nastavení",
+    "ru": "Настройки",
+    "id": "Pengaturan",
+    "vi": "Cài đặt",
+    "th": "การตั้งค่า",
+    "hi": "सेटिंग",
+    "ar": "الإعدادات"
+  },
+  "保存": {
+    "it": "Salva",
+    "nl": "Opslaan",
+    "sv": "Spara",
+    "pl": "Zapisz",
+    "cs": "Uložit",
+    "ru": "Сохранить",
+    "id": "Simpan",
+    "vi": "Lưu",
+    "th": "บันทึก",
+    "hi": "सहेजें",
+    "ar": "حفظ"
+  },
+  "キャンセル": {
+    "it": "Annulla",
+    "nl": "Annuleren",
+    "sv": "Avbryt",
+    "pl": "Anuluj",
+    "cs": "Zrušit",
+    "ru": "Отмена",
+    "id": "Batal",
+    "vi": "Hủy",
+    "th": "ยกเลิก",
+    "hi": "रद्द करें",
+    "ar": "إلغاء"
+  },
+  "削除": {
+    "it": "Elimina",
+    "nl": "Verwijderen",
+    "sv": "Ta bort",
+    "pl": "Usuń",
+    "cs": "Smazat",
+    "ru": "Удалить",
+    "id": "Hapus",
+    "vi": "Xóa",
+    "th": "ลบ",
+    "hi": "मिटाएँ",
+    "ar": "حذف"
+  },
+  "次へ": {
+    "it": "Avanti",
+    "nl": "Volgende",
+    "sv": "Nästa",
+    "pl": "Dalej",
+    "cs": "Další",
+    "ru": "Далее",
+    "id": "Berikutnya",
+    "vi": "Tiếp theo",
+    "th": "ถัดไป",
+    "hi": "अगला",
+    "ar": "التالي"
+  },
+  "問題": {
+    "it": "Puzzle",
+    "nl": "Puzzel",
+    "sv": "Pussel",
+    "pl": "Łamigłówka",
+    "cs": "Hlavolam",
+    "ru": "Головоломка",
+    "id": "Teka-teki",
+    "vi": "Câu đố",
+    "th": "ปริศนา",
+    "hi": "पहेली",
+    "ar": "اللغز"
+  },
+  "解答": {
+    "it": "Soluzione",
+    "nl": "Oplossing",
+    "sv": "Lösning",
+    "pl": "Rozwiązanie",
+    "cs": "Řešení",
+    "ru": "Решение",
+    "id": "Solusi",
+    "vi": "Lời giải",
+    "th": "เฉลย",
+    "hi": "हल",
+    "ar": "الحل"
+  },
+  "難易度": {
+    "it": "Difficoltà",
+    "nl": "Moeilijkheid",
+    "sv": "Svårighetsgrad",
+    "pl": "Poziom trudności",
+    "cs": "Obtížnost",
+    "ru": "Сложность",
+    "id": "Kesulitan",
+    "vi": "Độ khó",
+    "th": "ระดับความยาก",
+    "hi": "कठिनाई",
+    "ar": "الصعوبة"
+  },
+  "簡単": {
+    "it": "Facile",
+    "nl": "Makkelijk",
+    "sv": "Lätt",
+    "pl": "Łatwy",
+    "cs": "Lehká",
+    "ru": "Легко",
+    "id": "Mudah",
+    "vi": "Dễ",
+    "th": "ง่าย",
+    "hi": "आसान",
+    "ar": "سهل"
+  },
+  "ふつう": {
+    "it": "Medio",
+    "nl": "Gemiddeld",
+    "sv": "Medel",
+    "pl": "Średni",
+    "cs": "Střední",
+    "ru": "Средне",
+    "id": "Sedang",
+    "vi": "Trung bình",
+    "th": "ปานกลาง",
+    "hi": "मध्यम",
+    "ar": "متوسط"
+  },
+  "むずかしい": {
+    "it": "Difficile",
+    "nl": "Moeilijk",
+    "sv": "Svårt",
+    "pl": "Trudny",
+    "cs": "Těžká",
+    "ru": "Сложно",
+    "id": "Sulit",
+    "vi": "Khó",
+    "th": "ยาก",
+    "hi": "कठिन",
+    "ar": "صعب"
+  },
+  "通常ナンプレ": {
+    "it": "Sudoku classico",
+    "nl": "Klassieke sudoku",
+    "sv": "Klassisk sudoku",
+    "pl": "Klasyczne sudoku",
+    "cs": "Klasické sudoku",
+    "ru": "Классическое судоку",
+    "id": "Sudoku klasik",
+    "vi": "Sudoku cổ điển",
+    "th": "ซูโดกุมาตรฐาน",
+    "hi": "क्लासिक सुडोकू",
+    "ar": "سودوكو كلاسيكي"
+  },
+  "ジグソー": {
+    "it": "Sudoku Jigsaw",
+    "nl": "Jigsaw-sudoku",
+    "sv": "Jigsaw-sudoku",
+    "pl": "Sudoku nieregularne",
+    "cs": "Nepravidelné sudoku",
+    "ru": "Судоку с областями",
+    "id": "Sudoku jigsaw",
+    "vi": "Sudoku vùng bất quy tắc",
+    "th": "ซูโดกุจิ๊กซอว์",
+    "hi": "जिगसॉ सुडोकू",
+    "ar": "سودوكو المناطق غير المنتظمة"
+  },
+  "キラー": {
+    "it": "Sudoku Killer",
+    "nl": "Killer-sudoku",
+    "sv": "Killer-sudoku",
+    "pl": "Killer sudoku",
+    "cs": "Killer sudoku",
+    "ru": "Киллер-судоку",
+    "id": "Sudoku killer",
+    "vi": "Sudoku Killer",
+    "th": "ซูโดกุคิลเลอร์",
+    "hi": "किलर सुडोकू",
+    "ar": "سودوكو كيلر"
+  },
+  "おとなり": {
+    "it": "Vicini consecutivi",
+    "nl": "Opeenvolgende buren",
+    "sv": "Grannar i följd",
+    "pl": "Kolejni sąsiedzi",
+    "cs": "Po sobě jdoucí sousedé",
+    "ru": "Последовательные соседи",
+    "id": "Tetangga berurutan",
+    "vi": "Ô kề liên tiếp",
+    "th": "ช่องข้างเคียงเรียงกัน",
+    "hi": "क्रमिक पड़ोसी",
+    "ar": "جيران متتالية"
+  },
+  "メモ": {
+    "it": "Note",
+    "nl": "Notities",
+    "sv": "Anteckningar",
+    "pl": "Notatki",
+    "cs": "Poznámky",
+    "ru": "Заметки",
+    "id": "Catatan",
+    "vi": "Ghi chú",
+    "th": "จดโน้ต",
+    "hi": "नोट्स",
+    "ar": "ملاحظات"
+  },
+  "消す": {
+    "it": "Cancella",
+    "nl": "Wissen",
+    "sv": "Radera",
+    "pl": "Wymaż",
+    "cs": "Vymazat",
+    "ru": "Стереть",
+    "id": "Kosongkan",
+    "vi": "Xóa số",
+    "th": "ลบตัวเลข",
+    "hi": "अंक मिटाएँ",
+    "ar": "مسح الرقم"
+  },
+  "1手戻す": {
+    "it": "Annulla mossa",
+    "nl": "Zet ongedaan maken",
+    "sv": "Ångra drag",
+    "pl": "Cofnij ruch",
+    "cs": "Vrátit tah",
+    "ru": "Отменить ход",
+    "id": "Urungkan langkah",
+    "vi": "Hoàn tác",
+    "th": "ย้อนตาเดิน",
+    "hi": "चाल वापस लें",
+    "ar": "تراجع عن الحركة"
+  },
+  "ヒント": {
+    "it": "Suggerimento",
+    "nl": "Hint",
+    "sv": "Ledtråd",
+    "pl": "Wskazówka",
+    "cs": "Nápověda",
+    "ru": "Подсказка",
+    "id": "Petunjuk",
+    "vi": "Gợi ý",
+    "th": "คำใบ้",
+    "hi": "संकेत",
+    "ar": "تلميح"
+  },
+  "開始": {
+    "it": "Inizia",
+    "nl": "Starten",
+    "sv": "Starta",
+    "pl": "Rozpocznij",
+    "cs": "Spustit",
+    "ru": "Начать",
+    "id": "Mulai",
+    "vi": "Bắt đầu",
+    "th": "เริ่ม",
+    "hi": "शुरू करें",
+    "ar": "ابدأ"
+  },
+  "再開する": {
+    "it": "Riprendi",
+    "nl": "Hervatten",
+    "sv": "Fortsätt",
+    "pl": "Wznów",
+    "cs": "Pokračovat",
+    "ru": "Продолжить",
+    "id": "Lanjutkan",
+    "vi": "Tiếp tục",
+    "th": "เล่นต่อ",
+    "hi": "जारी रखें",
+    "ar": "استئناف"
+  },
+  "一時停止する": {
+    "it": "Metti in pausa",
+    "nl": "Pauzeren",
+    "sv": "Pausa",
+    "pl": "Wstrzymaj",
+    "cs": "Pozastavit",
+    "ru": "Приостановить",
+    "id": "Jeda",
+    "vi": "Tạm dừng",
+    "th": "หยุดชั่วคราว",
+    "hi": "रोकें",
+    "ar": "إيقاف مؤقت"
+  },
+  "一時停止": {
+    "it": "In pausa",
+    "nl": "Gepauzeerd",
+    "sv": "Pausad",
+    "pl": "Wstrzymano",
+    "cs": "Pozastaveno",
+    "ru": "Пауза",
+    "id": "Dijeda",
+    "vi": "Đã tạm dừng",
+    "th": "หยุดชั่วคราวแล้ว",
+    "hi": "रुका हुआ",
+    "ar": "متوقف مؤقتًا"
+  },
+  "印刷": {
+    "it": "Stampa",
+    "nl": "Afdrukken",
+    "sv": "Skriv ut",
+    "pl": "Drukuj",
+    "cs": "Tisk",
+    "ru": "Печать",
+    "id": "Cetak",
+    "vi": "In",
+    "th": "พิมพ์",
+    "hi": "प्रिंट करें",
+    "ar": "طباعة"
+  },
+  "問題を作る": {
+    "it": "Crea puzzle",
+    "nl": "Puzzels maken",
+    "sv": "Skapa pussel",
+    "pl": "Twórz łamigłówki",
+    "cs": "Vytvořit hlavolamy",
+    "ru": "Создать головоломки",
+    "id": "Buat teka-teki",
+    "vi": "Tạo câu đố",
+    "th": "สร้างปริศนา",
+    "hi": "पहेलियाँ बनाएँ",
+    "ar": "إنشاء ألغاز"
+  },
+  "問題で遊ぶ": {
+    "it": "Gioca",
+    "nl": "Puzzels spelen",
+    "sv": "Spela pussel",
+    "pl": "Rozwiązuj łamigłówki",
+    "cs": "Hrát hlavolamy",
+    "ru": "Решать головоломки",
+    "id": "Mainkan teka-teki",
+    "vi": "Chơi câu đố",
+    "th": "เล่นปริศนา",
+    "hi": "पहेलियाँ खेलें",
+    "ar": "حل الألغاز"
+  },
+  "行": {
+    "it": "Riga",
+    "nl": "Rij",
+    "sv": "Rad",
+    "pl": "Wiersz",
+    "cs": "Řádek",
+    "ru": "Строка",
+    "id": "Baris",
+    "vi": "Hàng",
+    "th": "แถว",
+    "hi": "पंक्ति",
+    "ar": "صف"
+  },
+  "列": {
+    "it": "Colonna",
+    "nl": "Kolom",
+    "sv": "Kolumn",
+    "pl": "Kolumna",
+    "cs": "Sloupec",
+    "ru": "Столбец",
+    "id": "Kolom",
+    "vi": "Cột",
+    "th": "คอลัมน์",
+    "hi": "स्तंभ",
+    "ar": "عمود"
+  },
+  "枠": {
+    "it": "Regione",
+    "nl": "Gebied",
+    "sv": "Område",
+    "pl": "Obszar",
+    "cs": "Oblast",
+    "ru": "Область",
+    "id": "Wilayah",
+    "vi": "Vùng",
+    "th": "เขต",
+    "hi": "क्षेत्र",
+    "ar": "منطقة"
+  },
+  "答え": {
+    "it": "Risposta",
+    "nl": "Antwoord",
+    "sv": "Svar",
+    "pl": "Odpowiedź",
+    "cs": "Odpověď",
+    "ru": "Ответ",
+    "id": "Jawaban",
+    "vi": "Đáp án",
+    "th": "คำตอบ",
+    "hi": "उत्तर",
+    "ar": "الإجابة"
+  },
+  "読み込み中…": {
+    "it": "Caricamento…",
+    "nl": "Laden…",
+    "sv": "Laddar…",
+    "pl": "Wczytywanie…",
+    "cs": "Načítání…",
+    "ru": "Загрузка…",
+    "id": "Memuat…",
+    "vi": "Đang tải…",
+    "th": "กำลังโหลด…",
+    "hi": "लोड हो रहा है…",
+    "ar": "جارٍ التحميل…"
+  },
+  "ルール": {
+    "it": "Regole",
+    "nl": "Regels",
+    "sv": "Regler",
+    "pl": "Zasady",
+    "cs": "Pravidla",
+    "ru": "Правила",
+    "id": "Aturan",
+    "vi": "Luật chơi",
+    "th": "กติกา",
+    "hi": "नियम",
+    "ar": "القواعد"
+  },
+  "問題を選ぶ": {
+    "it": "Scegli un puzzle",
+    "nl": "Kies een puzzel",
+    "sv": "Välj ett pussel",
+    "pl": "Wybierz łamigłówkę",
+    "cs": "Vybrat hlavolam",
+    "ru": "Выбрать головоломку",
+    "id": "Pilih teka-teki",
+    "vi": "Chọn câu đố",
+    "th": "เลือกปริศนา",
+    "hi": "पहेली चुनें",
+    "ar": "اختر لغزًا"
+  },
+  "数字を先に選んで入力": {
+    "it": "Seleziona prima un numero",
+    "nl": "Selecteer eerst een getal",
+    "sv": "Välj en siffra först",
+    "pl": "Najpierw wybierz cyfrę",
+    "cs": "Nejdřív vyberte číslo",
+    "ru": "Сначала выбрать число",
+    "id": "Pilih angka terlebih dahulu",
+    "vi": "Chọn số trước",
+    "th": "เลือกตัวเลขก่อน",
+    "hi": "पहले अंक चुनें",
+    "ar": "اختر رقمًا أولًا"
+  },
+  "普通": {
+    "it": "Medio",
+    "nl": "Gemiddeld",
+    "sv": "Medel",
+    "pl": "Średni",
+    "cs": "Střední",
+    "ru": "Средне",
+    "id": "Sedang",
+    "vi": "Trung bình",
+    "th": "ปานกลาง",
+    "hi": "मध्यम",
+    "ar": "متوسط"
+  },
+  "難問": {
+    "it": "Difficile",
+    "nl": "Moeilijk",
+    "sv": "Svårt",
+    "pl": "Trudny",
+    "cs": "Těžká",
+    "ru": "Сложно",
+    "id": "Sulit",
+    "vi": "Khó",
+    "th": "ยาก",
+    "hi": "कठिन",
+    "ar": "صعب"
+  },
+  "やさしい": {
+    "it": "Facile",
+    "nl": "Makkelijk",
+    "sv": "Lätt",
+    "pl": "Łatwy",
+    "cs": "Lehká",
+    "ru": "Легко",
+    "id": "Mudah",
+    "vi": "Dễ",
+    "th": "ง่าย",
+    "hi": "आसान",
+    "ar": "سهل"
+  },
+  "戻す": {
+    "it": "Annulla mossa",
+    "nl": "Zet ongedaan maken",
+    "sv": "Ångra drag",
+    "pl": "Cofnij ruch",
+    "cs": "Vrátit tah",
+    "ru": "Отменить ход",
+    "id": "Urungkan langkah",
+    "vi": "Hoàn tác",
+    "th": "ย้อนตาเดิน",
+    "hi": "चाल वापस लें",
+    "ar": "تراجع عن الحركة"
+  },
+  "印刷する": {
+    "it": "Stampa",
+    "nl": "Afdrukken",
+    "sv": "Skriv ut",
+    "pl": "Drukuj",
+    "cs": "Tisk",
+    "ru": "Печать",
+    "id": "Cetak",
+    "vi": "In",
+    "th": "พิมพ์",
+    "hi": "प्रिंट करें",
+    "ar": "طباعة"
+  },
+  "紙に印刷する": {
+    "it": "Stampa",
+    "nl": "Afdrukken",
+    "sv": "Skriv ut",
+    "pl": "Drukuj",
+    "cs": "Tisk",
+    "ru": "Печать",
+    "id": "Cetak",
+    "vi": "In",
+    "th": "พิมพ์",
+    "hi": "प्रिंट करें",
+    "ar": "طباعة"
+  },
+  "ふつうのナンプレ": {
+    "it": "Sudoku classico",
+    "nl": "Klassieke sudoku",
+    "sv": "Klassisk sudoku",
+    "pl": "Klasyczne sudoku",
+    "cs": "Klasické sudoku",
+    "ru": "Классическое судоку",
+    "id": "Sudoku klasik",
+    "vi": "Sudoku cổ điển",
+    "th": "ซูโดกุมาตรฐาน",
+    "hi": "क्लासिक सुडोकू",
+    "ar": "سودوكو كلاسيكي"
+  },
+  "ジグソーナンプレ": {
+    "it": "Sudoku Jigsaw",
+    "nl": "Jigsaw-sudoku",
+    "sv": "Jigsaw-sudoku",
+    "pl": "Sudoku nieregularne",
+    "cs": "Nepravidelné sudoku",
+    "ru": "Судоку с областями",
+    "id": "Sudoku jigsaw",
+    "vi": "Sudoku vùng bất quy tắc",
+    "th": "ซูโดกุจิ๊กซอว์",
+    "hi": "जिगसॉ सुडोकू",
+    "ar": "سودوكو المناطق غير المنتظمة"
+  },
+  "キラーナンプレ": {
+    "it": "Sudoku Killer",
+    "nl": "Killer-sudoku",
+    "sv": "Killer-sudoku",
+    "pl": "Killer sudoku",
+    "cs": "Killer sudoku",
+    "ru": "Киллер-судоку",
+    "id": "Sudoku killer",
+    "vi": "Sudoku Killer",
+    "th": "ซูโดกุคิลเลอร์",
+    "hi": "किलर सुडोकू",
+    "ar": "سودوكو كيلر"
+  },
+  "おとなりナンプレ": {
+    "it": "Vicini consecutivi",
+    "nl": "Opeenvolgende buren",
+    "sv": "Grannar i följd",
+    "pl": "Kolejni sąsiedzi",
+    "cs": "Po sobě jdoucí sousedé",
+    "ru": "Последовательные соседи",
+    "id": "Tetangga berurutan",
+    "vi": "Ô kề liên tiếp",
+    "th": "ช่องข้างเคียงเรียงกัน",
+    "hi": "क्रमिक पड़ोसी",
+    "ar": "جيران متتالية"
+  },
+  "ナンプレ帳": {
+    "it": "Nanpure Cho",
+    "nl": "Nanpure Cho",
+    "sv": "Nanpure Cho",
+    "pl": "Nanpure Cho",
+    "cs": "Nanpure Cho",
+    "ru": "Nanpure Cho",
+    "id": "Nanpure Cho",
+    "vi": "Nanpure Cho",
+    "th": "Nanpure Cho",
+    "hi": "Nanpure Cho",
+    "ar": "Nanpure Cho"
+  },
+  "各行・各列に1〜{n}を1回ずつ入れます。": {
+    "it": "Inserisci i numeri da 1 a {n} esattamente una volta in ogni riga e colonna.",
+    "nl": "Vul in elke rij en kolom de getallen 1 tot en met {n} precies één keer in.",
+    "sv": "Fyll i talen 1 till {n} exakt en gång i varje rad och kolumn.",
+    "pl": "W każdym wierszu i każdej kolumnie wpisz liczby od 1 do {n}, każdą dokładnie raz.",
+    "cs": "Do každého řádku a sloupce vyplňte čísla od 1 do {n}, každé právě jednou.",
+    "ru": "В каждой строке и каждом столбце разместите числа от 1 до {n} ровно по одному разу.",
+    "id": "Isi setiap baris dan kolom dengan angka 1 hingga {n}, masing-masing tepat sekali.",
+    "vi": "Điền các số từ 1 đến {n} vào mỗi hàng và mỗi cột, mỗi số đúng một lần.",
+    "th": "ใส่ตัวเลข 1 ถึง {n} ในแต่ละแถวและแต่ละคอลัมน์ โดยแต่ละตัวปรากฏเพียงครั้งเดียว",
+    "hi": "हर पंक्ति और हर स्तंभ में 1 से {n} तक के अंक भरें, हर अंक ठीक एक बार।",
+    "ar": "ضع الأرقام من 1 إلى {n} مرة واحدة بالضبط في كل صف وعمود."
+  },
+  "太い枠にも1〜{n}を1回ずつ入れます。": {
+    "it": "Anche ogni regione delimitata da linee spesse deve contenere i numeri da 1 a {n} esattamente una volta.",
+    "nl": "Elk gebied met een dikke rand bevat ook de getallen 1 tot en met {n} precies één keer.",
+    "sv": "Varje område med tjock kant ska också innehålla talen 1 till {n} exakt en gång.",
+    "pl": "Każdy obszar otoczony grubą linią również zawiera liczby od 1 do {n}, każdą dokładnie raz.",
+    "cs": "Také každá oblast ohraničená silnou čarou obsahuje čísla od 1 do {n}, každé právě jednou.",
+    "ru": "Каждая область с толстой границей также должна содержать числа от 1 до {n} ровно по одному разу.",
+    "id": "Setiap wilayah bergaris tebal juga harus berisi angka 1 hingga {n}, masing-masing tepat sekali.",
+    "vi": "Mỗi vùng có đường viền đậm cũng phải chứa các số từ 1 đến {n}, mỗi số đúng một lần.",
+    "th": "แต่ละเขตที่ล้อมด้วยเส้นหนาต้องมีตัวเลข 1 ถึง {n} โดยแต่ละตัวปรากฏเพียงครั้งเดียวเช่นกัน",
+    "hi": "मोटी रेखा से घिरे हर क्षेत्र में भी 1 से {n} तक के अंक ठीक एक-एक बार होने चाहिए।",
+    "ar": "يجب أن تحتوي كل منطقة ذات حدود سميكة أيضًا على الأرقام من 1 إلى {n} مرة واحدة بالضبط."
+  },
+  "でこぼこの太い枠にも1〜{n}を1回ずつ入れます。": {
+    "it": "Anche ogni regione irregolare delimitata da linee spesse deve contenere i numeri da 1 a {n} esattamente una volta.",
+    "nl": "Elk onregelmatig gebied met een dikke rand bevat ook de getallen 1 tot en met {n} precies één keer.",
+    "sv": "Varje oregelbundet område med tjock kant ska också innehålla talen 1 till {n} exakt en gång.",
+    "pl": "Każdy nieregularny obszar otoczony grubą linią również zawiera liczby od 1 do {n}, każdą dokładnie raz.",
+    "cs": "Také každá nepravidelná oblast ohraničená silnou čarou obsahuje čísla od 1 do {n}, každé právě jednou.",
+    "ru": "Каждая область неправильной формы с толстой границей также должна содержать числа от 1 до {n} ровно по одному разу.",
+    "id": "Setiap wilayah tak beraturan bergaris tebal juga harus berisi angka 1 hingga {n}, masing-masing tepat sekali.",
+    "vi": "Mỗi vùng bất quy tắc có đường viền đậm cũng phải chứa các số từ 1 đến {n}, mỗi số đúng một lần.",
+    "th": "แต่ละเขตรูปร่างไม่สม่ำเสมอที่ล้อมด้วยเส้นหนาต้องมีตัวเลข 1 ถึง {n} โดยแต่ละตัวปรากฏเพียงครั้งเดียวเช่นกัน",
+    "hi": "मोटी रेखा से घिरे हर अनियमित क्षेत्र में भी 1 से {n} तक के अंक ठीक एक-एक बार होने चाहिए।",
+    "ar": "يجب أن تحتوي كل منطقة غير منتظمة ذات حدود سميكة أيضًا على الأرقام من 1 إلى {n} مرة واحدة بالضبط."
+  },
+  "点線のまとまりは同じ数字を使わず、左上の合計に合わせます。": {
+    "it": "In ogni gabbia tratteggiata, i numeri non si ripetono e la loro somma è pari al valore in alto a sinistra.",
+    "nl": "Binnen elke gestippelde kooi zijn alle getallen verschillend en is hun som gelijk aan het getal linksboven.",
+    "sv": "I varje streckad bur får inget tal upprepas. Summan ska vara talet uppe till vänster.",
+    "pl": "W każdej klatce oznaczonej przerywaną linią liczby nie mogą się powtarzać, a ich suma musi być równa wskazówce w lewym górnym rogu.",
+    "cs": "V každé kleci s přerušovaným okrajem se čísla nesmějí opakovat a jejich součet se rovná údaji vlevo nahoře.",
+    "ru": "В каждой группе клеток с пунктирной границей числа не повторяются, а их сумма равна подсказке в левом верхнем углу.",
+    "id": "Dalam setiap sangkar bergaris putus-putus, angka tidak boleh berulang dan jumlahnya harus sama dengan petunjuk di kiri atas.",
+    "vi": "Trong mỗi nhóm ô có viền nét đứt, các số không được lặp lại và tổng phải bằng số gợi ý ở góc trên bên trái.",
+    "th": "ตัวเลขในแต่ละกลุ่มที่ล้อมด้วยเส้นประต้องไม่ซ้ำกัน และมีผลรวมเท่ากับตัวเลขกำกับที่มุมซ้ายบน",
+    "hi": "बिंदीदार रेखा से घिरे हर समूह में अंक दोहराए नहीं जा सकते और उनका योग ऊपर बाईं ओर दिए गए अंक के बराबर होना चाहिए।",
+    "ar": "لا تتكرر الأرقام داخل كل مجموعة ذات حدود متقطعة، ويجب أن يساوي مجموعها الرقم في الزاوية العلوية اليسرى."
+  },
+  "線でつながる2マスの数字を1違いにします。太い枠の条件はありません。線のない隣同士が1違いでもかまいません。": {
+    "it": "I numeri in due celle collegate da una linea differiscono di 1. Non ci sono vincoli sulle regioni. Anche due celle adiacenti senza linea possono differire di 1.",
+    "nl": "De getallen in twee cellen die met een lijn verbonden zijn, verschillen 1. Er gelden geen regels voor gebieden. Ook aangrenzende cellen zonder lijn mogen 1 verschillen.",
+    "sv": "Talen i två celler som är förbundna med en linje skiljer sig med 1. Det finns inga områdesregler. Även intilliggande celler utan linje får skilja sig med 1.",
+    "pl": "Liczby w dwóch komórkach połączonych linią różnią się o 1. Nie obowiązują ograniczenia dotyczące obszarów. Liczby w sąsiednich komórkach bez linii również mogą różnić się o 1.",
+    "cs": "Čísla ve dvou buňkách spojených čarou se liší o 1. Pro oblasti neplatí žádná omezení. I sousední buňky bez čáry se mohou lišit o 1.",
+    "ru": "Числа в двух клетках, соединённых линией, отличаются на 1. Ограничений для областей нет. В соседних клетках без линии числа тоже могут отличаться на 1.",
+    "id": "Angka dalam dua sel yang dihubungkan garis harus berselisih 1. Tidak ada batasan wilayah. Sel bertetangga tanpa garis juga boleh berselisih 1.",
+    "vi": "Các số trong hai ô được nối bằng đường kẻ chênh lệch 1. Không có ràng buộc theo vùng. Hai ô liền kề không có đường nối cũng được phép chênh lệch 1.",
+    "th": "ตัวเลขในสองช่องที่เชื่อมด้วยเส้นต้องต่างกัน 1 ไม่มีกติกาจำกัดตามเขต ช่องที่อยู่ติดกันโดยไม่มีเส้นเชื่อมก็ต่างกัน 1 ได้",
+    "hi": "रेखा से जुड़े दो खानों के अंकों का अंतर 1 होना चाहिए। क्षेत्रों से जुड़ी कोई पाबंदी नहीं है। बिना रेखा वाले पड़ोसी खानों के अंकों का अंतर भी 1 हो सकता है।",
+    "ar": "يجب أن يكون الفرق بين رقمي خليتين تصل بينهما علامة خطية هو 1. لا توجد قيود خاصة بالمناطق. ويجوز أن يكون الفرق بين خليتين متجاورتين دون خط هو 1 أيضًا."
+  },
+  "各行・各列に1〜{0}を1回ずつ入れます。": {
+    "it": "Inserisci i numeri da 1 a {0} esattamente una volta in ogni riga e colonna.",
+    "nl": "Vul in elke rij en kolom de getallen 1 tot en met {0} precies één keer in.",
+    "sv": "Fyll i talen 1 till {0} exakt en gång i varje rad och kolumn.",
+    "pl": "W każdym wierszu i każdej kolumnie wpisz liczby od 1 do {0}, każdą dokładnie raz.",
+    "cs": "Do každého řádku a sloupce vyplňte čísla od 1 do {0}, každé právě jednou.",
+    "ru": "В каждой строке и каждом столбце разместите числа от 1 до {0} ровно по одному разу.",
+    "id": "Isi setiap baris dan kolom dengan angka 1 hingga {0}, masing-masing tepat sekali.",
+    "vi": "Điền các số từ 1 đến {0} vào mỗi hàng và mỗi cột, mỗi số đúng một lần.",
+    "th": "ใส่ตัวเลข 1 ถึง {0} ในแต่ละแถวและแต่ละคอลัมน์ โดยแต่ละตัวปรากฏเพียงครั้งเดียว",
+    "hi": "हर पंक्ति और हर स्तंभ में 1 से {0} तक के अंक भरें, हर अंक ठीक एक बार।",
+    "ar": "ضع الأرقام من 1 إلى {0} مرة واحدة بالضبط في كل صف وعمود."
+  },
+  "太い枠にも1〜{0}を1回ずつ入れます。": {
+    "it": "Anche ogni regione delimitata da linee spesse deve contenere i numeri da 1 a {0} esattamente una volta.",
+    "nl": "Elk gebied met een dikke rand bevat ook de getallen 1 tot en met {0} precies één keer.",
+    "sv": "Varje område med tjock kant ska också innehålla talen 1 till {0} exakt en gång.",
+    "pl": "Każdy obszar otoczony grubą linią również zawiera liczby od 1 do {0}, każdą dokładnie raz.",
+    "cs": "Také každá oblast ohraničená silnou čarou obsahuje čísla od 1 do {0}, každé právě jednou.",
+    "ru": "Каждая область с толстой границей также должна содержать числа от 1 до {0} ровно по одному разу.",
+    "id": "Setiap wilayah bergaris tebal juga harus berisi angka 1 hingga {0}, masing-masing tepat sekali.",
+    "vi": "Mỗi vùng có đường viền đậm cũng phải chứa các số từ 1 đến {0}, mỗi số đúng một lần.",
+    "th": "แต่ละเขตที่ล้อมด้วยเส้นหนาต้องมีตัวเลข 1 ถึง {0} โดยแต่ละตัวปรากฏเพียงครั้งเดียวเช่นกัน",
+    "hi": "मोटी रेखा से घिरे हर क्षेत्र में भी 1 से {0} तक के अंक ठीक एक-एक बार होने चाहिए।",
+    "ar": "يجب أن تحتوي كل منطقة ذات حدود سميكة أيضًا على الأرقام من 1 إلى {0} مرة واحدة بالضبط."
+  },
+  "でこぼこの太い枠にも1〜{0}を1回ずつ入れます。": {
+    "it": "Anche ogni regione irregolare delimitata da linee spesse deve contenere i numeri da 1 a {0} esattamente una volta.",
+    "nl": "Elk onregelmatig gebied met een dikke rand bevat ook de getallen 1 tot en met {0} precies één keer.",
+    "sv": "Varje oregelbundet område med tjock kant ska också innehålla talen 1 till {0} exakt en gång.",
+    "pl": "Każdy nieregularny obszar otoczony grubą linią również zawiera liczby od 1 do {0}, każdą dokładnie raz.",
+    "cs": "Také každá nepravidelná oblast ohraničená silnou čarou obsahuje čísla od 1 do {0}, každé právě jednou.",
+    "ru": "Каждая область неправильной формы с толстой границей также должна содержать числа от 1 до {0} ровно по одному разу.",
+    "id": "Setiap wilayah tak beraturan bergaris tebal juga harus berisi angka 1 hingga {0}, masing-masing tepat sekali.",
+    "vi": "Mỗi vùng bất quy tắc có đường viền đậm cũng phải chứa các số từ 1 đến {0}, mỗi số đúng một lần.",
+    "th": "แต่ละเขตรูปร่างไม่สม่ำเสมอที่ล้อมด้วยเส้นหนาต้องมีตัวเลข 1 ถึง {0} โดยแต่ละตัวปรากฏเพียงครั้งเดียวเช่นกัน",
+    "hi": "मोटी रेखा से घिरे हर अनियमित क्षेत्र में भी 1 से {0} तक के अंक ठीक एक-एक बार होने चाहिए।",
+    "ar": "يجب أن تحتوي كل منطقة غير منتظمة ذات حدود سميكة أيضًا على الأرقام من 1 إلى {0} مرة واحدة بالضبط."
+  },
+  "太い枠にも1〜{0}を1回ずつ入れます。点線のまとまりは同じ数字を使わず、左上の合計に合わせます。": {
+    "it": "Anche ogni regione delimitata da linee spesse deve contenere i numeri da 1 a {0} esattamente una volta. In ogni gabbia tratteggiata, i numeri non si ripetono e la loro somma è pari al valore in alto a sinistra.",
+    "nl": "Elk gebied met een dikke rand bevat ook de getallen 1 tot en met {0} precies één keer. Binnen elke gestippelde kooi zijn alle getallen verschillend en is hun som gelijk aan het getal linksboven.",
+    "sv": "Varje område med tjock kant ska också innehålla talen 1 till {0} exakt en gång. I varje streckad bur får inget tal upprepas. Summan ska vara talet uppe till vänster.",
+    "pl": "Każdy obszar otoczony grubą linią również zawiera liczby od 1 do {0}, każdą dokładnie raz. W każdej klatce oznaczonej przerywaną linią liczby nie mogą się powtarzać, a ich suma musi być równa wskazówce w lewym górnym rogu.",
+    "cs": "Také každá oblast ohraničená silnou čarou obsahuje čísla od 1 do {0}, každé právě jednou. V každé kleci s přerušovaným okrajem se čísla nesmějí opakovat a jejich součet se rovná údaji vlevo nahoře.",
+    "ru": "Каждая область с толстой границей также должна содержать числа от 1 до {0} ровно по одному разу. В каждой группе клеток с пунктирной границей числа не повторяются, а их сумма равна подсказке в левом верхнем углу.",
+    "id": "Setiap wilayah bergaris tebal juga harus berisi angka 1 hingga {0}, masing-masing tepat sekali. Dalam setiap sangkar bergaris putus-putus, angka tidak boleh berulang dan jumlahnya harus sama dengan petunjuk di kiri atas.",
+    "vi": "Mỗi vùng có đường viền đậm cũng phải chứa các số từ 1 đến {0}, mỗi số đúng một lần. Trong mỗi nhóm ô có viền nét đứt, các số không được lặp lại và tổng phải bằng số gợi ý ở góc trên bên trái.",
+    "th": "แต่ละเขตที่ล้อมด้วยเส้นหนาต้องมีตัวเลข 1 ถึง {0} โดยแต่ละตัวปรากฏเพียงครั้งเดียวเช่นกัน ตัวเลขในแต่ละกลุ่มที่ล้อมด้วยเส้นประต้องไม่ซ้ำกัน และมีผลรวมเท่ากับตัวเลขกำกับที่มุมซ้ายบน",
+    "hi": "मोटी रेखा से घिरे हर क्षेत्र में भी 1 से {0} तक के अंक ठीक एक-एक बार होने चाहिए। बिंदीदार रेखा से घिरे हर समूह में अंक दोहराए नहीं जा सकते और उनका योग ऊपर बाईं ओर दिए गए अंक के बराबर होना चाहिए।",
+    "ar": "يجب أن تحتوي كل منطقة ذات حدود سميكة أيضًا على الأرقام من 1 إلى {0} مرة واحدة بالضبط. لا تتكرر الأرقام داخل كل مجموعة ذات حدود متقطعة، ويجب أن يساوي مجموعها الرقم في الزاوية العلوية اليسرى."
+  },
+  "拡大": {
+    "it": "Ingrandisci",
+    "nl": "Inzoomen",
+    "sv": "Zooma in",
+    "pl": "Powiększ",
+    "cs": "Přiblížit",
+    "ru": "Приблизить",
+    "id": "Perbesar",
+    "vi": "Phóng to",
+    "th": "ขยาย",
+    "hi": "बड़ा करें",
+    "ar": "تكبير"
+  },
+  "縮小": {
+    "it": "Riduci",
+    "nl": "Uitzoomen",
+    "sv": "Zooma ut",
+    "pl": "Pomniejsz",
+    "cs": "Oddálit",
+    "ru": "Отдалить",
+    "id": "Perkecil",
+    "vi": "Thu nhỏ",
+    "th": "ย่อ",
+    "hi": "छोटा करें",
+    "ar": "تصغير"
+  },
+  "形": {
+    "it": "Forma",
+    "nl": "Vorm",
+    "sv": "Form",
+    "pl": "Kształt",
+    "cs": "Tvar",
+    "ru": "Форма",
+    "id": "Bentuk",
+    "vi": "Hình dạng",
+    "th": "รูปร่าง",
+    "hi": "आकृति",
+    "ar": "الشكل"
+  },
+  "シンプル": {
+    "it": "Semplice",
+    "nl": "Eenvoudig",
+    "sv": "Enkel",
+    "pl": "Proste",
+    "cs": "Jednoduché",
+    "ru": "Простая",
+    "id": "Sederhana",
+    "vi": "Đơn giản",
+    "th": "เรียบง่าย",
+    "hi": "सरल",
+    "ar": "بسيط"
+  },
+  "少し複雑": {
+    "it": "Poco complesso",
+    "nl": "Iets complex",
+    "sv": "Lite komplex",
+    "pl": "Nieco złożone",
+    "cs": "Mírně složité",
+    "ru": "Немного сложная",
+    "id": "Agak rumit",
+    "vi": "Hơi phức tạp",
+    "th": "ซับซ้อนเล็กน้อย",
+    "hi": "थोड़ा जटिल",
+    "ar": "معقد قليلًا"
+  },
+  "複雑": {
+    "it": "Complesso",
+    "nl": "Complex",
+    "sv": "Komplex",
+    "pl": "Złożone",
+    "cs": "Složité",
+    "ru": "Сложная",
+    "id": "Rumit",
+    "vi": "Phức tạp",
+    "th": "ซับซ้อน",
+    "hi": "जटिल",
+    "ar": "معقد"
+  },
+  "とても複雑": {
+    "it": "Molto complesso",
+    "nl": "Zeer complex",
+    "sv": "Mycket komplex",
+    "pl": "Bardzo złożone",
+    "cs": "Velmi složité",
+    "ru": "Очень сложная",
+    "id": "Sangat rumit",
+    "vi": "Rất phức tạp",
+    "th": "ซับซ้อนมาก",
+    "hi": "बहुत जटिल",
+    "ar": "معقد جدًا"
+  },
+  "作る": {
+    "it": "Crea",
+    "nl": "Maken",
+    "sv": "Skapa",
+    "pl": "Utwórz",
+    "cs": "Vytvořit",
+    "ru": "Создать",
+    "id": "Buat",
+    "vi": "Tạo",
+    "th": "สร้าง",
+    "hi": "बनाएँ",
+    "ar": "إنشاء"
+  },
+  "変更": {
+    "it": "Modifica",
+    "nl": "Wijzigen",
+    "sv": "Ändra",
+    "pl": "Zmień",
+    "cs": "Změnit",
+    "ru": "Изменить",
+    "id": "Ubah",
+    "vi": "Thay đổi",
+    "th": "เปลี่ยน",
+    "hi": "बदलें",
+    "ar": "تغيير"
+  },
+  "前へ": {
+    "it": "Precedente",
+    "nl": "Vorige",
+    "sv": "Föregående",
+    "pl": "Poprzedni",
+    "cs": "Předchozí",
+    "ru": "Назад",
+    "id": "Sebelumnya",
+    "vi": "Trước",
+    "th": "ก่อนหน้า",
+    "hi": "पिछला",
+    "ar": "السابق"
+  },
+  "はい": {
+    "it": "Sì",
+    "nl": "Ja",
+    "sv": "Ja",
+    "pl": "Tak",
+    "cs": "Ano",
+    "ru": "Да",
+    "id": "Ya",
+    "vi": "Có",
+    "th": "ใช่",
+    "hi": "हाँ",
+    "ar": "نعم"
+  },
+  "太め": {
+    "it": "Spessa",
+    "nl": "Dikker",
+    "sv": "Tjockare",
+    "pl": "Grubsze",
+    "cs": "Silnější",
+    "ru": "Толще",
+    "id": "Lebih tebal",
+    "vi": "Dày hơn",
+    "th": "หนาขึ้น",
+    "hi": "अधिक मोटी",
+    "ar": "أكثر سماكة"
+  },
+  "とても太い": {
+    "it": "Molto spessa",
+    "nl": "Extra dik",
+    "sv": "Extra tjock",
+    "pl": "Bardzo grube",
+    "cs": "Velmi silná",
+    "ru": "Очень толстая",
+    "id": "Ekstra tebal",
+    "vi": "Rất dày",
+    "th": "หนามาก",
+    "hi": "बहुत मोटी",
+    "ar": "سميك جدًا"
+  },
+  "極太": {
+    "it": "Massiccia",
+    "nl": "Zeer dik",
+    "sv": "Mycket tjock",
+    "pl": "Najgrubsze",
+    "cs": "Nejsilnější",
+    "ru": "Наиболее толстая",
+    "id": "Sangat tebal",
+    "vi": "Cực dày",
+    "th": "หนาพิเศษ",
+    "hi": "अत्यधिक मोटी",
+    "ar": "بالغ السماكة"
+  },
+  "最大": {
+    "it": "Massima",
+    "nl": "Maximaal",
+    "sv": "Maximal",
+    "pl": "Maksymalne",
+    "cs": "Maximální",
+    "ru": "Максимальная",
+    "id": "Maksimum",
+    "vi": "Tối đa",
+    "th": "สูงสุด",
+    "hi": "अधिकतम",
+    "ar": "الأقصى"
+  },
+  "細め": {
+    "it": "Sottile",
+    "nl": "Dun",
+    "sv": "Tunn",
+    "pl": "Cienkie",
+    "cs": "Tenká",
+    "ru": "Тонкая",
+    "id": "Tipis",
+    "vi": "Mảnh",
+    "th": "บาง",
+    "hi": "पतली",
+    "ar": "رفيع"
+  },
+  "中くらい": {
+    "it": "Media",
+    "nl": "Gemiddeld",
+    "sv": "Medel",
+    "pl": "Średnie",
+    "cs": "Střední",
+    "ru": "Средняя",
+    "id": "Sedang",
+    "vi": "Vừa",
+    "th": "ปานกลาง",
+    "hi": "मध्यम",
+    "ar": "متوسط"
+  },
+  "なし": {
+    "it": "Nessuno",
+    "nl": "Geen",
+    "sv": "Ingen",
+    "pl": "Brak",
+    "cs": "Žádné",
+    "ru": "Нет",
+    "id": "Tidak ada",
+    "vi": "Không",
+    "th": "ไม่มี",
+    "hi": "कोई नहीं",
+    "ar": "بلا"
+  },
+  "弱め": {
+    "it": "Tenue",
+    "nl": "Subtiel",
+    "sv": "Svag",
+    "pl": "Słabe",
+    "cs": "Slabé",
+    "ru": "Слабая",
+    "id": "Lembut",
+    "vi": "Nhẹ",
+    "th": "อ่อน",
+    "hi": "हल्का",
+    "ar": "خفيف"
+  },
+  "強め": {
+    "it": "Intenso",
+    "nl": "Sterk",
+    "sv": "Stark",
+    "pl": "Silne",
+    "cs": "Silné",
+    "ru": "Сильная",
+    "id": "Kuat",
+    "vi": "Mạnh",
+    "th": "เข้ม",
+    "hi": "गहरा",
+    "ar": "قوي"
+  },
+  "入力方法": {
+    "it": "Modalità di inserimento",
+    "nl": "Invoermodus",
+    "sv": "Inmatningsläge",
+    "pl": "Tryb wpisywania",
+    "cs": "Režim zadávání",
+    "ru": "Режим ввода",
+    "id": "Mode input",
+    "vi": "Chế độ nhập",
+    "th": "วิธีป้อนข้อมูล",
+    "hi": "इनपुट मोड",
+    "ar": "طريقة الإدخال"
+  },
+  "入力する順番": {
+    "it": "Ordine di inserimento",
+    "nl": "Invoervolgorde",
+    "sv": "Inmatningsordning",
+    "pl": "Kolejność wpisywania",
+    "cs": "Pořadí zadávání",
+    "ru": "Порядок ввода",
+    "id": "Urutan input",
+    "vi": "Thứ tự nhập",
+    "th": "ลำดับการป้อนข้อมูล",
+    "hi": "भरने का क्रम",
+    "ar": "ترتيب الإدخال"
+  },
+  "マス → 数字": {
+    "it": "Cella → Numero",
+    "nl": "Cel → Getal",
+    "sv": "Cell → Tal",
+    "pl": "Komórka → Liczba",
+    "cs": "Buňka → Číslo",
+    "ru": "Клетка → Число",
+    "id": "Sel → Angka",
+    "vi": "Ô → Số",
+    "th": "ช่อง → ตัวเลข",
+    "hi": "खाना → अंक",
+    "ar": "⁦الخلية → الرقم⁩"
+  },
+  "数字 → マス": {
+    "it": "Numero → Cella",
+    "nl": "Getal → Cel",
+    "sv": "Tal → Cell",
+    "pl": "Liczba → Komórka",
+    "cs": "Číslo → Buňka",
+    "ru": "Число → Клетка",
+    "id": "Angka → Sel",
+    "vi": "Số → Ô",
+    "th": "ตัวเลข → ช่อง",
+    "hi": "अंक → खाना",
+    "ar": "⁦الرقم → الخلية⁩"
+  },
+  "キーボード操作": {
+    "it": "Comandi da tastiera",
+    "nl": "Toetsenbordbediening",
+    "sv": "Tangentbordskontroller",
+    "pl": "Sterowanie klawiaturą",
+    "cs": "Ovládání klávesnicí",
+    "ru": "Управление с клавиатуры",
+    "id": "Kontrol papan ketik",
+    "vi": "Điều khiển bàn phím",
+    "th": "การควบคุมด้วยแป้นพิมพ์",
+    "hi": "कीबोर्ड नियंत्रण",
+    "ar": "التحكم بلوحة المفاتيح"
+  },
+  "キーの割り当て": {
+    "it": "Assegnazione dei tasti",
+    "nl": "Toetstoewijzing",
+    "sv": "Tangenttilldelning",
+    "pl": "Przypisanie klawiszy",
+    "cs": "Přiřazení kláves",
+    "ru": "Назначение клавиш",
+    "id": "Pemetaan tombol",
+    "vi": "Gán phím",
+    "th": "กำหนดปุ่ม",
+    "hi": "कुंजियाँ तय करें",
+    "ar": "تعيين المفاتيح"
+  },
+  "解除": {
+    "it": "Rimuovi",
+    "nl": "Wissen",
+    "sv": "Rensa",
+    "pl": "Usuń przypisanie",
+    "cs": "Zrušit přiřazení",
+    "ru": "Убрать назначение",
+    "id": "Hapus pemetaan",
+    "vi": "Xóa gán phím",
+    "th": "ยกเลิกการกำหนด",
+    "hi": "हटाएँ",
+    "ar": "إزالة التعيين"
+  },
+  "初期値に戻す": {
+    "it": "Ripristina predefiniti",
+    "nl": "Standaardinstellingen herstellen",
+    "sv": "Återställ standardinställningar",
+    "pl": "Przywróć ustawienia domyślne",
+    "cs": "Obnovit výchozí nastavení",
+    "ru": "Восстановить настройки по умолчанию",
+    "id": "Pulihkan bawaan",
+    "vi": "Khôi phục mặc định",
+    "th": "คืนค่าเริ่มต้น",
+    "hi": "डिफ़ॉल्ट बहाल करें",
+    "ar": "استعادة الإعدادات الافتراضية"
+  },
+  "保存して閉じる": {
+    "it": "Salva e chiudi",
+    "nl": "Opslaan en sluiten",
+    "sv": "Spara och stäng",
+    "pl": "Zapisz i zamknij",
+    "cs": "Uložit a zavřít",
+    "ru": "Сохранить и закрыть",
+    "id": "Simpan dan tutup",
+    "vi": "Lưu và đóng",
+    "th": "บันทึกและปิด",
+    "hi": "सहेजें और बंद करें",
+    "ar": "حفظ وإغلاق"
+  },
+  "数字の太さ": {
+    "it": "Spessore dei numeri",
+    "nl": "Dikte van de cijfers",
+    "sv": "Siffrornas tjocklek",
+    "pl": "Grubość cyfr",
+    "cs": "Tloušťka číslic",
+    "ru": "Толщина цифр",
+    "id": "Ketebalan angka",
+    "vi": "Độ đậm của chữ số",
+    "th": "ความหนาของตัวเลข",
+    "hi": "अंकों का मोटापन",
+    "ar": "سماكة الأرقام"
+  },
+  "マス線の太さ": {
+    "it": "Spessore delle linee delle celle",
+    "nl": "Dikte van de cellijnen",
+    "sv": "Cellinjernas tjocklek",
+    "pl": "Grubość linii komórek",
+    "cs": "Tloušťka čar buněk",
+    "ru": "Толщина линий клеток",
+    "id": "Ketebalan garis sel",
+    "vi": "Độ dày đường kẻ ô",
+    "th": "ความหนาของเส้นช่อง",
+    "hi": "खानों की रेखाओं की मोटाई",
+    "ar": "سماكة خطوط الخلايا"
+  },
+  "入力する数字": {
+    "it": "Numero da inserire",
+    "nl": "In te voeren getal",
+    "sv": "Tal att mata in",
+    "pl": "Liczba do wpisania",
+    "cs": "Zadávané číslo",
+    "ru": "Число для ввода",
+    "id": "Angka yang dimasukkan",
+    "vi": "Số cần nhập",
+    "th": "ตัวเลขที่จะป้อน",
+    "hi": "भरने वाला अंक",
+    "ar": "الرقم المراد إدخاله"
+  },
+  "変更する": {
+    "it": "Modifica",
+    "nl": "Wijzigen",
+    "sv": "Ändra",
+    "pl": "Zmień",
+    "cs": "Změnit",
+    "ru": "Изменить",
+    "id": "Ubah",
+    "vi": "Thay đổi",
+    "th": "เปลี่ยน",
+    "hi": "बदलें",
+    "ar": "تغيير"
+  },
+  "見本を縮小する": {
+    "it": "Riduci",
+    "nl": "Uitzoomen",
+    "sv": "Zooma ut",
+    "pl": "Pomniejsz",
+    "cs": "Oddálit",
+    "ru": "Отдалить",
+    "id": "Perkecil",
+    "vi": "Thu nhỏ",
+    "th": "ย่อ",
+    "hi": "छोटा करें",
+    "ar": "تصغير"
+  },
+  "見本を拡大する": {
+    "it": "Ingrandisci",
+    "nl": "Inzoomen",
+    "sv": "Zooma in",
+    "pl": "Powiększ",
+    "cs": "Přiblížit",
+    "ru": "Приблизить",
+    "id": "Perbesar",
+    "vi": "Phóng to",
+    "th": "ขยาย",
+    "hi": "बड़ा करें",
+    "ar": "تكبير"
+  },
+  "盤面を縮小する": {
+    "it": "Riduci",
+    "nl": "Uitzoomen",
+    "sv": "Zooma ut",
+    "pl": "Pomniejsz",
+    "cs": "Oddálit",
+    "ru": "Отдалить",
+    "id": "Perkecil",
+    "vi": "Thu nhỏ",
+    "th": "ย่อ",
+    "hi": "छोटा करें",
+    "ar": "تصغير"
+  },
+  "盤面を拡大する": {
+    "it": "Ingrandisci",
+    "nl": "Inzoomen",
+    "sv": "Zooma in",
+    "pl": "Powiększ",
+    "cs": "Přiblížit",
+    "ru": "Приблизить",
+    "id": "Perbesar",
+    "vi": "Phóng to",
+    "th": "ขยาย",
+    "hi": "बड़ा करें",
+    "ar": "تكبير"
+  },
+  "□を繋げたので、黄色の部屋は6マスです。さらに右へ繋げると7マス以上になるので、ここは仕切れます。": {
+    "vi": "Nối ô □ sẽ tạo thành một vùng màu vàng gồm sáu ô. Nếu mở rộng sang phải, vùng sẽ có ít nhất bảy ô, vì vậy hãy kẻ đường ngăn ở đó."
+  },
+  "{0}×{1}・黒マス{2} / {3} / {4} / {5}": {
+    "vi": "{0}×{1} · {2} ô đen / {3} / {4} / {5}"
+  },
+  "語彙出典：Japanese Wordnet (v1.1) © 2009-2011 NICT, 2012-2015 Francis Bond and 2016-2024 Francis Bond, Takayuki Kuribayashi": {
+    "ar": "مصدر المفردات: Japanese Wordnet (v1.1) © 2009-2011 NICT، 2012-2015 Francis Bond و2016-2024 Francis Bond، Takayuki Kuribayashi"
+  },
+  "続きから開く": {
+    "it": "Riprendi",
+    "nl": "Hervatten",
+    "sv": "Fortsätt",
+    "pl": "Wznów",
+    "cs": "Pokračovat",
+    "ru": "Продолжить",
+    "id": "Lanjutkan",
+    "vi": "Tiếp tục",
+    "th": "เล่นต่อ",
+    "hi": "जारी रखें",
+    "ar": "استئناف"
+  },
+  "ホーム": {
+    "it": "Home",
+    "nl": "Startpagina",
+    "sv": "Startsida",
+    "pl": "Strona główna",
+    "cs": "Úvod",
+    "ru": "Главная",
+    "id": "Beranda",
+    "vi": "Trang chủ",
+    "th": "หน้าหลัก",
+    "hi": "मुखपृष्ठ",
+    "ar": "الرئيسية"
+  },
+  "中断": {
+    "it": "In pausa",
+    "nl": "Gepauzeerd",
+    "sv": "Pausad",
+    "pl": "Wstrzymano",
+    "cs": "Pozastaveno",
+    "ru": "Пауза",
+    "id": "Dijeda",
+    "vi": "Đã tạm dừng",
+    "th": "หยุดชั่วคราวแล้ว",
+    "hi": "रुका हुआ",
+    "ar": "متوقف مؤقتًا"
+  },
+  "裏": {
+    "it": "Indietro",
+    "nl": "Terug",
+    "sv": "Tillbaka",
+    "pl": "Wstecz",
+    "cs": "Zpět",
+    "ru": "Назад",
+    "id": "Kembali",
+    "vi": "Quay lại",
+    "th": "ย้อนกลับ",
+    "hi": "वापस",
+    "ar": "رجوع"
+  },
+  "削除する": {
+    "it": "Elimina",
+    "nl": "Verwijderen",
+    "sv": "Ta bort",
+    "pl": "Usuń",
+    "cs": "Smazat",
+    "ru": "Удалить",
+    "id": "Hapus",
+    "vi": "Xóa",
+    "th": "ลบ",
+    "hi": "मिटाएँ",
+    "ar": "حذف"
+  },
+  "やめる": {
+    "it": "Annulla",
+    "nl": "Annuleren",
+    "sv": "Avbryt",
+    "pl": "Anuluj",
+    "cs": "Zrušit",
+    "ru": "Отмена",
+    "id": "Batal",
+    "vi": "Hủy",
+    "th": "ยกเลิก",
+    "hi": "रद्द करें",
+    "ar": "إلغاء"
+  },
+  "ホームへ": {
+    "it": "Home",
+    "nl": "Startpagina",
+    "sv": "Startsida",
+    "pl": "Strona główna",
+    "cs": "Úvod",
+    "ru": "Главная",
+    "id": "Beranda",
+    "vi": "Trang chủ",
+    "th": "หน้าหลัก",
+    "hi": "मुखपृष्ठ",
+    "ar": "الرئيسية"
+  },
+  "標準": {
+    "it": "Standard",
+    "nl": "Standaard",
+    "sv": "Standard",
+    "pl": "Standardowe",
+    "cs": "Standardní",
+    "ru": "Стандартная",
+    "id": "Standar",
+    "vi": "Tiêu chuẩn",
+    "th": "มาตรฐาน",
+    "hi": "मानक",
+    "ar": "قياسي"
+  },
+  "見え方の見本": {
+    "it": "Anteprima",
+    "nl": "Voorbeeld van de weergave",
+    "sv": "Förhandsvisning",
+    "pl": "Podgląd wyglądu",
+    "cs": "Náhled vzhledu",
+    "ru": "Предпросмотр оформления",
+    "id": "Pratinjau tampilan",
+    "vi": "Xem trước giao diện",
+    "th": "ตัวอย่างการแสดงผล",
+    "hi": "दिखावट का पूर्वावलोकन",
+    "ar": "معاينة المظهر"
+  },
+  "選択マスのデザイン": {
+    "it": "Stile della cella selezionata",
+    "nl": "Stijl van de geselecteerde cel",
+    "sv": "Stil för vald cell",
+    "pl": "Styl wybranej komórki",
+    "cs": "Styl vybrané buňky",
+    "ru": "Стиль выбранной клетки",
+    "id": "Gaya sel yang dipilih",
+    "vi": "Kiểu ô được chọn",
+    "th": "รูปแบบช่องที่เลือก",
+    "hi": "चुने हुए खाने की शैली",
+    "ar": "نمط الخلية المحددة"
+  },
+  "くっきり枠": {
+    "it": "Contorno netto",
+    "nl": "Duidelijke rand",
+    "sv": "Tydlig kant",
+    "pl": "Wyraźny obrys",
+    "cs": "Výrazný obrys",
+    "ru": "Чёткая рамка",
+    "id": "Garis tegas",
+    "vi": "Viền rõ nét",
+    "th": "กรอบชัดเจน",
+    "hi": "स्पष्ट किनारा",
+    "ar": "إطار واضح"
+  },
+  "濃い色で選択": {
+    "it": "Evidenziazione piena",
+    "nl": "Effen markering",
+    "sv": "Hel markering",
+    "pl": "Pełne podświetlenie",
+    "cs": "Plné zvýraznění",
+    "ru": "Сплошная подсветка",
+    "id": "Sorotan penuh",
+    "vi": "Tô màu toàn ô",
+    "th": "เน้นสีทั้งช่อง",
+    "hi": "पूरे खाने का रंग",
+    "ar": "تظليل كامل"
+  },
+  "盤面の見え方": {
+    "it": "Aspetto della griglia",
+    "nl": "Weergave van het rooster",
+    "sv": "Rutnätets utseende",
+    "pl": "Wygląd planszy",
+    "cs": "Vzhled mřížky",
+    "ru": "Вид игрового поля",
+    "id": "Tampilan papan",
+    "vi": "Giao diện bảng",
+    "th": "การแสดงผลตาราง",
+    "hi": "बोर्ड की दिखावट",
+    "ar": "مظهر اللوحة"
+  },
+  "行・列ガイド": {
+    "it": "Guida di riga e colonna",
+    "nl": "Rij- en kolomgeleider",
+    "sv": "Rad- och kolumnguide",
+    "pl": "Prowadnice wiersza i kolumny",
+    "cs": "Vodítko řádku a sloupce",
+    "ru": "Подсветка строки и столбца",
+    "id": "Panduan baris dan kolom",
+    "vi": "Đánh dấu hàng và cột",
+    "th": "แนวแถวและคอลัมน์",
+    "hi": "पंक्ति और स्तंभ का मार्गदर्शक",
+    "ar": "دليل الصف والعمود"
+  },
+  "全体を表示": {
+    "it": "Mostra tutta la griglia",
+    "nl": "Hele rooster tonen",
+    "sv": "Visa hela rutnätet",
+    "pl": "Pokaż całą planszę",
+    "cs": "Zobrazit celou mřížku",
+    "ru": "Показать всё поле",
+    "id": "Tampilkan seluruh papan",
+    "vi": "Hiển thị toàn bộ bảng",
+    "th": "แสดงทั้งตาราง",
+    "hi": "पूरा बोर्ड दिखाएँ",
+    "ar": "عرض اللوحة كاملة"
+  },
+  "倍率を100%に戻す": {
+    "it": "Ripristina lo zoom al 100%",
+    "nl": "Zoom terugzetten naar 100%",
+    "sv": "Återställ zoom till 100%",
+    "pl": "Przywróć powiększenie do 100%",
+    "cs": "Obnovit přiblížení na 100%",
+    "ru": "Вернуть масштаб 100%",
+    "id": "Atur ulang zoom ke 100%",
+    "vi": "Đặt lại mức thu phóng về 100%",
+    "th": "คืนค่าการขยายเป็น 100%",
+    "hi": "ज़ूम 100% पर लौटाएँ",
+    "ar": "إعادة التكبير إلى 100%"
+  },
+  "全体": {
+    "it": "Mostra tutta la griglia",
+    "nl": "Hele rooster tonen",
+    "sv": "Visa hela rutnätet",
+    "pl": "Pokaż całą planszę",
+    "cs": "Zobrazit celou mřížku",
+    "ru": "Показать всё поле",
+    "id": "Tampilkan seluruh papan",
+    "vi": "Hiển thị toàn bộ bảng",
+    "th": "แสดงทั้งตาราง",
+    "hi": "पूरा बोर्ड दिखाएँ",
+    "ar": "عرض اللوحة كاملة"
+  },
+  "全体表示": {
+    "it": "Mostra tutta la griglia",
+    "nl": "Hele rooster tonen",
+    "sv": "Visa hela rutnätet",
+    "pl": "Pokaż całą planszę",
+    "cs": "Zobrazit celou mřížku",
+    "ru": "Показать всё поле",
+    "id": "Tampilkan seluruh papan",
+    "vi": "Hiển thị toàn bộ bảng",
+    "th": "แสดงทั้งตาราง",
+    "hi": "पूरा बोर्ड दिखाएँ",
+    "ar": "عرض اللوحة كاملة"
+  },
+  "閉じる ×": {
+    "it": "Chiudi ×",
+    "nl": "Sluiten ×",
+    "sv": "Stäng ×",
+    "pl": "Zamknij ×",
+    "cs": "Zavřít ×",
+    "ru": "Закрыть ×",
+    "id": "Tutup ×",
+    "vi": "Đóng ×",
+    "th": "ปิด ×",
+    "hi": "बंद करें ×",
+    "ar": "إغلاق ×"
+  },
+  "入門": {
+    "ar": "مبتدئ"
+  },
+  "マルチナンプレ": {
+    "ar": "سودوكو متعدد الشبكات",
+    "sv": "Sudoku med flera rutnät"
+  },
+  "温度計ナンプレ": {
+    "ar": "سودوكو مقياس الحرارة",
+    "sv": "Termometersudoku"
+  },
+  "矢印ナンプレ": {
+    "ar": "سودوكو الأسهم",
+    "sv": "Pilsudoku"
+  },
+  "サンドイッチナンプレ": {
+    "ar": "سودوكو الساندويتش",
+    "sv": "Sandwich-sudoku"
+  },
+  "ビルディングナンプレ": {
+    "ar": "سودوكو ناطحات السحاب"
+  },
+  "回文ナンプレ": {
+    "ar": "سودوكو المتناظر",
+    "hi": "पैलिन्ड्रोम सुडोकू",
+    "sv": "Palindromsudoku"
+  },
+  "ウィスパーナンプレ": {
+    "ar": "سودوكو الهمس",
+    "sv": "Viskningssudoku"
+  },
+  "対角線ナンプレ": {
+    "ar": "سودوكو الأقطار",
+    "sv": "Diagonalsudoku"
+  },
+  "ハイパーナンプレ": {
+    "ar": "سودوكو هايبر",
+    "sv": "Hyper-sudoku"
+  },
+  "クロプキナンプレ": {
+    "ar": "سودوكو كروبكي",
+    "hi": "क्रोपकी सुडोकू",
+    "sv": "Kropki-sudoku"
+  },
+  "★ お気に入り": {
+    "ar": "★ المفضلة"
+  },
+  "復元する": {
+    "ar": "استعادة"
+  },
+  "選択を外す": {
+    "ar": "إلغاء التحديد",
+    "sv": "Avmarkera"
+  },
+  "接続する": {
+    "ar": "ربط"
+  },
+  "X-Wing（四隅の候補）": {
+    "ar": "تقنية X-Wing (الزوايا الأربع)"
+  },
+  "クリーム": {
+    "ar": "كريمي",
+    "sv": "Gräddvit"
+  },
+  "ミント": {
+    "ar": "نعناعي",
+    "sv": "Mintgrön"
+  },
+  "パープル": {
+    "ar": "بنفسجي"
+  },
+  "9×9で作る・難易度を選ぶ": {
+    "ar": "إنشاء لغز 9×9 — اختيار الصعوبة"
+  },
+  "9×9をつなぐ・マルチナンプレ": {
+    "ar": "ربط شبكات 9×9 — سودوكو متعدد الشبكات"
+  },
+  "たて・よこ・枠を見比べて考えます。": {
+    "ar": "قارن بين الصفوف والأعمدة والمناطق."
+  },
+  "2候補のマスをつなぐXYチェーンが必要です。": {
+    "ar": "يتطلب الحل سلاسل XY تربط خلايا ذات مرشحين فقط."
+  },
+  "9×9中心": {
+    "ar": "أساسًا 9×9"
+  },
+  "含める": {
+    "ar": "تضمين"
+  },
+  "L字連結": {
+    "ar": "شبكات على شكل L"
+  },
+  "以前の設定": {
+    "ar": "إعداد قديم"
+  },
+  "復元": {
+    "ar": "استعادة"
+  },
+  "PCの管理画面": {
+    "ar": "إدارة العمل على الحاسوب"
+  },
+  "マルチ": {
+    "ar": "سودوكو متعدد الشبكات",
+    "sv": "Sudoku med flera rutnät"
+  },
+  "温度計": {
+    "ar": "سودوكو مقياس الحرارة",
+    "sv": "Termometersudoku"
+  },
+  "矢印": {
+    "ar": "سودوكو الأسهم",
+    "sv": "Pilsudoku"
+  },
+  "サンドイッチ": {
+    "ar": "سودوكو الساندويتش",
+    "sv": "Sandwich-sudoku"
+  },
+  "ビルディング": {
+    "ar": "سودوكو ناطحات السحاب"
+  },
+  "回文": {
+    "ar": "سودوكو المتناظر",
+    "hi": "पैलिन्ड्रोम सुडोकू",
+    "sv": "Palindromsudoku"
+  },
+  "ウィスパー": {
+    "ar": "سودوكو الهمس",
+    "sv": "Viskningssudoku"
+  },
+  "対角線": {
+    "ar": "سودوكو الأقطار",
+    "sv": "Diagonalsudoku"
+  },
+  "ハイパー": {
+    "ar": "سودوكو هايبر",
+    "sv": "Hyper-sudoku"
+  },
+  "クロプキ": {
+    "ar": "سودوكو كروبكي",
+    "hi": "क्रोपकी सुडोकू",
+    "sv": "Kropki-sudoku"
+  },
+  "9×9をつなぐ・マルチ": {
+    "ar": "ربط شبكات 9×9 — سودوكو متعدد الشبكات"
+  },
+  "入れる": {
+    "ar": "إدخال",
+    "sv": "Mata in"
+  },
+  "メニュー": {
+    "ar": "القائمة"
+  },
+  "日本時間0時に更新": {
+    "ar": "يتجدد عند منتصف الليل في اليابان (UTC+9)"
+  },
+  "送信する": {
+    "ar": "إرسال"
+  },
+  "紫": {
+    "ar": "بنفسجي"
+  },
+  "ピンク": {
+    "ar": "وردي"
+  },
+  "やり直す": {
+    "ar": "إعادة البدء",
+    "sv": "Börja om"
+  },
+  "ボタンの配置": {
+    "ar": "ترتيب الأزرار"
+  },
+  "返答あり": {
+    "ar": "يوجد رد"
+  },
+  "盤面を見直す": {
+    "ar": "مراجعة اللوحة"
+  },
+  "画像を外す": {
+    "ar": "إزالة الصورة"
+  },
+  "開いていた画面": {
+    "ar": "الشاشة",
+    "sv": "Skärm"
+  },
+  "読み込む内容を上の確認欄で確認してください。": {
+    "ar": "راجع البيانات في خانة التأكيد أعلاه."
+  },
+  "盤面の倍率": {
+    "ar": "تكبير اللوحة"
+  },
+  "この挑戦は練習に切り替わっています。": {
+    "ar": "تم تحويل هذا التحدي إلى وضع التدريب."
+  },
+  "隠れトリプル": {
+    "ar": "ثلاثية مخفية"
+  },
+  "X-ウィング": {
+    "ar": "تقنية X-Wing",
+    "hi": "X-Wing तकनीक"
+  },
+  "XY-ウィング": {
+    "ar": "تقنية XY-Wing"
+  },
+  "XYZ-ウィング": {
+    "ar": "تقنية XYZ-Wing",
+    "hi": "XYZ-Wing तकनीक"
+  },
+  "XY-チェーン": {
+    "ar": "سلسلة XY"
+  },
+  "やさしめ": {
+    "ar": "أسهل"
+  },
+  "ペア": {
+    "ar": "أزواج"
+  },
+  "100×100の完成盤面を検証できませんでした": {
+    "ar": "تعذر التحقق من شبكة 100×100 المكتملة."
+  },
+  "100×100の難易度を再調整しています。": {
+    "ar": "جارٍ إعادة ضبط صعوبة لغز 100×100."
+  },
+  "100×100の難易度は1〜10です": {
+    "ar": "يجب أن تكون صعوبة 100×100 بين 1 و10."
+  },
+  "連結の設定が正しくありません": {
+    "ar": "إعدادات الشبكات المترابطة غير صالحة"
+  },
+  "ヒントのマスが正しくありません": {
+    "ar": "خلايا التلميحات غير صالحة"
+  },
+  "共有枠の対応が矛盾しています": {
+    "ar": "توجد تناقضات في مطابقة المناطق المشتركة."
+  },
+  "マルチの形式が正しくありません": {
+    "ar": "تنسيق الشبكات المتعددة غير صالح",
+    "sv": "Ogiltigt format för flera rutnät"
+  },
+  "ナンプレ": {
+    "ar": "سودوكو",
+    "sv": "Sudoku"
+  },
+  "・たて": {
+    "ar": "· عمودي"
+  },
+  "・よこ": {
+    "ar": "· أفقي"
+  },
+  "隠れたトリプル": {
+    "ar": "ثلاثية مخفية"
+  },
+  "隠れた4国同盟": {
+    "ar": "رباعية مخفية"
+  },
+  "ゼリーフィッシュ": {
+    "ar": "تقنية قنديل البحر",
+    "sv": "Manet"
+  },
+  "XYウイング": {
+    "ar": "تقنية XY-Wing"
+  },
+  "XYZウイング（動画表記：XZY）": {
+    "ar": "تقنية XYZ-Wing (تسمى XZY في الفيديو)"
+  },
+  "XYZウイング": {
+    "ar": "تقنية XYZ-Wing",
+    "hi": "XYZ-Wing तकनीक"
+  },
+  "両端の丸の合計＝線の途中の合計": {
+    "ar": "مجموع الدائرتين عند الطرفين = مجموع الأرقام على الخط بينهما"
+  },
+  "1・5・9の区切りの間の合計を順に表示": {
+    "ar": "المجاميع بين الفواصل 1 و5 و9، بالترتيب"
+  },
+  "復元直前の退避": {
+    "ar": "نسخة محفوظة قبل الاستعادة"
+  },
+  "③ PCの書き出し記録を確認（小さい記録だけ）": {
+    "ar": "③ التحقق من سجل التصدير من الحاسوب (السجل الصغير فقط)"
+  },
+  "共有マスの対応が正しくありません": {
+    "ar": "مطابقة الخلايا المشتركة غير صالحة."
+  },
+  "6×6をつなげる": {
+    "ar": "ربط شبكات 6×6"
+  },
+  "2 → 4 → 8 はOK。2 → 2 → 8 はNGです。": {
+    "ar": "المسار 2 → 4 → 8 صحيح. المسار 2 → 2 → 8 غير صحيح."
+  },
+  "例えば1行1列と、3行2列には同じ数字を置けません。": {
+    "ar": "مثلًا، لا يجوز أن تحمل الخليتان R1C1 وR3C2 الرقم نفسه."
+  },
+  "☆ お気に入り": {
+    "ar": "☆ المفضلة"
+  },
+  "選択を解除": {
+    "ar": "إلغاء التحديد",
+    "sv": "Avmarkera"
+  },
+  "プロフィール": {
+    "ar": "الملف الشخصي"
+  },
+  "唯一解ルール": {
+    "ar": "قاعدة الحل الوحيد"
+  },
+  "×印のすぐ周りの4マスは、": {
+    "ar": "يجب أن تحقق الخلايا الأربع المحيطة مباشرة بعلامة × ما يلي: "
+  },
+  "③ 複数の×をつなげる": {
+    "ar": "3. ربط عدة علامات ×"
+  },
+  "③ 空きマスどうしを比べる": {
+    "ar": "3. مقارنة الخلايا الفارغة"
+  },
+  "例：家族用　9×9": {
+    "ar": "مثلًا: ألغاز 9×9 للعائلة"
+  },
+  "例：家族用の未印刷9×9": {
+    "ar": "مثلًا: ألغاز 9×9 غير مطبوعة للعائلة"
+  },
+  "cm角": {
+    "ar": "مربع بالسنتيمتر"
+  },
+  "横に": {
+    "ar": "أفقي"
+  },
+  "プレビューのページ": {
+    "ar": "صفحة المعاينة"
+  },
+  "ミス上限を使う（OFFで制限なし）": {
+    "ar": "استخدام حد للأخطاء (التعطيل = بلا حد)"
+  },
+  "盤面の強調": {
+    "ar": "تظليل الشبكة",
+    "sv": "Markering i rutnätet"
+  },
+  "生成の進み方": {
+    "ar": "طريقة تقدم الإنشاء"
+  },
+  "アイコン": {
+    "ar": "أيقونة",
+    "sv": "Ikon"
+  },
+  "6×6の自作ルール図": {
+    "ar": "رسم توضيحي أصلي للقواعد على شبكة 6×6"
+  },
+  "もっと大きい": {
+    "ar": "أكبر"
+  },
+  "ヨコ": {
+    "ar": "أفقي"
+  },
+  "自動": {
+    "ar": "تلقائي"
+  },
+  "wordnet-license.txt に全文を同梱しています。": {
+    "ar": "النص الكامل موجود في ملف wordnet-license.txt."
+  },
+  "○から△を通って□へ、道を繋ごう。 · 3問": {
+    "ar": "اربط مسارًا من ○ إلى □ مرورًا بـ △. · 3 ألغاز"
+  },
+  "仕切る": {
+    "ar": "تقسيم",
+    "sv": "Dela upp"
+  },
+  "繋がる": {
+    "ar": "ربط"
+  },
+  "桃": {
+    "ar": "وردي"
+  },
+  "下": {
+    "ar": "أسفل"
+  },
+  "一手戻す": {
+    "ar": "التراجع عن حركة واحدة"
+  },
+  "ピアノとシンセ · ゆったり": {
+    "ar": "بيانو وموسيقى إلكترونية · هادئة"
+  },
+  "○から△を一つ通って□まで、6マスの道。": {
+    "ar": "مسار من 6 خلايا يبدأ من ○ ويمر بعلامة △ واحدة وينتهي عند □."
+  },
+  "A4・たて／1ページを用紙1枚へ。": {
+    "ar": "A4، اتجاه عمودي. اطبع صفحة واحدة على كل ورقة."
+  },
+  "A4・よこ／1ページを用紙1枚へ。": {
+    "ar": "A4، اتجاه أفقي. اطبع صفحة واحدة على كل ورقة."
+  },
+  "再読み込み": {
+    "ar": "إعادة التحميل",
+    "sv": "Ladda om"
+  },
+  "中級": {
+    "sv": "Mellannivå"
+  },
+  "最上": {
+    "sv": "Elit"
+  },
+  "特上": {
+    "ar": "نخبة متقدمة",
+    "sv": "Elit plus"
+  },
+  "達人": {
+    "sv": "Stormästare"
+  },
+  "極限": {
+    "ar": "الحد الأقصى"
+  },
+  "究極": {
+    "sv": "Yttersta nivån"
+  },
+  "至高": {
+    "ar": "القمة",
+    "sv": "Högsta nivån"
+  },
+  "連番ナンプレ": {
+    "sv": "Renban-sudoku"
+  },
+  "アンチナイトナンプレ": {
+    "sv": "Antihästsudoku"
+  },
+  "スロー温度計ナンプレ": {
+    "hi": "धीमा थर्मो सुडोकू",
+    "sv": "Långsam termometersudoku"
+  },
+  "双子キラー": {
+    "sv": "Dubbel Killer-sudoku"
+  },
+  "まだ遊んでいない": {
+    "hi": "अभी नहीं खेला",
+    "sv": "Inte spelad"
+  },
+  "たて": {
+    "ar": "عمودي"
+  },
+  "片面": {
+    "sv": "Enkelsidig"
+  },
+  "余白": {
+    "ar": "الهوامش"
+  },
+  "冊子": {
+    "sv": "Häfte"
+  },
+  "問題の在庫一覧": {
+    "sv": "Pusselöversikt"
+  },
+  "保存した印刷セット": {
+    "sv": "Sparade utskriftsinställningar"
+  },
+  "タテのカギ": {
+    "sv": "Lodräta ledtrådar"
+  },
+  "ヨコのカギ": {
+    "hi": "आड़े शब्दों के संकेत"
+  },
+  "この問題の操作": {
+    "sv": "Pusselåtgärder"
+  },
+  "四角の代わりに、でこぼこの枠を使うナンプレ。": {
+    "ar": "سودوكو بمناطق غير منتظمة بدلًا من المربعات المستطيلة."
+  },
+  "巨大": {
+    "sv": "Jättestor"
+  },
+  "並び順": {
+    "sv": "Sorteringsordning"
+  },
+  "全選択を解除": {
+    "sv": "Avmarkera alla"
+  },
+  "印刷セット": {
+    "sv": "Utskriftsinställning"
+  },
+  "冊子用": {
+    "sv": "Häfte"
+  },
+  "連番": {
+    "sv": "Renban-sudoku"
+  },
+  "アンチナイト": {
+    "sv": "Antihästsudoku"
+  },
+  "スロー温度計": {
+    "hi": "धीमा थर्मो सुडोकू",
+    "sv": "Långsam termometersudoku"
+  },
+  "くつろぎのボサノバ": {
+    "hi": "सुकून देने वाला बोसा नोवा"
+  },
+  "ゆったりピアノ": {
+    "sv": "Mjukt piano"
+  },
+  "入力終了": {
+    "sv": "Dölj tangentbordet"
+  },
+  "ランキング": {
+    "sv": "Topplista"
+  },
+  "ニックネーム": {
+    "sv": "Smeknamn"
+  },
+  " 合計{sum}": {
+    "sv": ", bursumma {sum}"
+  },
+  "入力が不正です。": {
+    "sv": "Ogiltig inmatning."
+  },
+  "メモの大きさ": {
+    "sv": "Anteckningarnas storlek"
+  },
+  "ミス上限": {
+    "sv": "Felgräns"
+  },
+  "最新の状態に更新": {
+    "sv": "Uppdatera status"
+  },
+  "練習の続きから": {
+    "sv": "Fortsätt övningen"
+  },
+  "練習用の4×4盤面": {
+    "sv": "Övningsrutnät med 4 gånger 4 celler"
+  },
+  "広め": {
+    "sv": "Bred"
+  },
+  "ランキングを表示する": {
+    "sv": "Visa topplistan"
+  },
+  "同じ枠の4マスには1・2・3・4が1回ずつ入ります。": {
+    "ar": "تحتوي الخلايا الأربع في هذه المنطقة على 1 و2 و3 و4، كل رقم مرة واحدة."
+  },
+  "画像を再読み込み": {
+    "hi": "चित्र फिर लोड करें",
+    "sv": "Ladda om bilden"
+  },
+  "ブラウザ": {
+    "sv": "Webbläsare"
+  },
+  "記録・データ": {
+    "sv": "Resultat och data"
+  },
+  "不具合修正": {
+    "sv": "Felrättningar"
+  },
+  "クラウドから読み込む": {
+    "sv": "Läs in från molnet"
+  },
+  "ランキングを見る": {
+    "sv": "Visa placering"
+  },
+  "期間": {
+    "sv": "Period"
+  },
+  "深い藍のラウンジ": {
+    "sv": "Midnattslounge"
+  },
+  "更新": {
+    "sv": "Uppdatera"
+  },
+  "（除外中）": {
+    "hi": "(शामिल नहीं)"
+  },
+  "コードを隠す": {
+    "sv": "Dölj koden"
+  },
+  "管理を終了": {
+    "sv": "Lämna administrationen"
+  },
+  "細い": {
+    "sv": "Smal"
+  },
+  "広い": {
+    "sv": "Bred"
+  },
+  "ヒントが重なっています": {
+    "hi": "संकेत आपस में ओवरलैप करते हैं।"
+  },
+  "ソードフィッシュ": {
+    "hi": "स्वोर्डफ़िश तकनीक",
+    "sv": "Svärdfisk"
+  },
+  "XCycle（候補の輪）": {
+    "hi": "X-Cycle (संभावित अंकों का चक्र)"
+  },
+  "クロスチェック": {
+    "sv": "Korskontroll"
+  },
+  "2行4列と3行7列の5で枠内の2・3行目を除外。5行2列と7行3列の5で2・3列目を除外すると、1行1列だけが残ります。": {
+    "ar": "الرقم 5 في R2C4 وR3C7 يستبعد الصفين 2 و3 داخل المنطقة. والرقم 5 في R5C2 وR7C3 يستبعد العمودين 2 و3، فلا تبقى إلا الخلية R1C1."
+  },
+  "縦の枚数": {
+    "sv": "Ark på höjden"
+  },
+  "A・Bは同じ答え／点線内は合計・重複なし": {
+    "ar": "تشترك اللوحتان A وB في الحل نفسه؛ المجموعات ذات الحدود المتقطعة لها مجموع محدد ولا تتكرر أرقامها"
+  },
+  "1問のデータが大きすぎるため、元の問題は残しています": {
+    "ar": "حجم أحد الألغاز أكبر من أن يُصدّر؛ تم الاحتفاظ بالأصل."
+  },
+  "記録": {
+    "sv": "Resultat"
+  },
+  "座標{0}行{1}列": {
+    "ar": "الإحداثيات: الصف {0}، العمود {1}"
+  },
+  "この範囲で「{0}」の候補が残るのは{1}だけです。他の候補数字がそのマスに残っていても、「{2}」に確定できます。": {
+    "ar": "في هذه الوحدة، الخلية {1} هي الوحيدة التي ما زالت تحتوي على المرشح {0}. لذلك يجب أن تكون {2}، حتى لو بقيت فيها مرشحات أخرى."
+  },
+  "{0}の「{1}」の候補は、すべて{2}との重なりにあります。": {
+    "ar": "تقع جميع مواضع المرشح {1} في {0} ضمن التقاطع مع {2}."
+  },
+  "{0}ではそのどこかに「{1}」が必ず入るため、{2}の重なり以外には入りません。": {
+    "ar": "داخل {0}، لا بد أن تحتوي إحدى هذه الخلايا على {1}، لذا لا يمكن أن يظهر في {2} خارج التقاطع."
+  },
+  "{0}の青い{1}マスに残る数字は、合わせて「{2}」の{3}種類だけです。": {
+    "ar": "الخلايا الزرقاء وعددها {1} في {0} لا تحتوي إجمالًا إلا على {3} مرشحات مختلفة: {2}."
+  },
+  "この{0}マスが「{1}」を使い切るため、同じ範囲の他のマスからそれらの候補を消せます。": {
+    "ar": "تستخدم هذه الخلايا وعددها {0} جميع الأرقام {1}، لذا احذف هذه المرشحات من الخلايا الأخرى في الوحدة نفسها."
+  },
+  "{0}で「{1}」が入る場所は、青い{2}マスだけです。": {
+    "ar": "في {0}، لا يمكن أن تحتوي على {1} إلا الخلايا الزرقاء وعددها {2}."
+  },
+  "中心の{0}は「{1}」、両翼は「{2}」の候補です。": {
+    "ar": "خلية المحور عند {0} لها المرشحات {1}؛ وللجناحين المرشحات {2}."
+  },
+  "表示中の1面だけ（片面・元の {0} / {1} ページ）。": {
+    "ar": "الوجه المعروض حاليًا فقط (طباعة على وجه واحد؛ الصفحة الأصلية {0} / {1})."
+  },
+  "{3}行{4}列 {5}{6}": {
+    "ar": "الصف {3}، العمود {4} {5}{6}"
+  },
+  "{0}の候補「{1}」": {
+    "ar": "المرشح {1} في {0}"
+  },
+  "印刷 {0}ページ目": {
+    "ar": "طباعة الصفحة {0}",
+    "sv": "Skriv ut sida {0}"
+  },
+  "（旧方式）": {
+    "hi": "(पुराना तरीका)"
+  },
+  "（旧基準）": {
+    "sv": "(äldre skala)"
+  },
+  "超Lv.01より空きマスが多い、基本の練習。": {
+    "ar": "تدريب أساسي بخلايا فارغة أكثر من المستوى Super Lv.01."
+  },
+  "1、2、5、9 と並ぶ部分なら、間の合計は2＋5＝7です。": {
+    "ar": "في التسلسل 1، 2، 5، 9، مجموع الأرقام بين 1 و9 هو 2+5=7."
+  },
+  "6×6・8×8・9×9、仮置きなしで解ける4段階です。": {
+    "ar": "شبكات 6×6 و8×8 و9×9 بأربعة مستويات صعوبة، قابلة للحل دون تخمين الأرقام."
+  },
+  "（未保存）": {
+    "hi": "(सहेजा नहीं गया)"
+  },
+  "1つの問題を何枚かに分けます。36×36・49×49・100×100も、大きなマスで印刷できます。": {
+    "ar": "قسّم لغزًا واحدًا على عدة أوراق. يمكن أيضًا طباعة ألغاز 36×36 و49×49 و100×100 بخلايا كبيرة."
+  },
+  "とじ方": {
+    "sv": "Bindning"
+  },
+  "配置": {
+    "sv": "Layout"
+  },
+  "1手戻しました。": {
+    "sv": "Ångrade ett drag."
+  },
+  "バックアップの文字": {
+    "sv": "Säkerhetskopians text"
+  },
+  "コピーしました。": {
+    "hi": "कॉपी कर लिया।"
+  },
+  "スコアを表示": {
+    "sv": "Visa poäng"
+  },
+  "問題の配置": {
+    "sv": "Pusslens placering"
+  },
+  "未プレイ": {
+    "hi": "अभी नहीं खेला",
+    "sv": "Inte spelad"
+  },
+  "問題の出典": {
+    "sv": "Pusselkälla"
+  },
+  "バックアップを貼り付け": {
+    "sv": "Klistra in säkerhetskopia"
+  },
+  "印刷の見本": {
+    "sv": "Förhandsgranska utskrift"
+  },
+  "足りない分を補充する": {
+    "sv": "Fyll på det som saknas"
+  },
+  "自由な枠を作り、数字を入れています（{0}回目）": {
+    "ar": "جارٍ إنشاء مناطق حرة الشكل وملء الأرقام (المحاولة {0})"
+  },
+  "推理部分 {0}/10：{1}": {
+    "ar": "قسم الاستنتاج {0}/10: {1}",
+    "hi": "तर्क खंड {0}/10: {1}"
+  },
+  "メモ：{0}": {
+    "ar": "ملاحظات: {0}",
+    "hi": "नोट्स: {0}"
+  },
+  "冊子 {0}ページ ／ 用紙 {1}枚・両面": {
+    "ar": "كتيّب: {0} صفحة / {1} ورقة، على الوجهين"
+  },
+  "盤面{0}": {
+    "ar": "الشبكة {0}",
+    "sv": "Rutnät {0}"
+  },
+  "枠の複雑さ：{0}。": {
+    "ar": "تعقيد المناطق: {0}."
+  },
+  "{0}条件は指定数より少ないため、ある分だけ選びました。": {
+    "ar": "في {0} من الشروط، كان عدد الألغاز المتاح أقل من المطلوب، لذا تم تحديد جميع الألغاز المتاحة."
+  },
+  "{2}段階中{3}段階目": {
+    "ar": "المستوى {3} من {2}"
+  },
+  "枠 {7} × {8}": {
+    "ar": "المناطق {7} × {8}"
+  },
+  "選択：{2}行 {3}列{4}": {
+    "ar": "المحدد: الصف {2}، العمود {3}{4}"
+  },
+  "まとめて作る · {0} / 5": {
+    "sv": "Massgenerering · {0} / 5"
+  },
+  "印刷プレビュー": {
+    "sv": "Förhandsgranska utskrift"
+  },
+  "4種類の印版": {
+    "sv": "Version med fyra symboler"
+  },
+  "未記入": {
+    "hi": "बिना निशान"
+  },
+  "デザイン1": {
+    "sv": "Utseende 1"
+  },
+  "デザイン2": {
+    "sv": "Utseende 2"
+  },
+  "保存した設定": {
+    "sv": "Sparade inställningar"
+  },
+  "「ッャュョ」は「ツヤユヨ」と同じ扱い。「ガ」などの濁点つき文字も1マス。「ー」も1マスです。": {
+    "ar": "تُعامل حروف الكانا الصغيرة ッャュョ مثل الحروف الكاملة المقابلة ツヤユヨ (تسو، يا، يو، يو). ويشغل حرف الكانا ذو علامة الجهر، مثل ガ (غا)، خلية واحدة. كما تشغل علامة إطالة الصوت ー خلية واحدة."
+  },
+  "デザイン切り替え": {
+    "sv": "Byt utseende"
+  },
+  "{0}列目": {
+    "ar": "العمود {0}"
+  },
+  "枠{0}": {
+    "sv": "Område {0}"
+  },
+  "天秤 Lv.{0}": {
+    "ar": "الميزان — المستوى {0}"
+  },
+  "{0}のカギ": {
+    "ar": "التلميحات: {0}",
+    "hi": "संकेत: {0}",
+    "sv": "Ledtrådar: {0}"
+  },
+  "{1}を一つずつ": {
+    "ar": "واحد من كل رمز: {1}"
+  },
+  "{1} を一つずつ": {
+    "ar": "واحد من كل رمز: {1}"
+  },
+  "{2}を一つずつ": {
+    "ar": "واحد من كل رمز: {2}"
+  },
+  "考え方 {0} / {1}": {
+    "ar": "الاستدلال {0} / {1}",
+    "sv": "Resonemang {0} / {1}"
+  },
+  "天秤{0}：{1}": {
+    "ar": "الميزان {0}: {1}"
+  },
+  "天秤{2}：{3}": {
+    "ar": "الميزان {2}: {3}"
+  },
+  "{2}を選ぶ": {
+    "ar": "اختر {2}"
+  },
+  "{0}行{1}列": {
+    "ar": "الصف {0}، العمود {1}"
+  },
+  "{0}の「{1}」の候補は、{2}{3}の中だけにあります。": {
+    "ar": "تنحصر مواضع المرشح {1} في {0} ضمن {2}{3}."
+  },
+  "{0}列（上から下）": {
+    "ar": "العمود {0} (من الأعلى إلى الأسفل)"
+  },
+  "予約ポスト": {
+    "sv": "Pusselkö"
+  },
+  "盤面{0}の{1}行目": {
+    "ar": "اللوحة {0}، الصف {1}"
+  },
+  "盤面{0}の{1}列目": {
+    "ar": "اللوحة {0}، العمود {1}"
+  },
+  "盤面{0}の枠{1}": {
+    "ar": "اللوحة {0}، المنطقة {1}"
+  },
+  "{0}行の「{1}」の候補は、{2}列の中だけにあります。": {
+    "ar": "في الصفوف {0}، تنحصر مواضع المرشح {1} في الأعمدة {2}."
+  },
+  "{0}列の「{1}」の候補は、{2}行の中だけにあります。": {
+    "ar": "في الأعمدة {0}، تنحصر مواضع المرشح {1} في الصفوف {2}."
+  },
+  "対象の盤面内で、{0}行の「{1}」の候補は、{2}列の中だけにあります。": {
+    "ar": "داخل اللوحة المعنية، تنحصر مواضع المرشح {1} في الصفوف {0} ضمن الأعمدة {2}."
+  },
+  "対象の盤面内で、{0}列の「{1}」の候補は、{2}行の中だけにあります。": {
+    "ar": "داخل اللوحة المعنية، تنحصر مواضع المرشح {1} في الأعمدة {0} ضمن الصفوف {2}."
+  },
+  "中心の{0}は「{1}」、両翼は「{2}」と「{3}」の候補です。": {
+    "ar": "خلية المحور عند {0} لها المرشحات {1}؛ وللجناحين المرشحات {2} و{3} على الترتيب."
+  },
+  "合計 {0} 面。": {
+    "ar": "الإجمالي: {0} وجه مطبوع."
+  },
+  "{0}行{1}列 {2} 対象マス": {
+    "ar": "الصف {0}، العمود {1}: {2}؛ الخلية المستهدفة"
+  },
+  "{0}行{1}列 空きマス 対象マス": {
+    "ar": "الصف {0}، العمود {1}: خلية مستهدفة فارغة"
+  },
+  "{0}行{1}列 数字{2} 最初からある数字": {
+    "ar": "الصف {0}، العمود {1}: الرقم المعطى {2}"
+  },
+  "{0}行{1}列 数字{2}": {
+    "ar": "الصف {0}، العمود {1}: الرقم {2}"
+  },
+  "{0}行{1}列 {2} 最初からある数字": {
+    "ar": "الصف {0}، العمود {1}: {2}، رقم معطى"
+  },
+  "{0} 作成": {
+    "ar": "أُنشئ {0}"
+  },
+  "／ この中で選択済み {0}問": {
+    "ar": "/ المحدد من هذه القائمة: {0}"
+  },
+  "選択：{0}行 {1}列": {
+    "ar": "المحدد: الصف {0}، العمود {1}"
+  },
+  "選択：{0}行 {1}列　メモ：{2}": {
+    "ar": "المحدد: الصف {0}، العمود {1}. الملاحظات: {2}"
+  },
+  "{r}行{c}列 {value} 固定": {
+    "ar": "الصف {r}، العمود {c}: الرقم المعطى {value}"
+  },
+  "{r}行{c}列 空白": {
+    "ar": "الصف {r}، العمود {c}: خلية فارغة"
+  },
+  "Lv.{0} / {1}（旧基準）": {
+    "sv": "Nivå {0} / {1} (äldre skala)"
+  },
+  "{0} / {1}面": {
+    "ar": "الوجه {0} من {1}"
+  },
+  "{0} / {1}枚": {
+    "ar": "الورقة {0} من {1}"
+  },
+  "{0} / {1} 面": {
+    "ar": "الوجه {0} من {1}"
+  },
+  "{0} / {1} 枚": {
+    "ar": "الورقة {0} من {1}"
+  },
+  "{0} 枚（問題 {1} 枚 ＋ 答え {2} 枚）": {
+    "ar": "الأوراق: {0} ({1} للألغاز + {2} للحلول)"
+  },
+  "ひと部屋に {0} を一つずつ · {1}マス": {
+    "ar": "كل منطقة: {1} خلايا وواحد من كل رمز ({0})."
+  },
+  "各部屋は {0}マス・{1} を一つずつ": {
+    "ar": "تضم كل منطقة {0} خلايا، وتحتوي على واحد من كل رمز: {1}."
+  },
+  "{0}行 × {1}列、{2}マスの盤面です。": {
+    "ar": "تضم هذه اللوحة {0} صفوف و{1} أعمدة، بإجمالي {2} خلايا."
+  },
+  "一つの部屋は{0}マス。{1}を一つずつ入れます。": {
+    "ar": "تضم كل منطقة {0} خلايا، ويجب أن تحتوي على واحد من كل رمز: {1}."
+  },
+  "×印のすぐ周りの4マスは、左上＋右下＝右上＋左下になるようにします。": {
+    "ar": "يجب أن تحقق الخلايا الأربع المحيطة مباشرة بكل علامة × المعادلة: أعلى اليسار + أسفل اليمين = أعلى اليمين + أسفل اليسار."
+  },
+  "ひと部屋に {0} を一つずつ · {1}": {
+    "ar": "كل منطقة: {1} وواحد من كل رمز ({0})."
+  },
+  "{0}の盤面です。": {
+    "ar": "حجم اللوحة: {0}."
+  },
+  "一つの部屋は{0}。{1}を一つずつ入れます。": {
+    "ar": "تضم كل منطقة {0}، ويجب أن تحتوي على واحد من كل رمز: {1}."
+  },
+  "×印のすぐ周りの4マスは、{0}になるようにします。": {
+    "ar": "يجب أن تحقق الخلايا الأربع المحيطة مباشرة بكل علامة × ما يلي: {0}."
+  },
+  "保存している問題：{0}": {
+    "sv": "Sparade: {0}"
+  },
+  "残り {0}": {
+    "ar": "المتبقي: {0}"
+  },
+  "条件に合う問題 {0} ／ この中で選択済み {1}": {
+    "ar": "المطابق: {0} · المحدد منه: {1}"
+  },
+  "条件に合う問題 {0} ／ この中で選択済み {1}{2}条件の外でも {3} 選択中": {
+    "ar": "المطابق: {0} · المحدد منه: {1}{2}المحدد خارج هذه المرشحات أيضًا: {3}"
+  },
+  "{rank}位": {
+    "ar": "المرتبة {rank}",
+    "sv": "Placering {rank}"
+  },
+  "世界ランキング": {
+    "sv": "Världsranking"
+  },
+  "スコア": {
+    "sv": "Poäng"
+  },
+  "集計期間": {
+    "sv": "Poängperiod"
+  },
+  "割り当てなし": {
+    "hi": "तय नहीं किया गया",
+    "sv": "Inte tilldelad"
+  },
+  "○△□✕を一つずつ、6マスの部屋に。": {
+    "it": "Uno per ciascun simbolo ○△□✕ in ogni regione di 6 celle.",
+    "nl": "Eén van elk symbool ○△□✕ in elk gebied van 6 cellen.",
+    "sv": "En av varje symbol ○△□✕ i varje område med 6 celler.",
+    "pl": "Po jednym z symboli ○△□✕ w każdym obszarze z 6 komórek.",
+    "cs": "Od každého symbolu ○△□✕ jeden v každé oblasti se 6 buňkami.",
+    "ru": "По одному символу ○△□✕ в каждой области из 6 клеток.",
+    "id": "Satu dari setiap simbol ○△□✕ di setiap wilayah berisi 6 sel.",
+    "vi": "Mỗi vùng 6 ô có một ký hiệu thuộc mỗi loại ○△□✕.",
+    "th": "แต่ละเขตมี 6 ช่อง และมีสัญลักษณ์ ○△□✕ อย่างละหนึ่งตัว",
+    "hi": "हर 6 खानों वाले क्षेत्र में ○△□✕ में से हर चिह्न एक बार रखें।",
+    "ar": "رمز واحد من كل نوع ○△□✕ في كل منطقة من 6 خلايا."
+  },
+  "○△□✕だけを使います。各部屋は6マスで、4種類を一つずつ。": {
+    "it": "Si usano solo ○△□✕. Ogni regione ha 6 celle e contiene uno per ciascuno dei quattro simboli.",
+    "nl": "Gebruik alleen ○△□✕. Elk gebied heeft 6 cellen en bevat één van elk van de vier symbolen.",
+    "sv": "Endast ○△□✕ används. Varje område har 6 celler och innehåller en av var och en av de fyra symbolerna.",
+    "pl": "Używane są tylko ○△□✕. Każdy obszar ma 6 komórek i zawiera po jednym z czterech symboli.",
+    "cs": "Používají se pouze ○△□✕. Každá oblast má 6 buněk a obsahuje každý ze čtyř symbolů právě jednou.",
+    "ru": "Используются только ○△□✕. Каждая область содержит 6 клеток и по одному из четырёх символов.",
+    "id": "Hanya ○△□✕ yang digunakan. Setiap wilayah memiliki 6 sel dan memuat masing-masing dari empat simbol tepat sekali.",
+    "vi": "Chỉ dùng ○△□✕. Mỗi vùng có 6 ô và chứa mỗi loại trong bốn ký hiệu đúng một lần.",
+    "th": "ใช้เฉพาะ ○△□✕ แต่ละเขตมี 6 ช่อง และมีสัญลักษณ์ทั้งสี่ชนิดอย่างละหนึ่งตัว",
+    "hi": "केवल ○△□✕ का उपयोग होता है। हर क्षेत्र में 6 खाने हैं और चारों चिह्नों में से हर एक ठीक एक बार आता है।",
+    "ar": "تُستخدم الرموز ○△□✕ فقط. تضم كل منطقة 6 خلايا، وتحتوي على كل رمز من الرموز الأربعة مرة واحدة."
+  },
+  "○△□✕だけ。盤面が大きくなっても4種類。": {
+    "it": "Solo ○△□✕: sempre quattro simboli, anche nelle griglie più grandi.",
+    "nl": "Alleen ○△□✕: altijd vier symbolen, ook op grotere borden.",
+    "sv": "Endast ○△□✕: alltid fyra symboler, även på större rutnät.",
+    "pl": "Tylko ○△□✕: zawsze cztery symbole, nawet na większych planszach.",
+    "cs": "Pouze ○△□✕: vždy čtyři symboly, i na větších mřížkách.",
+    "ru": "Только ○△□✕: всегда четыре символа, даже на больших полях.",
+    "id": "Hanya ○△□✕: tetap empat simbol, bahkan pada papan yang lebih besar.",
+    "vi": "Chỉ có ○△□✕: luôn là bốn ký hiệu, kể cả trên bảng lớn hơn.",
+    "th": "ใช้เฉพาะ ○△□✕ มีสี่ชนิดเสมอ แม้ตารางจะใหญ่ขึ้น",
+    "hi": "केवल ○△□✕: बड़े बोर्ड पर भी हमेशा चार चिह्न ही होते हैं।",
+    "ar": "الرموز ○△□✕ فقط: أربعة رموز دائمًا، حتى في اللوحات الأكبر."
+  },
+  "数字版と、○△□✕の4種類版を選んで遊べます。": {
+    "it": "Scegli la versione con numeri o quella con i quattro simboli ○△□✕.",
+    "nl": "Kies de getallenversie of de versie met vier symbolen ○△□✕.",
+    "sv": "Välj versionen med tal eller versionen med de fyra symbolerna ○△□✕.",
+    "pl": "Wybierz wersję z liczbami albo wersję z czterema symbolami ○△□✕.",
+    "cs": "Vyberte verzi s čísly nebo verzi se čtyřmi symboly ○△□✕.",
+    "ru": "Выберите версию с числами или с четырьмя символами ○△□✕.",
+    "id": "Pilih versi angka atau versi empat simbol ○△□✕.",
+    "vi": "Chọn phiên bản số hoặc phiên bản bốn ký hiệu ○△□✕.",
+    "th": "เลือกเล่นแบบตัวเลขหรือแบบสี่สัญลักษณ์ ○△□✕",
+    "hi": "अंकों वाला या चार चिह्नों ○△□✕ वाला संस्करण चुनें।",
+    "ar": "اختر نسخة الأرقام أو نسخة الرموز الأربعة ○△□✕."
+  },
+  "デザイン": {
+    "sv": "Utseende"
+  },
+  "戻る操作で同じ画面に留まる問題と、戻り先のURLを修正しました。": {
+    "vi": "Đã sửa thao tác quay lại bị giữ ở cùng màn hình và sửa URL quay lại."
+  },
+  "‹ 前": {
+    "cs": "‹ Předchozí"
+  },
+  "✓ 練習クリア": {
+    "cs": "✓ Cvičení dokončeno"
+  },
+  "♫ 音あり": {
+    "hi": "♫ ध्वनि चालू"
+  },
+  "折らずに、端をとじる": {
+    "th": "ไม่พับ แต่เย็บหรือเข้าเล่มตามขอบ"
+  },
+  "従来の全解法では解き切れない問題。候補同士の強い・弱い関係をつなぐ推理（AIC）で、仮置きせず最後まで解けることを確認します。": {
+    "th": "ปริศนานี้ไม่สามารถแก้จนจบด้วยวิธีระดับก่อนหน้า ใช้โซ่การอนุมานสลับ (AIC) ที่เชื่อมความสัมพันธ์แบบเข้มและแบบอ่อนระหว่างตัวเลือก เพื่อตรวจสอบว่าแก้จนจบได้โดยไม่ต้องเดาวางตัวเลข"
+  }
+}

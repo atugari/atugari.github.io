@@ -1,6 +1,6 @@
 'use client';
 import {createContext,useContext,useEffect,useState,useCallback,type ReactNode} from 'react';
-import {isLocale,languageNames,languageKey,languageCookie,translate,htmlLanguage,type Locale} from '../lib/locale';
+import {isLocale,languageNames,languageKey,languageCookie,translate,htmlLanguage,isRTL,type Locale} from '../lib/locale';
 const Context=createContext({locale:'ja' as Locale,setLocale:(_locale:Locale)=>{},t:(source:string,params?:Record<string,string|number>)=>translate('ja',source,params)});
 export function LocaleProvider({initialLocale,children}:{initialLocale:Locale;children:ReactNode}){
  const [locale,updateLocale]=useState<Locale>(()=>typeof window!=='undefined'&&isLocale((window as any).NPI18n?.get())?(window as any).NPI18n.get():initialLocale);
@@ -14,7 +14,7 @@ export function LocaleProvider({initialLocale,children}:{initialLocale:Locale;ch
  },[]);
  useEffect(()=>{const hint=new URLSearchParams(window.location.search).get('lang');let saved;try{saved=localStorage.getItem(languageKey)}catch{}if(isLocale(hint))setLocale(hint);else if(isLocale(saved))setLocale(saved)},[]);
  useEffect(()=>{
-  (window as any).NPFurigana?.beforeLanguageChange();document.documentElement.lang=htmlLanguage(locale);document.documentElement.dataset.locale=locale;
+  (window as any).NPFurigana?.beforeLanguageChange();document.documentElement.lang=htmlLanguage(locale);document.documentElement.dir=isRTL(locale)?'rtl':'ltr';document.documentElement.dataset.locale=locale;
   const privacy=window.location.pathname==='/privacy'||new URLSearchParams(window.location.search).get('view')==='privacy';
   document.title=privacy?translate(locale,'ナンプレ帳')+' | '+translate(locale,'利用案内・プライバシー'):translate(locale,'ナンプレ帳｜無料ナンプレ・数独、日替わり問題と印刷');
   try{localStorage.setItem(languageKey,locale)}catch{}
@@ -26,6 +26,6 @@ export function LocaleProvider({initialLocale,children}:{initialLocale:Locale;ch
  return <Context.Provider value={{locale,setLocale,t}}>{children}</Context.Provider>;
 }
 export function useLocale(){return useContext(Context)}
-export function LanguagePicker(){const{locale,setLocale,t}=useLocale();const codes={ja:'JA',en:'EN','zh-Hans':'简','zh-Hant':'繁',ko:'KO',es:'ES',fr:'FR',de:'DE',pt:'PT'};
- return <label className="language-picker" title={t('言語')}><span aria-hidden="true" translate="no">🌐 {codes[locale]}</span><select translate="no" aria-label={t('言語')} value={locale} onChange={event=>{if(isLocale(event.target.value))setLocale(event.target.value)}}>{Object.entries(languageNames).map(([code,name])=><option key={code} value={code} lang={htmlLanguage(code as Locale)}>{name}</option>)}</select></label>;
+export function LanguagePicker(){const{locale,setLocale,t}=useLocale();const codes:Record<string,string>={'zh-Hans':'简','zh-Hant':'繁'};
+ return <label className="language-picker" title={t('言語')}><span aria-hidden="true" translate="no">🌐 {codes[locale]||locale.toUpperCase()}</span><select translate="no" aria-label={t('言語')} value={locale} onChange={event=>{if(isLocale(event.target.value))setLocale(event.target.value)}}>{Object.entries(languageNames).map(([code,name])=><option key={code} value={code} lang={htmlLanguage(code as Locale)}>{name}</option>)}</select></label>;
 }

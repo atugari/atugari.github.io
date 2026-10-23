@@ -28,7 +28,18 @@
           "es": "regiones de {0} casillas cada una",
           "fr": "pièces de {0} cases chacune",
           "de": "Räume mit je {0} Zellen",
-          "pt": "regiões de {0} células cada"
+          "pt": "regiões de {0} células cada",
+          "it": "regioni di {0} celle ciascuna",
+          "nl": "gebieden van elk {0} cellen",
+          "sv": "områden med {0} celler vardera",
+          "pl": "obszary po {0} komórek",
+          "cs": "oblasti po {0} buňkách",
+          "ru": "области по {0} клеток",
+          "id": "wilayah berisi {0} sel masing-masing",
+          "vi": "các vùng, mỗi vùng {0} ô",
+          "th": "เขตที่มีเขตละ {0} ช่อง",
+          "hi": "{0} खानों वाले क्षेत्र",
+          "ar": "مناطق من {0} خلايا لكل منها"
         }
       }
     ]
@@ -48,7 +59,18 @@
           "es": "un ejemplar de cada elemento ({0})",
           "fr": "un exemplaire de chaque élément ({0})",
           "de": "von jedem dieser Zeichen genau eines ({0})",
-          "pt": "um exemplar de cada elemento ({0})"
+          "pt": "um exemplar de cada elemento ({0})",
+          "it": "uno per ciascun simbolo ({0})",
+          "nl": "één van elk symbool ({0})",
+          "sv": "en av varje symbol ({0})",
+          "pl": "po jednym z każdego symbolu ({0})",
+          "cs": "každý symbol jednou ({0})",
+          "ru": "по одному из каждого символа ({0})",
+          "id": "satu dari setiap simbol ({0})",
+          "vi": "mỗi loại một ký hiệu ({0})",
+          "th": "สัญลักษณ์แต่ละชนิดอย่างละหนึ่งตัว ({0})",
+          "hi": "हर चिह्न एक बार ({0})",
+          "ar": "واحد من كل رمز ({0})"
         }
       }
     ]
@@ -68,7 +90,18 @@
           "es": "todas las casillas",
           "fr": "toutes les cases",
           "de": "alle Zellen",
-          "pt": "todas as células"
+          "pt": "todas as células",
+          "it": "ogni cella",
+          "nl": "elke cel",
+          "sv": "varje cell",
+          "pl": "wszystkie komórki",
+          "cs": "všechny buňky",
+          "ru": "все клетки",
+          "id": "setiap sel",
+          "vi": "mọi ô",
+          "th": "ทุกช่อง",
+          "hi": "हर खाना",
+          "ar": "كل خلية"
         }
       }
     ]
@@ -106,7 +139,18 @@
           "es": "un ejemplar de cada elemento ({1})",
           "fr": "un exemplaire de chaque élément ({1})",
           "de": "von jedem dieser Zeichen genau eines ({1})",
-          "pt": "um exemplar de cada elemento ({1})"
+          "pt": "um exemplar de cada elemento ({1})",
+          "it": "uno per ciascun simbolo ({1})",
+          "nl": "één van elk symbool ({1})",
+          "sv": "en av varje symbol ({1})",
+          "pl": "po jednym z każdego symbolu ({1})",
+          "cs": "každý symbol jednou ({1})",
+          "ru": "по одному из каждого символа ({1})",
+          "id": "satu dari setiap simbol ({1})",
+          "vi": "mỗi loại một ký hiệu ({1})",
+          "th": "สัญลักษณ์แต่ละชนิดอย่างละหนึ่งตัว ({1})",
+          "hi": "हर चिह्न एक बार ({1})",
+          "ar": "واحد من كل رمز ({1})"
         }
       }
     ]
@@ -174,7 +218,18 @@
           "es": "cada casilla exactamente una vez",
           "fr": "chaque case exactement une fois",
           "de": "jede Zelle genau einmal",
-          "pt": "cada célula exatamente uma vez"
+          "pt": "cada célula exatamente uma vez",
+          "it": "ogni cella esattamente una volta",
+          "nl": "elke cel precies één keer",
+          "sv": "varje cell exakt en gång",
+          "pl": "każda komórka dokładnie raz",
+          "cs": "Každá buňka přesně jednou",
+          "ru": "Каждая клетка ровно один раз",
+          "id": "Setiap sel tepat sekali",
+          "vi": "Mỗi tế bào một lần",
+          "th": "ทุกเซลล์ที่ตรงครั้งเดียว",
+          "hi": "एक बार में",
+          "ar": "كل خلية بالضبط"
         }
       }
     ]
@@ -204,7 +259,18 @@
           "es": "un ejemplar de cada elemento ({0})",
           "fr": "un exemplaire de chaque élément ({0})",
           "de": "von jedem dieser Zeichen genau eines ({0})",
-          "pt": "um exemplar de cada elemento ({0})"
+          "pt": "um exemplar de cada elemento ({0})",
+          "it": "uno per ciascun simbolo ({0})",
+          "nl": "één van elk symbool ({0})",
+          "sv": "en av varje symbol ({0})",
+          "pl": "po jednym z każdego symbolu ({0})",
+          "cs": "každý symbol jednou ({0})",
+          "ru": "по одному из каждого символа ({0})",
+          "id": "satu dari setiap simbol ({0})",
+          "vi": "mỗi loại một ký hiệu ({0})",
+          "th": "สัญลักษณ์แต่ละชนิดอย่างละหนึ่งตัว ({0})",
+          "hi": "हर चिह्न एक बार ({0})",
+          "ar": "واحد من كل رمز ({0})"
         }
       }
     ]
@@ -242,7 +308,18 @@
           "es": "un ejemplar de cada elemento ({1})",
           "fr": "un exemplaire de chaque élément ({1})",
           "de": "von jedem dieser Zeichen genau eines ({1})",
-          "pt": "um exemplar de cada elemento ({1})"
+          "pt": "um exemplar de cada elemento ({1})",
+          "it": "uno per ciascun simbolo ({1})",
+          "nl": "één van elk symbool ({1})",
+          "sv": "en av varje symbol ({1})",
+          "pl": "po jednym z każdego symbolu ({1})",
+          "cs": "každý symbol jednou ({1})",
+          "ru": "по одному из каждого символа ({1})",
+          "id": "satu dari setiap simbol ({1})",
+          "vi": "mỗi loại một ký hiệu ({1})",
+          "th": "สัญลักษณ์แต่ละชนิดอย่างละหนึ่งตัว ({1})",
+          "hi": "हर चिह्न एक बार ({1})",
+          "ar": "واحد من كل رمز ({1})"
         }
       }
     ]

@@ -16,7 +16,7 @@ const source=path.resolve(process.argv[2]||'');
 const require=createRequire(path.join(source,'package.json'));
 const esbuild=createRequire(require.resolve('vite'))('esbuild');
 const release=fs.readFileSync(path.join(source,'lib/releases.ts'),'utf8');
-const version='2026.10.23.39';
+const version='2026.10.23.40';
 const publicUpdates=JSON.parse(fs.readFileSync(path.join(repo,'scripts/release-notes.json'),'utf8'));
 if(publicUpdates[0]?.version!==version)throw Error('Release notes must match the release version');
 const overrides=path.join(repo,'scripts/client-overrides');
@@ -38,6 +38,7 @@ try {
  for(const name of ['app','lib']){fs.cpSync(path.join(source,name),path.join(scratch,name),{recursive:true});if(fs.existsSync(path.join(overrides,name)))fs.cpSync(path.join(overrides,name),path.join(scratch,name),{recursive:true});}
  fs.symlinkSync(path.join(source,'node_modules'),path.join(scratch,'node_modules'),'dir');
  for(const [file,target] of [['locale.ts','lib/locale.ts'],['locale-context.tsx','app/locale-context.tsx']])fs.copyFileSync(path.join(repo,'scripts/i18n',file),path.join(scratch,target));
+ fs.copyFileSync(path.join(repo,'scripts/i18n/languages.json'),path.join(scratch,'lib/language-names.json'));
  // Keep the verified client and switch its API transport to the Cloudflare Worker.
  for(const name of ['api-client.ts','cloud-save.tsx','pages-manager.tsx'])write('app/'+name,fs.readFileSync(path.join(repo,'nanpure-api/client',name),'utf8'));
  patch('app/game.tsx',"['ranking','backup','calendar','personal'].includes(view||'')","['ranking','backup','calendar','personal','updates','contact','replies','tutorial'].includes(view||'')");
@@ -91,6 +92,8 @@ try {
  fs.appendFileSync(path.join(output,'shell.css'),'\n'+fs.readFileSync(path.join(overrides,'public/ranking.css'),'utf8'));
  const appearanceCSS=fs.readFileSync(path.join(overrides,'public/board-appearance.css'),'utf8');
  fs.appendFileSync(path.join(output,'shell.css'),'\n'+appearanceCSS);fs.appendFileSync(path.join(output,'notebook/app.css'),'\n'+appearanceCSS);
+ const languageCSS=fs.readFileSync(path.join(overrides,'public/language-layout.css'),'utf8');
+ fs.appendFileSync(path.join(output,'shell.css'),'\n'+languageCSS);fs.appendFileSync(path.join(output,'notebook/app.css'),'\n'+languageCSS);
  // Render the same public home component at build time. It remains visible to users
  // after the client starts; there is no crawler-specific or hidden alternative copy.
  write('render-home.tsx',`import React from 'react';import {renderToStaticMarkup} from 'react-dom/server';import Game from './app/game';import {LocaleProvider} from './app/locale-context';process.stdout.write(renderToStaticMarkup(<LocaleProvider initialLocale="ja"><Game initialChallenges={[]}/></LocaleProvider>));`);

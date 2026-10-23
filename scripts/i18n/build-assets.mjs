@@ -4,7 +4,8 @@ import {fileURLToPath} from 'node:url';
 import catalog from './catalog.cjs';
 
 const directory = path.dirname(fileURLToPath(import.meta.url));
-export const translationLocales = ['en','zh-Hans','zh-Hant','ko','es','fr','de','pt'];
+export const languageNames=JSON.parse(fs.readFileSync(path.join(directory,'languages.json'),'utf8'));
+export const translationLocales=Object.keys(languageNames).filter(code=>code!=='ja');
 
 // Keep this bootstrap small: a language is fetched only when it is requested.
 // The reviewed catalog remains the single source for every generated pack.
@@ -45,7 +46,7 @@ function bootstrap(config) {
     request.catch(() => pending.delete(locale));
     return request;
   }
-  w.NPTranslationAssets = {version:config.version,load,has:locale=>locale==='ja'||loaded.has(locale),messages:config.messages};
+  w.NPTranslationAssets = {version:config.version,names:config.names,load,has:locale=>locale==='ja'||loaded.has(locale),messages:config.messages};
 }
 
 export function buildTranslationAssets(outputDirectory, version) {
@@ -62,7 +63,7 @@ export function buildTranslationAssets(outputDirectory, version) {
     bytes[locale] = Buffer.byteLength(source);
   }
   const messages = Object.fromEntries(['読み込み中…','表示を読み込めませんでした。通信を確認して、もう一度お試しください。','もう一度読み込む'].map(key=>[key,{ja:key,...catalog[key]}]));
-  const source = '('+bootstrap.toString()+')('+JSON.stringify({version,locales:translationLocales,inlineMessages,messages})+');\n';
+  const source = '('+bootstrap.toString()+')('+JSON.stringify({version,names:languageNames,locales:translationLocales,inlineMessages,messages})+');\n';
   fs.writeFileSync(path.join(outputDirectory,'i18n-data.js'),source);
   return {bootstrapBytes:Buffer.byteLength(source),localeBytes:bytes};
 }

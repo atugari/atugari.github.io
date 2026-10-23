@@ -2,7 +2,7 @@
 (function (w) {
   'use strict';
   const languageKey = 'nanpure-language-v1';
-  const names = {ja:'日本語',en:'English','zh-Hans':'简体中文','zh-Hant':'繁體中文',ko:'한국어',es:'Español',fr:'Français',de:'Deutsch',pt:'Português'};
+  const names = w.NPTranslationAssets?.names || {"ja":"日本語","en":"English","zh-Hans":"简体中文","zh-Hant":"繁體中文","ko":"한국어","es":"Español","fr":"Français","de":"Deutsch","pt":"Português","it":"Italiano","nl":"Nederlands","sv":"Svenska","pl":"Polski","cs":"Čeština","ru":"Русский","id":"Bahasa Indonesia","vi":"Tiếng Việt","th":"ไทย","hi":"हिन्दी","ar":"العربية"};
   const htmlLanguage = value => value === 'zh-Hans' ? 'zh-CN' : value === 'zh-Hant' ? 'zh-TW' : value;
   const normalized = value => String(value).replace(/\s+/g, ' ').trim();
   // Literal puzzle values, counts and identifiers are data. In particular, the
@@ -299,7 +299,7 @@
     if(!document.body||!loaded.has(current))return;
     observer?.disconnect();
     try{
-      rebuild();document.documentElement.lang=htmlLanguage(current);
+      rebuild();document.documentElement.lang=htmlLanguage(current);document.documentElement.dir=current==='ar'?'rtl':'ltr';
       document.documentElement.dataset.locale=current;
       const languageButton=document.getElementById('np-language-open');
       if(languageButton){languageButton.textContent='🌐 '+translate('言語');languageButton.setAttribute('translate','no')}
@@ -370,6 +370,7 @@
   function start() {
     const style=document.createElement('style');
     style.textContent='#np-language-bar{box-sizing:border-box;max-width:1040px;margin:0 auto;padding:8px 14px;display:flex;justify-content:flex-end}#np-language-bar button{width:auto;min-height:44px;padding:8px 14px;border:1px solid #cbd8ce;border-radius:12px;background:#fff;color:#285849;font:600 15px/1.4 system-ui;cursor:pointer}#np-language-dialog{box-sizing:border-box;max-width:520px;width:calc(100% - 24px);max-height:88dvh;overflow:auto;border:1px solid #bdd0c3;border-radius:20px;padding:24px;background:#fffef9;color:#243c34;font:17px/1.6 system-ui}#np-language-dialog select,#np-language-dialog button{width:100%;min-height:48px;padding:10px;font:inherit;box-sizing:border-box}#np-language-dialog::backdrop{background:#0006}html:not([data-locale="ja"]) .choice .text,html:not([data-locale="ja"]) button{overflow-wrap:anywhere;min-width:0}html:not([data-locale="ja"]) .choice strong{font-size:clamp(18px,4.8vw,24px);line-height:1.35}html:not([data-locale="ja"]) .top{flex-wrap:wrap}html:not([data-locale="ja"]) .top .back{white-space:normal}@media print{#np-language-bar,#np-language-dialog{display:none!important}}';
+    style.textContent+='html[dir="rtl"] :is(.paper-art,.print-art){direction:ltr}html[dir="rtl"] :is(.paper-art,.print-art) text{unicode-bidi:plaintext}';
     document.head.appendChild(style);addBar();observer=new MutationObserver(changed);if(loaded.has(current))finishLoading();else showLoading();
   }
   w.NPI18n={t:translate,react:reactTranslate,set,load,ready,get:()=>current,names,apply,show,htmlLanguage,missing:()=>[...missing],closeIfOpen:()=>{const dialog=document.getElementById('np-language-dialog');if(!dialog?.open)return false;dialog.close();return true}};

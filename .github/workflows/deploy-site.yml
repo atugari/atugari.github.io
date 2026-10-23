@@ -78,6 +78,7 @@ jobs:
           node scripts/check-nanpure-smooth-play.cjs _site
           node scripts/check-nanpure-keybindings-browser.cjs _site
           node scripts/check-nanpure-appearance-browser.cjs _site
+          node scripts/check-nanpure-languages-browser.cjs _site
 
       - name: Configure Pages
         uses: actions/configure-pages@v5

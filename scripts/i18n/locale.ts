@@ -1,5 +1,7 @@
 import type {DailyKind,DailySummary} from './daily-types';
-export const languageNames={ja:'日本語',en:'English','zh-Hans':'简体中文','zh-Hant':'繁體中文',ko:'한국어',es:'Español',fr:'Français',de:'Deutsch',pt:'Português'} as const;
+import languageNamesData from './language-names.json';
+export const languageNames=languageNamesData;
+export const isRTL=(locale:string)=>locale==='ar';
 export type Locale=keyof typeof languageNames;
 export const languageKey='nanpure-language-v1';
 export const languageCookie='np-language';

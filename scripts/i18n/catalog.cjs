@@ -10,4 +10,19 @@ module.exports = {
   ...require('./catalog-smooth-37.json'),
   ...require('./catalog-keybindings-38.json'),
   ...require('./catalog-appearance-39.json'),
+  ...require('./catalog-languages-40.json'),
 };
+// Additional languages are split by locale to keep updates reviewable.
+// Visitors receive one generated language pack, never this combined catalog.
+const fs=require('node:fs'),path=require('node:path');
+for(const locale of Object.keys(require('./languages.json')).filter(code=>!['ja','en','zh-Hans','zh-Hant','ko','es','fr','de','pt'].includes(code))){
+ const pack=JSON.parse(fs.readFileSync(path.join(__dirname,'additional',locale+'.json'),'utf8'));
+ for(const [key,value]of Object.entries(pack)){
+  if(!Object.hasOwn(module.exports,key))throw Error('Unknown translation source: '+key);
+  module.exports[key][locale]=value;
+ }
+}
+for(const [key,translations]of Object.entries(require('./additional-overrides.json'))){
+ if(!Object.hasOwn(module.exports,key))throw Error('Unknown correction source: '+key);
+ for(const [locale,value]of Object.entries(translations))if(Object.hasOwn(require('./languages.json'),locale))module.exports[key][locale]=value;
+}
