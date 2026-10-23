@@ -6,9 +6,10 @@
   let current='create';
   function activate(name,focus=true){
    if(!tabs.some(t=>t.dataset.workspaceTab===name))return;
-   current=name;
+   current=name;document.body.dataset.workspaceView=name;
    for(const tab of tabs){const on=tab.dataset.workspaceTab===name;tab.setAttribute('aria-selected',String(on));tab.tabIndex=on?0:-1;}
    for(const panel of panels)panel.hidden=panel.dataset.workspacePanel!==name;
+   document.dispatchEvent(new CustomEvent('wado-workspace-change',{detail:{view:name}}));
    if(focus){window.scrollTo(0,0);document.querySelector('[data-workspace-panel="'+name+'"] [data-workspace-heading]')?.focus({preventScroll:true});}
   }
   tabs.forEach((tab,index)=>{

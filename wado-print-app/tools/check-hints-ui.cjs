@@ -9,10 +9,10 @@ const puzzles=[1,2,3].map(i=>({...engine.generate({level:3,count:4,seed:i}),id:'
 const state={format:'wado-print',version:1,preferences:{...WadoLayout.defaults,hint:2,layout:6},puzzles},storage=new Map([['np-wado-print-v1',JSON.stringify(state)]]);
 const localStorage={getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)};
 window.scrollTo=()=>{};window.innerHeight=844;window.innerWidth=390;
-const context=vm.createContext({window,document,localStorage,WadoClues,WadoPrint,WadoLayout,WadoPaper,location:{hostname:'example.test'},console,setTimeout,clearTimeout,requestAnimationFrame:()=>1,crypto:require('node:crypto').webcrypto,URL,Blob});
+const context=vm.createContext({window,document,CustomEvent:window.CustomEvent,localStorage,WadoClues,WadoPrint,WadoLayout,WadoPaper,location:{hostname:'example.test'},console,setTimeout,clearTimeout,requestAnimationFrame:()=>1,crypto:require('node:crypto').webcrypto,URL,Blob});
 const settle=async()=>{for(let i=0;i<4;i++)await new Promise(setImmediate);};
 const click=e=>e.dispatchEvent(new window.Event('click',{bubbles:true}));
-(async()=>{vm.runInContext(fs.readFileSync(path.join(root,'web-source/workspace.js'),'utf8'),context);vm.runInContext(fs.readFileSync(path.join(root,'web-source/app.js'),'utf8'),context);await settle();
+(async()=>{vm.runInContext(fs.readFileSync(path.join(root,'web-source/workspace.js'),'utf8'),context);vm.runInContext(fs.readFileSync(path.join(root,'web-source/live.js'),'utf8'),context);vm.runInContext(fs.readFileSync(path.join(root,'web-source/app.js'),'utf8'),context);await settle();
  assert.equal(document.querySelectorAll('.puzzle-card').length,3);assert.equal(document.querySelector('#error').hidden,true);assert.equal(document.querySelector('#generate').disabled,false);
  const option=document.querySelector('.hint-picker input[value]:not([value=""])'),value=option.value,id=option.dataset.hintPuzzle,text=option.closest('label').textContent;option.checked=true;option.dispatchEvent(new window.Event('change',{bubbles:true}));
  assert.equal(JSON.parse(storage.get('np-wado-print-v1')).puzzles.find(p=>p.id===id).hintChoice,value);assert(document.querySelector('.card-hint').textContent.includes(text.slice(text.indexOf('の熟語')+3)));

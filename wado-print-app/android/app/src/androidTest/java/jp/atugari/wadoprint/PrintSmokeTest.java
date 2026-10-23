@@ -37,10 +37,11 @@ public class PrintSmokeTest {
             waitTrue("document.getElementById('book-count').textContent==='20問'&&!document.getElementById('preview-questions').disabled");
             try(java.io.InputStream stream=InstrumentationRegistry.getInstrumentation().getContext().getAssets().open("paper-smoke.js")){js(new String(stream.readAllBytes(),StandardCharsets.UTF_8));}
             assertNotEquals("Workspace navigation","null",js("window.__workspaceTest()"));
+            assertNotEquals("Live editing","null",js("window.__liveTest()"));
             for(String size:new String[]{"compact","small","medium","large","largest"})for(String text:new String[]{"normal","largest"})for(String kind:new String[]{"questions","answers","hints"})assertNotEquals("Automatic paper "+size+" / "+text+" / "+kind,"null",js("window.__paperTest('"+size+"','"+text+"','"+kind+"')"));
             js("window.__paperTest('compact','normal','questions',true)");
             waitTrue("document.querySelectorAll('.page-frame').length>0&&document.querySelector('.page-frame').offsetWidth>0");
-            String encoded=js("JSON.stringify({fonts:document.fonts.check('700 64px WadoPrintKanji'),pages:document.querySelectorAll('.page-frame').length,overflow:[...document.querySelectorAll('.sheet-item')].some(e=>e.scrollHeight>e.clientHeight+1),fits:(()=>{const r=document.querySelector('.page-frame').getBoundingClientRect();return r.left>=0&&r.right<=innerWidth+1&&r.bottom<=innerHeight+1})(),blank:[...document.querySelectorAll('.diagram')].every(e=>e.querySelectorAll('text').length===e.querySelectorAll('.arrow').length)})");
+            String encoded=js("JSON.stringify({fonts:document.fonts.check('700 64px WadoPrintKanji'),pages:document.querySelectorAll('.page-frame').length,overflow:[...document.querySelectorAll('#paper .sheet-item')].some(e=>e.scrollHeight>e.clientHeight+1),fits:(()=>{const r=document.querySelector('.page-frame').getBoundingClientRect();return r.left>=0&&r.right<=innerWidth+1&&r.bottom<=innerHeight+1})(),blank:[...document.querySelectorAll('#paper .diagram')].every(e=>e.querySelectorAll('text').length===e.querySelectorAll('.arrow').length)})");
             String decoded=(String)new org.json.JSONTokener(encoded).nextValue();JSONObject checks=new JSONObject(decoded);
             File output=InstrumentationRegistry.getInstrumentation().getTargetContext().getExternalFilesDir(null);
             Files.write(new File(output,"android-smoke.json").toPath(),decoded.getBytes(StandardCharsets.UTF_8));

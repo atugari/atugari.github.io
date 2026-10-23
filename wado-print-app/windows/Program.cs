@@ -11,7 +11,7 @@ internal sealed class MainWindow:Form {
  readonly WebView2 view=new(){Dock=DockStyle.Fill};
  readonly string[] args;
  readonly string root=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"Atugari","WadoPrint");
- public MainWindow(string[] arguments){args=arguments;Text="漢字穴埋め 印刷帳 2.5.0";Width=1120;Height=850;MinimumSize=new Size(420,560);StartPosition=FormStartPosition.CenterScreen;Controls.Add(view);Shown+=async(_,_)=>await Start();}
+ public MainWindow(string[] arguments){args=arguments;Text="漢字穴埋め 印刷帳 2.6.0";Width=1120;Height=850;MinimumSize=new Size(420,560);StartPosition=FormStartPosition.CenterScreen;Controls.Add(view);Shown+=async(_,_)=>await Start();}
  async Task Start(){
   try {
    Directory.CreateDirectory(root);string assets=Path.Combine(root,"assets");Directory.CreateDirectory(assets);
@@ -33,6 +33,7 @@ internal sealed class MainWindow:Form {
   try{Directory.CreateDirectory(folder);await WaitFor("!!document.getElementById('generate')&&!document.getElementById('generate').disabled");await Js("const b=document.getElementById('batch');b.value='20';b.dispatchEvent(new Event('change',{bubbles:true}));document.getElementById('generate').click()");await WaitFor("document.getElementById('book-count').textContent==='20問'&&!document.getElementById('preview-questions').disabled");
    await Js(await File.ReadAllTextAsync("wado-print-app/tools/paper-smoke.js"));
    if(await Js("window.__workspaceTest()") == "null")throw new Exception("Workspace navigation test failed");
+   if(await Js("window.__liveTest()") == "null")throw new Exception("Live editing test failed");
    foreach(var size in new[]{"compact","small","medium","large","largest"})foreach(var text in new[]{"normal","largest"})foreach(var kind in new[]{"questions","answers","hints"}){var check=await Js($"window.__paperTest('{size}','{text}','{kind}')");if(check=="null")throw new Exception("Automatic paper test failed: "+size+" / "+text+" / "+kind);}
    var print=view.CoreWebView2.Environment.CreatePrintSettings();print.ShouldPrintHeaderAndFooter=false;print.PageWidth=8.2677165;print.PageHeight=11.6929134;print.MarginTop=.3937008;print.MarginBottom=.3937008;print.MarginLeft=.3937008;print.MarginRight=.3937008;
    await Js("window.__paperTest('largest','largest','questions')");using(var image=File.Create(Path.Combine(folder,"windows-large-text.png")))await view.CoreWebView2.CapturePreviewAsync(CoreWebView2CapturePreviewImageFormat.Png,image);if(!await view.CoreWebView2.PrintToPdfAsync(Path.GetFullPath(Path.Combine(folder,"windows-large-text.pdf")),print))throw new Exception("Large PDF failed");
