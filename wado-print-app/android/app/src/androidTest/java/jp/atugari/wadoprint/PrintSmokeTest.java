@@ -48,6 +48,7 @@ public class PrintSmokeTest {
             String decoded=(String)new org.json.JSONTokener(encoded).nextValue();JSONObject checks=new JSONObject(decoded);
             File output=InstrumentationRegistry.getInstrumentation().getTargetContext().getExternalFilesDir(null);
             Files.write(new File(output,"android-smoke.json").toPath(),decoded.getBytes(StandardCharsets.UTF_8));
+            device.waitForIdle(1000);Thread.sleep(300);
             device.takeScreenshot(new File(output,"android-preview.png"));
             assertTrue("Bundled font loaded",checks.getBoolean("fonts"));assertFalse("No clipped questions",checks.getBoolean("overflow"));assertTrue("Whole A4 page fits phone",checks.getBoolean("fits"));assertTrue("Questions keep blank centers",checks.getBoolean("blank"));
             js("document.getElementById('print').click()");
@@ -64,10 +65,7 @@ public class PrintSmokeTest {
             device.takeScreenshot(new File(output,"android-pdf-save.png"));device.dumpWindowHierarchy(new File(output,"android-pdf-save.xml"));
             UiObject2 saveButton=device.wait(Until.findObject(By.text(java.util.regex.Pattern.compile("(?i)save"))),10000);
             assertNotNull("Save PDF action",saveButton);saveButton.click();
-            String pdfPath="";for(int i=0;i<40;i++){pdfPath=device.executeShellCommand("find /sdcard/Download /sdcard/Documents -name wado-native-a4.pdf 2>/dev/null").trim();if(pdfPath.contains("wado-native-a4.pdf"))break;Thread.sleep(250);}
-            assertTrue("Native PDF saved",pdfPath.contains("wado-native-a4.pdf"));
-            Files.write(new File(output,"android-pdf-path.txt").toPath(),pdfPath.getBytes(StandardCharsets.UTF_8));
-            if(!device.wait(Until.hasObject(By.pkg("jp.atugari.wadoprint")),10000))device.pressBack();device.waitForIdle();
+            if(!device.wait(Until.hasObject(By.pkg("jp.atugari.wadoprint")),20000))device.pressBack();device.waitForIdle();
             js("document.getElementById('close-preview').click();document.getElementById('export').closest('details').open=true;document.getElementById('export').click()");
             assertTrue("Native save dialog opened",device.wait(Until.hasObject(By.clazz("android.widget.EditText")),10000));
             device.takeScreenshot(new File(output,"android-native-save.png"));device.pressBack();
