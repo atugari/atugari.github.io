@@ -1,6 +1,12 @@
 package jp.atugari.wadoprint;
 
 import android.webkit.WebView;
+import android.os.CancellationSignal;
+import android.os.ParcelFileDescriptor;
+import android.print.PageRange;
+import android.print.PrintAttributes;
+import android.print.PrintDocumentAdapter;
+import android.print.PrintDocumentInfo;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -24,6 +30,22 @@ public class PrintSmokeTest {
     WebView web;
     String js(String script)throws Exception{CountDownLatch done=new CountDownLatch(1);AtomicReference<String> result=new AtomicReference<>();InstrumentationRegistry.getInstrumentation().runOnMainSync(()->web.evaluateJavascript(script,value->{result.set(value);done.countDown();}));assertTrue("JavaScript callback",done.await(10,TimeUnit.SECONDS));return result.get();}
     void waitTrue(String code)throws Exception{for(int i=0;i<160;i++){if("true".equals(js(code)))return;Thread.sleep(250);}fail("Timed out: "+code);}
+    void printPdf(File output)throws Exception{
+        CountDownLatch completed=new CountDownLatch(1);AtomicReference<String> failure=new AtomicReference<>();
+        ParcelFileDescriptor destination=ParcelFileDescriptor.open(output,ParcelFileDescriptor.MODE_CREATE|ParcelFileDescriptor.MODE_READ_WRITE|ParcelFileDescriptor.MODE_TRUNCATE);
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(()->{
+            PrintDocumentAdapter adapter=web.createPrintDocumentAdapter("Wado A4 print test");adapter.onStart();
+            PrintAttributes attributes=new PrintAttributes.Builder().setMediaSize(PrintAttributes.MediaSize.ISO_A4).setResolution(new PrintAttributes.Resolution("pdf","PDF",300,300)).setColorMode(PrintAttributes.COLOR_MODE_MONOCHROME).setMinMargins(new PrintAttributes.Margins(394,394,394,394)).build();
+            adapter.onLayout(null,attributes,new CancellationSignal(),new PrintDocumentAdapter.LayoutResultCallback(){
+                @Override public void onLayoutFinished(PrintDocumentInfo info,boolean changed){adapter.onWrite(new PageRange[]{PageRange.ALL_PAGES},destination,new CancellationSignal(),new PrintDocumentAdapter.WriteResultCallback(){
+                    @Override public void onWriteFinished(PageRange[] pages){adapter.onFinish();completed.countDown();}
+                    @Override public void onWriteFailed(CharSequence message){failure.set("Write: "+message);adapter.onFinish();completed.countDown();}
+                });}
+                @Override public void onLayoutFailed(CharSequence message){failure.set("Layout: "+message);adapter.onFinish();completed.countDown();}
+            },new android.os.Bundle());
+        });
+        assertTrue("PDF completed",completed.await(30,TimeUnit.SECONDS));destination.close();assertNull(failure.get());assertTrue("PDF bytes written",output.length()>1000);
+    }
     @Test public void nativePreviewAndPrint()throws Exception{
         UiDevice device=UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         try(ActivityScenario<MainActivity> scenario=ActivityScenario.launch(MainActivity.class)){
@@ -39,6 +61,7 @@ public class PrintSmokeTest {
             Files.write(new File(output,"android-smoke.json").toPath(),decoded.getBytes(StandardCharsets.UTF_8));
             device.takeScreenshot(new File(output,"android-preview.png"));
             assertTrue("Bundled font loaded",checks.getBoolean("fonts"));assertFalse("No clipped questions",checks.getBoolean("overflow"));assertTrue("Whole A4 page fits phone",checks.getBoolean("fits"));assertTrue("Questions keep blank centers",checks.getBoolean("blank"));
+            printPdf(new File(output,"android-12-questions.pdf"));
             js("document.getElementById('print').click()");
             assertTrue("Native print UI opened",device.wait(Until.hasObject(By.pkg("com.android.printspooler")),15000));
             device.takeScreenshot(new File(output,"android-native-print.png"));
@@ -50,3 +73,4 @@ public class PrintSmokeTest {
         }
     }
 }
+

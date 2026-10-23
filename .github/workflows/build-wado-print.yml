@@ -43,7 +43,10 @@ jobs:
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
           working-directory: wado-print-app/android
-          script: gradle --no-daemon :app:connectedDebugAndroidTest
+          script: |
+            gradle --no-daemon :app:connectedDebugAndroidTest
+            mkdir -p ../../wado-android-artifact/qa
+            adb pull /sdcard/Android/data/jp.atugari.wadoprint/files/. ../../wado-android-artifact/qa/
       - name: Prepare unsigned artifact and test evidence
         if: always()
         shell: bash
@@ -88,3 +91,4 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with: {name: wado-print-windows-2.1.0, path: wado-windows-artifact/, retention-days: 14, if-no-files-found: error}
+
