@@ -8,7 +8,7 @@ export function problem(input){
  if(keys.length<2||keys.length>4||keys.some(k=>!positions.includes(k)||!han.test(input.arms[k]))||input.answer!=null&&!han.test(input.answer))throw Error('周りの漢字を2〜4か所、1文字ずつ入力してください。');
  return{arms:Object.fromEntries(positions.filter(k=>input.arms[k]).map(k=>[k,input.arms[k]])),answer:input.answer??null};
 }
-export function words(p,answer){if(!han.test(answer))throw Error('候補の漢字を1文字入力してください。');return Object.entries(p.arms).map(([position,char])=>({position,text:['top','left'].includes(position)?char+answer:answer+char}));}
+export function words(p,answer){if(!han.test(answer))throw Error('候補の漢字を1文字入力してください。');return positions.filter(position=>p.arms[position]).map(position=>{const char=p.arms[position];return{position,text:['top','left'].includes(position)?char+answer:answer+char};});}
 export function discoveryQueries(input){const p=problem(input),shape=Object.entries(p.arms).map(([k,c])=>['top','left'].includes(k)?c+'□':'□'+c).join(' ');return[shape+' 共通 漢字 二字熟語',...Object.values(p.arms).map(c=>'"'+c+'" 二字熟語 一覧')];}
 export function candidateQuery(input,answer){return words(problem(input),answer).map(w=>'"'+w.text+'"').join(' ');}
 export function searchUrl(query){return'https://www.google.com/search?'+new URLSearchParams({q:query,hl:'ja'});}

@@ -25,6 +25,7 @@ require('./client-overrides/public/notebook/wado-engine.js');
  const settle=async()=>{for(let i=0;i<4;i++)await new Promise(setImmediate);};
  const click=node=>node.dispatchEvent(new window.Event('click',{bubbles:true}));
  vm.runInContext(fs.readFileSync('scripts/client-overrides/public/notebook/wado-ui.js','utf8'),context);await settle();
+ assert(document.querySelector('[data-wado-play]').hasAttribute('disabled'),'screen play stays unavailable');assert.equal(document.querySelector('[data-wado-play]').getAttribute('aria-disabled'),'true');
  assert(document.querySelector('.wado-question'),'saved puzzle loads');assert.equal(document.querySelector('#wado-web-after').disabled,false);
  const panel=document.querySelector('.wado-web-panel'),auto=panel.querySelector('.wado-web-auto');assert.equal(auto.disabled,false);
  const href=panel.querySelector('a').getAttribute('href');assert.equal(new URL(href).origin,'https://www.google.com');assert(new URL(href).searchParams.get('q').includes('二字熟語'));

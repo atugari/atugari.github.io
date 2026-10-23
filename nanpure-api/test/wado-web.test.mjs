@@ -17,6 +17,13 @@ test('URLs, markup, substrings and user input do not become false web evidence',
  for(const value of [{arms:{top:'感'}},{arms:{top:'感',right:'<script>'}},{...p,query:'extra'},{...p,answer:'AB'},{arms:{side:'感',right:'配'}}])assert.throws(()=>problem(value));
  const links=searchLinks(p,'受');assert(links.every(l=>new URL(l.url).origin==='https://www.google.com'));assert.equal(new URL(links[1].url).searchParams.get('q'),'"感受" "受配"');assert.deepEqual(words({arms:{left:'感',bottom:'配'}},'受').map(w=>w.text),['感受','受配']);assert.equal(discoveryQueries(p).length,3);
 });
+test('word evidence has the same position order for generated and normalized API arms',async()=>{
+ const generated={arms:{bottom:'道',right:'配',left:'共',top:'感'},answer:'心'},canonical=problem(generated);
+ assert.deepEqual(words(generated,'受'),words(canonical,'受'));
+ assert.deepEqual(words(generated,'受').map(w=>w.position),['top','left','right','bottom']);
+ const report=await inspectNetwork(generated,async()=>[r('感受 共受 受配 受道')]);
+ assert.deepEqual(report.candidates.find(c=>c.answer==='受').words.map(({position,text})=>({position,text})),words(generated,'受'));
+});
 test('discovery ranks cross-arm evidence and caps candidates visibly',async()=>{
  const report=await inspectNetwork(p,async()=>[r('感受 感温 感熱 感光 受配 温配 熱配 光配')]);assert.equal(report.truncated,true);assert.equal(report.discoveredCandidates,4);assert.equal(report.candidates.length,3);assert.equal(report.exhaustive,false);
 });

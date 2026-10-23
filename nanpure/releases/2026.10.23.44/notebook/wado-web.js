@@ -44,7 +44,10 @@ var NPWadoWeb = (() => {
   }
   function words(p, answer) {
     if (!han.test(answer)) throw Error("\u5019\u88DC\u306E\u6F22\u5B57\u30921\u6587\u5B57\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044\u3002");
-    return Object.entries(p.arms).map(([position, char]) => ({ position, text: ["top", "left"].includes(position) ? char + answer : answer + char }));
+    return positions.filter((position) => p.arms[position]).map((position) => {
+      const char = p.arms[position];
+      return { position, text: ["top", "left"].includes(position) ? char + answer : answer + char };
+    });
   }
   function discoveryQueries(input) {
     const p = problem(input), shape = Object.entries(p.arms).map(([k, c]) => ["top", "left"].includes(k) ? c + "\u25A1" : "\u25A1" + c).join(" ");

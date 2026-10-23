@@ -21,3 +21,5 @@ const rows={
  ar:['إنشاء ألغاز كانجي','كلمات يابانية · 10 مستويات · 2–4 كلمات','يمكن الآن إنشاء ألغاز إكمال كانجي (Wado Kaichin).','اختر من 10 مستويات ومن كلمتين إلى 4 كلمات مركبة.','تتضمن المستويات السهلة خيارات وتلميحات للقراءة. يمكن حفظ الألغاز المنشأة.','اطبع 1 أو 2 أو 4 أو 6 ألغاز في صفحة A4، مع الأسئلة والإجابات منفصلة.']
 };
 module.exports=Object.fromEntries(keys.map((key,i)=>[key,Object.fromEntries(Object.entries(rows).map(([locale,values])=>[locale,values[i]]))]));
+
+module.exports['漢字穴埋め帳を開く']={"en": "Open kanji puzzle notebook", "zh-Hans": "打开汉字填空题本", "zh-Hant": "開啟漢字填空題本", "ko": "한자 문제 노트 열기", "es": "Abrir cuaderno de kanji", "fr": "Ouvrir le carnet de kanji", "de": "Kanji-Rätselheft öffnen", "pt": "Abrir caderno de kanji", "it": "Apri il quaderno di kanji", "nl": "Kanji-puzzelboek openen", "sv": "Öppna kanjipusselboken", "pl": "Otwórz zeszyt łamigłówek kanji", "cs": "Otevřít sešit rébusů kandži", "ru": "Открыть тетрадь головоломок кандзи", "id": "Buka buku teka-teki kanji", "vi": "Mở sổ câu đố kanji", "th": "เปิดสมุดปริศนาคันจิ", "hi": "कांजी पहेली नोटबुक खोलें", "ar": "فتح دفتر ألغاز كانجي"};
