@@ -12,6 +12,7 @@ module.exports = {
   ...require('./catalog-appearance-39.json'),
   ...require('./catalog-languages-40.json'),
   ...require('./catalog-audio-41.json'),
+  ...require('./catalog-magic-42.json'),
 };
 // Additional languages are split by locale to keep updates reviewable.
 // Visitors receive one generated language pack, never this combined catalog.

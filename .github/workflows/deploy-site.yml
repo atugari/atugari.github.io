@@ -59,6 +59,7 @@ jobs:
         shell: bash
         run: |
           npm install --prefix "$RUNNER_TEMP/nanpure-browser" --no-audit --no-fund playwright@1.62.1 linkedom@0.18.13
+          node scripts/check-nanpure-magic.cjs
           node scripts/check-nanpure-i18n.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
           node scripts/check-nanpure-input.cjs scripts/client-overrides/public/notebook/app.js "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
           node scripts/check-nanpure-special-keyboard.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
@@ -73,6 +74,7 @@ jobs:
           export PLAYWRIGHT_MODULE="$RUNNER_TEMP/nanpure-browser/node_modules/playwright"
           export CHROME_BIN="$(command -v google-chrome || command -v chromium)"
           node scripts/check-nanpure-keyboard-dialogs.cjs
+          node scripts/check-nanpure-magic-browser.cjs _site
           node scripts/check-nanpure-audio-browser.cjs _site
           node scripts/check-nanpure-languages-browser.cjs _site
           node scripts/check-nanpure-browser.cjs _site
