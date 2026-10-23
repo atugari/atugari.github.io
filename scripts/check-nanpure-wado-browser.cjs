@@ -18,7 +18,7 @@ const types={'.html':'text/html','.js':'text/javascript','.json':'application/js
  assert.match(await page.locator('#wado-check-result').textContent(),/正解として扱えます/);assert.equal(await page.locator('.wado-check-candidate').count(),2);assert.match(await page.locator('#wado-check-result').textContent(),/受配/);assert.match(await page.locator('#wado-check-result').textContent(),/SudachiDict/);
  await page.locator('#wado-check-top').fill('龘');assert.equal(await page.locator('#wado-check-result').textContent(),'','changed input invalidates old result');await page.locator('#wado-check-right').fill('龘');await page.locator('#wado-check').click();assert.match(await page.locator('#wado-check-result').textContent(),/見つかりません/);
  await page.locator('#wado-check-right').fill('');await page.locator('#wado-check').click();assert.match(await page.locator('#wado-check-result').textContent(),/2〜4/);await page.locator('.wado-checker>summary').click();
- assert(await page.locator('[data-wado-play]').isDisabled());assert.equal(await page.locator('[data-wado-play]').getAttribute('aria-disabled'),'true');
+ assert.equal(await page.locator('[data-wado-play]').count(),0,'screen play entry is removed');
  assert.match(await page.locator('#wado-audit-summary').textContent(),/41,858/);assert.match(await page.locator('#wado-coverage-summary').textContent(),/2,575/);
  assert.deepEqual(await page.evaluate(key=>JSON.parse(localStorage.getItem(key)).items[0],key),JSON.parse(JSON.stringify(legacy)),'old saved question is preserved');
  let count=1;
