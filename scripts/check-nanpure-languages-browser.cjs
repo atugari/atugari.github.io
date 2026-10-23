@@ -30,6 +30,15 @@ async function openView(frame){await frame.locator('#np-play-settings-button').c
 // Independent expected menu labels catch untranslated or incorrect common UI.
 const additional={it:'Gioco libero',nl:'Vrij spelen',sv:'Spela fritt',pl:'Gra swobodna',cs:'Volná hra',ru:'Свободная игра',id:'Bermain bebas',vi:'Chơi tự do',th:'เล่นอิสระ',hi:'स्वतंत्र खेल',ar:'لعب حر'};
 async function audit(target,selector,label){
+ // New notebook dialogs are translated by a MutationObserver/rAF batch. Wait
+ // for its visible text, as the existing creation/print journeys do, without
+ // forcing NPI18n.apply() or treating one pending frame as a missing message.
+ await target.waitForFunction(selector=>{
+  const root=document.querySelector(selector);if(!root)return false;
+  const skip='script,style,textarea,[translate="no"],[data-i18n-skip],[contenteditable="true"]',walk=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let node;
+  while(node=walk.nextNode())if(node.parentElement.getClientRects().length&&!node.parentElement.closest(skip)&&/[\u3041-\u3096\u30a1-\u30fa]/.test(node.nodeValue))return false;
+  return true;
+ },selector,{timeout:10000});
  const result=await target.locator(selector).evaluate(root=>{
   const skip='script,style,textarea,[translate="no"],[data-i18n-skip],[contenteditable="true"]',bad=[],walk=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let node;
   while(node=walk.nextNode())if(node.parentElement.getClientRects().length&&!node.parentElement.closest(skip)&&/[\u3041-\u3096\u30a1-\u30fa]/.test(node.nodeValue))bad.push(node.nodeValue.trim());
