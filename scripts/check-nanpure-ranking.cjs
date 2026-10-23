@@ -6,8 +6,10 @@ const {parseHTML}=require(process.argv[2]||'linkedom');
 const repo=path.resolve(__dirname,'..'),manifest=require('../nanpure/release-manifest.json');
 const base=path.join(repo,manifest.base),catalog=require('./i18n/catalog.cjs');
 const added=require('./i18n/catalog-ranking-35.json');
-for(const [key,translations]of Object.entries(added)){
- assert.equal(Object.keys(translations).length,8,key);
+const locales=Object.keys(require('./i18n/languages.json')).filter(code=>code!=='ja');
+for(const key of Object.keys(added)){
+ const translations=catalog[key];
+ assert.deepEqual(Object.keys(translations).sort(),locales.slice().sort(),key);
  const placeholders=[...key.matchAll(/\{\w+\}/g)].map(m=>m[0]).sort();
  for(const value of Object.values(translations)){
   assert(value.length>0,key);
@@ -72,7 +74,7 @@ function result(mode='time',period='today',rows=[],myEntry=null,extra={}){
  assert(!w.document.querySelector('.ranking-player img'),'Names must render as text');
  // React translations are subsequently revisited by the shared DOM translator.
  // Both the visible own rank and accessible row ranks must retain their language.
- for(const locale of ['en','zh-Hans','zh-Hant','ko','es','fr','de','pt']){
+ for(const locale of locales){
   await w.NPI18n.set(locale);
   const ownLabel=catalog['{rank}位'][locale].replace('{rank}','75');
   const rowLabel=catalog['{rank}位'][locale].replace('{rank}','1');
@@ -111,6 +113,6 @@ function result(mode='time',period='today',rows=[],myEntry=null,extra={}){
  button('難問');await settle(()=>rankingRequests.length===8,'hard time request');assert.equal(rankingRequests[7].params.get('level'),'3');rankingRequests[7].reply(result());
  await settle(()=>!w.document.querySelector('.ranking [aria-busy=true]'),'hard loaded');
  assert.equal(errors.length,0,errors.join('\n'));
- testConsole.log('PASS worldwide ranking UI: 50 rows, tie ranks, milliseconds, private names, own rank outside top 50, period/difficulty controls, stale-response protection, retry/empty, 8-language coverage and dynamic rank translation');
+ testConsole.log('PASS worldwide ranking UI: 50 rows, tie ranks, milliseconds, private names, own rank outside top 50, period/difficulty controls, stale-response protection, retry/empty, '+locales.length+'-language coverage and dynamic rank translation');
  process.exit(0);
 })().catch(error=>{testConsole.error(error);process.exit(1)});
