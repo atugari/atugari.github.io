@@ -1,11 +1,11 @@
 (function(g){
  'use strict';
- const defaults={level:2,count:4,batch:10,layout:2,hint:1,spacing:'tight',kanjiSize:'large',kanjiWeight:'bold',previewScale:'page',uiSize:'normal',printText:'normal'};
+ const defaults={...WadoPaper.defaults,level:2,count:4,batch:10,layout:2,hint:1,spacing:'tight',kanjiSize:'large',kanjiWeight:'bold',previewScale:'page',uiSize:'normal',printText:'normal'};
  const uiScales={normal:1,large:1.25,larger:1.5,largest:2},printScales={normal:1,large:1.25,larger:1.5,largest:1.75};
  function preferences(p){
   if(!p||typeof p!=='object'||Array.isArray(p))throw Error('印刷・生成の設定を確認してください。');
-  const n={...defaults,...p};
-  if(!Number.isInteger(n.level)||n.level<1||n.level>10||![2,3,4].includes(n.count)||![1,5,10,20,50,100].includes(n.batch)||![1,2,4,6,8,9,12].includes(n.layout)||![0,1,2,3].includes(n.hint)||!['normal','tight'].includes(n.spacing)||!['normal','large','largest'].includes(n.kanjiSize)||!['normal','bold','heavy'].includes(n.kanjiWeight)||!['page','width','actual'].includes(n.previewScale)||n.layout>6&&n.hint!==0)throw Error('印刷・生成の設定を確認してください。');
+  const n={...defaults,...p,...WadoPaper.preferences(p)};
+  if(!Number.isInteger(n.level)||n.level<1||n.level>10||![2,3,4].includes(n.count)||![1,5,10,20,50,100].includes(n.batch)||![1,2,4,6,8,9,12].includes(n.layout)||![0,1,2,3].includes(n.hint)||!['normal','tight'].includes(n.spacing)||!['normal','large','largest'].includes(n.kanjiSize)||!['normal','bold','heavy'].includes(n.kanjiWeight)||!['page','width','actual'].includes(n.previewScale))throw Error('印刷・生成の設定を確認してください。');
   if(!Object.hasOwn(uiScales,n.uiSize)||!Object.hasOwn(printScales,n.printText))throw Error('文字の大きさの設定を確認してください。');
   return Object.fromEntries(Object.keys(defaults).map(k=>[k,n[k]]));
  }

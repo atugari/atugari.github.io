@@ -68,3 +68,5 @@
 @media(max-width:760px){:root[data-ui-size="larger"] .cards,:root[data-ui-size="largest"] .cards{grid-template-columns:1fr}}
 
 pre{font-size:calc(11px * var(--ui-scale,1))}
+
+.paper-fields{margin:20px 0;border:1px solid #b6c6bd;border-radius:10px;padding:16px}.paper-fields legend{font-weight:700;font-size:calc(16px * var(--ui-scale,1))}

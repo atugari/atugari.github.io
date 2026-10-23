@@ -7,8 +7,8 @@ android {
         applicationId 'jp.atugari.wadoprint'
         minSdk 26
         targetSdk 35
-        versionCode 20300
-        versionName '2.3.0'
+        versionCode 20400
+        versionName '2.4.0'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     buildTypes { release { minifyEnabled false; debuggable false } }
@@ -18,5 +18,5 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.6.2'
     androidTestImplementation 'androidx.test:rules:1.6.1'
     androidTestImplementation 'androidx.test.ext:junit:1.2.1'
-    androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.3.0'
+    androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.4.0'
 }
