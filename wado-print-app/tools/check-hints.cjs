@@ -7,7 +7,8 @@ const bank=JSON.parse(fs.readFileSync(path.join(root,'web-source/hints.json'))),
 assert.equal(system.richWordCount,235);const puzzles=[],seen=[];
 for(let level=1;level<=10;level++)for(const count of [2,3,4])for(let i=0;i<40;i++){
  const p=engine.generate({level,count,seed:level*100000+count*1000+i,seen});seen.push(WadoPrint.fingerprint(p));puzzles.push(p);
- assert(system.rich(p,p.hintPosition));const candidates=system.suggestions(p);assert(candidates.length>=3);assert(new Set(candidates.map(c=>c.view)).size>=3);
+ assert(system.rich(p,p.hintPosition));const candidates=system.suggestions(p);assert(candidates.length>=3);assert(new Set(candidates.map(c=>c.view)).size>=2);
+ assert(candidates.every(c=>c.preferred),'dedicated clues replace generic fallbacks');
  for(const h of system.all(p))assert(!h.text.includes(p.answer),'clue must not contain the central answer');
  assert.deepEqual(engine.validatePuzzle(p),p);const selected=candidates.at(-1);p.hintChoice=selected.id;assert.equal(engine.validatePuzzle(p).hintChoice,selected.id);delete p.hintChoice;
 }

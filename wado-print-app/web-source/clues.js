@@ -21,18 +21,18 @@
   function richWords(p){return [...new Set(all(p).filter(c=>c.preferred).map(c=>c.word))].filter(w=>grades.every(g=>all(p).some(c=>c.preferred&&c.word===w&&c.grade===g.value)));}
   function similar(a,b){const clean=s=>s.replace(/[\s、。・「」『』（）(),.!?]/g,''),x=clean(a),y=clean(b);if(Math.min(x.length,y.length)<8)return x===y;const grams=s=>new Set([...s].slice(1).map((c,i)=>s[i]+c)),u=grams(x),v=grams(y),intersection=[...u].filter(c=>v.has(c)).length;return intersection/(u.size+v.size-intersection)>.5;}
   function suggestions(p){
-   const list=all(p),chosen=[],usedViews=new Set(),usedIds=new Set();
+   const available=all(p),list=available.filter(c=>c.preferred||!available.some(x=>x.preferred&&x.grade===c.grade)),chosen=[],usedViews=new Set(),usedIds=new Set();
    const order=(a,b)=>Number(!!b.preferred)-Number(!!a.preferred)||(a.view==='field')-(b.view==='field')||hash(key(p)+a.id)-hash(key(p)+b.id);
    function add(c,force=false){if(c&&!usedIds.has(c.id)&&(force||!chosen.some(x=>similar(x.text,c.text)))){chosen.push(c);usedIds.add(c.id);usedViews.add(c.view);}}
    for(const grade of [1,2,3])add(list.filter(c=>c.grade===grade).sort(order)[0],true);
    for(const c of list.slice().sort(order))if(!usedViews.has(c.view)&&chosen.length<8)add(c);
    for(const c of list.slice().sort(order))if(chosen.length<6)add(c);
-   const manual=list.find(c=>c.id===p.hintChoice);if(manual&&!usedIds.has(manual.id)){if(chosen.length>=8)chosen.pop();add(manual,true);}
+   const manual=available.find(c=>c.id===p.hintChoice);if(manual&&!usedIds.has(manual.id)){if(chosen.length>=8)chosen.pop();add(manual,true);}
    return chosen.sort((a,b)=>a.grade-b.grade||order(a,b));
   }
   function plan(puzzles,grade,{respectSelection=true}={}){
    const result=new Map(),viewCounts=new Map(),textCounts=new Map(),recent=[];
-   for(const p of puzzles){if(!grade){result.set(key(p),null);continue;}const list=all(p),manual=respectSelection&&list.find(c=>c.id===p.hintChoice);let options=list.filter(c=>c.grade===grade);
+   for(const p of puzzles){if(!grade){result.set(key(p),null);continue;}const list=all(p),manual=respectSelection&&list.find(c=>c.id===p.hintChoice);let options=list.filter(c=>c.grade===grade);const dedicated=options.filter(c=>c.preferred);if(dedicated.length)options=dedicated;
     const preferred=options.filter(c=>c.preferred&&!textCounts.get(c.text)&&c.view!==recent.at(-1)?.view);if(preferred.length)options=preferred;
     const score=c=>(textCounts.get(c.text)||0)*1000+(c.view===recent.at(-1)?.view?250:0)+(c.preferred?0:20)+(viewCounts.get(c.view)||0)*20+(hash(key(p)+c.id)%1000)/1000;
     const chosen=manual||options.sort((a,b)=>score(a)-score(b))[0]||null;result.set(key(p),chosen);
