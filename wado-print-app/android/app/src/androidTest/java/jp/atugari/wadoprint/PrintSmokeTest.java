@@ -30,22 +30,6 @@ public class PrintSmokeTest {
     WebView web;
     String js(String script)throws Exception{CountDownLatch done=new CountDownLatch(1);AtomicReference<String> result=new AtomicReference<>();InstrumentationRegistry.getInstrumentation().runOnMainSync(()->web.evaluateJavascript(script,value->{result.set(value);done.countDown();}));assertTrue("JavaScript callback",done.await(10,TimeUnit.SECONDS));return result.get();}
     void waitTrue(String code)throws Exception{for(int i=0;i<160;i++){if("true".equals(js(code)))return;Thread.sleep(250);}fail("Timed out: "+code);}
-    void printPdf(File output)throws Exception{
-        CountDownLatch completed=new CountDownLatch(1);AtomicReference<String> failure=new AtomicReference<>();
-        ParcelFileDescriptor destination=ParcelFileDescriptor.open(output,ParcelFileDescriptor.MODE_CREATE|ParcelFileDescriptor.MODE_READ_WRITE|ParcelFileDescriptor.MODE_TRUNCATE);
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(()->{
-            PrintDocumentAdapter adapter=web.createPrintDocumentAdapter("Wado A4 print test");adapter.onStart();
-            PrintAttributes attributes=new PrintAttributes.Builder().setMediaSize(PrintAttributes.MediaSize.ISO_A4).setResolution(new PrintAttributes.Resolution("pdf","PDF",300,300)).setColorMode(PrintAttributes.COLOR_MODE_MONOCHROME).setMinMargins(new PrintAttributes.Margins(394,394,394,394)).build();
-            adapter.onLayout(null,attributes,new CancellationSignal(),new PrintDocumentAdapter.LayoutResultCallback(){
-                @Override public void onLayoutFinished(PrintDocumentInfo info,boolean changed){adapter.onWrite(new PageRange[]{PageRange.ALL_PAGES},destination,new CancellationSignal(),new PrintDocumentAdapter.WriteResultCallback(){
-                    @Override public void onWriteFinished(PageRange[] pages){adapter.onFinish();completed.countDown();}
-                    @Override public void onWriteFailed(CharSequence message){failure.set("Write: "+message);adapter.onFinish();completed.countDown();}
-                });}
-                @Override public void onLayoutFailed(CharSequence message){failure.set("Layout: "+message);adapter.onFinish();completed.countDown();}
-            },new android.os.Bundle());
-        });
-        assertTrue("PDF completed",completed.await(30,TimeUnit.SECONDS));destination.close();assertNull(failure.get());assertTrue("PDF bytes written",output.length()>1000);
-    }
     @Test public void nativePreviewAndPrint()throws Exception{
         UiDevice device=UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         try(ActivityScenario<MainActivity> scenario=ActivityScenario.launch(MainActivity.class)){
@@ -61,12 +45,21 @@ public class PrintSmokeTest {
             Files.write(new File(output,"android-smoke.json").toPath(),decoded.getBytes(StandardCharsets.UTF_8));
             device.takeScreenshot(new File(output,"android-preview.png"));
             assertTrue("Bundled font loaded",checks.getBoolean("fonts"));assertFalse("No clipped questions",checks.getBoolean("overflow"));assertTrue("Whole A4 page fits phone",checks.getBoolean("fits"));assertTrue("Questions keep blank centers",checks.getBoolean("blank"));
-            printPdf(new File(output,"android-12-questions.pdf"));
             js("document.getElementById('print').click()");
             assertTrue("Native print UI opened",device.wait(Until.hasObject(By.pkg("com.android.printspooler")),15000));
             device.takeScreenshot(new File(output,"android-native-print.png"));
             Files.write(new File(output,"android-print-ui.xml").toPath(),"".getBytes(StandardCharsets.UTF_8));device.dumpWindowHierarchy(new File(output,"android-print-ui.xml"));
-            device.pressBack();device.waitForIdle();
+            UiObject2 pdfButton=device.wait(Until.findObject(By.res("com.android.printspooler","print_button").enabled(true)),15000);
+            assertNotNull("Save PDF button",pdfButton);pdfButton.click();
+            UiObject2 filename=device.wait(Until.findObject(By.clazz("android.widget.EditText")),10000);
+            assertNotNull("PDF filename",filename);filename.setText("wado-native-a4.pdf");
+            device.takeScreenshot(new File(output,"android-pdf-save.png"));device.dumpWindowHierarchy(new File(output,"android-pdf-save.xml"));
+            UiObject2 saveButton=device.wait(Until.findObject(By.text(java.util.regex.Pattern.compile("(?i)save"))),10000);
+            assertNotNull("Save PDF action",saveButton);saveButton.click();
+            String pdfPath="";for(int i=0;i<40;i++){pdfPath=device.executeShellCommand("find /sdcard/Download /sdcard/Documents -name wado-native-a4.pdf 2>/dev/null").trim();if(pdfPath.contains("wado-native-a4.pdf"))break;Thread.sleep(250);}
+            assertTrue("Native PDF saved",pdfPath.contains("wado-native-a4.pdf"));
+            Files.write(new File(output,"android-pdf-path.txt").toPath(),pdfPath.getBytes(StandardCharsets.UTF_8));
+            if(!device.wait(Until.hasObject(By.pkg("jp.atugari.wadoprint")),10000))device.pressBack();device.waitForIdle();
             js("document.getElementById('close-preview').click();document.getElementById('export').closest('details').open=true;document.getElementById('export').click()");
             assertTrue("Native save dialog opened",device.wait(Until.hasObject(By.clazz("android.widget.EditText")),10000));
             device.takeScreenshot(new File(output,"android-native-save.png"));device.pressBack();
