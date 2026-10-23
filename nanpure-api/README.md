@@ -135,11 +135,11 @@ URLs, logs, screenshots, a tracked file or chat. Set `WADO_WEB_ENABLED` to the
 string `true`, review the daily allowance, and deploy the Worker. These setup
 steps have **not** been performed; live provider calls are unverified.
 
-The default quota reserves at most 40 upstream requests per UTC day globally,
+The default quotas allow at most 40 upstream requests per UTC day and 900 per UTC month globally,
 with 3 jobs/hour/IP. Each job reserves the worst case (9–17 calls) atomically
-before any provider call; unused reservations are conservatively retained until
-the quota day ends. `WADO_WEB_DAILY_QUERIES` may be 1–1000; it must fit the owner's
-subscription and budget. Basic search, no auto-upgrade, no generated answers,
+before any provider call; completed jobs release unused reservations. Interrupted
+handlers may conservatively retain a reservation until its quota period ends. `WADO_WEB_DAILY_QUERIES` may be 1–1000; it must fit the owner's
+subscription and budget. `WADO_WEB_MONTHLY_QUERIES` is limited to 1–900. Basic search, no auto-upgrade, no generated answers,
 no raw page downloads, at most 5 results/query, at most 3 candidate kanji, and a
 45-second search deadline bound the work. Browser cancellation stops displaying
 late results; already-issued server/provider calls may finish within the
@@ -157,3 +157,5 @@ Unit tests use fake keys and fixture search responses. They check discovery
 without dictionary input, word boundaries, source URLs, incomplete searches,
 response validation, quota enforcement, CORS and key non-disclosure. Passing
 these tests is **not** a live Tavily connectivity test.
+
+Free-plan setup checked 2026-10-23: the official [Researcher pricing page](https://www.tavily.com/pricing) offers 1,000 credits/month without a credit card, and says exhausted free credits stop requests unless the owner upgrades. [Basic search pricing](https://docs.tavily.com/documentation/api-credits) uses one credit per call; this integration explicitly selects basic search. The app's 900-call monthly ceiling leaves a margin but does not account for other uses of the same provider account. Use the free Researcher plan, leave paid/automatic-upgrade options disabled, and check the account's actual remaining quota before enabling. No signup, terms acceptance, paid plan, billing setup or live call has been performed in this task.

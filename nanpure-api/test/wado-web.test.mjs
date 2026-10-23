@@ -28,7 +28,7 @@ test('status and disabled API make no provider requests and never disclose a key
 test('API sends bounded Japanese search requests and returns only attributed evidence',async()=>{
  const{DB,env,request}=setup(),old=globalThis.fetch;let n=0;
  globalThis.fetch=async(url,options)=>{n++;assert.equal(url,'https://api.tavily.com/search');assert.equal(options.headers.Authorization,'Bearer fake-search-key');const body=JSON.parse(options.body);assert.equal(body.language,'ja');assert.equal(body.filter_by_language,true);assert.equal(body.search_depth,'basic');assert.equal(body.auto_parameters,false);assert.equal(body.include_raw_content,false);assert.equal(body.include_answer,false);return Response.json({results:[r('感受 受配')]});};
- try{const response=await worker.fetch(request(p),env),data=await response.json();assert.equal(response.status,200);assert.equal(data.status,'candidates-found');assert.equal(data.candidates[0].answer,'受');assert.equal(n,3);assert.equal(response.headers.get('cache-control'),'no-store');assert.equal(response.headers.get('access-control-allow-origin'),'https://atugari.github.io');assert(!JSON.stringify(data).includes('fake-search-key'));assert.equal(DB.raw.prepare('SELECT count FROM rate_limits WHERE key LIKE ?').get('wado-web-budget:%').count,9);}finally{globalThis.fetch=old;DB.raw.close();}
+ try{const response=await worker.fetch(request(p),env),data=await response.json();assert.equal(response.status,200);assert.equal(data.status,'candidates-found');assert.equal(data.candidates[0].answer,'受');assert.equal(n,3);assert.equal(response.headers.get('cache-control'),'no-store');assert.equal(response.headers.get('access-control-allow-origin'),'https://atugari.github.io');assert(!JSON.stringify(data).includes('fake-search-key'));assert.equal(DB.raw.prepare('SELECT count FROM rate_limits WHERE key LIKE ?').get('wado-web-budget:%').count,3);}finally{globalThis.fetch=old;DB.raw.close();}
 });
 test('untrusted origins, invalid inputs and exhausted global budget never call provider',async()=>{
  const{DB,env,request}=setup({WADO_WEB_DAILY_QUERIES:'8'}),old=globalThis.fetch;let n=0;globalThis.fetch=async()=>{n++;throw Error();};
@@ -42,4 +42,13 @@ test('malformed or failed provider response is incomplete, not a zero-result suc
 test('per-IP request limit blocks additional jobs before upstream calls',async()=>{
  const{DB,env,request}=setup({WADO_WEB_DAILY_QUERIES:'100'}),old=globalThis.fetch;let n=0;globalThis.fetch=async()=>{n++;return Response.json({results:[]});};
  try{for(let i=0;i<3;i++)assert.equal((await worker.fetch(request(p),env)).status,200);assert.equal(n,9);assert.equal((await worker.fetch(request(p),env)).status,429);assert.equal(n,9);}finally{globalThis.fetch=old;DB.raw.close();}
+});
+test('monthly cap prevents provider requests and unused daily reservation releases the month',async()=>{
+ const{DB,env,request}=setup({WADO_WEB_MONTHLY_QUERIES:'8'}),old=globalThis.fetch;let n=0;globalThis.fetch=async()=>{n++;return Response.json({results:[]});};
+ try{assert.equal((await worker.fetch(request(p),env)).status,429);assert.equal(n,0);env.WADO_WEB_MONTHLY_QUERIES='900';env.WADO_WEB_DAILY_QUERIES='8';assert.equal((await worker.fetch(request(p),env)).status,429);assert.equal(n,0);assert.equal(DB.raw.prepare('SELECT count FROM rate_limits WHERE key LIKE ?').get('wado-web-budget-month:%').count,0);}finally{globalThis.fetch=old;DB.raw.close();}
+});
+test('monthly exhaustion is atomic and cannot be bypassed by a different IP',async()=>{
+ const{DB,env,request}=setup(),old=globalThis.fetch;let n=0;globalThis.fetch=async()=>{n++;return Response.json({results:[]});};
+ const month=new Date().toISOString().slice(0,7);DB.raw.prepare('INSERT INTO rate_limits VALUES(?,?,?)').run('wado-web-budget-month:'+month,898,Date.now()+86400000);
+ try{const req=request(p);req.headers.set('cf-connecting-ip','203.0.113.88');assert.equal((await worker.fetch(req,env)).status,429);assert.equal(n,0);assert.equal(DB.raw.prepare('SELECT count FROM rate_limits WHERE key=?').get('wado-web-budget-month:'+month).count,898);}finally{globalThis.fetch=old;DB.raw.close();}
 });
