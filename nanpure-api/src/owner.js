@@ -1,7 +1,7 @@
 import {input,json,fail,owner,hash,validKey,limit} from './http.js';
 import {japanDay} from './shared/daily-plan.js';
 import {usageView} from './shared/provider-usage.js';
-export const apiVersion='1.3.0';
+export const apiVersion='1.3.1';
 const account='3fb1db1d33caddf96fec77fac7d571e6',database='7bb28b61-5fe2-47ce-b71b-b0e04fc3747b';
 export async function visit(request,env) {
   if(request.method!=='POST')fail(405,'この操作は利用できません。');

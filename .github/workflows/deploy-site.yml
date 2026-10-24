@@ -65,6 +65,7 @@ jobs:
           node scripts/check-public-release-policy.cjs
           node scripts/check-nanpure-i18n-delta.cjs
           python3 scripts/check-nanpure-wado-dictionary.py
+          node scripts/check-nanpure-wado-play.cjs
           node scripts/check-nanpure-wado.cjs
           node scripts/check-nanpure-wado-web-ui.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
           node scripts/check-nanpure-magic.cjs

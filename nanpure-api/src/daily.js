@@ -1,9 +1,9 @@
 import{input,json,fail,identity,limit}from'./http.js';
-import{japanDay,dailySummary}from'./shared/daily-plan.js';
+import{japanDay,dailySummary,smallDailyFrom}from'./shared/daily-plan.js';
 import{dailyScore,scoring,scorePeriod,fallbackSizeSql,scoreSql}from'./shared/ranking.js';
 const recordDay=d=>d+':cloudflare-v1';
 const publicPuzzle=p=>{const {solution,...safe}=p;return safe};
-async function puzzle(db,day,level){const r=await db.prepare('SELECT payload FROM daily_assignments WHERE slot=?').bind(day+':'+level).first();if(!r)fail(503,'問題を準備しています。少し待って再試行してください。');return JSON.parse(r.payload)}
+async function puzzle(db,day,level){const r=await db.prepare('SELECT payload FROM daily_assignments WHERE slot=?').bind(day+':'+level).first();if(!r)fail(503,'問題を準備しています。少し待って再試行してください。');const p=JSON.parse(r.payload);if(day>=smallDailyFrom&&day>=japanDay()&&p.n>9)fail(503,'問題を入れ替えています。少し待って再試行してください。');return p}
 export async function daily(request,db){
  const today=japanDay(),player=await identity(request,'x-nanpure-key',request.method!=='GET');
  if(request.method==='GET'){

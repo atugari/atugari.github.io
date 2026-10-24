@@ -8,7 +8,7 @@ import {createRequire} from 'node:module';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {publicReleases,announcementVersion} from './public-release-policy.mjs';
-import {reuseVerifiedShell} from './reuse-nanpure-shell-50.mjs';
+import {reuseVerifiedShell} from './reuse-nanpure-shell-51.mjs';
 import {patchNotebook} from './i18n/patch-notebook.mjs';
 import {buildTranslationAssets} from './i18n/build-assets.mjs';
 import {readSiteContent,searchHead,applicationData,buildSearchPages} from './seo/build-seo.mjs';
@@ -18,7 +18,7 @@ const source=path.resolve(process.argv[2]||'');
 const require=createRequire(path.join(source,'package.json'));
 const esbuild=createRequire(require.resolve('vite'))('esbuild');
 const release=fs.readFileSync(path.join(source,'lib/releases.ts'),'utf8');
-const version='2026.10.24.50';
+const version='2026.10.24.51';
 const allUpdates=JSON.parse(fs.readFileSync(path.join(repo,'scripts/release-notes.json'),'utf8'));
 const publicUpdates=publicReleases(allUpdates);
 if(allUpdates[0]?.version!==version)throw Error('Release notes must match the release version');
@@ -68,6 +68,7 @@ try {
   fs.cpSync(path.join(source,'public',name),path.join(output,name),{recursive:true});
  }
  if(fs.existsSync(path.join(overrides,'public')))fs.cpSync(path.join(overrides,'public'),output,{recursive:true});
+ fs.rmSync(path.join(output,'notebook/wado-web.js'),{force:true});
  fs.writeFileSync(path.join(output,'keyboard-access.js'),['key-bindings.js','keyboard-access.js'].map(name=>fs.readFileSync(path.join(overrides,'public',name),'utf8')).join('\n'));
  await esbuild.build({entryPoints:[path.join(overrides,'lib/board-appearance.ts')],outfile:path.join(output,'notebook/board-appearance.js'),bundle:true,format:'iife',globalName:'NPBoardAppearance',target:['es2022'],minify:true,logLevel:'warning'});
  await esbuild.build({entryPoints:[path.join(repo,'nanpure-api/src/shared/wado-web.js')],outfile:path.join(output,'notebook/wado-web.js'),bundle:true,format:'iife',globalName:'NPWadoWeb',target:['es2022'],minify:false,logLevel:'warning'});
@@ -90,7 +91,7 @@ try {
  fs.writeFileSync(path.join(output,'shell.css'),rewrite(fs.readFileSync(path.join(cssDir,styles[0]),'utf8'))+'\n.sync-code{margin:16px 0;padding:12px;border:1px solid #b8b0a0;border-radius:12px}.sync-code summary{cursor:pointer;font-weight:700}.sync-code textarea,.sync-code input,.legal input{width:100%;box-sizing:border-box;overflow-wrap:anywhere}.owner-logout{margin:16px}.pages-tab-note{display:block;margin-top:6px;font-size:max(var(--ui-min-font,0px),14px)}.pages-online .primary{display:block;text-align:center}.pages-online p{line-height:1.8}.practice{position:relative}.practice-loading{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;text-align:center;background:var(--paper,#f8f5ee);color:var(--ink,#263b30);font-size:max(var(--ui-min-font,0px),16px)}.practice-loading p{line-height:1.7}.practice-loading button{min-height:44px;padding:10px 20px}');
  write('main.tsx',`import React from 'react';import{createRoot}from'react-dom/client';import Game from './app/game';import Privacy from './app/privacy/page';import PagesManager from './app/pages-manager';import{LocaleProvider}from './app/locale-context';import{ReadingRuntime}from './app/reading-settings';import InputAidRuntime from './app/input-aid-runtime';Promise.resolve((window as any).NPI18n?.ready).then(()=>{createRoot(document.getElementById('root')!).render(<LocaleProvider initialLocale="ja"><ReadingRuntime/><InputAidRuntime/>{new URLSearchParams(location.search).get('view')==='privacy'?<Privacy/>:new URLSearchParams(location.search).get('view')==='manage'?<PagesManager/>:<Game initialChallenges={[]}/>}</LocaleProvider>);});`);
  fs.rmSync(path.join(output,'shell'),{recursive:true,force:true});
- if(version==='2026.10.24.50')reuseVerifiedShell(repo,output,allUpdates[0]);
+ if(version==='2026.10.24.51')reuseVerifiedShell(repo,output,allUpdates[0]);
  else await esbuild.build({entryPoints:[path.join(scratch,'main.tsx')],outdir:path.join(output,'shell'),bundle:true,format:'esm',splitting:true,jsx:'automatic',target:['es2022'],minify:true,sourcemap:false,metafile:true,define:{'process.env.NODE_ENV':'"production"'},logLevel:'warning'});
  fs.appendFileSync(path.join(output,'shell.css'),'\n'+fs.readFileSync(path.join(overrides,'public/native-board.css'),'utf8')+'\n'+fs.readFileSync(path.join(overrides,'public/release-info.css'),'utf8'));
  fs.appendFileSync(path.join(output,'shell.css'),'\n'+fs.readFileSync(path.join(overrides,'public/site-intro.css'),'utf8'));

@@ -1,4 +1,4 @@
-import { dailySummary, japanDay } from './daily-plan.js';
+import { dailySummary, japanDay, smallDailyFrom } from './daily-plan.js';
 
 export const scoring = Object.freeze({
   basePoints: [1000, 2000, 3000],
@@ -32,11 +32,13 @@ export function scorePeriod(period, now = Date.now()) {
 // for an imported current-edition attempt whose assignment is temporarily
 // absent, using the same 20-day schedule as dailySummary (never an answer).
 const cycleSize = 20;
-export const fallbackSizeSql = `CASE a.level ${[1, 2, 3].map(level =>
+const legacyFallbackSizeSql = `CASE a.level ${[1, 2, 3].map(level =>
   `WHEN ${level} THEN CASE (CAST(julianday(substr(a.day,1,10)) - 2440587.5 AS INTEGER) % ${cycleSize}) ${Array.from({ length: cycleSize }, (_, day) => {
     const date = new Date(day * 86400000).toISOString().slice(0, 10);
     return `WHEN ${day} THEN ${dailySummary(date, level).n}`;
   }).join(' ')} ELSE 9 END`
 ).join(' ')} ELSE 9 END`;
+
+export const fallbackSizeSql = `CASE WHEN substr(a.day,1,10)>='${smallDailyFrom}' THEN MIN(9,(${legacyFallbackSizeSql})) ELSE (${legacyFallbackSizeSql}) END`;
 
 export const scoreSql = `(level * 1000 + CAST((level * 500.0 * n * n * ${scoring.referenceMsPerCell}) / (n * n * ${scoring.referenceMsPerCell} + elapsed) AS INTEGER))`;

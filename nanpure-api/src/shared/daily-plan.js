@@ -4,6 +4,7 @@ export function japanDay(now = Date.now()) {
 }
 // Keep the new edition's rankings separate; existing attempts are not deleted.
 export function dailyRecordDay(day) { return `${day}:book-v2`; }
+export const smallDailyFrom = '2026-10-25';
 const rotation = [
     ['normal', 6], ['jigsaw', 9], ['killer', 16], ['neighbor', 8],
     ['normal', 12], ['jigsaw', 16], ['killer', 9], ['neighbor', 6],
@@ -23,7 +24,8 @@ function dayNumber(day) {
 export function dailySummary(day, level) {
     if (![1, 2, 3].includes(level))
         throw Error('難易度が不正です');
-    const [kind, n] = rotation[(dayNumber(day) + [0, 5, 10][level - 1]) % rotation.length];
+    const [kind, oldSize] = rotation[(dayNumber(day) + [0, 5, 10][level - 1]) % rotation.length];
+    const n = day >= smallDailyFrom ? Math.min(oldSize, 9) : oldSize;
     const base = `各行・各列に1〜${n}を1回ずつ入れます。`;
     const extra = {
         normal: `太い枠にも1〜${n}を1回ずつ入れます。`,

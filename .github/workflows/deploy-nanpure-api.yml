@@ -80,6 +80,10 @@ jobs:
                   const privateResponse = await fetch(new URL(path, url), { signal: AbortSignal.timeout(10000) });
                   if (privateResponse.status !== 403) throw new Error('Private endpoint authorization check failed.');
                 }
+                for (const method of ['GET','POST']) {
+                  const retired = await fetch(new URL('/api/wado/web-search', url), {method, headers:{Origin:'https://atugari.github.io','Content-Type':'application/json'}, ...(method==='POST'?{body:'{}'}:{})});
+                  if (retired.status !== 410) throw new Error('Retired search endpoint must return 410.');
+                }
                 appendFileSync(process.env.GITHUB_STEP_SUMMARY,
                   `Worker deployed and D1 connected.\n\nHealth check: ${url}\n\nSchema: ${result.schema}; API: ${result.version}; site: ${result.siteVersion}. Owner endpoints reject unauthenticated requests.\n`);
                 process.exit(0);
