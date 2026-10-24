@@ -1,6 +1,7 @@
 // Extend the verified client at explicit action boundaries; keep old releases immutable.
 import fs from 'node:fs';import path from 'node:path';import crypto from 'node:crypto';import{fileURLToPath}from'node:url';
 import{publicReleases,announcementVersion}from'./public-release-policy.mjs';
+import{patchShirupure,patchNotebookApp}from'./i18n/patch-notebook.mjs';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'),previous='2026.10.24.51',version='2026.10.24.52',oldBase='/nanpure/releases/'+previous+'/',base='/nanpure/releases/'+version+'/',out=path.join(root,base),prior=JSON.parse(fs.readFileSync(path.join(root,'nanpure/release-manifest.json')));
 if(prior.version!==previous&&prior.version!==version)throw Error('Unexpected previous release');
 const notes=JSON.parse(fs.readFileSync(path.join(root,'scripts/release-notes.json')));if(notes[0].version!==version)throw Error('Missing release note');
@@ -17,6 +18,7 @@ for(const name of ['app.js','shirupure.html','crossword-ui.js','tenbin-ui.js','p
  if(name.endsWith('.html')){text=text.replace('<head>','<head><meta name="robots" content="noindex, follow">').replace('</head>',`<script defer src="${base}keyboard-access.js"></script></head>`);}
  fs.writeFileSync(path.join(out,'notebook',name),text);
 }
+patchShirupure(path.join(out,'notebook'));patchNotebookApp(path.join(out,'notebook'));
 // Keep the same translation dictionaries. Newly introduced collection names are stable Japanese title names.
 const shellFile=path.join(out,'shell/main.js');let shell=fs.readFileSync(shellFile,'utf8');
 function patch(a,b){if(shell.split(a).length!==2)throw Error('Shell anchor changed: '+a.slice(0,100));shell=shell.replace(a,b);}

@@ -16,11 +16,7 @@ export function patchNotebook(directory) {
   replace('access-tools.js','const t=s=>window.NPI18n?.t(s)||s;','const t=s=>s;');
   replace('play-options.js','function t(s){return window.NPI18n?.t(s)||s}','function t(s){return s}');
 
-  // Replace the former no-op settings adapter with the shared audio bridge.
-  replace('shirupure.html','<script>window.ShiruAudio={available:()=>!!window.NPSiteAudio,settings:()=>{},gesture:()=>window.NPSiteAudio?.unlock(),effect:name=>window.NPSiteAudio?.effect(({clear:"complete",draw:"input",join:"note",color:"note",erase:"erase",undo:"undo",next:"next"})[name]||"input")};</script>','<script src="shirupure-audio.js"></script>');
-  replace('shirupure.html','g.ShiruGame={valid,edges};applyTheme();audio.settings(data.settings);home();','g.ShiruGame={valid,edges};applyTheme();audio.connect(data.settings);home();');
-  replace('shirupure.html','save();applyTheme();audio.settings(data.settings);home();','save();applyTheme();audio.connect(data.settings);home();');
-  replace('shirupure.html',"else window.NPSiteAudio?.openPanel();}","else legacySound();}");
+  patchShirupure(directory);
 
   patchNotebookApp(directory);
 
@@ -51,4 +47,15 @@ export function patchNotebookApp(directory) {
   replace('app.js','u(window.NPI18n?NPI18n.t("ミス"):"ミス")','u("ミス")');
   replace('app.js','Ue(e+" <small>問</small>","pick-count"','Ue(e+" 問","pick-count"');
   replace("app.js","d+='<p class=\"selection-count\" role=\"status\">条件に合う問題 <b>'+t.length+\"問</b> ／ この中で選択済み \"+l+\"問\"+(L.ids.length>l?\"<br>条件の外でも \"+(L.ids.length-l)+\"問 選択中\":\"\")+\"</p>\"","d+='<p class=\"selection-count\" role=\"status\">条件に合う問題 <b>'+t.length+\"問</b> ／ この中で選択済み <span>\"+l+\"問</span>\"+(L.ids.length>l?\"<br>条件の外でも <span>\"+(L.ids.length-l)+\"問</span> 選択中\":\"\")+\"</p>\"");
+}
+
+// Reapply the shared audio adapter when a release copies the maintained course source.
+export function patchShirupure(directory){
+  function replace(file,from,to){const target=path.join(directory,file),source=fs.readFileSync(target,'utf8');if(source.split(from).length!==2)throw Error('Shirupure audio anchor changed: '+from.slice(0,80));fs.writeFileSync(target,source.replace(from,to));}
+  // Replace the former no-op settings adapter with the shared audio bridge.
+  replace('shirupure.html','<script>window.ShiruAudio={available:()=>!!window.NPSiteAudio,settings:()=>{},gesture:()=>window.NPSiteAudio?.unlock(),effect:name=>window.NPSiteAudio?.effect(({clear:"complete",draw:"input",join:"note",color:"note",erase:"erase",undo:"undo",next:"next"})[name]||"input")};</script>','<script src="shirupure-audio.js"></script>');
+  replace('shirupure.html','g.ShiruGame={valid,edges};applyTheme();audio.settings(data.settings);home();','g.ShiruGame={valid,edges};applyTheme();audio.connect(data.settings);home();');
+  replace('shirupure.html','save();applyTheme();audio.settings(data.settings);home();','save();applyTheme();audio.connect(data.settings);home();');
+  replace('shirupure.html',"else window.NPSiteAudio?.openPanel();}","else legacySound();}");
+
 }
