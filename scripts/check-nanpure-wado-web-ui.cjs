@@ -21,11 +21,12 @@ require('./client-overrides/public/notebook/wado-engine.js');require('./client-o
   const entries=web.words(requests.at(-1),'龘').map(w=>({...w,sources:[{title:'Fixture source <img src=x>',url:mode==='unsafe'?'javascript:alert(1)':'https://example.test/source'}]}));
   return Response.json({version:1,provider:'Tavily',checkedAt:Date.now(),status:mode==='empty'?'no-candidates-found':'candidates-found',exhaustive:false,candidates:mode==='empty'?[]:[{answer:'龘',words:entries,allWordsFound:true}],queries:[],failedQueries:0,truncated:false});
  };
- window.scrollTo=()=>{};for(const node of document.querySelectorAll('*'))node.focus=()=>{};
- const context=vm.createContext({window,document,NPWado,WadoClues,WadoPaper,NPWadoWeb:web,fetch,navigator:{},localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)},location:{replace(){}},Option:function(text,value){const node=document.createElement('option');node.textContent=text;node.value=String(value);return node;},AbortController,AbortSignal,Worker:class{},Date,setTimeout,clearTimeout,console});
+ window.scrollTo=()=>{};window.CustomEvent=class extends window.Event{constructor(type,opts){super(type);this.detail=opts?.detail;}};for(const node of document.querySelectorAll('*'))node.focus=()=>{};
+ const context=vm.createContext({window,document,CustomEvent:window.CustomEvent,NPWado,WadoClues,WadoPaper,NPWadoWeb:web,fetch,navigator:{},localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)},location:{replace(){}},Option:function(text,value){const node=document.createElement('option');node.textContent=text;node.value=String(value);return node;},AbortController,AbortSignal,Worker:class{},Date,setTimeout,clearTimeout,console});
  const settle=async()=>{for(let i=0;i<4;i++)await new Promise(setImmediate);};
  const click=node=>node.dispatchEvent(new window.Event('click',{bubbles:true}));
  vm.runInContext(fs.readFileSync('scripts/client-overrides/public/notebook/wado-workspace.js','utf8'),context);
+ vm.runInContext(fs.readFileSync('scripts/client-overrides/public/notebook/wado-live.js','utf8'),context);
  vm.runInContext(fs.readFileSync('scripts/client-overrides/public/notebook/wado-ui.js','utf8'),context);await settle();
  assert.equal(document.querySelector('[data-wado-play]'),null,'screen play entry is removed');
  assert(document.querySelector('.wado-question'),'saved puzzle loads');assert.equal(document.querySelector('#wado-web-after').disabled,false);
