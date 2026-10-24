@@ -40,7 +40,7 @@ if([4,6,8].every(n=>(s.counts['perfect:max:normal:'+n]||0)>0))secret(s,98);if(['
 function apply(s,c,type,d={},at=Date.now()){
 if(!Number.isFinite(at))return[];const id=typeof d.id==='string'?d.id:'';
 if(type==='start'&&id){const previous=s.active[id],a=active(s,d);if(previous){a.resumed=true;a.resumedDay=a.savedDay||date(at);}else{a.observed=d.fresh===true;a.timerHidden=!!d.timerHidden;a.silent=!!d.silent;}a.savedDay=date(at);a.lastAt=at;if(d.filtered)a.filtered=true;}
-else if(type==='input'&&id){const a=active(s,d);a.lastAt=at;a.savedDay=date(at);if(d.timerHidden===false)a.timerHidden=false;if(d.silent===false)a.silent=false;if(d.memo){a.notes++;}else{if(d.value===0&&d.old)a.erased=true;if(d.value>0&&d.value!==d.old){if(d.correct===false)a.errors++;if(!d.byHint){if(!a.filled.includes(d.cell)&&d.correct){a.filled.push(d.cell);a.first.push({i:d.cell,v:d.value,at});}if(!a.modes.includes(d.mode))a.modes.push(d.mode);if(!a.sources.includes(d.source))a.sources.push(d.source);if(a.undoCell!==undefined&&d.correct&&d.cell!==a.undoCell)a.afterUndo=true;if(a.afterUndo&&d.cell===a.undoCell&&d.correct)a.undoRestored=true;}}if(a.hintCell===d.cell&&d.value!==a.hintValue)a.hintErased=true;}}
+else if(type==='input'&&id){const a=active(s,d);a.lastAt=at;a.savedDay=date(at);if(d.timerHidden===false)a.timerHidden=false;if(d.silent===false)a.silent=false;if(d.memo){if(d.value>0&&d.noteAdded!==false)a.notes++;}else{if(d.value===0&&d.old)a.erased=true;if(d.value>0&&d.value!==d.old){if(d.correct===false)a.errors++;if(!d.byHint){if(!a.filled.includes(d.cell)&&d.correct){a.filled.push(d.cell);a.first.push({i:d.cell,v:d.value,at});}if(!a.modes.includes(d.mode))a.modes.push(d.mode);if(!a.sources.includes(d.source))a.sources.push(d.source);if(a.undoCell!==undefined&&d.correct&&d.cell!==a.undoCell)a.afterUndo=true;if(a.afterUndo&&d.cell===a.undoCell&&d.correct)a.undoRestored=true;}}if(a.hintCell===d.cell&&d.value!==a.hintValue)a.hintErased=true;}}
 else if(type==='options'&&id){const a=active(s,d);if(d.timerHidden===false)a.timerHidden=false;if(d.silent===false)a.silent=false;}
 else if(type==='hint'&&id){const a=active(s,d);a.hints++;a.lastHint=at;if(d.cell!==undefined){a.hintCell=d.cell;a.hintValue=d.value;}if(d.technique&&s.flags['guide:'+d.technique])a.pendingGuide=d.technique;}
 else if(type==='guide-apply'&&id){const a=active(s,d);if(d.technique&&s.flags['guide:'+d.technique]&&!a.guide.includes(d.technique))a.guide.push(d.technique);}
@@ -49,7 +49,7 @@ else if(type==='notes-cleared'&&id)active(s,d).notesClearedAt=at;
 else if(type==='clear'&&id&&d.valid===true&&!d.auto&&!d.revealed&&d.game!=='wado'&&once(s,'clear',id)){
 const a=active(s,d);d={...d,id,at,generated:!!s.flags['generated:'+id],hints:Math.max(d.hints||0,a.hints),errors:Math.max(d.errors||0,a.errors)};
 if(d.game==='sudoku'){
-if(!c.kinds.includes(d.kind)||!Number.isInteger(d.n)||!Number.isInteger(d.level))return[];
+if(typeof d.kind!=='string'||!Number.isInteger(d.n)||!Number.isInteger(d.level))return[];
 family(s,'clear:all',{});inc(s,'clear:kind:'+d.kind);if(d.kind==='normal')inc(s,'clear:normal:size:'+d.n);if(d.level>0)inc(s,'clear:first-level:'+d.kind+':'+d.n+':'+d.level);
 if(!d.hints){inc(s,'nohint:all');inc(s,'nohint:kind:'+d.kind);inc(s,'nohint:level:'+d.kind+':'+d.n+':'+d.level);if(d.level===c.limits[d.kind+':'+d.n])inc(s,'nohint:max:'+d.kind+':'+d.n);}
 if(d.errorKnown&&d.errors===0){inc(s,'noerror:all');inc(s,'noerror:kind:'+d.kind);if(!d.hints){inc(s,'perfect:all');inc(s,'perfect:kind:'+d.kind);if(d.level===c.limits[d.kind+':'+d.n])inc(s,'perfect:max:'+d.kind+':'+d.n);}}
@@ -69,7 +69,7 @@ inc(s,'tenbin:clear');if(d.level===10&&d.choices===1)inc(s,'tenbin:max-first');i
 }
 s.history.push({game:d.game,kind:d.kind,n:d.n,level:d.level,tier:d.tier,daily:d.daily,day:d.day,at});s.history=s.history.slice(-200);delete s.active[id];
 }else if(type==='generated'&&id&&d.valid===true&&once(s,'generated',id)){
-if(d.game==='wado')inc(s,'wado:generated');else if(d.game==='sudoku'&&c.kinds.includes(d.kind)){inc(s,'generation:問題を生む手');if(d.n===9)inc(s,'generation:九つの枠の編集室');if(d.n>=16)inc(s,'generation:大判の設計机');distinct(s,'library:問題帳の広がり',d.kind);distinct(s,'generated:kinds',d.kind);s.flags['generated:'+id]=true;}
+if(d.game==='wado')inc(s,'wado:generated');else if(d.game==='sudoku'&&typeof d.kind==='string'){inc(s,'generation:問題を生む手');if(d.n===9)inc(s,'generation:九つの枠の編集室');if(d.n>=16)inc(s,'generation:大判の設計机');if(c.kinds.includes(d.kind))distinct(s,'library:問題帳の広がり',d.kind);distinct(s,'generated:kinds',d.kind);s.flags['generated:'+id]=true;}
 }else if(type==='generation-job'&&d.valid&&once(s,'generation-job',id)){
 for(const[k,v]of Object.entries({'束ねてつくる':d.count>=10,'ルールを編む':d.kinds>=3,'作問の続きから':d.resumed&&d.count>0,'不足を補う手':d.refill&&d.count>0,'難しさの見本帳':d.levels>=3}))if(v)inc(s,'generation:'+k);if(d.rested&&d.count>0)secret(s,68);if(d.refill&&d.count>0&&s.flags.emptyRefill)secret(s,69);
 }else if(type==='empty-refill')s.flags.emptyRefill=true;
