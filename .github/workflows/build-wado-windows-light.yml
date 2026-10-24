@@ -1,0 +1,61 @@
+name: Build compact Wado Print Windows package
+on:
+  push:
+    branches: [codex/wado-print-native]
+    paths: ['wado-print-app/windows-light/**', 'wado-print-app/windows/Program.cs', '.github/workflows/build-wado-windows-light.yml']
+permissions:
+  contents: read
+concurrency:
+  group: wado-print-windows-light
+  cancel-in-progress: true
+jobs:
+  windows-light:
+    runs-on: windows-2022
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-dotnet@v4
+        with: {dotnet-version: '8.0.x'}
+      - name: Build complete offline UI
+        run: |
+          node wado-print-app/tools/check-hints.cjs
+          python wado-print-app/build_web.py
+      - name: Build compact native Windows app
+        run: dotnet publish wado-print-app/windows-light/WadoPrint.csproj -c Release -o wado-windows-light
+      - name: Ensure official WebView2 runtime
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "${env:ProgramFiles(x86)}\Microsoft\EdgeWebView\Application")) {
+            Invoke-WebRequest 'https://go.microsoft.com/fwlink/p/?LinkId=2124703' -OutFile "$env:RUNNER_TEMP\WebView2Setup.exe"
+            Start-Process "$env:RUNNER_TEMP\WebView2Setup.exe" -ArgumentList '/silent /install' -Wait
+          }
+      - name: Launch native app and verify live preview and A4 PDF
+        shell: pwsh
+        run: |
+          $evidence = Join-Path $PWD 'qa-light'
+          New-Item -ItemType Directory -Force $evidence | Out-Null
+          $process = Start-Process './wado-windows-light/WadoPrint.exe' -ArgumentList @('--smoke-test', $evidence) -PassThru
+          if (-not $process.WaitForExit(120000)) { $process.Kill(); throw 'Compact desktop smoke test timed out' }
+          if ($process.ExitCode -ne 0) { Get-Content "$evidence/windows-failure.txt" -ErrorAction SilentlyContinue; throw "Compact desktop smoke test failed: $($process.ExitCode)" }
+          Get-Content "$evidence/windows-smoke.json"
+      - name: Package one small ZIP
+        shell: pwsh
+        run: |
+          Copy-Item 'wado-print-app/windows-light/README.txt' 'wado-windows-light/README.txt'
+          Copy-Item 'wado-print-app/web-source/licenses.txt' 'wado-windows-light/licenses.txt'
+          Get-ChildItem wado-windows-light -Recurse -Include *.pdb,*.xml | Remove-Item
+          Compress-Archive -Path wado-windows-light/* -DestinationPath WadoPrint-2.6.0-Windows.zip -CompressionLevel Optimal
+          $zip = Get-Item WadoPrint-2.6.0-Windows.zip
+          if ($zip.Length -gt 15000000) { throw 'Compact download must be under 15 MB' }
+          Get-FileHash WadoPrint-2.6.0-Windows.zip -Algorithm SHA256
+          Write-Output "Download bytes: $($zip.Length)"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: wado-print-windows-2.6.0-light
+          path: |
+            WadoPrint-2.6.0-Windows.zip
+            qa-light/
+          retention-days: 14
+          if-no-files-found: error

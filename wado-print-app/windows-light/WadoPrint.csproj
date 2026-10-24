@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+ <PropertyGroup>
+  <OutputType>WinExe</OutputType><TargetFramework>net48</TargetFramework><UseWindowsForms>true</UseWindowsForms><Nullable>enable</Nullable><ImplicitUsings>disable</ImplicitUsings><LangVersion>latest</LangVersion>
+  <AssemblyName>WadoPrint</AssemblyName><AssemblyTitle>漢字穴埋め 印刷帳</AssemblyTitle><Product>漢字穴埋め 印刷帳</Product><Version>2.6.0</Version><FileVersion>2.6.0.1</FileVersion>
+  <PlatformTarget>x64</PlatformTarget><SelfContained>false</SelfContained><ApplicationManifest>app.manifest</ApplicationManifest><AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+ </PropertyGroup>
+ <ItemGroup><Compile Include="../windows/Program.cs" Link="Program.cs"/><Reference Include="System.Web.Extensions"/><PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2903.40"/><EmbeddedResource Include="../web/index.html" LogicalName="WadoPrint.index.html"/></ItemGroup>
+</Project>
