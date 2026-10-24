@@ -2,7 +2,7 @@ name: Build compact Wado Print Windows package
 on:
   push:
     branches: [codex/wado-print-native]
-    paths: ['wado-print-app/windows-light/**', 'wado-print-app/windows/Program.cs', '.github/workflows/build-wado-windows-light.yml']
+    paths: ['wado-print-app/**', '.github/workflows/build-wado-windows-light.yml']
 permissions:
   contents: read
 concurrency:
@@ -44,6 +44,9 @@ jobs:
         run: |
           Copy-Item 'wado-print-app/windows-light/README.txt' 'wado-windows-light/README.txt'
           Copy-Item 'wado-print-app/web-source/licenses.txt' 'wado-windows-light/licenses.txt'
+          $sdk = Join-Path $env:USERPROFILE '.nuget/packages/microsoft.web.webview2/1.0.2903.40'
+          Copy-Item "$sdk/LICENSE.txt" 'wado-windows-light/WebView2-LICENSE.txt'
+          Copy-Item "$sdk/NOTICE.txt" 'wado-windows-light/WebView2-NOTICE.txt'
           Get-ChildItem wado-windows-light -Recurse -Include *.pdb,*.xml | Remove-Item
           Compress-Archive -Path wado-windows-light/* -DestinationPath WadoPrint-2.6.0-Windows.zip -CompressionLevel Optimal
           $zip = Get-Item WadoPrint-2.6.0-Windows.zip
