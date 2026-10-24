@@ -63,6 +63,8 @@ jobs:
           npm install --prefix "$RUNNER_TEMP/nanpure-browser" --no-audit --no-fund playwright@1.62.1 linkedom@0.18.13
           npm run build --prefix nanpure-api
           node scripts/check-public-release-policy.cjs
+          node scripts/check-nanpure-achievements.cjs
+          node scripts/check-nanpure-achievements-ui.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
           node scripts/check-nanpure-i18n-delta.cjs
           python3 scripts/check-nanpure-wado-dictionary.py
           node scripts/check-nanpure-wado-play.cjs

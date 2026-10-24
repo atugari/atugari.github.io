@@ -79,7 +79,7 @@ const npKeys=npCreateGameKeyboard({root:()=>t('app'),items:'#cw-play .board butt
     function f() { if (window.NPRecovery && NPRecovery.isRestoring())
         return !0; if (c)
         return !1; try {
-        return i.save(l), !0;
+        if(o)window.NPAchievementHooks?.crosswordEdit(o);return i.save(l), !0;
     }
     catch (e) {
         return u("保存できませんでした。アプリを閉じる前に、空き容量を確認して「保存を再試行」を押してください。"), !1;
@@ -118,7 +118,7 @@ const npKeys=npCreateGameKeyboard({root:()=>t('app'),items:'#cw-play .board butt
     function clueList(){return '<div class="cluelist">'+[0,1].map(direction=>`<section><h2>${direction?'タテ':'ヨコ'}のカギ</h2>${o.entries.map((entry,index)=>entry.d===direction?p(`<b>${entry.num}</b>　${n(entry.clue)} <small>（${entry.answer.length}文字）</small>`,"clue","",`data-entry="${index}" aria-pressed="${index===r}"`):'').join('')}</section>`).join('')+'</div>'}
     function draftKey(){return o.id+':'+r}
     function g(){
-        if(!o)return h();s='play';if(!o.entries[r])r=0;
+        if(!o)return h();window.NPAchievementHooks?.crossword?.(o);s='play';if(!o.entries[r])r=0;
         window.NPRecovery?.track('crossword',o.id,'クロスワード '+e.label(o),o.done,o.options);
         if(t('cw-play')?.dataset.puzzle!==o.id){
             m(`<section id="cw-play" class="cw-play" data-puzzle="${n(o.id)}"><header class="cw-play-head"><strong>クロスワード <small>${o.n}×${o.n}</small></strong><output id="cw-progress"></output></header><div class="cw-board-area">${w()}</div><section class="cw-entry" id="entry-card"><div class="cw-clue-row">${p('‹','previous','cw-arrow','type="button" aria-label="前のカギ"')}<div class="cw-clue-copy"><b class="badge" id="cw-clue-badge"></b><span id="cw-clue-text"></span><small id="cw-word-length"></small></div>${p('›','next','cw-arrow','type="button" aria-label="次のカギ"')}</div><form id="entry-form"><label class="cw-sr-only" for="answer">選んだカギの言葉を入力</label><div class="cw-input-row"><input class="entry" id="answer" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="40" enterkeyhint="done" aria-describedby="cw-clue-text cw-word-length" placeholder="ひらがなでもOK">${p('入れる','put','primary','type="submit"')}${p('入力終了','keyboard-done','cw-keyboard-done','type="button"')}</div></form></section><nav class="cw-actions" aria-label="問題の操作">${p('答え合わせ','check','primary')}${p('カギ一覧','clues')}${p('その他','more')}</nav><p class="cw-live" id="cw-live" role="status" aria-live="polite"></p></section>`);
@@ -232,7 +232,7 @@ const npKeys=npCreateGameKeyboard({root:()=>t('app'),items:'#cw-play .board butt
                 void 0 !== i && (o.input[i] = o.grid[i], o.hints++, drafts.delete(draftKey()), o.done = o.grid.every((e, i) => !e || e === o.input[i]), f()), t("dialog").close(), g(), u(void 0 === i ? "この言葉は合っています。" : "1文字を入れました。");
             }
             else
-                "reveal" === w ? x("<h2>解答を表示しますか？</h2><p>すべてのマスに答えが入り、完成扱いになります。</p>" + p("解答を表示する", "reveal-ok", "primary wide")) : "reveal-ok" === w ? (o.input = o.grid.slice(), drafts.clear(), o.hints++, o.done = !0, f(), t("dialog").close(), g()) : "delete" === w ? x("<h2>完成済みの問題を削除？</h2><p>未完成の問題は残します。削除は取り消せません。</p>" + p("完成済みを削除する", "delete-ok", "wide")) : "delete-ok" === w ? (l.list = l.list.filter(e => !e.done), o = l.list.find(e => e.id === l.current) || null, o || (l.current = null), f(), t("dialog").close(), k()) : "print-menu" === w ? x("<h2>印刷する内容</h2>" + p("問題だけ", "print-question", "wide") + p("問題と解答（別ページ）", "print-answer", "wide")) : "print-question" === w || "print-answer" === w ? (z = "print-answer" === w, t("dialog").close(), s = "print", m('<div class="print-controls">' + $("印刷プレビュー") + p("A4で印刷する", "print-now", "primary wide") + '<p class="muted">問題' + (z ? "と別ページの解答" : "のみ") + "を印刷します。</p></div>"), document.body.classList.add("print-preview"), t("paper").innerHTML = L(!1) + (z ? L(!0) : "")) : "print-now" === w && ("file:" === location.protocol ? location.href = "nanpure://print/a4" : window.print());
+                "reveal" === w ? x("<h2>解答を表示しますか？</h2><p>すべてのマスに答えが入り、完成扱いになります。</p>" + p("解答を表示する", "reveal-ok", "primary wide")) : "reveal-ok" === w ? (o.titleRevealed=true,o.input = o.grid.slice(), drafts.clear(), o.hints++, o.done = !0, f(), t("dialog").close(), g()) : "delete" === w ? x("<h2>完成済みの問題を削除？</h2><p>未完成の問題は残します。削除は取り消せません。</p>" + p("完成済みを削除する", "delete-ok", "wide")) : "delete-ok" === w ? (l.list = l.list.filter(e => !e.done), o = l.list.find(e => e.id === l.current) || null, o || (l.current = null), f(), t("dialog").close(), k()) : "print-menu" === w ? x("<h2>印刷する内容</h2>" + p("問題だけ", "print-question", "wide") + p("問題と解答（別ページ）", "print-answer", "wide")) : "print-question" === w || "print-answer" === w ? (z = "print-answer" === w, t("dialog").close(), s = "print", m('<div class="print-controls">' + $("印刷プレビュー") + p("A4で印刷する", "print-now", "primary wide") + '<p class="muted">問題' + (z ? "と別ページの解答" : "のみ") + "を印刷します。</p></div>"), document.body.classList.add("print-preview"), t("paper").innerHTML = L(!1) + (z ? L(!0) : "")) : "print-now" === w && ("file:" === location.protocol ? location.href = "nanpure://print/a4" : window.print());
         }
         catch (i) {
             u("操作できませんでした：" + i.message);

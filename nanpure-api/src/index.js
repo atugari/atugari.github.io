@@ -2,9 +2,10 @@ import{Problem,json,siteOrigin,fail}from'./http.js';
 import{daily,ranking,archive}from'./daily.js';
 import{contact,contactImage,admin}from'./contact.js';
 import{cloud}from'./cloud.js';
+import{achievements}from'./achievements.js';
 import{importLegacy}from'./import.js';
 import{visit,overview,apiVersion}from'./owner.js';
-const tables=['attempts','daily_stock','daily_assignments','daily_maintenance','inquiries','cloud_saves','rate_limits','contact_images','cloud_uploads','cloud_chunks','visit_sessions','visit_browsers','visit_days','owner_usage_snapshots'];
+const tables=['attempts','daily_stock','daily_assignments','daily_maintenance','inquiries','cloud_saves','rate_limits','contact_images','cloud_uploads','cloud_chunks','visit_sessions','visit_browsers','visit_days','owner_usage_snapshots','achievement_members','achievement_owned'];
 export default {async fetch(request,env){let response;const url=new URL(request.url),origin=request.headers.get('origin');
  try{
   if(origin!==null&&origin!==siteOrigin&&origin!==url.origin)fail(403,'送信元を確認できません。');
@@ -26,6 +27,7 @@ export default {async fetch(request,env){let response;const url=new URL(request.
    else if(url.pathname==='/api/daily/archive'&&request.method==='GET')response=await archive(url,env.DB);
    else if(url.pathname==='/api/contact')response=await contact(request,env,url);
    else if(url.pathname==='/api/contact/image'&&request.method==='GET')response=await contactImage(request,env,url);
+   else if(url.pathname==='/api/achievements')response=await achievements(request,env.DB);
    else if(url.pathname==='/api/cloud')response=await cloud(request,env.DB,url);
    else if(url.pathname==='/api/admin')response=await admin(request,env);
    else if(url.pathname==='/api/admin/import'&&request.method==='POST')response=await importLegacy(request,env);

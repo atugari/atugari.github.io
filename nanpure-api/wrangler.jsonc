@@ -14,7 +14,7 @@
     }
   ],
   "vars": {
-    "SITE_VERSION": "2026.10.24.51",
+    "SITE_VERSION": "2026.10.24.52",
     "OWNER_KEY_HASH": "52e16ad28f95ef010e4eac362d982d280be868fe273a486f9f845243d0ad938b"
   }
 }

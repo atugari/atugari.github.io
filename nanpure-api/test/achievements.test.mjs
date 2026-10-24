@@ -1,0 +1,9 @@
+import test from 'node:test';import assert from 'node:assert/strict';import{validateAchievements,achievements}from'../src/achievements.js';
+import{DatabaseSync}from'node:sqlite';import fs from'node:fs';
+test('title IDs are bounded, deduplicated and reject mixed or oversized data',()=>{assert.deepEqual(validateAchievements({version:1,owned:['NP-1000','NP-0001','NP-0001']}),['NP-0001','NP-1000']);for(const owned of [['NP-0000'],['NP-1001'],['NP-0001',null],Array(1001).fill('NP-0001')])assert.throws(()=>validateAchievements({version:1,owned}));assert.throws(()=>validateAchievements({version:2,owned:[]}));});
+test('anonymous ownership uses one eligible save per token and never returns identities',async()=>{
+ const sql=new DatabaseSync(':memory:');sql.exec(fs.readFileSync(new URL('../migrations/0005_achievements.sql',import.meta.url),'utf8'));sql.exec('CREATE TABLE rate_limits(key TEXT PRIMARY KEY,count INTEGER,expires INTEGER)');
+ const db={prepare(query){const stmt=sql.prepare(query);let args=[];const obj={bind(...v){args=v;return obj},async first(){return stmt.get(...args)||null},async all(){return{results:stmt.all(...args)}},async run(){return stmt.run(...args)}};return obj},async batch(stmts){sql.exec('BEGIN');try{for(const s of stmts)await s.run();sql.exec('COMMIT')}catch(e){sql.exec('ROLLBACK');throw e}}};
+ const post=(key,owned)=>achievements(new Request('https://api.test/api/achievements',{method:'POST',headers:{'X-Cloud-Key':key.repeat(64),'Content-Type':'application/json'},body:JSON.stringify({version:1,owned})}),db).then(r=>r.json());
+ let r=await post('a',['NP-0001']);assert.equal(r.total,1);assert.equal(r.counts['NP-0001'],1);r=await post('a',['NP-0002']);assert.equal(r.total,1);assert.equal(r.counts['NP-0001'],1);r=await post('b',[]);assert.equal(r.total,2);assert.equal(r.counts['NP-0001'],1);assert.equal(Object.keys(r.counts).length,1000);assert(!JSON.stringify(r).includes('identity'));assert(r.updatedAt>0);
+});

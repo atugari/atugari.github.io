@@ -18,7 +18,7 @@ const source=path.resolve(process.argv[2]||'');
 const require=createRequire(path.join(source,'package.json'));
 const esbuild=createRequire(require.resolve('vite'))('esbuild');
 const release=fs.readFileSync(path.join(source,'lib/releases.ts'),'utf8');
-const version='2026.10.24.51';
+const version='2026.10.24.52';
 const allUpdates=JSON.parse(fs.readFileSync(path.join(repo,'scripts/release-notes.json'),'utf8'));
 const publicUpdates=publicReleases(allUpdates);
 if(allUpdates[0]?.version!==version)throw Error('Release notes must match the release version');
@@ -71,7 +71,6 @@ try {
  fs.rmSync(path.join(output,'notebook/wado-web.js'),{force:true});
  fs.writeFileSync(path.join(output,'keyboard-access.js'),['key-bindings.js','keyboard-access.js'].map(name=>fs.readFileSync(path.join(overrides,'public',name),'utf8')).join('\n'));
  await esbuild.build({entryPoints:[path.join(overrides,'lib/board-appearance.ts')],outfile:path.join(output,'notebook/board-appearance.js'),bundle:true,format:'iife',globalName:'NPBoardAppearance',target:['es2022'],minify:true,logLevel:'warning'});
- await esbuild.build({entryPoints:[path.join(repo,'nanpure-api/src/shared/wado-web.js')],outfile:path.join(output,'notebook/wado-web.js'),bundle:true,format:'iife',globalName:'NPWadoWeb',target:['es2022'],minify:false,logLevel:'warning'});
  fs.copyFileSync(path.join(repo,'scripts/i18n/runtime.js'),path.join(output,'notebook/i18n.js'));
  buildTranslationAssets(path.join(output,'notebook'),version,{previousDirectory:path.join(repo,'nanpure/releases/2026.10.23.43/notebook')});
  patchNotebook(path.join(output,'notebook'));
@@ -81,7 +80,7 @@ try {
  for(const file of walk(path.join(output,'notebook')).filter(file=>file.endsWith('.html'))){
   let text=fs.readFileSync(file,'utf8');
   if(!/<meta[^>]+name=["']robots["']/i.test(text))text=text.replace(/<head([^>]*)>/i,'<head$1><meta name="robots" content="noindex, follow">');
-  text=text.replace('</head>',`<script defer src="${base}keyboard-access.js"></script></head>`);
+  text=text.replace('</head>',`<script defer src="${base}achievements-core.js"></script><script defer src="${base}achievements-catalog.js"></script><script defer src="${base}achievements.js"></script><script defer src="${base}achievements-hooks.js"></script><script defer src="${base}keyboard-access.js"></script>`+["achievements-core.js","achievements-catalog.js","achievements.js","achievements-hooks.js"].map(n=>`<script defer src="${base+n}"></script>`).join("")+"</head>");
   if(text.includes('access-tools.js'))text=text.replace('<script src="access-tools.js"></script>','<script src="board-appearance.js"></script><script src="access-tools.js"></script><script src="appearance-controls.js"></script>');
   fs.writeFileSync(file,text);
  }
@@ -111,7 +110,7 @@ try {
  const protection=spawnSync(process.execPath,[path.join(source,'scripts/protect-client.mjs'),output],{cwd:source,stdio:'inherit'});
  if(protection.error||protection.status!==0)throw Error('Distribution protection failed: '+(protection.error?.message||protection.status));
  const siteContent=readSiteContent(repo);
- const html=`<!doctype html><html lang="ja" data-site-theme="notebook"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="referrer" content="no-referrer"><meta name="theme-color" content="#f4efe3">${searchHead({title:siteContent.title,description:siteContent.description,icon:base+'favicon.svg',graph:[applicationData(siteContent)]})}<script>if(['manage','backup','personal','contact','replies'].includes(new URLSearchParams(location.search).get('view')))document.querySelector('meta[name="robots"]').content='noindex, follow';</script><script src="${base}site-theme.js"></script><script src="${base}notebook/i18n-data.js"></script><script src="${base}notebook/i18n.js"></script><script src="${base}ui-text.js"></script><link rel="stylesheet" href="${base}shell.css"></head><body><div id="root">${homeHTML}</div><noscript><p>問題をプレイするにはJavaScriptを有効にしてください。遊び方の案内は、そのまま読むことができます。</p></noscript><script type="module" src="${base}shell/main.js"></script><script defer src="${base}visit-stats.js"></script><script defer src="${base}keyboard-access.js"></script></body></html>`;
+ const html=`<!doctype html><html lang="ja" data-site-theme="notebook"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="referrer" content="no-referrer"><meta name="theme-color" content="#f4efe3">${searchHead({title:siteContent.title,description:siteContent.description,icon:base+'favicon.svg',graph:[applicationData(siteContent)]})}<script>if(['manage','backup','personal','contact','replies'].includes(new URLSearchParams(location.search).get('view')))document.querySelector('meta[name="robots"]').content='noindex, follow';</script><script src="${base}site-theme.js"></script><script src="${base}notebook/i18n-data.js"></script><script src="${base}notebook/i18n.js"></script><script src="${base}ui-text.js"></script><link rel="stylesheet" href="${base}shell.css"></head><body><div id="root">${homeHTML}</div><noscript><p>問題をプレイするにはJavaScriptを有効にしてください。遊び方の案内は、そのまま読むことができます。</p></noscript><script type="module" src="${base}shell/main.js"></script><script defer src="${base}visit-stats.js"></script><script defer src="${base}achievements-core.js"></script><script defer src="${base}achievements-catalog.js"></script><script defer src="${base}achievements.js"></script><script defer src="${base}achievements-hooks.js"></script><script defer src="${base}keyboard-access.js"></script></body></html>`;
  fs.writeFileSync(path.join(repo,'nanpure/index.html'),html);
  fs.writeFileSync(path.join(repo,'nanpure.html'),'<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ナンプレ帳</title><link rel="canonical" href="https://atugari.github.io/nanpure/"><meta http-equiv="refresh" content="0;url=/nanpure/"><script>location.replace("/nanpure/"+location.search+location.hash)</script></head><body><a href="/nanpure/">ナンプレ帳を開く</a></body></html>');
  const searchFiles=buildSearchPages(repo,version,base);
