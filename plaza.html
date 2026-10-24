@@ -647,6 +647,21 @@
     }
     .ad-wrap ins{ display:block; }
 .nanpure-bg{background:linear-gradient(135deg,#fff 40%,#edf5ec);border-color:#b6cdbb}.nanpure-bg .card-tag{color:#467756}.nanpure-bg .card-title{color:#214c32}
+
+    /* Move Moove Mooove: square jump and goal */
+    .game-card.move-bg { overflow: hidden; }
+    .game-card.move-bg::before {
+      content: '';
+      position: absolute;
+      right: 20px;
+      top: 21px;
+      width: 23px;
+      height: 23px;
+      border: 4px solid #a6553226;
+      box-shadow: -22px 34px 0 -4px #352d241a, -44px 23px 0 -7px #745b3b1a;
+      pointer-events: none;
+    }
+    .game-card.move-bg .card-title { letter-spacing: .02em; }
 </style>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=YOUR_PUBLISHER_ID" crossorigin="anonymous"></script>
 </head>
@@ -739,6 +754,12 @@
 
     <div class="section-label pop"><span class="spark">✦</span> 新作 <span class="spark">✦</span></div>
 
+    <a class="game-card move-bg" href="move-moove-mooove.html" id="card-14" data-published="2026-10-25" data-genre="puzzle" data-title="Move Moove Mooove">
+      <div class="card-tag">PUZZLE</div>
+      <div class="card-title">Move Moove Mooove</div>
+      <div class="card-desc">跳ぶたびに歩幅が伸びる<br>四角いゴールを目指す思考パズル</div>
+    </a>
+
     <a class="game-card speed-bg" href="speed.html" id="card-12" data-published="2026-09-18" data-genre="card" data-title="スピード">
       <div class="card-tag">CARD GAME</div>
       <div class="card-title">スピード</div>
@@ -822,7 +843,7 @@
 </div>
 <div class="footer">
     <span class="footer-brand" data-text="現電 — 幻実世界の電子遊戯">現電 — 幻実世界の電子遊戯</span><br>
-    <span style="font-size:9px;letter-spacing:0.05em;">ver2026.10.20</span>
+    <span style="font-size:9px;letter-spacing:0.05em;">ver2026.10.25</span>
   </div>
 
 </div>
