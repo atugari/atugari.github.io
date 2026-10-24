@@ -18,7 +18,7 @@ const source=path.resolve(process.argv[2]||'');
 const require=createRequire(path.join(source,'package.json'));
 const esbuild=createRequire(require.resolve('vite'))('esbuild');
 const release=fs.readFileSync(path.join(source,'lib/releases.ts'),'utf8');
-const version='2026.10.24.52';
+const version='2026.10.24.53';
 const allUpdates=JSON.parse(fs.readFileSync(path.join(repo,'scripts/release-notes.json'),'utf8'));
 const publicUpdates=publicReleases(allUpdates);
 if(allUpdates[0]?.version!==version)throw Error('Release notes must match the release version');
