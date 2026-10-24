@@ -80,7 +80,7 @@ try {
  for(const file of walk(path.join(output,'notebook')).filter(file=>file.endsWith('.html'))){
   let text=fs.readFileSync(file,'utf8');
   if(!/<meta[^>]+name=["']robots["']/i.test(text))text=text.replace(/<head([^>]*)>/i,'<head$1><meta name="robots" content="noindex, follow">');
-  text=text.replace('</head>',`<script defer src="${base}achievements-core.js"></script><script defer src="${base}achievements-catalog.js"></script><script defer src="${base}achievements.js"></script><script defer src="${base}achievements-hooks.js"></script><script defer src="${base}keyboard-access.js"></script>`+["achievements-core.js","achievements-catalog.js","achievements.js","achievements-hooks.js"].map(n=>`<script defer src="${base+n}"></script>`).join("")+"</head>");
+  text=text.replace('</head>',`<script defer src="${base}keyboard-access.js"></script>`+["achievements-core.js","achievements-catalog.js","achievements.js","achievements-hooks.js"].map(n=>`<script defer src="${base+n}"></script>`).join("")+"</head>");
   if(text.includes('access-tools.js'))text=text.replace('<script src="access-tools.js"></script>','<script src="board-appearance.js"></script><script src="access-tools.js"></script><script src="appearance-controls.js"></script>');
   fs.writeFileSync(file,text);
  }

@@ -1,4 +1,5 @@
 (function(w){'use strict';
+if(w.NPAchievementHooks)return;
 const A=()=>w.NPAchievements;let shellTab='unknown',inputSource='button',sourceAt=0,lastDaily='',lastDailyRun='',lastHint=0;const wrapped=new WeakSet(),currentGames=new WeakMap(),lastPrint=new Map(),meta=()=>w.NPStorage?.meta||localStorage;
 function read(k,f){try{return JSON.parse(meta().getItem(k))??f}catch{return f}}
 function emit(type,d){return A()?.capture(type,d)}

@@ -32,3 +32,4 @@ for(const [key,translations]of Object.entries(require('./additional-overrides.js
 }
 
 Object.assign(module.exports,require('./catalog-wado-45.cjs'));
+Object.assign(module.exports,require('./catalog-achievements-52.json'));
