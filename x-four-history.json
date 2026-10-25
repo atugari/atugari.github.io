@@ -74,11 +74,11 @@
       "key": "2026-10-26@08:00",
       "day": "2026-10-26",
       "slot": "08:00",
-      "status": "ready",
+      "status": "failed",
       "post_id": null,
       "due": 1792969200000,
       "sent_at": null,
-      "error": null,
+      "error": "X API 400 /2/tweets",
       "date": "2026-10-26",
       "fingerprints": [
         "aa469b80f87d020037d8311d0cf73f01fda69ff6b0fdfe9cc8be5fdf75950beb",
