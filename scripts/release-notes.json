@@ -1,5 +1,16 @@
 [
   {
+    "version": "2026.10.25.55",
+    "date": "2026-10-25",
+    "kind": "fix",
+    "visibility": "internal",
+    "notify": false,
+    "title": "ホームからの画面切り替えを調整",
+    "items": [
+      "別の画面へ移動したときにホーム用のボタンが残らないようにしました。"
+    ]
+  },
+  {
     "version": "2026.10.25.54",
     "date": "2026-10-25",
     "kind": "improvement",

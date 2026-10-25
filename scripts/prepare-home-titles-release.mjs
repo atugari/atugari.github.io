@@ -1,7 +1,7 @@
 // Keep unchanged assets byte-identical so Git can reuse the existing blobs.
 import fs from 'node:fs';import path from 'node:path';import crypto from 'node:crypto';import{fileURLToPath}from'node:url';
 import{publicReleases,announcementVersion}from'./public-release-policy.mjs';
-const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'),previous='2026.10.24.53',version='2026.10.25.54';
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'),previous=process.argv[2]||'2026.10.24.53',version=process.argv[3]||'2026.10.25.54';
 const prior=JSON.parse(fs.readFileSync(path.join(root,'nanpure/release-manifest.json')));
 if(prior.version!==previous)throw Error('Unexpected previous release');
 const oldBase='/nanpure/releases/'+previous+'/',base='/nanpure/releases/'+version+'/',out=path.join(root,base),pub=path.join(root,'scripts/client-overrides/public');
@@ -17,7 +17,7 @@ shell=shell.replace(/let p="2026\.10\.24\.52"/,'let p="'+announcementVersion(not
 const homeFile=path.join(root,'nanpure/index.html');let home=fs.readFileSync(homeFile,'utf8');
 home=home.replaceAll(oldBase,base);
 for(const name of ['achievements-core.js','achievements-catalog.js','achievements.js','achievements-hooks.js'])home=home.replace(oldBase+name,base+name);
-home=home.replace('</head>','<link rel="stylesheet" data-home-layout href="'+base+'home-layout.css"><script defer src="'+base+'home-layout.js"></script></head>');
+if(!home.includes('data-home-layout'))home=home.replace('</head>','<link rel="stylesheet" data-home-layout href="'+base+'home-layout.css"><script defer src="'+base+'home-layout.js"></script></head>');
 home=home.replace(/(class="home-version"[^]*?data-i18n-skip="true">)\d{4}\.\d{2}\.\d{2}\.\d+/,'$1'+version);fs.writeFileSync(homeFile,home);
 const overrides=path.join(root,'scripts/client-overrides'),digest=crypto.createHash('sha256').update(walk(overrides).sort().map(f=>path.relative(overrides,f)+'\0'+fs.readFileSync(f)).join('\0')).digest('hex');
 const info={version,announcementVersion:announcementVersion(notes),sourceCommit:prior.sourceCommit,clientOverridesSha256:digest,baseRelease:previous};

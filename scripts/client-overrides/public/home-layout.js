@@ -4,6 +4,7 @@ const asset=new URL('./',document.currentScript?.src||location.href);
 if(!document.querySelector('link[data-home-layout]')){const style=document.createElement('link');style.rel='stylesheet';style.href=new URL('home-layout.css',asset).href;style.dataset.homeLayout='';document.head.append(style)}
 const t=text=>w.NPI18n?.t(text)||text;
 function mount(){
+ document.querySelectorAll('[data-home-title],[data-home-guide]').forEach(node=>{if(!node.closest('.designed-home'))node.remove()});
  const main=document.querySelector('.designed-home');if(!main)return null;
  const top=main.querySelector('.home-topline'),links=main.querySelector('.home-bottom-links');if(!top||!links)return null;
  if(!links.querySelector('[data-home-guide]')){
