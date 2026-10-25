@@ -97,7 +97,7 @@ async function ready(v,db,now){
 }
 export function xClient(env,fetcher=fetch){return{async request(method,route,body){
  const url='https://api.x.com'+route;let response;
- try{response=await fetcher(url,{method,headers:{Authorization:await oauthHeader(method,url,env),'Content-Type':'application/json'},...(body?{body:body.media?'{'+'"media":"'+body.media+'","media_category":"tweet_image"}':JSON.stringify(body)}:{}),signal:AbortSignal.timeout(20000)})}catch{throw Error('X connection failed; no automatic retry')}
+ try{response=await fetcher(url,{method,headers:{Authorization:await oauthHeader(method,url,env),'Content-Type':'application/json'},...(body?{body:JSON.stringify(body)}:{}),signal:AbortSignal.timeout(20000)})}catch{throw Error('X connection failed; no automatic retry')}
  if(!response.ok)throw Error('X API '+response.status+' '+new URL(url).pathname);
  const data=await response.json();if(data.errors?.length)throw Error('X rejected the request');return data;
 }}}
@@ -126,19 +126,33 @@ export async function runScheduled(scheduledTime,env,{now=()=>Date.now(),client=
  }catch(error){const message=/^(X API \d{3} \/2\/[a-z/]+|X connection failed; no automatic retry|X rejected the request|Wrong X posting account|Publication window expired|Prepared image is missing|Image processing did not finish|Invalid media response|Uncertain post result)$/.test(error.message)?error.message:'Publication failed; review before retrying';await db.prepare("UPDATE x_four_posts SET status='failed',error=? WHERE key=? AND status='posting'").bind(message,slot.key).run();throw Error(message)}
 }
 export async function dryRun(key,env){
- const post=await env.DB.prepare("SELECT due FROM x_four_posts WHERE key=? AND status='ready'").bind(key).first();if(!post||post.due<=Date.now())fail(409,'Choose a future ready slot');
+ const post=await env.DB.prepare("SELECT due,meta FROM x_four_posts WHERE key=? AND status='ready'").bind(key).first();if(!post||post.due<=Date.now())fail(409,'Choose a future ready slot');
  // Exercise the real publisher and signature path without a database write or any X request.
  const db={prepare(sql){
   if(sql.startsWith("UPDATE x_four_posts SET status='posting'"))return env.DB.prepare("SELECT meta FROM x_four_posts WHERE key=? AND status='ready' AND due=?");
   if(/^(UPDATE|DELETE)/.test(sql))return{bind(){return this},async run(){return{}}};return env.DB.prepare(sql);
  }};
- const calls=[];const client=xClient(env,async(url,init)=>{calls.push(new URL(url).pathname);if(!init.headers.Authorization.startsWith('OAuth '))throw Error('No signature');const path=new URL(url).pathname;return Response.json({data:path==='/2/users/me'?{username:env.X_EXPECTED_USERNAME||'parade166'}:path==='/2/media/upload'?{id:String(calls.length)}:path==='/2/tweets'?{id:'0'}:{}})});
+ const calls=[],ids=[],expected=JSON.parse(post.meta);
+ const client=xClient(env,async(url,init)=>{
+  const path=new URL(url).pathname;calls.push(path);
+  if(!init.headers.Authorization.startsWith('OAuth '))throw Error('No signature');
+  const body=init.body?JSON.parse(init.body):null;
+  if(path==='/2/media/upload'){
+   if(typeof body?.media!=='string'||body.media_category!=='tweet_image')throw Error('Invalid serialized image upload');
+   const id=String(calls.length);ids.push(id);return Response.json({data:{id}});
+  }
+  if(path==='/2/tweets'){
+   if(body?.text!==expected.text||ids.length!==4||JSON.stringify(body.media)!==JSON.stringify({media_ids:ids})||Object.keys(body).length!==2)throw Error('Invalid serialized Post payload');
+   return Response.json({data:{id:'0'}});
+  }
+  return Response.json({data:path==='/2/users/me'?{username:env.X_EXPECTED_USERNAME||'parade166'}:{}});
+ });
  const result=await runScheduled(post.due,{...env,DB:db},{now:()=>post.due,client});if(result.status!=='sent'||calls.length!==10)throw Error('Dry run failed');return{ok:true,dry_run:true,key,images:4,x_requests:0};
 }
 export default{
  async fetch(request,env){try{
   const path=new URL(request.url).pathname;
-  if(path==='/health'&&request.method==='GET'){await env.DB.prepare('SELECT enabled FROM x_four_settings WHERE id=1').first();return json({ok:true,service:'nanpure-x-scheduler',version:1,configured:['X_API_KEY','X_API_SECRET','X_ACCESS_TOKEN','X_ACCESS_TOKEN_SECRET'].every(k=>!!env[k])})}
+  if(path==='/health'&&request.method==='GET'){await env.DB.prepare('SELECT enabled FROM x_four_settings WHERE id=1').first();return json({ok:true,service:'nanpure-x-scheduler',version:2,configured:['X_API_KEY','X_API_SECRET','X_ACCESS_TOKEN','X_ACCESS_TOKEN_SECRET'].every(k=>!!env[k])})}
   const expected=await queueToken(env),provided=request.headers.get('authorization')||'';
   if(await sha(provided)!==await sha('Bearer '+expected))fail(403,'Forbidden');
   const now=Date.now();

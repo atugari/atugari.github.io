@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
 import {createHash} from 'node:crypto';
-import worker,{SLOTS,dueFor,windowFor,MAX_LATENESS,queueToken,oauthHeader,validateMeta,runScheduled,dryRun} from '../src/index.js';
+import worker,{SLOTS,dueFor,windowFor,MAX_LATENESS,queueToken,oauthHeader,validateMeta,runScheduled,dryRun,xClient} from '../src/index.js';
 const BASE=Date.parse('2026-10-26T02:00:00+09:00'),DAY='2026-10-26';
 const secrets={X_API_KEY:'test-key',X_API_SECRET:'test-secret',X_ACCESS_TOKEN:'test-token',X_ACCESS_TOKEN_SECRET:'test-token-secret',X_EXPECTED_USERNAME:'parade166'};
 function database(){
@@ -22,6 +22,30 @@ async function fixture(t,{ready=true,slot='08:00',salt='a'}={}){
  return{db,env,p,request};
 }
 function client({failRoute='',wrong=false,uncertain=false}={}){const calls=[];return{calls,async request(method,route,body){calls.push({method,route,body});if(route===failRoute)throw Error('X API 402 /2/users/me');if(route==='/2/users/me')return{data:{username:wrong?'other':'parade166'}};if(route==='/2/media/upload')return{data:{id:String(calls.length)}};if(route==='/2/tweets'){if(uncertain)throw Error('X connection failed; no automatic retry');return{data:{id:'123456'}}}return{data:{}}}}}
+
+test('wire JSON preserves image uploads and Posts with media objects',async()=>{
+ const calls=[],api=xClient(secrets,async(url,init)=>{calls.push({route:new URL(url).pathname,body:JSON.parse(init.body)});return Response.json({data:{id:'2114380193200529666'}})});
+ const image={media:'AAECAwQFBgcICQ==',media_category:'tweet_image'},tweet={text:'承認済みの本文をそのまま送信',media:{media_ids:['2114380193200529666','2114380193200529667','2114380193200529668','2114380193200529669']}};
+ await api.request('POST','/2/media/upload',image);
+ await api.request('POST','/2/tweets',tweet);
+ assert.deepEqual(calls,[{route:'/2/media/upload',body:image},{route:'/2/tweets',body:tweet}]);
+});
+
+test('scheduled publication sends the exact text and four IDs through the real JSON transport',async t=>{
+ const f=await fixture(t),due=dueFor(DAY,'08:00'),calls=[],ids=[];
+ const api=xClient(f.env,async(url,init)=>{
+  const route=new URL(url).pathname,body=init.body?JSON.parse(init.body):null;calls.push({route,body});
+  if(route==='/2/users/me')return Response.json({data:{username:'parade166'}});
+  if(route==='/2/media/upload'){const id=(2114380193200529666n+BigInt(ids.length)).toString();ids.push(id);return Response.json({data:{id}})}
+  if(route==='/2/tweets')return Response.json({data:{id:'2114380193200529670'}});
+  return Response.json({data:{}});
+ });
+ await runScheduled(due,f.env,{now:()=>due,client:api});
+ assert.deepEqual(calls.at(-1),{route:'/2/tweets',body:{text:f.p.meta.text,media:{media_ids:ids}}});
+ assert.equal(ids.length,4);assert(ids.every(id=>typeof id==='string'));
+ await runScheduled(due,f.env,{now:()=>due,client:api});
+ assert.equal(calls.filter(call=>call.route==='/2/tweets').length,1);
+});
 
 test('all four Japan slots map to the correct UTC dates',()=>{assert.equal(new Date(dueFor(DAY,'08:00')).toISOString(),'2026-10-25T23:00:00.000Z');for(const slot of SLOTS){const due=dueFor(DAY,slot);assert.equal(windowFor(due,due).key,DAY+'@'+slot)}assert.throws(()=>dueFor('2026-02-30','08:00'));assert.throws(()=>dueFor(DAY,'09:00'))});
 test('the actual 25th 21:00 -> 26th 00:34 incident cannot publish',()=>{const due=dueFor('2026-10-25','21:00');assert.equal(windowFor(due,Date.parse('2026-10-26T00:34:57+09:00')),null)});
