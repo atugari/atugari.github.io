@@ -1,5 +1,18 @@
 [
   {
+    "version": "2026.10.26.60",
+    "date": "2026-10-26",
+    "kind": "improvement",
+    "scope": "cloud-notice",
+    "visibility": "internal",
+    "notify": false,
+    "title": "終了案内を直接アクセスにも表示",
+    "items": [
+      "日替わりやランキングのブックマークから直接開いた場合も、クラウド利用者に終了案内を表示します。",
+      "2回確認するまでは安全な画面での操作前にも案内し、プレイ中は割り込みません。"
+    ]
+  },
+  {
     "version": "2026.10.26.59",
     "date": "2026-10-26",
     "kind": "improvement",

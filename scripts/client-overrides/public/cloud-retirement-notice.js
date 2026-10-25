@@ -1,6 +1,7 @@
 (function(w){'use strict';
 if(w.NPCloudRetirement)return;
-const retirement=__CLOUD_RETIRE_AT__,key='np-cloud-retirement-notice-v1';
+const retirement=__CLOUD_RETIRE_AT__,key='np-cloud-retirement-notice-v1',wantsDialog=['backup','ranking','calendar','personal'].includes(new URLSearchParams(w.location?.search||'').get('view'));
+let initial=true;
 let memory={count:0,lastAt:0},offset=0,pending=null,dialog=null,timer=0,autoDay='',queued=false,starting=false,replay=false;
 const now=()=>Date.now()+offset;
 const day=time=>new Date(time+9*3600000).toISOString().slice(0,10);
@@ -35,7 +36,7 @@ function onEntry(serverNow){
 async function beforeUse(){while(state().count<2){if(now()>=retirement||!await show())return false}return now()<retirement}
 function beforeStart(event){
  if(replay||now()>=retirement||state().count>=2)return;
- const target=event.target.closest?.('.designed-home button,.designed-home a');if(!target||target.disabled)return;
+ const target=event.target.closest?.('button,a[href]');if(!target||target.disabled||target.closest('.np-cloud-retirement-dialog,.cloud-save')||document.querySelector('.site-shell.mode-daily,.site-shell.mode-practice'))return;
  let known=false;try{known=/^[a-f0-9]{64}$/.test(localStorage.getItem('np-cloud-sync-key-v1')||'')}catch{}if(!known)return;
  event.preventDefault();event.stopImmediatePropagation();if(starting)return;starting=true;
  void beforeUse().then(ok=>{if(ok&&target.isConnected){replay=true;try{target.click()}finally{replay=false}}}).finally(()=>{starting=false});
@@ -43,10 +44,11 @@ function beforeStart(event){
 function inspect(){
  if(pending||document.hidden||now()>=retirement||autoDay===day(now()))return;
  let known=false;try{known=/^[a-f0-9]{64}$/.test(localStorage.getItem('np-cloud-sync-key-v1')||'')}catch{}
- const home=document.querySelector('.site-shell.mode-home .designed-home');
- if(known&&home?.getClientRects().length&&!document.querySelector('dialog[open],[role="dialog"][aria-modal="true"]'))void onEntry();
+ const home=document.querySelector('.site-shell:not(.mode-daily):not(.mode-practice),.legal');
+ if(!known||!home?.getClientRects().length||initial&&wantsDialog&&!document.querySelector('.game-dialog[open]'))return;
+ if(initial||!document.querySelector('dialog[open],[role="dialog"][aria-modal="true"]')){initial=false;void onEntry()}
 }
 const observer=new MutationObserver(()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;inspect()})});
 w.NPCloudRetirement={onEntry,beforeUse,getCount:()=>state().count,retirement};
-if(state().count<2){let known=false;try{known=/^[a-f0-9]{64}$/.test(localStorage.getItem('np-cloud-sync-key-v1')||'')}catch{}if(known)observer.observe(document.documentElement,{childList:true,subtree:true});document.addEventListener('visibilitychange',inspect);document.addEventListener('click',beforeStart,true);w.addEventListener('focus',inspect)}schedule();inspect();
+if(state().count<2){let known=false;try{known=/^[a-f0-9]{64}$/.test(localStorage.getItem('np-cloud-sync-key-v1')||'')}catch{}if(known)observer.observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['open']});document.addEventListener('visibilitychange',inspect);document.addEventListener('click',beforeStart,true);w.addEventListener('focus',inspect)}schedule();inspect();
 })(window);

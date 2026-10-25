@@ -47,7 +47,8 @@ shell=shell.replace(marker,'var ka="'+version+'",wS=');
 const notification=shell.match(/function BS\(\)\{let p="([^"]+)"/);
 if(!notification)throw Error('Notification anchor changed');
 shell=shell.replace(notification[0],'function BS(){let p="'+announcementVersion(notes)+'"');
-const startup=shell.lastIndexOf('Promise.resolve(window.NPI18n?.ready).then(');if(startup<0)throw Error('Missing shell startup');
+let startup=shell.lastIndexOf('Promise.resolve(window.NPI18n?.ready).then(');if(startup<0)throw Error('Missing shell startup');
+const oldNotice=shell.indexOf('/* cloud-notice-source:');if(oldNotice>=0){shell=shell.slice(0,oldNotice)+shell.slice(startup);startup=oldNotice;}
 shell=shell.slice(0,startup)+'/* cloud-notice-source:'+noticeHash+' */'+noticeSource.replaceAll('__CLOUD_RETIRE_AT__',String(cloudRetiresAt))+'\n'+shell.slice(startup);
 fs.writeFileSync(file,shell);
 buildSearchPages(root,version,base);

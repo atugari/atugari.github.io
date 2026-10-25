@@ -8,10 +8,10 @@ const locales=Object.keys(require('./i18n/languages.json')).filter(x=>x!=='ja');
 const stateKey='np-cloud-retirement-notice-v1',base=Date.parse('2026-10-26T12:00:00+09:00');
 function setup({at=base,storage=new Map(),locale='ja',home=false,known=false,failWrites=false}={}){
  if(known)storage.set('np-cloud-sync-key-v1','a'.repeat(64));
- const{window:w}=parseHTML('<!doctype html><html><body>'+(home?'<div class="site-shell mode-home"><main class="designed-home"></main></div>':'<main class="mode-practice"></main>')+'</body></html>');
+ const{window:w}=parseHTML('<!doctype html><html><body>'+(home?'<div class="site-shell mode-home"><main class="designed-home"></main></div>':'<div class="site-shell mode-practice"><main></main></div>')+'</body></html>');
  let clock=at;class Clock extends Date{static now(){return clock}}
  w.HTMLElement.prototype.showModal=function(){this.open=true;this.setAttribute('open','')};w.HTMLElement.prototype.close=function(){this.open=false;this.removeAttribute('open');this.dispatchEvent(new w.Event('close'))};w.HTMLElement.prototype.getClientRects=function(){return [{}]};w.HTMLElement.prototype.focus=function(){};
- Object.assign(w,{window:w,self:w,Date:Clock,console,requestAnimationFrame:fn=>setImmediate(fn),setTimeout:()=>1,clearTimeout(){},localStorage:{getItem:key=>storage.get(key)||null,setItem:(key,value)=>{if(failWrites)throw Error('full');storage.set(key,value)}},NPI18n:{t:key=>locale==='ja'?key:catalog[key]?.[locale]||key},fetch(){throw Error('A notice must not make network requests')}});
+ Object.assign(w,{window:w,self:w,Date:Clock,URLSearchParams,console,requestAnimationFrame:fn=>setImmediate(fn),setTimeout:()=>1,clearTimeout(){},localStorage:{getItem:key=>storage.get(key)||null,setItem:(key,value)=>{if(failWrites)throw Error('full');storage.set(key,value)}},NPI18n:{t:key=>locale==='ja'?key:catalog[key]?.[locale]||key},fetch(){throw Error('A notice must not make network requests')}});
  delete w.NPCloudRetirement;Object.defineProperty(w.document,'hidden',{value:false});vm.runInContext(source.replaceAll('__CLOUD_RETIRE_AT__',String(meta.cloudRetiresAt)),vm.createContext(w));
  return{w,storage,api:w.NPCloudRetirement,setTime:value=>{clock=value},dialog:()=>w.document.querySelector('.np-cloud-retirement-dialog'),confirm:()=>{const button=w.document.querySelector('.np-cloud-retirement-dialog button');assert(button,'Notice must be visible before acknowledgement');button.click()}};
 }
