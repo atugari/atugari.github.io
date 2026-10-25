@@ -36,14 +36,15 @@
     },
     "2026-10-25@21:00": {
       "date": "2026-10-25",
-      "status": "posting",
+      "status": "sent",
       "fingerprints": [
         "ef33c2bc8a6b42b830a00a15c1bf18c373efae90b72b40dfb1b420f0a82fd197",
         "175f4b04705932fb19de72a6603524b73a66271196658228c37d2b3880f35150",
         "890bd39661a7229b5b05982be50190ec5d9db303651be87343b02f8268d0f4db",
         "e41fe494886de4f9b13ec903fb35538cde75782e2e4c443d36793228e8e4387f"
       ],
-      "slot": "21:00"
+      "slot": "21:00",
+      "post_id": "2114380193200529666"
     }
   }
 }
