@@ -37,6 +37,21 @@ jobs:
         working-directory: nanpure-api
         run: npm run build
 
+      - name: Install the pinned deployment tools
+        working-directory: nanpure-api
+        run: npm ci --no-audit --no-fund
+
+      - name: Match the API metadata to the published client version
+        run: |
+          node --input-type=module <<'NODE'
+          import {readFileSync,writeFileSync} from 'node:fs';
+          const version=JSON.parse(readFileSync('nanpure-version.json','utf8')).version;
+          if(!/^\d{4}\.\d{2}\.\d{2}\.\d+$/.test(version))throw Error('Invalid site version');
+          const path='nanpure-api/wrangler.jsonc',config=JSON.parse(readFileSync(path,'utf8'));
+          config.vars.SITE_VERSION=version;
+          writeFileSync(path,JSON.stringify(config,null,2)+'\n');
+          NODE
+
       - name: Check deployment credential
         id: credential
         env:
@@ -84,6 +99,15 @@ jobs:
                   const retired = await fetch(new URL('/api/wado/web-search', url), {method, headers:{Origin:'https://atugari.github.io','Content-Type':'application/json'}, ...(method==='POST'?{body:'{}'}:{})});
                   if (retired.status !== 410) throw new Error('Retired search endpoint must return 410.');
                 }
+                // A disposable ID reads only empty metadata. The oversized
+                // request must be rejected before reserving space or a slot.
+                const code=crypto.randomUUID().replaceAll('-','').repeat(2);
+                const headers={Origin:'https://atugari.github.io','X-Cloud-Key':code,'Content-Type':'application/json'};
+                const cloud=new URL('/api/cloud',url);
+                const denied=await fetch(cloud,{method:'POST',headers,body:JSON.stringify({action:'begin',expected:null,bytes:5*1024*1024+1,chunks:41,puzzles:0,digest:'0'.repeat(64)})});
+                if(denied.status!==413)throw Error('Cloud size limit was not enforced');
+                const state=await fetch(cloud,{headers}),info=await state.json();
+                if(!state.ok||info.save!==null||info.limits?.maxBytes!==5*1024*1024||info.limits?.dailySaves!==3||info.quota?.remaining!==3||info.quota?.reserved!==0)throw Error('Cloud policy verification failed');
                 appendFileSync(process.env.GITHUB_STEP_SUMMARY,
                   `Worker deployed and D1 connected.\n\nHealth check: ${url}\n\nSchema: ${result.schema}; API: ${result.version}; site: ${result.siteVersion}. Owner endpoints reject unauthenticated requests.\n`);
                 process.exit(0);

@@ -17,8 +17,20 @@ as artifacts. Assignments have unique canonical fingerprints and immutable slots
 
 Cross-origin API calls use random 256-bit device credentials in headers, not
 third-party cookies. Only their SHA-256-derived identifiers are stored in D1.
-Cloud backups use a separate transferable sync key, 128 KiB chunks, a 20 MiB
+Cloud backups use a separate transferable sync key, 128 KiB chunks, a 5 MiB
 per-save limit, a 200 MiB aggregate reservation limit and optimistic revisions.
+Each save ID can complete three saves per Japanese calendar day. The same
+transfer code shares its allowance across devices; unrelated codes on a shared
+school or household IP are independent. Active uploads reserve daily slots
+atomically, successful commits consume them once, and cancellation or expiry
+releases the reservation. Rejected size, capacity and revision checks do not
+consume an allowance. The initial upload's Japan date determines its daily slot,
+including a completion just after midnight. Existing larger backups remain
+readable. GET metadata includes the limit, completed/reserved/remaining counts
+and the next Japanese midnight. Daily counts reuse the existing bounded,
+expiring rate-limit table, so no new database migration is needed.
+Question generation, local storage, printing and transfer-file export remain
+client-side and are not counted against this cloud allowance.
 No R2 activation or paid plan is required. Incomplete uploads expire after an hour
 and the twice-daily job removes them. Receipt keys and owner credentials are never
 included in public bundles. Only a hash of the random owner key is configured.

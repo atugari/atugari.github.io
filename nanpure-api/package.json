@@ -1,6 +1,6 @@
 {
   "name": "nanpure-cloudflare-api",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "private": true,
   "type": "module",
   "engines": {
@@ -14,6 +14,7 @@
     "db:migrate": "wrangler d1 migrations apply DB --remote"
   },
   "devDependencies": {
+    "esbuild": "0.25.10",
     "wrangler": "4.92.0"
   }
 }
