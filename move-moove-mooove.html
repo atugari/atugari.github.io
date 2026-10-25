@@ -18,25 +18,28 @@
 @media(max-height:620px){#start-screen>.panel>.tag,#start-screen>.panel>.tagline{display:none}.character-picker{min-height:96px;margin-top:10px;margin-bottom:10px}.run-kind{margin-top:10px}.title-stats{margin-top:10px}.panel .launch{margin-top:10px}}
 
 .overlay{scrollbar-width:thin;scrollbar-color:#9e7bc35a transparent}.overlay::-webkit-scrollbar{width:6px}.overlay::-webkit-scrollbar-thumb{border-radius:10px;background:#9e7bc35a}.identity .sub{font-size:14px}.rule-card strong{font-size:15px}.rule-card p{font-size:13px}.stat .label{font-size:12px}.survival-note{font-size:14px}
+
+/* Shared full character portraits replace the old placeholder faces. */
+.runner-portrait{display:block;width:104px;height:104px;flex:none;margin:3px auto 1px;filter:drop-shadow(0 0 12px color-mix(in srgb,var(--runner) 28%,transparent));transform:rotate(-4deg)}.runner-portrait svg{display:block;width:100%;height:100%}.runner-card{min-height:210px;gap:6px}.runner-card.locked .runner-portrait{opacity:.55;filter:saturate(.65)}.character-picker .hero-preview svg{overflow:visible}.runner-card:hover:not(:disabled) .runner-portrait{transform:rotate(0deg) translateY(-2px)}
 </style></head><body>
 <main class="layout">
- <aside class="identity"><div class="eyebrow">Think fast. Jump higher.</div><div class="wordmark" aria-hidden="true"><span>Move.</span><span>Moove.</span><span>Mooove.</span></div><p class="edition">M A G M A　R U S H</p><p class="lead">一歩先を読め。<br>マグマは、待たない。</p><p class="sub">跳べる場所は、かぎられている。<br>どこに跳ぶかは、きみが決める。</p><div class="rule-card"><svg viewBox="0 0 60 65" aria-hidden="true"><g fill="#ffffff09" stroke="#82748c" stroke-width=".6"><rect x="3" y="3" width="16" height="16" rx="3"/><rect x="23" y="3" width="16" height="16" rx="3"/><rect x="3" y="23" width="16" height="16" rx="3"/><rect x="23" y="23" width="16" height="16" rx="3"/><rect x="3" y="43" width="16" height="16" rx="3"/><rect x="23" y="43" width="16" height="16" rx="3"/></g><path d="M11 51V11H31" fill="none" stroke="#d8ff61" stroke-width="3" stroke-linejoin="round"/><path d="m26 6 6 5-6 5" fill="none" stroke="#d8ff61" stroke-width="3"/><circle cx="11" cy="51" r="4" fill="#d8ff61"/></svg><div><strong>2マス ＋ 1マス のL字。</strong><p>ルールはシンプル。<br>進む道は、ひとつじゃない。</p></div></div><div class="credit">MOVE MOOVE MOOOVE / v3.0.2</div></aside>
+ <aside class="identity"><div class="eyebrow">Think fast. Jump higher.</div><div class="wordmark" aria-hidden="true"><span>Move.</span><span>Moove.</span><span>Mooove.</span></div><p class="edition">M A G M A　R U S H</p><p class="lead">一歩先を読め。<br>マグマは待たない</p><p class="sub">跳べる場所は限られている<br>どこに跳ぶかはきみが決める</p><div class="rule-card"><svg viewBox="0 0 60 65" aria-hidden="true"><g fill="#ffffff09" stroke="#82748c" stroke-width=".6"><rect x="3" y="3" width="16" height="16" rx="3"/><rect x="23" y="3" width="16" height="16" rx="3"/><rect x="3" y="23" width="16" height="16" rx="3"/><rect x="23" y="23" width="16" height="16" rx="3"/><rect x="3" y="43" width="16" height="16" rx="3"/><rect x="23" y="43" width="16" height="16" rx="3"/></g><path d="M11 51V11H31" fill="none" stroke="#d8ff61" stroke-width="3" stroke-linejoin="round"/><path d="m26 6 6 5-6 5" fill="none" stroke="#d8ff61" stroke-width="3"/><circle cx="11" cy="51" r="4" fill="#d8ff61"/></svg><div><strong>2マス ＋ 1マス のL字。</strong><p>ルールはシンプル。<br>進む道はひとつじゃない</p></div></div><div class="credit">MOVE MOOVE MOOOVE / v3.0.3</div></aside>
  <section class="stage" aria-label="マグマラッシュ ゲーム画面">
   <header class="topbar"><div><div class="hud-label">ALTITUDE / 到達高度</div><div class="altitude"><strong id="height">0</strong><small>m</small></div></div><div class="hud-right"><div class="small-brand">Move.<br>Moove.<br><span>Mooove.</span></div><button class="icon-button" id="sound" aria-label="音をオフ" aria-pressed="true"><svg viewBox="0 0 24 24"><path d="m11 4-5 4H3v8h3l5 4zM15 8q5 4 0 8M18 5q8 7 0 14"/></svg></button><button class="icon-button" id="pause" aria-label="一時停止"><svg viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg></button></div></header>
   <div class="danger-meter" role="meter" aria-label="マグマの接近度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="danger-fill"></i></div>
   <div class="arena" id="arena"><canvas id="game" aria-label="光る足場をタップしてL字に跳びます。足場ボタンはキーボードでも選択できます。"></canvas><div class="target-layer" id="targets"></div><div class="float-label"><span id="zone">01 / EMBER CHAMBER</span><em id="heat-status">MAGMA RISING</em></div><div class="run-hint" id="run-hint"></div><div class="run-objective" id="run-objective"></div><div class="toast" id="toast"><strong></strong><span></span></div></div>
   <footer class="bottom"><div class="move-strip"><div class="current-move"><svg class="l-mark" viewBox="0 0 30 30" aria-hidden="true"><path d="M5 26V6H25m-6-5 6 5-6 5" fill="none" stroke="#d8ff61" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div><p>JUMP RULE</p><strong id="move-rule">2 ＋ 1 のL字</strong></div></div><span class="mode-pill" id="mode-pill">NORMAL</span></div><div class="run-progress"><span id="next-reward">次の強化まで 60m</span><span id="run-score">0 pt</span></div><div class="controls"><button class="pulse-button" id="pulse">冷却 <b>1</b><small>Space</small></button><p>タップで跳ぶ<br>長押しで1手先</p><button class="undo" id="undo" title="1手戻る。マグマと時間は戻りません。" disabled>↶ 1手戻る</button></div></footer>
-  <section class="overlay" id="start-screen" aria-labelledby="title"><div class="panel"><div class="tag">OUTRUN THE ERUPTION</div><h1 id="title">Move.<br>Moove. <span>Mooove.</span></h1><button class="character-picker" id="open-characters" type="button"><span class="hero-preview" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="m57 52 32-1-11 13 12 8-35-5" fill="var(--runner-scarf,#ff5362)"/><path d="m22 65-6 16 21-2 7-13m12-1 6 18 22-1-11-20" fill="#7b4bc5" stroke="#1c1434" stroke-width="3"/><path d="m20 28 9-17 15 11 18-3 13-11 8 24-4 33-20 11-32-8-13-19z" fill="var(--runner-body,#a485ee)" stroke="#211731" stroke-width="3"/><path d="m29 23 2-8 8 9m29-1 9-9 3 13" fill="#d8ff61"/><path d="m24 35 14-7 31 3 9 13-6 17-36 2-14-12z" fill="#231b39"/><path d="m31 45 11-3 2 10-11 2m17-11 13 2-2 9-12-2" fill="#a6ffec"/><path d="m31 65 24 5 17-5 5 9-24 8-22-9" fill="var(--runner-scarf,#ff5362)"/><path d="m19 42-9 8 5 13 10-8m53-12 12 5 1 13-13-3" fill="#d8ff61" stroke="#211731" stroke-width="3"/></svg></span><span class="character-picker-copy"><strong>キャラクター変更 <span aria-hidden="true">›</span></strong><span id="current-character">使用中：エンバー</span><small>使えるキャラ <span id="collection-count">1/8</span></small></span></button><p class="tagline">同じ一歩から、違う冒険を。<br>道を読み、強化を選び、火山を駆け上がれ。</p><div class="run-kind" role="group" aria-label="冒険の種類"><button id="random-run" aria-pressed="true">新しい冒険</button><button id="daily-run" aria-pressed="false">今日の地形</button></div><p class="daily-note" id="daily-note"></p><div class="mode-select" role="group" aria-label="モード"><button id="normal-mode" aria-pressed="true"><strong>ノーマル</strong>2＋1のL字で固定</button><button id="expert-mode" aria-pressed="false"><strong>上級</strong>長い側が2→3→4</button></div><div class="title-stats"><div><span>自己ベスト</span><strong id="start-best">0 m</strong></div><div><span id="title-goal-label">次の高度目標</span><strong id="title-goals">50 m</strong></div></div><button class="launch" id="start">駆け上がる <span>↗</span></button><button class="resume-save" id="continue-save" hidden>保存した冒険の続きから</button><div class="title-secondary"><button class="text-button records-button" id="open-collection" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V11h4v9m2 0V4h4v16m2 0v-6h4v6M3 20h20"/></svg>目標・記録を見る <span aria-hidden="true">›</span></button></div><p class="start-note audio-note">音は開始後に鳴ります</p><details class="howto"><summary>遊び方</summary><p>光る足場へL字に跳ぶ。長押しでその先を確認。</p><p>青い結晶は冷却。金色の遺物は高得点。</p><p>冷却ボタンで3秒の猶予。新しい足場を進むと補充。</p><p>ひび割れた足場は乗って3秒で崩落。強化中は時間停止。</p><p>PC：数字キー、矢印＋Enter、Spaceで冷却、Zで戻る。</p></details></div></section>
+  <section class="overlay" id="start-screen" aria-labelledby="title"><div class="panel"><div class="tag">OUTRUN THE ERUPTION</div><h1 id="title">Move.<br>Moove. <span>Mooove.</span></h1><button class="character-picker" id="open-characters" type="button"><span class="hero-preview" id="title-avatar" aria-hidden="true"></span><span class="character-picker-copy"><strong>キャラクター変更 <span aria-hidden="true">›</span></strong><span id="current-character">使用中：エンバー</span><small>使えるキャラ <span id="collection-count">1/8</span></small></span></button><p class="tagline">同じ一歩から違う冒険へ<br>道を読んで火山を駆け上がれ</p><div class="run-kind" role="group" aria-label="冒険の種類"><button id="random-run" aria-pressed="true">新しい冒険</button><button id="daily-run" aria-pressed="false">今日の地形</button></div><p class="daily-note" id="daily-note"></p><div class="mode-select" role="group" aria-label="モード"><button id="normal-mode" aria-pressed="true"><strong>ノーマル</strong>2＋1のL字で固定</button><button id="expert-mode" aria-pressed="false"><strong>上級</strong>長い側が2→3→4</button></div><div class="title-stats"><div><span>自己ベスト</span><strong id="start-best">0 m</strong></div><div><span id="title-goal-label">次の高度目標</span><strong id="title-goals">50 m</strong></div></div><button class="launch" id="start">駆け上がる <span>↗</span></button><button class="resume-save" id="continue-save" hidden>保存した冒険の続きから</button><div class="title-secondary"><button class="text-button records-button" id="open-collection" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V11h4v9m2 0V4h4v16m2 0v-6h4v6M3 20h20"/></svg>目標・記録を見る <span aria-hidden="true">›</span></button></div><p class="start-note audio-note">音は開始後に鳴ります</p><details class="howto"><summary>遊び方</summary><p>光る足場へL字に跳ぶ。長押しでその先を確認。</p><p>青い結晶は冷却。金色の遺物は高得点。</p><p>冷却ボタンで3秒の猶予。新しい足場を進むと補充。</p><p>ひび割れた足場は乗って3秒で崩落。強化中は時間停止。</p><p>PC：数字キー、矢印＋Enter、Spaceで冷却、Zで戻る。</p></details></div></section>
   <section class="overlay" id="pause-screen" aria-labelledby="pause-title" hidden><div class="panel"><div class="tag">TAKE A BREATH</div><h2 id="pause-title">ひと休み。</h2><p class="tagline">マグマも止まっています。</p><div class="pause-options"><button id="toggle-music">緊張感のあるBGM<strong>ON</strong></button><button id="toggle-fx">画面の揺れ・残像<strong>ON</strong></button></div><button class="launch" id="resume">続ける <span>↗</span></button><div class="equipment-list" id="pause-equipment"></div><button class="text-button" id="save-title">冒険を保存してタイトルへ</button><br><button class="text-button" id="restart">最初からやり直す</button><p class="start-note">1手戻る：時間とマグマは戻りません。<br>最高記録と音の設定はこのブラウザに保存されます。</p></div></section>
-  <section class="overlay" id="result-screen" aria-labelledby="result-title" hidden><div class="panel"><div class="tag">THE MAGMA CAUGHT UP.</div><h2 id="result-title">まだ、上へ行ける。</h2><div class="result-number"><span id="result-height">0</span><small>m</small></div><p class="new-best" id="new-best" hidden>NEW PERSONAL BEST</p><p class="result-score" id="result-score"></p><div class="results"><span id="result-time">0秒</span><span id="result-jumps">0ジャンプ</span><span id="result-coolant">結晶 0個</span></div><p class="result-reason" id="result-reason"></p><div class="result-awards" id="result-awards"></div><div class="equipment-list" id="result-equipment"></div><button class="launch" id="retry">もう一度、駆け上がる <span>↗</span></button><button class="text-button" id="same-route">同じ地形で再挑戦</button><br><button class="text-button" id="to-title">モードを変える</button></div></section>
-  <section class="overlay" id="draft-screen" aria-labelledby="draft-title" hidden><div class="panel draft-panel"><div class="tag">CHOOSE YOUR NEXT MOVE</div><h2 id="draft-title" tabindex="-1">この冒険を、どう変える？</h2><p class="tagline">選んでから決定。マグマは止まっています。</p><p class="draft-input-note" id="draft-input-note" role="status"></p><div class="draft-options" id="draft-options" data-locked="true"></div><p class="draft-selection" id="draft-selection" aria-live="polite"></p><button class="launch" id="draft-confirm" type="button" disabled>この強化にする <span>✓</span></button><p class="start-note" id="draft-location"></p></div></section><section class="overlay" id="collection-screen" aria-labelledby="collection-title" hidden><div class="panel collection-panel">
+  <section class="overlay" id="result-screen" aria-labelledby="result-title" hidden><div class="panel"><div class="tag">THE MAGMA CAUGHT UP.</div><h2 id="result-title">まだ上へ行ける</h2><div class="result-number"><span id="result-height">0</span><small>m</small></div><p class="new-best" id="new-best" hidden>NEW PERSONAL BEST</p><p class="result-score" id="result-score"></p><div class="results"><span id="result-time">0秒</span><span id="result-jumps">0ジャンプ</span><span id="result-coolant">結晶 0個</span></div><p class="result-reason" id="result-reason"></p><div class="result-awards" id="result-awards"></div><div class="equipment-list" id="result-equipment"></div><button class="launch" id="retry">もう一度駆け上がる <span>↗</span></button><button class="text-button" id="same-route">同じ地形で再挑戦</button><br><button class="text-button" id="to-title">モードを変える</button></div></section>
+  <section class="overlay" id="draft-screen" aria-labelledby="draft-title" hidden><div class="panel draft-panel"><div class="tag">CHOOSE YOUR NEXT MOVE</div><h2 id="draft-title" tabindex="-1">この冒険をどう変える？</h2><p class="tagline">選んでから決定。マグマは止まっています。</p><p class="draft-input-note" id="draft-input-note" role="status"></p><div class="draft-options" id="draft-options" data-locked="true"></div><p class="draft-selection" id="draft-selection" aria-live="polite"></p><button class="launch" id="draft-confirm" type="button" disabled>この強化にする <span>✓</span></button><p class="start-note" id="draft-location"></p></div></section><section class="overlay" id="collection-screen" aria-labelledby="collection-title" hidden><div class="panel collection-panel">
   <div class="collection-heading"><div><div class="tag">YOUR EXPEDITIONS</div><h2 id="collection-title" tabindex="-1">キャラクター変更</h2></div><button class="text-button" id="close-collection">閉じる ✕</button></div>
   <div class="collection-tabs" role="group" aria-label="表示切り替え"><button id="characters-tab" type="button" aria-pressed="true" aria-controls="characters-view">キャラクター</button><button id="records-tab" type="button" aria-pressed="false" aria-controls="records-view">目標・記録</button></div>
   <section id="characters-view" aria-labelledby="characters-heading"><h3 id="characters-heading">キャラクター <small id="runner-count"></small></h3><p class="collection-note">キャラをタップして変更。ジャンプの性能は共通です。</p><p class="collection-feedback" id="collection-feedback" role="status"></p><div class="runner-grid" id="runner-grid"></div></section>
   <section id="records-view" aria-labelledby="goals-heading" hidden><p class="collection-intro" id="collection-records"></p><h3 id="goals-heading">次の目標</h3><p class="collection-note">1回の冒険で挑む記録です。好きな目標からどうぞ。</p><div class="goal-grid" id="goal-grid"></div></section>
  </div></section><p id="announce" class="sr-only" aria-live="polite"></p>
  </section>
- <aside class="sidebar"><div class="stat"><div class="label">PERSONAL BEST / 最高記録</div><strong><span id="best">0</span><small>m</small></strong></div><div class="stat"><div class="label">JUMPS / ジャンプ</div><strong id="jumps">0</strong></div><div class="stat"><div class="label">COOLANT / 結晶</div><strong id="crystals">0</strong></div><p class="survival-note">高い足場だけが正解とは限らない。<br><br><b>一度横に逃げてから、上へ。</b><br>そのひと手が、次の道を開く。</p></aside>
+ <aside class="sidebar"><div class="stat"><div class="label">PERSONAL BEST / 最高記録</div><strong><span id="best">0</span><small>m</small></strong></div><div class="stat"><div class="label">JUMPS / ジャンプ</div><strong id="jumps">0</strong></div><div class="stat"><div class="label">COOLANT / 結晶</div><strong id="crystals">0</strong></div><p class="survival-note">高い足場だけが正解とは限らない。<br><br><b>一度横に逃げてから上へ</b><br>そのひと手が次の道を開く</p></aside>
 </main>
 <script>(function (root) {
   'use strict';
@@ -119,7 +122,7 @@
   {id:'cinder',name:'シンダー',body:'#ff9b61',scarf:'#8e3f9f',eye:'#fff3a0',trim:'#ffdc83',shape:2,rule:'1回の冒険で結晶3個',test:s=>s.records.crystals>=3},
   {id:'volt',name:'ボルト',body:'#dee768',scarf:'#293d8e',eye:'#f0ffea',trim:'#9c99ff',shape:1,rule:'10連続ジャンプ',test:s=>s.records.combo>=10},
   {id:'pearl',name:'パール',body:'#e8dbff',scarf:'#ef81b7',eye:'#a0eaff',trim:'#a4fded',shape:0,rule:'1回の冒険で遺物3個',test:s=>s.records.relics>=3},
-  {id:'onyx',name:'オニキス',body:'#797baf',scarf:'#70e6d4',eye:'#ffbeef',trim:'#baadff',shape:2,rule:'目標を合計8個達成',test:s=>Object.keys(s.badges).length>=8},
+  {id:'onyx',name:'オニキス',body:'#797baf',scarf:'#70e6d4',eye:'#a6ffec',trim:'#d8ff61',shape:2,rule:'目標を合計8個達成',test:s=>Object.keys(s.badges).length>=8},
   {id:'flare',name:'フレア',body:'#ff769d',scarf:'#f8dc7b',eye:'#e9fffa',trim:'#af78f8',shape:3,rule:'高度600mに到達',test:s=>s.records.height>=600},
   {id:'aurora',name:'オーロラ',body:'#93b6ff',scarf:'#e69bff',eye:'#eeffad',trim:'#83ffe6',shape:3,rule:'目標を合計20個達成',test:s=>Object.keys(s.badges).length>=20}
  ];
@@ -133,6 +136,107 @@
  function unlocked(s){return HEROES.filter(h=>h.test(s));}
  function score(stats){return Math.floor(number(stats.height)*10+number(stats.unique)*5+number(stats.crystals)*30+number(stats.relics)*180+number(stats.combo)*12);}
  const api={UPGRADES,GOALS,HEROES,normalize,day,dailySeed,offers,goals,award,unlocked,score};if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.AscentReplay=api;
+})(typeof window!=='undefined'?window:globalThis);
+</script><script>(function(root){
+ 'use strict';
+ // One set of vector shapes drives the title, collection portraits and canvas.
+ const cache=new Map(),svgCache=new Map(),ink='#211731';
+ const points=s=>s.trim().split(/\s+/).map(v=>v.split(',').map(Number));
+ const poly=(s,fill,stroke=ink,width=2.6)=>({type:'poly',points:points(s),fill,stroke,width});
+ const rect=(x,y,w,h,r,fill,stroke=ink,width=2.6)=>({type:'rect',x,y,w,h,r,fill,stroke,width});
+ const ellipse=(x,y,rx,ry,fill,stroke=ink,width=2.6)=>({type:'ellipse',x,y,rx,ry,fill,stroke,width});
+ function shapes(h){
+  if(cache.has(h.id))return cache.get(h.id);
+  const b=h.body,s=h.scarf,t=h.trim,e=h.eye,a=[],add=(...v)=>a.push(...v);
+  const tail=()=>add(poly('57,52 89,51 78,64 90,72 55,67',s,null));
+  const boots=(color='#7b4bc5')=>add(poly('22,65 16,81 37,79 44,66',color,ink,3),poly('56,65 62,83 84,82 73,62',color,ink,3));
+  const visor=()=>add(poly('24,35 38,28 69,31 78,44 72,61 36,63 22,51','#231b39',null));
+  const eyes=(variant=0)=>{
+   if(variant===1)add(poly('30,43 43,44 42,54 31,52',e,null),poly('53,44 65,42 63,52 52,54',e,null));
+   else add(poly('31,45 42,42 44,52 33,54',e,null),poly('50,43 63,45 61,54 49,52',e,null));
+   for(const eye of a.slice(-2))eye.glow=true;
+  };
+  const collar=()=>add(poly('31,65 55,70 72,65 77,74 53,82 31,73',s,null));
+  const hands=()=>add(poly('19,42 10,50 15,63 25,55',t,ink,3),poly('78,43 90,48 91,61 78,58',t,ink,3));
+  if(h.id==='onyx'){
+   // Keep the angular cat and scarf from the user's favourite title portrait.
+   tail();boots();add(poly('20,28 29,11 44,22 62,19 75,8 83,32 79,65 59,76 27,68 14,49',b,ink,3));
+   add(poly('29,23 31,15 39,24',t,null),poly('68,23 77,14 80,27',t,null));visor();eyes();collar();hands();
+  }else if(h.id==='ember'){
+   tail();boots('#68429f');
+   add(poly('34,27 31,12 43,18 51,3 57,19 70,11 65,31','#ff906b',ink,2.5));
+   add(poly('44,24 49,13 54,26',t,null));
+   add(poly('20,32 28,22 70,22 81,35 77,65 60,77 29,70 17,53',b,ink,3));
+   add(rect(18,32,12,15,4,'#7960bc'),rect(71,32,12,15,4,'#7960bc'));visor();eyes();collar();hands();
+   add(rect(46,23,9,7,2,t,null));
+  }else if(h.id==='mint'){
+   add(rect(72,37,16,31,6,'#387bac'),rect(77,41,7,20,3,'#a5fff1',null));tail();boots('#3d789c');
+   add(poly('29,34 19,5 29,3 43,31',b,ink,3),poly('57,30 69,2 79,7 72,37',b,ink,3));
+   add(poly('28,27 23,10 28,9 36,29',t,null),poly('64,28 72,9 75,11 69,31',t,null));
+   add(rect(20,25,58,47,16,b,ink,3),rect(24,34,50,29,10,'#173943',null));eyes(1);collar();hands();
+   add(ellipse(79,53,5,7,'#b3fff2','#287f8e',1.5));
+  }else if(h.id==='cinder'){
+   tail();add(rect(19,65,24,20,4,'#91516c'),rect(57,65,25,20,4,'#91516c'));
+   add(poly('21,31 13,17 26,10 34,26',t,ink,3),poly('64,26 75,10 88,18 78,34',t,ink,3));
+   add(poly('20,29 35,21 66,21 81,31 79,63 63,76 35,76 19,63',b,ink,3));
+   add(rect(22,34,56,28,6,'#3b2438',null));eyes();collar();
+   add(poly('16,42 5,45 7,67 28,64 26,48',t,ink,3),poly('76,47 95,43 96,65 76,68',t,ink,3));
+   add(rect(9,51,12,6,2,'#c2744f',null),rect(81,51,11,6,2,'#c2744f',null));
+   add(poly('40,24 60,24 55,32 45,32','#fff0a2',null));
+  }else if(h.id==='volt'){
+   add(poly('49,27 58,1 68,4 61,16 76,13 60,35',t,ink,2.5));tail();
+   add(poly('21,65 12,84 36,79 45,66','#3d438e'),poly('58,65 62,83 87,78 73,61','#3d438e'));
+   add(poly('15,35 31,19 62,22 83,36 76,64 58,76 29,69',b,ink,3));
+   add(poly('22,36 38,30 72,35 76,47 64,62 30,61 19,49','#282b50',null));eyes(1);collar();
+   add(poly('17,42 7,50 18,64 27,51',t),poly('77,42 93,44 86,55 96,62 78,65',t));
+   add(poly('56,26 45,43 54,42 47,59 67,37 57,39','#f3ffae',null));
+  }else if(h.id==='pearl'){
+   add(ellipse(22,35,10,13,'#b2d9ef'),ellipse(77,35,10,13,'#b2d9ef'));tail();
+   add(rect(24,66,19,18,8,'#b99cc9'),rect(57,66,19,18,8,'#b99cc9'));
+   add(ellipse(50,45,31,29,b,ink,3));
+   add(ellipse(50,44,25,20,'#263451',null));eyes(1);
+   add(poly('32,63 50,69 69,64 78,77 51,84 24,76',s,ink,2));
+   add(ellipse(18,54,9,10,t),ellipse(82,54,9,10,t));
+   add(ellipse(34,25,4,3,'#ffffff',null),ellipse(72,13,4,4,'#a0eaff','#e9fcff',1.3),ellipse(82,23,2.5,2.5,'#e9fcff',null));
+  }else if(h.id==='flare'){
+   add(poly('28,39 3,28 9,49 3,62 28,67',s,ink,2.5),poly('72,39 97,27 91,50 98,61 72,67',s,ink,2.5));
+   add(poly('18,44 8,38 13,51 7,57 25,59',t,null),poly('82,44 92,37 87,51 93,56 75,59',t,null));
+   boots('#b46b73');add(poly('30,30 28,10 45,20 53,3 62,21 77,13 72,34',t,ink,2.7));
+   add(poly('20,32 34,22 66,23 80,36 75,62 57,77 30,68 17,49',b,ink,3));
+   add(poly('23,36 43,31 51,36 60,31 76,40 68,59 33,61 21,49','#43233f',null));eyes();
+   add(poly('45,54 51,49 58,54 51,62',t,null));collar();hands();
+  }else{
+   add(ellipse(50,10,25,6,null,t,2));tail();
+   add(poly('30,28 23,9 42,22',b),poly('61,21 80,9 72,34',b));
+   boots('#7565b1');add(poly('19,34 38,20 66,22 81,37 76,62 55,78 29,68 15,49',b,ink,3));
+   add(poly('19,34 38,20 45,37 29,68 15,49','#b3cfff',null),poly('66,22 81,37 76,62 63,48','#7091e0',null));
+   add(poly('26,36 44,29 69,33 76,46 65,62 34,62 23,49','#242746',null));eyes(1);collar();
+   add(ellipse(17,54,8,9,t),ellipse(83,54,8,9,t),poly('49,14 55,23 49,32 44,23',s,null));
+   add(ellipse(10,23,2,2,t,null),ellipse(90,19,2,2,t,null));
+  }
+  cache.set(h.id,a);return a;
+ }
+ function svg(h){
+  if(svgCache.has(h.id))return svgCache.get(h.id);
+  const art=shapes(h).map(s=>{
+   const attrs=' fill="'+(s.fill||'none')+'"'+(s.stroke?' stroke="'+s.stroke+'" stroke-width="'+s.width+'" stroke-linejoin="round"':'');
+   if(s.type==='poly')return'<polygon points="'+s.points.map(p=>p.join(',')).join(' ')+'"'+attrs+'/>';
+   if(s.type==='rect')return'<rect x="'+s.x+'" y="'+s.y+'" width="'+s.w+'" height="'+s.h+'" rx="'+s.r+'"'+attrs+'/>';
+   return'<ellipse cx="'+s.x+'" cy="'+s.y+'" rx="'+s.rx+'" ry="'+s.ry+'"'+attrs+'/>';
+  }).join('');
+  const result='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false" data-avatar="'+h.id+'">'+art+'</svg>';svgCache.set(h.id,result);return result;
+ }
+ function draw(ctx,h,x,y,size,glow=true){
+  ctx.save();ctx.translate(x,y);ctx.scale(size/100,size/100);ctx.translate(-50,-50);
+  for(const s of shapes(h)){
+   ctx.beginPath();if(s.type==='poly'){s.points.forEach((p,i)=>i?ctx.lineTo(...p):ctx.moveTo(...p));ctx.closePath();}
+   else if(s.type==='rect')ctx.roundRect(s.x,s.y,s.w,s.h,s.r);
+   else ctx.ellipse(s.x,s.y,s.rx,s.ry,0,0,Math.PI*2);
+   ctx.shadowBlur=glow&&s.glow?8:0;ctx.shadowColor=h.eye;
+   if(s.fill){ctx.fillStyle=s.fill;ctx.fill();}if(s.stroke){ctx.strokeStyle=s.stroke;ctx.lineWidth=s.width;ctx.lineJoin='round';ctx.stroke();}
+  }ctx.restore();
+ }
+ const api={svg,draw,shapes};if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.AscentAvatar=api;
 })(typeof window!=='undefined'?window:globalThis);
 </script><script>(function(root){
   'use strict';
@@ -154,7 +258,7 @@
 })(window);
 </script><script>(function(){
  'use strict';
- const C=window.AscentCore,R=window.AscentReplay,$=id=>document.getElementById(id),canvas=$('game'),ctx=canvas.getContext('2d'),sound=new window.AscentSound();
+ const C=window.AscentCore,R=window.AscentReplay,A=window.AscentAvatar,$=id=>document.getElementById(id),canvas=$('game'),ctx=canvas.getContext('2d'),sound=new window.AscentSound();
  const SAVE='mmm-magma-rush-v2';
  let old={};try{old=JSON.parse(localStorage.getItem(SAVE))||{};}catch(_){}
  let saved=R.normalize({muted:false,music:true,fx:!matchMedia('(prefers-reduced-motion: reduce)').matches,...old});
@@ -185,7 +289,7 @@
   const next=goals.find(g=>g.id==='height')||goals[0];
   $('title-goal-label').textContent=next?(next.id==='height'?'次の高度目標':next.name):'すべての目標';
   $('title-goals').textContent=next?next.target+' '+next.unit:'達成！';
-  $('current-character').textContent='使用中：'+h.name;
+  $('current-character').textContent='使用中：'+h.name;$('title-avatar').innerHTML=A.svg(h);
   $('open-characters').setAttribute('aria-label','キャラクター変更。使用中：'+h.name+'。使えるキャラ '+R.unlocked(saved).length+'人');
   $('collection-count').textContent=R.unlocked(saved).length+'/8';$('continue-save').hidden=!saved.checkpoint;
  }
@@ -227,7 +331,7 @@
     if(lv('flow')&&combo>=5&&combo%Math.max(2,5-lv('flow'))===0){cool(.3+lv('flow')*.25,.35);burst(player.x,player.y,16,'#d8ff61',1.2);}
    }
    if(lv('magnet'))for(const tile of world.tiles.values())if(tile.type==='relic'&&!tile.collected&&!tile.crumbled&&tile.y>lava+.28&&Math.hypot(tile.x-player.x,tile.y-player.y)<=1.5+lv('magnet')*.75)takeResource(tile);
-   if(combo===5||combo>5&&combo%10===0)toast(combo+' FLOW','新しい足場を、リズムよく。');
+   if(combo===5||combo>5&&combo%10===0)toast(combo+' FLOW','新しい足場をリズムよく');
   }
   world.ensure(peak+viewH/cell+24);world.prune(lava-20);const z=Math.max(0,Math.floor((peak-2)/24));if(z>zoneIndex){zoneIndex=z;sound.milestone();toast('SECTOR '+String(z+1).padStart(2,'0'),biome().name+' ／ '+biome().note);}
   flight=null;updateAchievements();if(height()>=nextDraft)openDraft();else syncTargets();updateHud();saveCheckpoint();
@@ -259,7 +363,7 @@
   phase='draft';draftReady=false;draftPick=null;draftConfirmAt=0;settleDraftInput();
   $('draft-options').dataset.locked='true';$('draft-confirm').disabled=true;
   $('draft-input-note').textContent='指を離して、少し待つと選べます。';$('draft-selection').textContent='候補を押しても、まだ確定しません。';
-  clearHold();sound.setActive(false);show('draft-screen');$('targets').replaceChildren();targets=[];$('draft-title').textContent=draftCount===0?'最初の強化を選ぼう。':'この冒険を、どう変える？';$('draft-location').textContent=height()+'m / '+biome().name+' ／ 選んだ装備はこの冒険の間だけ有効';
+  clearHold();sound.setActive(false);show('draft-screen');$('targets').replaceChildren();targets=[];$('draft-title').textContent=draftCount===0?'最初の強化を選ぼう。':'この冒険をどう変える？';$('draft-location').textContent=height()+'m / '+biome().name+' ／ 選んだ装備はこの冒険の間だけ有効';
   const frag=document.createDocumentFragment();for(const u of opts){const b=document.createElement('button');b.className='upgrade-card';b.type='button';b.disabled=true;b.dataset.upgrade=u.id;b.setAttribute('aria-pressed','false');b.style.setProperty('--upgrade',u.color);const icon=document.createElement('span');icon.className='upgrade-icon';icon.textContent=u.icon;const text=document.createElement('span');const title=document.createElement('strong');title.textContent=u.name;const level=document.createElement('small');level.textContent='Lv.'+(lv(u.id)+1)+' / '+u.max;const desc=document.createElement('p');desc.textContent=u.desc;text.append(title);text.append(level);text.append(desc);b.append(icon);b.append(text);b.onclick=()=>selectUpgrade(u.id);frag.append(b);}$('draft-options').replaceChildren(frag);$('draft-title').focus({preventScroll:true});saveCheckpoint();updateHud();
  }
  function chooseUpgrade(id){if(phase!=='draft'||!draftReady||!id||id!==draftPick||performance.now()<draftConfirmAt)return;const u=R.offers(seed,draftCount,levels).find(x=>x.id===id);if(!u)return;levels[id]=lv(id)+1;if(id==='capacity')charges=Math.min(1+lv(id),charges+1);draftCount++;nextDraft=R.offers(seed,draftCount,levels).length?nextDraft+120:Infinity;phase='play';show(null);freeze=Math.max(freeze,1.2);last=performance.now();sound.unlock();sound.setActive(true);sound.milestone();toast(u.icon+' '+u.name,'Lv.'+lv(id)+(Number.isFinite(nextDraft)?' ／ 次は'+nextDraft+'m':' ／ 全装備 MAX！'));updateAchievements();syncTargets();updateHud();saveCheckpoint();}
@@ -299,7 +403,7 @@
   $('characters-tab').setAttribute('aria-pressed',String(characters));$('records-tab').setAttribute('aria-pressed',String(!characters));
   $('collection-screen').scrollTop=0;$('collection-feedback').textContent='使用中：'+runner().name;
   $('collection-records').textContent='冒険 '+saved.totals.runs+'回 ／ 目標 '+Object.keys(saved.badges).length+' / 36 達成';$('runner-count').textContent=R.unlocked(saved).length+' / 8';
-  const frag=document.createDocumentFragment();for(const h of R.HEROES){const unlocked=h.test(saved),b=document.createElement('button');b.className='runner-card'+(unlocked?'':' locked');b.dataset.hero=h.id;b.setAttribute('aria-pressed',String(saved.hero===h.id));b.disabled=!unlocked;b.style.setProperty('--runner',h.body);const icon=document.createElement('span');icon.className='runner-avatar shape-'+h.shape;icon.style.setProperty('--scarf',h.scarf);icon.textContent=unlocked?'••':'?';const name=document.createElement('strong');name.textContent=h.name;const note=document.createElement('small');note.textContent=unlocked?(saved.hero===h.id?'使用中 ✓':'このキャラにする'):h.rule;b.append(icon);b.append(name);b.append(note);b.onclick=()=>chooseHero(h.id);frag.append(b);}$('runner-grid').replaceChildren(frag);
+  const frag=document.createDocumentFragment();for(const h of R.HEROES){const unlocked=h.test(saved),b=document.createElement('button');b.className='runner-card'+(unlocked?'':' locked');b.dataset.hero=h.id;b.setAttribute('aria-pressed',String(saved.hero===h.id));b.disabled=!unlocked;b.style.setProperty('--runner',h.body);const icon=document.createElement('span');icon.className='runner-portrait';icon.setAttribute('aria-hidden','true');icon.innerHTML=A.svg(h);const name=document.createElement('strong');name.textContent=h.name;const note=document.createElement('small');note.textContent=unlocked?(saved.hero===h.id?'使用中 ✓':'このキャラにする'):h.rule;b.append(icon);b.append(name);b.append(note);b.onclick=()=>chooseHero(h.id);frag.append(b);}$('runner-grid').replaceChildren(frag);
   const goals=document.createDocumentFragment();for(const g of R.GOALS){const next=R.goals(saved).find(x=>x.id===g.id),card=document.createElement('div');card.className='goal-card';const name=document.createElement('strong');name.textContent=g.name;const record=document.createElement('p');record.textContent=next?'記録 '+next.record+g.unit+' → '+next.target+g.unit:'全段階達成！';const progress=document.createElement('progress');progress.max=next?.target||1;progress.value=next?Math.min(next.record,next.target):1;progress.setAttribute('aria-label',g.name);const stages=document.createElement('small');stages.textContent=g.steps.map((n,i)=>(saved.badges[g.id+'-'+i]?'✓ ':'')+n+g.unit).join(' · ');card.append(name);card.append(record);card.append(progress);card.append(stages);goals.append(card);}$('goal-grid').replaceChildren(goals);$('collection-title').focus({preventScroll:true});
  }
  function burst(x,y,count,color,power){for(let i=0;i<count;i++){const a=Math.random()*Math.PI*2,v=(.5+Math.random()*2.3)*power;particles.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v+1,life:.25+Math.random()*.5,max:.8,size:1.5+Math.random()*3,color});}if(particles.length>260)particles.splice(0,particles.length-260);}
@@ -325,16 +429,12 @@
  function heroPosition(){if(!flight)return{...player};const t=Math.min(1,flight.t/flight.duration),e=1-Math.pow(1-t,2);return{x:flight.from.x+(flight.to.x-flight.from.x)*e,y:flight.from.y+(flight.to.y-flight.from.y)*e+Math.sin(t*Math.PI)*.6};}
  function polygon(points,fill,stroke=null,width=1){ctx.beginPath();points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();if(fill){ctx.fillStyle=fill;ctx.fill();}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=width;ctx.stroke();}}
  function rounded(x,y,w,h,r,fill,stroke=null,width=1){ctx.beginPath();ctx.roundRect(x,y,w,h,r);if(fill){ctx.fillStyle=fill;ctx.fill();}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=width;ctx.stroke();}}
- function drawHero(x,y,size,alpha=1){ctx.save();ctx.translate(x,y);ctx.scale(size/44,size/44);ctx.globalAlpha=alpha;const h=runner();if(alpha===1&&saved.fx&&shake>0)ctx.translate((Math.random()-.5)*shake,(Math.random()-.5)*shake);const bob=flight?0:Math.sin(clock*5)*.8,tilt=flight?(flight.to.x-flight.from.x)*.07:Math.sin(clock*2.5)*.025;ctx.rotate(tilt);ctx.translate(0,bob);
-  // A distinct silhouette, scarf and visor for each unlocked runner.
-  if(h.shape===3){ctx.strokeStyle=h.trim;ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(0,-33,19,5,Math.sin(clock)*.15,0,Math.PI*2);ctx.stroke();}
-  polygon([[8,2],[34+Math.sin(clock*11)*3,-4],[25,7],[32,12],[7,9]],h.scarf);
-  rounded(-15,12,11,9,3,'#7041ad','#1c1534',2);rounded(5,12,12,9,3,'#7041ad','#1c1534',2);rounded(-15,17,11,3,1,h.trim);rounded(5,17,12,3,1,h.trim);
-  polygon(h.shape===1?[[-18,-11],[-17,-22],[-4,-19],[10,-19],[19,-22],[21,-10],[18,11],[5,18],[-13,11],[-20,1]]:h.shape===2?[[-18,-11],[-20,-30],[-3,-18],[9,-20],[23,-31],[21,-10],[18,11],[5,18],[-13,11],[-20,1]]:[[-18,-11],[-13,-28],[-3,-18],[9,-20],[19,-29],[21,-10],[18,11],[5,18],[-13,11],[-20,1]],h.body,'#241735',2.5);
-  polygon([[-14,-16],[-12,-23],[-6,-17]],h.trim);polygon([[13,-18],[18,-24],[18,-14]],h.trim);
-  polygon([[-16,-7],[-6,-13],[11,-11],[18,-3],[13,8],[-8,10],[-17,3]],'#231837');
-  ctx.shadowColor=h.eye;ctx.shadowBlur=saved.fx?8:0;polygon([[-11,-2],[-4,-4],[-3,2],[-10,4]],h.eye);polygon([[2,-4],[10,-3],[9,3],[2,2]],h.eye);ctx.shadowBlur=0;
-  polygon([[-13,10],[3,13],[15,8],[18,14],[3,21],[-13,16]],h.scarf,'#281834',1.5);rounded(-23,-1,8,12,3,h.trim,'#2a1c3b',2);rounded(16,0,8,12,3,h.trim,'#2a1c3b',2);ctx.restore();}
+ function drawHero(x,y,size,alpha=1){
+  ctx.save();ctx.translate(x,y);ctx.globalAlpha=alpha;
+  if(alpha===1&&saved.fx&&shake>0)ctx.translate((Math.random()-.5)*shake,(Math.random()-.5)*shake);
+  const bob=flight?0:Math.sin(clock*5)*.8,tilt=flight?(flight.to.x-flight.from.x)*.07:Math.sin(clock*2.5)*.025;
+  ctx.rotate(tilt);ctx.translate(0,bob);A.draw(ctx,runner(),0,0,size*100/64,saved.fx);ctx.restore();
+ }
  function drawBackground(){const z=zoneVisual();ctx.fillStyle='#120e20';ctx.fillRect(0,0,viewW,viewH);const glow=ctx.createRadialGradient(viewW*.6,viewH*.7,0,viewW*.6,viewH*.6,viewH*.9);glow.addColorStop(0,z[1]+'16');glow.addColorStop(1,'#110d1c00');ctx.fillStyle=glow;ctx.fillRect(0,0,viewW,viewH);
   const scroll=cam*cell*.18;for(let side=0;side<2;side++){const x=side?viewW-18:0;polygon([[x,0],[x+18,0],[x+13,viewH],[x,viewH]],'#21172f');for(let i=-1;i<viewH/80+1;i++){const y=(i*80+scroll%80);ctx.strokeStyle=i%2?'#ff66442a':z[1]+'30';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(side?viewW:y%17,y);ctx.lineTo(side?viewW-10:13,y+27);ctx.lineTo(side?viewW-4:7,y+50);ctx.stroke();}}
   ctx.fillStyle='#ffffff08';for(let y=-1;y<viewH/cell+1;y++)for(let x=0;x<9;x++){const sy=((Math.floor(cam)+y)-cam)*cell;ctx.beginPath();ctx.arc(offsetX+(x+.5)*cell,viewH+sy,1,0,Math.PI*2);ctx.fill();}
