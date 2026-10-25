@@ -1,0 +1,12 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "nanpure-x-scheduler",
+  "main": "src/index.js",
+  "compatibility_date": "2026-05-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "preview_urls": false,
+  "triggers": {"crons": ["0 3,9,12,23 * * *"]},
+  "d1_databases": [{"binding":"DB","database_name":"puzzle-db","database_id":"7bb28b61-5fe2-47ce-b71b-b0e04fc3747b"}],
+  "vars": {"X_EXPECTED_USERNAME":"parade166"}
+}

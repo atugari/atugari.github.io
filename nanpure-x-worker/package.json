@@ -1,0 +1,1 @@
+{"name":"nanpure-x-scheduler","private":true,"type":"module","scripts":{"test":"node --test test/*.test.mjs","build":"node --check src/index.js && npm test"},"devDependencies":{"wrangler":"4.92.0"}}

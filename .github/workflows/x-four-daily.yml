@@ -3,27 +3,22 @@ name: X daily four puzzles
 on:
   push:
     branches: [main]
-    paths: ['scripts/x-four/**', '.github/workflows/x-four-daily.yml']
+    paths: ['scripts/x-four/**', 'nanpure-x-worker/**', '.github/workflows/x-four-daily.yml']
   workflow_dispatch:
     inputs:
       mode:
-        description: 'preview: images only / check: X account only / publish: one real post'
+        description: 'queue: reserve future slots / preview: images only / check: X account only'
         type: choice
-        options: [preview, check, publish]
-        default: preview
+        options: [queue, preview, check]
+        default: queue
       slot:
-        description: 'Japan-time post slot'
+        description: 'Preview slot (Japan time)'
         type: choice
         options: ['08:00', '12:00', '18:00', '21:00']
         default: '08:00'
+  # These runs only replenish a three-day buffer. They never publish to X.
   schedule:
-    - cron: '0 8 * * *'
-      timezone: Asia/Tokyo
-    - cron: '0 12 * * *'
-      timezone: Asia/Tokyo
-    - cron: '0 18 * * *'
-      timezone: Asia/Tokyo
-    - cron: '0 21 * * *'
+    - cron: '17 3,9,15,21 * * *'
       timezone: Asia/Tokyo
 
 permissions:
@@ -35,11 +30,8 @@ concurrency:
 
 jobs:
   prepare-or-post:
-    # Enabled after the verified @parade166 connection check on 2026-10-25.
-    # Set the repository variable X_FOUR_POST_ENABLED=false to pause posts.
-    if: github.event_name != 'schedule' || (vars.X_FOUR_POST_ENABLED || 'true') == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 35
     permissions:
       contents: write
     steps:
@@ -52,22 +44,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Check Japan-time publication window before contacting X
-        id: clock
-        env:
-          X_FOUR_SCHEDULE: ${{ github.event.schedule || '' }}
-        run: python scripts/x-four/check_window.py
-      - name: Install renderer dependencies
-        if: steps.clock.outputs.allowed == 'true'
+      - name: Test clock, duplicate and publication guards
         run: |
           python -m pip install -r scripts/x-four/requirements.txt
-          sudo apt-get update -qq
-          sudo apt-get install -y fonts-noto-cjk
-      - name: Check publication guards
-        if: steps.clock.outputs.allowed == 'true'
-        run: python -m unittest discover -s scripts/x-four -p 'test_*.py' -v
-      - name: Check X posting account before preview
-        if: github.event_name == 'push' && steps.clock.outputs.allowed == 'true'
+          python -m unittest discover -s scripts/x-four -p 'test_*.py' -v
+          npm test --prefix nanpure-x-worker
+      - name: Check X posting account before deployment
+        if: github.event_name == 'push' || inputs.mode == 'check'
         env:
           X_FOUR_MODE: check
           X_EXPECTED_USERNAME: parade166
@@ -76,28 +59,49 @@ jobs:
           X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
           X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
         run: python scripts/x-four/run.py
-      - name: Prepare four questions or publish
-        id: prepare
-        if: steps.clock.outputs.allowed == 'true'
+      - name: Deploy independent publication clock and encrypted credentials
+        if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.mode == 'queue')
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: '3fb1db1d33caddf96fec77fac7d571e6'
+          workingDirectory: nanpure-x-worker
+          wranglerVersion: '4.92.0'
+          packageManager: npm
+          command: |
+            d1 execute DB --remote --file schema.sql
+            deploy
+          secrets: |
+            X_API_KEY
+            X_API_SECRET
+            X_ACCESS_TOKEN
+            X_ACCESS_TOKEN_SECRET
         env:
-          GITHUB_TOKEN: ${{ github.token }}
-          REPO_ROOT: ${{ github.workspace }}
-          X_FOUR_MODE: ${{ github.event_name == 'schedule' && 'publish' || inputs.mode || 'preview' }}
-          X_FOUR_SCHEDULE: ${{ github.event.schedule || '' }}
-          X_FOUR_SLOT: ${{ inputs.slot || '08:00' }}
-          X_FOUR_POST_ENABLED: ${{ vars.X_FOUR_POST_ENABLED || 'true' }}
-          X_FOUR_INCLUDE_URL: ${{ vars.X_FOUR_INCLUDE_URL || 'false' }}
-          X_EXPECTED_USERNAME: parade166
           X_API_KEY: ${{ secrets.X_API_KEY }}
           X_API_SECRET: ${{ secrets.X_API_SECRET }}
           X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
           X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+      - name: Install rendering fonts
+        if: inputs.mode != 'check'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y fonts-noto-cjk
+      - name: Reserve future questions without immediate publication
+        if: github.event_name != 'workflow_dispatch' || inputs.mode == 'queue'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          REPO_ROOT: ${{ github.workspace }}
+          X_FOUR_POST_ENABLED: ${{ vars.X_FOUR_POST_ENABLED || 'true' }}
+          X_FOUR_INCLUDE_URL: ${{ vars.X_FOUR_INCLUDE_URL || 'false' }}
+          X_QUEUE_CHECK: ${{ github.event_name == 'push' && 'true' || 'false' }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+        run: python scripts/x-four/queue_worker.py
+      - name: Preview only when explicitly requested
+        if: github.event_name == 'workflow_dispatch' && inputs.mode == 'preview'
+        env:
+          REPO_ROOT: ${{ github.workspace }}
+          X_FOUR_MODE: preview
+          X_FOUR_SLOT: ${{ inputs.slot || '08:00' }}
+          X_FOUR_INCLUDE_URL: ${{ vars.X_FOUR_INCLUDE_URL || 'false' }}
         run: python scripts/x-four/run.py
-      - name: Save question images and post text
-        if: success() && steps.prepare.outputs.prepared == 'true' && (github.event_name != 'workflow_dispatch' || inputs.mode != 'check')
-        uses: actions/upload-artifact@v4
-        with:
-          name: x-four-questions-${{ github.run_id }}
-          path: ${{ runner.temp }}/x-four-work/output/
-          if-no-files-found: error
-          retention-days: 7
