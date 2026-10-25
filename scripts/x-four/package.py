@@ -18,17 +18,16 @@ alts=[a+'画像下部に https://atugari.github.io/nanpure/ とQRコード。検
 assert all(0<len(a)<=1000 for a in alts),[len(a) for a in alts]
 include_url=os.environ.get('X_FOUR_INCLUDE_URL','false').lower()=='true'
 label=day[5:].replace('-','/')
-guide='画像のURL・QRからどうぞ。'
+guide='画像のURL・QRから。'
 if include_url:guide='https://atugari.github.io/nanpure/'
 text=('【今日の4問｜'+label+'】\n'
-      'シルプレ・数独・和同開珎・クロスワード。\n\n'
-      '無料のナンプレ帳は電車や休憩時間の脳トレに。\n'
-      '問題を作って学校・施設用に印刷もできます。\n'
-      '自由に使ってください。\n\n'
+      'ナンプレ帳は無料。脳トレや学校・施設のプリントに自由にどうぞ。\n\n'
+      'OFUSEはSoziの応援窓口。\n'
+      '無料メッセージや100円からの支援を送れます。\n'
+      '決済は専門サービスStripe。カード情報はナンプレ帳に入力しません。\n'
+      'サイトのOFUSEから応援を！\n\n'
       +guide+'\n'
-      'OFUSEでメッセージや支援金を送れます。\n'
-      '楽しめたら応援を！\n\n'
-      '#ナンプレ帳 #パズル')
+      '#ナンプレ帳')
 
 names=['01-shirupure.png','02-sudoku.png','03-wado.png','04-crossword.png']
 assert len([x for x in out.glob('*.png')])==4
