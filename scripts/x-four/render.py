@@ -198,7 +198,8 @@ for i,item in enumerate(ITEMS):
  for size in (2048,1024):
   scan=im if size==2048 else im.resize((size,size),Image.Resampling.LANCZOS)
   assert 'https://'+URL in [b.text for b in zxingcpp.read_barcodes(scan)],('QR decode failed',name,size)
- im.save(OUT/name,optimize=True);images.append(im)
+ temporary=OUT/('.'+name+'.tmp')
+ im.save(temporary,format='PNG',optimize=True);temporary.replace(OUT/name);images.append(im)
 check_font=TTFont(BOLD,fontNumber=0);cmap=check_font.getBestCmap();missing=sorted({c for t in texts for c in t if not c.isspace() and ord(c) not in cmap})
 assert not missing,missing
 assert len([p for p in OUT.glob('0*.png')])==4
