@@ -1,5 +1,18 @@
 [
   {
+    "version": "2026.10.26.59",
+    "date": "2026-10-26",
+    "kind": "improvement",
+    "scope": "cloud-notice",
+    "visibility": "internal",
+    "notify": false,
+    "title": "クラウド保存終了の確認を2回表示",
+    "items": [
+      "初回の終了案内と保存・読み込み前の案内を確認します。",
+      "終了日とデータ削除の案内を2回確認した状態はブラウザ内に保存します。"
+    ]
+  },
+  {
     "version": "2026.10.26.58",
     "date": "2026-10-26",
     "kind": "notice",

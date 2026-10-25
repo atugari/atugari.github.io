@@ -591,7 +591,21 @@ async function checkJigsawCreationAndPrint(page,lang,expected){
   assert.equal((await page.locator('a[href*="chatgpt.site"]').count()),0,'Legacy account URL in '+view);
   assert(!/通信できませんでした|読み込めませんでした/.test(await page.locator('body').innerText()),'API error in '+view);
   if(view==='daily')assert((await page.locator('body').innerText()).includes('日替わり'));
-  if(view==='backup')assert((await page.locator('body').innerText()).includes('別の端末とつなぐ'));
+  if(view==='backup'){
+   assert((await page.locator('body').innerText()).includes('別の端末とつなぐ'));
+   const notice=page.locator('.np-cloud-retirement-dialog'),confirm=notice.locator('button');
+   await notice.waitFor();assert((await notice.textContent()).includes('1/2'));
+   assert(await notice.evaluate(e=>e.open&&e.matches(':modal')&&e.scrollWidth<=e.clientWidth+1),'First notice must be an accessible modal without horizontal clipping');
+   await confirm.click();
+   const writes=[],watch=request=>{if(new URL(request.url()).pathname==='/api/cloud'&&request.method()==='POST')writes.push(request.url())};page.on('request',watch);
+   await page.getByRole('button',{name:'閉じる',exact:true}).click();await page.locator('.main-choice').click();
+   await notice.waitFor();assert((await notice.textContent()).includes('2/2'));assert.deepEqual(writes,[],'No cloud upload during either acknowledgement');
+   await confirm.click();await page.locator('.site-shell.mode-practice').waitFor();
+   page.off('request',watch);
+   await page.goto('https://atugari.github.io/nanpure/?lang=ja&view=backup',{waitUntil:'domcontentloaded'});await page.locator('.cloud-save').waitFor();
+   assert.equal(await notice.count(),0,'The same browser is not asked a third time');
+
+  }
   console.log('PASS mobile view:',view||'home');
  }
  // Translation layout uses deterministic fixtures after the live API gate.

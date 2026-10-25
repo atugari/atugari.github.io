@@ -10,14 +10,17 @@ export default function CloudSave({capture,onRestore,busy}:{capture:()=>Promise<
  async function loadInfo(){const d=await apiJSON('/api/cloud');V(d.save);Q(d.quota&&Number.isInteger(d.quota.remaining)&&Number.isFinite(d.quota.serverNow)&&Number.isFinite(d.quota.resetAt)?d.quota:null);R(true)}
  useEffect(()=>{if(!quota||closed)return;const timer=setTimeout(()=>{void loadInfo().catch(()=>{Q(null);R(false)})},Math.min(86400000,Math.max(1000,quota.resetAt-quota.serverNow+250)));return()=>clearTimeout(timer)},[quota?.resetAt,quota?.serverNow]);
  useEffect(()=>{if(!quota||closed)return;const timer=setTimeout(()=>CLOSED(true),Math.min(2147483647,Math.max(0,cloudRetiresAt-quota.serverNow)));return()=>clearTimeout(timer)},[quota?.serverNow,closed]);
+ useEffect(()=>{if(quota&&!closed)void (window as any).NPCloudRetirement?.onEntry(quota.serverNow)},[quota?.serverNow,closed]);
+ async function acknowledge(){const notice=(window as any).NPCloudRetirement;if(!notice)throw Error('読み込みを待って再試行してください。');return notice.beforeUse()}
  async function refresh(){R(false);Q(null);M('');try{K('NP1-'+storedKey(syncStorage));await loadInfo()}catch(e){if((e as any).status===410)CLOSED(true);else M((e as Error).message)}}useEffect(()=>{void refresh()},[]);
  async function upload(){W(true);M('');C(false);let revision='';try{
+  if(!await acknowledge())return;
   const backup=validateBackup(await capture()),bytes=new TextEncoder().encode(JSON.stringify(backup));if(bytes.length>5*1024*1024)throw Error('5MBを超える場合は「引き継ぎファイルを保存」を使ってください。');
   const chunks=Math.ceil(bytes.length/131072),meta=await apiJSON('/api/cloud',{action:'begin',expected:save?.revision||null,bytes:bytes.length,chunks,puzzles:backup.notebook?.puzzles?.length||0,digest:await digest(bytes)});revision=meta.revision;
   for(let i=0;i<chunks;i++){P(`${i+1} / ${chunks}`);const r=await apiFetch(`/api/cloud?action=chunk&revision=${revision}&position=${i}`,{method:'POST',headers:{'Content-Type':'application/octet-stream'},body:bytes.slice(i*131072,(i+1)*131072)});if(!r.ok)throw Error((await r.json()).error)}
   const d=await apiJSON('/api/cloud',{action:'commit',revision});revision='';V(d.save);M('クラウドに保存しました。別の端末では同じ引き継ぎコードを入力してください。');
  }catch(e){if((e as any).status===409)R(false);M((e as Error).message)}finally{if(revision)await apiJSON('/api/cloud',{action:'cancel',revision}).catch(()=>{});await loadInfo().catch(()=>{Q(null);R(false)});W(false);P('')}}
- async function download(){W(true);M('');try{const meta=await apiJSON('/api/cloud'),s:Saved=meta.save;if(!s)throw Error('クラウドに保存したデータはありません。');const bytes=new Uint8Array(s.bytes);let offset=0;
+ async function download(){W(true);M('');try{if(!await acknowledge())return;const meta=await apiJSON('/api/cloud'),s:Saved=meta.save;if(!s)throw Error('クラウドに保存したデータはありません。');const bytes=new Uint8Array(s.bytes);let offset=0;
   for(let i=0;i<s.chunks;i++){P(`${i+1} / ${s.chunks}`);const r=await apiFetch(`/api/cloud?action=chunk&revision=${s.revision}&position=${i}`);if(!r.ok)throw Error((await r.json()).error);const part=new Uint8Array(await r.arrayBuffer());bytes.set(part,offset);offset+=part.length}
   if(offset!==s.bytes||await digest(bytes)!==s.digest)throw Error('保存データを確認できませんでした。もう一度読み込んでください。');onRestore(validateBackup(JSON.parse(new TextDecoder().decode(bytes))));V(s);
  }catch(e){M((e as Error).message)}finally{W(false);P('')}}

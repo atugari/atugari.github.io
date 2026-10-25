@@ -3,7 +3,7 @@ const testConsole=console;
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict'),cryptoModule=require('node:crypto');
 const{pathToFileURL}=require('node:url'),{parseHTML}=require(process.argv[2]||'linkedom');
 const root=path.resolve(__dirname,'..'),manifest=require('../nanpure/release-manifest.json'),catalog=require('./i18n/catalog.cjs');
-const added={...require('./i18n/catalog-cloud-57.cjs'),...require('./i18n/catalog-cloud-retirement-58.cjs')},locales=Object.keys(require('./i18n/languages.json')).filter(x=>x!=='ja');
+const added={...require('./i18n/catalog-cloud-57.cjs'),...require('./i18n/catalog-cloud-retirement-58.cjs'),...require('./i18n/catalog-cloud-notice-59.cjs')},locales=Object.keys(require('./i18n/languages.json')).filter(x=>x!=='ja');
 for(const[key,row]of Object.entries(added)){
  assert.deepEqual(Object.keys(row).sort(),locales.slice().sort());
  for(const value of Object.values(row))assert.deepEqual([...value.matchAll(/\{\w+\}/g)].map(m=>m[0]),[...key.matchAll(/\{\w+\}/g)].map(m=>m[0]));
@@ -30,7 +30,7 @@ Object.assign(w,{window:w,self:w,Headers,URL,URLSearchParams,TextEncoder,TextDec
   const headers=new Headers(init.headers);headers.set('Origin','https://atugari.github.io');
   return worker.fetch(new Request('https://worker.test'+target.pathname+target.search,{...init,headers}),{DB});
  }
-});w.parent=w;
+});w.parent=w;w.HTMLElement.prototype.showModal=function(){this.open=true;this.setAttribute('open','')};w.HTMLElement.prototype.close=function(){this.open=false;this.removeAttribute('open');this.dispatchEvent(new w.Event('close'))};
 const context=vm.createContext(w),modules=new Map();
 async function load(file){file=path.resolve(file);if(modules.has(file))return modules.get(file);const m=new vm.SourceTextModule(file===shellFile?shipped:fs.readFileSync(file,'utf8'),{context,identifier:file,importModuleDynamically:async(spec,ref)=>{const next=await load(path.resolve(path.dirname(ref.identifier),spec));await next.evaluate();return next}});modules.set(file,m);await m.link((spec,ref)=>load(path.resolve(path.dirname(ref.identifier),spec)));return m;}
 const wait=async(condition,label)=>{const until=Date.now()+5000;while(!condition()){assert(Date.now()<until,'Timed out: '+label);await new Promise(r=>setTimeout(r,5));}};
@@ -45,12 +45,13 @@ async function run(){
  const{Component,React,createRoot,Context}=module.namespace.CloudTest,reactRoot=createRoot(w.document.getElementById('cloud-test'));
  const backup=()=>({format:'nanpure-website-backup-v1',created:Date.now(),data:{},notebook:{puzzles:[],...(large?{padding:'x'.repeat(5*1024*1024)}:{})}});
  function render(locale='ja'){const t=s=>locale==='ja'?s:catalog[s]?.[locale]||s;reactRoot.render(React.createElement(Context.Provider,{value:{locale,t,setLocale(){}}},React.createElement(Component,{capture:async()=>backup(),onRestore:v=>{restored=v},busy:false})));}
- async function save(){button('クラウドに保存').click();await new Promise(r=>setTimeout(r,10));const confirm=[...w.document.querySelectorAll('button')].find(b=>b.textContent==='この端末の内容を保存');if(confirm)confirm.click();}
+ async function save(){button('クラウドに保存').click();await new Promise(r=>setTimeout(r,10));const notice=w.document.querySelector('.np-cloud-retirement-dialog button');if(notice){assert.equal(DB.raw.prepare('SELECT COUNT(*) AS n FROM cloud_uploads').get().n,0);notice.click();await new Promise(r=>setTimeout(r,10));}const confirm=[...w.document.querySelectorAll('button')].find(b=>b.textContent==='この端末の内容を保存');if(confirm)confirm.click();}
  render();await wait(()=>contents().includes('今日はあと3回保存できます。'),'initial remaining count');
  assert(contents().includes('2026年11月9日0時'));assert(contents().includes('全員のクラウド保存データを削除'));assert(contents().includes('保存し直しても期限は延びません'));
+ await wait(()=>w.document.querySelector('.np-cloud-retirement-dialog button'),'first explicit notice');assert.equal(w.NPCloudRetirement.getCount(),0);w.document.querySelector('.np-cloud-retirement-dialog button').click();assert.equal(w.NPCloudRetirement.getCount(),1);
  assert(contents().includes('5MB'));assert(contents().includes('問題の作成・印刷と端末への保存は引き続き無料で使えます。'));
  await save();await wait(()=>contents().includes('今日はあと2回保存できます。')&&contents().includes('クラウドに保存しました。'),'first save');
- const original=DB.raw.prepare('SELECT revision FROM cloud_saves').get().revision;
+ assert.equal(w.NPCloudRetirement.getCount(),2);const original=DB.raw.prepare('SELECT revision FROM cloud_saves').get().revision;
  large=true;await save();await wait(()=>message().includes('5MBを超える場合は')&&!button('クラウドに保存').disabled,'oversized local backup message');
  assert(contents().includes('今日はあと2回保存できます。'));assert.equal(DB.raw.prepare('SELECT COUNT(*) AS n FROM cloud_uploads').get().n,0);
  large=false;failChunk=true;await save();await wait(()=>message().includes('通信できませんでした。')&&!button('クラウドに保存').disabled,'failed upload recovery');
