@@ -35,7 +35,9 @@ concurrency:
 
 jobs:
   prepare-or-post:
-    if: github.event_name != 'schedule' || vars.X_FOUR_POST_ENABLED == 'true'
+    # Enabled after the verified @parade166 connection check on 2026-10-25.
+    # Set the repository variable X_FOUR_POST_ENABLED=false to pause posts.
+    if: github.event_name != 'schedule' || (vars.X_FOUR_POST_ENABLED || 'true') == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -74,7 +76,7 @@ jobs:
           X_FOUR_MODE: ${{ github.event_name == 'schedule' && 'publish' || inputs.mode || 'preview' }}
           X_FOUR_SCHEDULE: ${{ github.event.schedule || '' }}
           X_FOUR_SLOT: ${{ inputs.slot || '08:00' }}
-          X_FOUR_POST_ENABLED: ${{ vars.X_FOUR_POST_ENABLED }}
+          X_FOUR_POST_ENABLED: ${{ vars.X_FOUR_POST_ENABLED || 'true' }}
           X_FOUR_INCLUDE_URL: ${{ vars.X_FOUR_INCLUDE_URL || 'false' }}
           X_EXPECTED_USERNAME: parade166
           X_API_KEY: ${{ secrets.X_API_KEY }}
