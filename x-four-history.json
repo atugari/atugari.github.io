@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "posts": {
+    "2026-10-24": {
+      "status": "previously-prepared",
+      "fingerprints": [
+        "80ab8567c6a90aaac9403762d453db4424d1bc1264cbc495e0e2df785764a3cc",
+        "6d58e09a60d2f46960214023ac5594d20b69cb996075a46d42e1cef007ae9248",
+        "f68593abcbf0babebd024bb600f2d6d009f8783f6d0057f0f4cda6427f52a20a",
+        "5fc09439837cff2925e3da0cdf0a18e9f4ea8a85079de5d2b89d3c2270a8e49a"
+      ]
+    },
+    "2026-10-25@12:00": {
+      "date": "2026-10-25",
+      "status": "posting",
+      "fingerprints": [
+        "e87fc92eb2f13d07124fa91c510a2b13a127fe6289e94b43fb1d20300630e9d5",
+        "4a4595660050a56e5e019eec5893eb64e171031e31c6a403c1093970922c79e4",
+        "2663ed6fed8f94175e7e1fb0b090ac8c3cff0a4813cbb7ce246a7e127ff40c72",
+        "66d66c2abb8144ec6f600f562a005a1b0b05034c3d5588cd7fb8b05925da5ea8"
+      ],
+      "slot": "12:00"
+    }
+  }
+}
