@@ -3,7 +3,7 @@ import base64,hashlib,json,os,subprocess,sys
 from datetime import datetime,timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
-from publish import Ledger,http,validate
+from publish import Ledger,validate
 from post_schedule import SLOTS,publication_key
 
 DEFAULT_URL='https://nanpure-x-scheduler.puzzle-hub-4826.workers.dev'
@@ -24,7 +24,15 @@ class Queue:
         self.url=os.environ.get('X_QUEUE_URL',DEFAULT_URL).rstrip('/')
         if self.url!=DEFAULT_URL:raise ValueError('Unexpected queue destination')
         self.token=queue_token(os.environ['X_API_SECRET'],os.environ['X_ACCESS_TOKEN_SECRET'])
-    def api(self,path,body=None):return http('GET' if body is None else 'POST',self.url+path,{'Authorization':'Bearer '+self.token,'Content-Type':'application/json'},body)
+    def api(self,path,body=None):
+        request={'url':self.url+path,'authorization':'Bearer '+self.token,'body':body}
+        process=subprocess.run(['node',str(Path(__file__).with_name('queue_http.mjs'))],input=json.dumps(request),text=True,capture_output=True,timeout=70)
+        try:result=json.loads(process.stdout)
+        except ValueError:raise RuntimeError('Queue transport failed') from None
+        if process.returncode or not 200<=result['status']<300:
+            # Never echo request headers or provider error bodies into public logs.
+            raise RuntimeError('Queue API request failed: '+str(result.get('status',0))+' '+path)
+        return result['data']
 
 def prepare(q,repo,work,legacy,now,*,enabled=True,generate=None):
     q.api('/control',{'enabled':enabled,'history':legacy})
