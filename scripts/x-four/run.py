@@ -3,7 +3,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 import json,os,subprocess,sys
 from publish import Ledger,XClient,publish,validate
-from post_schedule import publication_key,resolve_slot
+from post_schedule import publication_key,resolve_slot,is_current_slot
 
 script=Path(__file__).resolve().parent
 repo=Path(os.environ.get('REPO_ROOT',script.parents[1])).resolve()
@@ -17,6 +17,8 @@ if mode=='check':
     if username.lower()!=os.environ.get('X_EXPECTED_USERNAME','parade166').lower():raise RuntimeError('Wrong X account')
     print('X connection verified for @'+username)
     sys.exit(0)
+if mode=='publish' and not is_current_slot(datetime.now(ZoneInfo('Asia/Tokyo')),day,slot):
+    print('Skipped: publication window expired. No X API request was made.');sys.exit(0)
 if os.environ.get('GITHUB_TOKEN'):
     ledger=Ledger();history=ledger.load()
     if mode=='publish' and (key in history.get('posts',{}) or day in history.get('posts',{})):raise RuntimeError('This date or slot already has an attempt; check its history before continuing')
@@ -28,7 +30,11 @@ run(sys.executable,str(script/'verify.py'),str(work))
 run(sys.executable,str(script/'render.py'),str(work))
 run(sys.executable,str(script/'package.py'),str(work))
 validate(work/'output')
+if os.environ.get('GITHUB_OUTPUT'):
+    with open(os.environ['GITHUB_OUTPUT'],'a') as output:output.write('prepared=true\n')
 if mode=='publish':
+    if not is_current_slot(datetime.now(ZoneInfo('Asia/Tokyo')),day,slot):
+        print('Skipped: publication window expired during preparation.');sys.exit(0)
     if os.environ.get('X_FOUR_POST_ENABLED')!='true':raise RuntimeError('Posting is disabled; finish the connection check before enabling it')
     post_id=publish(work/'output',ledger,XClient(),os.environ.get('X_EXPECTED_USERNAME','parade166'))
     print('Published: https://x.com/'+os.environ.get('X_EXPECTED_USERNAME','parade166')+'/status/'+post_id)

@@ -2,7 +2,7 @@ from datetime import datetime,timedelta
 import unittest
 from zoneinfo import ZoneInfo
 from daily_plan import daily_plan,RULES,LABELS
-from post_schedule import SLOTS,publication_key,resolve_slot
+from post_schedule import SLOTS,publication_key,resolve_slot,is_current_slot
 
 class ScheduleTests(unittest.TestCase):
     def test_delayed_schedule_keeps_its_intended_slot(self):
@@ -11,6 +11,16 @@ class ScheduleTests(unittest.TestCase):
     def test_late_night_run_belongs_to_the_previous_japan_day(self):
         now=datetime(2026,10,26,0,12,tzinfo=ZoneInfo('Asia/Tokyo'))
         self.assertEqual(resolve_slot(now,schedule='0 21 * * *'),('2026-10-25','21:00'))
+    def test_overdue_and_next_day_slots_are_not_publishable(self):
+        due=datetime(2026,10,25,21,tzinfo=ZoneInfo('Asia/Tokyo'))
+        self.assertTrue(is_current_slot(due,'2026-10-25','21:00'))
+        self.assertTrue(is_current_slot(due+timedelta(minutes=15),'2026-10-25','21:00'))
+        self.assertFalse(is_current_slot(due+timedelta(minutes=15,seconds=1),'2026-10-25','21:00'))
+        self.assertFalse(is_current_slot(datetime(2026,10,26,0,34,tzinfo=ZoneInfo('Asia/Tokyo')),'2026-10-25','21:00'))
+    def test_deadline_uses_japan_time_for_utc_clocks(self):
+        now=datetime(2026,10,25,23,2,tzinfo=ZoneInfo('UTC'))
+        self.assertTrue(is_current_slot(now,'2026-10-26','08:00'))
+        self.assertFalse(is_current_slot(now,'2026-10-25','21:00'))
     def test_four_slots_have_distinct_publication_ids(self):
         self.assertEqual(len({publication_key('2026-10-25',slot) for slot in SLOTS}),4)
         with self.assertRaises(ValueError):publication_key('2026-10-25','09:00')

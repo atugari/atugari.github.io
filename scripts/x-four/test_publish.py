@@ -2,9 +2,17 @@ import copy,hashlib,json,tempfile,unittest
 from pathlib import Path
 from unittest.mock import patch
 from PIL import Image
-from publish import oauth_header,publish,validate
+from publish import oauth_header,publish as publish_impl,validate
+from datetime import datetime,timedelta
+from zoneinfo import ZoneInfo
 from post_text import render_text,weighted_length
 from post_schedule import SLOTS
+
+# Each publication scenario runs at its own scheduled Japan time.
+def publish(directory,*args,**kwargs):
+    post=json.loads((Path(directory)/'post.json').read_text())
+    due=datetime.fromisoformat(post['date']+'T'+post.get('slot','08:00')+':00').replace(tzinfo=ZoneInfo('Asia/Tokyo'))
+    return publish_impl(directory,*args,now=lambda:due,**kwargs)
 
 class Ledger:
     def __init__(self,events,state=None):self.events=events;self.state=state or {'version':1,'posts':{}}
@@ -33,6 +41,17 @@ class PublicationTests(unittest.TestCase):
         self.save()
     def tearDown(self):self.tmp.cleanup()
     def save(self):(self.root/'post.json').write_text(json.dumps(self.data))
+    def test_previous_day_slot_cannot_make_any_x_request(self):
+        self.data.update(slot='21:00',publication_id=self.data['date']+'@21:00');self.save()
+        events=[];late=datetime(2026,10,27,0,34,tzinfo=ZoneInfo('Asia/Tokyo'))
+        with self.assertRaisesRegex(RuntimeError,'window expired'):publish_impl(self.root,Ledger(events),Client(events),'parade166',now=lambda:late)
+        self.assertEqual(events,[])
+    def test_deadline_expiring_during_upload_does_not_create_a_post(self):
+        self.data.update(slot='08:00',publication_id=self.data['date']+'@08:00');self.save()
+        events=[];ledger=Ledger(events);due=datetime(2026,10,26,8,tzinfo=ZoneInfo('Asia/Tokyo'));ticks=iter([due,due,due,due+timedelta(minutes=16)])
+        with self.assertRaisesRegex(RuntimeError,'window expired'):publish_impl(self.root,ledger,Client(events),'parade166',now=lambda:next(ticks))
+        self.assertNotIn('post',events);self.assertEqual(events.count('upload'),1)
+        self.assertEqual(ledger.state['posts'][self.data['publication_id']]['status'],'posting')
     def test_four_uploads_and_durable_claim_before_post(self):
         events=[];ledger=Ledger(events)
         self.assertEqual(publish(self.root,ledger,Client(events),'parade166'),'123456')

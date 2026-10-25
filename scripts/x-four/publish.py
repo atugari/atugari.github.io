@@ -1,12 +1,14 @@
 """Send exactly four verified PNGs. Secrets are read from the environment only."""
 import base64,hashlib,hmac,json,os,secrets,time
+from datetime import datetime
+from zoneinfo import ZoneInfo
 from pathlib import Path
 from urllib.parse import quote,urlsplit,parse_qsl
 from urllib.request import Request,urlopen
 from urllib.error import HTTPError,URLError
 from PIL import Image
 from post_text import render_text,weighted_length
-from post_schedule import publication_key
+from post_schedule import publication_key,is_current_slot
 from daily_plan import daily_plan
 
 def encoded(value):return quote(str(value),safe='~-._')
@@ -111,17 +113,25 @@ def validate(directory):
         if hashlib.sha256(p.read_bytes()).hexdigest()!=item['sha256']:raise ValueError('Image changed after validation')
     return post
 
-def publish(directory,ledger,client,expected_username):
+def publish(directory,ledger,client,expected_username,*,now=None):
     post=validate(directory);state=ledger.load();posts=state.setdefault('posts',{});day=post['date']
     key=publication_key(day,post.get('slot'))
+    clock=now or (lambda:datetime.now(ZoneInfo('Asia/Tokyo')))
+    def check_time():
+        if post.get('slot') and not is_current_slot(clock(),day,post['slot']):raise RuntimeError('Publication window expired; no late post will be sent')
+    check_time()
     if key in posts or day in posts:raise RuntimeError('This date or slot already has a sent or uncertain attempt. Review it; it will not be reposted automatically.')
     old={h for p in posts.values() for h in p.get('fingerprints',[])}
     if any(h in old for h in post['fingerprints']):raise RuntimeError('A previously used puzzle was found')
+    check_time()
     if client.username().lower()!=expected_username.lower():raise RuntimeError('Connected X account does not match the intended account')
     posts[key]={'date':day,'status':'posting','fingerprints':post['fingerprints']}
     if post.get('slot') is not None:posts[key]['slot']=post['slot']
     ledger.write(state)  # A durable claim precedes every upload or post request.
-    ids=[client.upload(Path(directory)/item['file'],item['alt']) for item in post['images']]
+    ids=[]
+    for item in post['images']:
+        check_time();ids.append(client.upload(Path(directory)/item['file'],item['alt']))
+    check_time()
     post_id=client.create(post['text'],ids)
     posts[key].update(status='sent',post_id=post_id)
     ledger.write(state)

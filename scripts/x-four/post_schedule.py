@@ -24,3 +24,11 @@ def resolve_slot(now,*,schedule='',requested='08:00'):
         if requested not in SLOTS:raise ValueError('Invalid publication slot')
         slot=requested;day=local.date()
     return day.isoformat(),slot
+
+MAX_DELAY=timedelta(minutes=15)
+
+def is_current_slot(now,day,slot):
+    if now.tzinfo is None:raise ValueError('A timezone-aware current time is required')
+    due=datetime.fromisoformat(day+'T'+slot+':00').replace(tzinfo=ZoneInfo('Asia/Tokyo'))
+    local=now.astimezone(ZoneInfo('Asia/Tokyo'))
+    return local.date().isoformat()==day and timedelta(0)<=local-due<=MAX_DELAY
