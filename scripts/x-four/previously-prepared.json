@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "posts": {
+    "2026-10-24": {
+      "status": "previously-prepared",
+      "fingerprints": [
+        "80ab8567c6a90aaac9403762d453db4424d1bc1264cbc495e0e2df785764a3cc",
+        "6d58e09a60d2f46960214023ac5594d20b69cb996075a46d42e1cef007ae9248",
+        "f68593abcbf0babebd024bb600f2d6d009f8783f6d0057f0f4cda6427f52a20a",
+        "5fc09439837cff2925e3da0cdf0a18e9f4ea8a85079de5d2b89d3c2270a8e49a"
+      ]
+    }
+  }
+}
