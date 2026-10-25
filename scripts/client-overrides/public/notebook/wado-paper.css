@@ -21,3 +21,20 @@
 :is(#paper,#wado-print-root,#live-stage,.wp-measure) .wp-page-number{white-space:nowrap}
 @page{size:A4 portrait;margin:10mm}
 @media print{.wp-measure{display:none!important}#wado-print-root .wp-sheet:last-child{break-after:auto;page-break-after:auto}}
+/* Question cards and their matching answer/hint slips share the same measured A4 page. */
+:is(#paper,#wado-print-root,#live-stage,.wp-measure) .wp-sheet[data-kind=cut] .wp-grid{flex:0 0 auto;gap:2mm}
+:is(#paper,#wado-print-root,#live-stage,.wp-measure) .wp-sheet[data-kind=cut] .wp-item{border:.2mm dashed #888}
+:is(#paper,#wado-print-root,#live-stage,.wp-measure) .wp-cut-section{flex:none;border-top:.25mm dashed #555;margin-top:4mm;padding-top:2mm;break-inside:avoid}
+:is(#paper,#wado-print-root,#live-stage,.wp-measure) .wp-cut-section h2{display:flex;justify-content:space-between;gap:3mm;margin:0 0 1mm;font-size:calc(11pt * var(--wp-text-scale,1));font-weight:600;line-height:1.5}
+:is(#paper,#wado-print-root,#live-stage,.wp-measure) .wp-cut-section h2 small{font-size:.8em;font-weight:400}
+:is(#paper,#wado-print-root,#live-stage,.wp-measure) .wp-key-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1mm 2mm}
+:is(#paper,#wado-print-root,#live-stage,.wp-measure) .wp-key{border:.2mm dashed #aaa;padding:1.5mm;min-width:0;overflow-wrap:anywhere;font-size:calc(10pt * var(--wp-text-scale,1));line-height:1.5}
+:is(#paper,#wado-print-root,#live-stage,.wp-measure) .wp-key-number{font-size:calc(10pt * var(--wp-text-scale,1));font-weight:600}
+:is(#paper,#wado-print-root,#live-stage,.wp-measure) .wp-key .wp-answers{font-size:inherit;margin:0}
+:is(#paper,#wado-print-root,#live-stage,.wp-measure) .wp-key .wado-hints{display:block;font-size:inherit;margin:0;line-height:1.5}
+:is(#paper,#wado-print-root,#live-stage,.wp-measure) .wp-key .wado-hint-current{margin:0;font-size:inherit;line-height:1.5}
+:is(#paper,#wado-print-root,#live-stage,.wp-measure) .wp-key .wado-hint-current strong{display:block;font-size:.85em;font-weight:400}
+:is(#paper,#wado-print-root,#live-stage,.wp-measure) .wp-key .wado-word-list{gap:0 2mm}
+:is(#paper,#wado-print-root,#live-stage,.wp-measure) .wp-paired-answer{border-top:.2mm dashed #888;padding-top:2mm;margin-top:1mm;font-size:calc(11pt * var(--wp-text-scale,1));line-height:1.5}
+:is(#paper,#wado-print-root,#live-stage,.wp-measure) .wp-answer-value{font-size:inherit;line-height:1.5}
+:is(#paper,#wado-print-root,#live-stage,.wp-measure) .wp-answer-value strong{font-size:1.25em;font-weight:600}
