@@ -57,6 +57,16 @@ jobs:
           sudo apt-get install -y fonts-noto-cjk
       - name: Check publication guards
         run: python -m unittest discover -s scripts/x-four -p 'test_*.py' -v
+      - name: Check X posting account before preview
+        if: github.event_name == 'push'
+        env:
+          X_FOUR_MODE: check
+          X_EXPECTED_USERNAME: parade166
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+        run: python scripts/x-four/run.py
       - name: Prepare four questions or publish
         env:
           GITHUB_TOKEN: ${{ github.token }}
