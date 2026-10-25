@@ -1,1451 +1,167 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#0d0d0a">
-  <title>飛べ飛 — 丸場所</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&display=swap');
-
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    :root{
-      --bg:#0d0d0a;
-      --surface:#161612;
-      --border:rgba(255,255,255,0.07);
-      --text:#e8e4d8;
-      --text2:#8a8678;
-      --text3:#4a4840;
-      --gold:#c8a85a;
-      --gold2:#8a7040;
-      --red:#c05840;
-      --green:#5a9870;
-      --r:10px;
-    }
-
-    html,body{
-      height:100%;
-      background:var(--bg);
-      color:var(--text);
-      font-family:'Noto Serif JP',serif;
-      overflow:hidden;
-      touch-action:none;
-      user-select:none;
-      -webkit-user-select:none;
-    }
-    /* 黒帯マスク（横向き時の左右余白） */
-    #game-mask-l, #game-mask-r {
-      position:fixed;top:0;bottom:0;width:0;
-      background:#0d0d0a;z-index:50;pointer-events:none;
-    }
-    #game-mask-l{ left:0; }
-    #game-mask-r{ right:0; }
-
-    /* 和紙テクスチャ風ノイズ */
-    body::before{
-      content:'';
-      position:fixed;inset:0;
-      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
-      pointer-events:none;z-index:9999;
-    }
-
-    #wrapper{
-      display:flex;flex-direction:column;
-      align-items:center;justify-content:center;
-      position:fixed;inset:0;
-      gap:0;
-    }
-
-    /* ===== タイトル画面 ===== */
-    #screen-title{
-      display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
-      gap:min(2.5vw,10px);text-align:center;
-      padding:min(6vw,24px) min(6vw,24px) 40px;
-      overflow-y:auto;overflow-x:hidden;
-      -webkit-overflow-scrolling:touch;
-      position:fixed;inset:0;
-    }
-    .title-kanji{
-      font-size:min(26vw,96px);font-weight:900;color:var(--gold);
-      line-height:1;
-      text-shadow:0 0 40px rgba(200,168,90,0.4), 0 2px 0 rgba(0,0,0,0.8);
-      animation:float 3s ease-in-out infinite;
-    }
-    @keyframes float{
-      0%,100%{transform:translateY(0);}
-      50%{transform:translateY(-8px);}
-    }
-    .title-sub{
-      font-size:min(3.6vw,13px);color:var(--text2);letter-spacing:0.2em;
-    }
-    .title-desc{
-      font-size:min(3.3vw,12px);color:var(--text3);line-height:2;letter-spacing:0.05em;
-      border:1px solid var(--border);border-radius:var(--r);
-      padding:min(3vw,12px) min(5vw,20px);
-      max-width:min(78vw,280px);
-    }
-    .title-best{
-      font-size:min(3.3vw,12px);color:var(--text2);
-      letter-spacing:0.1em;
-    }
-    .title-best span{
-      color:var(--gold);font-size:min(5vw,18px);font-weight:700;
-    }
-    .btn-start{
-      margin-top:min(2vw,8px);
-      background:none;
-      border:1px solid var(--gold2);
-      color:var(--gold);
-      font-family:'Noto Serif JP',serif;
-      font-size:min(4.4vw,16px);
-      letter-spacing:0.2em;
-      padding:min(3.3vw,12px) min(11vw,40px);
-      border-radius:var(--r);
-      cursor:pointer;
-      transition:background 0.2s,border-color 0.2s;
-      -webkit-tap-highlight-color:rgba(0,0,0,0);
-    }
-    .btn-start:hover,.btn-start:active{
-      background:rgba(200,168,90,0.1);
-      border-color:var(--gold);
-    }
-    .back-link{
-      font-size:min(3vw,11px);color:var(--text3);text-decoration:none;
-      letter-spacing:0.1em;margin-top:min(1vw,4px);
-    }
-    .back-link:hover{color:var(--text2);}
-
-    /* ===== ゲーム画面 ===== */
-    #screen-game{
-      display:none;
-      flex-direction:column;
-      align-items:center;
-      position:fixed;
-      inset:0;
-    }
-
-    /* HUD */
-    #hud{
-      position:absolute;top:0;left:0;right:0;
-      display:flex;justify-content:space-between;align-items:center;
-      padding:10px 16px;
-      z-index:10;
-      pointer-events:none;
-    }
-    #hud-score{
-      font-size:min(6vw,28px);font-weight:700;color:var(--gold);
-      text-shadow:0 0 20px rgba(200,168,90,0.5);
-      letter-spacing:0.05em;
-    }
-    #hud-best{
-      font-size:min(3vw,13px);color:var(--text3);letter-spacing:0.1em;
-    }
-    #pause-btn{
-      position:absolute;top:10px;right:16px;
-      background:none;border:1px solid var(--border);
-      color:var(--text2);font-family:'Noto Serif JP',serif;
-      font-size:min(3vw,13px);letter-spacing:0.1em;
-      padding:5px 12px;border-radius:6px;
-      cursor:pointer;z-index:20;
-      -webkit-tap-highlight-color:rgba(0,0,0,0);
-    }
-    #pause-btn:active{background:rgba(255,255,255,0.05);}
-
-    /* キャンバス */
-    #game-canvas{
-      display:block;
-      position:fixed;
-      top:0;left:0;
-      width:100%;
-      height:100%;
-      touch-action:none;
-    }
-
-    /* ===== ポーズ画面 ===== */
-    #screen-pause{
-      display:none;
-      position:fixed;inset:0;
-      background:#0d0d0a;
-      z-index:100;
-      flex-direction:column;align-items:center;justify-content:center;
-      gap:16px;
-    }
-    .pause-kanji{
-      font-size:min(20vw,72px);font-weight:900;color:var(--text3);
-    }
-    .pause-text{
-      font-size:min(3.6vw,13px);color:var(--text2);letter-spacing:0.2em;
-    }
-    .btn-resume{
-      background:none;border:1px solid var(--border);
-      color:var(--text2);font-family:'Noto Serif JP',serif;
-      font-size:min(3.9vw,14px);letter-spacing:0.2em;
-      padding:min(2.8vw,10px) min(8.9vw,32px);border-radius:var(--r);
-      cursor:pointer;
-      -webkit-tap-highlight-color:rgba(0,0,0,0);
-    }
-    .btn-resume:active{background:rgba(255,255,255,0.05);}
-
-    /* ===== ゲームオーバー画面 ===== */
-    #screen-gameover{
-      display:none;
-      position:fixed;inset:0;
-      background:rgba(13,13,10,0.92);
-      z-index:100;
-      flex-direction:column;align-items:center;justify-content:center;
-      gap:14px;
-      text-align:center;
-    }
-    .go-kanji{
-      font-size:min(5vw,22px);color:var(--red);letter-spacing:0.3em;
-      text-shadow:0 0 30px rgba(192,88,64,0.6);
-    }
-    .go-score-label{font-size:min(3.5vw,13px);color:var(--text3);letter-spacing:0.2em;}
-    .go-score{
-      font-size:min(16vw,64px);font-weight:900;color:var(--text);
-      line-height:1;
-    }
-    .go-best-wrap{font-size:min(3.8vw,14px);color:var(--text2);letter-spacing:0.1em;}
-    .go-best-wrap span{color:var(--gold);}
-    .go-new-best{
-      font-size:min(3vw,11px);color:var(--gold);letter-spacing:0.2em;
-      animation:pulse 1s ease-in-out infinite;
-    }
-    @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
-    .go-divider{
-      width:60px;height:1px;background:var(--border);
-    }
-    .btn-retry{
-      background:none;border:1px solid var(--gold2);
-      color:var(--gold);font-family:'Noto Serif JP',serif;
-      font-size:min(3.9vw,14px);letter-spacing:0.2em;
-      padding:min(2.8vw,10px) min(8.9vw,32px);border-radius:var(--r);
-      cursor:pointer;
-      -webkit-tap-highlight-color:rgba(0,0,0,0);
-    }
-    .btn-retry:active{background:rgba(200,168,90,0.1);}
-    .btn-home{
-      background:none;border:none;
-      color:var(--text3);font-family:'Noto Serif JP',serif;
-      font-size:min(3vw,11px);letter-spacing:0.1em;
-      cursor:pointer;
-      -webkit-tap-highlight-color:rgba(0,0,0,0);
-    }
-    .btn-home:active{color:var(--text2);}
-
-    /* コントローラー接続表示 */
-    #gamepad-indicator{
-      position:fixed;bottom:12px;left:50%;transform:translateX(-50%);
-      font-size:10px;color:var(--text3);letter-spacing:0.1em;
-      z-index:50;pointer-events:none;
-      transition:opacity 0.5s;
-    }
-
-    /* コントローラー操作一覧 */
-    /* コントローラーガイド：タイトル画面のバナー形式 */
-    #gp-ctrl-guide{
-      display:block;
-      background:rgba(20,20,18,0.88);
-      border:1px solid rgba(200,168,90,0.22);
-      border-radius:8px;
-      cursor:pointer;
-      box-sizing:border-box;
-    }
-    #gp-guide-header{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding:9px 14px;
-      font-size:12px;
-      color:rgba(200,168,90,0.85);
-      letter-spacing:0.08em;
-      line-height:1.4;
-    }
-    #gp-guide-arrow{
-      font-size:10px;
-      color:rgba(200,168,90,0.6);
-      margin-left:8px;
-      flex-shrink:0;
-    }
-    #gp-guide-body{
-      display:none;
-      padding:8px 14px 12px;
-      border-top:1px solid rgba(255,255,255,0.08);
-    }
-    .gp-guide-note{
-      font-size:10px;
-      color:rgba(140,134,120,0.75);
-      margin-bottom:8px;
-      line-height:1.6;
-    }
-    .gp-guide-row{
-      display:flex;
-      justify-content:space-between;
-      gap:8px;
-      padding:4px 0;
-      border-bottom:1px solid rgba(255,255,255,0.05);
-      font-size:12px;
-    }
-    .gp-guide-row:last-child{border-bottom:none;}
-    .gp-guide-key{color:rgba(200,168,90,0.95);font-weight:700;flex-shrink:0;}
-    .gp-guide-act{color:rgba(200,210,220,0.85);}
-  
-    /* ===== AdSense 広告 ===== */
-    .ad-wrap{
-      display:none;
-      width:100%;max-width:480px;margin:0 auto;
-      text-align:center;
-      min-height:50px;
-      overflow:hidden;
-    }
-    .ad-wrap ins{ display:block; }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101511">
+<meta name="description" content="文字の「飛」を操縦するアクションゲーム。溜めて、離して、壁の間を飛び抜ける。コントローラー・キーボード・タッチ対応。">
+<title>飛べ飛 — 溜めて、離して、飛び抜ける。</title>
+<style>
+:root{color-scheme:dark;--bg:#101511;--panel:#1b231d;--ink:#f0efdf;--muted:#a1ac9c;--gold:#e4c878;--line:#364237;--red:#ed937d;--green:#b7d7bd;font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--ink);overscroll-behavior:none}body{height:100dvh}button,a{touch-action:manipulation;-webkit-tap-highlight-color:transparent}button,input{font:inherit}button{cursor:pointer;color:inherit;background:transparent;border:1px solid var(--line);border-radius:10px;padding:13px 18px;font-weight:650;transition:background .12s,border-color .12s}button:hover{background:#ffffff09;border-color:#78846d}button:focus-visible,a:focus-visible,.pad-focus{outline:2px solid var(--gold);outline-offset:4px}button.primary{background:var(--gold);border-color:var(--gold);color:#20281d}button.primary:hover{background:#f0d996}button:disabled{opacity:.4;cursor:default}a{color:var(--muted);text-underline-offset:4px}h1,h2,p{margin:0}button small{display:block;color:var(--muted);font-weight:400;margin-top:5px}button.primary small{color:#424934}[hidden]{display:none!important}.serif{font-family:"Yu Mincho","Hiragino Mincho ProN","Noto Serif JP",serif}.eyebrow{color:var(--gold);font-size:11px;letter-spacing:.22em;font-weight:650}.muted{color:var(--muted)}
+#app{position:relative;height:100%;isolation:isolate}#game{display:flex;flex-direction:column;height:100%;background:var(--bg)}.topbar{display:flex;align-items:center;gap:14px;padding:12px max(16px,env(safe-area-inset-right)) 10px max(16px,env(safe-area-inset-left));min-height:64px;border-bottom:1px solid var(--line);z-index:2;background:var(--bg)}.brand{font-size:24px;color:var(--gold);white-space:nowrap;letter-spacing:.06em}.stage-name{font-size:13px;font-weight:650}.stage-caption{font-size:10px;color:var(--muted);margin-top:3px}.topstats{margin-left:auto;display:flex;align-items:center;gap:18px;font-variant-numeric:tabular-nums}.timer{font-size:18px;min-width:66px}.lightscore{color:var(--gold);font-size:14px;white-space:nowrap}.iconbtn{padding:8px 12px;font-size:12px}.viewport{position:relative;flex:1;min-height:80px;overflow:hidden}canvas{display:block;width:100%;height:100%;touch-action:none}#corner-note{position:absolute;top:14px;left:18px;color:#9da88e;font-size:10px;letter-spacing:.03em;pointer-events:none;background:#101511de;border:1px solid #364237;border-radius:5px;padding:5px 8px}#toast{position:absolute;top:18px;left:50%;transform:translateX(-50%);background:#263026ef;color:var(--gold);padding:10px 16px;max-width:90%;border:1px solid #63714d;border-radius:8px;font-size:13px;pointer-events:none;opacity:0;transition:opacity .15s;text-align:center}#toast.show{opacity:1}.guidance{min-height:56px;padding:9px 18px;background:#171e18;border-top:1px solid var(--line);display:flex;gap:12px;align-items:center;justify-content:center;z-index:2}.guide-tag{border:1px solid #63714d;color:var(--gold);padding:4px 7px;border-radius:4px;font-size:10px;white-space:nowrap;letter-spacing:.05em}#guide-text{font-size:13px;line-height:1.6;color:#dbe1d0}#desktop-hint{padding:7px 14px calc(7px + env(safe-area-inset-bottom));font-size:10px;text-align:center;letter-spacing:.03em;color:var(--muted)}
+.menu{position:absolute;inset:0;z-index:10;background:radial-gradient(ellipse at 70% 30%,#2c3828 0,transparent 55%),var(--bg);display:flex;align-items:center;justify-content:center;padding:28px max(24px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(24px,env(safe-area-inset-left));overflow-x:hidden;overflow-y:auto}.menu-inner{width:min(100%,940px);margin:auto}.menu-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}.version{color:#89947f;font-size:10px;letter-spacing:.1em}.home-grid{display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:center}.home-title{font-size:clamp(68px,10vw,126px);line-height:1.18;color:var(--gold);font-weight:800;letter-spacing:.04em;margin:15px 0 20px}.home-lead{font-size:clamp(17px,2.2vw,23px);line-height:1.8;letter-spacing:.09em}.home-note{color:var(--muted);font-size:12px;line-height:1.9;margin:14px 0 25px}.home-actions{display:grid;gap:10px;max-width:350px}.secondary-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.home-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:32px;color:var(--muted);font-size:11px}.home-foot a{font-size:11px}.preview-art{height:360px;position:relative;border:1px solid #424e37;border-radius:160px 160px 12px 12px;background:linear-gradient(180deg,#c0d3a909,transparent);overflow:hidden}.preview-art .wall-art{position:absolute;color:#7a8568;font-size:34px;writing-mode:vertical-rl;letter-spacing:.2em}.wall-a{top:20px;left:38px}.wall-b{bottom:0;right:38px}.art-flight{position:absolute;left:42%;top:43%;font-size:74px;color:var(--gold);filter:drop-shadow(-12px 12px 0 #e4c8780c);animation:float 4s ease-in-out infinite}.art-goal{position:absolute;right:32px;top:34px;color:var(--green);font-size:26px;border:1px solid #b7d7bd55;border-radius:50%;padding:8px}.art-line{position:absolute;left:25%;top:25%;width:48%;height:52%;border:1px dashed #b7d7bd44;border-left-color:transparent;border-bottom-color:transparent;border-radius:60%}.art-label{position:absolute;left:24px;bottom:23px;color:#abb59b;font-size:11px;line-height:1.9;letter-spacing:.12em}.device-note{font-size:11px;color:var(--muted);margin-top:12px;min-height:17px}.modal-title{font-size:28px;letter-spacing:.08em;margin-bottom:10px}.modal-note{font-size:12px;color:var(--muted);line-height:1.9;margin-bottom:22px}.stage-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.stage-card{text-align:left;padding:18px;min-height:125px;position:relative;background:#19221b}.stage-card .number{font-size:11px;letter-spacing:.1em;color:var(--gold)}.stage-card strong{display:block;font-size:20px;margin:8px 0}.stage-card small{font-size:11px;line-height:1.6}.stage-card .saved{font-size:11px;color:var(--green);margin-top:10px}.panel-actions{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.control-card{border:1px solid var(--line);border-radius:12px;padding:20px;background:#19211a}.control-card h3{font-size:15px;margin:0 0 14px}.control-card p{font-size:13px;line-height:2;color:#d7dfcd}.control-card .keys{color:var(--gold);font-weight:600}.settings-buttons{display:grid;gap:10px}.settings-buttons button{text-align:left;font-size:13px}.settings-buttons button span{float:right;color:var(--gold)}.overlay{background:#101511e8;backdrop-filter:blur(5px)}.compact-inner{width:min(100%,540px)}.pause-symbol{font-size:68px;color:var(--gold);margin-bottom:12px}.result-symbol{color:var(--green);font-size:62px;margin-bottom:12px}.result-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:24px 0}.result-stat{padding:16px 8px;border:1px solid var(--line);border-radius:10px;text-align:center}.result-stat strong{display:block;font-size:22px;color:var(--gold);font-variant-numeric:tabular-nums}.result-stat small{font-size:10px;display:block;color:var(--muted);margin-top:8px}.result-actions{display:grid;gap:10px}.tiny-note{font-size:11px;color:var(--muted);line-height:1.8;margin-top:16px}.saving-note{color:var(--red);font-size:11px;margin-top:8px}#touch-dock{height:140px;flex-shrink:0;position:relative;padding-bottom:env(safe-area-inset-bottom);background:#111912;border-top:1px solid var(--line);display:none;justify-content:space-between;align-items:center;padding-left:28px;padding-right:28px;z-index:3}.touch-mode #touch-dock{display:flex}.touch-mode #desktop-hint{display:none}#joystick{width:108px;height:108px;border:1px solid #68745477;border-radius:50%;background:#26302455;position:relative;touch-action:none}#joystick::before{content:'操縦';position:absolute;left:0;right:0;top:43px;text-align:center;color:#778468;font-size:11px}#stick{position:absolute;width:42px;height:42px;left:32px;top:32px;border-radius:50%;border:1px solid #a7ba87;background:#536644aa;pointer-events:none}#charge-button{height:96px;width:112px;border-radius:48px;border:1px solid var(--gold);background:#e4c87812;color:var(--gold);touch-action:none;padding:0;font-size:15px;box-shadow:inset 0 0 22px #e4c87808}#charge-button.held{background:#e4c87833}#charge-button small{font-size:10px;color:#cfbd83;margin-top:5px}.touch-center{font-size:10px;text-align:center;line-height:1.9;color:var(--muted);padding:0 10px;max-width:160px}.flash-message{position:absolute;inset:0;display:flex;justify-content:center;align-items:center;pointer-events:none;color:var(--red);font-size:42px;letter-spacing:.2em;text-shadow:0 2px 10px #000;opacity:0}#crash-label.visible{opacity:1}@keyframes float{0%,100%{transform:translate(0,0) rotate(-6deg)}50%{transform:translate(9px,-9px) rotate(2deg)}}
+@media(max-width:650px){.menu{padding:22px}.home-grid{grid-template-columns:1fr;gap:0}.home-title{font-size:80px;margin:10px 0 14px}.home-lead{font-size:18px}.home-note{margin:10px 0 20px}.home-actions{max-width:none}.preview-art{position:absolute;width:220px;height:280px;right:-55px;top:80px;opacity:.15;pointer-events:none;z-index:-1}.home-grid>div:first-child{max-width:100%}.home-foot{margin-top:22px;flex-wrap:wrap;line-height:1.9}.stage-grid{grid-template-columns:1fr 1fr;gap:9px}.stage-card{padding:13px;min-height:116px}.stage-card strong{font-size:17px}.settings-grid{grid-template-columns:1fr;gap:12px}.control-card{padding:14px}.modal-title{font-size:24px}.topbar{gap:9px;padding-top:max(9px,env(safe-area-inset-top));min-height:61px}.brand{font-size:20px}.stage-name{font-size:12px}.stage-caption{font-size:9px}.topstats{gap:9px}.timer{font-size:15px;min-width:57px}.lightscore{font-size:12px}.iconbtn{padding:8px}.guidance{padding:8px 12px;gap:8px;min-height:58px}#guide-text{font-size:12px}.guide-tag{font-size:9px}#corner-note{font-size:9px;left:12px}.result-stats{gap:7px}.result-stat strong{font-size:20px}}
+@media(max-height:550px){.menu{padding:14px 30px}.home-title{font-size:65px;margin:4px 0 8px}.home-grid{grid-template-columns:1fr 1fr;gap:30px}.home-lead{font-size:16px}.home-note{font-size:11px;margin:6px 0 12px}.home-actions{gap:6px}.home-actions button{padding:10px}.menu-header{margin-bottom:8px}.home-foot{margin-top:14px}.preview-art{position:relative;opacity:1;width:100%;height:230px;right:auto;top:auto;z-index:auto}.stage-card{min-height:100px;padding:12px}.stage-card strong{margin:5px 0}.stage-grid{grid-template-columns:repeat(3,1fr)}.settings-grid{grid-template-columns:1fr 1fr}.topbar{min-height:48px;padding-top:6px;padding-bottom:6px}.guidance{min-height:40px;padding:5px 16px}#desktop-hint{padding:4px}.touch-mode #touch-dock{position:absolute;bottom:45px;left:0;right:0;height:100px;background:none;border:none;pointer-events:none;padding:0 20px}.touch-mode #touch-dock>*{pointer-events:auto}#joystick{width:86px;height:86px;background:#101511bd}#joystick::before{top:32px}#stick{left:21px;top:21px}#charge-button{width:88px;height:80px;background:#101511bd;font-size:12px}.touch-center{display:none}.pause-symbol,.result-symbol{font-size:38px;margin-bottom:4px}.result-stats{margin:12px 0}.result-stat{padding:8px}.result-actions button{padding:10px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.overlay{backdrop-filter:none}}
 </style>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=YOUR_PUBLISHER_ID" crossorigin="anonymous"></script>
 </head>
 <body>
-<!-- 黒帯マスク（横向き時の左右余白） -->
-<div id="game-mask-l"></div>
-<div id="game-mask-r"></div>
-
-<div id="wrapper">
-
-  <!-- タイトル画面 -->
-  <div id="screen-title">
-    <div class="title-kanji">飛べ飛</div>
-    <div class="title-sub">飛べ飛 / 感じるな漢字ろ！</div>
-    <div class="title-desc">
-      「壁」の隙間をくぐり抜けよ<br>
-      画面タップ または ボタンで跳ぶ<br>
-      コントローラー対応（Bluetooth接続可）<br>
-      横向きでもプレイ可能<br>
-      <span style="color:var(--text3);font-size:11px;">一時停止で画面は伏せられる</span>
-    </div>
-    <input id="tobi-nick-input" type="text" maxlength="12" placeholder="ニックネームを入力"
-      style="width:min(72vw,260px);font-size:min(3.8vw,14px);padding:min(2.5vw,9px) min(3.5vw,13px);border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);text-align:center;font-family:'Noto Serif JP',serif;outline:none;"
-      oninput="onNickInput()" />
-    <div id="tobi-nick-msg" style="font-size:min(3vw,11px);color:var(--text3);min-height:16px;margin-top:-8px;"></div>
-    <!-- コントローラー操作ガイド（接続時のみ表示） -->
-    <div id="gp-ctrl-guide" onclick="toggleGpGuide()" style="width:min(80vw,300px);">
-      <div id="gp-guide-header">
-        <span>🎮 操作ガイド</span>
-        <span id="gp-guide-arrow">▼</span>
-      </div>
-      <div id="gp-guide-body">
-        <div class="gp-guide-note">コントローラー（プロコン等）<br>機種によりボタン配置が異なる場合があります</div>
-        <div class="gp-guide-row"><span class="gp-guide-key">Aボタン</span><span class="gp-guide-act">飛ぶ／決定</span></div>
-        <div class="gp-guide-row"><span class="gp-guide-key">Bボタン</span><span class="gp-guide-act">一時停止／戻る</span></div>
-        <div class="gp-guide-row"><span class="gp-guide-key">十字 ↑↓←→</span><span class="gp-guide-act">カーソル移動</span></div>
-        <div class="gp-guide-row"><span class="gp-guide-key">左／右スティック</span><span class="gp-guide-act">スクロール</span></div>
-      </div>
-    </div>
-    <div class="title-best" id="title-best-disp">ハイスコア　<span id="title-best-num">―</span></div>
-    <button class="btn-start" id="btn-start" onclick="startGame(false)">普 通 モ ー ド / 始 め る</button>
-    <button class="btn-start" id="btn-murige" onclick="startGame(true)" style="display:none;font-size:min(3.8vw,14px);padding:min(2.5vw,9px) min(8vw,28px);border-color:var(--red);color:var(--red);">無 理 ゲ ー モ ー ド / 始 め る</button>
-    <div style="display:flex;flex-direction:column;align-items:center;gap:min(2vw,8px);width:100%;margin-top:min(1vw,4px);">
-      <div style="display:flex;align-items:center;gap:8px;cursor:pointer;" onclick="toggleClearMode()" id="clear-mode-toggle">
-        <div id="clear-mode-box" style="width:min(8vw,28px);height:min(4.5vw,16px);border-radius:min(2.5vw,8px);border:1px solid var(--text3);background:transparent;position:relative;transition:background 0.2s;">
-          <div id="clear-mode-knob" style="position:absolute;top:2px;left:2px;width:min(3.5vw,12px);height:min(3.5vw,12px);border-radius:50%;background:var(--text3);transition:transform 0.2s,background 0.2s;"></div>
-        </div>
-        <span style="font-size:min(3.8vw,14px);color:var(--text3);letter-spacing:0.08em;">壁をくっきり表示</span>
-      </div>
-      <a href="tobi-ranking.html" id="title-ranking-link" style="font-size:min(3.8vw,14px);color:var(--gold2);text-decoration:none;letter-spacing:0.1em;">🏆 ランキングを見る</a>
-      <a href="index.html" id="title-back-link" style="font-size:min(3.8vw,14px);color:var(--text3);text-decoration:none;letter-spacing:0.1em;">丸場所記憶ゲーム</a>
-      <a href="contact.html" style="font-size:min(3vw,11px);color:var(--text3);text-decoration:none;letter-spacing:0.05em;">不具合・お問い合わせは丸場所記憶ゲームのお問い合わせへ</a>
-    </div>
-    <div style="font-size:min(2.5vw,9px);color:var(--text3);opacity:0.4;letter-spacing:0.05em;">v2026.03.28</div>
-  </div>
-
-  <!-- ゲーム画面 -->
-  <div id="screen-game">
-    <div id="hud">
-      <div>
-        <div id="hud-score">0</div>
-        <div id="hud-best"></div>
-      </div>
-    </div>
-    <button id="pause-btn" onclick="togglePause()">一時停止</button>
-    <canvas id="game-canvas"></canvas>
-  </div>
-
-  <!-- ポーズ画面（画面を伏せる） -->
-  <div id="screen-pause">
-    <div class="pause-kanji">休</div>
-    <div class="pause-text">一 時 停 止 中</div>
-    <button class="btn-resume" onclick="togglePause()">再 開 す る</button>
-  </div>
-
-  <!-- ゲームオーバー画面 -->
-  <div id="screen-gameover">
-    <div class="go-kanji">墜　落</div>
-    <div class="go-score-label">通過した壁</div>
-    <div class="go-score" id="go-score-num">0</div>
-    <div class="go-best-wrap" id="go-best-wrap"></div>
-    <div class="go-new-best" id="go-new-best" style="display:none;">★ 新記録 ★</div>
-    <div class="go-divider"></div>
-    <button class="btn-retry" id="go-btn-retry" onclick="startGame(_murigeMode)">も う 一 度</button>
-    <button class="btn-home" id="go-btn-home" onclick="goTitle()">タ イ ト ル へ</button>
-    <div id="go-gp-hint" style="display:none;font-size:10px;color:var(--text3);letter-spacing:0.1em;margin-top:4px;">
-      ボタン0: もう一度　ボタン1: タイトルへ
-    </div>
-    <div id="go-nick-hint" style="display:none;font-size:10px;color:var(--gold2);letter-spacing:0.05em;margin-top:8px;text-align:center;">
-      ニックネームを入力するとランキングに載ります
-    </div>
-  </div>
-
+<div id="app">
+<main id="game" hidden aria-label="飛べ飛 プレイ画面">
+ <header class="topbar"><span class="brand serif">飛べ飛</span><div><div id="stage-name" class="stage-name"></div><div id="stage-caption" class="stage-caption"></div></div><div class="topstats"><span class="lightscore" id="lights">光 0/3</span><span class="timer" id="timer">0:00.0</span><button class="iconbtn" id="pause-btn" aria-label="一時停止">休止</button></div></header>
+ <div class="viewport" id="viewport"><canvas id="canvas" aria-label="「飛」を動かして「終」を目指します"></canvas><div id="corner-note">輪の内側が「飛」の当たり判定</div><div id="toast" role="status" aria-live="polite"></div><div id="crash-label" class="flash-message serif">衝</div></div>
+ <div class="guidance"><span class="guide-tag" id="guide-tag">操縦</span><span id="guide-text"></span></div>
+ <div id="touch-dock"><div id="joystick" role="group" aria-label="操縦スティック"><div id="stick"></div></div><div class="touch-center">「終」でクリア<br>光は寄り道の目標</div><button id="charge-button">押して溜める<small>離すと飛び出す</small></button></div>
+ <div id="desktop-hint">移動：矢印 / WASD　　溜めて離す：Space / Z　　休止：Esc　　やり直し：R</div>
+</main>
+<section class="menu" id="home" aria-label="タイトル画面"><div class="menu-inner">
+ <div class="menu-header"><span class="eyebrow">文字を、操れ。</span><span class="version">操縦版 v2.0.0</span></div>
+ <div class="home-grid"><div><h1 class="home-title serif">飛べ飛</h1><p class="home-lead">溜めて、離して、<br>飛び抜ける。</p><p class="home-note">文字の「飛」で、文字の世界を飛ぶ。<br>ブレーキで狙いを定め、「終」を目指そう。</p><div class="home-actions"><button class="primary" id="start-btn">はじめる<small>最初のステージで操作を覚える</small></button><div class="secondary-row"><button id="select-btn">ステージ</button><button id="settings-btn">操作・設定</button></div></div><div class="device-note" id="device-note">キーボード・コントローラー・タッチ対応</div><div class="saving-note" id="save-error" hidden>この環境では記録を保存できません。プレイはできます。</div></div>
+ <div class="preview-art" aria-hidden="true"><span class="wall-art serif wall-a">壁壁壁壁</span><span class="wall-art serif wall-b">壁壁壁壁</span><div class="art-line"></div><span class="art-flight serif">飛</span><span class="art-goal serif">終</span><div class="art-label">操縦 / ブレーキ / 飛び出し<br>六つの短いステージ</div></div></div>
+ <footer class="home-foot"><span>記録はこのブラウザに保存</span><span><a href="tobetobi-classic.html">旧版を遊ぶ</a>　／　<a href="https://atugari.github.io/plaza.html">広場へ</a></span></footer>
+</div></section>
+<section class="menu" id="stage-menu" hidden aria-label="ステージ選択"><div class="menu-inner"><div class="eyebrow">STAGES</div><h2 class="modal-title" style="margin-top:9px">行き先を選ぶ</h2><p class="modal-note">「終」に触れるとクリア。「光」は任意の寄り道目標。試作の全6ステージを選べます。</p><div id="stage-grid" class="stage-grid"></div><div class="panel-actions"><button id="stage-back">タイトルへ戻る</button></div></div></section>
+<section class="menu" id="settings" hidden aria-label="操作と設定"><div class="menu-inner"><div class="eyebrow">CONTROLS</div><h2 class="modal-title" style="margin-top:9px">操縦のしかた</h2><p class="modal-note">押している間は減速しながら溜め、離すと狙った方向へ飛び出します。</p><div class="settings-grid"><div class="control-card"><h3>コントローラー</h3><p><span class="keys">左スティック / 十字キー</span>：上下左右へ操縦<br><span class="keys">A または B</span>：押して溜め、離して飛ぶ<br><span class="keys">＋ / START</span>：一時停止<br><span class="keys">− / SELECT</span>：継続点からやり直す</p><p class="tiny-note">メニューも十字キーで選び、A / Bで決定。X / Yで戻れます。接続後、いずれかのボタンを押してください。</p></div><div class="control-card"><h3>キーボード / タッチ</h3><p><span class="keys">矢印 / WASD</span>：上下左右へ操縦<br><span class="keys">Space / Z / J</span>：溜めて離す<br><span class="keys">Esc / P</span>：休止　<span class="keys">R</span>：やり直し<br>スマホは<span class="keys">左のスティックと右のボタン</span></p><p class="tiny-note">方向を入れずに離すと、最後に向いた方向へ飛びます。「継」は再開地点。集めた光はミスしても残ります。</p></div><div class="settings-buttons"><button id="sound-setting">効果音<span></span></button><button id="music-setting">BGM<span></span></button><button id="motion-setting">画面の揺れ<span></span></button></div><div class="control-card"><p>「飛」の周りの小さな輪が当たり判定です。壁に当たってもすぐ再開できます。<br>「門」は飛び出した勢いで通過。記録は自己ベストとして端末に保存されます。</p></div></div><div class="panel-actions"><button class="primary" id="settings-back">戻る</button><button id="tutorial-btn">最初から操作を練習</button></div></div></section>
+<section class="menu overlay" id="pause" hidden aria-label="一時停止"><div class="menu-inner compact-inner"><div class="pause-symbol serif">休</div><h2 class="modal-title">ひと息。</h2><p class="modal-note">時間も、動く障害物も止まっています。</p><div class="result-actions"><button class="primary" id="resume-btn">続きを飛ぶ</button><button id="restart-btn">このステージを最初から</button><button id="pause-settings">操作・設定</button><button id="pause-select">ステージを選ぶ</button><button id="pause-home">タイトルへ</button></div></div></section>
+<section class="menu overlay" id="result" hidden aria-label="クリア結果"><div class="menu-inner compact-inner"><div class="eyebrow" id="result-eyebrow">STAGE CLEAR</div><div class="result-symbol serif">翔</div><h2 class="modal-title" id="result-title">飛び抜けた。</h2><p class="modal-note" id="result-note"></p><div class="result-stats"><div class="result-stat"><strong id="result-time"></strong><small>クリアタイム</small></div><div class="result-stat"><strong id="result-lights"></strong><small>集めた光</small></div><div class="result-stat"><strong id="result-misses"></strong><small>ミス</small></div></div><div class="result-actions"><button class="primary" id="next-btn">次のステージへ</button><button id="retry-btn">もう一度飛ぶ</button><button id="result-select">ステージを選ぶ</button></div><p class="tiny-note" id="result-best"></p></div></section>
 </div>
-<!-- デバッグログ（常に最前面・ゲームオーバー画面に依存しない） -->
-<div id="go-debug" style="display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(0,0,0,0.92);color:#0f0;font-size:10px;padding:8px;white-space:pre-wrap;word-break:break-all;max-height:50vh;overflow-y:auto;font-family:monospace;text-align:left;z-index:99999;pointer-events:none;"></div>
-
-
-<div id="gamepad-indicator"></div>
-
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script>
-  // ===== ローカルストレージ =====
-  // デバッグログをパネルにも表示
-  const _origLog = console.log.bind(console);
-  const _origErr = console.error.bind(console);
-  function _dbgLog(...args){
-    _origLog(...args);
-    const panel = document.getElementById('debug-panel');
-    if(!panel) return;
-    const line = document.createElement('div');
-    line.style.borderBottom = '1px solid #222';
-    line.style.padding = '2px 0';
-    line.textContent = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
-    panel.appendChild(line);
-    panel.scrollTop = panel.scrollHeight;
-  }
-  console.log   = _dbgLog;
-  console.error = (...args) => { _origErr(...args); _dbgLog('ERROR:', ...args); };
-
-  const DB_URL       = 'https://ad-game-7b40a-default-rtdb.asia-southeast1.firebasedatabase.app';
-
-
-  // ===== 広場に表示するプレイ人数・プレイ回数（Firestore） =====
-  let _firestorePlayCountedThisPage = false;
-  function recordFirestorePlay(gameKey){
-    if(_firestorePlayCountedThisPage) return;
-    _firestorePlayCountedThisPage = true;
-    try {
-      if(window.self !== window.top || location.search.indexOf('preview=1') >= 0) return;
-      if(typeof firebase === 'undefined') return;
-      if(!firebase.apps.length){
-        firebase.initializeApp({
-          apiKey:"AIzaSyCwIH0lXYNVYbcpmEDGXRRPxRueyOD0XoU",
-          authDomain:"ad-game-7b40a.firebaseapp.com",
-          projectId:"ad-game-7b40a",
-          storageBucket:"ad-game-7b40a.firebasestorage.app",
-          messagingSenderId:"5960938874",
-          appId:"1:5960938874:web:0fac17704f74f5f0f512c3"
-        });
-      }
-      const fdb = firebase.firestore();
-      const inc = firebase.firestore.FieldValue.increment(1);
-      const names = {
-        'tobetobi':'飛べ飛',
-        'combination-blocks':'組み合わせを試す',
-        'maze-lab':'迷路ラボ'
-      };
-      fdb.collection('games').doc(gameKey).set({uses:inc,name:names[gameKey]||gameKey},{merge:true});
-      const personKey = 'marubasho_firestore_player_' + gameKey + '_v1';
-      let already = false;
-      try { already = localStorage.getItem(personKey) === '1'; } catch(_) {}
-      if(!already){
-        fdb.collection('games').doc(gameKey).set({people:inc,name:names[gameKey]||gameKey},{merge:true})
-          .then(()=>{ try { localStorage.setItem(personKey,'1'); } catch(_) {} })
-          .catch(()=>{});
-      }
-    } catch(_) {}
-  }
-
-
-  // ===== プレイ人数カウント（同じブラウザ・端末は1回） =====
-  const SITE_PLAYER_ID_KEY = 'marubasho_site_player_id_v1';
-  function getSitePlayerId(){
-    try {
-      let id = localStorage.getItem(SITE_PLAYER_ID_KEY);
-      if(!id){
-        id = (globalThis.crypto && typeof crypto.randomUUID === 'function')
-          ? crypto.randomUUID()
-          : 'p_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,12);
-        localStorage.setItem(SITE_PLAYER_ID_KEY, id);
-      }
-      return id;
-    } catch(_) {
-      return 'session_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,12);
-    }
-  }
-  function recordUniquePlayer(gameKey){
-    recordFirestorePlay(gameKey);
-    const doneKey = 'marubasho_counted_' + gameKey + '_v1';
-    try { if(localStorage.getItem(doneKey) === '1') return; } catch(_) {}
-    const playerId = getSitePlayerId();
-    fetch(DB_URL + '/playCounts/' + gameKey + '/' + playerId + '.json', {
-      method: 'PUT',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ firstPlayedAt: { '.sv': 'timestamp' } }),
-      keepalive: true
-    }).then(r => {
-      if(r.ok){ try { localStorage.setItem(doneKey, '1'); } catch(_) {} }
-    }).catch(() => {});
-  }
-  const LS_KEY        = 'tobiGame_best';       // 通常ハイスコア
-  const LS_KEY_MURIGE = 'tobiGame_best_murige'; // 無理ゲーハイスコア
-  const LS_CLEAR_KEY  = 'tobiGame_clearMode';
-  const UNLOCKED_KEY  = 'tobiGame_unlocked';
-  const IDB_NAME     = 'tobiGameDB';
-  const IDB_STORE    = 'gameData';
-
-  // ===== IndexedDB（閲覧履歴消去では消えない） =====
-  let _idb = null;
-  function openIDB(){
-    return new Promise((resolve) => {
-      if(_idb){ resolve(_idb); return; }
-      const req = indexedDB.open(IDB_NAME, 1);
-      req.onupgradeneeded = e => {
-        e.target.result.createObjectStore(IDB_STORE);
-      };
-      req.onsuccess = e => { _idb = e.target.result; resolve(_idb); };
-      req.onerror   = () => resolve(null);
-    });
-  }
-  async function idbGet(key){
-    const db = await openIDB();
-    if(!db) return null;
-    return new Promise(resolve => {
-      const tx = db.transaction(IDB_STORE, 'readonly');
-      const req = tx.objectStore(IDB_STORE).get(key);
-      req.onsuccess = () => resolve(req.result ?? null);
-      req.onerror   = () => resolve(null);
-    });
-  }
-  async function idbSet(key, val){
-    const db = await openIDB();
-    if(!db) return;
-    return new Promise(resolve => {
-      const tx = db.transaction(IDB_STORE, 'readwrite');
-      tx.objectStore(IDB_STORE).put(val, key);
-      tx.oncomplete = () => resolve();
-      tx.onerror    = () => resolve();
-    });
-  }
-
-  // ===== ニックネーム管理 =====
-  const NICK_LS_KEY = 'tobiGame_nick';
-
-  function getNick(){
-    return localStorage.getItem(NICK_LS_KEY) || '';
-  }
-  function saveNick(nick){
-    localStorage.setItem(NICK_LS_KEY, nick);
-  }
-
-  function onNickInput(){
-    const input = document.getElementById('tobi-nick-input');
-    const msg   = document.getElementById('tobi-nick-msg');
-    const val   = input.value.trim();
-    saveNick(val);
-    if(!val){
-      msg.textContent = 'ニックネームを入力するとスコアが保存されます';
-      msg.style.color = 'var(--text3)';
-    } else {
-      msg.textContent = '';
-    }
-    updateTitleBest();
-  }
-
-  // 端末ID（localStorage→IndexedDB）
-  let DEVICE_ID = '';
-  async function initDeviceId(){
-    let id = localStorage.getItem('tobiGame_deviceId');
-    if(!id) id = await idbGet('deviceId');
-    if(!id){
-      id = 'tobi_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8);
-    }
-    localStorage.setItem('tobiGame_deviceId', id);
-    await idbSet('deviceId', id);
-    DEVICE_ID = id;
-  }
-
-  // ハイスコア取得（通常 or 無理ゲー）
-  function getBest(murige){
-    const key = murige ? LS_KEY_MURIGE : LS_KEY;
-    return parseInt(localStorage.getItem(key)||'0');
-  }
-
-  // デバッグログ表示
-  function dbg(msg){
-    const el = document.getElementById('go-debug');
-    if(!el) return;
-
-    el.textContent += msg + '\n';
-
-  }
-
-  // ハイスコア保存（localStorage + Firebase）
-  async function saveBest(n, murige){
-    const lsKey = murige ? LS_KEY_MURIGE : LS_KEY;
-    localStorage.setItem(lsKey, n);
-    if(!murige && n >= 100) localStorage.setItem(UNLOCKED_KEY, '1');
-
-    // DEVICE_IDがまだ初期化されていない場合は先に初期化
-    if(!DEVICE_ID) await initDeviceId();
-    dbg('DEVICE_ID:' + (DEVICE_ID||'なし'));
-
-    if(!DEVICE_ID){ dbg('→DIDなし終了'); return; }
-
-    const nick = getNick().trim();
-    dbg('nick:[' + nick + '] score:' + n);
-    if(!nick){ dbg('→nick未入力終了'); return; }
-
-    const fbPath = '/rankings/';
-    const safeNick = 'tobifly_' + nick.replace(/[.#$[\]\/]/g, '_') + (murige ? '_murige' : '');
-    const key = encodeURIComponent(safeNick);
-    dbg('key:' + key + ' path:' + fbPath);
-
-    try {
-      const existing = await fetch(DB_URL + fbPath + key + '.json')
-        .then(r => r.json()).catch(err => { dbg('fetch既存エラー:'+err); return null; });
-      dbg('existing:' + JSON.stringify(existing));
-
-      // 他端末の同名エントリは上書きしない
-      if(existing && existing.deviceId && existing.deviceId !== DEVICE_ID){
-        dbg('→他端末の同名のためスキップ');
-        return;
-      }
-
-      // 初回 or ベスト更新時のみ保存
-      if(!existing || !existing.best || existing.best < n){
-        const res = await fetch(DB_URL + fbPath + key + '.json', {
-          method: 'PUT',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({
-            name: nick,
-            best: n,
-            deviceId: DEVICE_ID,
-            updatedAt: Date.now()
-          })
-        });
-        dbg('→PUT status:' + res.status);
-      } else {
-        dbg('→既存best:' + existing.best + ' >= ' + n + ' スキップ');
-      }
-    } catch(e) {
-      dbg('→catch エラー:' + e.message);
-    }
-  }
-
-  // 起動時にFirebaseからスコアを復元（通常・無理ゲー両方）
-  async function restoreBest(){
-    await initDeviceId();
-    const nick = getNick();
-    const key = encodeURIComponent(
-      nick ? 'tobifly_' + nick.replace(/[\.#\$\[\]\/]/g,'_') : DEVICE_ID
-    );
-    // 通常スコア復元
-    try {
-      const res  = await fetch(DB_URL + '/rankings/' + key + '.json');
-      const data = await res.json();
-      if(data && data.best && data.deviceId === DEVICE_ID){
-        const best = Math.max(parseInt(localStorage.getItem(LS_KEY)||'0'), parseInt(data.best));
-        if(best > 0) localStorage.setItem(LS_KEY, best);
-        if(best >= 100) localStorage.setItem(UNLOCKED_KEY, '1');
-      }
-    } catch(e) {}
-    // 無理ゲースコア復元
-    try {
-      const res  = await fetch(DB_URL + '/rankings/' + key + '_murige.json');
-      const data = await res.json();
-      if(data && data.best && data.deviceId === DEVICE_ID){
-        const best = Math.max(parseInt(localStorage.getItem(LS_KEY_MURIGE)||'0'), parseInt(data.best));
-        if(best > 0) localStorage.setItem(LS_KEY_MURIGE, best);
-      }
-    } catch(e) {}
-    updateTitleBest();
-
-    // 過去プレイヤーのスコアをFirebaseに初回アップロード
-    // （ランキング追加前にプレイしていたユーザーのスコアを救済）
-    const localBest = parseInt(localStorage.getItem(LS_KEY)||'0');
-    const localBestM = parseInt(localStorage.getItem(LS_KEY_MURIGE)||'0');
-    const currentNick = getNick().trim();
-    if(currentNick && DEVICE_ID){
-      if(localBest > 0) await saveBest(localBest, false);
-      if(localBestM > 0) await saveBest(localBestM, true);
-    }
-  }
-
-  // 無理ゲー解放フラグ
-  function getUnlocked(){ return localStorage.getItem(UNLOCKED_KEY)==='1'; }
-  function saveUnlocked(){ localStorage.setItem(UNLOCKED_KEY, '1'); }
-
-  // ===== くっきりモード =====
-  let _clearMode = localStorage.getItem(LS_CLEAR_KEY) === '1';
-
-  function applyClearModeUI(){
-    const box   = document.getElementById('clear-mode-box');
-    const knob  = document.getElementById('clear-mode-knob');
-    if(!box||!knob) return;
-    if(_clearMode){
-      box.style.background  = 'var(--gold2)';
-      box.style.borderColor = 'var(--gold2)';
-      knob.style.background = 'var(--gold)';
-      knob.style.transform  = 'translateX(min(3.5vw,12px))';
-    } else {
-      box.style.background  = 'transparent';
-      box.style.borderColor = 'var(--text3)';
-      knob.style.background = 'var(--text3)';
-      knob.style.transform  = 'translateX(0)';
-    }
-  }
-
-  function toggleClearMode(){
-    _clearMode = !_clearMode;
-    localStorage.setItem(LS_CLEAR_KEY, _clearMode ? '1' : '0');
-    applyClearModeUI();
-  }
-
-  function getWallColor(){
-    return _clearMode ? '#b0aa90' : '#4a4840';
-  }
-
-  // ===== 画面制御 =====
-  function showScreen(id){
-    ['screen-title','screen-game','screen-pause','screen-gameover'].forEach(s=>{
-      const el = document.getElementById(s);
-      el.style.display = 'none';
-    });
-    document.getElementById(id).style.display = 'flex';
-  }
-
-  function goTitle(){
-    cancelAnimationFrame(_raf);
-    _raf = null;
-    showScreen('screen-title');
-    updateTitleBest();
-    _titleCursor = 0;
-    updateTitleCursor();
-  }
-
-  function updateTitleBest(){
-    const b  = getBest(false);
-    const bm = getBest(true);
-    let txt = b > 0 ? b + ' 壁' : '―';
-    if(bm > 0) txt += '　無理ゲー ' + bm + ' 壁';
-    document.getElementById('title-best-num').textContent = txt;
-    // 無理ゲーボタンの表示制御
-    const btn = document.getElementById('btn-murige');
-    if(btn) btn.style.display = (getUnlocked() || b >= 100) ? '' : 'none';
-  }
-
-  // ===== キャンバスセットアップ =====
-  const canvas = document.getElementById('game-canvas');
-  const ctx = canvas.getContext('2d');
-
-  // ===== ゲーム定数 =====
-  // 仮想ゲームエリア（製作者端末基準）
-  const BASE_H         = 750;
-  const BASE_W         = 360;
-  const WALL_INTERVAL  = 240;
-  const WALL_WIDTH     = 38;
-  const PLAYER_SIZE    = 36;
-  const PLAYER_X_RATIO = 0.22;
-
-  // ゲームエリア情報（横向き対応・黒帯マスク込み）
-  let _gameRect = { x:0, y:0, w:360, h:750, scale:1 };
-
-  function calcGameRect(){
-    const sw = window.innerWidth;
-    const sh = window.innerHeight;
-    // ゲームエリアの縦横比を BASE_W:BASE_H に固定
-    const aspect = BASE_W / BASE_H;
-    let gw, gh;
-    if(sw / sh < aspect){
-      // 画面が縦長 → 幅いっぱい
-      gw = sw;
-      gh = sw / aspect;
-    } else {
-      // 画面が横長 → 高さいっぱい
-      gh = sh;
-      gw = sh * aspect;
-    }
-    const gx = (sw - gw) / 2;
-    const gy = (sh - gh) / 2;
-    const scale = gh / BASE_H;
-    return { x:gx, y:gy, w:gw, h:gh, scale };
-  }
-
-  function resizeCanvas(){
-    canvas.width  = window.innerWidth;
-    canvas.height = window.innerHeight;
-    _gameRect = calcGameRect();
-    // 黒帯マスクの幅を更新
-    const ml = document.getElementById('game-mask-l');
-    const mr = document.getElementById('game-mask-r');
-    const r = _gameRect;
-    const H = window.innerHeight;
-    if(ml){ ml.style.width = r.x + 'px'; ml.style.height = H + 'px'; }
-    if(mr){ mr.style.width = r.x + 'px'; mr.style.height = H + 'px'; }
-    // タイトル・GO・ポーズ・ゲーム画面をゲームエリアに合わせて配置
-    ['screen-title','screen-pause','screen-gameover','screen-game'].forEach(id => {
-      const el = document.getElementById(id);
-      if(!el) return;
-      el.style.position = 'fixed';
-      el.style.left   = r.x + 'px';
-      el.style.top    = r.y + 'px';
-      el.style.width  = r.w + 'px';
-      el.style.height = r.h + 'px';
-    });
-  }
-  window.addEventListener('resize', ()=>{ resizeCanvas(); });
-  window.addEventListener('orientationchange', ()=>{ setTimeout(resizeCanvas, 200); });
-
-  // ゲームエリア内座標へ変換（仮想→実キャンバス）
-  function gx(vx){ return _gameRect.x + vx * _gameRect.scale; }
-  function gy(vy){ return _gameRect.y + vy * _gameRect.scale; }
-  function gs(v) { return v * _gameRect.scale; }
-
-  function getScale(){ return _gameRect.scale; }
-  // 物理値はスケールに比例
-  function getGravity()    { return 0.38 * getScale(); }
-  function getFlapPower()  { return -7.2 * getScale(); }
-  function getScrollSpeed(){ return 3.2  * getScale(); }
-
-  // ===== 難易度フェーズ定義 =====
-  // score範囲ごとにパラメータを変える
-  // gap: 隙間の高さ(px)  vertRange: 縦位置の振れ幅(0〜1)  label: 表示名
-  function getPhase(score){
-    // 無理ゲーモードは最初から無理ゲー難易度
-    if(_murigeMode){
-      saveUnlocked();
-      return { gapMin:BASE_H*0.090, gapMax:BASE_H*0.102, vertMin:0.05, vertMax:0.82, label:'無理ゲー', labelDetail:'' };
-    }
-    // 隙間は仮想座標系（BASE_H=750px）の比率で固定
-    if(score < 10){
-      return { gapMin:BASE_H*0.267, gapMax:BASE_H*0.307, vertMin:0.20, vertMax:0.60, label:'入門', labelDetail:'まずは感覚をつかもう' };
-    } else if(score < 30){
-      return { gapMin:BASE_H*0.207, gapMax:BASE_H*0.233, vertMin:0.15, vertMax:0.65, label:'普通', labelDetail:'少しずつ狭くなってきた' };
-    } else if(score < 50){
-      return { gapMin:BASE_H*0.167, gapMax:BASE_H*0.187, vertMin:0.10, vertMax:0.72, label:'難しい', labelDetail:'大きく上下に動かそう' };
-    } else if(score < 100){
-      return { gapMin:BASE_H*0.140, gapMax:BASE_H*0.157, vertMin:0.08, vertMax:0.76, label:'達人', labelDetail:'繰り返せるか…' };
-    } else {
-      saveUnlocked();
-      return { gapMin:BASE_H*0.090, gapMax:BASE_H*0.102, vertMin:0.05, vertMax:0.82, label:'無理ゲー', labelDetail:'' };
-    }
-  }
-
-  // ===== ゲーム状態 =====
-  let _raf = null;
-  let state = {};
-
-  function initState(){
-    resizeCanvas();
-    const W = canvas.width, H = canvas.height;
-    return {
-      playerY      : BASE_H * 0.45,
-      playerVY     : 0,
-      rotation     : 0,
-      walls        : [],
-      scrollX      : 0,
-      score        : 0,
-      frame        : 0,
-      alive        : true,
-      started      : false,
-      flashTimer   : 0,
-
-    };
-  }
-
-  // ===== 壁生成 =====
-  function getWallInterval(){
-    // 仮想座標系では常にWALL_INTERVAL（スクロール速度がスケールされるので間隔も連動）
-    return WALL_INTERVAL;
-  }
-  function spawnWall(x){
-    // 仮想座標系（BASE_H基準）で生成
-    const phase = getPhase(state ? state.score : 0);
-    const gap = phase.gapMin + Math.random()*(phase.gapMax - phase.gapMin);
-    const topMin = BASE_H * phase.vertMin;
-    const topMax = BASE_H * phase.vertMax - gap;
-    const topH = topMin + Math.random()*Math.max(0, topMax - topMin);
-    const initSc = _gameRect ? _gameRect.scale : 1;
-    return { x, topH, gap, passed:false, _wallW: Math.round(28 * initSc) };
-  }
-
-  // ===== 描画ヘルパー =====
-  function drawKanji(kanji, x, y, size, color, alpha=1, rotation=0){
-    ctx.save();
-    ctx.globalAlpha = alpha;
-    ctx.translate(x, y);
-    if(rotation) ctx.rotate(rotation);
-    ctx.font = `900 ${size}px 'Noto Serif JP', serif`;
-    ctx.fillStyle = color;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(kanji, 0, 0);
-    ctx.restore();
-  }
-
-  // 縦書き風「壁」を上下に描画（仮想座標→実座標変換）
-  function drawWall(wall){
-    const r = _gameRect;
-    const vx = wall.x - state.scrollX;
-    if(vx < -WALL_WIDTH*2 || vx > BASE_W + WALL_WIDTH*2) return;
-
-    const sc = getScale();
-    const fontSize = Math.round(28 * sc);
-    // charHをfontSizeと同じにする（1.1倍のギャップをなくす）
-    const charH = fontSize;
-    const wallColor = getWallColor();
-    const rx = r.x + vx * sc;
-
-    // 上の壁：先端文字の下端が topEdgePx を超えない
-    const topEdgePx = r.y + wall.topH * sc;
-    let topLastCy = -Infinity;
-    for(let i = 0; ; i++){
-      const cy = r.y + charH / 2 + i * charH;
-      if(cy + charH / 2 > topEdgePx) break; // 文字下端が隙間上端を超えたら止まる
-      drawKanji('壁', rx, cy, fontSize, wallColor, 1);
-      topLastCy = cy;
-    }
-    // 先端文字の下端Y（判定に使う）
-    const topDrawEnd = topLastCy > -Infinity ? topLastCy + charH / 2 : r.y;
-
-    // 下の壁：先端文字の上端が botEdgePx を超えない
-    const botEdgePx = r.y + (wall.topH + wall.gap) * sc;
-    let botLastCy = Infinity;
-    for(let i = 0; ; i++){
-      const cy = r.y + r.h - charH / 2 - i * charH;
-      if(cy - charH / 2 < botEdgePx) break; // 文字上端が隙間下端を超えたら止まる
-      drawKanji('壁', rx, cy, fontSize, wallColor, 1);
-      botLastCy = cy;
-    }
-    // 先端文字の上端Y（判定に使う）
-    const botDrawStart = botLastCy < Infinity ? botLastCy - charH / 2 : r.y + r.h;
-
-    // 描画された先端をスケール逆変換して仮想座標で保存 → checkCollisionで使う
-    wall._drawTopH  = (topDrawEnd  - r.y) / sc;
-    wall._drawBotH  = (botDrawStart - r.y) / sc;
-    wall._wallW = Math.round(fontSize);
-  }
-
-  // 背景：ゲームエリア内だけ描画（黒帯外は塗りつぶすのみ）
-  function drawBg(){
-    const W = canvas.width, H = canvas.height;
-    const r = _gameRect;
-    ctx.clearRect(0,0,W,H);
-    // 全画面を暗く
-    ctx.fillStyle = '#050504';
-    ctx.fillRect(0,0,W,H);
-    // ゲームエリアを背景色で
-    ctx.fillStyle = '#0d0d0a';
-    ctx.fillRect(r.x, r.y, r.w, r.h);
-
-
-  }
-
-  // プレイヤー描画（仮想座標→実座標変換）
-  function drawPlayer(){
-    const r = _gameRect;
-    const vpx = BASE_W * PLAYER_X_RATIO; // 仮想X
-    const vpy = state.playerY;           // 仮想Y
-    const rpx = r.x + vpx * r.scale;    // 実X
-    const rpy = r.y + vpy * r.scale;    // 実Y
-    const rot = Math.min(Math.max(state.playerVY * 0.07, -0.6), 1.0);
-    const pSize = Math.round(PLAYER_SIZE * r.scale);
-
-    // 軌跡（残像）
-    const trailCount = 4;
-    for(let i=trailCount; i>0; i--){
-      const try_ = rpy - state.playerVY * r.scale * i * 1.5;
-      drawKanji('飛', rpx, try_, pSize, '#c8a85a', 0.06 * (trailCount-i+1), rot);
-    }
-
-    // グロー
-    ctx.save();
-    ctx.shadowColor = 'rgba(200,168,90,0.5)';
-    ctx.shadowBlur = 18;
-    drawKanji('飛', rpx, rpy, pSize, '#e8c870', 1, rot);
-    ctx.restore();
-
-    // フラッシュ（衝突時）
-    if(state.flashTimer > 0){
-      drawKanji('飛', rpx, rpy, pSize, '#ffffff', state.flashTimer/8, rot);
-      state.flashTimer--;
-    }
-  }
-
-  // スコア表示（ゲーム中）
-  function drawHudScore(){
-    const phase = getPhase(state.score);
-    document.getElementById('hud-score').textContent = state.score;
-    const b = getBest(_murigeMode);
-    const hudBest = getBest(_murigeMode);
-    document.getElementById('hud-best').textContent =
-      '【' + phase.label + '】' + (hudBest > 0 ? '  best ' + hudBest : '');
-
-    // ゲームエリア中央上部にスコアを大きく描画
-    const r2 = _gameRect;
-    const scoreFontSize = Math.round(r2.scale * 48);
-    ctx.save();
-    ctx.font = `700 ${scoreFontSize}px 'Noto Serif JP', serif`;
-    ctx.fillStyle = 'rgba(200,168,90,0.18)';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'top';
-    ctx.fillText(state.score, r2.x + r2.w/2, r2.y + 18 * r2.scale);
-    ctx.restore();
-  }
-
-  // 「はじめにタップ」表示（仮想座標系）
-  function drawReadyText(){
-    const r = _gameRect;
-    const cx = r.x + r.w/2;
-    const alpha = 0.5 + 0.5*Math.sin(state.frame*0.08);
-    const fs1 = Math.round(13 * r.scale);
-    const fs2 = Math.round(15 * r.scale);
-    const lineH = fs1 * 1.9;
-    const lines = [
-      '【 入門 】まずは感覚をつかもう',
-      '壁と壁の隙間を通り抜けよう',
-      'タップするたびに「飛」が上へ跳ねる',
-    ];
-    const boxY  = r.y + r.h * 0.60;
-    const boxH  = lineH * lines.length + fs1 * 1.2;
-    const boxW  = r.w * 0.82;
-    ctx.save();
-    // 半透明背景ボックス
-    ctx.fillStyle = 'rgba(13,13,10,0.78)';
-    ctx.beginPath();
-    ctx.roundRect(cx - boxW/2, boxY, boxW, boxH, 6 * r.scale);
-    ctx.fill();
-    // テキスト
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.globalAlpha = 1;
-    ctx.font = `400 ${fs1}px 'Noto Serif JP', serif`;
-    ctx.fillStyle = '#b0aa90';
-    lines.forEach((line, i) => {
-      ctx.fillText(line, cx, boxY + fs1 * 0.9 + i * lineH);
-    });
-    // 点滅テキスト
-    ctx.globalAlpha = alpha;
-    ctx.font = `700 ${fs2}px 'Noto Serif JP', serif`;
-    ctx.fillStyle = 'rgba(200,168,90,1)';
-    ctx.fillText('タップして開始', cx, r.y + r.h * 0.86);
-    ctx.restore();
-  }
-
-
-  // ===== 衝突判定（仮想座標系で計算） =====
-  function checkCollision(){
-    const px = BASE_W * PLAYER_X_RATIO; // 仮想X固定
-    const py = state.playerY;           // 仮想Y
-    const pr = PLAYER_SIZE * 0.38;      // プレイヤーの当たり判定半径（仮想px）
-
-    // 天井・床
-    if(py - pr < 0 || py + pr > BASE_H - 5) return true;
-
-    const sc = getScale();
-    for(const wall of state.walls){
-      const wx = wall.x - state.scrollX; // 仮想X
-
-      // 横判定：壁の文字サイズ半分＋プレイヤー半径
-      const wallHalfW = sc > 0
-        ? (wall._wallW || Math.round(28 * sc)) / sc / 2
-        : 14;
-      if(Math.abs(wx - px) > wallHalfW + pr * 0.6) continue;
-
-      // 縦判定：描画された先端文字の位置を使う（視覚と一致・少し小さめ）
-      const drawTop = wall._drawTopH !== undefined ? wall._drawTopH : wall.topH;
-      const drawBot = wall._drawBotH !== undefined ? wall._drawBotH : wall.topH + wall.gap;
-      if(py - pr * 0.75 < drawTop || py + pr * 0.75 > drawBot) return true;
-    }
-    return false;
-  }
-
-  // ===== メインループ =====
-  function gameLoop(){
-    state.frame++;
-
-    if(state.started){
-      // 物理（画面高さ基準でスケール）
-      state.playerVY += getGravity();
-      state.playerY  += state.playerVY;
-
-      // スクロール
-      state.scrollX  += getScrollSpeed();
-
-      // 壁を追加
-      const wInterval = getWallInterval();
-      const lastWall = state.walls[state.walls.length-1];
-      const nextX = lastWall ? lastWall.x + wInterval : BASE_W + 80;
-      if(nextX - state.scrollX < BASE_W + 80){
-        state.walls.push(spawnWall(nextX));
-      }
-
-      // 古い壁を削除
-      state.walls = state.walls.filter(w => w.x - state.scrollX > -WALL_WIDTH*3);
-
-      // スコア更新
-      for(const wall of state.walls){
-        if(!wall.passed && wall.x - state.scrollX < BASE_W * PLAYER_X_RATIO){
-          wall.passed = true;
-          state.score++;
-          // フェーズ切替チェック
-          const newPhase = getPhase(state.score);
-          if(newPhase.label !== state.phaseLabel){
-            state.phaseLabel = newPhase.label;
-          }
-        }
-      }
-
-      // 衝突判定
-      if(checkCollision()){
-        state.alive = false;
-        gameOver();
-        return;
-      }
-    }
-
-    // 描画
-    drawBg();
-    state.walls.forEach(drawWall);
-    drawPlayer();
-    if(!state.started) drawReadyText();
-    drawHudScore();
-
-    _raf = requestAnimationFrame(gameLoop);
-  }
-
-  // ===== ゲーム開始・終了 =====
-  let _murigeMode = false;
-  function startGame(murige){
-    recordUniquePlayer('tobetobi');
-    _murigeMode = !!murige;
-    cancelAnimationFrame(_raf);
-    state = initState();
-
-    // 最初の壁をすこし先に生成
-    const wi = getWallInterval();
-    for(let i=0; i<5; i++){
-      state.walls.push(spawnWall(BASE_W * 0.8 + i * wi));
-    }
-
-    showScreen('screen-game');
-    document.getElementById('screen-game').style.display = 'flex';
-    _raf = requestAnimationFrame(gameLoop);
-  }
-
-  function gameOver(){
-    cancelAnimationFrame(_raf);
-    // デバッグエリアリセット（テキストのみクリア・表示は維持）
-    const dbgEl = document.getElementById('go-debug');
-    if(dbgEl){ dbgEl.textContent=''; dbgEl.style.display='none'; }
-    const score = state.score;
-    const best  = getBest(_murigeMode);
-    const isNew = score > best;
-    // 新記録でなくても初回Firebase保存のために毎回試みる（saveBest内で重複チェック済み）
-    if(score > 0) saveBest(Math.max(score, best), _murigeMode);
-
-    document.getElementById('go-score-num').textContent = score;
-    const modeLabel = _murigeMode ? '無理ゲー　' : '';
-    document.getElementById('go-best-wrap').textContent =
-      modeLabel + 'ハイスコア　' + (isNew ? score : best) + ' 壁';
-    document.getElementById('go-new-best').style.display = isNew ? 'block' : 'none';
-
-    setTimeout(()=>{
-      _goCursor = 0;
-      updateGoCursor();
-      // ニックネームなし時に案内表示
-      const nickHint = document.getElementById('go-nick-hint');
-      if(nickHint) nickHint.style.display = getNick().trim() ? 'none' : 'block';
-      showScreen('screen-gameover');
-    }, 300);
-  }
-
-  // ===== 一時停止 =====
-  let _paused = false;
-  function togglePause(){
-    if(!state.alive) return;
-    _paused = !_paused;
-    if(_paused){
-      cancelAnimationFrame(_raf);
-      document.getElementById('screen-pause').style.display = 'flex';
-    } else {
-      document.getElementById('screen-pause').style.display = 'none';
-      _raf = requestAnimationFrame(gameLoop);
-    }
-  }
-
-  // ===== 操作：タップ / クリック =====
-  function doFlap(){
-    if(_paused) return;
-    if(!state.alive) return;
-    if(!state.started){
-      state.started = true;
-    }
-    state.playerVY = getFlapPower();
-  }
-
-  canvas.addEventListener('pointerdown', e=>{
-    e.preventDefault();
-    // ゲームエリア外（黒帯部分）のタップは無視
-    const r = _gameRect;
-    if(e.clientX < r.x || e.clientX > r.x + r.w) return;
-    doFlap();
-  });
-
-  // ===== 操作：キーボード =====
-  document.addEventListener('keydown', e=>{
-    if(e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyZ'){
-      e.preventDefault();
-      const goEl = document.getElementById('screen-gameover');
-      if(goEl.style.display === 'flex'){ startGame(); return; }
-      if(document.getElementById('screen-title').style.display !== 'none') return;
-      doFlap();
-    }
-    if(e.code === 'Escape' || e.code === 'KeyP'){
-      const gameEl = document.getElementById('screen-game');
-      if(gameEl.style.display === 'flex') togglePause();
-    }
-  });
-
-  // ===== 操作：ゲームパッド =====
-  const gpIndicator = document.getElementById('gamepad-indicator');
-  let _gpConnected = false;
-  let _gpPrevButtons = {};
-  // ゲームオーバー画面のカーソル: 0=もう一度, 1=タイトルへ
-  let _goCursor = 0;
-
-  // タイトル画面のカーソル
-  // 項目: 0=はじめる, 1=無理ゲー（解放時のみ）, 2=くっきり表示, 3=丸場所へ戻る
-  let _titleCursor = 0;
-
-  function getTitleItems(){
-    const items = ['btn-start'];
-    const murige = document.getElementById('btn-murige');
-    if(murige && murige.style.display !== 'none') items.push('btn-murige');
-    items.push('clear-mode-toggle');
-    items.push('title-ranking-link');
-    items.push('title-back-link');
-    return items;
-  }
-
-  function toggleGpGuide(){
-    const body  = document.getElementById('gp-guide-body');
-    const arrow = document.getElementById('gp-guide-arrow');
-    if(!body) return;
-    const open = body.style.display === 'block';
-    body.style.display = open ? 'none' : 'block';
-    if(arrow) arrow.textContent = open ? '▼' : '▲';
-  }
-
-  function updateTitleCursor(){
-    const items = getTitleItems();
-    items.forEach((id, i) => {
-      const el = document.getElementById(id);
-      if(!el) return;
-      if(i === _titleCursor){
-        el.style.outline = '2px solid var(--gold)';
-        el.style.outlineOffset = '3px';
-        // カーソルが画面外に出たら自動スクロール
-        const rect = el.getBoundingClientRect();
-        const margin = 80;
-        if(rect.bottom > window.innerHeight - margin){
-          window.scrollBy(0, rect.bottom - window.innerHeight + margin + 20);
-        } else if(rect.top < margin){
-          window.scrollBy(0, rect.top - margin - 20);
-        }
-      } else {
-        el.style.outline = 'none';
-      }
-    });
-  }
-
-  function titleCursorAction(){
-    const items = getTitleItems();
-    const id = items[_titleCursor];
-    if(id === 'btn-start')               startGame(false);
-    else if(id === 'btn-murige')         startGame(true);
-    else if(id === 'clear-mode-toggle')  toggleClearMode();
-    else if(id === 'title-ranking-link') window.location.href = 'tobi-ranking.html';
-    else if(id === 'title-back-link')    window.location.href = 'index.html';
-  }
-
-  function updateGoCursor(){
-    const r = document.getElementById('go-btn-retry');
-    const h = document.getElementById('go-btn-home');
-    if(!r||!h) return;
-    r.style.borderColor = _goCursor===0 ? 'var(--gold)' : 'var(--gold2)';
-    r.style.color       = _goCursor===0 ? 'var(--gold)' : 'var(--text3)';
-    h.style.borderColor = _goCursor===1 ? 'rgba(138,134,120,0.6)' : 'transparent';
-    h.style.color       = _goCursor===1 ? 'var(--text2)' : 'var(--text3)';
-  }
-
-  function _onGamepadConnected(){
-    _gpConnected = true;
-    document.getElementById('go-gp-hint').style.display = 'block';
-    _titleCursor = 0;
-    updateTitleCursor();
-  }
-
-  window.addEventListener('gamepadconnected', e=>{
-    _onGamepadConnected();
-    gpIndicator.textContent = 'コントローラー接続中 — 十字キー:カーソル移動　1:決定／飛ぶ　0:停止';
-    gpIndicator.style.opacity = '1';
-    setTimeout(()=>{ gpIndicator.style.opacity='0'; }, 4000);
-  });
-
-  // 接続済みコントローラーの即時検出（遷移後・リロード後どちらも対応）
-  function _detectGamepad(){
-    const gps = navigator.getGamepads ? navigator.getGamepads() : [];
-    if([...gps].some(g=>g) && !_gpConnected) _onGamepadConnected();
-  }
-  setTimeout(_detectGamepad, 0);
-  setTimeout(_detectGamepad, 100);
-  setTimeout(_detectGamepad, 300);
-  setInterval(_detectGamepad, 500);
-  window.addEventListener('gamepaddisconnected', ()=>{
-    _gpConnected = false;
-    document.getElementById('go-gp-hint').style.display = 'none';
-  });
-
-  // ===== ゲームパッド遅延改善 =====
-  // requestAnimationFrameは描画と同期するため約16ms固定。
-  // setIntervalで8ms間隔にしてポーリング頻度を上げる。
-  // ボタン判定も .pressed ではなく .value > 0.08 に下げて反応を早める。
-  // さらに「フラップ予約」バッファを設けて、判定タイミングのズレを吸収する。
-
-  let _flapQueued = false; // 入力バッファ：次フレームで確実に反映
-
-  function _btnOn(btn){
-    if(!btn) return false;
-    // pressedよりvalueで判定（閾値を低くして反応を早める）
-    return btn.value > 0.08 || btn.pressed;
-  }
-
-  function pollGamepad(){
-    const gps = navigator.getGamepads ? navigator.getGamepads() : [];
-    for(const gp of gps){
-      if(!gp) continue;
-      const idx = gp.index;
-
-      const titleEl = document.getElementById('screen-title');
-      const gameEl  = document.getElementById('screen-game');
-      const goEl    = document.getElementById('screen-gameover');
-      const pauseEl = document.getElementById('screen-pause');
-
-      const isTitle  = titleEl.style.display !== 'none';
-      const isGO     = goEl.style.display === 'flex';
-      const isPause  = pauseEl.style.display === 'flex';
-      const isGame   = gameEl.style.display === 'flex';
-
-      // プロコン対応: ブラウザ番号 0=B, 1=A
-      // Aボタン（ブラウザ1）: 飛ぶ／決定
-      const bA = _btnOn(gp.buttons[1]);
-      if(bA && !_gpPrevButtons[idx+'_A']){
-        if(isTitle)       titleCursorAction();
-        else if(isGO)     { if(_goCursor===0) startGame(_murigeMode); else goTitle(); }
-        else if(isPause)  togglePause();
-        else              _flapQueued = true;
-      }
-      _gpPrevButtons[idx+'_A'] = bA;
-
-      // Bボタン（ブラウザ0）: 一時停止 / タイトルへ（戻る）
-      const bB = _btnOn(gp.buttons[0]);
-      if(bB && !_gpPrevButtons[idx+'_B']){
-        if(isTitle)       toggleGpGuide();
-        else if(isGO)     goTitle();
-        else if(isGame)   togglePause();
-        else if(isPause)  togglePause();
-      }
-      _gpPrevButtons[idx+'_B'] = bB;
-
-      // 十字キー上 / 左スティック上
-      const up = _btnOn(gp.buttons[12]) || (gp.axes[1] < -0.3);
-      if(up && !_gpPrevButtons[idx+'_up']){
-        if(isTitle){
-          const items = getTitleItems();
-          _titleCursor = (_titleCursor - 1 + items.length) % items.length;
-          updateTitleCursor();
-        } else if(!isGO){
-          _flapQueued = true;
-        }
-      }
-      _gpPrevButtons[idx+'_up'] = up;
-
-      // 十字キー下 / 左スティック下
-      const down = _btnOn(gp.buttons[13]) || (gp.axes[1] > 0.3);
-      if(down && !_gpPrevButtons[idx+'_down']){
-        if(isTitle){
-          const items = getTitleItems();
-          _titleCursor = (_titleCursor + 1) % items.length;
-          updateTitleCursor();
-        } else if(isGO){
-          _goCursor = _goCursor===0 ? 1 : 0;
-          updateGoCursor();
-        }
-      }
-      _gpPrevButtons[idx+'_down'] = down;
-
-      // 十字キー左右
-      const left = _btnOn(gp.buttons[14]) || (gp.axes[0] < -0.3);
-      if(left && !_gpPrevButtons[idx+'_left']){
-        if(isGO){ _goCursor=0; updateGoCursor(); }
-      }
-      _gpPrevButtons[idx+'_left'] = left;
-
-      const right = _btnOn(gp.buttons[15]) || (gp.axes[0] > 0.3);
-      if(right && !_gpPrevButtons[idx+'_right']){
-        if(isGO){ _goCursor=1; updateGoCursor(); }
-      }
-      _gpPrevButtons[idx+'_right'] = right;
-
-      // 左スティック・右スティック: タイトル画面スクロール
-      if(isTitle){
-        const ly = gp.axes[1]; const ry = gp.axes[3];
-        const sy = Math.abs(ly) > 0.15 ? ly : (Math.abs(ry) > 0.15 ? ry : 0);
-        if(sy !== 0) window.scrollBy(0, sy * 14);
-      }
-    }
-
-    // バッファされた入力を処理
-    if(_flapQueued){
-      doFlap();
-      _flapQueued = false;
-    }
-  }
-
-  // setIntervalで8ms間隔ポーリング（rAFの約2倍の頻度）
-  setInterval(pollGamepad, 8);
-
-  // ===== 初期化 =====
-  resizeCanvas();
-  _gameRect = calcGameRect();
-  // 保存済みニックネームをinputに反映
-  const _savedNick = getNick();
-  const _nickInput = document.getElementById('tobi-nick-input');
-  if(_nickInput && _savedNick) _nickInput.value = _savedNick;
-  showScreen('screen-title');
-  updateTitleBest();
-  applyClearModeUI();
-  restoreBest(); // Firebaseからスコア復元（非同期・バックグラウンド）
+'use strict';
+(() => {
+const $=id=>document.getElementById(id), TAU=Math.PI*2,T=48;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),len=(x,y)=>Math.hypot(x,y),lerp=(a,b,t)=>a+(b-a)*t;
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const STORE='tobetobi-flight-v2';
+let saved={records:{},sound:true,music:false,motion:!reduced};
+try{const s=JSON.parse(localStorage.getItem(STORE)||'null');if(s&&typeof s==='object'){saved.sound=s.sound!==false;saved.music=s.music===true;saved.motion=!reduced&&s.motion!==false;if(s.records&&typeof s.records==='object')for(const [id,r]of Object.entries(s.records)){if(r&&Number.isFinite(r.time)&&r.time>0)saved.records[id]={time:r.time,lights:clamp(Number(r.lights)||0,0,3),perfect:!!r.perfect};}}localStorage.setItem(STORE,JSON.stringify(saved));}catch(e){$('save-error').hidden=false;}
+function persist(){try{localStorage.setItem(STORE,JSON.stringify(saved));}catch(e){$('save-error').hidden=false;}}
+function board(w,h){return Array.from({length:h},()=>Array(w).fill('.'));}
+function rect(m,x,y,w,h,c='#'){for(let j=y;j<y+h;j++)for(let i=x;i<x+w;i++)if(m[j]&&i>=0&&i<m[j].length)m[j][i]=c;}
+function border(m){rect(m,0,0,m[0].length,1);rect(m,0,m.length-1,m[0].length,1);rect(m,0,0,1,m.length);rect(m,m[0].length-1,0,1,m.length);}
+function mark(m,c,x,y){m[y][x]=c;}
+function makeStages(){const out=[];let m;
+ m=board(24,13);border(m);rect(m,11,3,4,4);rect(m,4,9,5,3);mark(m,'S',3,3);mark(m,'G',21,9);[[7,3],[8,7],[18,9]].forEach(p=>mark(m,'o',...p));out.push({name:'一 / はじめの空',sub:'操縦して「終」へ',m,par:22,lesson:true});
+ m=board(28,15);border(m);rect(m,13,1,1,13);mark(m,'|',13,7);mark(m,'S',3,7);mark(m,'G',24,4);mark(m,'C',17,7);[[7,3],[10,11],[23,11]].forEach(p=>mark(m,'o',...p));out.push({name:'二 / 溜めて、離す',sub:'ブレーキと飛び出し',m,par:30});
+ m=board(28,17);rect(m,0,0,28,17);rect(m,1,1,24,3,'.');rect(m,22,1,3,8,'.');rect(m,3,6,22,3,'.');rect(m,3,6,3,9,'.');rect(m,3,12,23,3,'.');rect(m,12,3,1,10,'.');mark(m,'S',2,2);mark(m,'G',25,13);mark(m,'C',23,7);[[15,2],[4,10],[18,13]].forEach(p=>mark(m,'o',...p));out.push({name:'三 / 曲がり角',sub:'減速して、向きを変える',m,par:40});
+ m=board(28,17);border(m);rect(m,9,1,1,15);rect(m,9,6,1,4,'.');rect(m,18,1,1,15);rect(m,18,3,1,4,'.');mark(m,'S',3,12);mark(m,'G',25,3);mark(m,'C',14,6);[[5,3],[13,12],[24,13]].forEach(p=>mark(m,'o',...p));out.push({name:'四 / 風を読む',sub:'流れを利用する',m,par:35,winds:[{x:3,y:2,w:5,h:11,dx:0,dy:-95},{x:11,y:3,w:5,h:11,dx:110,dy:0},{x:21,y:7,w:5,h:8,dx:0,dy:115}]});
+ m=board(28,17);border(m);rect(m,1,6,21,1);rect(m,7,11,20,1);mark(m,'S',3,3);mark(m,'G',24,14);mark(m,'C',23,8);[[16,3],[3,9],[13,14]].forEach(p=>mark(m,'o',...p));out.push({name:'五 / 動く間を抜ける',sub:'急がず、隙を見つける',m,par:45,movers:[{x:22.2,y:2.5,w:1.2,h:1.2,axis:'y',amp:2.5,speed:1.6},{x:14,y:7.5,w:1.4,h:1.4,axis:'x',amp:5.5,speed:1.4},{x:3,y:11.5,w:1.3,h:1.3,axis:'y',amp:2.2,speed:1.8}]});
+ m=board(30,19);border(m);rect(m,10,1,1,13);rect(m,10,4,1,3,'.');mark(m,'|',10,5);rect(m,11,11,13,1);rect(m,20,1,1,10);rect(m,20,5,1,3,'.');rect(m,6,15,19,1);rect(m,6,15,3,1,'.');mark(m,'S',3,4);mark(m,'G',26,16);mark(m,'C',16,8);[[5,12],[25,3],[13,17]].forEach(p=>mark(m,'o',...p));out.push({name:'六 / 飛べ、飛',sub:'これまでの操縦をつなげる',m,par:55,winds:[{x:12,y:2,w:6,h:7,dx:110,dy:-50},{x:2,y:14,w:4,h:4,dx:60,dy:-70}],movers:[{x:22,y:12,w:1.5,h:1.5,axis:'x',amp:3.3,speed:1.5}]});return out;
+}
+const stages=makeStages();
+const canvas=$('canvas'),ctx=canvas.getContext('2d',{alpha:false});
+const screenIds=['home','stage-menu','settings','pause','result'];
+let screen='home',settingsReturn='home',stageIndex=0,world=null,player=null,phase='ready',elapsed=0,worldTime=0,misses=0,particles=[],trail=[],camera={x:0,y:0},checkpoint=null,crashClock=0,burstCount=0,heldTime=0,moveDistance=0,toastClock=0,flash=0,simulationClock=0;
+let view={w:1,h:1,scale:1,dpr:1},lastFrame=0,acc=0,hiddenPaused=false,focusIndex=0,navClock=0,menuIgnore=0,chargeBlocked=false;
+const input={keys:new Set(),touch:{x:0,y:0,charge:false},pad:{x:0,y:0,charge:false},lastCharge:false,aimX:1,aimY:0};
+let connectedPad=null,padWas=[],pointerId=null,chargePointer=null,hadPad=false,touchMode=matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0||innerWidth<=650;
+document.body.classList.toggle('touch-mode',touchMode);
+const audio={ctx:null,next:0,step:0};
+function unlockAudio(){if(!audio.ctx){try{audio.ctx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){return;}}if(audio.ctx.state==='suspended')audio.ctx.resume().catch(()=>{});}
+function note(freq,duration=.1,volume=.035,type='sine',when=0,slide=0){const c=audio.ctx;if(!c||c.state!=='running')return;try{const o=c.createOscillator(),g=c.createGain(),t=c.currentTime+when;o.type=type;o.frequency.setValueAtTime(freq,t);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,slide),t+duration);g.gain.setValueAtTime(volume,t);g.gain.exponentialRampToValueAtTime(.0001,t+duration);o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+duration+.02);}catch(e){}}
+function sfx(kind){if(!saved.sound)return;unlockAudio();if(kind==='burst')note(210,.2,.045,'triangle',0,780);else if(kind==='crash')note(100,.18,.045,'triangle',0,35);else if(kind==='light'){note(660,.12);note(990,.17,.025,'sine',.08);}else if(kind==='clear'){[523,659,784,1046].forEach((f,i)=>note(f,.3,.035,'sine',i*.1));}else if(kind==='checkpoint'){note(392,.16);note(587,.24,.03,'sine',.1);}else note(440,.045,.018);}
+function music(){if(!saved.music||!audio.ctx||screen!=='play'||phase!=='play')return;const c=audio.ctx;if(c.currentTime<audio.next)return;const melody=[0,7,12,7,3,10,7,3,5,12,15,12,7,10,3,7];note(220*Math.pow(2,melody[audio.step%16]/12),.42,.009,'sine');if(audio.step%4===0)note(110,.85,.009,'triangle');audio.step++;audio.next=c.currentTime+.32;}
+function resetInputs(){input.keys.clear();input.touch={x:0,y:0,charge:false};input.pad={x:0,y:0,charge:false};input.lastCharge=false;input.aimX=1;input.aimY=0;pointerId=null;chargePointer=null;$('stick').style.transform='';$('charge-button').classList.remove('held');chargeBlocked=true;}
+function show(id){screen=id;screenIds.forEach(s=>$(s).hidden=s!==id);$('game').hidden=(id==='home'||id==='stage-menu'||(id==='settings'&&settingsReturn!=='pause'));focusIndex=0;menuIgnore=.18;resetInputs();document.querySelectorAll('.pad-focus').forEach(e=>e.classList.remove('pad-focus'));if(id!=='play'){const b=buttons()[0];if(b)b.focus({preventScroll:true});}else{document.activeElement?.blur();requestAnimationFrame(resize);} }
+function buttons(){const root=$(screen);return root?[...root.querySelectorAll('button,a')].filter(e=>!e.disabled&&e.getClientRects().length):[];}
+function focusMenu(delta){const b=buttons();if(!b.length)return;let now=b.indexOf(document.activeElement);if(now<0)now=focusIndex;focusIndex=(now+delta+b.length)%b.length;document.querySelectorAll('.pad-focus').forEach(e=>e.classList.remove('pad-focus'));b[focusIndex].classList.add('pad-focus');b[focusIndex].focus({preventScroll:true});b[focusIndex].scrollIntoView({block:'nearest'});}
+function toast(text){$('toast').textContent=text;$('toast').classList.add('show');toastClock=2.1;}
+function formatTime(t){return Math.floor(t/60)+':'+(t%60).toFixed(1).padStart(4,'0');}
+function stageMenu(){renderStageMenu();show('stage-menu');}
+function renderStageMenu(){$('stage-grid').replaceChildren();stages.forEach((s,i)=>{const b=document.createElement('button');b.className='stage-card';const r=saved.records[i];b.innerHTML='<span class="number">'+String(i+1).padStart(2,'0')+'</span><strong>'+s.name.split(' / ')[1]+'</strong><small>'+s.sub+'</small>'+(r?'<div class="saved">'+formatTime(r.time)+'　光 '+r.lights+'/3'+(r.perfect?'　無傷':'')+'</div>':'');b.onclick=()=>start(i);$('stage-grid').appendChild(b);});}
+function updateSettings(){for(const [id,key]of[['sound-setting','sound'],['music-setting','music'],['motion-setting','motion']])$(id).querySelector('span').textContent=saved[key]?'ON':'OFF';}
+function settings(from){settingsReturn=from;updateSettings();show('settings');}
+function mapWorld(s){const w={w:s.m[0].length*T,h:s.m.length*T,walls:[],lights:[],gates:[],checkpoints:[],winds:[],movers:[],goal:null,start:null};s.m.forEach((row,y)=>row.forEach((c,x)=>{const p={x:(x+.5)*T,y:(y+.5)*T};if(c==='#')w.walls.push({x:x*T,y:y*T,w:T,h:T});if(c==='S')w.start=p;if(c==='G')w.goal=p;if(c==='o')w.lights.push({...p,got:false});if(c==='C')w.checkpoints.push({...p,active:false});if(c==='|')w.gates.push({x:x*T,y:y*T,w:T,h:T,open:false,denied:0});}));w.winds=(s.winds||[]).map(o=>({...o,x:o.x*T,y:o.y*T,w:o.w*T,h:o.h*T}));w.movers=(s.movers||[]).map(o=>({...o,baseX:o.x*T,baseY:o.y*T,x:o.x*T,y:o.y*T,w:o.w*T,h:o.h*T,amp:o.amp*T}));return w;}
+function start(i){stageIndex=i;world=mapWorld(stages[i]);checkpoint={...world.start};player={...world.start,vx:0,vy:0,r:14,charge:0,burst:0,invincible:0};elapsed=0;worldTime=0;misses=0;particles=[];trail=[];phase='play';burstCount=0;heldTime=0;moveDistance=0;flash=0;crashClock=0;$('crash-label').classList.remove('visible');camera={...world.start};$('stage-name').textContent=stages[i].name;$('stage-caption').textContent=stages[i].sub;$('toast').classList.remove('show');show('play');resize();updateHUD();updateGuide();unlockAudio();}
+function pause(){if(screen!=='play')return;show('pause');}
+function resume(){if(!world)return;show('play');lastFrame=0;acc=0;}
+function retry(){if(!world)return;resetInputs();player.x=checkpoint.x;player.y=checkpoint.y;player.vx=player.vy=player.charge=player.burst=0;player.invincible=.3;crashClock=0;phase='play';trail=[];$('crash-label').classList.remove('visible');}
+function emit(x,y,count,color,speed=150){for(let i=0;i<count&&particles.length<100;i++){const a=Math.random()*TAU,v=(.3+Math.random()*.7)*speed;particles.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:.25+Math.random()*.4,max:.65,color});}}
+function collide(p,r){return len(p.x-clamp(p.x,r.x,r.x+r.w),p.y-clamp(p.y,r.y,r.y+r.h))<p.r;}
+function crash(){if(player.invincible>0||phase!=='play')return;misses++;phase='crash';crashClock=.5;player.charge=0;input.lastCharge=false;chargeBlocked=true;emit(player.x,player.y,24,'#ed937d',210);sfx('crash');flash=.18;$('crash-label').classList.add('visible');}
+function clear(){phase='clear';const collected=world.lights.filter(l=>l.got).length,old=saved.records[stageIndex],isBest=!old||elapsed<old.time;saved.records[stageIndex]={time:isBest?elapsed:old.time,lights:Math.max(collected,old?.lights||0),perfect:misses===0||!!old?.perfect};persist();sfx('clear');emit(player.x,player.y,45,'#e4c878',220);$('result-title').textContent=stageIndex===stages.length-1?'六つの空を、飛び抜けた。':'飛び抜けた。';$('result-note').textContent=stages[stageIndex].name+'　'+(isBest?'自己ベスト！':'クリア');$('result-time').textContent=formatTime(elapsed);$('result-lights').textContent=collected+'/3';$('result-misses').textContent=misses+'回';$('result-best').textContent=collected===3?'光をすべて集めました。次は狙い通りの軌道へ。':'光は任意の目標。慣れたら寄り道やタイム短縮にも挑戦できます。';$('next-btn').textContent=stageIndex===stages.length-1?'ステージ一覧へ':'次のステージへ';show('result');}
+function axis(){let x=0,y=0;const k=input.keys;if(k.has('ArrowRight')||k.has('KeyD'))x++;if(k.has('ArrowLeft')||k.has('KeyA'))x--;if(k.has('ArrowDown')||k.has('KeyS'))y++;if(k.has('ArrowUp')||k.has('KeyW'))y--;if(len(input.pad.x,input.pad.y)>len(x,y)){x=input.pad.x;y=input.pad.y;}if(len(input.touch.x,input.touch.y)>len(x,y)){x=input.touch.x;y=input.touch.y;}const n=len(x,y);return n>1?{x:x/n,y:y/n}:{x,y};}
+function chargeDown(){return input.keys.has('Space')||input.keys.has('KeyZ')||input.keys.has('KeyJ')||input.touch.charge||input.pad.charge;}
+function tick(dt){if(screen!=='play'||!world)return;simulationClock+=dt;elapsed+=dt;worldTime+=dt;flash=Math.max(0,flash-dt);if(toastClock>0){toastClock-=dt;if(toastClock<=0)$('toast').classList.remove('show');}
+ for(const q of particles){q.x+=q.vx*dt;q.y+=q.vy*dt;q.vx*=.96;q.vy*=.96;q.life-=dt;}particles=particles.filter(q=>q.life>0);
+ world.movers.forEach((o,i)=>{o.x=o.baseX+(o.axis==='x'?Math.sin(worldTime*o.speed+i)*o.amp:0);o.y=o.baseY+(o.axis==='y'?Math.sin(worldTime*o.speed+i)*o.amp:0);});
+ if(phase==='crash'){crashClock-=dt;if(crashClock<=0)retry();updateHUD();return;}
+ if(phase!=='play')return;
+ const a=axis(),amount=len(a.x,a.y),raw=chargeDown();if(!raw)chargeBlocked=false;const holding=raw&&!chargeBlocked;if(amount>.12){input.aimX=a.x/amount;input.aimY=a.y/amount;}
+ player.invincible=Math.max(0,player.invincible-dt);player.burst=Math.max(0,player.burst-dt);
+ if(holding){player.charge=Math.min(1,player.charge+dt/0.65);heldTime+=dt;player.vx*=Math.exp(-19*dt);player.vy*=Math.exp(-19*dt);player.vx+=a.x*160*dt;player.vy+=a.y*160*dt;player.burst=0;}
+ else{if(input.lastCharge&&player.charge>.07){const power=300+player.charge*350;player.vx=input.aimX*power;player.vy=input.aimY*power;player.burst=.55;burstCount++;emit(player.x-input.aimX*12,player.y-input.aimY*12,9,'#e4c878',80);sfx('burst');}player.charge=0;const responsiveness=player.burst>0?1.5:9,base=185;player.vx=lerp(player.vx,a.x*base,1-Math.exp(-responsiveness*dt));player.vy=lerp(player.vy,a.y*base,1-Math.exp(-responsiveness*dt));}
+ input.lastCharge=holding;
+ for(const w of world.winds)if(player.x>w.x&&player.x<w.x+w.w&&player.y>w.y&&player.y<w.y+w.h){const f=holding?.15:1;player.vx+=w.dx*dt*3*f;player.vy+=w.dy*dt*3*f;}
+ const dist=len(player.vx,player.vy)*dt,steps=Math.max(1,Math.ceil(dist/6));
+ for(let n=0;n<steps;n++){player.x+=player.vx*dt/steps;player.y+=player.vy*dt/steps;if(world.walls.some(r=>collide(player,r))||world.movers.some(r=>collide(player,r))){crash();break;}
+ for(const g of world.gates){g.denied=Math.max(0,g.denied-dt/steps);if(!g.open&&collide(player,g)){if(player.burst>0&&len(player.vx,player.vy)>270){g.open=true;emit(g.x+T/2,g.y+T/2,22,'#e4c878');toast('門を抜けた');sfx('checkpoint');}else{player.x-=player.vx*dt/steps;player.y-=player.vy*dt/steps;player.vx=player.vy=0;if(g.denied<=0){toast('押して溜め、離した勢いで「門」を抜けよう');g.denied=2.3;}}}}
+ }
+ moveDistance+=dist;
+ if(phase==='play'){
+ for(const l of world.lights)if(!l.got&&len(player.x-l.x,player.y-l.y)<27){l.got=true;emit(l.x,l.y,15,'#e4c878',100);sfx('light');}
+ for(const c of world.checkpoints)if(!c.active&&len(player.x-c.x,player.y-c.y)<30){c.active=true;checkpoint={x:c.x,y:c.y};emit(c.x,c.y,18,'#b7d7bd');toast('継続点。ミスしてもここから');sfx('checkpoint');}
+ if(len(player.x-world.goal.x,player.y-world.goal.y)<30){clear();return;}
+ }
+ if(player.burst>0&&simulationClock%(.025)<dt){trail.push({x:player.x,y:player.y,life:.35});if(trail.length>24)trail.shift();}trail.forEach(t=>t.life-=dt);trail=trail.filter(t=>t.life>0);
+ updateHUD();updateGuide();
+}
+function updateHUD(){$('timer').textContent=formatTime(elapsed);$('lights').textContent='光 '+world.lights.filter(l=>l.got).length+'/3';}
+function updateGuide(){let tag='操縦',text=touchMode&&!connectedPad?'左のスティックで「飛」を動かし、「終」へ。':'スティック / 矢印キーで「飛」を動かし、「終」へ。';const mobile=touchMode&&!connectedPad,action=connectedPad?'A または B':mobile?'右のボタン':'Space';if(stageIndex===0){if(moveDistance>120){tag='目標';text='淡い緑の「終」に触れるとクリア。光は集めなくても進めます。';}}else if(stageIndex===1){tag='溜めて離す';text=burstCount?'「門」は飛び出した勢いで通過。方向を決めてから離そう。':action+' を押すと減速して溜め、離すと飛び出す。';}else if(stageIndex===2){tag='曲がり角';text=action+' を押して減速。曲がる方向を決めてから離そう。';}else if(stageIndex===3){tag='風';text='「風」の矢印が流れる方向。ブレーキ中は風の影響も弱まります。';}else if(stageIndex===4){tag='動く壁';text='「動」の軌道を見て通過。止まって待つのも操縦です。';}else{tag='最後の空';text='風、門、動く壁。光の寄り道と安全な道を選ぼう。';}if($('guide-text').textContent!==text)$('guide-text').textContent=text;$('guide-tag').textContent=tag;}
+function resize(){const r=$('viewport').getBoundingClientRect();if(!r.width||!r.height)return;view.w=r.width;view.h=r.height;view.dpr=Math.min(2,devicePixelRatio||1);canvas.width=Math.round(view.w*view.dpr);canvas.height=Math.round(view.h*view.dpr);view.scale=clamp(Math.min(view.w/640,view.h/460),touchMode&&view.w<650?.95:.8,1.3);}
+new ResizeObserver(resize).observe($('viewport'));
+function textGlyph(g,x,y,size,color){ctx.fillStyle=color;ctx.font='700 '+size+'px "Yu Mincho","Hiragino Mincho ProN",serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(g,x,y+1);}
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r);}
+function paint(){if(!world||$('game').hidden)return;const {w,h,scale:s,dpr}=view;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle='#101511';ctx.fillRect(0,0,w,h);const ahead=player.burst>0?50:30,tx=player.x+input.aimX*ahead,ty=player.y+input.aimY*ahead;
+ const halfW=w/(2*s),halfH=h/(2*s),targetX=world.w<halfW*2?world.w/2:clamp(tx,halfW,world.w-halfW),targetY=world.h<halfH*2?world.h/2:clamp(ty,halfH,world.h-halfH);camera.x=lerp(camera.x,targetX,.14);camera.y=lerp(camera.y,targetY,.14);
+ ctx.save();let shake=saved.motion&&phase==='crash'?Math.max(0,crashClock-.23)*12:0;ctx.translate(w/2+(Math.random()-.5)*shake,h/2+(Math.random()-.5)*shake);ctx.scale(s,s);ctx.translate(-camera.x,-camera.y);const minX=camera.x-halfW-70,maxX=camera.x+halfW+70,minY=camera.y-halfH-70,maxY=camera.y+halfH+70,visible=r=>r.x+r.w>minX&&r.x<maxX&&r.y+r.h>minY&&r.y<maxY;
+ ctx.strokeStyle='#c6dbb908';ctx.lineWidth=1;ctx.beginPath();for(let x=Math.floor(minX/T)*T;x<maxX;x+=T){ctx.moveTo(x,minY);ctx.lineTo(x,maxY);}for(let y=Math.floor(minY/T)*T;y<maxY;y+=T){ctx.moveTo(minX,y);ctx.lineTo(maxX,y);}ctx.stroke();
+ for(const wind of world.winds)if(visible(wind)){ctx.fillStyle='#abcfa90b';ctx.fillRect(wind.x,wind.y,wind.w,wind.h);ctx.strokeStyle='#a6cbaa38';ctx.lineWidth=1;ctx.strokeRect(wind.x+1,wind.y+1,wind.w-2,wind.h-2);for(let y=wind.y+T/2;y<wind.y+wind.h;y+=T)for(let x=wind.x+T/2;x<wind.x+wind.w;x+=T){const ox=Math.sin(worldTime*2)*7*Math.sign(wind.dx),oy=Math.sin(worldTime*2)*7*Math.sign(wind.dy);textGlyph(wind.dx>0?'→':wind.dx<0?'←':wind.dy>0?'↓':'↑',x+ox,y+oy,16,'#9dbd9347');}textGlyph('風',wind.x+wind.w/2,wind.y+wind.h/2,40,'#bed8ab58');}
+ for(const wall of world.walls)if(visible(wall)){ctx.fillStyle='#2a3529';ctx.fillRect(wall.x,wall.y,T,T);ctx.strokeStyle='#526147';ctx.lineWidth=1;ctx.strokeRect(wall.x+.5,wall.y+.5,T-1,T-1);textGlyph('壁',wall.x+T/2,wall.y+T/2,29,'#899375');}
+ for(const gate of world.gates)if(!gate.open&&visible(gate)){ctx.fillStyle='#4a4021';ctx.fillRect(gate.x,gate.y,T,T);ctx.strokeStyle='#e4c878';ctx.strokeRect(gate.x+1,gate.y+1,T-2,T-2);textGlyph('門',gate.x+T/2,gate.y+T/2,30,'#f0d68a');}
+ for(const o of world.movers)if(visible(o)){ctx.strokeStyle='#ed937d30';ctx.setLineDash([4,5]);ctx.beginPath();if(o.axis==='x'){ctx.moveTo(o.baseX-o.amp+o.w/2,o.baseY+o.h/2);ctx.lineTo(o.baseX+o.amp+o.w/2,o.baseY+o.h/2);}else{ctx.moveTo(o.baseX+o.w/2,o.baseY-o.amp+o.h/2);ctx.lineTo(o.baseX+o.w/2,o.baseY+o.amp+o.h/2);}ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#392b24';roundRect(o.x,o.y,o.w,o.h,4);ctx.fill();ctx.strokeStyle='#e49a7b';ctx.stroke();textGlyph('動',o.x+o.w/2,o.y+o.h/2,29,'#edaf8f');}
+ const g=world.goal;ctx.strokeStyle='#b7d7bd88';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(g.x,g.y,28,0,TAU);ctx.stroke();ctx.fillStyle='#b7d7bd12';ctx.fill();textGlyph('終',g.x,g.y,30,'#c3dec2');
+ for(const c of world.checkpoints){ctx.strokeStyle=c.active?'#b7d7bd99':'#93ae8155';ctx.beginPath();ctx.arc(c.x,c.y,25,0,TAU);ctx.stroke();textGlyph('継',c.x,c.y,23,c.active?'#c3dec2':'#9caf8a');}
+ for(const l of world.lights)if(!l.got){const pulse=reduced?0:Math.sin(worldTime*3+l.x)*2;ctx.strokeStyle='#e4c87888';ctx.lineWidth=1;ctx.beginPath();ctx.arc(l.x,l.y,19+pulse,0,TAU);ctx.stroke();textGlyph('光',l.x,l.y,21,'#e4c878');}
+ for(const t of trail){ctx.globalAlpha=t.life/.35*.2;textGlyph('飛',t.x,t.y,30,'#e4c878');}ctx.globalAlpha=1;
+ for(const q of particles){ctx.globalAlpha=clamp(q.life/q.max,0,1);ctx.fillStyle=q.color;ctx.fillRect(q.x-1.5,q.y-1.5,3,3);}ctx.globalAlpha=1;
+ if(phase!=='crash'){const p=player;if(p.invincible<=0||Math.floor(p.invincible*16)%2===0){const c=p.charge,ang=Math.atan2(input.aimY,input.aimX);ctx.save();ctx.translate(p.x,p.y);ctx.strokeStyle=c>.03?'#e4c878':'#d9e0be99';ctx.lineWidth=1;ctx.beginPath();ctx.arc(0,0,p.r,0,TAU);ctx.stroke();if(c>.03){ctx.strokeStyle='#e4c878';ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,24,-Math.PI/2,-Math.PI/2+c*TAU);ctx.stroke();ctx.rotate(ang);ctx.fillStyle='#e4c878';ctx.beginPath();ctx.moveTo(34+c*12,0);ctx.lineTo(26+c*12,-4);ctx.lineTo(26+c*12,4);ctx.fill();ctx.rotate(-ang);}ctx.scale(1-c*.14,1+c*.05);textGlyph('飛',0,0,27,p.burst>0?'#ffe7a0':'#f3efd6');ctx.restore();}}
+ ctx.restore();
+ // Offscreen goal cue stays outside the immediate control area.
+ const gx=(g.x-camera.x)*s+w/2,gy=(g.y-camera.y)*s+h/2;if(gx<20||gx>w-20||gy<20||gy>h-20){const x=clamp(gx,25,w-25),y=clamp(gy,40,h-27),a=Math.atan2(gy-h/2,gx-w/2);ctx.save();ctx.translate(x,y);ctx.rotate(a);ctx.fillStyle='#b7d7bd';ctx.beginPath();ctx.moveTo(8,0);ctx.lineTo(-4,-5);ctx.lineTo(-4,5);ctx.fill();ctx.restore();ctx.font='10px system-ui';ctx.textAlign='center';ctx.fillStyle='#a9bea1';ctx.fillText('終',x,y+17);}
+ if(flash>0){ctx.fillStyle='rgba(237,147,125,'+(flash*.6)+')';ctx.fillRect(0,0,w,h);}
+}
+function menuBack(){if(screen==='settings'){if(settingsReturn==='pause')show('pause');else show('home');}else if(screen==='pause')resume();else if(screen==='stage-menu'||screen==='result')show('home');}
+function pollGamepad(dt){const pads=navigator.getGamepads?navigator.getGamepads():[];const p=Array.from(pads).find(p=>p&&p.connected);connectedPad=p||null;input.pad={x:0,y:0,charge:false};if(!p){if(hadPad){hadPad=false;padWas=[];if(screen==='play'){pause();toast('コントローラーが切断されました');}}return;}hadPad=true;const bs=p.buttons.map(b=>b.pressed),edge=i=>bs[i]&&!padWas[i];let x=p.axes[0]||0,y=p.axes[1]||0;const n=len(x,y),dead=.19;if(n<dead){x=y=0;}else{const mag=clamp((n-dead)/(1-dead),0,1);x=x/n*mag;y=y/n*mag;}if(bs[14]||bs[15])x=(bs[15]?1:0)-(bs[14]?1:0);if(bs[12]||bs[13])y=(bs[13]?1:0)-(bs[12]?1:0);input.pad={x,y,charge:!!(bs[0]||bs[1])};
+ if(screen==='play'){if(edge(9)){pause();}else if(edge(8)){retry();misses++;}}else if(menuIgnore<=0){if(edge(9)&&screen==='pause')resume();else if(edge(2)||edge(3))menuBack();else if(edge(0)||edge(1)){unlockAudio();const b=buttons();(document.activeElement&&b.includes(document.activeElement)?document.activeElement:b[0])?.click();}else{let d=0;if(y>.5)d=1;if(y<-.5)d=-1;if(x>.5)d=1;if(x<-.5)d=-1;if(d&&navClock<=0){focusMenu(d);navClock=.19;}if(!d)navClock=0;}}
+ padWas=bs;
+}
+function frame(now){const dt=lastFrame?Math.min((now-lastFrame)/1000,.05):0;lastFrame=now;menuIgnore=Math.max(0,menuIgnore-dt);navClock=Math.max(0,navClock-dt);pollGamepad(dt);if(screen==='play'){acc+=dt;let loops=0;while(acc>=1/120&&loops++<8){tick(1/120);acc-=1/120;}}else acc=0;paint();music();requestAnimationFrame(frame);}
+const gameKeys=new Set(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyW','KeyA','KeyS','KeyD','Space','KeyZ','KeyJ']);
+window.addEventListener('keydown',e=>{if(e.ctrlKey||e.metaKey||e.altKey)return;if(screen==='play'){if(gameKeys.has(e.code)){e.preventDefault();input.keys.add(e.code);unlockAudio();}if(!e.repeat){if(e.code==='Escape'||e.code==='KeyP'){e.preventDefault();pause();}if(e.code==='KeyR'){e.preventDefault();retry();misses++;}}}else{if(e.code==='Escape'){e.preventDefault();menuBack();}if(['ArrowDown','ArrowRight','ArrowUp','ArrowLeft'].includes(e.code)){e.preventDefault();focusMenu(e.code==='ArrowDown'||e.code==='ArrowRight'?1:-1);}if(e.code==='Space'&&!e.repeat){e.preventDefault();const b=buttons();(b.includes(document.activeElement)?document.activeElement:b[0])?.click();}}});
+window.addEventListener('keyup',e=>{input.keys.delete(e.code);if(gameKeys.has(e.code)&&screen==='play')e.preventDefault();});
+window.addEventListener('blur',()=>{resetInputs();if(screen==='play')pause();});document.addEventListener('visibilitychange',()=>{if(document.hidden){hiddenPaused=screen==='play';resetInputs();if(hiddenPaused)pause();}lastFrame=0;});
+window.addEventListener('gamepadconnected',()=>{unlockAudio();$('device-note').textContent='コントローラー接続中。十字キーと A / B で操作できます。';});window.addEventListener('gamepaddisconnected',()=>{$('device-note').textContent='キーボード・コントローラー・タッチ対応';});
+function setStick(e){const r=$('joystick').getBoundingClientRect(),dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2),n=len(dx,dy),max=r.width*.31,v=Math.min(n/max,1);input.touch.x=n?dx/n*v:0;input.touch.y=n?dy/n*v:0;$('stick').style.transform='translate('+(n?dx/n*v*max:0)+'px,'+(n?dy/n*v*max:0)+'px)';}
+$('joystick').addEventListener('pointerdown',e=>{if(pointerId!==null||screen!=='play')return;e.preventDefault();unlockAudio();pointerId=e.pointerId;e.currentTarget.setPointerCapture(e.pointerId);setStick(e);});$('joystick').addEventListener('pointermove',e=>{if(e.pointerId===pointerId){e.preventDefault();setStick(e);}});for(const kind of['pointerup','pointercancel','lostpointercapture'])$('joystick').addEventListener(kind,e=>{if(e.pointerId===pointerId){pointerId=null;input.touch.x=input.touch.y=0;$('stick').style.transform='';}});
+$('charge-button').addEventListener('pointerdown',e=>{if(screen!=='play'||chargePointer!==null)return;e.preventDefault();unlockAudio();chargePointer=e.pointerId;e.currentTarget.setPointerCapture(e.pointerId);input.touch.charge=true;e.currentTarget.classList.add('held');});for(const kind of['pointerup','pointercancel','lostpointercapture'])$('charge-button').addEventListener(kind,e=>{if(e.pointerId===chargePointer){input.touch.charge=false;chargePointer=null;$('charge-button').classList.remove('held');if(kind!=='pointerup'){input.lastCharge=false;if(player)player.charge=0;}}});
+document.addEventListener('pointerdown',e=>{if(e.pointerType==='touch'&&!touchMode){touchMode=true;document.body.classList.add('touch-mode');resize();}},true);
+$('start-btn').onclick=()=>start(0);$('select-btn').onclick=stageMenu;$('settings-btn').onclick=()=>settings('home');$('stage-back').onclick=()=>show('home');$('settings-back').onclick=menuBack;$('tutorial-btn').onclick=()=>start(0);$('pause-btn').onclick=pause;$('resume-btn').onclick=resume;$('restart-btn').onclick=()=>start(stageIndex);$('pause-settings').onclick=()=>settings('pause');$('pause-select').onclick=stageMenu;$('pause-home').onclick=()=>show('home');$('retry-btn').onclick=()=>start(stageIndex);$('next-btn').onclick=()=>stageIndex===stages.length-1?stageMenu():start(stageIndex+1);$('result-select').onclick=stageMenu;
+for(const [id,key]of[['sound-setting','sound'],['music-setting','music'],['motion-setting','motion']])$(id).onclick=()=>{saved[key]=!saved[key];unlockAudio();persist();updateSettings();if(key==='sound'&&saved.sound)sfx('light');};
+// Public diagnostics expose read-only state for reproducible checks, never a score-submission endpoint.
+window.Tobetobi=Object.freeze({version:'2.0.0',getState:()=>({screen,phase,stage:stageIndex,time:elapsed,misses,burstCount,position:player?{x:player.x,y:player.y,vx:player.vx,vy:player.vy,charge:player.charge}:null,lights:world?world.lights.filter(l=>l.got).length:0,checkpoint:checkpoint?{...checkpoint}:null}),getMaps:()=>stages.map(s=>s.m.map(row=>row.join('')))});
+updateSettings();requestAnimationFrame(frame);
+})();
 </script>
-
-<!-- 広告:下部 -->
-<div class="ad-wrap">
-  <ins class="adsbygoogle"
-       style="display:block;text-align:center;"
-       data-ad-client="YOUR_PUBLISHER_ID"
-       data-ad-slot="YOUR_SLOT_ID_BOTTOM"
-       data-ad-format="auto"
-       data-full-width-responsive="true"></ins>
-  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-</div>
 </body>
 </html>
