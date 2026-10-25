@@ -3,6 +3,7 @@ from pathlib import Path
 from unittest.mock import patch
 from PIL import Image
 from publish import oauth_header,publish,validate
+from post_text import render_text,weighted_length
 
 class Ledger:
     def __init__(self,events,state=None):self.events=events;self.state=state or {'version':1,'posts':{}}
@@ -14,6 +15,7 @@ class Client:
     def username(self):self.events.append('account');return self.name
     def upload(self,path,alt):self.events.append('upload');return str(len(self.events))
     def create(self,text,ids):
+        self.text=text
         self.events.append('post');assert len(ids)==4
         if self.fail:raise TimeoutError('uncertain delivery')
         return '123456'
@@ -61,6 +63,22 @@ class PublicationTests(unittest.TestCase):
     def test_missing_alt_rejected(self):
         self.data['images'][1]['alt']='';self.save()
         with self.assertRaises(ValueError):validate(self.root)
+    def test_approved_long_post_is_sent_in_full_with_four_images(self):
+        self.data['text']=render_text(self.data['date'])
+        self.data['requires_longform']=True;self.save()
+        self.assertGreater(weighted_length(self.data['text']),280)
+        events=[];client=Client(events)
+        self.assertEqual(publish(self.root,Ledger(events),client,'parade166'),'123456')
+        self.assertEqual(client.text,self.data['text'])
+        self.assertEqual(events.count('post'),1)
+        self.assertEqual(events.count('upload'),4)
+    def test_unapproved_long_text_cannot_bypass_the_length_guard(self):
+        self.data['text']='変更された文章。'*100
+        self.data['requires_longform']=True;self.save()
+        with self.assertRaisesRegex(ValueError,'approved copy'):validate(self.root)
+    def test_long_post_requires_explicit_manifest_flag(self):
+        self.data['text']=render_text(self.data['date']);self.save()
+        with self.assertRaisesRegex(ValueError,'long-form is required'):validate(self.root)
     def test_oauth_reference_signature(self):
         # OAuth 1.0 reference request: independently published signature vector.
         from urllib.parse import unquote

@@ -1,5 +1,6 @@
 from pathlib import Path
 import json,os,sys,hashlib
+from post_text import render_text,weighted_length
 
 root=Path(sys.argv[1]).resolve();out=root/'output'
 meta=json.loads((root/'meta.json').read_text());day=meta['date']
@@ -17,23 +18,14 @@ for d,label in [(0,'ヨコ'),(1,'タテ')]:
 alts=[a+'画像下部に https://atugari.github.io/nanpure/ とQRコード。検索のヒントは「ナンプレ帳 atugari」。' for a in [alt1,alt2,alt3,alt4]]
 assert all(0<len(a)<=1000 for a in alts),[len(a) for a in alts]
 include_url=os.environ.get('X_FOUR_INCLUDE_URL','false').lower()=='true'
-label=day[5:].replace('-','/')
-guide='画像のURL・QRから。'
-if include_url:guide='https://atugari.github.io/nanpure/'
-text=('【今日の4問｜'+label+'】\n'
-      'ナンプレ帳は無料。脳トレや学校・施設のプリントに自由にどうぞ。\n\n'
-      'OFUSEはSoziの応援窓口。\n'
-      '無料メッセージや100円からの支援を送れます。\n'
-      '決済は専門サービスStripe。カード情報はナンプレ帳に入力しません。\n'
-      'サイトのOFUSEから応援を！\n\n'
-      +guide+'\n'
-      '#ナンプレ帳')
+text=render_text(day,include_url)
 
 names=['01-shirupure.png','02-sudoku.png','03-wado.png','04-crossword.png']
 assert len([x for x in out.glob('*.png')])==4
 for name in names:assert 0<(out/name).stat().st_size<5*1024*1024
 # Public output contains only questions and ALT. No answer material is copied.
-post={'date':day,'text':text,'fingerprints':meta['fingerprints'],'images':[{'file':name,'alt':alt,'sha256':hashlib.sha256((out/name).read_bytes()).hexdigest()} for name,alt in zip(names,alts)]}
+post={'date':day,'text':text,'requires_longform':weighted_length(text)>280,'fingerprints':meta['fingerprints'],'images':[{'file':name,'alt':alt,'sha256':hashlib.sha256((out/name).read_bytes()).hexdigest()} for name,alt in zip(names,alts)]}
 (out/'post.json').write_text(json.dumps(post,ensure_ascii=False,indent=2))
 (out/'post.txt').write_text(text+'\n')
 print('Packaged four question images; ALT lengths: '+str([len(a) for a in alts]))
+print('Approved full post: weighted length '+str(weighted_length(text))+'; long-form required: '+str(post['requires_longform']))

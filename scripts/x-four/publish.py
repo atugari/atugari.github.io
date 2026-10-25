@@ -5,6 +5,7 @@ from urllib.parse import quote,urlsplit,parse_qsl
 from urllib.request import Request,urlopen
 from urllib.error import HTTPError,URLError
 from PIL import Image
+from post_text import render_text,weighted_length
 
 def encoded(value):return quote(str(value),safe='~-._')
 
@@ -88,13 +89,13 @@ def validate(directory):
     expected=['01-shirupure.png','02-sudoku.png','03-wado.png','04-crossword.png']
     if [i['file'] for i in post['images']]!=expected:raise ValueError('Exactly four question images are required in the approved order')
     if len(post['fingerprints'])!=4 or len(set(post['fingerprints']))!=4:raise ValueError('Four distinct puzzle fingerprints are required')
-    if not post['text'] or len(post['text'])>1000:raise ValueError('Invalid post text')
-    # All current Japanese copy fits the standard weighted 280-character limit.
-    import re
-    without_urls=re.sub(r'https?://\S+','',post['text'])
-    weighted=sum(1 if ord(c)<=0x10ff or 0x2000<=ord(c)<=0x200d or 0x2010<=ord(c)<=0x201f or 0x2032<=ord(c)<=0x2037 else 2 for c in without_urls)
-    weighted+=23*len(re.findall(r'https?://\S+',post['text']))
-    if weighted>280:raise ValueError('Post exceeds the standard X text length')
+    if not post['text'] or len(post['text'])>25000:raise ValueError('Invalid post text')
+    weighted=weighted_length(post['text'])
+    if weighted>25000:raise ValueError('Post exceeds the long-form X text length')
+    if weighted>280:
+        if post.get('requires_longform') is not True:raise ValueError('Post exceeds the standard X text length; long-form is required')
+        if post['text'] not in (render_text(post['date']),render_text(post['date'],True)):
+            raise ValueError('Long-form text does not match the approved copy')
     for item in post['images']:
         p=directory/item['file']
         if not 0<p.stat().st_size<5*1024*1024 or not 0<len(item['alt'])<=1000:raise ValueError('Invalid image or ALT')
