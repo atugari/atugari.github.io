@@ -154,8 +154,10 @@ export default{
   fail(404,'Not found');
  }catch(e){return json({error:e instanceof Failure?e.message:'Scheduler request failed'},e instanceof Failure?e.status:503)}},
  async scheduled(controller,env){
-  const result=await runScheduled(controller.scheduledTime,env);console.log(JSON.stringify(result));
-  const now=Date.now();await env.DB.prepare("UPDATE x_four_posts SET status='expired' WHERE status IN ('ready','assembling') AND due<?").bind(now-MAX_LATENESS).run();
-  await env.DB.prepare('DELETE FROM x_four_images WHERE post_key IN (SELECT key FROM x_four_posts WHERE due<?)').bind(now-7*86400000).run();
+  try{const result=await runScheduled(controller.scheduledTime,env);console.log(JSON.stringify(result))}
+  finally{
+   const now=Date.now();await env.DB.prepare("UPDATE x_four_posts SET status='expired' WHERE status IN ('ready','assembling') AND due<?").bind(now-MAX_LATENESS).run();
+   await env.DB.prepare('DELETE FROM x_four_images WHERE post_key IN (SELECT key FROM x_four_posts WHERE due<?)').bind(now-7*86400000).run();
+  }
  }
 };

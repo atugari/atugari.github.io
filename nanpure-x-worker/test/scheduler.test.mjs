@@ -41,3 +41,14 @@ test('insufficient credits stop before media upload',async t=>{const f=await fix
 test('an interrupted preparation can safely replace its own unpublished images',async t=>{const f=await fixture(t,{ready:false}),next=post('08:00','different').meta;assert.equal((await f.request('/prepare',next)).status,200);assert.equal(JSON.parse(f.db.prepare('SELECT meta FROM x_four_posts').get().meta).fingerprints[0],next.fingerprints[0]);assert.equal(f.db.prepare('SELECT count(*) AS n FROM x_four_fingerprints').get().n,8)});
 test('the real publisher dry run signs requests but never writes or sends to X',async t=>{const f=await fixture(t);assert.equal((await dryRun(f.p.meta.publication_id,f.env)).x_requests,0);assert.equal(f.db.prepare('SELECT status FROM x_four_posts').get().status,'ready');assert.equal(f.db.prepare('SELECT count(*) AS n FROM x_four_images').get().n,4)});
 test('legacy sent and uncertain fingerprints remain blocked after migration',async t=>{const f=await fixture(t,{ready:false}),hash=createHash('sha256').update('legacy').digest('hex');assert.equal((await f.request('/control',{enabled:true,history:{posts:{'2026-10-25@21:00':{status:'posting',fingerprints:[hash]}}}})).status,200);const next=post('12:00','new').meta;next.fingerprints[0]=hash;assert.equal((await f.request('/prepare',next)).status,409)});
+
+test('scheduled cleanup still removes old images when X is unavailable',async t=>{
+ const f=await fixture(t),due=dueFor(DAY,'08:00'),oldDue=due-10*86400000;
+ f.db.prepare('INSERT INTO x_four_posts(key,day,slot,due,status,meta,created) VALUES(?,?,?,?,?,?,?)').run('old','2026-10-16','08:00',oldDue,'ready','{}',oldDue);
+ f.db.prepare('INSERT INTO x_four_images(post_key,position,media,sha256) VALUES(?,?,?,?)').run('old',0,'old-image','old-hash');
+ t.mock.method(Date,'now',()=>due);t.mock.method(globalThis,'fetch',async()=>{throw Error('offline')});
+ await assert.rejects(worker.scheduled({scheduledTime:due},f.env),/no automatic retry/);
+ assert.equal(f.db.prepare('SELECT count(*) AS n FROM x_four_images WHERE post_key=?').get('old').n,0);
+ assert.equal(f.db.prepare('SELECT status FROM x_four_posts WHERE key=?').get('old').status,'expired');
+ assert.equal(f.db.prepare('SELECT status FROM x_four_posts WHERE key=?').get(f.p.meta.publication_id).status,'failed');
+});
