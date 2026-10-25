@@ -24,7 +24,7 @@ const engine=generatorEngine();let sudoku;
 const started=Date.now();
 while(Date.now()-started<120000){
   const p=engine.NPGenerate({kind:'normal',n:9,level:8,count:1,complexity:2},()=>{if(Date.now()-started>120000)throw Error('Sudoku generation timed out');});
-  engine.NP.validate(p);if(accept(p,['sudoku',p.puzzle])){sudoku=p;break;}
+  engine.NP.validate(p);if(!p.rating.humanSolvable||p.rating.hardest!==8||!p.rating.techniques?.some(t=>t.id==='x-wing'))continue;if(accept(p,['sudoku',p.puzzle])){sudoku=p;break;}
 }
 if(!sudoku)throw Error('No unused hard Sudoku');save('sudoku.json',sudoku);
 

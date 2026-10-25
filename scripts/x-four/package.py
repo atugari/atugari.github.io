@@ -17,7 +17,7 @@ for d,label in [(0,'ヨコ'),(1,'タテ')]:
 alts=[alt1,alt2,alt3,alt4]
 assert all(0<len(a)<=1000 for a in alts),[len(a) for a in alts]
 text='【今日の問題｜難しめの4問】\n'+day+'\n\n①シルプレ\n②ナンプレ・数独\n③和同開珎\n④クロスワード\n\n線・数字・漢字・ことば。今日はどれから挑戦する？\nルールは画像に載せています。\n\n無料サイト「ナンプレ帳」\n#脳トレ #パズル'
-if os.environ.get('X_FOUR_INCLUDE_URL','false').lower()=='true':text+='\nhttps://atugari.github.io/nanpure/'
+if os.environ.get('X_FOUR_INCLUDE_URL','true').lower()=='true':text+='\nhttps://atugari.github.io/nanpure/'
 names=['01-shirupure.png','02-sudoku.png','03-wado.png','04-crossword.png']
 assert len([x for x in out.glob('*.png')])==4
 for name in names:assert 0<(out/name).stat().st_size<5*1024*1024

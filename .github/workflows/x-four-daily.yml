@@ -52,7 +52,7 @@ jobs:
           REPO_ROOT: ${{ github.workspace }}
           X_FOUR_MODE: ${{ github.event_name == 'schedule' && 'publish' || inputs.mode || 'preview' }}
           X_FOUR_POST_ENABLED: ${{ vars.X_FOUR_POST_ENABLED }}
-          X_FOUR_INCLUDE_URL: ${{ vars.X_FOUR_INCLUDE_URL || 'false' }}
+          X_FOUR_INCLUDE_URL: ${{ vars.X_FOUR_INCLUDE_URL || 'true' }}
           X_EXPECTED_USERNAME: parade166
           X_API_KEY: ${{ secrets.X_API_KEY }}
           X_API_SECRET: ${{ secrets.X_API_SECRET }}
