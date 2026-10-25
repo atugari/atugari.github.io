@@ -2,14 +2,16 @@ import{Problem,json,siteOrigin,fail}from'./http.js';
 import{daily,ranking,archive}from'./daily.js';
 import{contact,contactImage,admin}from'./contact.js';
 import{cloud}from'./cloud.js';
+import{cloudRetired,cloudRetirement,deleteRetiredCloudData}from'./shared/cloud-retirement.js';
 import{achievements}from'./achievements.js';
 import{importLegacy}from'./import.js';
 import{visit,overview,apiVersion}from'./owner.js';
 const tables=['attempts','daily_stock','daily_assignments','daily_maintenance','inquiries','cloud_saves','rate_limits','contact_images','cloud_uploads','cloud_chunks','visit_sessions','visit_browsers','visit_days','owner_usage_snapshots','achievement_members','achievement_owned'];
-export default {async fetch(request,env){let response;const url=new URL(request.url),origin=request.headers.get('origin');
+export default {async scheduled(event,env){if(cloudRetired())await deleteRetiredCloudData(env.DB);},async fetch(request,env){let response;const url=new URL(request.url),origin=request.headers.get('origin');
  try{
   if(origin!==null&&origin!==siteOrigin&&origin!==url.origin)fail(403,'送信元を確認できません。');
   if(url.pathname==='/api/wado/web-search')fail(410,'ネット検索機能は提供を終了しました。');
+  if(url.pathname==='/api/cloud'&&cloudRetired()){if(env.DB)await deleteRetiredCloudData(env.DB);fail(410,'クラウド保存は提供を終了しました。引き継ぎファイルをご利用ください。');}
   if(request.method==='OPTIONS'){
    const method=request.headers.get('access-control-request-method'),headers=(request.headers.get('access-control-request-headers')||'').toLowerCase().split(',').map(s=>s.trim()).filter(Boolean);
    if(!['GET','POST'].includes(method)||headers.some(h=>!['content-type','x-nanpure-key','x-cloud-key','x-contact-key','authorization'].includes(h)))fail(405,'この操作は利用できません。');
@@ -21,7 +23,7 @@ export default {async fetch(request,env){let response;const url=new URL(request.
    if(url.pathname==='/'||url.pathname==='/api/health'){
     if(request.method!=='GET')fail(405,'この操作は利用できません。');
     const rows=await env.DB.prepare('SELECT name FROM sqlite_master WHERE type=?').bind('table').all();const names=new Set(rows.results.map(r=>r.name));
-    response=json({ok:true,service:'puzzle-api',version:apiVersion,siteVersion:env.SITE_VERSION||null,database:'connected',schema:tables.every(t=>names.has(t))?'installed':'pending',gameApi:'ready'});
+    response=json({ok:true,service:'puzzle-api',version:apiVersion,siteVersion:env.SITE_VERSION||null,database:'connected',schema:tables.every(t=>names.has(t))?'installed':'pending',gameApi:'ready',cloud:{...cloudRetirement,retired:cloudRetired()}});
    }else if(url.pathname==='/api/daily')response=await daily(request,env.DB);
    else if(url.pathname==='/api/ranking'&&request.method==='GET')response=await ranking(url,env.DB,request);
    else if(url.pathname==='/api/daily/archive'&&request.method==='GET')response=await archive(url,env.DB);

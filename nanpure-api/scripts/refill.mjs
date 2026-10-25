@@ -1,4 +1,5 @@
 // Runs on GitHub Actions, never inside a Worker. Future answers stay only in D1.
+import{cloudDeletionStatements}from'../src/shared/cloud-retirement.js';
 import{generateStock}from'../src/shared/stock-generate.js';
 import{fingerprintPuzzle,validateStock}from'../src/shared/stock-puzzle.js';
 import{dailySummary,japanDay}from'../src/shared/daily-plan.js';
@@ -7,6 +8,9 @@ const account='3fb1db1d33caddf96fec77fac7d571e6',database='7bb28b61-5fe2-47ce-b7
 const token=process.env.CLOUDFLARE_API_TOKEN;if(!token)throw Error('Deployment credential is required');
 async function query(sql,params=[]){for(let attempt=0;attempt<4;attempt++){const r=await fetch(`https://api.cloudflare.com/client/v4/accounts/${account}/d1/database/${database}/query`,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({sql,params}),signal:AbortSignal.timeout(30000)});const d=await r.json();if(r.ok&&d.success&&d.result?.every(x=>x.success))return d.result[0];if(r.status<500&&r.status!==429)throw Error('D1 query rejected ('+r.status+')');await new Promise(resolve=>setTimeout(resolve,1000*(attempt+1)))}throw Error('D1 unavailable')}
 const now=Date.now(),today=japanDay();
+const retirement=cloudDeletionStatements(now);
+for(const {sql,params}of retirement)await query(sql,params);
+if(retirement.length){const r=await query('SELECT (SELECT COUNT(*) FROM cloud_saves)+(SELECT COUNT(*) FROM cloud_uploads)+(SELECT COUNT(*) FROM cloud_chunks) AS remaining');if(r.results[0].remaining!==0)throw Error('Cloud retirement cleanup is incomplete');console.log('Cloud retirement confirmed: all saved backups, uploads and chunks deleted.');}
 await query('DELETE FROM rate_limits WHERE expires<?',[now]);
 await query('DELETE FROM cloud_chunks WHERE revision IN(SELECT revision FROM cloud_uploads WHERE expires<?)',[now]);
 await query('DELETE FROM cloud_uploads WHERE expires<?',[now]);

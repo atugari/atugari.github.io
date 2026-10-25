@@ -3,7 +3,7 @@ const testConsole=console;
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict'),cryptoModule=require('node:crypto');
 const{pathToFileURL}=require('node:url'),{parseHTML}=require(process.argv[2]||'linkedom');
 const root=path.resolve(__dirname,'..'),manifest=require('../nanpure/release-manifest.json'),catalog=require('./i18n/catalog.cjs');
-const added=require('./i18n/catalog-cloud-57.cjs'),locales=Object.keys(require('./i18n/languages.json')).filter(x=>x!=='ja');
+const added={...require('./i18n/catalog-cloud-57.cjs'),...require('./i18n/catalog-cloud-retirement-58.cjs')},locales=Object.keys(require('./i18n/languages.json')).filter(x=>x!=='ja');
 for(const[key,row]of Object.entries(added)){
  assert.deepEqual(Object.keys(row).sort(),locales.slice().sort());
  for(const value of Object.values(row))assert.deepEqual([...value.matchAll(/\{\w+\}/g)].map(m=>m[0]),[...key.matchAll(/\{\w+\}/g)].map(m=>m[0]));
@@ -38,6 +38,7 @@ function button(text){const b=[...w.document.querySelectorAll('button')].find(e=
 const contents=()=>w.document.querySelector('.cloud-save')?.textContent||'';
 const message=()=>w.document.querySelector('.cloud-save>p[role="status"]')?.textContent||'';
 async function run(){
+ const systemNow=Date.now;Date.now=()=>Math.min(systemNow(),Date.parse('2026-10-28T00:00:00+09:00')); 
  worker=(await import(pathToFileURL(path.join(root,'nanpure-api/src/index.js')))).default;
  DB=(await import(pathToFileURL(path.join(root,'nanpure-api/test/db.mjs')))).database();
  const module=await load(shellFile);await module.evaluate();
@@ -46,6 +47,7 @@ async function run(){
  function render(locale='ja'){const t=s=>locale==='ja'?s:catalog[s]?.[locale]||s;reactRoot.render(React.createElement(Context.Provider,{value:{locale,t,setLocale(){}}},React.createElement(Component,{capture:async()=>backup(),onRestore:v=>{restored=v},busy:false})));}
  async function save(){button('クラウドに保存').click();await new Promise(r=>setTimeout(r,10));const confirm=[...w.document.querySelectorAll('button')].find(b=>b.textContent==='この端末の内容を保存');if(confirm)confirm.click();}
  render();await wait(()=>contents().includes('今日はあと3回保存できます。'),'initial remaining count');
+ assert(contents().includes('2026年11月9日0時'));assert(contents().includes('全員のクラウド保存データを削除'));assert(contents().includes('保存し直しても期限は延びません'));
  assert(contents().includes('5MB'));assert(contents().includes('問題の作成・印刷と端末への保存は引き続き無料で使えます。'));
  await save();await wait(()=>contents().includes('今日はあと2回保存できます。')&&contents().includes('クラウドに保存しました。'),'first save');
  const original=DB.raw.prepare('SELECT revision FROM cloud_saves').get().revision;
@@ -56,8 +58,10 @@ async function run(){
  await save();await wait(()=>contents().includes('今日はあと1回保存できます。'),'second save');
  await save();await wait(()=>contents().includes('今日はあと0回保存できます。'),'third save');assert(button('クラウドに保存').disabled);assert(!button('クラウドから読み込む').disabled);
  button('クラウドから読み込む').click();await wait(()=>restored,'download at daily limit');assert.equal(restored.format,'nanpure-website-backup-v1');
- for(const locale of locales){render(locale);const expected=catalog['今日はあと{count}回保存できます。'][locale].replace('{count}','0');await wait(()=>contents().includes(expected),'translated quota '+locale);assert(contents().includes(catalog['クラウド保存は5MBまで・1日3回です。'][locale]));}
- assert.deepEqual(errors,[]);reactRoot.unmount();DB.raw.close();
- testConsole.log('PASS shipped cloud UI + real API: remaining saves, oversize rejection, failed-upload recovery, limit preserves download, and 19 translated locales');
+ for(const locale of locales){render(locale);const expected=catalog['今日はあと{count}回保存できます。'][locale].replace('{count}','0');await wait(()=>contents().includes(expected),'translated quota '+locale);assert(contents().includes(catalog['クラウド保存は5MBまで・1日3回です。'][locale]));for(const key of Object.keys(require('./i18n/catalog-cloud-retirement-58.cjs')))assert(contents().includes(catalog[key][locale]));}
+ reactRoot.unmount();
+ const originalNow=Date.now;try{Date.now=()=>manifest.cloudRetiresAt;const second=createRoot(w.document.getElementById('cloud-test'));second.render(React.createElement(Context.Provider,{value:{locale:'ja',t:s=>s,setLocale(){}}},React.createElement(Component,{capture:async()=>backup(),onRestore(){},busy:false})));await wait(()=>!w.document.querySelector('.cloud-save'),'cloud controls disappear after retirement');await new Promise(r=>setTimeout(r,50));assert(!w.document.querySelector('.cloud-save'));second.unmount();}finally{Date.now=originalNow}
+ assert.deepEqual(errors,[]);DB.raw.close();
+ testConsole.log('PASS shipped cloud UI + real API: remaining saves, oversize rejection, failed-upload recovery, limit preserves download, deadline notices, automatic retirement, and 19 translated locales');
 }
 run().then(()=>process.exit(0)).catch(e=>{testConsole.error(e);try{DB?.raw.close()}catch{}process.exit(1)});

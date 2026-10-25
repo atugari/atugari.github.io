@@ -1,0 +1,14 @@
+/* Text follows the selected language. Puzzle coordinates and number keys keep
+   their original order, so saved grids and arrow-key navigation stay aligned. */
+html[dir="rtl"] :is(.variable-board,#board,.preview-grid,.preview-cells,.np-sample-grid,.number-pad,.keypad,.keybinding-grid,.np-keybindings-grid){direction:ltr;unicode-bidi:isolate}
+html[dir="rtl"] :is(.play-time,.timer,.np-timer,kbd,input[type="number"],input[type="date"],input[type="time"]){direction:ltr;unicode-bidi:isolate}
+html[dir="rtl"] :is(.paper-art,.print-art){direction:ltr}
+html[dir="rtl"] :is(.paper-art,.print-art) text{unicode-bidi:plaintext}
+html[dir="rtl"] :is(.language-picker,#np-language-dialog select){direction:ltr}
+html[dir="rtl"] :is(.ps-section,.np-appearance-options,.rule-brief,.play-caption){text-align:start}
+html[dir="rtl"] :is(.header .back,.back-button)>svg{transform:scaleX(-1)}
+html[dir="rtl"] :is(input[type="email"],input[type="url"],.backup-code){direction:ltr;text-align:start}
+/* Allow long translated labels to wrap without enlarging the mobile page. */
+:is(.site-shell,#app) :is(.main-choice,.secondary-choice,.choice,.setting-row,.ps-section,.np-appearance-options,.settings-page){min-width:0;overflow-wrap:anywhere}
+:is(.site-shell,#app) select{max-width:100%;min-width:0}
+#np-language-dialog select{max-width:100%}

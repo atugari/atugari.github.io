@@ -99,15 +99,17 @@ jobs:
                   const retired = await fetch(new URL('/api/wado/web-search', url), {method, headers:{Origin:'https://atugari.github.io','Content-Type':'application/json'}, ...(method==='POST'?{body:'{}'}:{})});
                   if (retired.status !== 410) throw new Error('Retired search endpoint must return 410.');
                 }
-                // A disposable ID reads only empty metadata. The oversized
-                // request must be rejected before reserving space or a slot.
-                const code=crypto.randomUUID().replaceAll('-','').repeat(2);
-                const headers={Origin:'https://atugari.github.io','X-Cloud-Key':code,'Content-Type':'application/json'};
+                const {cloudRetiresAt}=await import('./nanpure-api/src/shared/cloud-retirement.js');
+                const headers={Origin:'https://atugari.github.io','X-Cloud-Key':crypto.randomUUID().replaceAll('-','').repeat(2),'Content-Type':'application/json'};
                 const cloud=new URL('/api/cloud',url);
-                const denied=await fetch(cloud,{method:'POST',headers,body:JSON.stringify({action:'begin',expected:null,bytes:5*1024*1024+1,chunks:41,puzzles:0,digest:'0'.repeat(64)})});
-                if(denied.status!==413)throw Error('Cloud size limit was not enforced');
                 const state=await fetch(cloud,{headers}),info=await state.json();
-                if(!state.ok||info.save!==null||info.limits?.maxBytes!==5*1024*1024||info.limits?.dailySaves!==3||info.quota?.remaining!==3||info.quota?.reserved!==0)throw Error('Cloud policy verification failed');
+                if(Date.now()>=cloudRetiresAt){
+                  if(state.status!==410)throw Error('Cloud service retirement was not enforced');
+                }else{
+                  if(!state.ok||info.save!==null||info.limits?.maxBytes!==5*1024*1024||info.limits?.dailySaves!==3||info.limits?.retirement?.at!==cloudRetiresAt||info.quota?.remaining!==3||info.quota?.reserved!==0)throw Error('Cloud policy verification failed');
+                  const denied=await fetch(cloud,{method:'POST',headers,body:JSON.stringify({action:'begin',expected:null,bytes:5*1024*1024+1,chunks:41,puzzles:0,digest:'0'.repeat(64)})});
+                  if(denied.status!==413)throw Error('Cloud size limit was not enforced');
+                }
                 appendFileSync(process.env.GITHUB_STEP_SUMMARY,
                   `Worker deployed and D1 connected.\n\nHealth check: ${url}\n\nSchema: ${result.schema}; API: ${result.version}; site: ${result.siteVersion}. Owner endpoints reject unauthenticated requests.\n`);
                 process.exit(0);

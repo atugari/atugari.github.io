@@ -6,6 +6,8 @@ import {hash} from '../src/http.js';
 
 const primary='a'.repeat(64),secondary='b'.repeat(64),origin='https://atugari.github.io';
 function setup(t){
+ // Preserve the pre-retirement contract when this historical suite runs later.
+ if(Date.now()>=Date.parse('2026-11-09T00:00:00+09:00'))t.mock.method(Date,'now',()=>Date.parse('2026-10-26T00:00:00+09:00'));
  const DB=database();t.after(()=>DB.raw.close());
  async function call(data,{code=primary,ip='192.0.2.1',device=primary,path='/api/cloud',bytes}={}){
   const r=await worker.fetch(new Request('https://worker.test'+path,{method:data||bytes?'POST':'GET',headers:{Origin:origin,'x-cloud-key':code,'x-nanpure-key':device,'cf-connecting-ip':ip},body:bytes||(data?JSON.stringify(data):undefined)}),{DB});

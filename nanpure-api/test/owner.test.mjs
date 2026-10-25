@@ -93,7 +93,7 @@ test('owner overview summarizes existing data without exposing inquiries, creden
   env.DB={prepare:DB.prepare,batch:async statements=>(await DB.batch(statements)).map(row=>({...row,meta:{...row.meta,size_after:64000}}))};
   const result=await call('/api/owner/overview',{admin:true});assert.equal(result.status,200);
   assert.equal(result.headers.get('cache-control'),'no-store');
-  assert.deepEqual(result.data.site,{url:'https://atugari.github.io/nanpure/',version:'2026.10.22.33',apiVersion:'1.5.0'});
+  assert.deepEqual(result.data.site,{url:'https://atugari.github.io/nanpure/',version:'2026.10.22.33',apiVersion:'1.6.0'});
   assert.deepEqual(result.data.inquiries,{total:5,received:2,reading:1,answered:1,closed:1,open:3});
   assert.equal(result.data.traffic.history.length,1);assert.equal(result.data.traffic.since,now-40*86400000);
   assert.equal(result.data.stock.todayCount,3);assert.equal(result.data.stock.readyDays,2);assert.equal(result.data.stock.through,japanDay(now+86400000));assert.equal(result.data.stock.lastRefillAt,now-1000);

@@ -13,6 +13,22 @@ inventory and remove expired upload reservations. Generation runs on the runner;
 future solutions are sent directly to D1 and never committed, logged or uploaded
 as artifacts. Assignments have unique canonical fingerprints and immutable slots.
 
+## Cloud storage retirement
+
+Cloud storage ends for **all users at 2026-11-09 00:00 Asia/Tokyo**
+(2026-11-08 15:00 UTC). Saves and restores remain available until then;
+re-saving never extends this shared date. The public cloud screen and guide
+instruct users to restore needed backups and export a transfer file beforehand.
+Local puzzles, progress, files, daily puzzles, rankings and inquiries remain.
+
+At the deadline the server rejects every cloud operation with HTTP 410 and the
+client removes the cloud controls. A native daily 15:00 UTC Cron Trigger deletes
+all cloud saves, uploaded chunks, upload reservations and cloud rate-limit keys.
+The same transactional deletion runs on any post-deadline cloud request; the
+existing twice-daily refill job is an independent cleanup fallback. All cleanup
+paths check the shared server deadline and are safe to rerun. Empty legacy tables
+remain for schema compatibility. No cloud data is deleted before the deadline.
+
 ## Identity and private data
 
 Cross-origin API calls use random 256-bit device credentials in headers, not

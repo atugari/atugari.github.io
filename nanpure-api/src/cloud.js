@@ -1,8 +1,10 @@
 import{input,body,json,fail,identity,validKey}from'./http.js';
 import{japanDay}from'./shared/daily-plan.js';
+import{cloudRetirement}from'./shared/cloud-retirement.js';
 const maxBytes=5*1024*1024,chunkBytes=128*1024,capacity=200*1024*1024,dailySaves=3;
+const beforeRetirement="julianday('now')<julianday('"+new Date(cloudRetirement.at).toISOString()+"')";
 const savedFields='revision,created,bytes,puzzles,chunks,digest';
-const limits={maxBytes,dailySaves,timezone:'Asia/Tokyo'};
+const limits={maxBytes,dailySaves,retirement:cloudRetirement,timezone:'Asia/Tokyo'};
 function windowFor(owner,now){const day=japanDay(now),start=Date.parse(day+'T00:00:00+09:00');return{day,start,resetAt:start+86400000,key:'cloud-save-v2:'+owner+':'+day};}
 async function quota(db,owner,now=Date.now()){
  const w=windowFor(owner,now),row=await db.prepare('SELECT COALESCE((SELECT count FROM rate_limits WHERE key=?),0) AS used,(SELECT COUNT(*) FROM cloud_uploads WHERE owner=? AND created>=? AND created<? AND expires>?) AS reserved').bind(w.key,owner,w.start,w.resetAt,now).first();
@@ -22,7 +24,7 @@ export async function cloud(request,db,url){
   const position=Number(url.searchParams.get('position'));const upload=await db.prepare('SELECT * FROM cloud_uploads WHERE revision=? AND owner=? AND expires>?').bind(revision,owner,Date.now()).first();
   if(!upload||!Number.isInteger(position)||position<0||position>=upload.chunks)fail(409,'保存を最初からやり直してください。');
   const bytes=await body(request,chunkBytes);const expected=position===upload.chunks-1?upload.bytes-position*chunkBytes:chunkBytes;if(bytes.byteLength!==expected)fail(400,'保存データの大きさが合いません。');
-  const result=await db.prepare('INSERT INTO cloud_chunks(owner,revision,position,data) SELECT ?,?,?,? WHERE EXISTS(SELECT 1 FROM cloud_uploads WHERE revision=? AND owner=? AND expires>?) ON CONFLICT(revision,position) DO UPDATE SET data=excluded.data RETURNING position').bind(owner,revision,position,bytes.buffer,revision,owner,Date.now()).first();if(!result)fail(409,'保存を最初からやり直してください。');return json({ok:true});
+  const result=await db.prepare('INSERT INTO cloud_chunks(owner,revision,position,data) SELECT ?,?,?,? WHERE '+beforeRetirement+' AND EXISTS(SELECT 1 FROM cloud_uploads WHERE revision=? AND owner=? AND expires>?) ON CONFLICT(revision,position) DO UPDATE SET data=excluded.data RETURNING position').bind(owner,revision,position,bytes.buffer,revision,owner,Date.now()).first();if(!result)fail(409,'保存を最初からやり直してください。');return json({ok:true});
  }
  const b=await input(request,2000);
  if(b.action==='begin'){
@@ -32,7 +34,7 @@ export async function cloud(request,db,url){
   const now=Date.now(),id=crypto.randomUUID(),w=windowFor(owner,now);
   // Reserve capacity and a daily slot in the same statement. A shared IP does
   // not merge separate save IDs; two devices using one code share the quota.
-  const added=await db.prepare('INSERT INTO cloud_uploads(revision,owner,expected,created,expires,bytes,chunks,puzzles,digest) SELECT ?,?,?,?,?,?,?,?,? WHERE (SELECT COALESCE(SUM(bytes),0) FROM cloud_saves)+(SELECT COALESCE(SUM(bytes),0) FROM cloud_uploads)+?<=? AND (SELECT COUNT(*) FROM cloud_uploads WHERE owner=? AND expires>?)<2 AND COALESCE((SELECT count FROM rate_limits WHERE key=?),0)+(SELECT COUNT(*) FROM cloud_uploads WHERE owner=? AND created>=? AND created<? AND expires>?)<? RETURNING revision').bind(id,owner,b.expected,now,now+3600000,b.bytes,b.chunks,b.puzzles,b.digest,b.bytes,capacity,owner,now,w.key,owner,w.start,w.resetAt,now,dailySaves).first();
+  const added=await db.prepare('INSERT INTO cloud_uploads(revision,owner,expected,created,expires,bytes,chunks,puzzles,digest) SELECT ?,?,?,?,?,?,?,?,? WHERE (SELECT COALESCE(SUM(bytes),0) FROM cloud_saves)+(SELECT COALESCE(SUM(bytes),0) FROM cloud_uploads)+?<=? AND (SELECT COUNT(*) FROM cloud_uploads WHERE owner=? AND expires>?)<2 AND COALESCE((SELECT count FROM rate_limits WHERE key=?),0)+(SELECT COUNT(*) FROM cloud_uploads WHERE owner=? AND created>=? AND created<? AND expires>?)<? AND '+beforeRetirement+' RETURNING revision').bind(id,owner,b.expected,now,now+3600000,b.bytes,b.chunks,b.puzzles,b.digest,b.bytes,capacity,owner,now,w.key,owner,w.start,w.resetAt,now,dailySaves).first();
   if(!added){const q=await quota(db,owner,now);if(q.remaining===0)fail(429,'今日のクラウド保存は上限に達しました。日本時間の0時に回数が戻ります。');const active=await db.prepare('SELECT COUNT(*) AS n FROM cloud_uploads WHERE owner=? AND expires>?').bind(owner,now).first();if(active.n>=2)fail(409,'別の保存処理が進行中です。少し待って再試行してください。');fail(507,'現在クラウドに保存できません。引き継ぎファイルを保存し、後でもう一度お試しください。');}
   return json({ok:true,revision:id,chunkBytes,limits,quota:await quota(db,owner,now)});
  }
@@ -42,8 +44,8 @@ export async function cloud(request,db,url){
   const size=await db.prepare('SELECT COUNT(*) AS chunks,COALESCE(SUM(length(data)),0) AS bytes FROM cloud_chunks WHERE revision=? AND owner=?').bind(b.revision,owner).first();if(size.chunks!==upload.chunks||size.bytes!==upload.bytes)fail(409,'保存が途中です。もう一度保存してください。');
   const previous=upload.expected,w=windowFor(owner,upload.created);
   const result=await db.batch([
-   db.prepare('INSERT INTO cloud_saves(owner,revision,object_key,created,bytes,puzzles,chunks,digest) SELECT ?,?,?,?,?,?,?,? WHERE ? IS NULL OR EXISTS(SELECT 1 FROM cloud_saves WHERE owner=? AND revision=?) ON CONFLICT(owner) DO UPDATE SET revision=excluded.revision,object_key=excluded.object_key,created=excluded.created,bytes=excluded.bytes,puzzles=excluded.puzzles,chunks=excluded.chunks,digest=excluded.digest WHERE cloud_saves.revision=? RETURNING '+savedFields).bind(owner,b.revision,b.revision,Date.now(),upload.bytes,upload.chunks===0?0:upload.puzzles,upload.chunks,upload.digest,previous,owner,previous,previous),
-   db.prepare('INSERT INTO rate_limits(key,count,expires) SELECT ?,1,? WHERE EXISTS(SELECT 1 FROM cloud_uploads WHERE owner=? AND revision=?) AND EXISTS(SELECT 1 FROM cloud_saves WHERE owner=? AND revision=?) ON CONFLICT(key) DO UPDATE SET count=count+1').bind(w.key,w.resetAt+2*86400000,owner,b.revision,owner,b.revision),
+   db.prepare('INSERT INTO cloud_saves(owner,revision,object_key,created,bytes,puzzles,chunks,digest) SELECT ?,?,?,?,?,?,?,? WHERE (? IS NULL OR EXISTS(SELECT 1 FROM cloud_saves WHERE owner=? AND revision=?)) AND '+beforeRetirement+' ON CONFLICT(owner) DO UPDATE SET revision=excluded.revision,object_key=excluded.object_key,created=excluded.created,bytes=excluded.bytes,puzzles=excluded.puzzles,chunks=excluded.chunks,digest=excluded.digest WHERE cloud_saves.revision=? RETURNING '+savedFields).bind(owner,b.revision,b.revision,Date.now(),upload.bytes,upload.chunks===0?0:upload.puzzles,upload.chunks,upload.digest,previous,owner,previous,previous),
+   db.prepare('INSERT INTO rate_limits(key,count,expires) SELECT ?,1,? WHERE EXISTS(SELECT 1 FROM cloud_uploads WHERE owner=? AND revision=?) AND EXISTS(SELECT 1 FROM cloud_saves WHERE owner=? AND revision=?) AND '+beforeRetirement+' ON CONFLICT(key) DO UPDATE SET count=count+1').bind(w.key,w.resetAt+2*86400000,owner,b.revision,owner,b.revision),
    db.prepare('DELETE FROM cloud_uploads WHERE revision=? AND EXISTS(SELECT 1 FROM cloud_saves WHERE owner=? AND revision=?)').bind(b.revision,owner,b.revision),
    db.prepare('DELETE FROM cloud_chunks WHERE owner=? AND revision=? AND EXISTS(SELECT 1 FROM cloud_saves WHERE owner=? AND revision=?)').bind(owner,previous,owner,b.revision)
   ]);

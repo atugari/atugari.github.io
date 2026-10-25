@@ -21,7 +21,7 @@ test('contact is private, idempotent and owner reply reaches receipt only',async
  r=await call('/api/admin',{headers:{'oai-authenticated-user-email':'owner@example.test'}});assert.equal(r.status,403);
  r=await call('/api/admin',{admin:true,data:{id,status:'answered',response:'Reply'}});assert.equal(r.data.ok,true);r=await call('/api/contact');assert.equal(r.data.items[0].response,'Reply');r=await call('/api/contact',{who:other});assert.equal(r.data.items.length,0);DB.raw.close();
 });
-test('chunked cloud saves: isolation, incomplete uploads, atomic revision conflicts and integrity',async()=>{const {DB,call}=await setup();const bytes=new TextEncoder().encode(JSON.stringify({format:'nanpure-website-backup-v1',data:{}})),digest=await hash(bytes);
+test('chunked cloud saves: isolation, incomplete uploads, atomic revision conflicts and integrity',async t=>{t.mock.method(Date,'now',()=>Date.parse('2026-10-26T00:00:00+09:00'));const {DB,call}=await setup();const bytes=new TextEncoder().encode(JSON.stringify({format:'nanpure-website-backup-v1',data:{}})),digest=await hash(bytes);
  async function begin(expected=null){const r=await call('/api/cloud',{data:{action:'begin',expected,bytes:bytes.length,chunks:1,puzzles:0,digest}});assert.equal(r.status,200);return r.data.revision}
  const a=await begin(),b=await begin();let r=await call('/api/cloud',{data:{action:'commit',revision:a}});assert.equal(r.status,409);
  for(const revision of[a,b]){r=await call('/api/cloud?action=chunk&revision='+revision+'&position=0',{bytes});assert.equal(r.status,200)}
