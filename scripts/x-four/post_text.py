@@ -2,11 +2,13 @@
 from datetime import date
 from pathlib import Path
 import re
+from daily_plan import daily_plan
 
 def render_text(day,include_url=False):
     label=date.fromisoformat(day).strftime('%m/%d')
     text=(Path(__file__).parent/'approved-post.txt').read_text(encoding='utf-8').rstrip('\n')
     text=text.replace('{date_label}',label)
+    text=text.replace('シルプレ・数独・和同開珎・クロスワード。','・'.join(item['title'] for item in daily_plan(day))+'。')
     if include_url:
         guide='サイトへは画像に載せたURLかQRコードからどうぞ！'
         text=text.replace(guide,guide+'\nhttps://atugari.github.io/nanpure/')

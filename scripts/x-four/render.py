@@ -3,6 +3,8 @@ from functools import lru_cache
 import json,math,os,sys,qrcode,zxingcpp
 from PIL import Image,ImageDraw,ImageFont
 from fontTools.ttLib import TTFont
+from daily_plan import daily_plan
+from rule_text import sudoku_rules
 
 ROOT=Path(sys.argv[1]).resolve()
 OUT=ROOT/'output';OUT.mkdir(exist_ok=True)
@@ -10,7 +12,9 @@ S=2048
 BG='#F7F4EC';INK='#1F302B';MUTED='#5A665F';LINE='#ADB5AC';WHITE='#FFFFFF'
 URL='atugari.github.io/nanpure/'
 REG=Path(os.environ.get('X_FONT_REGULAR','/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc'));BOLD=Path(os.environ.get('X_FONT_BOLD','/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc'))
-DAY=json.loads((ROOT/'meta.json').read_text())['date'].replace('-','.')
+META=json.loads((ROOT/'meta.json').read_text());ITEMS=META['questions']
+assert ITEMS==daily_plan(META['date'])
+DAY=META['date'].replace('-','.')
 @lru_cache(maxsize=None)
 def font(size,bold=False):return ImageFont.truetype(str(BOLD if bold else REG),size)
 texts=[];boxes=[]
@@ -64,11 +68,7 @@ def base(number,title,badge,accent,subtitle,answer=False):
 
  return im,d
 
-SHIRU=json.loads((ROOT/'shiru.json').read_text())
-SUDOKU=json.loads((ROOT/'sudoku.json').read_text())
-WADO=json.loads((ROOT/'wado.json').read_text())
-CW=json.loads((ROOT/'crossword-generated.json').read_text())
-for entry in CW['entries']:entry['displayClue']=entry['clue']
+def badge(item):return f"{item['difficulty']} / Lv.{item['level']}・{item['max_level']}段階"
 
 def mark(d,x,y,value,scale=1):
  radius=40*scale;width=max(3,round(10*scale))
@@ -79,9 +79,9 @@ def mark(d,x,y,value,scale=1):
  elif value==3:d.rectangle((x-36*scale,y-36*scale,x+36*scale,y+36*scale),outline=INK,width=width)
  elif value==4:
   a=35*scale;d.line((x-a,y-a,x+a,y+a),fill=INK,width=width);d.line((x-a,y+a,x+a,y-a),fill=INK,width=width)
-def shiru(answer=False):
- im,d=base('①','シルプレ','むずかしい / 3段階中3', '#2D6251','境界線を引いて6マスずつの部屋に分けよう。',answer)
- p=SHIRU;cell=142;x=(S-p['cols']*cell)//2;y=465
+def shiru(item,p,number,answer=False):
+ im,d=base(number,item['title'],badge(item),'#2D6251','境界線を引いて6マスずつの部屋に分けよう。',answer)
+ cell=142;x=(S-p['cols']*cell)//2;y=465
  d.rectangle((x,y,x+p['cols']*cell,y+p['rows']*cell),fill=WHITE)
  for r in range(p['rows']+1):d.line((x,y+r*cell,x+p['cols']*cell,y+r*cell),fill=LINE,width=3)
  for c in range(p['cols']+1):d.line((x+c*cell,y,x+c*cell,y+p['rows']*cell),fill=LINE,width=3)
@@ -100,21 +100,41 @@ def shiru(answer=False):
  text(d,(104,1832),'8×6マス / 4種類の印 / 1部屋6マス',31,MUTED)
  return im
 
-def sudoku(answer=False):
- im,d=base('②','ナンプレ','難問 / Lv.8・18段階', '#315F8A','たて・よこ・3×3の枠に1〜9を1回ずつ。',answer)
+def sudoku(item,p,number,answer=False):
+ kind=item['rule'];rules=sudoku_rules(kind)
+ im,d=base(number,item['title'],badge(item),'#315F8A',rules[0],answer)
  cell=138;x=(S-cell*9)//2;y=450
+ regions=p.get('regions',[r//3*3+c//3 for r in range(9) for c in range(9)])
+ palette=['#FFFFFF','#F0F4E8','#E9F2F6','#F8EEDD','#EAEAF5','#F2E6EE','#E5F1EB','#F6F2E8','#E8EEF1']
  for r in range(9):
   for c in range(9):
-   d.rectangle((x+c*cell,y+r*cell,x+(c+1)*cell,y+(r+1)*cell),fill=WHITE if (r//3+c//3)%2==0 else '#F1F5F7')
+   fill=palette[regions[r*9+c]%9] if kind=='jigsaw' else (WHITE if (r//3+c//3)%2==0 else '#F1F5F7')
+   if kind=='diagonal' and (r==c or r+c==8):fill='#DCEAF2'
+   if kind=='hyper' and any(rr<=r<rr+3 and cc<=c<cc+3 for rr in (1,5) for cc in (1,5)):fill='#DCE9E0'
+   d.rectangle((x+c*cell,y+r*cell,x+(c+1)*cell,y+(r+1)*cell),fill=fill)
+ if kind=='diagonal':
+  d.line((x+cell/2,y+cell/2,x+8.5*cell,y+8.5*cell),fill='#B0CBDC',width=14)
+  d.line((x+8.5*cell,y+cell/2,x+cell/2,y+8.5*cell),fill='#B0CBDC',width=14)
+ if kind=='hyper':
+  for rr in (1,5):
+   for cc in (1,5):d.rectangle((x+cc*cell+6,y+rr*cell+6,x+(cc+3)*cell-6,y+(rr+3)*cell-6),outline='#92B69F',width=7)
  for i in range(10):
-  w=12 if i%3==0 else 3;color=INK if i%3==0 else LINE
+  w=3 if kind=='jigsaw' else 12 if i%3==0 else 3;color=INK if w==12 else LINE
   d.line((x+i*cell,y,x+i*cell,y+9*cell),fill=color,width=w)
   d.line((x,y+i*cell,x+9*cell,y+i*cell),fill=color,width=w)
- for i,value in enumerate(SUDOKU['solution'] if answer else SUDOKU['puzzle']):
+ if kind=='jigsaw':
+  for r in range(9):
+   for c in range(9):
+    i=r*9+c
+    if c<8 and regions[i]!=regions[i+1]:d.line((x+(c+1)*cell,y+r*cell,x+(c+1)*cell,y+(r+1)*cell),fill=INK,width=12)
+    if r<8 and regions[i]!=regions[i+9]:d.line((x+c*cell,y+(r+1)*cell,x+(c+1)*cell,y+(r+1)*cell),fill=INK,width=12)
+ d.rectangle((x,y,x+9*cell,y+9*cell),outline=INK,width=12)
+ for i,value in enumerate(p['solution'] if answer else p['puzzle']):
   if value:
-   r,c=divmod(i,9);center(d,(x+(c+.5)*cell,y+(r+.5)*cell),value,89,INK if SUDOKU['puzzle'][i] else '#315F8A')
- lines(d,104,1752,['同じ行・列・太い枠の中で数字を重ねずに埋めてください。'],size=43,width=1840)
- text(d,(104,1832),'9×9 / 通常ルール / ナンプレ＝数独（Sudoku）',31,MUTED)
+   r,c=divmod(i,9);center(d,(x+(c+.5)*cell,y+(r+.5)*cell),value,89,INK if p['puzzle'][i] else '#315F8A')
+ notes=rules[1:] or ['同じ行・列・枠の中で数字を重ねずに埋めてください。']
+ lines(d,104,1744,notes,size=36,gap=14,width=1840)
+ text(d,(104,1832),'9×9 / '+item['title'],30,MUTED)
  return im
 
 def arrow(d,start,end,color=INK,width=20,head=36):
@@ -123,8 +143,8 @@ def arrow(d,start,end,color=INK,width=20,head=36):
  d.line((*start,*back),fill=color,width=width)
  d.polygon([end,(back[0]-uy*head*.68,back[1]+ux*head*.68),(back[0]+uy*head*.68,back[1]-ux*head*.68)],fill=color)
 
-def wado(answer=False):
- im,d=base('③','和同開珎','熟語4個 / 難しめ', '#875535','同じ漢字1文字で4つの熟語を作ろう。',answer)
+def wado(item,WADO,number,answer=False):
+ im,d=base(number,item['title'],badge(item),'#875535','同じ漢字1文字で4つの熟語を作ろう。',answer)
  cx,cy=1024,1028
  for pos,(x,y) in {'top':(1024,573),'left':(569,1028),'right':(1479,1028),'bottom':(1024,1483)}.items():
   d.rounded_rectangle((x-122,y-122,x+122,y+122),radius=8,fill=WHITE,outline=INK,width=9)
@@ -142,8 +162,9 @@ def wado(answer=False):
  text(d,(104,1832),'※解答例以外にも成立する熟語の組み合わせがある場合があります。',30,MUTED)
  return im
 
-def crossword(answer=False):
- im,d=base('④','クロスワード','難しめ / 専門語入り', '#725887','カタカナで1マス1文字。小さいャ・ュ・ョ・ッも大きく。',answer)
+def crossword(item,CW,number,answer=False):
+ for entry in CW['entries']:entry['displayClue']=entry['clue']
+ im,d=base(number,item['title'],badge(item),'#725887','カタカナで1マス1文字。小さいャ・ュ・ョ・ッも大きく。',answer)
  n=CW['n'];cell=88;x=(S-n*cell)//2;y=435
  starts={e['r']*n+e['c']:e['num'] for e in CW['entries']}
  for i,value in enumerate(CW['grid']):
@@ -170,12 +191,14 @@ def crossword(answer=False):
  return im
 
 images=[]
-for name,fn in [('01-shirupure',shiru),('02-sudoku',sudoku),('03-wado',wado),('04-crossword',crossword)]:
- im=fn()
+renderers={'shirupure':shiru,'sudoku':sudoku,'wado':wado,'crossword':crossword}
+for i,item in enumerate(ITEMS):
+ name=item['file'];p=json.loads((ROOT/item['data_file']).read_text())
+ im=renderers[item['family']](item,p,'①②③④'[i])
  for size in (2048,1024):
   scan=im if size==2048 else im.resize((size,size),Image.Resampling.LANCZOS)
   assert 'https://'+URL in [b.text for b in zxingcpp.read_barcodes(scan)],('QR decode failed',name,size)
- im.save(OUT/(name+'.png'),optimize=True);images.append(im)
+ im.save(OUT/name,optimize=True);images.append(im)
 check_font=TTFont(BOLD,fontNumber=0);cmap=check_font.getBestCmap();missing=sorted({c for t in texts for c in t if not c.isspace() and ord(c) not in cmap})
 assert not missing,missing
 assert len([p for p in OUT.glob('0*.png')])==4

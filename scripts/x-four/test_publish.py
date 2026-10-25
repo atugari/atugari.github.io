@@ -4,6 +4,7 @@ from unittest.mock import patch
 from PIL import Image
 from publish import oauth_header,publish,validate
 from post_text import render_text,weighted_length
+from post_schedule import SLOTS
 
 class Ledger:
     def __init__(self,events,state=None):self.events=events;self.state=state or {'version':1,'posts':{}}
@@ -36,6 +37,21 @@ class PublicationTests(unittest.TestCase):
         events=[];ledger=Ledger(events)
         self.assertEqual(publish(self.root,ledger,Client(events),'parade166'),'123456')
         self.assertEqual(events,['account','claim','upload','upload','upload','upload','post','sent'])
+    def test_four_slots_each_publish_once_without_a_daily_lockout(self):
+        events=[];ledger=Ledger(events);client=Client(events)
+        for index,slot in enumerate(SLOTS):
+            self.data.update(slot=slot,publication_id=self.data['date']+'@'+slot,fingerprints=[str(index)+':'+str(i) for i in range(4)])
+            self.save();publish(self.root,ledger,client,'parade166')
+        self.assertEqual(len(ledger.state['posts']),4)
+        self.assertEqual(events.count('post'),4)
+        self.assertEqual(events.count('upload'),16)
+        with self.assertRaisesRegex(RuntimeError,'slot'):publish(self.root,ledger,client,'parade166')
+        self.assertEqual(events.count('post'),4)
+    def test_legacy_day_record_still_blocks_a_slotted_retry(self):
+        self.data.update(slot='08:00',publication_id=self.data['date']+'@08:00');self.save()
+        events=[];ledger=Ledger(events,{'posts':{self.data['date']:{'status':'sent','fingerprints':[]}}})
+        with self.assertRaisesRegex(RuntimeError,'date'):publish(self.root,ledger,Client(events),'parade166')
+        self.assertEqual(events,[])
     def test_wrong_account_never_uploads(self):
         events=[]
         with self.assertRaisesRegex(RuntimeError,'account'):publish(self.root,Ledger(events),Client(events,'other'),'parade166')

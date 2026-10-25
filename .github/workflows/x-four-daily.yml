@@ -11,8 +11,19 @@ on:
         type: choice
         options: [preview, check, publish]
         default: preview
+      slot:
+        description: 'Japan-time post slot'
+        type: choice
+        options: ['08:00', '12:00', '18:00', '21:00']
+        default: '08:00'
   schedule:
     - cron: '0 8 * * *'
+      timezone: Asia/Tokyo
+    - cron: '0 12 * * *'
+      timezone: Asia/Tokyo
+    - cron: '0 18 * * *'
+      timezone: Asia/Tokyo
+    - cron: '0 21 * * *'
       timezone: Asia/Tokyo
 
 permissions:
@@ -51,6 +62,8 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           REPO_ROOT: ${{ github.workspace }}
           X_FOUR_MODE: ${{ github.event_name == 'schedule' && 'publish' || inputs.mode || 'preview' }}
+          X_FOUR_SCHEDULE: ${{ github.event.schedule || '' }}
+          X_FOUR_SLOT: ${{ inputs.slot || '08:00' }}
           X_FOUR_POST_ENABLED: ${{ vars.X_FOUR_POST_ENABLED }}
           X_FOUR_INCLUDE_URL: ${{ vars.X_FOUR_INCLUDE_URL || 'false' }}
           X_EXPECTED_USERNAME: parade166

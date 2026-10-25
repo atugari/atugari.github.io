@@ -6,6 +6,8 @@ from urllib.request import Request,urlopen
 from urllib.error import HTTPError,URLError
 from PIL import Image
 from post_text import render_text,weighted_length
+from post_schedule import publication_key
+from daily_plan import daily_plan
 
 def encoded(value):return quote(str(value),safe='~-._')
 
@@ -86,7 +88,12 @@ class Ledger:
 
 def validate(directory):
     directory=Path(directory);post=json.loads((directory/'post.json').read_text())
+    key=publication_key(post['date'],post.get('slot'))
+    if 'publication_id' in post and post['publication_id']!=key:raise ValueError('Publication ID does not match the date and slot')
     expected=['01-shirupure.png','02-sudoku.png','03-wado.png','04-crossword.png']
+    if 'questions' in post:
+        if post.get('plan_version')!=1 or post['questions']!=daily_plan(post['date']):raise ValueError('Question rules and difficulty do not match the daily plan')
+        expected=[item['file'] for item in post['questions']]
     if [i['file'] for i in post['images']]!=expected:raise ValueError('Exactly four question images are required in the approved order')
     if len(post['fingerprints'])!=4 or len(set(post['fingerprints']))!=4:raise ValueError('Four distinct puzzle fingerprints are required')
     if not post['text'] or len(post['text'])>25000:raise ValueError('Invalid post text')
@@ -106,14 +113,16 @@ def validate(directory):
 
 def publish(directory,ledger,client,expected_username):
     post=validate(directory);state=ledger.load();posts=state.setdefault('posts',{});day=post['date']
-    if day in posts:raise RuntimeError('This date already has a sent or uncertain attempt. Review it; it will not be reposted automatically.')
+    key=publication_key(day,post.get('slot'))
+    if key in posts or day in posts:raise RuntimeError('This date or slot already has a sent or uncertain attempt. Review it; it will not be reposted automatically.')
     old={h for p in posts.values() for h in p.get('fingerprints',[])}
     if any(h in old for h in post['fingerprints']):raise RuntimeError('A previously used puzzle was found')
     if client.username().lower()!=expected_username.lower():raise RuntimeError('Connected X account does not match the intended account')
-    posts[day]={'status':'posting','fingerprints':post['fingerprints']}
+    posts[key]={'date':day,'status':'posting','fingerprints':post['fingerprints']}
+    if post.get('slot') is not None:posts[key]['slot']=post['slot']
     ledger.write(state)  # A durable claim precedes every upload or post request.
     ids=[client.upload(Path(directory)/item['file'],item['alt']) for item in post['images']]
     post_id=client.create(post['text'],ids)
-    posts[day].update(status='sent',post_id=post_id)
+    posts[key].update(status='sent',post_id=post_id)
     ledger.write(state)
     return post_id

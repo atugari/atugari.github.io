@@ -3,11 +3,13 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 import json,os,subprocess,sys
 from publish import Ledger,XClient,publish,validate
+from post_schedule import publication_key,resolve_slot
 
 script=Path(__file__).resolve().parent
 repo=Path(os.environ.get('REPO_ROOT',script.parents[1])).resolve()
 work=Path(os.environ.get('RUNNER_TEMP','/tmp'))/'x-four-work';work.mkdir(exist_ok=True)
-day=datetime.now(ZoneInfo('Asia/Tokyo')).date().isoformat()
+day,slot=resolve_slot(datetime.now(ZoneInfo('Asia/Tokyo')),schedule=os.environ.get('X_FOUR_SCHEDULE',''),requested=os.environ.get('X_FOUR_SLOT','08:00'))
+key=publication_key(day,slot)
 mode=os.environ.get('X_FOUR_MODE','preview')
 if mode not in ('preview','check','publish'):raise ValueError('Invalid mode')
 if mode=='check':
@@ -17,11 +19,11 @@ if mode=='check':
     sys.exit(0)
 if os.environ.get('GITHUB_TOKEN'):
     ledger=Ledger();history=ledger.load()
-    if day in history.get('posts',{}) and mode=='publish':raise RuntimeError('This date already has an attempt; check its history before continuing')
+    if mode=='publish' and (key in history.get('posts',{}) or day in history.get('posts',{})):raise RuntimeError('This date or slot already has an attempt; check its history before continuing')
 else:history=json.loads((script/'previously-prepared.json').read_text())
 (work/'history.json').write_text(json.dumps(history))
 def run(*args):subprocess.run(args,check=True,cwd=repo)
-run('node',str(script/'generate.mjs'),str(work),day)
+run('node',str(script/'generate.mjs'),str(work),day,slot)
 run(sys.executable,str(script/'verify.py'),str(work))
 run(sys.executable,str(script/'render.py'),str(work))
 run(sys.executable,str(script/'package.py'),str(work))
