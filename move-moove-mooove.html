@@ -21,15 +21,18 @@
 
 /* Shared full character portraits replace the old placeholder faces. */
 .runner-portrait{display:block;width:104px;height:104px;flex:none;margin:3px auto 1px;filter:drop-shadow(0 0 12px color-mix(in srgb,var(--runner) 28%,transparent));transform:rotate(-4deg)}.runner-portrait svg{display:block;width:100%;height:100%}.runner-card{min-height:210px;gap:6px}.runner-card.locked .runner-portrait{opacity:.55;filter:saturate(.65)}.character-picker .hero-preview svg{overflow:visible}.runner-card:hover:not(:disabled) .runner-portrait{transform:rotate(0deg) translateY(-2px)}
+/* Optional support lives on its own screen and never interrupts a run. */
+.support-entry{display:flex;justify-content:center;gap:18px;align-items:center;margin-top:11px}.panel .support-entry button{min-height:44px;padding:8px 13px;font-size:14px;color:#ddc6a5}.support-entry .support-thanks{color:#f4d493}.support-panel{text-align:left;max-width:420px}.support-panel h2{font-size:26px}.support-panel h3{font-size:17px;margin:24px 0 12px;color:#f6e9d4}.support-intro{font-size:15px;line-height:1.8;color:#dbcde7;margin:18px 0}.support-gift{display:flex;gap:12px;align-items:center;background:linear-gradient(120deg,#49342666,#251b3533);border:1px solid #eac17845;border-radius:13px;padding:12px}.support-preview{width:90px;height:90px;flex:none}.support-preview svg{width:100%;height:100%}.support-gift strong{font-size:15px;color:#f6d498}.support-gift p{font-size:15px;line-height:1.8;margin:7px 0}.support-gift small,.support-steps small{font-size:13px;line-height:1.8;color:#c3b3cc}.support-steps{padding-left:25px;font-size:15px;line-height:1.9}.support-steps li{padding-left:3px;margin:10px 0}.support-note{font-size:13px;line-height:1.85;color:#cbbbd9;margin:10px 0 16px}.support-label{display:block;font-size:14px;color:#e4d4ed;margin:22px 0 7px}.support-panel input[type=text],.support-id,.support-panel textarea{display:block;width:100%;min-width:0;border:1px solid #bda2d94a;background:#0d0b16;border-radius:9px;color:#fff;padding:12px;font:14px/1.8 ui-monospace,monospace;resize:vertical}.support-id{text-align:center;letter-spacing:.03em;font-size:15px!important;cursor:text}.support-panel textarea{min-height:95px;overflow-wrap:anywhere}.support-secondary,.support-ofuse{display:block;width:100%;border:1px solid #d0b38166;border-radius:9px;background:#d5ac7010;color:#f6dfb8;padding:12px 10px;min-height:46px;text-align:center;font:700 15px/1.5 inherit;text-decoration:none;margin:11px 0}.support-ofuse{background:#2882a7;color:white;border-color:#56a0bb;font-weight:700}.support-secondary:focus-visible,.support-ofuse:focus-visible,.support-panel input:focus-visible,.support-panel textarea:focus-visible{outline:3px solid var(--acid);outline-offset:3px}.support-choice{display:flex;gap:12px;align-items:center;margin:13px 0;min-height:44px;font-size:15px}.support-choice input{width:21px;height:21px;accent-color:#ebc071}.support-redeem{border-top:1px solid #ffffff20;padding-top:1px;margin-top:24px}.support-owned{border:1px solid #eac1784a;background:#d1ad6510;padding:0 15px 7px;border-radius:12px;margin-top:24px}.support-restore{margin:23px 0;font-size:14px}.support-restore summary{cursor:pointer;min-height:42px;padding:7px 0;color:#d9c8e6}.support-panel input[type=file]{max-width:100%;font-size:13px;color:#d3c1e1}.support-file-label{display:block;font-size:14px;margin:12px 0}.support-status{white-space:pre-line;color:#b9ffdc;font-size:14px;line-height:1.85;overflow-wrap:anywhere;min-height:1.8em}.support-status[data-error=true]{color:#ffb7b4}@media(max-width:350px){.support-gift{padding:9px;gap:7px}.support-preview{width:64px;height:76px}.support-gift p{font-size:14px}.support-id{font-size:13px!important;padding-left:7px;padding-right:7px}}
+
 </style></head><body>
 <main class="layout">
- <aside class="identity"><div class="eyebrow">Think fast. Jump higher.</div><div class="wordmark" aria-hidden="true"><span>Move.</span><span>Moove.</span><span>Mooove.</span></div><p class="edition">M A G M A　R U S H</p><p class="lead">一歩先を読め。<br>マグマは待たない</p><p class="sub">跳べる場所は限られている<br>どこに跳ぶかはきみが決める</p><div class="rule-card"><svg viewBox="0 0 60 65" aria-hidden="true"><g fill="#ffffff09" stroke="#82748c" stroke-width=".6"><rect x="3" y="3" width="16" height="16" rx="3"/><rect x="23" y="3" width="16" height="16" rx="3"/><rect x="3" y="23" width="16" height="16" rx="3"/><rect x="23" y="23" width="16" height="16" rx="3"/><rect x="3" y="43" width="16" height="16" rx="3"/><rect x="23" y="43" width="16" height="16" rx="3"/></g><path d="M11 51V11H31" fill="none" stroke="#d8ff61" stroke-width="3" stroke-linejoin="round"/><path d="m26 6 6 5-6 5" fill="none" stroke="#d8ff61" stroke-width="3"/><circle cx="11" cy="51" r="4" fill="#d8ff61"/></svg><div><strong>2マス ＋ 1マス のL字。</strong><p>ルールはシンプル。<br>進む道はひとつじゃない</p></div></div><div class="credit">MOVE MOOVE MOOOVE / v3.0.3</div></aside>
+ <aside class="identity"><div class="eyebrow">Think fast. Jump higher.</div><div class="wordmark" aria-hidden="true"><span>Move.</span><span>Moove.</span><span>Mooove.</span></div><p class="edition">M A G M A　R U S H</p><p class="lead">一歩先を読め。<br>マグマは待たない</p><p class="sub">跳べる場所は限られている<br>どこに跳ぶかはきみが決める</p><div class="rule-card"><svg viewBox="0 0 60 65" aria-hidden="true"><g fill="#ffffff09" stroke="#82748c" stroke-width=".6"><rect x="3" y="3" width="16" height="16" rx="3"/><rect x="23" y="3" width="16" height="16" rx="3"/><rect x="3" y="23" width="16" height="16" rx="3"/><rect x="23" y="23" width="16" height="16" rx="3"/><rect x="3" y="43" width="16" height="16" rx="3"/><rect x="23" y="43" width="16" height="16" rx="3"/></g><path d="M11 51V11H31" fill="none" stroke="#d8ff61" stroke-width="3" stroke-linejoin="round"/><path d="m26 6 6 5-6 5" fill="none" stroke="#d8ff61" stroke-width="3"/><circle cx="11" cy="51" r="4" fill="#d8ff61"/></svg><div><strong>2マス ＋ 1マス のL字。</strong><p>ルールはシンプル。<br>進む道はひとつじゃない</p></div></div><div class="credit">MOVE MOOVE MOOOVE / v3.1.0</div></aside>
  <section class="stage" aria-label="マグマラッシュ ゲーム画面">
   <header class="topbar"><div><div class="hud-label">ALTITUDE / 到達高度</div><div class="altitude"><strong id="height">0</strong><small>m</small></div></div><div class="hud-right"><div class="small-brand">Move.<br>Moove.<br><span>Mooove.</span></div><button class="icon-button" id="sound" aria-label="音をオフ" aria-pressed="true"><svg viewBox="0 0 24 24"><path d="m11 4-5 4H3v8h3l5 4zM15 8q5 4 0 8M18 5q8 7 0 14"/></svg></button><button class="icon-button" id="pause" aria-label="一時停止"><svg viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg></button></div></header>
   <div class="danger-meter" role="meter" aria-label="マグマの接近度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="danger-fill"></i></div>
   <div class="arena" id="arena"><canvas id="game" aria-label="光る足場をタップしてL字に跳びます。足場ボタンはキーボードでも選択できます。"></canvas><div class="target-layer" id="targets"></div><div class="float-label"><span id="zone">01 / EMBER CHAMBER</span><em id="heat-status">MAGMA RISING</em></div><div class="run-hint" id="run-hint"></div><div class="run-objective" id="run-objective"></div><div class="toast" id="toast"><strong></strong><span></span></div></div>
   <footer class="bottom"><div class="move-strip"><div class="current-move"><svg class="l-mark" viewBox="0 0 30 30" aria-hidden="true"><path d="M5 26V6H25m-6-5 6 5-6 5" fill="none" stroke="#d8ff61" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div><p>JUMP RULE</p><strong id="move-rule">2 ＋ 1 のL字</strong></div></div><span class="mode-pill" id="mode-pill">NORMAL</span></div><div class="run-progress"><span id="next-reward">次の強化まで 60m</span><span id="run-score">0 pt</span></div><div class="controls"><button class="pulse-button" id="pulse">冷却 <b>1</b><small>Space</small></button><p>タップで跳ぶ<br>長押しで1手先</p><button class="undo" id="undo" title="1手戻る。マグマと時間は戻りません。" disabled>↶ 1手戻る</button></div></footer>
-  <section class="overlay" id="start-screen" aria-labelledby="title"><div class="panel"><div class="tag">OUTRUN THE ERUPTION</div><h1 id="title">Move.<br>Moove. <span>Mooove.</span></h1><button class="character-picker" id="open-characters" type="button"><span class="hero-preview" id="title-avatar" aria-hidden="true"></span><span class="character-picker-copy"><strong>キャラクター変更 <span aria-hidden="true">›</span></strong><span id="current-character">使用中：エンバー</span><small>使えるキャラ <span id="collection-count">1/8</span></small></span></button><p class="tagline">同じ一歩から違う冒険へ<br>道を読んで火山を駆け上がれ</p><div class="run-kind" role="group" aria-label="冒険の種類"><button id="random-run" aria-pressed="true">新しい冒険</button><button id="daily-run" aria-pressed="false">今日の地形</button></div><p class="daily-note" id="daily-note"></p><div class="mode-select" role="group" aria-label="モード"><button id="normal-mode" aria-pressed="true"><strong>ノーマル</strong>2＋1のL字で固定</button><button id="expert-mode" aria-pressed="false"><strong>上級</strong>長い側が2→3→4</button></div><div class="title-stats"><div><span>自己ベスト</span><strong id="start-best">0 m</strong></div><div><span id="title-goal-label">次の高度目標</span><strong id="title-goals">50 m</strong></div></div><button class="launch" id="start">駆け上がる <span>↗</span></button><button class="resume-save" id="continue-save" hidden>保存した冒険の続きから</button><div class="title-secondary"><button class="text-button records-button" id="open-collection" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V11h4v9m2 0V4h4v16m2 0v-6h4v6M3 20h20"/></svg>目標・記録を見る <span aria-hidden="true">›</span></button></div><p class="start-note audio-note">音は開始後に鳴ります</p><details class="howto"><summary>遊び方</summary><p>光る足場へL字に跳ぶ。長押しでその先を確認。</p><p>青い結晶は冷却。金色の遺物は高得点。</p><p>冷却ボタンで3秒の猶予。新しい足場を進むと補充。</p><p>ひび割れた足場は乗って3秒で崩落。強化中は時間停止。</p><p>PC：数字キー、矢印＋Enter、Spaceで冷却、Zで戻る。</p></details></div></section>
+  <section class="overlay" id="start-screen" aria-labelledby="title"><div class="panel"><div class="tag">OUTRUN THE ERUPTION</div><h1 id="title">Move.<br>Moove. <span>Mooove.</span></h1><button class="character-picker" id="open-characters" type="button"><span class="hero-preview" id="title-avatar" aria-hidden="true"></span><span class="character-picker-copy"><strong>キャラクター変更 <span aria-hidden="true">›</span></strong><span id="current-character">使用中：エンバー</span><small>使えるキャラ <span id="collection-count">1/8</span></small></span></button><p class="tagline">同じ一歩から違う冒険へ<br>道を読んで火山を駆け上がれ</p><div class="run-kind" role="group" aria-label="冒険の種類"><button id="random-run" aria-pressed="true">新しい冒険</button><button id="daily-run" aria-pressed="false">今日の地形</button></div><p class="daily-note" id="daily-note"></p><div class="mode-select" role="group" aria-label="モード"><button id="normal-mode" aria-pressed="true"><strong>ノーマル</strong>2＋1のL字で固定</button><button id="expert-mode" aria-pressed="false"><strong>上級</strong>長い側が2→3→4</button></div><div class="title-stats"><div><span>自己ベスト</span><strong id="start-best">0 m</strong></div><div><span id="title-goal-label">次の高度目標</span><strong id="title-goals">50 m</strong></div></div><button class="launch" id="start">駆け上がる <span>↗</span></button><button class="resume-save" id="continue-save" hidden>保存した冒険の続きから</button><div class="title-secondary"><button class="text-button records-button" id="open-collection" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V11h4v9m2 0V4h4v16m2 0v-6h4v6M3 20h20"/></svg>目標・記録を見る <span aria-hidden="true">›</span></button></div><div class="support-entry"><button class="text-button" id="open-support" type="button">開発を応援・特典</button></div><p class="start-note audio-note">音は開始後に鳴ります</p><details class="howto"><summary>遊び方</summary><p>光る足場へL字に跳ぶ。長押しでその先を確認。</p><p>青い結晶は冷却。金色の遺物は高得点。</p><p>冷却ボタンで3秒の猶予。新しい足場を進むと補充。</p><p>ひび割れた足場は乗って3秒で崩落。強化中は時間停止。</p><p>PC：数字キー、矢印＋Enter、Spaceで冷却、Zで戻る。</p></details></div></section>
   <section class="overlay" id="pause-screen" aria-labelledby="pause-title" hidden><div class="panel"><div class="tag">TAKE A BREATH</div><h2 id="pause-title">ひと休み。</h2><p class="tagline">マグマも止まっています。</p><div class="pause-options"><button id="toggle-music">緊張感のあるBGM<strong>ON</strong></button><button id="toggle-fx">画面の揺れ・残像<strong>ON</strong></button></div><button class="launch" id="resume">続ける <span>↗</span></button><div class="equipment-list" id="pause-equipment"></div><button class="text-button" id="save-title">冒険を保存してタイトルへ</button><br><button class="text-button" id="restart">最初からやり直す</button><p class="start-note">1手戻る：時間とマグマは戻りません。<br>最高記録と音の設定はこのブラウザに保存されます。</p></div></section>
   <section class="overlay" id="result-screen" aria-labelledby="result-title" hidden><div class="panel"><div class="tag">THE MAGMA CAUGHT UP.</div><h2 id="result-title">まだ上へ行ける</h2><div class="result-number"><span id="result-height">0</span><small>m</small></div><p class="new-best" id="new-best" hidden>NEW PERSONAL BEST</p><p class="result-score" id="result-score"></p><div class="results"><span id="result-time">0秒</span><span id="result-jumps">0ジャンプ</span><span id="result-coolant">結晶 0個</span></div><p class="result-reason" id="result-reason"></p><div class="result-awards" id="result-awards"></div><div class="equipment-list" id="result-equipment"></div><button class="launch" id="retry">もう一度駆け上がる <span>↗</span></button><button class="text-button" id="same-route">同じ地形で再挑戦</button><br><button class="text-button" id="to-title">モードを変える</button></div></section>
   <section class="overlay" id="draft-screen" aria-labelledby="draft-title" hidden><div class="panel draft-panel"><div class="tag">CHOOSE YOUR NEXT MOVE</div><h2 id="draft-title" tabindex="-1">この冒険をどう変える？</h2><p class="tagline">選んでから決定。マグマは止まっています。</p><p class="draft-input-note" id="draft-input-note" role="status"></p><div class="draft-options" id="draft-options" data-locked="true"></div><p class="draft-selection" id="draft-selection" aria-live="polite"></p><button class="launch" id="draft-confirm" type="button" disabled>この強化にする <span>✓</span></button><p class="start-note" id="draft-location"></p></div></section><section class="overlay" id="collection-screen" aria-labelledby="collection-title" hidden><div class="panel collection-panel">
@@ -37,7 +40,18 @@
   <div class="collection-tabs" role="group" aria-label="表示切り替え"><button id="characters-tab" type="button" aria-pressed="true" aria-controls="characters-view">キャラクター</button><button id="records-tab" type="button" aria-pressed="false" aria-controls="records-view">目標・記録</button></div>
   <section id="characters-view" aria-labelledby="characters-heading"><h3 id="characters-heading">キャラクター <small id="runner-count"></small></h3><p class="collection-note">キャラをタップして変更。ジャンプの性能は共通です。</p><p class="collection-feedback" id="collection-feedback" role="status"></p><div class="runner-grid" id="runner-grid"></div></section>
   <section id="records-view" aria-labelledby="goals-heading" hidden><p class="collection-intro" id="collection-records"></p><h3 id="goals-heading">次の目標</h3><p class="collection-note">1回の冒険で挑む記録です。好きな目標からどうぞ。</p><div class="goal-grid" id="goal-grid"></div></section>
- </div></section><p id="announce" class="sr-only" aria-live="polite"></p>
+ </div></section>  <section class="overlay" id="support-screen" aria-labelledby="support-title" hidden><div class="panel support-panel">
+   <div class="collection-heading"><div><div class="tag">THANK YOU FOR PLAYING</div><h2 id="support-title" tabindex="-1">応援・特典</h2></div><button class="text-button" id="close-support" type="button">閉じる ✕</button></div>
+   <p class="support-intro">このゲームの開発をOFUSEで応援できます。</p>
+   <div class="support-gift"><span class="support-preview" id="support-preview" aria-hidden="true"></span><div><strong>応援してくれた方へ</strong><p>使えるキャラに「琥珀カラー」<br>ジャンプに「金の火花」</p><small>見た目だけの特典です。性能は変わりません。</small></div></div>
+   <div id="support-steps"><h3>特典を受け取るには</h3><ol class="support-steps"><li>下の「申請文をコピー」を押す</li><li>OFUSEにログインして支援付きレターを送る<br><small>メッセージに申請文を貼り付けてください。</small></li><li>運営から届いたコードをこの画面に入力</li></ol><p class="support-note">特典は支援を確認してから手動でお送りします。すぐには届かない場合があります。</p>
+   <label class="support-label" for="support-request">あなたの申請番号</label><input id="support-request" class="support-id" readonly spellcheck="false" aria-describedby="support-id-note"><p class="support-note" id="support-id-note">このブラウザ用の番号です。特典を受け取るまではブラウザのデータを消さずにお待ちください。</p><button class="support-secondary" id="copy-support-request" type="button">申請文をコピー</button><a class="support-ofuse" id="support-ofuse" href="https://ofuse.me/o?uid=228296" target="_blank" rel="noopener noreferrer">OFUSEで開発を応援する ↗</a><p class="support-note">OFUSEのアカウントがなくてもゲームは遊べます。お返事で特典を受け取る方はログインしてご支援ください。</p></div>
+   <div class="support-redeem"><h3>特典コードを入力</h3><label class="sr-only" for="support-code">OFUSEのお返事で届いた特典コード</label><textarea id="support-code" rows="3" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="届いたコードをここに貼り付け"></textarea><button class="support-secondary" id="redeem-support" type="button">特典を受け取る</button></div>
+   <section class="support-owned" id="support-owned" hidden aria-labelledby="support-owned-title"><h3 id="support-owned-title">応援ありがとうございます！</h3><label class="support-choice"><input type="checkbox" id="support-palette">琥珀カラーにする</label><label class="support-choice"><input type="checkbox" id="support-trail">金の火花を出す</label><p class="support-note">元の見た目にも戻せます。演出は「画面の揺れ・残像」の設定に従います。</p><button class="support-secondary" id="export-support" type="button">特典の控えを保存</button><p class="support-note">機種変更に備えて保存してください。控えの復元に追加の支援は必要ありません。</p></section>
+   <details class="support-restore"><summary>機種変更・特典を復元</summary><p class="support-note">「特典の控え」で保存したファイルを選ぶと復元できます。冒険の記録は変わりません。控えがない場合は以前のOFUSEのお返事から再発行をご相談ください。</p><label class="support-file-label" for="restore-support">控えファイルを選ぶ</label><input type="file" id="restore-support" accept="application/json,.json"></details>
+   <p id="support-status" class="support-status" role="status" aria-live="polite"></p>
+  </div></section>
+<p id="announce" class="sr-only" aria-live="polite"></p>
  </section>
  <aside class="sidebar"><div class="stat"><div class="label">PERSONAL BEST / 最高記録</div><strong><span id="best">0</span><small>m</small></strong></div><div class="stat"><div class="label">JUMPS / ジャンプ</div><strong id="jumps">0</strong></div><div class="stat"><div class="label">COOLANT / 結晶</div><strong id="crystals">0</strong></div><p class="survival-note">高い足場だけが正解とは限らない。<br><br><b>一度横に逃げてから上へ</b><br>そのひと手が次の道を開く</p></aside>
 </main>
@@ -145,8 +159,9 @@
  const poly=(s,fill,stroke=ink,width=2.6)=>({type:'poly',points:points(s),fill,stroke,width});
  const rect=(x,y,w,h,r,fill,stroke=ink,width=2.6)=>({type:'rect',x,y,w,h,r,fill,stroke,width});
  const ellipse=(x,y,rx,ry,fill,stroke=ink,width=2.6)=>({type:'ellipse',x,y,rx,ry,fill,stroke,width});
+ function artKey(h){return[h.id,h.body,h.scarf,h.eye,h.trim].join('|');}
  function shapes(h){
-  if(cache.has(h.id))return cache.get(h.id);
+  if(cache.has(artKey(h)))return cache.get(artKey(h));
   const b=h.body,s=h.scarf,t=h.trim,e=h.eye,a=[],add=(...v)=>a.push(...v);
   const tail=()=>add(poly('57,52 89,51 78,64 90,72 55,67',s,null));
   const boots=(color='#7b4bc5')=>add(poly('22,65 16,81 37,79 44,66',color,ink,3),poly('56,65 62,83 84,82 73,62',color,ink,3));
@@ -214,17 +229,17 @@
    add(ellipse(17,54,8,9,t),ellipse(83,54,8,9,t),poly('49,14 55,23 49,32 44,23',s,null));
    add(ellipse(10,23,2,2,t,null),ellipse(90,19,2,2,t,null));
   }
-  cache.set(h.id,a);return a;
+  cache.set(artKey(h),a);return a;
  }
  function svg(h){
-  if(svgCache.has(h.id))return svgCache.get(h.id);
+  if(svgCache.has(artKey(h)))return svgCache.get(artKey(h));
   const art=shapes(h).map(s=>{
    const attrs=' fill="'+(s.fill||'none')+'"'+(s.stroke?' stroke="'+s.stroke+'" stroke-width="'+s.width+'" stroke-linejoin="round"':'');
    if(s.type==='poly')return'<polygon points="'+s.points.map(p=>p.join(',')).join(' ')+'"'+attrs+'/>';
    if(s.type==='rect')return'<rect x="'+s.x+'" y="'+s.y+'" width="'+s.w+'" height="'+s.h+'" rx="'+s.r+'"'+attrs+'/>';
    return'<ellipse cx="'+s.x+'" cy="'+s.y+'" rx="'+s.rx+'" ry="'+s.ry+'"'+attrs+'/>';
   }).join('');
-  const result='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false" data-avatar="'+h.id+'">'+art+'</svg>';svgCache.set(h.id,result);return result;
+  const result='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false" data-avatar="'+h.id+'">'+art+'</svg>';svgCache.set(artKey(h),result);return result;
  }
  function draw(ctx,h,x,y,size,glow=true){
   ctx.save();ctx.translate(x,y);ctx.scale(size/100,size/100);ctx.translate(-50,-50);
@@ -256,6 +271,49 @@
   }
   root.AscentSound=Sound;
 })(window);
+</script><script>(function(root){
+ 'use strict';
+ const PUBLIC_JWK={"key_ops":["verify"],"ext":true,"kty":"EC","x":"9btiBs1OnGAoHEGYKLrZgQRisAOmqxMAb2UYd9p_Cn4","y":"aApAfDtL2fJ5yQb64BzJUP808uImyNyFdUC9NthuUqw","crv":"P-256"};
+ const STORAGE_KEY='mmm-support-v1',DOMAIN='MoveMooveMooove/support/v1';
+ const alphabet='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+ const normalizeId=value=>String(value||'').trim().toUpperCase().replace(/^MMM-/, '').replace(/[\s-]/g,'');
+ const validId=id=>/^[A-HJ-NP-Z2-9]{16}$/.test(id);
+ const formatId=id=>'MMM-'+id.match(/.{4}/g).join('-');
+ function newId(){const a=new Uint8Array(16);root.crypto.getRandomValues(a);return Array.from(a,n=>alphabet[n%alphabet.length]).join('');}
+ function encode(bytes){let s='';for(const n of new Uint8Array(bytes))s+=String.fromCharCode(n);return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
+ function decode(s){if(!/^[A-Za-z0-9_-]+$/.test(s))throw Error('コードの文字を確認してください。');const raw=atob(s.replace(/-/g,'+').replace(/_/g,'/'));return Uint8Array.from(raw,c=>c.charCodeAt(0));}
+ const signedText=(id,date)=>new TextEncoder().encode(DOMAIN+'|'+id+'|'+date);
+ let keyPromise;
+ async function verify(value,expectedId){
+  if(!root.crypto?.subtle)throw Error('このブラウザではコードを確認できません。ChromeやSafariの最新版で開いてください。');
+  const code=String(value||'').replace(/\s/g,'');
+  if(code.length>200)throw Error('特典コードをそのまま貼り付けてください。');
+  const parts=code.split('.');
+  if(parts.length!==4||parts[0]!=='MMM1'||!validId(parts[1])||!/^[0-9a-z]{6,10}$/.test(parts[2])||!/^[A-Za-z0-9_-]{86}$/.test(parts[3]))throw Error('特典コードをそのまま貼り付けてください。');
+  const signature=decode(parts[3]);
+  if(signature.length!==64||encode(signature)!==parts[3])throw Error('コードの文字を確認してください。');
+  keyPromise=keyPromise||root.crypto.subtle.importKey('jwk',PUBLIC_JWK,{name:'ECDSA',namedCurve:'P-256'},false,['verify']);
+  const verified=await root.crypto.subtle.verify({name:'ECDSA',hash:'SHA-256'},await keyPromise,signature,signedText(parts[1],parts[2]));
+  if(!verified)throw Error('コードを確認できません。受け取ったコードをもう一度コピーしてください。');
+  if(expectedId&&parts[1]!==normalizeId(expectedId))throw Error('別の申請番号のコードです。機種変更の場合は「特典を復元」から控えファイルを読み込んでください。');
+  return{code,id:parts[1],issued:parseInt(parts[2],36)*1000};
+ }
+ function createStore(storage){
+  let raw={};try{raw=JSON.parse(storage?.getItem(STORAGE_KEY)||'{}')||{};}catch(_){}
+  let state={id:validId(raw.id)?raw.id:newId(),code:'',palette:'original',trail:'original'},unlocked=false,available=false;
+  function commit(next){try{if(!storage)throw Error();storage.setItem(STORAGE_KEY,JSON.stringify(next));if(storage.getItem(STORAGE_KEY)!==JSON.stringify(next))throw Error();available=true;state=next;return true;}catch(_){available=false;return false;}}
+  if(validId(raw.id))available=!!storage;else commit(state);
+  const ready=(async()=>{if(raw.code&&raw.id===state.id){try{const result=await verify(raw.code,state.id);state={id:result.id,code:result.code,palette:raw.palette==='amber'?'amber':'original',trail:raw.trail==='gold'?'gold':'original'};unlocked=true;}catch(_){commit(state);}}return unlocked;})();
+  const snapshot=()=>({...state,unlocked,available,requestId:formatId(state.id)});
+  async function applyCode(code){await ready;const result=await verify(code,state.id);const next={...state,code:result.code,palette:unlocked?state.palette:'amber',trail:unlocked?state.trail:'gold'};if(!commit(next))throw Error('特典を保存できません。通常モードのブラウザでお試しください。');unlocked=true;return snapshot();}
+  async function importBackup(text){await ready;let b;try{b=JSON.parse(text);}catch(_){throw Error('応援特典の控えファイルを選んでください。');}if(!b||b.type!=='mmm-support-backup-v1'||!validId(b.id))throw Error('応援特典の控えファイルを選んでください。');const result=await verify(b.code,b.id);const next={id:result.id,code:result.code,palette:b.palette==='amber'?'amber':'original',trail:b.trail==='gold'?'gold':'original'};if(!commit(next))throw Error('特典を保存できません。通常モードのブラウザでお試しください。');unlocked=true;return snapshot();}
+  function setStyle(palette,trail){if(!unlocked)throw Error('先に特典コードを入力してください。');if(!['original','amber'].includes(palette)||!['original','gold'].includes(trail))throw Error('選択を確認してください。');if(!commit({...state,palette,trail}))throw Error('設定を保存できませんでした。');return snapshot();}
+  function backup(){if(!unlocked)throw Error('先に特典コードを入力してください。');return JSON.stringify({type:'mmm-support-backup-v1',...state},null,2);}
+  return{ready,snapshot,applyCode,importBackup,setStyle,backup};
+ }
+ function styleHero(hero,enabled){return enabled?{...hero,body:'#e7b85d',scarf:'#9c5367',eye:'#fff3bc',trim:'#fff0ba'}:hero;}
+ root.MagmaSupport={PUBLIC_JWK,STORAGE_KEY,normalizeId,validId,formatId,newId,encode,decode,signedText,verify,createStore,styleHero};
+})(typeof window!=='undefined'?window:globalThis);
 </script><script>(function(){
  'use strict';
  const C=window.AscentCore,R=window.AscentReplay,A=window.AscentAvatar,$=id=>document.getElementById(id),canvas=$('game'),ctx=canvas.getContext('2d'),sound=new window.AscentSound();
@@ -268,14 +326,52 @@
  // Gameplay taps must settle before the new screen can accept a choice.
  const activePointers=new Set(),DRAFT_SETTLE_MS=650,DRAFT_CONFIRM_MS=250;
  let draftReady=false,draftReadyAt=0,draftPick=null,draftConfirmAt=0;
- const screenIds=['start-screen','pause-screen','result-screen','draft-screen','collection-screen'];
+ const screenIds=['start-screen','pause-screen','result-screen','draft-screen','collection-screen','support-screen'];
+ const S=window.MagmaSupport;
+ let supportStorage;try{supportStorage=window.localStorage;}catch(_){}
+ const support=S.createStore(supportStorage),supportLooks=new Map();
+ let supportState=support.snapshot();
+ function paintHero(h){const active=supportState.unlocked&&supportState.palette==='amber',key=h.id+':'+active;if(!supportLooks.has(key))supportLooks.set(key,S.styleHero(h,active));return supportLooks.get(key);}
+ function golden(){return supportState.unlocked&&supportState.trail==='gold';}
+ function supportStatus(text,error=false){$('support-status').textContent=text;$('support-status').dataset.error=String(error);}
+ function reflectSupport(){
+  supportState=support.snapshot();
+  $('support-request').value=supportState.requestId;
+  $('support-owned').hidden=!supportState.unlocked;$('support-steps').hidden=supportState.unlocked;
+  $('support-palette').checked=supportState.palette==='amber';$('support-trail').checked=supportState.trail==='gold';
+  $('open-support').textContent=supportState.unlocked?'応援特典の設定':'開発を応援・特典';$('open-support').classList.toggle('support-thanks',supportState.unlocked);
+  $('support-preview').innerHTML=A.svg(S.styleHero(R.HEROES.find(h=>h.id==='onyx'),true));
+  if(!supportState.available)supportStatus('このブラウザに申請番号を保存できません。通常モードのブラウザで開いてからお申し込みください。',true);
+ }
+ async function openSupport(){
+  phase='support';clearHold();sound.setActive(false);show('support-screen');$('targets').replaceChildren();
+  $('support-screen').scrollTop=0;supportStatus('');await support.ready;reflectSupport();
+  if(phase==='support')$('support-title').focus({preventScroll:true});
+ }
+ async function copySupportRequest(){
+  if(!supportState.available){supportStatus('申請番号を保存できないため、通常モードのブラウザで開き直してください。',true);return;}
+  const text='Move Moove Mooove の応援特典を希望します。\n申請番号：'+supportState.requestId;
+  try{if(!navigator.clipboard?.writeText)throw Error();await navigator.clipboard.writeText(text);supportStatus('申請文をコピーしました。OFUSEのメッセージに貼り付けてください。');}catch(_){$('support-request').focus();$('support-request').select();supportStatus('申請番号を選択しました。コピーして「Move Moove Moooveの特典希望」と一緒にOFUSEへお送りください。');}
+ }
+ function downloadSupport(){
+  try{const url=URL.createObjectURL(new Blob([support.backup()],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='MoveMooveMooove_support_backup.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);supportStatus('特典の控えを保存しました。機種変更時はこのファイルから復元できます。');}catch(e){supportStatus(e.message,true);}
+ }
+ async function redeemSupport(){
+  const button=$('redeem-support');button.disabled=true;supportStatus('コードを確認しています…');
+  try{await support.applyCode($('support-code').value);reflectSupport();refreshTitle();$('support-code').value='';supportStatus('応援ありがとうございます！特典を受け取りました。\n「特典の控えを保存」で機種変更にも備えられます。');$('support-owned').scrollIntoView({block:'nearest',behavior:'smooth'});}catch(e){supportStatus(e.message,true);}finally{button.disabled=false;}
+ }
+ async function restoreSupport(){const input=$('restore-support'),file=input.files?.[0];if(!file)return;try{if(file.size>32768)throw Error('応援特典の控えファイルを選んでください。');await support.importBackup(await file.text());reflectSupport();refreshTitle();supportStatus('応援特典を復元しました。冒険の記録はそのままです。');}catch(e){supportStatus(e.message,true);}finally{input.value='';}}
+ function changeSupportStyle(){try{support.setStyle($('support-palette').checked?'amber':'original',$('support-trail').checked?'gold':'original');reflectSupport();refreshTitle();supportStatus('見た目を変更しました。');}catch(e){reflectSupport();supportStatus(e.message,true);}}
+ $('open-support').onclick=openSupport;$('close-support').onclick=()=>{toTitle();$('open-support').focus();};$('copy-support-request').onclick=copySupportRequest;$('redeem-support').onclick=redeemSupport;$('export-support').onclick=downloadSupport;$('restore-support').onchange=restoreSupport;$('support-palette').onchange=changeSupportStyle;$('support-trail').onchange=changeSupportStyle;
+ support.ready.then(()=>{reflectSupport();refreshTitle();}).catch(()=>supportStatus('特典を読み込めませんでした。受け取ったコードか控えから復元してください。',true));
+
  const lv=id=>levels[id]||0;
  function show(id){for(const k of screenIds)$(k).hidden=k!==id;}
  function persist(){try{localStorage.setItem(SAVE,JSON.stringify(saved));}catch(_){} }
  function height(){return Math.max(0,Math.floor((peak-2)*5));}
  function best(){return saved.best[mode]||0;}
  function stats(){return{height:height(),unique:Math.max(0,visited.size-1),crystals,relics,combo:maxCombo,upgrades:draftCount};}
- function runner(){return R.HEROES.find(h=>h.id===saved.hero)||R.HEROES[0];}
+ function runner(){return paintHero(R.HEROES.find(h=>h.id===saved.hero)||R.HEROES[0]);}
  function biome(){return world?.biomeAt(peak)||C.BIOMES[0];}
  function zoneVisual(){const b=biome();return[b.name,...b.colors];}
  function updateBestLabels(){$('best').textContent=best();$('start-best').textContent=best()+' m';}
@@ -318,7 +414,7 @@
  }
  function move(t){
   if(phase!=='play'||flight||!t)return false;const dest=world.step(player,t.x,t.y,lava);if(!dest)return false;
-  history.push({...player});if(history.length>100)history.shift();flight={from:{...player},to:dest,t:0,duration:.20};preview=null;focus=-1;clearHold();burst(player.x,player.y,10,'#d8ff61',.5);sound.jump(world.length(player.p));combo=!visited.has(C.key(dest.x,dest.y))?(elapsed-lastJump<1.65?combo+1:1):0;maxCombo=Math.max(maxCombo,combo);lastJump=elapsed;jumps++;saved.totals.jumps++;$('run-hint').style.opacity=0;syncTargets();return true;
+  history.push({...player});if(history.length>100)history.shift();flight={from:{...player},to:dest,t:0,duration:.20};preview=null;focus=-1;clearHold();burst(player.x,player.y,10,golden()?'#ffdc8c':'#d8ff61',.5);sound.jump(world.length(player.p));combo=!visited.has(C.key(dest.x,dest.y))?(elapsed-lastJump<1.65?combo+1:1):0;maxCombo=Math.max(maxCombo,combo);lastJump=elapsed;jumps++;saved.totals.jumps++;$('run-hint').style.opacity=0;syncTargets();return true;
  }
  function undo(){if(phase!=='play'||flight||!history.length)return;const previous=history[history.length-1],tile=world.tiles.get(C.key(previous.x,previous.y));if(previous.y<=lava+.3||!tile||tile.crumbled){announce('前の足場はもう戻れません。');toast('NO WAY BACK','沈んだ足場、崩れた足場には戻れない。');return;}history.pop();flight={from:{...player},to:previous,t:0,duration:.20,undo:true};preview=null;combo=0;clearHold();sound.jump(2);syncTargets();}
  function cool(push,seconds){lava-=push;freeze=Math.max(freeze,seconds);rings.push({x:player.x,y:player.y,life:.6,max:.6,color:'#6fffe9'});}
@@ -326,7 +422,7 @@
  function updateAchievements(){const before=new Set(R.unlocked(saved).map(h=>h.id)),earned=R.award(saved,stats());goalsEarned.push(...earned);for(const h of R.unlocked(saved))if(!before.has(h.id)){unlocksEarned.push(h.name);toast('キャラ解放！',h.name+'が使えます。タイトルの「キャラクター変更」から選択。');}if(earned.length&&!unlocksEarned.length)announce('目標達成：'+earned[0]);saved.best[mode]=Math.max(best(),height());if(kind==='daily'){if(saved.daily?.date!==runDay)saved.daily={date:runDay,normal:0,expert:0,score:0};saved.daily[mode]=Math.max(saved.daily[mode],height());saved.daily.score=Math.max(saved.daily.score,R.score(stats()));}updateBestLabels();}
  function land(f){
   player={...f.to};peak=Math.max(peak,player.y);const fresh=!visited.has(C.key(player.x,player.y));visited.add(C.key(player.x,player.y));world.enter(player,3+lv('reinforce')*1.5);
-  if(!f.undo){sound.land();burst(player.x,player.y,saved.fx?20:7,biome().colors[1],1);rings.push({x:player.x,y:player.y,life:.4,max:.4,color:'#d8ff61'});shake=saved.fx?2:0;pulse=.18;takeResource(player);
+  if(!f.undo){sound.land();burst(player.x,player.y,saved.fx?20:7,golden()?'#ffdc8c':biome().colors[1],1);rings.push({x:player.x,y:player.y,life:.4,max:.4,color:golden()?'#ffe3a2':'#d8ff61'});shake=saved.fx?2:0;pulse=.18;takeResource(player);
    if(fresh){chargeProgress++;if(chargeProgress>=24-lv('capacity')*4){chargeProgress=0;charges=Math.min(1+lv('capacity'),charges+1);announce('冷却を補充しました。');}
     if(lv('flow')&&combo>=5&&combo%Math.max(2,5-lv('flow'))===0){cool(.3+lv('flow')*.25,.35);burst(player.x,player.y,16,'#d8ff61',1.2);}
    }
@@ -403,7 +499,7 @@
   $('characters-tab').setAttribute('aria-pressed',String(characters));$('records-tab').setAttribute('aria-pressed',String(!characters));
   $('collection-screen').scrollTop=0;$('collection-feedback').textContent='使用中：'+runner().name;
   $('collection-records').textContent='冒険 '+saved.totals.runs+'回 ／ 目標 '+Object.keys(saved.badges).length+' / 36 達成';$('runner-count').textContent=R.unlocked(saved).length+' / 8';
-  const frag=document.createDocumentFragment();for(const h of R.HEROES){const unlocked=h.test(saved),b=document.createElement('button');b.className='runner-card'+(unlocked?'':' locked');b.dataset.hero=h.id;b.setAttribute('aria-pressed',String(saved.hero===h.id));b.disabled=!unlocked;b.style.setProperty('--runner',h.body);const icon=document.createElement('span');icon.className='runner-portrait';icon.setAttribute('aria-hidden','true');icon.innerHTML=A.svg(h);const name=document.createElement('strong');name.textContent=h.name;const note=document.createElement('small');note.textContent=unlocked?(saved.hero===h.id?'使用中 ✓':'このキャラにする'):h.rule;b.append(icon);b.append(name);b.append(note);b.onclick=()=>chooseHero(h.id);frag.append(b);}$('runner-grid').replaceChildren(frag);
+  const frag=document.createDocumentFragment();for(const h of R.HEROES){const unlocked=h.test(saved),b=document.createElement('button');b.className='runner-card'+(unlocked?'':' locked');b.dataset.hero=h.id;b.setAttribute('aria-pressed',String(saved.hero===h.id));b.disabled=!unlocked;b.style.setProperty('--runner',paintHero(h).body);const icon=document.createElement('span');icon.className='runner-portrait';icon.setAttribute('aria-hidden','true');icon.innerHTML=A.svg(paintHero(h));const name=document.createElement('strong');name.textContent=h.name;const note=document.createElement('small');note.textContent=unlocked?(saved.hero===h.id?'使用中 ✓':'このキャラにする'):h.rule;b.append(icon);b.append(name);b.append(note);b.onclick=()=>chooseHero(h.id);frag.append(b);}$('runner-grid').replaceChildren(frag);
   const goals=document.createDocumentFragment();for(const g of R.GOALS){const next=R.goals(saved).find(x=>x.id===g.id),card=document.createElement('div');card.className='goal-card';const name=document.createElement('strong');name.textContent=g.name;const record=document.createElement('p');record.textContent=next?'記録 '+next.record+g.unit+' → '+next.target+g.unit:'全段階達成！';const progress=document.createElement('progress');progress.max=next?.target||1;progress.value=next?Math.min(next.record,next.target):1;progress.setAttribute('aria-label',g.name);const stages=document.createElement('small');stages.textContent=g.steps.map((n,i)=>(saved.badges[g.id+'-'+i]?'✓ ':'')+n+g.unit).join(' · ');card.append(name);card.append(record);card.append(progress);card.append(stages);goals.append(card);}$('goal-grid').replaceChildren(goals);$('collection-title').focus({preventScroll:true});
  }
  function burst(x,y,count,color,power){for(let i=0;i<count;i++){const a=Math.random()*Math.PI*2,v=(.5+Math.random()*2.3)*power;particles.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v+1,life:.25+Math.random()*.5,max:.8,size:1.5+Math.random()*3,color});}if(particles.length>260)particles.splice(0,particles.length-260);}
@@ -475,15 +571,16 @@
   if(e.ctrlKey||e.metaKey||e.altKey)return;const key=e.key.toLowerCase();
   if(phase==='draft'&&(!draftReady||e.repeat)){settleDraftInput();e.preventDefault();return;}
   if(phase==='over'&&key==='r'){e.preventDefault();start();return;}
-  if(e.key==='Escape'||key==='p'){if(phase==='play'){e.preventDefault();pause();}else if(phase==='pause'){e.preventDefault();resume();}else if(phase==='collection'){e.preventDefault();toTitle();}return;}
+  if(e.key==='Escape'||key==='p'){if(phase==='play'){e.preventDefault();pause();}else if(phase==='pause'){e.preventDefault();resume();}else if(phase==='collection'||phase==='support'){e.preventDefault();const supportOpen=phase==='support';toTitle();if(supportOpen)$('open-support').focus();}return;}
   if(phase!=='play')return;if(e.key===' '){e.preventDefault();if(!e.repeat)usePulse();return;}if(flight)return;
   if(key==='z'||e.key==='Backspace'){e.preventDefault();undo();return;}if(/^[1-8]$/.test(e.key)){e.preventDefault();move(targets[Number(e.key)-1]);return;}
   if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();const dir={ArrowUp:[0,1],ArrowDown:[0,-1],ArrowLeft:[-1,0],ArrowRight:[1,0]}[e.key],cur=focus>=0?targets[focus]:player;const options=targets.map((t,i)=>({t,i,along:(t.x-cur.x)*dir[0]+(t.y-cur.y)*dir[1],d:Math.hypot(t.x-cur.x,t.y-cur.y)})).filter(v=>v.along>0).sort((a,b)=>a.d-b.d);focus=options[0]?.i??((focus+1)%Math.max(1,targets.length));$('targets').children[focus]?.focus({preventScroll:true});return;}
   if(e.key==='Enter'&&focus>=0){e.preventDefault();move(targets[focus]);}
  });
  // Read-only inspection for maintenance. There are no state-changing debug shortcuts.
- window.MagmaRush={snapshot:()=>({version:3,mode,kind,runDay,phase,seed,player:{...player},lava,peak,height:height(),elapsed,jumps,crystals,relics,combo,maxCombo,freeze,charges,chargeProgress,levels:{...levels},draftCount,nextDraft,reviveUsed,unique:Math.max(0,visited.size-1),flight:!!flight,moves:targets.map(t=>({...t})),biome:biome().id,tiles:world?.tiles.size||0,sound:{enabled:sound.enabled,music:sound.music,active:sound.active,context:sound.ctx?.state||'not-started'},best:best(),checkpoint:!!saved.checkpoint})};
+ window.MagmaRush={snapshot:()=>({version:3,build:'3.1.0',support:{unlocked:supportState.unlocked,palette:supportState.palette,trail:supportState.trail},mode,kind,runDay,phase,seed,player:{...player},lava,peak,height:height(),elapsed,jumps,crystals,relics,combo,maxCombo,freeze,charges,chargeProgress,levels:{...levels},draftCount,nextDraft,reviveUsed,unique:Math.max(0,visited.size-1),flight:!!flight,moves:targets.map(t=>({...t})),biome:biome().id,tiles:world?.tiles.size||0,sound:{enabled:sound.enabled,music:sound.music,active:sound.active,context:sound.ctx?.state||'not-started'},best:best(),checkpoint:!!saved.checkpoint})};
  world=new C.World(41823,'normal');cam=2+viewH/cell-5;reflectSound();setMode('normal');setKind('random');resize();show('start-screen');requestAnimationFrame(frame);
 })();
 </script>
 </body></html>
+
