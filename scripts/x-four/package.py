@@ -14,10 +14,21 @@ rows=[''.join('□' if x else '■' for x in c['grid'][r*c['n']:(r+1)*c['n']]) f
 alt4='④クロスワード。'+str(c['n'])+'×'+str(c['n'])+'。カタカナを1マス1文字で入れる。小さい文字も大きく書く。■は黒マス。盤面は上から：'+'／'.join(rows)+'。開始位置は行・列で1から数える。'
 for d,label in [(0,'ヨコ'),(1,'タテ')]:
  alt4+=label+'：'+'／'.join(str(e['num'])+'('+str(e['r']+1)+','+str(e['c']+1)+')'+e['clue'] for e in sorted(c['entries'],key=lambda e:e['num']) if e['d']==d)+'。'
-alts=[alt1,alt2,alt3,alt4]
+alts=[a+'画像下部に https://atugari.github.io/nanpure/ とQRコード。検索のヒントは「ナンプレ帳 atugari」。' for a in [alt1,alt2,alt3,alt4]]
 assert all(0<len(a)<=1000 for a in alts),[len(a) for a in alts]
-text='【今日の問題｜難しめの4問】\n'+day+'\n\n①シルプレ\n②ナンプレ・数独\n③和同開珎\n④クロスワード\n\n線・数字・漢字・ことば。今日はどれから挑戦する？\nルールは画像に載せています。\n\n無料サイト「ナンプレ帳」\n#脳トレ #パズル'
-if os.environ.get('X_FOUR_INCLUDE_URL','false').lower()=='true':text+='\nhttps://atugari.github.io/nanpure/'
+include_url=os.environ.get('X_FOUR_INCLUDE_URL','false').lower()=='true'
+label=day[5:].replace('-','/')
+guide='無料のナンプレ帳は画像のURL・QRから。'
+if include_url:guide='無料のナンプレ帳\nhttps://atugari.github.io/nanpure/'
+text=('【今日の4問｜'+label+'】\n'
+      'シルプレ・数独・和同開珎・クロスワード。\n\n'
+      '家族の脳トレや学校・施設のレクに。\n'
+      '保存・印刷して自由に使ってください。\n\n'
+      +guide+'\n'
+      'OFUSEはメッセージや支援金を送れる仕組みです。\n'
+      '楽しめたらサイトのOFUSEで応援を！\n\n'
+      '#ナンプレ帳 #パズル')
+
 names=['01-shirupure.png','02-sudoku.png','03-wado.png','04-crossword.png']
 assert len([x for x in out.glob('*.png')])==4
 for name in names:assert 0<(out/name).stat().st_size<5*1024*1024

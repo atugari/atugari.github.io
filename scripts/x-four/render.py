@@ -1,6 +1,6 @@
 from pathlib import Path
 from functools import lru_cache
-import json,math,os,sys
+import json,math,os,sys,qrcode,zxingcpp
 from PIL import Image,ImageDraw,ImageFont
 from fontTools.ttLib import TTFont
 
@@ -51,10 +51,17 @@ def base(number,title,badge,accent,subtitle,answer=False):
  text(d,(1944-w/2,231),badge,35,WHITE,True,'mt')
  d.line((104,320,1944,320),fill=accent,width=5)
  text(d,(104,355),subtitle,43,INK,False,limit=1944)
- d.rectangle((0,1912,2048,2048),fill=INK)
- text(d,(104,1938),'ナンプレ帳',48,WHITE,True)
- text(d,(104,2006),'無料で遊ぶ・問題をつくる・A4印刷',27,'#D5E1D6')
- text(d,(1944,1969),URL,43,WHITE,False,'rt')
+ d.rectangle((0,1878,2048,2048),fill=INK)
+ text(d,(104,1904),'ナンプレ帳',48,WHITE,True)
+ text(d,(104,1986),'無料で遊ぶ・問題をつくる・A4印刷',27,'#D5E1D6')
+ text(d,(1744,1908),URL,52,WHITE,False,'rt')
+ text(d,(1744,1986),'検索のヒント：ナンプレ帳 atugari',28,'#D5E1D6',False,'rt')
+ qr=qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_M,box_size=4,border=4)
+ qr.add_data('https://'+URL);qr.make(fit=True)
+ q=qr.make_image(fill_color=INK,back_color=WHITE).convert('RGB')
+ assert q.width<=156 and q.height<=156
+ im.paste(q,(1944-q.width,2036-q.height))
+
  return im,d
 
 SHIRU=json.loads((ROOT/'shiru.json').read_text())
@@ -90,7 +97,7 @@ def shiru(answer=False):
  '全てのマスを使って各部屋に ○・△・□・× を1つずつ。',
  '部屋は上下左右につながる6マス。空白マスも使います。',
  '上下左右で隣り合う同じ印の間には必ず境界線を引きます。'],size=42,gap=19,width=1840)
- text(d,(104,1853),'8×6マス / 4種類の印 / 1部屋6マス',31,MUTED)
+ text(d,(104,1832),'8×6マス / 4種類の印 / 1部屋6マス',31,MUTED)
  return im
 
 def sudoku(answer=False):
@@ -107,7 +114,7 @@ def sudoku(answer=False):
   if value:
    r,c=divmod(i,9);center(d,(x+(c+.5)*cell,y+(r+.5)*cell),value,89,INK if SUDOKU['puzzle'][i] else '#315F8A')
  lines(d,104,1752,['同じ行・列・太い枠の中で数字を重ねずに埋めてください。'],size=43,width=1840)
- text(d,(104,1853),'9×9 / 通常ルール / ナンプレ＝数独（Sudoku）',31,MUTED)
+ text(d,(104,1832),'9×9 / 通常ルール / ナンプレ＝数独（Sudoku）',31,MUTED)
  return im
 
 def arrow(d,start,end,color=INK,width=20,head=36):
@@ -132,7 +139,7 @@ def wado(answer=False):
   text(d,(1024,1665),words,52,INK,True,'mt')
  else:text(d,(1024,1684),'矢印の向きに2文字で読んでください。',48,INK,True,'mt')
  text(d,(1024,1772),'上・左 → 中央 → 右・下',39,MUTED,False,'mt')
- text(d,(104,1853),'※解答例以外にも成立する熟語の組み合わせがある場合があります。',30,MUTED)
+ text(d,(104,1832),'※解答例以外にも成立する熟語の組み合わせがある場合があります。',30,MUTED)
  return im
 
 def crossword(answer=False):
@@ -150,7 +157,7 @@ def crossword(answer=False):
   yy=1140
   entries=sorted((e for e in CW['entries'] if e['d']==direction),key=lambda e:e['num'])
   clue_size=40
-  while clue_size>36 and sum(max(clue_size+15,len(wrap(d,e['displayClue'],810,clue_size))*(clue_size+8)+7) for e in entries)>745:clue_size-=2
+  while clue_size>36 and sum(max(clue_size+15,len(wrap(d,e['displayClue'],810,clue_size))*(clue_size+8)+7) for e in entries)>710:clue_size-=2
   for entry in entries:
    text(d,(left,yy),str(entry['num']),36,'#725887',True)
    clue=entry['answer']+'：'+entry['displayClue'] if answer else entry['displayClue']
@@ -159,16 +166,20 @@ def crossword(answer=False):
    chunks=wrap(d,clue,810,clue_size)
    for j,line in enumerate(chunks):text(d,(left+62,yy+j*(clue_size+8)),line,clue_size,INK,False,limit=left+880)
    yy+=max(clue_size+15,len(chunks)*(clue_size+8)+7)
-  assert yy<=1885,('クロスワードのカギが画像に収まりません',direction,yy)
+  assert yy<=1850,('クロスワードのカギが画像に収まりません',direction,yy)
  return im
 
 images=[]
 for name,fn in [('01-shirupure',shiru),('02-sudoku',sudoku),('03-wado',wado),('04-crossword',crossword)]:
- im=fn();im.save(OUT/(name+'.png'),optimize=True);images.append(im)
+ im=fn()
+ for size in (2048,1024):
+  scan=im if size==2048 else im.resize((size,size),Image.Resampling.LANCZOS)
+  assert 'https://'+URL in [b.text for b in zxingcpp.read_barcodes(scan)],('QR decode failed',name,size)
+ im.save(OUT/(name+'.png'),optimize=True);images.append(im)
 check_font=TTFont(BOLD,fontNumber=0);cmap=check_font.getBestCmap();missing=sorted({c for t in texts for c in t if not c.isspace() and ord(c) not in cmap})
 assert not missing,missing
 assert len([p for p in OUT.glob('0*.png')])==4
 for p in OUT.glob('*.png'):
  assert p.stat().st_size<5*1024*1024
  print(p.name,p.stat().st_size)
-(ROOT/'render-audit.json').write_text(json.dumps({'canvas':[2048,2048],'all_images_below_5MB':True,'checked_text_objects':len(boxes),'missing_glyphs':missing,'arrow_clearance_pixels':35},indent=2))
+(ROOT/'render-audit.json').write_text(json.dumps({'canvas':[2048,2048],'all_images_below_5MB':True,'checked_text_objects':len(boxes),'missing_glyphs':missing,'arrow_clearance_pixels':35,'qr_decoded_at':[2048,1024],'search_hint':'ナンプレ帳 atugari'},indent=2))

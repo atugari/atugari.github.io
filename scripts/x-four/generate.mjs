@@ -39,7 +39,7 @@ if(!shiru)throw Error('No unused verified difficult Shirupure');save('shiru.json
 const c=context(seed);
 for(const name of ['crossword-words.js','crossword-clues.js','crossword-layouts.js','crossword-engine.js','crossword-layout.js'])vm.runInContext(fs.readFileSync(path.join(base,name),'utf8'),c,{timeout:10000});
 let crossword;
-for(let i=0;i<100;i++){const p=c.Crossword.generate(0,seed+i,{level:3,clue:0,genre:'all'});if(p.n===7&&[0,1].every(d=>p.entries.filter(e=>e.d===d).reduce((h,e)=>h+Math.max(51,Math.ceil(e.clue.length/21)*44+7),0)<=745)&&c.Crossword.valid(p)&&accept(p,['crossword',p.n,p.grid])){crossword=p;break;}}
+for(let i=0;i<100;i++){const p=c.Crossword.generate(0,seed+i,{level:3,clue:0,genre:'all'});if(p.n===7&&[0,1].every(d=>p.entries.filter(e=>e.d===d).reduce((h,e)=>h+Math.max(51,Math.ceil(e.clue.length/21)*44+7),0)<=710)&&c.Crossword.valid(p)&&accept(p,['crossword',p.n,p.grid])){crossword=p;break;}}
 if(!crossword)throw Error('No unused valid crossword');save('crossword-generated.json',crossword);
 
 vm.runInContext(fs.readFileSync(path.join(repo,'scripts/client-overrides/public/notebook/wado-engine.js'),'utf8'),c,{timeout:5000});
