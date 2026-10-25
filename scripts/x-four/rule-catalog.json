@@ -1,10 +1,181 @@
 [
-  {"rule":"normal","title":"ナンプレ","family":"sudoku","max_level":18,"levels":[[1,2,3],[4,5,6],[7,8]]},
-  {"rule":"jigsaw","title":"ジグソーナンプレ","family":"sudoku","max_level":5,"levels":[[1],[2,3],[4,5]]},
-  {"rule":"diagonal","title":"対角線ナンプレ","family":"sudoku","max_level":8,"levels":[[1,2],[3,4,5],[6,7,8]]},
-  {"rule":"hyper","title":"ハイパーナンプレ","family":"sudoku","max_level":8,"levels":[[1,2],[3,4,5],[6,7,8]]},
-  {"rule":"antiknight","title":"アンチナイトナンプレ","family":"sudoku","max_level":8,"levels":[[1,2],[3,4,5],[6,7,8]]},
-  {"rule":"shirupure","title":"シルプレ","family":"shirupure","max_level":3,"levels":[[1],[2],[3]]},
-  {"rule":"wado","title":"和同開珎","family":"wado","max_level":10,"levels":[[1,2,3],[4,5,6,7],[8,9,10]]},
-  {"rule":"crossword","title":"クロスワード","family":"crossword","max_level":3,"levels":[[1],[2],[3]]}
+  {
+    "rule": "normal",
+    "title": "ナンプレ",
+    "family": "sudoku",
+    "max_level": 18,
+    "levels": [
+      [
+        1,
+        2
+      ],
+      [
+        3,
+        4,
+        5
+      ],
+      [
+        6,
+        7
+      ],
+      [
+        8
+      ]
+    ]
+  },
+  {
+    "rule": "jigsaw",
+    "title": "ジグソーナンプレ",
+    "family": "sudoku",
+    "max_level": 5,
+    "levels": [
+      [
+        1
+      ],
+      [
+        2
+      ],
+      [
+        3
+      ],
+      [
+        4,
+        5
+      ]
+    ]
+  },
+  {
+    "rule": "diagonal",
+    "title": "対角線ナンプレ",
+    "family": "sudoku",
+    "max_level": 8,
+    "levels": [
+      [
+        1,
+        2
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        7,
+        8
+      ]
+    ]
+  },
+  {
+    "rule": "hyper",
+    "title": "ハイパーナンプレ",
+    "family": "sudoku",
+    "max_level": 8,
+    "levels": [
+      [
+        1,
+        2
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        7,
+        8
+      ]
+    ]
+  },
+  {
+    "rule": "antiknight",
+    "title": "アンチナイトナンプレ",
+    "family": "sudoku",
+    "max_level": 8,
+    "levels": [
+      [
+        1,
+        2
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        7,
+        8
+      ]
+    ]
+  },
+  {
+    "rule": "shirupure",
+    "title": "シルプレ",
+    "family": "shirupure",
+    "max_level": 3,
+    "levels": [
+      [
+        1
+      ],
+      [
+        2
+      ],
+      [
+        3
+      ],
+      []
+    ]
+  },
+  {
+    "rule": "wado",
+    "title": "和同開珎",
+    "family": "wado",
+    "max_level": 10,
+    "levels": [
+      [
+        1,
+        2
+      ],
+      [
+        3,
+        4,
+        5
+      ],
+      [
+        6,
+        7
+      ],
+      [
+        8,
+        9,
+        10
+      ]
+    ]
+  },
+  {
+    "rule": "crossword",
+    "title": "クロスワード",
+    "family": "crossword",
+    "max_level": 3,
+    "levels": [
+      [
+        1
+      ],
+      [
+        2
+      ],
+      [
+        3
+      ],
+      []
+    ]
+  }
 ]

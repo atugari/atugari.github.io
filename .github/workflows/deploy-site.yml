@@ -84,6 +84,7 @@ jobs:
           node --experimental-vm-modules scripts/check-nanpure-ranking.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
           export PLAYWRIGHT_MODULE="$RUNNER_TEMP/nanpure-browser/node_modules/playwright"
           export CHROME_BIN="$(command -v google-chrome || command -v chromium)"
+          node scripts/check-nanpure-home-titles-browser.cjs _site
           node scripts/check-nanpure-keyboard-dialogs.cjs
           node scripts/check-nanpure-wado-browser.cjs _site
           node scripts/check-nanpure-magic-browser.cjs _site

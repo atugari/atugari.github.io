@@ -10,7 +10,7 @@ meta=json.loads((root/'meta.json').read_text());day=meta['date'];questions=meta[
 assert questions==daily_plan(day)
 
 def alt_text(item,p,number):
- text=f"{number}{item['title']}。{item['difficulty']}。難易度{item['level']}/{item['max_level']}。"
+ text=f"{number}{item['title']}。難易度：{item['difficulty']}。"
  family=item['family']
  if family=='sudoku':
   text+=''.join(sudoku_rules(item['rule']))+'0は空欄。数字は上の行から：'+'／'.join(''.join(map(str,p['puzzle'][r*9:(r+1)*9])) for r in range(9))+'。'

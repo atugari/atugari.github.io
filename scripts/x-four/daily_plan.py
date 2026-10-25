@@ -5,7 +5,7 @@ import hashlib,json,random,sys
 
 CATALOG=json.loads((Path(__file__).parent/'rule-catalog.json').read_text(encoding='utf-8'))
 RULES={item['rule']:item for item in CATALOG}
-LABELS=('やさしい','ふつう','むずかしい')
+LABELS=('簡単','普通','難しい','とても難しい')
 
 def daily_plan(day):
     date.fromisoformat(day)
@@ -15,7 +15,7 @@ def daily_plan(day):
         if sum(item['family']=='sudoku' for item in selected)<=2:break
     result=[]
     for index,item in enumerate(selected,1):
-        tier=rng.randrange(3)
+        tier=rng.choice([i for i,levels in enumerate(item['levels']) if levels])
         result.append({'rule':item['rule'],'title':item['title'],'family':item['family'],
                        'level':rng.choice(item['levels'][tier]),'max_level':item['max_level'],
                        'difficulty':LABELS[tier],'file':f'{index:02}-question.png',

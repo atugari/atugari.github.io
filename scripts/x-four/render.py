@@ -68,7 +68,7 @@ def base(number,title,badge,accent,subtitle,answer=False):
 
  return im,d
 
-def badge(item):return f"{item['difficulty']} / Lv.{item['level']}・{item['max_level']}段階"
+def badge(item):return item['difficulty']
 
 def mark(d,x,y,value,scale=1):
  radius=40*scale;width=max(3,round(10*scale))

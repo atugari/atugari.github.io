@@ -1,7 +1,7 @@
 from datetime import datetime,timedelta
 import unittest
 from zoneinfo import ZoneInfo
-from daily_plan import daily_plan,RULES
+from daily_plan import daily_plan,RULES,LABELS
 from post_schedule import SLOTS,publication_key,resolve_slot
 
 class ScheduleTests(unittest.TestCase):
@@ -15,6 +15,7 @@ class ScheduleTests(unittest.TestCase):
         self.assertEqual(len({publication_key('2026-10-25',slot) for slot in SLOTS}),4)
         with self.assertRaises(ValueError):publication_key('2026-10-25','09:00')
     def test_daily_plan_is_stable_and_varies_rules_and_real_levels(self):
+        self.assertEqual(LABELS,('簡単','普通','難しい','とても難しい'))
         day=datetime(2026,10,25);seen_rules=set();seen_plans=set();levels={}
         for offset in range(60):
             date=(day+timedelta(days=offset)).date().isoformat();plan=daily_plan(date)
@@ -22,6 +23,7 @@ class ScheduleTests(unittest.TestCase):
             self.assertLessEqual(sum(q['family']=='sudoku' for q in plan),2)
             for item in plan:
                 self.assertIn(item['level'],sum(RULES[item['rule']]['levels'],[]))
+                self.assertIn(item['difficulty'],LABELS)
                 seen_rules.add(item['rule']);levels.setdefault(item['rule'],set()).add(item['level'])
             seen_plans.add(tuple(q['rule'] for q in plan))
         self.assertEqual(seen_rules,set(RULES));self.assertGreater(len(seen_plans),10)
