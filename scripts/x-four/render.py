@@ -5,6 +5,7 @@ from PIL import Image,ImageDraw,ImageFont
 from fontTools.ttLib import TTFont
 from daily_plan import daily_plan
 from rule_text import sudoku_rules
+from font_text import readable
 
 ROOT=Path(sys.argv[1]).resolve()
 OUT=ROOT/'output';OUT.mkdir(exist_ok=True)
@@ -12,6 +13,7 @@ S=2048
 BG='#F7F4EC';INK='#1F302B';MUTED='#5A665F';LINE='#ADB5AC';WHITE='#FFFFFF'
 URL='atugari.github.io/nanpure/'
 REG=Path(os.environ.get('X_FONT_REGULAR','/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc'));BOLD=Path(os.environ.get('X_FONT_BOLD','/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc'))
+CMAP=set(TTFont(BOLD,fontNumber=0).getBestCmap()) & set(TTFont(REG,fontNumber=0).getBestCmap())
 META=json.loads((ROOT/'meta.json').read_text());ITEMS=META['questions']
 assert ITEMS==daily_plan(META['date'])
 DAY=META['date'].replace('-','.')
@@ -19,7 +21,7 @@ DAY=META['date'].replace('-','.')
 def font(size,bold=False):return ImageFont.truetype(str(BOLD if bold else REG),size)
 texts=[];boxes=[]
 def text(draw,xy,value,size=44,fill=INK,bold=False,anchor='lt',limit=None):
- value=str(value);texts.append(value)
+ value=readable(value,CMAP);texts.append(value)
  bbox=draw.textbbox(xy,value,font=font(size,bold),anchor=anchor)
  if limit:assert bbox[2]<=limit,(value,bbox,limit)
  assert bbox[0]>=-1 and bbox[1]>=-1 and bbox[2]<=S+1 and bbox[3]<=S+1,(value,bbox)
@@ -27,11 +29,11 @@ def text(draw,xy,value,size=44,fill=INK,bold=False,anchor='lt',limit=None):
  return bbox
 def center(draw,xy,value,size=80,fill=INK,bold=True):
  # Bounding-box centering includes CJK glyph height and avoids baseline drift.
- value=str(value);f=font(size,bold);b=draw.textbbox((0,0),value,font=f)
+ value=readable(value,CMAP);f=font(size,bold);b=draw.textbbox((0,0),value,font=f)
  x=xy[0]-(b[2]-b[0])/2-b[0];y=xy[1]-(b[3]-b[1])/2-b[1]
  texts.append(value);draw.text((x,y),value,font=f,fill=fill)
 def wrap(draw,value,max_width,size,bold=False):
- lines=[];line=''
+ lines=[];line='';value=readable(value,CMAP)
  for char in value:
   if draw.textlength(line+char,font=font(size,bold))>max_width:
    lines.append(line);line=char
