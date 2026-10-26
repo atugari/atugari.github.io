@@ -91,10 +91,10 @@
       "key": "2026-10-26@12:00",
       "day": "2026-10-26",
       "slot": "12:00",
-      "status": "ready",
-      "post_id": null,
+      "status": "sent",
+      "post_id": "2114552865297420533",
       "due": 1792983600000,
-      "sent_at": null,
+      "sent_at": 1792983664699,
       "error": null,
       "date": "2026-10-26",
       "fingerprints": [
