@@ -1,5 +1,18 @@
 [
   {
+    "version": "2026.10.26.61",
+    "date": "2026-10-26",
+    "kind": "improvement",
+    "scope": "ofuse",
+    "visibility": "internal",
+    "notify": false,
+    "title": "応援メンバーの公開ページへ接続",
+    "items": [
+      "月100円の応援メンバーと1回ごとの支援を案内します。",
+      "問題づくり・プレイ・印刷は引き続き無料で使えます。"
+    ]
+  },
+  {
     "version": "2026.10.26.60",
     "date": "2026-10-26",
     "kind": "improvement",

@@ -46,7 +46,13 @@ function button(text){const b=[...w.document.querySelectorAll('button')].find(x=
  assert.equal(w.document.querySelectorAll('iframe.notebook').length,0,'Home must not preload the puzzle notebook');
  assert(!intervals.includes(500),'Home must not run a half-second play clock');
  const daily=w.document.querySelector('button.daily-choice');assert(daily);assert(!w.document.querySelector('a.daily-choice'));
- const menu=w.document.querySelector('.menu-button');assert(menu,'Menu button missing');menu.click();await settle(()=>w.document.querySelector('.site-menu'),'menu panel');assert(w.document.querySelector('.site-menu'));button('閉じる ×');await settle(()=>!w.document.querySelector('.site-menu'),'menu dismissal');
+ const membership='https://ofuse.me/memberships/5107',letter='https://ofuse.me/o?uid=228296';
+ const homeSupport=w.document.querySelector('.home-support-button');assert.equal(homeSupport.getAttribute('href'),membership);assert(homeSupport.textContent.includes('100円'));assert.equal(w.document.querySelector('.header-support').getAttribute('href'),letter);
+ const menu=w.document.querySelector('.menu-button');assert(menu,'Menu button missing');menu.click();await settle(()=>w.document.querySelector('.site-menu'),'menu panel');assert(w.document.querySelector('.site-menu'));
+ const supportEntry=[...w.document.querySelectorAll('.menu-entry')].find(x=>x.querySelector('strong')?.textContent==='制作を応援');assert(supportEntry);supportEntry.click();await settle(()=>w.document.querySelector('.membership-support'),'membership support panel');
+ const support=w.document.querySelector('.membership-support');assert(support.textContent.includes('メンバー限定の機能や追加特典はありません。'));assert(support.textContent.includes('問題づくり・プレイ・印刷は無料で使えます。'));
+ const memberLinks=[...support.querySelectorAll('a')];assert.deepEqual(memberLinks.map(x=>x.getAttribute('href')),[membership,letter]);for(const link of memberLinks){assert.equal(link.getAttribute('target'),'_blank');assert.equal(link.getAttribute('rel'),'noopener noreferrer')}
+ button('閉じる ×');await settle(()=>!w.document.querySelector('.membership-support'),'support dismissal');
  const free=w.document.querySelector('.main-choice');free.click();await settle(()=>w.document.querySelector('.site-shell.mode-practice')&&w.document.querySelector('iframe.notebook'),'free-play render');assert(w.document.querySelector('.site-shell').classList.contains('mode-practice'));
  assert(w.document.querySelector('.practice-loading[role="status"]'),'First notebook load has a visible status');
  const iframe=w.document.querySelector('iframe.notebook');assert.equal(iframe.getAttribute('src'),manifest.base+'notebook/index.html');

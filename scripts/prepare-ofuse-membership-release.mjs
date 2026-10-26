@@ -1,0 +1,43 @@
+// Extend the verified client release with the published, optional OFUSE plan.
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import {createRequire} from 'node:module';
+import {fileURLToPath} from 'node:url';
+import {execFileSync} from 'node:child_process';
+
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+const previous=process.argv[2]||'2026.10.26.60',version=process.argv[3]||'2026.10.26.61';
+const buildModule=process.argv[4]||path.join(root,'nanpure-api/node_modules/esbuild');
+execFileSync(process.execPath,[path.join(root,'scripts/prepare-cloud-notice-release.mjs'),previous,version,buildModule],{cwd:root,stdio:'pipe'});
+const esbuild=createRequire(import.meta.url)(buildModule),base='/nanpure/releases/'+version+'/',out=path.join(root,base);
+const hash=value=>crypto.createHash('sha256').update(value).digest('hex');
+const source=fs.readFileSync(path.join(root,'scripts/client-overrides/app/support.tsx'),'utf8');
+const component=source.replace(/^'use client';\s*/,'').replace(/^import.*$/gm,'').replace('export default function Support(','function ep(').replace('useLocale()','Y()');
+const compiled=await esbuild.transform(component,{loader:'tsx',jsxFactory:'Ct.createElement',jsxFragment:'Ct.Fragment',target:'es2022',minify:true,charset:'utf8'});
+const file=path.join(out,'shell/main.js');let shell=fs.readFileSync(file,'utf8').replace(/\/\* support-source:[a-f0-9]+ \*\//g,'');
+const start=shell.indexOf('function ep('),end=shell.indexOf('var Mr=',start);
+if(start<0||end<start||!shell.slice(start,end).includes('creator-support')||!compiled.code.startsWith('function ep('))throw Error('Support component anchor changed');
+shell=shell.slice(0,start)+'/* support-source:'+hash(source)+' */'+compiled.code+shell.slice(end);
+const oldAnchor='className:"home-support-button",href:"https://ofuse.me/o?uid=228296"',newAnchor='className:"home-support-button",href:"https://ofuse.me/memberships/5107"';
+const oldCaption='t("OFUSE\\u3067\\u5236\\u4F5C\\u3092\\u5FDC\\u63F4")';
+if(shell.split(oldAnchor).length!==2||shell.split(oldCaption).length!==2)throw Error('Home support anchor changed');
+shell=shell.replace(oldAnchor,newAnchor).replace(oldCaption,'t("月100円で制作を応援")');
+fs.writeFileSync(file,shell);
+fs.copyFileSync(path.join(root,'scripts/client-overrides/public/ofuse-membership.css'),path.join(out,'ofuse-membership.css'));
+const home=path.join(root,'nanpure/index.html');let html=fs.readFileSync(home,'utf8');
+const oldStatic='class="home-support-button" href="https://ofuse.me/o?uid=228296"';
+if(html.split(oldStatic).length!==2)throw Error('Static home support anchor changed');
+html=html.replace(oldStatic,'class="home-support-button" href="https://ofuse.me/memberships/5107"').replace('OFUSEで制作を応援','月100円で制作を応援');
+html=html.replace(/<link rel="stylesheet" href="[^"]*ofuse-membership.css">\s*/g,'').replace('</head>','<link rel="stylesheet" href="'+base+'ofuse-membership.css">\n</head>');
+fs.writeFileSync(home,html);
+const manifestPath=path.join(root,'nanpure/release-manifest.json'),manifest=JSON.parse(fs.readFileSync(manifestPath));
+const infoPath=path.join(root,'nanpure/version.json'),info=JSON.parse(fs.readFileSync(infoPath));
+info.supportSourceSha256=hash(source);manifest.supportSourceSha256=info.supportSourceSha256;
+manifest.files[path.relative(root,path.join(out,'ofuse-membership.css'))]='';
+for(const name of Object.keys(manifest.files))manifest.files[name]=hash(fs.readFileSync(path.join(root,name)));
+fs.writeFileSync(infoPath,JSON.stringify(info));
+// version.json is a manifest entry too.
+if(Object.hasOwn(manifest.files,'nanpure/version.json'))manifest.files['nanpure/version.json']=hash(fs.readFileSync(infoPath));
+fs.writeFileSync(manifestPath,JSON.stringify(manifest,null,2)+'\n');
+console.log('Prepared optional OFUSE membership release',version,Object.keys(manifest.files).length,'verified files');

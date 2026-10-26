@@ -38,3 +38,4 @@ Object.assign(module.exports,require('./catalog-cloud-57.cjs'));
 Object.assign(module.exports,require('./catalog-cloud-retirement-58.cjs'));
 
 Object.assign(module.exports,require('./catalog-cloud-notice-59.cjs'));
+Object.assign(module.exports,require('./catalog-ofuse-membership-61.cjs'));
