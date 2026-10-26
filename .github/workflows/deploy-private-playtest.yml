@@ -1,0 +1,83 @@
+name: Deploy invite-only playtest
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/private-playtest/**'
+      - '.github/workflows/deploy-private-playtest.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: private-playtest-deployment
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.repository == 'atugari/atugari.github.io' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CLOUDFLARE_ACCOUNT_ID: '3fb1db1d33caddf96fec77fac7d571e6'
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - name: Verify private deployment transport
+        run: node --test .github/private-playtest/envelope.test.mjs
+      - name: Publish only the deployment public key
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: node .github/private-playtest/envelope.mjs public-key
+      - name: Open private package in the temporary runner
+        if: hashFiles('.github/private-playtest/payload.json') != ''
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: node .github/private-playtest/envelope.mjs open .github/private-playtest/payload.json "$RUNNER_TEMP/private-playtest"
+      - name: Install and validate the private game server
+        if: hashFiles('.github/private-playtest/payload.json') != ''
+        working-directory: ${{ runner.temp }}/private-playtest
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build
+      - name: Deploy isolated invitation-only server and protected assets
+        if: hashFiles('.github/private-playtest/payload.json') != ''
+        working-directory: ${{ runner.temp }}/private-playtest
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          npx wrangler deploy
+          npx wrangler secret bulk .secrets/worker-secrets.json
+      - name: Verify live invitation gate and both two-player games
+        if: hashFiles('.github/private-playtest/payload.json') != ''
+        working-directory: ${{ runner.temp }}/private-playtest
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import {readFileSync,appendFileSync} from 'node:fs';
+          import {spawnSync} from 'node:child_process';
+          const origin='https://private-playtest.puzzle-hub-4826.workers.dev';
+          let ready=false;
+          for(let i=0;i<10;i++){
+            const r=await fetch(origin,{signal:AbortSignal.timeout(10000)});
+            if(r.status===200&&(await r.text()).includes('招待制プレイテスト')){ready=true;break;}
+            if(i<9)await new Promise(resolve=>setTimeout(resolve,3000));
+          }
+          assert.ok(ready,'Private entrance did not become ready.');
+          for(const path of ['/arena/','/story/','/arena/app.js','/story/assets/6d475ed6cb14f421.jpg','/api/arena/health']){
+            const r=await fetch(origin+path,{signal:AbortSignal.timeout(10000)});assert.equal(r.status,401,path);assert.match(r.headers.get('Cache-Control'),/no-store/);assert.match(r.headers.get('X-Robots-Tag'),/noindex/);
+          }
+          const code=readFileSync('.secrets/check-code','utf8').trim();
+          const check=spawnSync(process.execPath,['scripts/check-arena-runtime.mjs','--remote',origin],{env:{...process.env,PLAYTEST_CODE:code},stdio:'inherit',timeout:120000});
+          assert.equal(check.status,0,'Two-player live verification failed.');
+          appendFileSync(process.env.GITHUB_STEP_SUMMARY,'Invitation-only playtest verified: '+origin+'\n\nAnonymous access to game files and APIs is rejected. Both two-player games passed. No invite values are published.\n');
+          NODE
+      - name: Remove decrypted temporary files
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/private-playtest"
