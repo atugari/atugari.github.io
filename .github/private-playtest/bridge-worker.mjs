@@ -4,6 +4,7 @@ const encoder=new TextEncoder();
 function reply(data,status=200){return Response.json(data,{status,headers:{'Cache-Control':'no-store','X-Robots-Tag':'noindex, nofollow'}});}
 export default {
  async fetch(request,env){
+  if(Date.now()>Number(env.EXPIRES_AT||0))return reply({error:'Transfer closed'},410);
   const url=new URL(request.url),parts=url.pathname.split('/');
   if(request.method!=='POST'||parts.length!==4||parts[1]!=='_release'||parts[2]!==env.RELEASE_ID)return reply({error:'準備中です。'},503);
   const key=request.headers.get('X-Upload-Key')||'';

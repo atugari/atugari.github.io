@@ -14,15 +14,15 @@ const temp=process.env.RUNNER_TEMP;
 if(!temp||!token||!account||!/^\w{32}$/.test(release.release)||!/^[a-f0-9]{64}$/.test(release.uploadHash))throw Error('Missing private transfer configuration.');
 const command=process.argv[2];
 if(command==='prepare'){
- const r=await fetch('https://api.cloudflare.com/client/v4/accounts/'+account+'/workers/scripts/private-playtest/settings',{headers,signal:AbortSignal.timeout(20000)}),data=await r.json();
- if(data.success){const names=new Set((data.result?.bindings||[]).map(v=>v.name));if(!names.has('DEPLOY_DB')&&!(names.has('ARENA')&&names.has('GATE_LIMITER')))throw Error('The target Worker belongs to another project.');}
+ const r=await fetch('https://api.cloudflare.com/client/v4/accounts/'+account+'/workers/scripts/private-playtest-inbox/settings',{headers,signal:AbortSignal.timeout(20000)}),data=await r.json();
+ if(data.success){const names=new Set((data.result?.bindings||[]).map(v=>v.name));if(!names.has('DEPLOY_DB'))throw Error('The inbox Worker belongs to another project.');}
  else if(r.status!==404||!data.errors?.some(v=>v.code===10007))throw Error('Could not verify the isolated destination (HTTP '+r.status+').');
  await query('CREATE TABLE IF NOT EXISTS private_playtest_release_parts(release_id TEXT NOT NULL,path TEXT NOT NULL,data TEXT NOT NULL,sha TEXT NOT NULL,PRIMARY KEY(release_id,path))');
  const folder=resolve(temp,'private-playtest-inbox');mkdirSync(folder,{recursive:true,mode:0o700});
- const config={name:'private-playtest',main:resolve(root,'.github/private-playtest/bridge-worker.mjs'),compatibility_date:'2026-05-15',workers_dev:true,preview_urls:false,d1_databases:[{binding:'DEPLOY_DB',database_name:'puzzle-db',database_id:database}],vars:{UPLOAD_HASH:release.uploadHash,RELEASE_ID:release.release}};
+ const config={name:'private-playtest-inbox',main:resolve(root,'.github/private-playtest/bridge-worker.mjs'),compatibility_date:'2026-05-15',workers_dev:true,preview_urls:false,d1_databases:[{binding:'DEPLOY_DB',database_name:'puzzle-db',database_id:database}],vars:{UPLOAD_HASH:release.uploadHash,RELEASE_ID:release.release,EXPIRES_AT:String(Date.now()+15*60000)}};
  writeFileSync(resolve(folder,'wrangler.json'),JSON.stringify(config));console.log('Authenticated encrypted inbox prepared.');
 }else if(command==='receive'){
- console.log('STAGING_UPLOAD_READY=https://private-playtest.puzzle-hub-4826.workers.dev');
+ console.log('STAGING_UPLOAD_READY=https://private-playtest-inbox.puzzle-hub-4826.workers.dev');
  let ready=false;
  for(let i=0;i<60;i++){if((await query('SELECT path FROM private_playtest_release_parts WHERE release_id=? AND path=?',[release.release,'complete'])).length){ready=true;break;}await new Promise(resolve=>setTimeout(resolve,10000));}
  if(!ready)throw Error('Encrypted transfer did not finish within the reception window.');
@@ -45,4 +45,10 @@ if(command==='prepare'){
  console.log('::add-mask::'+readFileSync(resolve(temp,'private-playtest/.secrets/check-code'),'utf8').trim());
 }else if(command==='cleanup'){
  await query('DELETE FROM private_playtest_release_parts WHERE release_id=?',[release.release]);console.log('Temporary encrypted transfer rows removed.');
+ const url='https://api.cloudflare.com/client/v4/accounts/'+account+'/workers/scripts/private-playtest-inbox';
+ const r=await fetch(url+'/settings',{headers,signal:AbortSignal.timeout(20000)}),settings=await r.json();
+ if(settings.success&&settings.result?.bindings?.some(v=>v.name==='RELEASE_ID'&&v.text===release.release)){
+  const deleted=await fetch(url,{method:'DELETE',headers,signal:AbortSignal.timeout(20000)}),result=await deleted.json();
+  if(!deleted.ok||!result.success)throw Error('Temporary inbox cleanup failed.');console.log('Temporary authenticated inbox removed.');
+ }
 }else throw Error('Expected prepare, receive, mask, or cleanup.');
