@@ -36,6 +36,10 @@ if(command==='prepare'){
  const manifest=JSON.parse(readFileSync(resolve(folder,'payload.json'),'utf8'));if(manifest.sha256!==release.encryptedSha256)throw Error('Wrong encrypted release.');
  console.log('Private encrypted package received and checked.');
 }else if(command==='mask'){
+ const entryPath=resolve(temp,'private-playtest/src/index.js'),before="const target=u.pathname==='/'?new URL('/arena/'+u.search,u):u;",after="if(u.pathname==='/')return response(null,303,{'Location':'/arena/'+u.search}); const target=u;";
+ const source=readFileSync(entryPath,'utf8');
+ if(!source.includes(before)&&!source.includes(after))throw Error('Unknown private entry routing format.');
+ writeFileSync(entryPath,source.replace(before,after),{mode:0o600});
  const secrets=JSON.parse(readFileSync(resolve(temp,'private-playtest/.secrets/worker-secrets.json'),'utf8'));
  for(const value of Object.values(secrets))console.log('::add-mask::'+value);
  console.log('::add-mask::'+readFileSync(resolve(temp,'private-playtest/.secrets/check-code'),'utf8').trim());
