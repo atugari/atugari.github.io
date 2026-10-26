@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - '.github/private-playtest/**'
+      - '.github/private-playtest/bridge-release.json'
       - '.github/workflows/deploy-private-playtest.yml'
   workflow_dispatch:
 
@@ -35,27 +35,38 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: node .github/private-playtest/envelope.mjs public-key
-      - name: Open private package in the temporary runner
-        if: hashFiles('.github/private-playtest/payload.json') != ''
+      - name: Install existing deployment tools
+        run: npm ci --prefix nanpure-api --no-audit --no-fund
+      - name: Prepare authenticated encrypted transfer
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: node .github/private-playtest/envelope.mjs open .github/private-playtest/payload.json "$RUNNER_TEMP/private-playtest"
+        run: node .github/private-playtest/bridge.mjs prepare
+      - name: Open a private write-only reception point
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: npm exec --prefix nanpure-api -- wrangler deploy --config "$RUNNER_TEMP/private-playtest-inbox/wrangler.json"
+      - name: Receive encrypted files directly in Cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: node .github/private-playtest/bridge.mjs receive
+      - name: Open private package in the temporary runner
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          node .github/private-playtest/envelope.mjs open "$RUNNER_TEMP/private-playtest-encrypted/payload.json" "$RUNNER_TEMP/private-playtest"
+          node .github/private-playtest/bridge.mjs mask
       - name: Install and validate the private game server
-        if: hashFiles('.github/private-playtest/payload.json') != ''
         working-directory: ${{ runner.temp }}/private-playtest
         run: |
           npm ci --no-audit --no-fund
-          npm run build
+          npm run build | sed "s/Kotodama/Prototype A/g"
       - name: Deploy isolated invitation-only server and protected assets
-        if: hashFiles('.github/private-playtest/payload.json') != ''
         working-directory: ${{ runner.temp }}/private-playtest
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
-          npx wrangler deploy
-          npx wrangler secret bulk .secrets/worker-secrets.json
+          npx wrangler deploy --secrets-file .secrets/worker-secrets.json
       - name: Verify live invitation gate and both two-player games
-        if: hashFiles('.github/private-playtest/payload.json') != ''
         working-directory: ${{ runner.temp }}/private-playtest
         run: |
           node --input-type=module <<'NODE'
@@ -78,6 +89,11 @@ jobs:
           assert.equal(check.status,0,'Two-player live verification failed.');
           appendFileSync(process.env.GITHUB_STEP_SUMMARY,'Invitation-only playtest verified: '+origin+'\n\nAnonymous access to game files and APIs is rejected. Both two-player games passed. No invite values are published.\n');
           NODE
+      - name: Remove encrypted transfer rows
+        if: always()
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: node .github/private-playtest/bridge.mjs cleanup
       - name: Remove decrypted temporary files
         if: always()
-        run: rm -rf "$RUNNER_TEMP/private-playtest"
+        run: rm -rf "$RUNNER_TEMP/private-playtest" "$RUNNER_TEMP/private-playtest-encrypted" "$RUNNER_TEMP/private-playtest-inbox"
