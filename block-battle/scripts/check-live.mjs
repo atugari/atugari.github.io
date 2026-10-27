@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';import{readFile}from'node:fs/promises';
+const origin=process.argv[2];if(!origin||new URL(origin).hostname.endsWith('.chatgpt.site'))throw Error('External public host required');
+const until=async(fn,ms=20000)=>{let end=Date.now()+ms;while(Date.now()<end){if(fn())return;await new Promise(r=>setTimeout(r,100))}throw Error('Live verification timed out')};
+let health;for(let i=0;i<10;i++){try{let r=await fetch(origin+'/api/health',{signal:AbortSignal.timeout(10000)});health=await r.json();if(r.ok&&health.ok&&health.version===22)break}catch{}if(i<9)await new Promise(r=>setTimeout(r,2000))}assert.equal(health?.version,22);assert.equal(health.transport,'websocket');
+let page=await fetch(origin,{redirect:'manual'});assert.equal(page.status,200);let html=await page.text();assert.match(html,/<title>BLOCK BATTLE/);assert.ok(!html.includes('chatgpt.site'));assert.ok(!html.includes('signin-with-chatgpt'));assert.ok(!html.includes('<script src='));
+const deployed=await(await fetch(origin+'/block-battle.mjs')).text();assert.equal(deployed,await readFile('public/block-battle.mjs','utf8'));assert.ok((await(await fetch(origin+'/test-checklist.html')).text()).includes('確認してほしいテスト一覧'));assert.ok((await(await fetch(origin+'/TEST_CHECKLIST.txt')).text()).includes('別回線'));
+let peers=[],interval;const code='QACF'+crypto.randomUUID().slice(0,8).toUpperCase();
+try{
+ async function connect(i){let url=new URL('/ws',origin);url.protocol='wss:';url.search=new URLSearchParams({mode:'private',n:'9',code,name:'AUTO'+i});let ws=new WebSocket(url),p={ws,id:null,room:null,players:[]};peers.push(p);ws.addEventListener('message',e=>{if(e.data==='pong')return;let d=JSON.parse(e.data);if(d.type==='state'){p.id=d.id;p.room=d.room;p.players=d.players}else if(d.type==='delta'&&p.room?.seed===d.seed){for(let row of d.rows){let t=p.players.find(t=>t.id===row.id);if(t)Object.assign(t,row)}}});await new Promise((resolve,reject)=>{ws.addEventListener('open',resolve,{once:true});ws.addEventListener('error',reject,{once:true})});return p}
+ await Promise.all(Array.from({length:9},(_,i)=>connect(i)));interval=setInterval(()=>peers.forEach(p=>{if(p.ws.readyState===1)p.ws.send('ping')}),4000);
+ await until(()=>peers.every(p=>p.room?.phase===1&&p.players.length===9));assert.equal(new Set(peers.map(p=>p.room.id)).size,1);assert.equal(new Set(peers.map(p=>p.room.seed)).size,1);await until(()=>Date.now()>=peers[0].room.start);
+ const tick=(p,seq,extra={})=>p.ws.send(JSON.stringify({t:'tick',seq,round:p.room.seed,board:'0'.repeat(220),piece:[0,3,1,0],score:0,lines:0,a:0,alive:1,...extra}));
+ tick(peers[0],1,{a:4});tick(peers[0],1,{a:4});await until(()=>peers.every(p=>p.players.reduce((s,x)=>s+x.g,0)===4));
+ peers.slice(1).forEach(p=>tick(p,1,{alive:0}));await until(()=>peers.every(p=>p.room.phase===2));assert.ok(peers.every(p=>p.room.winner===peers[0].id));
+ let previous=peers[0].room.seed;peers.slice(0,8).forEach(p=>p.ws.send(JSON.stringify({t:'ready'})));await new Promise(r=>setTimeout(r,250));assert.ok(peers.every(p=>p.room.phase===2));peers[8].ws.send(JSON.stringify({t:'ready'}));await until(()=>peers.every(p=>p.room.phase===1&&p.room.seed!==previous));assert.ok(peers.every(p=>p.players.every(x=>x.alive&&x.g===0)));
+ peers[8].ws.close(1000,'QA finished');await until(()=>peers.slice(0,8).every(p=>p.players.filter(x=>!x.online).length===1));
+ console.log(JSON.stringify({pass:true,origin,publicNoLogin:true,nineLiveConnections:true,commonSeed:true,attackOnce:true,uniqueWinner:true,allReadyRematch:true,disconnect:true,sourceMatches:true,checklist:true}));
+}finally{clearInterval(interval);peers.forEach(p=>p.ws.close(1000,'QA finished'))}

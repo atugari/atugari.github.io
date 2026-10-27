@@ -1,0 +1,13 @@
+{
+ "$schema":"node_modules/wrangler/config-schema.json",
+ "name":"block-battle",
+ "main":"public/block-battle.mjs",
+ "compatibility_date":"2026-05-15",
+ "compatibility_flags":["nodejs_compat"],
+ "workers_dev":true,
+ "define":{"__NODE__":"false"},
+ "preview_urls":false,
+ "assets":{"directory":"public","binding":"ASSETS"},
+ "durable_objects":{"bindings":[{"name":"HUB","class_name":"BattleHub"}]},
+ "migrations":[{"tag":"v1","new_sqlite_classes":["BattleHub"]}]
+}

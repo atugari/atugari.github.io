@@ -1,0 +1,56 @@
+name: Deploy public Block Battle
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'block-battle/**'
+      - '.github/workflows/deploy-block-battle.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: public-block-battle
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.repository == 'atugari/atugari.github.io' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - name: Install pinned build and deployment tools
+        working-directory: block-battle
+        run: npm ci --no-audit --no-fund
+      - name: Build and verify standalone source and relay
+        working-directory: block-battle
+        run: |
+          npm run build
+          npm test
+          test ! -f public/_qa.html
+      - name: Deploy isolated public Worker
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: '3fb1db1d33caddf96fec77fac7d571e6'
+          workingDirectory: block-battle
+          wranglerVersion: '4.92.0'
+          packageManager: npm
+          command: deploy
+      - name: Verify public entry and nine isolated test players
+        working-directory: block-battle
+        run: |
+          node scripts/check-live.mjs https://block-battle.puzzle-hub-4826.workers.dev
+          node --input-type=module <<'JS'
+          import{appendFileSync,readFileSync}from'node:fs';
+          const size=JSON.parse(readFileSync('generated/size.json','utf8'));
+          appendFileSync(process.env.GITHUB_STEP_SUMMARY,'Public game: https://block-battle.puzzle-hub-4826.workers.dev/\n\nChecklist: https://block-battle.puzzle-hub-4826.workers.dev/test-checklist.html\n\nNine live WebSockets, common seed, attack deduplication, winner, all-ready rematch, and disconnect passed. No ChatGPT hosting or login. Code characters: '+size.characters+'; conservative X post weight: '+size.postConservativeXWeight+'.\n');
+          JS
