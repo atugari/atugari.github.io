@@ -1,0 +1,173 @@
+[
+  {
+    "number": 1,
+    "id": "WADO-Q01",
+    "level": 1,
+    "count": 2,
+    "arms": {
+      "top": "安",
+      "right": "然"
+    },
+    "example": "全",
+    "reason": "難度1・2語",
+    "hint": "危ないことがなく、無事である状態"
+  },
+  {
+    "number": 2,
+    "id": "WADO-Q02",
+    "level": 1,
+    "count": 3,
+    "arms": {
+      "top": "安",
+      "right": "配",
+      "bottom": "理"
+    },
+    "example": "心",
+    "reason": "難度1・3語",
+    "hint": "気がかりや不安がなく、ほっとした気持ちです"
+  },
+  {
+    "number": 3,
+    "id": "WADO-Q03",
+    "level": 1,
+    "count": 4,
+    "arms": {
+      "top": "確",
+      "right": "号",
+      "left": "受",
+      "bottom": "用"
+    },
+    "example": "信",
+    "reason": "難度1・4語",
+    "hint": "赤・黄・青の光などで、道路の進行を指示するもの"
+  },
+  {
+    "number": 4,
+    "id": "WADO-Q04",
+    "level": 5,
+    "count": 2,
+    "arms": {
+      "top": "改",
+      "right": "所"
+    },
+    "example": "札",
+    "reason": "難度5・2語",
+    "hint": "駅で切符やICカードを確認し、人を通すこと"
+  },
+  {
+    "number": 5,
+    "id": "WADO-Q05",
+    "level": 5,
+    "count": 3,
+    "arms": {
+      "top": "長",
+      "right": "下",
+      "left": "革"
+    },
+    "example": "靴",
+    "reason": "難度5・3語",
+    "hint": "くつを履く前に、足に直接身につけます"
+  },
+  {
+    "number": 6,
+    "id": "WADO-Q06",
+    "level": 5,
+    "count": 4,
+    "arms": {
+      "top": "失",
+      "right": "北",
+      "left": "惨",
+      "bottom": "因"
+    },
+    "example": "敗",
+    "reason": "難度5・4語",
+    "hint": "しくじって、目的を果たせないことです"
+  },
+  {
+    "number": 7,
+    "id": "WADO-Q07",
+    "level": 10,
+    "count": 2,
+    "arms": {
+      "top": "指",
+      "right": "徹"
+    },
+    "example": "貫",
+    "reason": "難度10・2語",
+    "hint": "針を押しやすくするため、指にはめる裁縫道具"
+  },
+  {
+    "number": 8,
+    "id": "WADO-Q08",
+    "level": 10,
+    "count": 3,
+    "arms": {
+      "top": "遅",
+      "right": "絵",
+      "left": "種"
+    },
+    "example": "蒔",
+    "reason": "難度10・3語",
+    "hint": "漆で描いた模様に、金や銀などの粉をまく装飾技法"
+  },
+  {
+    "number": 9,
+    "id": "WADO-Q09",
+    "level": 10,
+    "count": 4,
+    "arms": {
+      "top": "溶",
+      "right": "介",
+      "left": "虫",
+      "bottom": "染"
+    },
+    "example": "媒",
+    "reason": "難度10・4語",
+    "hint": "溶液で、ほかの物質を溶かしている側の成分"
+  },
+  {
+    "number": 10,
+    "id": "WADO-Q10",
+    "level": 8,
+    "count": 4,
+    "arms": {
+      "top": "佯",
+      "right": "文",
+      "left": "躁",
+      "bottom": "言"
+    },
+    "example": "狂",
+    "reason": "長い文章ヒント",
+    "hint": "能とともに演じられ、日常の人物などを滑稽に描く伝統芸能"
+  },
+  {
+    "number": 11,
+    "id": "WADO-Q11",
+    "level": 5,
+    "count": 4,
+    "arms": {
+      "top": "名",
+      "right": "識",
+      "left": "図",
+      "bottom": "賞"
+    },
+    "example": "鑑",
+    "reason": "画数の多い漢字を含む候補",
+    "hint": "動植物などを、絵や画像で調べるための本です"
+  },
+  {
+    "number": 12,
+    "id": "WADO-Q12",
+    "level": 1,
+    "count": 4,
+    "arms": {
+      "top": "用",
+      "right": "味",
+      "left": "注",
+      "bottom": "識"
+    },
+    "example": "意",
+    "reason": "画数の多い漢字を含む候補",
+    "hint": "失敗や危険を避けるため、気を付けることです"
+  }
+]

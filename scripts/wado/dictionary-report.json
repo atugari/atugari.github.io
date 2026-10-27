@@ -1,27 +1,27 @@
 {
-  "revision": "whole-lexicon-2",
+  "revision": "whole-lexicon-3",
   "stats": {
-    "generationWords": 41858,
+    "generationWords": 41864,
     "alternativeWords": 87353,
     "classification": {
       "excluded": 3027,
-      "pending": 42468,
-      "adopted": 41858
+      "pending": 42462,
+      "adopted": 41864
     },
     "reasons": {
       "no-ordinary-reading": 3027,
-      "single-family": 41984,
-      "reading-supported": 41858,
+      "single-family": 41978,
+      "reading-supported": 41864,
       "reading-unconfirmed": 484
     },
     "byRank": {
-      "1": 5171,
-      "2": 5963,
-      "3": 30724
+      "1": 5172,
+      "2": 5964,
+      "3": 30728
     },
     "bySource": {
       "jmdict": 58373,
-      "sudachi": 72745,
+      "sudachi": 72751,
       "juman": 15779
     }
   },
@@ -33,7 +33,7 @@
     "single-family": "Eligible reading available from one family only; not a claim of invalidity.",
     "reading-unconfirmed": "No reading corroborated by two families, or reviewed preference not corroborated."
   },
-  "auditSha256": "b112f36ce23e4992e43d8de1ddb442d189c027524b19623a64f376b04c3aebe7",
+  "auditSha256": "28012d9b9f2d2a985b1670a27bce75825498a7409b05835034c1701eb40edd15",
   "coverage": {
     "source": {
       "id": "ninjal-basic-1984",
@@ -15530,5 +15530,10 @@
       "青白",
       "面白"
     ]
+  },
+  "reviewedSupplement": {
+    "file": "review-20261027.json",
+    "sha256": "f1e04fa2bc39c7034d7ed3ee286121a487a5af6eaefdaa96dc27914b5af28511",
+    "scope": "six individually reviewed pronouns, exact source rows and matching readings"
   }
 }
