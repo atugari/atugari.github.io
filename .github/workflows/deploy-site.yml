@@ -118,6 +118,7 @@ jobs:
         with:
           node-version: 22
       - name: Install isolated verification dependencies
+        timeout-minutes: 6
         shell: bash
         run: |
           npm install --prefix "$RUNNER_TEMP/wado-browser" --no-audit --no-fund playwright@1.62.1 linkedom@0.18.13
