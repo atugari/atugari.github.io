@@ -1,0 +1,15 @@
+{
+  "pass": true,
+  "origin": "https://block-battle.puzzle-hub-4826.workers.dev",
+  "seconds": 1200,
+  "elapsedSeconds": 1200,
+  "players": 2,
+  "sent": 4404,
+  "received": 9055,
+  "completedRounds": 19,
+  "heartbeats": 204,
+  "unexpectedCloses": 0,
+  "maxBuffered": 332,
+  "finishedAt": "2026-10-27T02:37:42.348Z",
+  "scope": "Real public WebSockets and repeated ready/win cycles; synthetic game states, not physical-device gameplay"
+}

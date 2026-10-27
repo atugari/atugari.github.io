@@ -1,0 +1,145 @@
+{
+  "version": 24,
+  "checkedAt": "2026-10-27",
+  "phase": "complete",
+  "fixes": [
+    "古いコントローラー設定を引き継いだ際、同じ入力に複数の操作が重ならないよう修正。変更していない古い標準配置は、新しい標準配置へ移行。",
+    "タッチが途中で中断されても、長押し状態を解除して動き続けないよう修正。"
+  ],
+  "coverage": [
+    {
+      "id": "entry",
+      "verified": "公開先HTTP 200・ログイン不要・ソース一致を確認。PCのChromeでも表示を確認。",
+      "remaining": "スマホでの表示は残り1で確認。"
+    },
+    {
+      "id": "solo",
+      "verified": "PCで開始時の自動移動・停止・再開を確認。自動検証で移動・回転・HOLD・落下を確認。",
+      "remaining": "タッチの使い心地は残り1で確認。"
+    },
+    {
+      "id": "two",
+      "verified": "公開先の2画面と9接続で、待機・共通開始・同じブロック順を確認。",
+      "remaining": "異なる実回線での操作感は残り3で確認。"
+    },
+    {
+      "id": "attack",
+      "verified": "エンジンで同時消しと相殺、公開先で攻撃の重複防止と勝者1人を確認。",
+      "remaining": ""
+    },
+    {
+      "id": "rematch",
+      "verified": "公開先2画面・9接続で、全員が準備した時だけ再戦することを確認。",
+      "remaining": ""
+    },
+    {
+      "id": "pad",
+      "verified": "仮想入力で十字キー↑・変更・保存・重複入替・切断時の解除を確認。古い設定の重複を修正。",
+      "remaining": "実物の接続は残り2で確認。"
+    },
+    {
+      "id": "audio",
+      "verified": "PCで音ON/OFF・音量操作を確認。音源の生成・音量0・停止・復帰は自動検証。スマホでの聞こえ方は未確認。",
+      "remaining": "スマホでの音は残り1で確認。"
+    },
+    {
+      "id": "mobile",
+      "verified": "ポインターの長押し・同時押し・解放・キャンセルを自動検証。入力の追跡が失われた場合の解除を追加。",
+      "remaining": "スマホの実際の画面・指の操作は残り1で確認。"
+    },
+    {
+      "id": "nine",
+      "verified": "公開先の実ブラウザー9画面で、相手8枚・8人脱落後の勝者1人・全員準備での再戦・スコア初期化を確認。",
+      "remaining": "9台の実機・複数回線は未確認。集まった時の任意の確認。"
+    },
+    {
+      "id": "disconnect",
+      "verified": "公開先2画面で退室・相手のKO・入り直しが次の募集になることを確認。無応答の処理は自動検証。 公開先では35秒の待機後も同じ部屋へ参加でき、応答を止めた接続だけが切断されることも確認。",
+      "remaining": ""
+    },
+    {
+      "id": "bo3",
+      "verified": "単一ファイルを実際に起動し、実WebSocketで2勝先取・次セットの勝数リセットを確認。",
+      "remaining": ""
+    },
+    {
+      "id": "background",
+      "verified": "仮想イベントでフォーカス喪失時の長押し解除、練習の自動停止、対戦を停止しない処理を確認。",
+      "remaining": "スマホOSのアプリ切替は残り1で確認。"
+    },
+    {
+      "id": "random",
+      "verified": "自分のテスト用サーバーでランダム18接続を9人ずつに分け、人数別・合言葉別の部屋分離を確認。公開のランダム待機所には入っていない。",
+      "remaining": ""
+    },
+    {
+      "id": "long",
+      "verified": "30分相当のロジック検証で108,000フレーム・7,200個配置・2,840列消去。公開先で実時間20分・2接続・19回の勝敗と再戦を確認し、予期しない切断は0回。",
+      "remaining": "普段の端末での長時間の操作感は未確認。"
+    },
+    {
+      "id": "keyboard",
+      "verified": "公開先のPCで変更・保存・再読込・Esc・初期化・フォーム入力保護を確認。",
+      "remaining": ""
+    }
+  ],
+  "remaining": [
+    {
+      "id": "real-mobile",
+      "title": "普段のスマホで2〜3分",
+      "device": "手元のスマホ1台",
+      "steps": "練習開始後の画面、タッチの長押しと指を離した時の停止、音ON/OFF、縦横持ち、別アプリからの復帰を試す。",
+      "expected": "スクロールし直さず遊べて、操作を離すと止まり、音が聞こえる。"
+    },
+    {
+      "id": "real-pad",
+      "title": "実物のコントローラーで1〜2分",
+      "device": "コントローラーと接続する端末",
+      "steps": "接続後にボタンを押し、十字キー↑で落下、回転、入れ替えを試す。操作を変更して再読み込みし、最後に押したまま接続を切る。",
+      "expected": "機種固有のボタンや接続が正しく反応し、切断後に動き続けない。"
+    },
+    {
+      "id": "real-network",
+      "title": "別回線の2台で1試合",
+      "device": "スマホ2台、またはスマホ＋PC",
+      "steps": "1台をWi-Fi、もう1台をモバイル通信にする。人数2・同じ合言葉で1試合と再戦を試す。",
+      "expected": "実際の回線でも遊べる操作感で、勝敗と再戦が両方に反映される。"
+    }
+  ],
+  "soak": {
+    "pass": true,
+    "origin": "https://block-battle.puzzle-hub-4826.workers.dev",
+    "seconds": 1200,
+    "elapsedSeconds": 1200,
+    "players": 2,
+    "sent": 4404,
+    "received": 9055,
+    "completedRounds": 19,
+    "heartbeats": 204,
+    "unexpectedCloses": 0,
+    "maxBuffered": 332,
+    "finishedAt": "2026-10-27T02:37:42.348Z",
+    "scope": "Real public WebSockets and repeated ready/win cycles; synthetic game states, not physical-device gameplay"
+  },
+  "soakTestedVersion": 23,
+  "simulation": {
+    "simulatedMinutes": 30,
+    "frames": 108000,
+    "placed": 7200,
+    "totalLines": 2840,
+    "restarts": 3
+  },
+  "automatedCasesPassed": 15,
+  "idleAndTimeout": {
+    "pass": true,
+    "origin": "https://block-battle.puzzle-hub-4826.workers.dev",
+    "idleSeconds": 35,
+    "idlePongs": 10,
+    "waitingRoomPreserved": true,
+    "lateJoinSameSeed": true,
+    "silentTimeoutSeconds": 26,
+    "silentCloseCode": 1001,
+    "activePeerContinues": true,
+    "uniqueWinner": true
+  }
+}

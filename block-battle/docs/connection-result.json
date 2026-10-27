@@ -1,0 +1,12 @@
+{
+  "pass": true,
+  "origin": "https://block-battle.puzzle-hub-4826.workers.dev",
+  "idleSeconds": 35,
+  "idlePongs": 10,
+  "waitingRoomPreserved": true,
+  "lateJoinSameSeed": true,
+  "silentTimeoutSeconds": 26,
+  "silentCloseCode": 1001,
+  "activePeerContinues": true,
+  "uniqueWinner": true
+}

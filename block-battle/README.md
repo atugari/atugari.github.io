@@ -1,4 +1,4 @@
-# BLOCK BATTLE v23 — 公開版
+# BLOCK BATTLE v24 — 公開版
 
 ゲームと対戦サーバーを1ファイル・2万文字以内に収めた、2〜9人の落ち物パズル。公開版のゲーム・通信・配信ファイルは、ユーザーの既存Cloudflare環境で動く。ChatGPTのサーバー、ChatGPTログイン、外部ゲームライブラリは使用しない。
 
@@ -15,7 +15,7 @@
 - `public/block-battle.mjs`：ブラウザのHTML/CSS/JS、WebSocket対戦管理、Cloudflare用Worker/Durable Object、Node起動用HTTP/WebSocketサーバーを内包する。
 - `public/x-post.txt`：全文をXへ載せるための実行説明付きソース。実投稿は別途行う。
 - `generated/size.json`：文字数の実測。日本語などを多めに数えた値でも、投稿全文が20,000以内でなければビルドを止める。
-- `public/test-checklist.html` と `public/TEST_CHECKLIST.txt`：実機で確認してほしいテスト一覧。チェック結果は端末内だけに保存し、送信しない。
+- `public/test-checklist.html` と `public/TEST_CHECKLIST.txt`：こちらで実施した検証結果と、実機で残る3件。チェックとメモは端末内だけに保存し、送信しない。
 
 HTML/CSS/JSはBrotliで圧縮し、制御文字や結合文字を含まないLatin Extendedの文字へ1バイト1文字で符号化して同じソース内に保持し、標準の`node:zlib`で展開する。実行中に外部のゲームコードや圧縮ライブラリを読み込まない。Cloudflareの配信用設定とGitHub Actionsは、環境を用意するための設定である。
 
@@ -43,3 +43,5 @@ npm run deploy
 ローカルブラウザ確認時だけ`tests/browser-qa.html`を`public/_qa.html`へコピーする。公開前に取り除く。公開後の検証は`node scripts/check-live.mjs <公開URL>`で、固有のQA用合言葉を使う。実ユーザーのランダム待機所には入らない。
 
 Cloudflareの利用上限は契約プランに従う。無料枠でも無制限という意味ではない。自動テスト・同一ブラウザの複数画面と、実機・別回線・実物コントローラーでの確認は区別する。
+
+追加検証は `tests/extended-input.test.mjs`、`tests/endurance.test.mjs`、`tests/network-session.test.mjs`。公開先の実時間通信は `node scripts/soak-live.mjs https://block-battle.puzzle-hub-4826.workers.dev 1200`。固有のQA部屋の2接続で実施し、ゲーム状態は合成入力である。
