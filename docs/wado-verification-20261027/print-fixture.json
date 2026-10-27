@@ -1,0 +1,224 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "version": 3,
+      "level": 1,
+      "count": 2,
+      "arms": {
+        "top": "安",
+        "right": "然"
+      },
+      "answer": "全",
+      "choices": [],
+      "hintChoice": "top.2",
+      "fixtureReason": "難度1・2語",
+      "id": "WADO-Q01",
+      "created": 1793070000000
+    },
+    {
+      "version": 3,
+      "level": 1,
+      "count": 3,
+      "arms": {
+        "top": "安",
+        "right": "配",
+        "bottom": "理"
+      },
+      "answer": "心",
+      "choices": [],
+      "hintChoice": "top.5",
+      "fixtureReason": "難度1・3語",
+      "id": "WADO-Q02",
+      "created": 1793070060000
+    },
+    {
+      "version": 3,
+      "level": 1,
+      "count": 4,
+      "arms": {
+        "top": "確",
+        "right": "号",
+        "left": "受",
+        "bottom": "用"
+      },
+      "answer": "信",
+      "choices": [],
+      "hintChoice": "right.2",
+      "fixtureReason": "難度1・4語",
+      "id": "WADO-Q03",
+      "created": 1793070120000
+    },
+    {
+      "version": 3,
+      "level": 5,
+      "count": 2,
+      "arms": {
+        "top": "改",
+        "right": "所"
+      },
+      "answer": "札",
+      "choices": [],
+      "hintChoice": "top.2",
+      "fixtureReason": "難度5・2語",
+      "id": "WADO-Q04",
+      "created": 1793070180000
+    },
+    {
+      "version": 3,
+      "level": 5,
+      "count": 3,
+      "arms": {
+        "top": "長",
+        "right": "下",
+        "left": "革"
+      },
+      "answer": "靴",
+      "choices": [],
+      "hintChoice": "right.5",
+      "fixtureReason": "難度5・3語",
+      "id": "WADO-Q05",
+      "created": 1793070240000
+    },
+    {
+      "version": 3,
+      "level": 5,
+      "count": 4,
+      "arms": {
+        "top": "失",
+        "right": "北",
+        "left": "惨",
+        "bottom": "因"
+      },
+      "answer": "敗",
+      "choices": [],
+      "hintChoice": "top.5",
+      "fixtureReason": "難度5・4語",
+      "id": "WADO-Q06",
+      "created": 1793070300000
+    },
+    {
+      "version": 3,
+      "level": 10,
+      "count": 2,
+      "arms": {
+        "top": "指",
+        "right": "徹"
+      },
+      "answer": "貫",
+      "choices": [],
+      "hintChoice": "top.2",
+      "fixtureReason": "難度10・2語",
+      "id": "WADO-Q07",
+      "created": 1793070360000
+    },
+    {
+      "version": 3,
+      "level": 10,
+      "count": 3,
+      "arms": {
+        "top": "遅",
+        "right": "絵",
+        "left": "種"
+      },
+      "answer": "蒔",
+      "choices": [],
+      "hintChoice": "right.2",
+      "fixtureReason": "難度10・3語",
+      "id": "WADO-Q08",
+      "created": 1793070420000
+    },
+    {
+      "version": 3,
+      "level": 10,
+      "count": 4,
+      "arms": {
+        "top": "溶",
+        "right": "介",
+        "left": "虫",
+        "bottom": "染"
+      },
+      "answer": "媒",
+      "choices": [],
+      "hintChoice": "top.2",
+      "fixtureReason": "難度10・4語",
+      "id": "WADO-Q09",
+      "created": 1793070480000
+    },
+    {
+      "version": 3,
+      "level": 8,
+      "count": 4,
+      "arms": {
+        "top": "佯",
+        "right": "文",
+        "left": "躁",
+        "bottom": "言"
+      },
+      "answer": "狂",
+      "choices": [],
+      "hintChoice": "bottom.2",
+      "fixtureReason": "長い文章ヒント",
+      "id": "WADO-Q10",
+      "created": 1793070540000
+    },
+    {
+      "version": 3,
+      "level": 5,
+      "count": 4,
+      "arms": {
+        "top": "名",
+        "right": "識",
+        "left": "図",
+        "bottom": "賞"
+      },
+      "answer": "鑑",
+      "choices": [],
+      "hintChoice": "left.5",
+      "fixtureReason": "画数の多い漢字を含む候補",
+      "id": "WADO-Q11",
+      "created": 1793070600000
+    },
+    {
+      "version": 3,
+      "level": 1,
+      "count": 4,
+      "arms": {
+        "top": "用",
+        "right": "味",
+        "left": "注",
+        "bottom": "識"
+      },
+      "answer": "意",
+      "choices": [],
+      "hintChoice": "left.5",
+      "fixtureReason": "画数の多い漢字を含む候補",
+      "id": "WADO-Q12",
+      "created": 1793070660000
+    }
+  ],
+  "preferences": {
+    "problemSize": "medium",
+    "printWeight": "bold",
+    "separateHints": true,
+    "showHeading": true,
+    "showNameDate": true,
+    "showNumber": true,
+    "showDifficulty": true,
+    "showId": true,
+    "showFooter": true,
+    "level": 1,
+    "wordCount": 4,
+    "batch": 10,
+    "kanjiSize": "largest",
+    "kanjiWeight": "heavy",
+    "spacing": "tight",
+    "hint": 3,
+    "uiSize": "normal",
+    "printText": "largest"
+  },
+  "play": {
+    "active": "安>然",
+    "states": {}
+  }
+}

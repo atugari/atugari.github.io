@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ja"><head><meta name="robots" content="noindex, follow"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#285849"><title>和同開珎で遊ぶ｜ナンプレ帳</title><script src="/nanpure/releases/2026.10.27.63/site-theme.js"></script><script src="/nanpure/releases/2026.10.27.63/ui-text.js"></script><link rel="stylesheet" href="wado-play.css"><script defer src="/nanpure/releases/2026.10.27.63/keyboard-access.js"></script><script defer src="/nanpure/releases/2026.10.27.63/achievements-core.js"></script><script defer src="/nanpure/releases/2026.10.27.63/achievements-catalog.js"></script><script defer src="/nanpure/releases/2026.10.27.63/achievements.js"></script><script defer src="/nanpure/releases/2026.10.27.63/achievements-hooks.js"></script></head>
+<body data-i18n-skip class="wado-play">
+<header class="play-header"><a class="back" href="index.html" aria-label="ナンプレ帳に戻る">‹ 戻る</a><strong>和同開珎</strong><div class="header-tools"><a id="play-print-current" href="wado.html">印刷する</a><button type="button" id="play-settings-open" aria-haspopup="dialog" aria-controls="play-settings">設定</button></div></header>
+<main>
+ <p id="play-error" role="alert" hidden></p>
+ <div id="play-loading" class="loading" role="status">問題を準備しています…</div>
+ <section id="play-setup" hidden aria-labelledby="play-welcome-title">
+  <h1 id="play-welcome-title" tabindex="-1">真ん中に入る<br>漢字は、なんでしょう。</h1>
+  <div class="welcome-board" role="img" aria-label="例題。学と先の後ろ、活と徒の前に、同じ漢字を入れます。">
+   <span class="sample top">学</span><span class="sample left">先</span><span class="sample right">活</span><span class="sample bottom">徒</span><span class="sample center">？</span><i class="sample-arrow atop" aria-hidden="true"></i><i class="sample-arrow aleft" aria-hidden="true"></i><i class="sample-arrow aright" aria-hidden="true"></i><i class="sample-arrow abottom" aria-hidden="true"></i>
+  </div>
+  <p class="welcome-caption">同じ漢字で、言葉がつながる。</p>
+  <button class="primary" id="play-start" type="button">はじめる <span aria-hidden="true">→</span></button>
+  <button class="primary" id="play-resume" type="button" hidden>続きから遊ぶ <span aria-hidden="true">→</span></button>
+  <button class="text-button" id="play-new-welcome" type="button" hidden>新しい問題で遊ぶ</button>
+  <button class="setting-shortcut" type="button" data-play-settings><span id="play-settings-summary">やさしい · 4つの言葉</span> <span aria-hidden="true">変更 ›</span></button>
+  <button id="play-open-library" type="button" class="library-link">保存した問題 <span id="play-library-count"></span><span aria-hidden="true">›</span></button>
+ </section>
+ <section id="play-game" hidden aria-labelledby="play-game-title">
+  <div class="game-top"><button id="play-back" type="button" class="quiet">‹ 問題一覧</button><button class="meta-button" type="button" data-play-settings><span id="play-meta"></span> <span aria-hidden="true">⌄</span></button></div>
+  <h1 id="play-game-title" tabindex="-1">真ん中に入る漢字は？</h1>
+  <div id="play-board" class="board" role="img" aria-label="漢字の問題">
+   <div class="cell top" id="play-top"></div><div class="cell left" id="play-left"></div><div class="cell right" id="play-right"></div><div class="cell bottom" id="play-bottom"></div><span class="arrow atop" aria-hidden="true"></span><span class="arrow aleft" aria-hidden="true"></span><span class="arrow aright" aria-hidden="true"></span><span class="arrow abottom" aria-hidden="true"></span><div class="cell center" id="play-center">？</div>
+  </div>
+  <p id="play-direction" class="board-caption">矢印の向きに、2文字の言葉。</p>
+  <div class="support-actions"><button id="play-hint-toggle" type="button" aria-expanded="false" aria-controls="play-hints">ヒントを見る</button><button id="play-reveal" type="button" aria-expanded="false" aria-controls="play-example">答えを見る</button></div>
+  <section id="play-hints" class="hint-box" hidden aria-label="ヒント">
+   <div class="hint-levels" id="play-hint-levels" role="group" aria-label="ヒントの段階"><button type="button" data-hint-grade="1" aria-pressed="true">1 ひかえめ</button><button type="button" data-hint-grade="2" aria-pressed="false">2 もう少し</button><button type="button" data-hint-grade="3" aria-pressed="false">3 くわしく</button></div>
+   <p id="play-hint-text" aria-live="polite"></p>
+   <div class="hint-actions"><button id="play-hint-other" type="button" class="quiet">別の手がかり</button><button id="play-hint-more" type="button">もう少しヒント →</button></div>
+  </section>
+  <section id="play-example" class="example" hidden aria-label="解答例" aria-live="polite"></section>
+  <div class="next-actions"><button id="play-previous-question" type="button" aria-label="前の問題">‹ 前の問題</button><button id="play-next" type="button" class="primary">次の問題 →</button></div>
+  <p id="play-save-status" class="save-status" role="status"></p>
+ </section>
+ <section id="play-library" hidden aria-labelledby="play-library-title">
+  <div class="game-top"><button id="play-library-back" type="button" class="quiet">‹ はじめの画面</button><button id="play-library-new" type="button" class="quiet">新しい問題 ＋</button></div>
+  <h1 id="play-library-title" tabindex="-1">保存した問題</h1><p id="play-total" class="help"></p><div id="play-library-list"></div>
+  <nav class="pager" aria-label="問題一覧のページ"><button id="play-previous" type="button">前へ</button><span id="play-page"></span><button id="play-following" type="button">次へ</button></nav><a class="print-link" href="wado.html">問題をまとめて作る・印刷する →</a>
+ </section>
+</main>
+<dialog id="play-settings" aria-labelledby="play-settings-title"><div class="dialog-head"><h2 id="play-settings-title">問題・文字の設定</h2><button id="play-settings-close" type="button">閉じる ×</button></div>
+ <form id="play-new-form"><label>問題の難しさ<select id="play-level"></select></label><p id="play-level-help" class="help"></p><label>つなぐ言葉の数<select id="play-count"><option value="2">2つ · 少なめ</option><option value="3">3つ</option><option value="4" selected>4つ · 基本</option></select></label><button class="primary" id="play-new" type="submit">この設定で新しい問題</button></form>
+ <label>文字・ボタンの大きさ<select id="play-size"><option value="normal">標準</option><option value="large">大きい · 125%</option><option value="larger">さらに大きい · 150%</option><option value="largest">最大 · 200%</option></select></label>
+ <details><summary>遊び方・辞書について</summary><p>矢印の向きに2文字の熟語を作ります。中央の漢字は、頭の中や紙で考えます。回答入力・採点はありません。</p><p>解答例以外の漢字でも、すべての熟語が成り立つ場合があります。問題と表示状態はこのブラウザに保存します。</p><a href="wado.html">辞書の出典・利用条件</a></details>
+</dialog>
+<script src="wado-engine.js"></script><script src="wado-clues.js"></script><script src="wado-play.js"></script><script src="site-bridge.js"></script>
+</body></html>

@@ -30,7 +30,7 @@
  function shuffle(values,random){const a=values.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
  function fingerprint(p){const before=['top','left'].filter(k=>p.arms[k]).map(k=>p.arms[k]).sort().join(''),after=['right','bottom'].filter(k=>p.arms[k]).map(k=>p.arms[k]).sort().join('');return before+'>'+after;}
  function create(data){
-  if(data?.version!==2||data.revision!=='whole-lexicon-2'||!Array.isArray(data.words)||!Array.isArray(data.legacyWords)||typeof data.checks!=='string'||!Array.isArray(data.sources))throw Error('辞書を読み込めませんでした。');
+  if(data?.version!==2||!['whole-lexicon-2','whole-lexicon-3'].includes(data.revision)||!Array.isArray(data.words)||!Array.isArray(data.legacyWords)||typeof data.checks!=='string'||!Array.isArray(data.sources))throw Error('辞書を読み込めませんでした。');
   const spellings=data.checks.split(' '),sourceBits={jmdict:1,sudachi:2,juman:4},sources=data.sources.filter(s=>s.bit),masks=new Map();
   if(typeof data.checkSources!=='string'||data.checkSources.length!==spellings.length||!/^[1-7]+$/.test(data.checkSources)||sources.length!==3||sources.some(s=>sourceBits[s.id]!==s.bit)||new Set(sources.map(s=>s.id)).size!==3||new Set(spellings).size!==spellings.length)throw Error('辞書の出典情報を確認してください。');
   const words=new Map(),legacy=new Map(),checks=new Set(spellings),inIndex=new Map(),outIndex=new Map(),pool=new Map();

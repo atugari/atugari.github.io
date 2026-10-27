@@ -249,8 +249,15 @@ def build(args):
     for text, reading in juman_lines((args.juman / 'dic/ContentW.dic').read_text().splitlines()):
         lexicons['juman'][text].add(reading)
         checks[text] |= 4
+    # Bounded re-review of six pronouns; source rows and matching readings are verified.
+    import importlib.util
+    review_spec = importlib.util.spec_from_file_location('reviewed_vocab', HERE / 'review-vocabulary-20261027.py')
+    review_module = importlib.util.module_from_spec(review_spec)
+    review_spec.loader.exec_module(review_module)
+    review_module.apply_reviewed_pronouns(args.sudachi_small, lexicons, checks)
     frequency = wordfreq.get_frequency_dict('ja')
     preferred = json.loads((HERE / 'preferred-readings.json').read_text())
+    preferred.update({r['text']: r['reading'] for r in json.loads((HERE / 'review-20261027.json').read_text())['entries'] if r['decision'] == 'adopted'})
     spellings = sorted(checks)
     words, decisions = [], []
     from collections import Counter
@@ -273,7 +280,7 @@ def build(args):
     coverage.update(rawTwoHanForms=len(reference['raw']), outsideScopeWithOkurigana=reference['withOkurigana'])
     coverage['scope'] = 'Distinct two-BMP-Han headwords in the 1984 survey with at least one row having no separate okurigana. Numerals and unusual original forms are retained. Not modern daily-word coverage.'
     result = {
-        'version': 2, 'revision': 'whole-lexicon-2',
+        'version': 2, 'revision': 'whole-lexicon-3',
         'source': 'JMdict + SudachiDict (UniDic family) + JUMAN; wordfreq familiarity',
         'sourceDate': data['dictDate'], 'sources': lock['sources'], 'sourceSha256': actual,
         'copyright': 'See wado-licenses.txt for all retained upstream notices and attribution.',
@@ -285,6 +292,7 @@ def build(args):
         'stats': stats,
         'coverage': {k: v for k, v in coverage.items() if k not in {'entries', 'unmatched'}},
     }
+    result['reviewedSupplement'] = {'file': 'review-20261027.json', 'sha256': sha((HERE / 'review-20261027.json').read_bytes()), 'scope': 'six individually reviewed pronouns, exact source rows and matching readings'}
     output = ROOT / 'scripts/client-overrides/public/notebook/wado-data.json'
     output.write_text(json.dumps(result, ensure_ascii=False, separators=(',', ':')) + '\n')
     audit = ROOT / 'scripts/client-overrides/public/notebook/wado-audit.tsv'
@@ -307,6 +315,7 @@ def build(args):
                                      'single-family': 'Eligible reading available from one family only; not a claim of invalidity.',
                                      'reading-unconfirmed': 'No reading corroborated by two families, or reviewed preference not corroborated.'},
               'auditSha256': sha(audit.read_bytes())}
+    report['reviewedSupplement'] = result['reviewedSupplement']
     report['coverage'] = coverage
     (ROOT / 'scripts/client-overrides/public/notebook/wado-coverage.json').write_text(
         json.dumps(coverage, ensure_ascii=False, separators=(',', ':')) + '\n')

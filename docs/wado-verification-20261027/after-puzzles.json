@@ -1,0 +1,3602 @@
+[
+  {
+    "version": 3,
+    "level": 1,
+    "count": 2,
+    "arms": {
+      "top": "安",
+      "right": "然"
+    },
+    "answer": "全",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 1,
+    "count": 2,
+    "arms": {
+      "top": "科",
+      "right": "校"
+    },
+    "answer": "学",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 1,
+    "count": 2,
+    "arms": {
+      "top": "意",
+      "right": "事"
+    },
+    "answer": "見",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 1,
+    "count": 2,
+    "arms": {
+      "top": "楽",
+      "right": "気"
+    },
+    "answer": "天",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 1,
+    "count": 2,
+    "arms": {
+      "top": "舞",
+      "right": "風"
+    },
+    "answer": "台",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 1,
+    "count": 2,
+    "arms": {
+      "top": "飲",
+      "right": "事"
+    },
+    "answer": "食",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 1,
+    "count": 2,
+    "arms": {
+      "top": "露",
+      "right": "発"
+    },
+    "answer": "出",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 1,
+    "count": 2,
+    "arms": {
+      "top": "写",
+      "right": "実"
+    },
+    "answer": "真",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 1,
+    "count": 2,
+    "arms": {
+      "top": "履",
+      "right": "史"
+    },
+    "answer": "歴",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 1,
+    "count": 2,
+    "arms": {
+      "top": "意",
+      "right": "方"
+    },
+    "answer": "味",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 1,
+    "count": 3,
+    "arms": {
+      "top": "安",
+      "right": "配",
+      "bottom": "理"
+    },
+    "answer": "心",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 1,
+    "count": 3,
+    "arms": {
+      "top": "意",
+      "right": "方",
+      "left": "趣"
+    },
+    "answer": "味",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 1,
+    "count": 3,
+    "arms": {
+      "top": "合",
+      "right": "功",
+      "left": "編"
+    },
+    "answer": "成",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 1,
+    "count": 3,
+    "arms": {
+      "top": "録",
+      "right": "楽",
+      "bottom": "声"
+    },
+    "answer": "音",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 1,
+    "count": 3,
+    "arms": {
+      "top": "復",
+      "right": "動",
+      "left": "生"
+    },
+    "answer": "活",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 1,
+    "count": 3,
+    "arms": {
+      "top": "迷",
+      "right": "星",
+      "left": "疑"
+    },
+    "answer": "惑",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 1,
+    "count": 3,
+    "arms": {
+      "top": "対",
+      "right": "分",
+      "left": "何"
+    },
+    "answer": "処",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 1,
+    "count": 3,
+    "arms": {
+      "top": "独",
+      "right": "然",
+      "bottom": "社"
+    },
+    "answer": "自",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 1,
+    "count": 3,
+    "arms": {
+      "top": "確",
+      "right": "仰",
+      "bottom": "号"
+    },
+    "answer": "信",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 1,
+    "count": 3,
+    "arms": {
+      "top": "脱",
+      "right": "場",
+      "bottom": "発"
+    },
+    "answer": "出",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 1,
+    "count": 4,
+    "arms": {
+      "top": "確",
+      "right": "号",
+      "left": "受",
+      "bottom": "用"
+    },
+    "answer": "信",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 1,
+    "count": 4,
+    "arms": {
+      "top": "情",
+      "right": "告",
+      "left": "通",
+      "bottom": "道"
+    },
+    "answer": "報",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 1,
+    "count": 4,
+    "arms": {
+      "top": "中",
+      "right": "配",
+      "left": "安",
+      "bottom": "臓"
+    },
+    "answer": "心",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 1,
+    "count": 4,
+    "arms": {
+      "top": "以",
+      "right": "日",
+      "left": "名",
+      "bottom": "後"
+    },
+    "answer": "前",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 1,
+    "count": 4,
+    "arms": {
+      "top": "用",
+      "right": "味",
+      "left": "注",
+      "bottom": "識"
+    },
+    "answer": "意",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 1,
+    "count": 4,
+    "arms": {
+      "top": "更",
+      "right": "作",
+      "left": "最",
+      "bottom": "聞"
+    },
+    "answer": "新",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 1,
+    "count": 4,
+    "arms": {
+      "top": "完",
+      "right": "体",
+      "left": "安",
+      "bottom": "然"
+    },
+    "answer": "全",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 1,
+    "count": 4,
+    "arms": {
+      "top": "復",
+      "right": "動",
+      "left": "生",
+      "bottom": "躍"
+    },
+    "answer": "活",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 1,
+    "count": 4,
+    "arms": {
+      "top": "会",
+      "right": "解",
+      "left": "意",
+      "bottom": "事"
+    },
+    "answer": "見",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 1,
+    "count": 4,
+    "arms": {
+      "top": "受",
+      "right": "号",
+      "left": "送",
+      "bottom": "用"
+    },
+    "answer": "信",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 2,
+    "count": 2,
+    "arms": {
+      "top": "勘",
+      "right": "当"
+    },
+    "answer": "弁",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 2,
+    "count": 2,
+    "arms": {
+      "top": "親",
+      "right": "人"
+    },
+    "answer": "友",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 2,
+    "count": 2,
+    "arms": {
+      "top": "防",
+      "right": "星"
+    },
+    "answer": "衛",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 2,
+    "count": 2,
+    "arms": {
+      "top": "通",
+      "right": "号"
+    },
+    "answer": "信",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 2,
+    "count": 2,
+    "arms": {
+      "top": "勉",
+      "right": "化"
+    },
+    "answer": "強",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 2,
+    "count": 2,
+    "arms": {
+      "top": "牛",
+      "right": "首"
+    },
+    "answer": "乳",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 2,
+    "count": 2,
+    "arms": {
+      "top": "帽",
+      "right": "供"
+    },
+    "answer": "子",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 2,
+    "count": 2,
+    "arms": {
+      "top": "水",
+      "right": "備"
+    },
+    "answer": "準",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 2,
+    "count": 2,
+    "arms": {
+      "top": "光",
+      "right": "色"
+    },
+    "answer": "景",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 2,
+    "count": 2,
+    "arms": {
+      "top": "伝",
+      "right": "明"
+    },
+    "answer": "説",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 2,
+    "count": 3,
+    "arms": {
+      "top": "護",
+      "right": "星",
+      "left": "防"
+    },
+    "answer": "衛",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 2,
+    "count": 3,
+    "arms": {
+      "top": "東",
+      "right": "部",
+      "left": "敗"
+    },
+    "answer": "北",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 2,
+    "count": 3,
+    "arms": {
+      "top": "発",
+      "right": "撃",
+      "left": "反"
+    },
+    "answer": "射",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 2,
+    "count": 3,
+    "arms": {
+      "top": "調",
+      "right": "由",
+      "bottom": "解"
+    },
+    "answer": "理",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 2,
+    "count": 3,
+    "arms": {
+      "top": "部",
+      "right": "敷",
+      "bottom": "根"
+    },
+    "answer": "屋",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 2,
+    "count": 3,
+    "arms": {
+      "top": "一",
+      "right": "用",
+      "left": "適"
+    },
+    "answer": "応",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 2,
+    "count": 3,
+    "arms": {
+      "top": "録",
+      "right": "楽",
+      "bottom": "源"
+    },
+    "answer": "音",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 2,
+    "count": 3,
+    "arms": {
+      "top": "中",
+      "right": "界",
+      "bottom": "間"
+    },
+    "answer": "世",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 2,
+    "count": 3,
+    "arms": {
+      "top": "誘",
+      "right": "星",
+      "left": "疑"
+    },
+    "answer": "惑",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 2,
+    "count": 3,
+    "arms": {
+      "top": "意",
+      "right": "噌",
+      "bottom": "方"
+    },
+    "answer": "味",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 2,
+    "count": 4,
+    "arms": {
+      "top": "給",
+      "right": "理",
+      "left": "有",
+      "bottom": "金"
+    },
+    "answer": "料",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 2,
+    "count": 4,
+    "arms": {
+      "top": "本",
+      "right": "章",
+      "left": "論",
+      "bottom": "化"
+    },
+    "answer": "文",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 2,
+    "count": 4,
+    "arms": {
+      "top": "電",
+      "right": "両",
+      "left": "戦",
+      "bottom": "内"
+    },
+    "answer": "車",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 2,
+    "count": 4,
+    "arms": {
+      "top": "気",
+      "right": "方",
+      "left": "意",
+      "bottom": "噌"
+    },
+    "answer": "味",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 2,
+    "count": 4,
+    "arms": {
+      "top": "適",
+      "right": "日",
+      "left": "弁",
+      "bottom": "然"
+    },
+    "answer": "当",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 2,
+    "count": 4,
+    "arms": {
+      "top": "会",
+      "right": "学",
+      "left": "意",
+      "bottom": "方"
+    },
+    "answer": "見",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 2,
+    "count": 4,
+    "arms": {
+      "top": "録",
+      "right": "楽",
+      "left": "発",
+      "bottom": "源"
+    },
+    "answer": "音",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 2,
+    "count": 4,
+    "arms": {
+      "top": "喪",
+      "right": "礼",
+      "left": "損",
+      "bottom": "敗"
+    },
+    "answer": "失",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 2,
+    "count": 4,
+    "arms": {
+      "top": "暴",
+      "right": "方",
+      "left": "銀",
+      "bottom": "使"
+    },
+    "answer": "行",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 2,
+    "count": 4,
+    "arms": {
+      "top": "安",
+      "right": "配",
+      "left": "感",
+      "bottom": "臓"
+    },
+    "answer": "心",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 3,
+    "count": 2,
+    "arms": {
+      "top": "結",
+      "right": "実"
+    },
+    "answer": "果",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 3,
+    "count": 2,
+    "arms": {
+      "top": "墜",
+      "right": "語"
+    },
+    "answer": "落",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 3,
+    "count": 2,
+    "arms": {
+      "top": "写",
+      "right": "実"
+    },
+    "answer": "真",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 3,
+    "count": 2,
+    "arms": {
+      "top": "基",
+      "right": "備"
+    },
+    "answer": "準",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 3,
+    "count": 2,
+    "arms": {
+      "top": "貸",
+      "right": "手"
+    },
+    "answer": "切",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 3,
+    "count": 2,
+    "arms": {
+      "top": "神",
+      "right": "験"
+    },
+    "answer": "経",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 3,
+    "count": 2,
+    "arms": {
+      "top": "正",
+      "right": "間"
+    },
+    "answer": "月",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 3,
+    "count": 2,
+    "arms": {
+      "top": "親",
+      "right": "人"
+    },
+    "answer": "友",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 3,
+    "count": 2,
+    "arms": {
+      "top": "勘",
+      "right": "当"
+    },
+    "answer": "弁",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 3,
+    "count": 2,
+    "arms": {
+      "top": "注",
+      "right": "地"
+    },
+    "answer": "意",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 3,
+    "count": 3,
+    "arms": {
+      "top": "同",
+      "right": "報",
+      "bottom": "勢"
+    },
+    "answer": "情",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 3,
+    "count": 3,
+    "arms": {
+      "top": "水",
+      "right": "備",
+      "left": "基"
+    },
+    "answer": "準",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 3,
+    "count": 3,
+    "arms": {
+      "top": "補",
+      "right": "与",
+      "bottom": "食"
+    },
+    "answer": "給",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 3,
+    "count": 3,
+    "arms": {
+      "top": "記",
+      "right": "音",
+      "bottom": "画"
+    },
+    "answer": "録",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 3,
+    "count": 3,
+    "arms": {
+      "top": "区",
+      "right": "配",
+      "bottom": "子"
+    },
+    "answer": "分",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 3,
+    "count": 3,
+    "arms": {
+      "top": "景",
+      "right": "察",
+      "bottom": "客"
+    },
+    "answer": "観",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 3,
+    "count": 3,
+    "arms": {
+      "top": "本",
+      "right": "根",
+      "left": "部"
+    },
+    "answer": "屋",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 3,
+    "count": 3,
+    "arms": {
+      "top": "合",
+      "right": "泊",
+      "bottom": "題"
+    },
+    "answer": "宿",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 3,
+    "count": 3,
+    "arms": {
+      "top": "包",
+      "right": "度",
+      "bottom": "寧"
+    },
+    "answer": "丁",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 3,
+    "count": 3,
+    "arms": {
+      "top": "注",
+      "right": "的",
+      "bottom": "標"
+    },
+    "answer": "目",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 3,
+    "count": 4,
+    "arms": {
+      "top": "構",
+      "right": "書",
+      "left": "意",
+      "bottom": "鑑"
+    },
+    "answer": "図",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 3,
+    "count": 4,
+    "arms": {
+      "top": "適",
+      "right": "月",
+      "left": "補",
+      "bottom": "規"
+    },
+    "answer": "正",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 3,
+    "count": 4,
+    "arms": {
+      "top": "好",
+      "right": "外",
+      "left": "決",
+      "bottom": "見"
+    },
+    "answer": "意",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 3,
+    "count": 4,
+    "arms": {
+      "top": "復",
+      "right": "性",
+      "left": "生",
+      "bottom": "用"
+    },
+    "answer": "活",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 3,
+    "count": 4,
+    "arms": {
+      "top": "最",
+      "right": "盗",
+      "left": "勉",
+      "bottom": "度"
+    },
+    "answer": "強",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 3,
+    "count": 4,
+    "arms": {
+      "top": "劣",
+      "right": "粧",
+      "left": "文",
+      "bottom": "学"
+    },
+    "answer": "化",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 3,
+    "count": 4,
+    "arms": {
+      "top": "内",
+      "right": "量",
+      "left": "美",
+      "bottom": "姿"
+    },
+    "answer": "容",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 3,
+    "count": 4,
+    "arms": {
+      "top": "反",
+      "right": "殺",
+      "left": "発",
+      "bottom": "撃"
+    },
+    "answer": "射",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 3,
+    "count": 4,
+    "arms": {
+      "top": "不",
+      "right": "易",
+      "left": "平",
+      "bottom": "全"
+    },
+    "answer": "安",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 3,
+    "count": 4,
+    "arms": {
+      "top": "対",
+      "right": "方",
+      "left": "何",
+      "bottom": "女"
+    },
+    "answer": "処",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 4,
+    "count": 2,
+    "arms": {
+      "top": "金",
+      "right": "雷"
+    },
+    "answer": "魚",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 4,
+    "count": 2,
+    "arms": {
+      "top": "牛",
+      "right": "首"
+    },
+    "answer": "乳",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 4,
+    "count": 2,
+    "arms": {
+      "top": "敗",
+      "right": "上"
+    },
+    "answer": "北",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 4,
+    "count": 2,
+    "arms": {
+      "top": "四",
+      "right": "節"
+    },
+    "answer": "季",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 4,
+    "count": 2,
+    "arms": {
+      "top": "短",
+      "right": "詞"
+    },
+    "answer": "歌",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 4,
+    "count": 2,
+    "arms": {
+      "top": "実",
+      "right": "真"
+    },
+    "answer": "写",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 4,
+    "count": 2,
+    "arms": {
+      "top": "小",
+      "right": "明"
+    },
+    "answer": "説",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 4,
+    "count": 2,
+    "arms": {
+      "top": "風",
+      "right": "長"
+    },
+    "answer": "船",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 4,
+    "count": 2,
+    "arms": {
+      "top": "苦",
+      "right": "顔"
+    },
+    "answer": "笑",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 4,
+    "count": 2,
+    "arms": {
+      "top": "親",
+      "right": "揮"
+    },
+    "answer": "指",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 4,
+    "count": 3,
+    "arms": {
+      "top": "注",
+      "right": "欲",
+      "bottom": "見"
+    },
+    "answer": "意",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 4,
+    "count": 3,
+    "arms": {
+      "top": "野",
+      "right": "団",
+      "left": "電"
+    },
+    "answer": "球",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 4,
+    "count": 3,
+    "arms": {
+      "top": "最",
+      "right": "応",
+      "bottom": "当"
+    },
+    "answer": "適",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 4,
+    "count": 3,
+    "arms": {
+      "top": "脱",
+      "right": "皮",
+      "bottom": "布"
+    },
+    "answer": "毛",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 4,
+    "count": 3,
+    "arms": {
+      "top": "登",
+      "right": "音",
+      "left": "記"
+    },
+    "answer": "録",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 4,
+    "count": 3,
+    "arms": {
+      "top": "答",
+      "right": "護",
+      "bottom": "当"
+    },
+    "answer": "弁",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 4,
+    "count": 3,
+    "arms": {
+      "top": "化",
+      "right": "校",
+      "left": "小"
+    },
+    "answer": "学",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 4,
+    "count": 3,
+    "arms": {
+      "top": "消",
+      "right": "踪",
+      "bottom": "敗"
+    },
+    "answer": "失",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 4,
+    "count": 3,
+    "arms": {
+      "top": "図",
+      "right": "賞",
+      "bottom": "定"
+    },
+    "answer": "鑑",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 4,
+    "count": 3,
+    "arms": {
+      "top": "標",
+      "right": "備",
+      "bottom": "拠"
+    },
+    "answer": "準",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 4,
+    "count": 4,
+    "arms": {
+      "top": "国",
+      "right": "声",
+      "left": "短",
+      "bottom": "詞"
+    },
+    "answer": "歌",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 4,
+    "count": 4,
+    "arms": {
+      "top": "大",
+      "right": "手",
+      "left": "親",
+      "bottom": "符"
+    },
+    "answer": "切",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 4,
+    "count": 4,
+    "arms": {
+      "top": "眉",
+      "right": "皮",
+      "left": "脱",
+      "bottom": "布"
+    },
+    "answer": "毛",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 4,
+    "count": 4,
+    "arms": {
+      "top": "生",
+      "right": "用",
+      "left": "就",
+      "bottom": "発"
+    },
+    "answer": "活",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 4,
+    "count": 4,
+    "arms": {
+      "top": "効",
+      "right": "実",
+      "left": "結",
+      "bottom": "物"
+    },
+    "answer": "果",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 4,
+    "count": 4,
+    "arms": {
+      "top": "捕",
+      "right": "欲",
+      "left": "朝",
+      "bottom": "事"
+    },
+    "answer": "食",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 4,
+    "count": 4,
+    "arms": {
+      "top": "受",
+      "right": "意",
+      "left": "発",
+      "bottom": "入"
+    },
+    "answer": "注",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 4,
+    "count": 4,
+    "arms": {
+      "top": "発",
+      "right": "色",
+      "left": "観",
+      "bottom": "楽"
+    },
+    "answer": "音",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 4,
+    "count": 4,
+    "arms": {
+      "top": "改",
+      "right": "義",
+      "left": "氏",
+      "bottom": "前"
+    },
+    "answer": "名",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 4,
+    "count": 4,
+    "arms": {
+      "top": "答",
+      "right": "護",
+      "left": "勘",
+      "bottom": "当"
+    },
+    "answer": "弁",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 5,
+    "count": 2,
+    "arms": {
+      "top": "改",
+      "right": "所"
+    },
+    "answer": "札",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 5,
+    "count": 2,
+    "arms": {
+      "top": "将",
+      "right": "譜"
+    },
+    "answer": "棋",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 5,
+    "count": 2,
+    "arms": {
+      "top": "脂",
+      "right": "問"
+    },
+    "answer": "質",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 5,
+    "count": 2,
+    "arms": {
+      "top": "太",
+      "right": "動"
+    },
+    "answer": "鼓",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 5,
+    "count": 2,
+    "arms": {
+      "top": "失",
+      "right": "顔"
+    },
+    "answer": "笑",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 5,
+    "count": 2,
+    "arms": {
+      "top": "熱",
+      "right": "当"
+    },
+    "answer": "弁",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 5,
+    "count": 2,
+    "arms": {
+      "top": "大",
+      "right": "柳"
+    },
+    "answer": "川",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 5,
+    "count": 2,
+    "arms": {
+      "top": "潤",
+      "right": "稽"
+    },
+    "answer": "滑",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 5,
+    "count": 2,
+    "arms": {
+      "top": "陸",
+      "right": "動"
+    },
+    "answer": "運",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 5,
+    "count": 2,
+    "arms": {
+      "top": "不",
+      "right": "折"
+    },
+    "answer": "屈",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 5,
+    "count": 3,
+    "arms": {
+      "top": "長",
+      "right": "下",
+      "left": "革"
+    },
+    "answer": "靴",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 5,
+    "count": 3,
+    "arms": {
+      "top": "生",
+      "right": "字",
+      "bottom": "気"
+    },
+    "answer": "活",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 5,
+    "count": 3,
+    "arms": {
+      "top": "包",
+      "right": "重",
+      "bottom": "寧"
+    },
+    "answer": "丁",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 5,
+    "count": 3,
+    "arms": {
+      "top": "老",
+      "right": "鏡",
+      "left": "着"
+    },
+    "answer": "眼",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 5,
+    "count": 3,
+    "arms": {
+      "top": "完",
+      "right": "北",
+      "bottom": "戦"
+    },
+    "answer": "敗",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 5,
+    "count": 3,
+    "arms": {
+      "top": "将",
+      "right": "譜",
+      "bottom": "士"
+    },
+    "answer": "棋",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 5,
+    "count": 3,
+    "arms": {
+      "top": "木",
+      "right": "部",
+      "bottom": "毛"
+    },
+    "answer": "陰",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 5,
+    "count": 3,
+    "arms": {
+      "top": "金",
+      "right": "膜",
+      "bottom": "戸"
+    },
+    "answer": "網",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 5,
+    "count": 3,
+    "arms": {
+      "top": "砂",
+      "right": "類",
+      "left": "血"
+    },
+    "answer": "糖",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 5,
+    "count": 3,
+    "arms": {
+      "top": "深",
+      "right": "葉",
+      "left": "口"
+    },
+    "answer": "紅",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 5,
+    "count": 4,
+    "arms": {
+      "top": "失",
+      "right": "北",
+      "left": "惨",
+      "bottom": "因"
+    },
+    "answer": "敗",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 5,
+    "count": 4,
+    "arms": {
+      "top": "迫",
+      "right": "上",
+      "left": "写",
+      "bottom": "名"
+    },
+    "answer": "真",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 5,
+    "count": 4,
+    "arms": {
+      "top": "遍",
+      "right": "戦",
+      "left": "学",
+      "bottom": "史"
+    },
+    "answer": "歴",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 5,
+    "count": 4,
+    "arms": {
+      "top": "名",
+      "right": "識",
+      "left": "図",
+      "bottom": "賞"
+    },
+    "answer": "鑑",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 5,
+    "count": 4,
+    "arms": {
+      "top": "幸",
+      "right": "命",
+      "left": "開",
+      "bottom": "動"
+    },
+    "answer": "運",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 5,
+    "count": 4,
+    "arms": {
+      "top": "奉",
+      "right": "事",
+      "left": "給",
+      "bottom": "官"
+    },
+    "answer": "仕",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 5,
+    "count": 4,
+    "arms": {
+      "top": "神",
+      "right": "度",
+      "left": "東",
+      "bottom": "験"
+    },
+    "answer": "経",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 5,
+    "count": 4,
+    "arms": {
+      "top": "酢",
+      "right": "化",
+      "left": "硫",
+      "bottom": "素"
+    },
+    "answer": "酸",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 5,
+    "count": 4,
+    "arms": {
+      "top": "祝",
+      "right": "書",
+      "left": "世",
+      "bottom": "令"
+    },
+    "answer": "辞",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 5,
+    "count": 4,
+    "arms": {
+      "top": "悪",
+      "right": "言",
+      "left": "遊",
+      "bottom": "曲"
+    },
+    "answer": "戯",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 6,
+    "count": 2,
+    "arms": {
+      "top": "世",
+      "right": "書"
+    },
+    "answer": "辞",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 6,
+    "count": 2,
+    "arms": {
+      "top": "整",
+      "right": "着"
+    },
+    "answer": "頓",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 6,
+    "count": 2,
+    "arms": {
+      "top": "般",
+      "right": "葉"
+    },
+    "answer": "若",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 6,
+    "count": 2,
+    "arms": {
+      "top": "本",
+      "right": "田"
+    },
+    "answer": "棚",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 6,
+    "count": 2,
+    "arms": {
+      "top": "恣",
+      "right": "味"
+    },
+    "answer": "意",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 6,
+    "count": 2,
+    "arms": {
+      "top": "原",
+      "right": "縁"
+    },
+    "answer": "因",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 6,
+    "count": 2,
+    "arms": {
+      "top": "水",
+      "right": "乳"
+    },
+    "answer": "牛",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 6,
+    "count": 2,
+    "arms": {
+      "top": "悪",
+      "right": "曲"
+    },
+    "answer": "戯",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 6,
+    "count": 2,
+    "arms": {
+      "top": "改",
+      "right": "束"
+    },
+    "answer": "札",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 6,
+    "count": 2,
+    "arms": {
+      "top": "磁",
+      "right": "官"
+    },
+    "answer": "器",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 6,
+    "count": 3,
+    "arms": {
+      "top": "顔",
+      "right": "亭",
+      "bottom": "理"
+    },
+    "answer": "料",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 6,
+    "count": 3,
+    "arms": {
+      "top": "電",
+      "right": "力",
+      "bottom": "器"
+    },
+    "answer": "磁",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 6,
+    "count": 3,
+    "arms": {
+      "top": "目",
+      "right": "週",
+      "left": "高"
+    },
+    "answer": "次",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 6,
+    "count": 3,
+    "arms": {
+      "top": "模",
+      "right": "似",
+      "bottom": "態"
+    },
+    "answer": "擬",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 6,
+    "count": 3,
+    "arms": {
+      "top": "主",
+      "right": "科",
+      "bottom": "鏡"
+    },
+    "answer": "眼",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 6,
+    "count": 3,
+    "arms": {
+      "top": "鍛",
+      "right": "語",
+      "left": "木"
+    },
+    "answer": "造",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 6,
+    "count": 3,
+    "arms": {
+      "top": "地",
+      "right": "案",
+      "bottom": "面"
+    },
+    "answer": "図",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 6,
+    "count": 3,
+    "arms": {
+      "top": "同",
+      "right": "侶",
+      "bottom": "奏"
+    },
+    "answer": "伴",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 6,
+    "count": 3,
+    "arms": {
+      "top": "大",
+      "right": "尾",
+      "left": "風"
+    },
+    "answer": "船",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 6,
+    "count": 3,
+    "arms": {
+      "top": "行",
+      "right": "本",
+      "bottom": "色"
+    },
+    "answer": "脚",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 6,
+    "count": 4,
+    "arms": {
+      "top": "法",
+      "right": "律",
+      "left": "定",
+      "bottom": "模"
+    },
+    "answer": "規",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 6,
+    "count": 4,
+    "arms": {
+      "top": "鼓",
+      "right": "台",
+      "left": "乱",
+      "bottom": "妓"
+    },
+    "answer": "舞",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 6,
+    "count": 4,
+    "arms": {
+      "top": "牛",
+      "right": "頭",
+      "left": "授",
+      "bottom": "腺"
+    },
+    "answer": "乳",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 6,
+    "count": 4,
+    "arms": {
+      "top": "中",
+      "right": "名",
+      "left": "日",
+      "bottom": "尚"
+    },
+    "answer": "和",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 6,
+    "count": 4,
+    "arms": {
+      "top": "賛",
+      "right": "退",
+      "left": "世",
+      "bottom": "書"
+    },
+    "answer": "辞",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 6,
+    "count": 4,
+    "arms": {
+      "top": "結",
+      "right": "肉",
+      "left": "成",
+      "bottom": "敢"
+    },
+    "answer": "果",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 6,
+    "count": 4,
+    "arms": {
+      "top": "染",
+      "right": "理",
+      "left": "試",
+      "bottom": "亭"
+    },
+    "answer": "料",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 6,
+    "count": 4,
+    "arms": {
+      "top": "女",
+      "right": "観",
+      "left": "歴",
+      "bottom": "料"
+    },
+    "answer": "史",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 6,
+    "count": 4,
+    "arms": {
+      "top": "潤",
+      "right": "走",
+      "left": "円",
+      "bottom": "稽"
+    },
+    "answer": "滑",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 6,
+    "count": 4,
+    "arms": {
+      "top": "恒",
+      "right": "雲",
+      "left": "黒",
+      "bottom": "空"
+    },
+    "answer": "星",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 7,
+    "count": 2,
+    "arms": {
+      "top": "裁",
+      "right": "続"
+    },
+    "answer": "断",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 7,
+    "count": 2,
+    "arms": {
+      "top": "寓",
+      "right": "術"
+    },
+    "answer": "話",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 7,
+    "count": 2,
+    "arms": {
+      "top": "瞳",
+      "right": "雀"
+    },
+    "answer": "孔",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 7,
+    "count": 2,
+    "arms": {
+      "top": "不",
+      "right": "折"
+    },
+    "answer": "屈",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 7,
+    "count": 2,
+    "arms": {
+      "top": "整",
+      "right": "挫"
+    },
+    "answer": "頓",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 7,
+    "count": 2,
+    "arms": {
+      "top": "木",
+      "right": "毛"
+    },
+    "answer": "陰",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 7,
+    "count": 2,
+    "arms": {
+      "top": "鋳",
+      "right": "反"
+    },
+    "answer": "造",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 7,
+    "count": 2,
+    "arms": {
+      "top": "目",
+      "right": "席"
+    },
+    "answer": "次",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 7,
+    "count": 2,
+    "arms": {
+      "top": "溶",
+      "right": "解"
+    },
+    "answer": "融",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 7,
+    "count": 2,
+    "arms": {
+      "top": "金",
+      "right": "膜"
+    },
+    "answer": "網",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 7,
+    "count": 3,
+    "arms": {
+      "top": "因",
+      "right": "側",
+      "left": "絶"
+    },
+    "answer": "縁",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 7,
+    "count": 3,
+    "arms": {
+      "top": "山",
+      "right": "性",
+      "left": "木"
+    },
+    "answer": "陰",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 7,
+    "count": 3,
+    "arms": {
+      "top": "大",
+      "right": "流",
+      "left": "満"
+    },
+    "answer": "潮",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 7,
+    "count": 3,
+    "arms": {
+      "top": "潤",
+      "right": "稽",
+      "left": "円"
+    },
+    "answer": "滑",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 7,
+    "count": 3,
+    "arms": {
+      "top": "一",
+      "right": "大",
+      "left": "濾"
+    },
+    "answer": "過",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 7,
+    "count": 3,
+    "arms": {
+      "top": "窮",
+      "right": "折",
+      "bottom": "曲"
+    },
+    "answer": "屈",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 7,
+    "count": 3,
+    "arms": {
+      "top": "戯",
+      "right": "調",
+      "bottom": "面"
+    },
+    "answer": "曲",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 7,
+    "count": 3,
+    "arms": {
+      "top": "目",
+      "right": "代",
+      "bottom": "女"
+    },
+    "answer": "次",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 7,
+    "count": 3,
+    "arms": {
+      "top": "整",
+      "right": "挫",
+      "bottom": "着"
+    },
+    "answer": "頓",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 7,
+    "count": 3,
+    "arms": {
+      "top": "貴",
+      "right": "方",
+      "bottom": "堂"
+    },
+    "answer": "殿",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 7,
+    "count": 4,
+    "arms": {
+      "top": "松",
+      "right": "巻",
+      "left": "若",
+      "bottom": "書"
+    },
+    "answer": "葉",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 7,
+    "count": 4,
+    "arms": {
+      "top": "隔",
+      "right": "頂",
+      "left": "根",
+      "bottom": "縁"
+    },
+    "answer": "絶",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 7,
+    "count": 4,
+    "arms": {
+      "top": "写",
+      "right": "性",
+      "left": "純",
+      "bottom": "鍮"
+    },
+    "answer": "真",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 7,
+    "count": 4,
+    "arms": {
+      "top": "大",
+      "right": "流",
+      "left": "満",
+      "bottom": "風"
+    },
+    "answer": "潮",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 7,
+    "count": 4,
+    "arms": {
+      "top": "裸",
+      "right": "科",
+      "left": "着",
+      "bottom": "鏡"
+    },
+    "answer": "眼",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 7,
+    "count": 4,
+    "arms": {
+      "top": "若",
+      "right": "潮",
+      "left": "煮",
+      "bottom": "物"
+    },
+    "answer": "干",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 7,
+    "count": 4,
+    "arms": {
+      "top": "日",
+      "right": "性",
+      "left": "木",
+      "bottom": "毛"
+    },
+    "answer": "陰",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 7,
+    "count": 4,
+    "arms": {
+      "top": "偽",
+      "right": "詣",
+      "left": "鍛",
+      "bottom": "成"
+    },
+    "answer": "造",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 7,
+    "count": 4,
+    "arms": {
+      "top": "骨",
+      "right": "鼓",
+      "left": "丸",
+      "bottom": "古"
+    },
+    "answer": "太",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 7,
+    "count": 4,
+    "arms": {
+      "top": "準",
+      "right": "蓄",
+      "left": "軍",
+      "bottom": "品"
+    },
+    "answer": "備",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 8,
+    "count": 2,
+    "arms": {
+      "top": "縮",
+      "right": "羊"
+    },
+    "answer": "緬",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 8,
+    "count": 2,
+    "arms": {
+      "top": "焙",
+      "right": "薬"
+    },
+    "answer": "煎",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 8,
+    "count": 2,
+    "arms": {
+      "top": "膨",
+      "right": "滑"
+    },
+    "answer": "潤",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 8,
+    "count": 2,
+    "arms": {
+      "top": "実",
+      "right": "算"
+    },
+    "answer": "験",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 8,
+    "count": 2,
+    "arms": {
+      "top": "建",
+      "right": "膜"
+    },
+    "answer": "網",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 8,
+    "count": 2,
+    "arms": {
+      "top": "湯",
+      "right": "騰"
+    },
+    "answer": "沸",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 8,
+    "count": 2,
+    "arms": {
+      "top": "目",
+      "right": "会"
+    },
+    "answer": "次",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 8,
+    "count": 2,
+    "arms": {
+      "top": "休",
+      "right": "室"
+    },
+    "answer": "憩",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 8,
+    "count": 2,
+    "arms": {
+      "top": "将",
+      "right": "界"
+    },
+    "answer": "棋",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 8,
+    "count": 2,
+    "arms": {
+      "top": "石",
+      "right": "化"
+    },
+    "answer": "鹸",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 8,
+    "count": 3,
+    "arms": {
+      "top": "適",
+      "right": "滑",
+      "bottom": "色"
+    },
+    "answer": "潤",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 8,
+    "count": 3,
+    "arms": {
+      "top": "南",
+      "right": "糸",
+      "left": "経"
+    },
+    "answer": "緯",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 8,
+    "count": 3,
+    "arms": {
+      "top": "縮",
+      "right": "羊",
+      "left": "訪"
+    },
+    "answer": "緬",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 8,
+    "count": 3,
+    "arms": {
+      "top": "湯",
+      "right": "薬",
+      "left": "肝"
+    },
+    "answer": "煎",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 8,
+    "count": 3,
+    "arms": {
+      "top": "白",
+      "right": "光",
+      "bottom": "行"
+    },
+    "answer": "銀",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 8,
+    "count": 3,
+    "arms": {
+      "top": "竹",
+      "right": "革",
+      "bottom": "具"
+    },
+    "answer": "馬",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 8,
+    "count": 3,
+    "arms": {
+      "top": "必",
+      "right": "要",
+      "left": "急"
+    },
+    "answer": "須",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 8,
+    "count": 3,
+    "arms": {
+      "top": "雪",
+      "right": "喩",
+      "bottom": "亡"
+    },
+    "answer": "隠",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 8,
+    "count": 3,
+    "arms": {
+      "top": "母",
+      "right": "乳",
+      "left": "海"
+    },
+    "answer": "牛",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 8,
+    "count": 3,
+    "arms": {
+      "top": "急",
+      "right": "落",
+      "left": "沸"
+    },
+    "answer": "騰",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 8,
+    "count": 4,
+    "arms": {
+      "top": "疣",
+      "right": "線",
+      "left": "法",
+      "bottom": "鈿"
+    },
+    "answer": "螺",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 8,
+    "count": 4,
+    "arms": {
+      "top": "列",
+      "right": "縮",
+      "left": "勉",
+      "bottom": "暴"
+    },
+    "answer": "強",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 8,
+    "count": 4,
+    "arms": {
+      "top": "頭",
+      "right": "碁",
+      "left": "外",
+      "bottom": "繞"
+    },
+    "answer": "囲",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 8,
+    "count": 4,
+    "arms": {
+      "top": "湯",
+      "right": "剤",
+      "left": "香",
+      "bottom": "餅"
+    },
+    "answer": "煎",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 8,
+    "count": 4,
+    "arms": {
+      "top": "切",
+      "right": "工",
+      "left": "読",
+      "bottom": "札"
+    },
+    "answer": "手",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 8,
+    "count": 4,
+    "arms": {
+      "top": "幽",
+      "right": "喩",
+      "left": "明",
+      "bottom": "記"
+    },
+    "answer": "暗",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 8,
+    "count": 4,
+    "arms": {
+      "top": "坐",
+      "right": "家",
+      "left": "友",
+      "bottom": "定"
+    },
+    "answer": "禅",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 8,
+    "count": 4,
+    "arms": {
+      "top": "興",
+      "right": "昌",
+      "left": "膨",
+      "bottom": "起"
+    },
+    "answer": "隆",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 8,
+    "count": 4,
+    "arms": {
+      "top": "佯",
+      "right": "文",
+      "left": "躁",
+      "bottom": "言"
+    },
+    "answer": "狂",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 8,
+    "count": 4,
+    "arms": {
+      "top": "性",
+      "right": "文",
+      "left": "球",
+      "bottom": "曲"
+    },
+    "answer": "戯",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 9,
+    "count": 2,
+    "arms": {
+      "top": "適",
+      "right": "滑"
+    },
+    "answer": "潤",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 9,
+    "count": 2,
+    "arms": {
+      "top": "散",
+      "right": "孔"
+    },
+    "answer": "瞳",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 9,
+    "count": 2,
+    "arms": {
+      "top": "遅",
+      "right": "絵"
+    },
+    "answer": "蒔",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 9,
+    "count": 2,
+    "arms": {
+      "top": "桐",
+      "right": "性"
+    },
+    "answer": "塑",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 9,
+    "count": 2,
+    "arms": {
+      "top": "焙",
+      "right": "茶"
+    },
+    "answer": "煎",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 9,
+    "count": 2,
+    "arms": {
+      "top": "北",
+      "right": "糸"
+    },
+    "answer": "緯",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 9,
+    "count": 2,
+    "arms": {
+      "top": "模",
+      "right": "化"
+    },
+    "answer": "糊",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 9,
+    "count": 2,
+    "arms": {
+      "top": "興",
+      "right": "起"
+    },
+    "answer": "隆",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 9,
+    "count": 2,
+    "arms": {
+      "top": "後",
+      "right": "折"
+    },
+    "answer": "屈",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 9,
+    "count": 2,
+    "arms": {
+      "top": "浸",
+      "right": "滑"
+    },
+    "answer": "潤",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 9,
+    "count": 3,
+    "arms": {
+      "top": "虫",
+      "right": "染",
+      "left": "溶"
+    },
+    "answer": "媒",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 9,
+    "count": 3,
+    "arms": {
+      "top": "湯",
+      "right": "茶",
+      "left": "焙"
+    },
+    "answer": "煎",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 9,
+    "count": 3,
+    "arms": {
+      "top": "散",
+      "right": "孔",
+      "left": "縮"
+    },
+    "answer": "瞳",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 9,
+    "count": 3,
+    "arms": {
+      "top": "浮",
+      "right": "線",
+      "left": "泳"
+    },
+    "answer": "力",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 9,
+    "count": 3,
+    "arms": {
+      "top": "切",
+      "right": "潮",
+      "bottom": "満"
+    },
+    "answer": "干",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 9,
+    "count": 3,
+    "arms": {
+      "top": "流",
+      "right": "居",
+      "bottom": "話"
+    },
+    "answer": "寓",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 9,
+    "count": 3,
+    "arms": {
+      "top": "強",
+      "right": "帯",
+      "bottom": "皮"
+    },
+    "answer": "靱",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 9,
+    "count": 3,
+    "arms": {
+      "top": "遅",
+      "right": "絵",
+      "left": "種"
+    },
+    "answer": "蒔",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 9,
+    "count": 3,
+    "arms": {
+      "top": "溶",
+      "right": "酌",
+      "left": "風"
+    },
+    "answer": "媒",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 9,
+    "count": 3,
+    "arms": {
+      "top": "模",
+      "right": "化",
+      "left": "姫"
+    },
+    "answer": "糊",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 9,
+    "count": 4,
+    "arms": {
+      "top": "落",
+      "right": "合",
+      "left": "干",
+      "bottom": "解"
+    },
+    "answer": "潮",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 9,
+    "count": 4,
+    "arms": {
+      "top": "急",
+      "right": "臾",
+      "left": "呉",
+      "bottom": "要"
+    },
+    "answer": "須",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 9,
+    "count": 4,
+    "arms": {
+      "top": "焙",
+      "right": "薬",
+      "left": "肝",
+      "bottom": "剤"
+    },
+    "answer": "煎",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 9,
+    "count": 4,
+    "arms": {
+      "top": "太",
+      "right": "楼",
+      "left": "軍",
+      "bottom": "弓"
+    },
+    "answer": "鼓",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 9,
+    "count": 4,
+    "arms": {
+      "top": "湯",
+      "right": "薬",
+      "left": "焙",
+      "bottom": "剤"
+    },
+    "answer": "煎",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 9,
+    "count": 4,
+    "arms": {
+      "top": "生",
+      "right": "喰",
+      "left": "朱",
+      "bottom": "器"
+    },
+    "answer": "漆",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 9,
+    "count": 4,
+    "arms": {
+      "top": "整",
+      "right": "死",
+      "left": "停",
+      "bottom": "知"
+    },
+    "answer": "頓",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 9,
+    "count": 4,
+    "arms": {
+      "top": "賢",
+      "right": "娘",
+      "left": "酵",
+      "bottom": "牛"
+    },
+    "answer": "母",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 9,
+    "count": 4,
+    "arms": {
+      "top": "護",
+      "right": "滅",
+      "left": "減",
+      "bottom": "擦"
+    },
+    "answer": "摩",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 9,
+    "count": 4,
+    "arms": {
+      "top": "将",
+      "right": "戦",
+      "left": "兵",
+      "bottom": "王"
+    },
+    "answer": "棋",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 10,
+    "count": 2,
+    "arms": {
+      "top": "指",
+      "right": "徹"
+    },
+    "answer": "貫",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 10,
+    "count": 2,
+    "arms": {
+      "top": "急",
+      "right": "要"
+    },
+    "answer": "須",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 10,
+    "count": 2,
+    "arms": {
+      "top": "回",
+      "right": "込"
+    },
+    "answer": "折",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 10,
+    "count": 2,
+    "arms": {
+      "top": "縮",
+      "right": "羊"
+    },
+    "answer": "緬",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 10,
+    "count": 2,
+    "arms": {
+      "top": "湯",
+      "right": "剤"
+    },
+    "answer": "煎",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 10,
+    "count": 2,
+    "arms": {
+      "top": "猟",
+      "right": "禅"
+    },
+    "answer": "友",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 10,
+    "count": 2,
+    "arms": {
+      "top": "強",
+      "right": "帯"
+    },
+    "answer": "靱",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 10,
+    "count": 2,
+    "arms": {
+      "top": "種",
+      "right": "絵"
+    },
+    "answer": "蒔",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 10,
+    "count": 2,
+    "arms": {
+      "top": "不",
+      "right": "染"
+    },
+    "answer": "抜",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 10,
+    "count": 2,
+    "arms": {
+      "top": "焙",
+      "right": "剤"
+    },
+    "answer": "煎",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 10,
+    "count": 3,
+    "arms": {
+      "top": "遅",
+      "right": "絵",
+      "left": "種"
+    },
+    "answer": "蒔",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 10,
+    "count": 3,
+    "arms": {
+      "top": "翩",
+      "right": "案",
+      "bottom": "字"
+    },
+    "answer": "翻",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 10,
+    "count": 3,
+    "arms": {
+      "top": "田",
+      "right": "鈿",
+      "bottom": "線"
+    },
+    "answer": "螺",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 10,
+    "count": 3,
+    "arms": {
+      "top": "桐",
+      "right": "性",
+      "bottom": "像"
+    },
+    "answer": "塑",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 10,
+    "count": 3,
+    "arms": {
+      "top": "縮",
+      "right": "羊",
+      "left": "訪"
+    },
+    "answer": "緬",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 10,
+    "count": 3,
+    "arms": {
+      "top": "象",
+      "right": "頓",
+      "bottom": "合"
+    },
+    "answer": "嵌",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 10,
+    "count": 3,
+    "arms": {
+      "top": "山",
+      "right": "書",
+      "left": "枕"
+    },
+    "answer": "詞",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 10,
+    "count": 3,
+    "arms": {
+      "top": "原",
+      "right": "隙",
+      "left": "採"
+    },
+    "answer": "寸",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 10,
+    "count": 3,
+    "arms": {
+      "top": "錦",
+      "right": "幕",
+      "left": "更"
+    },
+    "answer": "紗",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 10,
+    "count": 3,
+    "arms": {
+      "top": "校",
+      "right": "歴",
+      "left": "親"
+    },
+    "answer": "閲",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 10,
+    "count": 4,
+    "arms": {
+      "top": "溶",
+      "right": "介",
+      "left": "虫",
+      "bottom": "染"
+    },
+    "answer": "媒",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 10,
+    "count": 4,
+    "arms": {
+      "top": "呉",
+      "right": "要",
+      "left": "急",
+      "bottom": "臾"
+    },
+    "answer": "須",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 10,
+    "count": 4,
+    "arms": {
+      "top": "仕",
+      "right": "金",
+      "left": "稲",
+      "bottom": "詞"
+    },
+    "answer": "掛",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 10,
+    "count": 4,
+    "arms": {
+      "top": "姫",
+      "right": "化",
+      "left": "血",
+      "bottom": "口"
+    },
+    "answer": "糊",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 10,
+    "count": 4,
+    "arms": {
+      "top": "採",
+      "right": "書",
+      "left": "外",
+      "bottom": "簡"
+    },
+    "answer": "寸",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 10,
+    "count": 4,
+    "arms": {
+      "top": "寄",
+      "right": "話",
+      "left": "流",
+      "bottom": "居"
+    },
+    "answer": "寓",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 10,
+    "count": 4,
+    "arms": {
+      "top": "特",
+      "right": "内",
+      "left": "道",
+      "bottom": "端"
+    },
+    "answer": "管",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 10,
+    "count": 4,
+    "arms": {
+      "top": "焙",
+      "right": "茶",
+      "left": "肝",
+      "bottom": "薬"
+    },
+    "answer": "煎",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 10,
+    "count": 4,
+    "arms": {
+      "top": "湯",
+      "right": "剤",
+      "left": "肝",
+      "bottom": "茶"
+    },
+    "answer": "煎",
+    "choices": []
+  },
+  {
+    "version": 3,
+    "level": 10,
+    "count": 4,
+    "arms": {
+      "top": "拘",
+      "right": "図",
+      "left": "伸",
+      "bottom": "緬"
+    },
+    "answer": "縮",
+    "choices": []
+  }
+]

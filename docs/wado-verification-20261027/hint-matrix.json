@@ -1,0 +1,150 @@
+{
+  "cases": 9,
+  "checks": 18,
+  "rows": [
+    {
+      "viewerGrade": 1,
+      "printGrade": 1,
+      "phase": "return",
+      "displayLabel": "難しめ · 使う場面 · 下の言葉",
+      "printChoice": "bottom.3",
+      "result": "pass"
+    },
+    {
+      "viewerGrade": 1,
+      "printGrade": 1,
+      "phase": "reload",
+      "displayLabel": "難しめ · 使う場面 · 下の言葉",
+      "printChoice": "bottom.3",
+      "result": "pass"
+    },
+    {
+      "viewerGrade": 1,
+      "printGrade": 2,
+      "phase": "return",
+      "displayLabel": "難しめ · 使う場面 · 下の言葉",
+      "printChoice": "bottom.4",
+      "result": "pass"
+    },
+    {
+      "viewerGrade": 1,
+      "printGrade": 2,
+      "phase": "reload",
+      "displayLabel": "難しめ · 使う場面 · 下の言葉",
+      "printChoice": "bottom.4",
+      "result": "pass"
+    },
+    {
+      "viewerGrade": 1,
+      "printGrade": 3,
+      "phase": "return",
+      "displayLabel": "難しめ · 使う場面 · 下の言葉",
+      "printChoice": "bottom.5",
+      "result": "pass"
+    },
+    {
+      "viewerGrade": 1,
+      "printGrade": 3,
+      "phase": "reload",
+      "displayLabel": "難しめ · 使う場面 · 下の言葉",
+      "printChoice": "bottom.5",
+      "result": "pass"
+    },
+    {
+      "viewerGrade": 2,
+      "printGrade": 1,
+      "phase": "return",
+      "displayLabel": "ふつう · 働き・用途 · 下の言葉",
+      "printChoice": "bottom.3",
+      "result": "pass"
+    },
+    {
+      "viewerGrade": 2,
+      "printGrade": 1,
+      "phase": "reload",
+      "displayLabel": "ふつう · 働き・用途 · 下の言葉",
+      "printChoice": "bottom.3",
+      "result": "pass"
+    },
+    {
+      "viewerGrade": 2,
+      "printGrade": 2,
+      "phase": "return",
+      "displayLabel": "ふつう · 働き・用途 · 下の言葉",
+      "printChoice": "bottom.4",
+      "result": "pass"
+    },
+    {
+      "viewerGrade": 2,
+      "printGrade": 2,
+      "phase": "reload",
+      "displayLabel": "ふつう · 働き・用途 · 下の言葉",
+      "printChoice": "bottom.4",
+      "result": "pass"
+    },
+    {
+      "viewerGrade": 2,
+      "printGrade": 3,
+      "phase": "return",
+      "displayLabel": "ふつう · 働き・用途 · 下の言葉",
+      "printChoice": "bottom.5",
+      "result": "pass"
+    },
+    {
+      "viewerGrade": 2,
+      "printGrade": 3,
+      "phase": "reload",
+      "displayLabel": "ふつう · 働き・用途 · 下の言葉",
+      "printChoice": "bottom.5",
+      "result": "pass"
+    },
+    {
+      "viewerGrade": 3,
+      "printGrade": 1,
+      "phase": "return",
+      "displayLabel": "やさしめ · 特徴 · 下の言葉",
+      "printChoice": "bottom.3",
+      "result": "pass"
+    },
+    {
+      "viewerGrade": 3,
+      "printGrade": 1,
+      "phase": "reload",
+      "displayLabel": "やさしめ · 特徴 · 下の言葉",
+      "printChoice": "bottom.3",
+      "result": "pass"
+    },
+    {
+      "viewerGrade": 3,
+      "printGrade": 2,
+      "phase": "return",
+      "displayLabel": "やさしめ · 特徴 · 下の言葉",
+      "printChoice": "bottom.4",
+      "result": "pass"
+    },
+    {
+      "viewerGrade": 3,
+      "printGrade": 2,
+      "phase": "reload",
+      "displayLabel": "やさしめ · 特徴 · 下の言葉",
+      "printChoice": "bottom.4",
+      "result": "pass"
+    },
+    {
+      "viewerGrade": 3,
+      "printGrade": 3,
+      "phase": "return",
+      "displayLabel": "やさしめ · 特徴 · 下の言葉",
+      "printChoice": "bottom.5",
+      "result": "pass"
+    },
+    {
+      "viewerGrade": 3,
+      "printGrade": 3,
+      "phase": "reload",
+      "displayLabel": "やさしめ · 特徴 · 下の言葉",
+      "printChoice": "bottom.5",
+      "result": "pass"
+    }
+  ]
+}

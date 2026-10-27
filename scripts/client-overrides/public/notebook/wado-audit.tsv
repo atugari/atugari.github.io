@@ -5314,7 +5314,7 @@ text	decision	reason	reading	readingSources	zipf	rank	foundIn	eligibleReadings
 何兆	pending	single-family					jmdict	jmdict:なんちょう
 何党	pending	single-family					sudachi	sudachi:なにとう
 何円	pending	single-family					sudachi	sudachi:なんえん
-何処	pending	single-family					jmdict	jmdict:いずこ/どこ
+何処	adopted	reading-supported	どこ	jmdict,sudachi	4.35	1	jmdict,sudachi	jmdict:いずこ/どこ;sudachi:どこ
 何分	adopted	reading-supported	なにぶん	jmdict,sudachi	3.0	2	jmdict,sudachi	jmdict:なにぶん/なんぷん;sudachi:なにぶん
 何割	pending	single-family					jmdict	jmdict:なんわり
 何十	pending	single-family					jmdict	jmdict:なんじゅう
@@ -5335,7 +5335,7 @@ text	decision	reason	reading	readingSources	zipf	rank	foundIn	eligibleReadings
 何所	pending	single-family					jmdict	jmdict:どこ
 何才	adopted	reading-supported	なんさい	jmdict,sudachi	0	3	jmdict,sudachi	jmdict:なんさい;sudachi:なんさい
 何故	adopted	reading-supported	なぜ	jmdict,sudachi,juman	4.6	1	jmdict,sudachi,juman	jmdict:なぜ/なにゆえ;sudachi:なぜ/なにゆえ;juman:なぜ
-何方	pending	single-family					jmdict	jmdict:いずかた/いずち/どなた
+何方	adopted	reading-supported	どなた	jmdict,sudachi	2.68	3	jmdict,sudachi	jmdict:いずかた/いずち/どなた;sudachi:どなた
 何日	adopted	reading-supported	なんにち	jmdict,sudachi	0	3	jmdict,sudachi	jmdict:なんにち;sudachi:なんにち
 何時	adopted	reading-supported	なんどき	jmdict,sudachi	3.4	2	jmdict,sudachi	jmdict:なんじ/なんどき;sudachi:なんどき
 何曜	pending	single-family					sudachi	sudachi:なんよう
@@ -30111,7 +30111,7 @@ text	decision	reason	reading	readingSources	zipf	rank	foundIn	eligibleReadings
 御婆	pending	single-family					juman	juman:おばあ
 御嬢	pending	single-family					jmdict,sudachi	sudachi:おじょう
 御子	adopted	reading-supported	みこ	jmdict,sudachi	2.81	2	jmdict,sudachi	jmdict:おんこ/みこ;sudachi:みこ
-御宅	pending	single-family					jmdict,juman	juman:おたく
+御宅	adopted	reading-supported	おたく	juman,sudachi	0	3	jmdict,sudachi,juman	sudachi:おたく;juman:おたく
 御宇	adopted	reading-supported	ぎょう	jmdict,sudachi	1.29	3	jmdict,sudachi	jmdict:ぎょう;sudachi:ぎょう
 御守	pending	single-family					jmdict	jmdict:おまもり
 御定	pending	single-family					jmdict	jmdict:ごじょう
@@ -73295,12 +73295,12 @@ text	decision	reason	reading	readingSources	zipf	rank	foundIn	eligibleReadings
 貴使	pending	single-family					sudachi	sudachi:きし
 貴信	pending	single-family					jmdict	jmdict:きしん
 貴僧	adopted	reading-supported	きそう	jmdict,sudachi	0	3	jmdict,sudachi	jmdict:きそう;sudachi:きそう
-貴兄	pending	single-family					jmdict	jmdict:きけい
+貴兄	adopted	reading-supported	きけい	jmdict,sudachi	1.61	3	jmdict,sudachi	jmdict:きけい;sudachi:きけい
 貴公	pending	single-family					jmdict	jmdict:きこう
 貴卑	pending	single-family					jmdict	jmdict:きび
 貴台	adopted	reading-supported	きだい	jmdict,sudachi	0	3	jmdict,sudachi	jmdict:きだい;sudachi:きだい
 貴名	pending	single-family					jmdict	jmdict:きめい
-貴君	pending	single-family					jmdict	jmdict:きくん
+貴君	adopted	reading-supported	きくん	jmdict,sudachi	2.6	3	jmdict,sudachi	jmdict:きくん;sudachi:きくん
 貴国	adopted	reading-supported	きこく	jmdict,sudachi,juman	2.07	3	jmdict,sudachi,juman	jmdict:きこく;sudachi:きこく;juman:きこく
 貴地	adopted	reading-supported	きち	jmdict,sudachi	0	3	jmdict,sudachi	jmdict:きち;sudachi:きち
 貴女	adopted	reading-supported	きじょ	jmdict,sudachi	3.9	1	jmdict,sudachi	jmdict:あなた/きじょ;sudachi:きじょ
@@ -73322,7 +73322,7 @@ text	decision	reason	reading	readingSources	zipf	rank	foundIn	eligibleReadings
 貴札	adopted	reading-supported	きさつ	jmdict,sudachi	0	3	jmdict,sudachi	jmdict:きさつ;sudachi:きさつ
 貴校	adopted	reading-supported	きこう	jmdict,sudachi	0	3	jmdict,sudachi	jmdict:きこう;sudachi:きこう
 貴様	excluded	no-ordinary-reading					jmdict	
-貴殿	pending	single-family					jmdict	jmdict:きでん
+貴殿	adopted	reading-supported	きでん	jmdict,sudachi	2.91	2	jmdict,sudachi	jmdict:きでん;sudachi:きでん
 貴男	pending	single-family					jmdict	jmdict:あなた
 貴石	adopted	reading-supported	きせき	jmdict,sudachi	2.03	3	jmdict,sudachi	jmdict:きせき;sudachi:きせき
 貴社	adopted	reading-supported	きしゃ	jmdict,sudachi	2.6	3	jmdict,sudachi	jmdict:きしゃ;sudachi:きしゃ

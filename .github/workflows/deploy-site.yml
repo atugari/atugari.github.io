@@ -109,13 +109,54 @@ jobs:
         with:
           path: _site
 
+  wado-verification:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install isolated verification dependencies
+        shell: bash
+        run: |
+          npm install --prefix "$RUNNER_TEMP/wado-browser" --no-audit --no-fund playwright@1.62.1 linkedom@0.18.13
+          "$RUNNER_TEMP/wado-browser/node_modules/.bin/playwright" install --with-deps webkit
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends fonts-noto-cjk poppler-utils
+          python3 -m venv "$RUNNER_TEMP/wado-python"
+          "$RUNNER_TEMP/wado-python/bin/pip" install pypdf==6.10.0 pdfplumber==0.11.9
+      - name: Check hint state and reviewed vocabulary
+        run: |
+          node scripts/check-nanpure-wado-hint-matrix.cjs "$RUNNER_TEMP/wado-browser/node_modules/linkedom" docs/wado-verification-20261027/hint-matrix.json
+          node scripts/wado/compare-generation-20261027.cjs
+          node scripts/check-nanpure-wado-review.cjs
+          node scripts/wado/build-print-fixture-20261027.cjs
+      - name: Export and inspect four actual A4 PDFs
+        shell: bash
+        run: |
+          node -e 'const f=require("fs"),v=require("./nanpure/version.json").version;f.mkdirSync(".wado-site/nanpure/releases",{recursive:true});f.copyFileSync("nanpure/version.json",".wado-site/nanpure/version.json");f.cpSync("nanpure/releases/"+v,".wado-site/nanpure/releases/"+v,{recursive:true});'
+          export PLAYWRIGHT_MODULE="$RUNNER_TEMP/wado-browser/node_modules/playwright"
+          export CHROME_BIN="$(command -v google-chrome || command -v chromium)"
+          node scripts/check-nanpure-wado-pdf.cjs .wado-site wado-verification-output
+          "$RUNNER_TEMP/wado-python/bin/python" scripts/wado/check-pdf-20261027.py wado-verification-output
+          cp -a docs/wado-verification-20261027/. wado-verification-output/
+          cp scripts/wado/review-20261027.json scripts/client-overrides/public/notebook/wado-licenses.txt wado-verification-output/
+      - name: Upload reviewable PDFs and comparison evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wado-verification-${{ github.sha }}
+          path: wado-verification-output
+          if-no-files-found: ignore
+          retention-days: 14
+
   deploy:
     if: github.event_name != 'pull_request'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    needs: build
+    needs: [build, wado-verification]
     steps:
       - name: Deploy
         id: deployment

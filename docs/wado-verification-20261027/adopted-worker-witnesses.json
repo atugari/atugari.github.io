@@ -1,0 +1,98 @@
+[
+  {
+    "text": "何処",
+    "level": 4,
+    "seed": 252,
+    "puzzle": {
+      "version": 3,
+      "level": 4,
+      "count": 2,
+      "arms": {
+        "top": "何",
+        "right": "分"
+      },
+      "answer": "処",
+      "choices": []
+    }
+  },
+  {
+    "text": "何方",
+    "level": 8,
+    "seed": 10984,
+    "puzzle": {
+      "version": 3,
+      "level": 8,
+      "count": 2,
+      "arms": {
+        "top": "誰",
+        "right": "方"
+      },
+      "answer": "何",
+      "choices": []
+    }
+  },
+  {
+    "text": "御宅",
+    "level": 8,
+    "seed": 9875,
+    "puzzle": {
+      "version": 3,
+      "level": 8,
+      "count": 2,
+      "arms": {
+        "top": "御",
+        "right": "送"
+      },
+      "answer": "宅",
+      "choices": []
+    }
+  },
+  {
+    "text": "貴兄",
+    "level": 8,
+    "seed": 39719,
+    "puzzle": {
+      "version": 3,
+      "level": 8,
+      "count": 2,
+      "arms": {
+        "top": "貴",
+        "right": "分"
+      },
+      "answer": "兄",
+      "choices": []
+    }
+  },
+  {
+    "text": "貴君",
+    "level": 8,
+    "seed": 48036,
+    "puzzle": {
+      "version": 3,
+      "level": 8,
+      "count": 2,
+      "arms": {
+        "top": "貴",
+        "right": "恩"
+      },
+      "answer": "君",
+      "choices": []
+    }
+  },
+  {
+    "text": "貴殿",
+    "level": 5,
+    "seed": 2165,
+    "puzzle": {
+      "version": 3,
+      "level": 5,
+      "count": 2,
+      "arms": {
+        "top": "高",
+        "right": "殿"
+      },
+      "answer": "貴",
+      "choices": []
+    }
+  }
+]
