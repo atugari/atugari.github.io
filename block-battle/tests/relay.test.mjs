@@ -35,6 +35,6 @@ test('HTTP public page and WebSocket admission validation',async()=>{
  assert.equal((await get('/ws?n=10&mode=random',{Upgrade:'websocket'})).status,400);
  assert.equal((await get('/ws?n=2&mode=private&code=A',{Upgrade:'websocket'})).status,400);
  assert.equal((await get('/ws?n=9&mode=random',{Upgrade:'websocket'})).status,200);assert.equal(called,1);
- let r=await get('/');assert.equal(r.headers.get('content-encoding'),null);let html=await r.text();assert.match(html,/<title>BLOCK BATTLE/);assert.ok(!html.includes('chatgpt.site'));assert.ok(!html.includes('<script src='));assert.match(html,/v22/);
- let health=await(await get('/api/health')).json();assert.equal(health.transport,'websocket');assert.equal(health.version,22);
+ let r=await get('/');assert.equal(r.headers.get('content-encoding'),null);let html=await r.text();assert.match(html,/<title>BLOCK BATTLE/);assert.ok(!html.includes('chatgpt.site'));assert.ok(!html.includes('<script src='));assert.match(html,/v23/);
+ let health=await(await get('/api/health')).json();assert.equal(health.transport,'websocket');assert.equal(health.version,23);
 });
