@@ -28,6 +28,7 @@
    for(const node of document.querySelectorAll('[data-workspace-total]'))node.textContent=total;
    for(const node of document.querySelectorAll('[data-workspace-selected]'))node.textContent=selected;
    for(const button of document.querySelectorAll('[data-workspace-needs-selection]'))button.disabled=selected===0;
+   for(const node of document.querySelectorAll('[data-workspace-selection-empty]'))node.hidden=selected>0;
   }
   function back(){if(dialog.open){dialog.close();return true;}if(current!=='create'){activate('create');return true;}return false;}
   activate('create',false);return{activate,counts,back};

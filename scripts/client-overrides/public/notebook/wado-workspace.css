@@ -88,3 +88,5 @@
  @media(max-width:370px){.workspace .workspace-tabs button{gap:4px}.workspace .workspace-brand{font-size:calc(16px * var(--ws-scale))}.workspace .workspace-header{gap:8px}}
 }
 @media print{.workspace-tabs,.workspace-dialog{display:none!important}}
+
+@media screen{.workspace[data-workspace-large=true] .workspace-tabs button{white-space:normal}.workspace .wado-question-head label{cursor:pointer;min-height:44px;padding:7px 0}.workspace .wado-question-head label small{display:block;font-size:.8em;font-weight:500}.workspace .wado-question:has(input[data-wado-select]:checked){border-color:#285849;background:#f0f5eb}.workspace [data-workspace-selection-empty]{display:block;width:100%;margin:8px 0}.workspace .live-preview-tools{flex-wrap:wrap}.workspace .live-preview-tools select{min-width:0;max-width:100%}@media(max-width:560px){.workspace .workspace-tabs i{display:none}.workspace .workspace-tabs button{font-size:calc(13px * var(--ws-scale));white-space:normal}.workspace .workspace-header-actions{flex-wrap:wrap}.workspace .workspace-header-actions>a{white-space:normal!important}}}
