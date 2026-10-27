@@ -18,7 +18,7 @@
   if(preferred&&!all.some(h=>h.id===preferred.id))all.unshift(preferred);if(preferred)all.sort((a,b)=>(a.id===preferred.id?-1:b.id===preferred.id?1:0));
   const views=new Set(),first=all.filter(h=>{if(views.has(h.view))return false;views.add(h.view);return true;}),ordered=[...first,...all.filter(h=>!first.includes(h))],h=ordered.length?ordered[state.hintIndex%ordered.length]:null;
   $('play-hint-text').innerHTML=h?'<b>'+esc(h.label)+' · '+esc(h.viewLabel)+' · '+labels[h.position]+'の言葉</b>'+esc(h.text):'この段階のヒントはまだありません。';
-  $('play-hint-other').hidden=all.length<2;$('play-hint-more').hidden=grade===3;$('play-hints').hidden=!state.hint;
+  $('play-hint-other').hidden=all.length<2;$('play-hint-more').textContent=(grade===1?'詳しいヒント':'より詳しいヒント')+'を見る →';$('play-hint-more').hidden=grade===3;$('play-hints').hidden=!state.hint;
   for(const button of document.querySelectorAll('[data-hint-grade]'))button.setAttribute('aria-pressed',String(Number(button.dataset.hintGrade)===grade));
   $('play-hint-toggle').textContent=state.hint?'ヒントを閉じる':'ヒントを見る';$('play-hint-toggle').setAttribute('aria-expanded',String(state.hint));
   if(state.hint&&h)w.NPAchievementHooks?.wadoHint(current,h,grade);
