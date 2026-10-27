@@ -1,0 +1,49 @@
+/* Screen-only choices. Printed puzzles keep their own measured line widths. */
+@media screen{
+.mode-daily .variable-board{border-width:var(--np-region-line,2px)}
+html[data-np-digit-weight]:not([data-np-digit-weight="0"]) .mode-daily .variable-board .cell-value{font-weight:var(--np-digit-weight)}
+html[data-np-digit-weight]:not([data-np-digit-weight="0"]) #board.play-board .cell>span:not(.notes,.hundred-notes,.cage-label,.cage-border){font-weight:var(--np-digit-weight)}
+#board.play-board .grid-regions,#board .np-region-lines{stroke-width:var(--np-region-line,2px);stroke:#000}
+#board.play-board .grid-thin,#board .np-cell-lines{stroke-width:var(--np-cell-line,1px);stroke:#000}
+#board.hundred-board .cell{border-right-width:var(--np-cell-line,1px);border-bottom-width:var(--np-cell-line,1px)}
+#board.hundred-board .cell:nth-child(10n){border-right-width:var(--np-region-line,2px)}
+.np-appearance-legacy{display:none!important}
+.np-appearance-options{margin-block:12px}
+.np-appearance-status:empty{display:none}
+.np-appearance-options>small{display:block;line-height:1.6;font-size:max(12px,var(--ui-min-font,0px))}
+.np-appearance-options label{display:grid;grid-template-columns:minmax(0,1fr) minmax(110px,48%);gap:10px;align-items:center;padding:10px 0;font-size:max(14px,var(--ui-min-font,0px))}
+.np-appearance-options select{min-width:0;width:100%;min-height:44px}
+:is(.settings-preview .preview-cells,.np-access-preview .np-sample-grid){border:var(--np-region-line,2px) solid #000}
+:is(.settings-preview .preview-cells,.np-access-preview .np-sample-grid)>:is(span,b){border:0;border-right:var(--np-cell-line,1px) solid #000;border-bottom:var(--np-cell-line,1px) solid #000;font-weight:var(--np-digit-weight,700)}
+:is(.settings-preview .preview-cells,.np-access-preview .np-sample-grid)>:nth-child(4n){border-right:0}
+:is(.settings-preview .preview-cells,.np-access-preview .np-sample-grid)>:nth-child(4n+2){border-right-width:var(--np-region-line,2px)}
+:is(.settings-preview .preview-cells,.np-access-preview .np-sample-grid)>:nth-child(n+5):nth-child(-n+8){border-bottom-width:var(--np-region-line,2px)}
+:is(.settings-preview .preview-cells,.np-access-preview .np-sample-grid)>:nth-child(n+13){border-bottom:0}
+}
+
+@media screen{
+html[data-np-area-strength="1"] :is(.variable-board .cell.related:not(.selected,.same),.settings-preview .preview-related:not(.preview-selected,.preview-same)){background:color-mix(in srgb,var(--selection-peer) 40%,#fff)}
+html[data-np-selection-design][data-np-area-strength="1"] :is(#board.play-board .peer:not(.selected,.same,.wrong,.vh-unit,.vh-witness,.vh-focus,.vh-cut),.np-access-preview .np-preview-related:not(.np-preview-selected,.np-preview-same)){background:color-mix(in srgb,var(--np-selection-related) 40%,var(--np-selection-base))}
+html[data-np-area-strength="1"] :is(.variable-board,.settings-preview)[data-selection-design="guide"] :is(.cell.related:not(.selected,.same),.preview-related:not(.preview-selected,.preview-same)){background:color-mix(in srgb,var(--selection-guide) 40%,#fff)}
+html[data-np-selection-design="guide"][data-np-area-strength="1"] :is(#board.play-board .peer:not(.guide,.selected,.same,.wrong,.vh-unit,.vh-witness,.vh-focus,.vh-cut),.np-access-preview .np-preview-related:not(.np-preview-guide,.np-preview-selected,.np-preview-same)){background:var(--np-selection-base)}
+html[data-np-selection-design="guide"][data-np-area-strength="1"] :is(#board.play-board .guide:not(.selected,.same,.wrong,.vh-unit,.vh-witness,.vh-focus,.vh-cut),.np-access-preview .np-preview-guide:not(.np-preview-selected,.np-preview-same)){background:color-mix(in srgb,var(--np-selection-guide) 40%,var(--np-selection-base))}
+html[data-np-same-strength="1"] :is(.variable-board .cell.same:not(.selected),.settings-preview .preview-same:not(.preview-selected)){background:color-mix(in srgb,var(--selection-same) 40%,#fff)}
+html[data-np-selection-design][data-np-same-strength="1"] :is(#board.play-board .same:not(.selected,.wrong,.vh-unit,.vh-witness,.vh-focus,.vh-cut),.np-access-preview .np-preview-same:not(.np-preview-selected)){background:color-mix(in srgb,var(--np-selection-same) 40%,var(--np-selection-base))}
+html[data-np-area-strength="3"] :is(.variable-board .cell.related:not(.selected,.same),.settings-preview .preview-related:not(.preview-selected,.preview-same)){background:color-mix(in srgb,var(--selection-peer) 70%,var(--selection-frame))}
+html[data-np-selection-design][data-np-area-strength="3"] :is(#board.play-board .peer:not(.selected,.same,.wrong,.vh-unit,.vh-witness,.vh-focus,.vh-cut),.np-access-preview .np-preview-related:not(.np-preview-selected,.np-preview-same)){background:color-mix(in srgb,var(--np-selection-related) 70%,var(--np-selection-frame))}
+html[data-np-area-strength="3"] :is(.variable-board,.settings-preview)[data-selection-design="guide"] :is(.cell.related:not(.selected,.same),.preview-related:not(.preview-selected,.preview-same)){background:color-mix(in srgb,var(--selection-guide) 70%,var(--selection-frame))}
+html[data-np-selection-design="guide"][data-np-area-strength="3"] :is(#board.play-board .peer:not(.guide,.selected,.same,.wrong,.vh-unit,.vh-witness,.vh-focus,.vh-cut),.np-access-preview .np-preview-related:not(.np-preview-guide,.np-preview-selected,.np-preview-same)){background:var(--np-selection-base)}
+html[data-np-selection-design="guide"][data-np-area-strength="3"] :is(#board.play-board .guide:not(.selected,.same,.wrong,.vh-unit,.vh-witness,.vh-focus,.vh-cut),.np-access-preview .np-preview-guide:not(.np-preview-selected,.np-preview-same)){background:color-mix(in srgb,var(--np-selection-guide) 70%,var(--np-selection-frame))}
+html[data-np-same-strength="3"] :is(.variable-board .cell.same:not(.selected),.settings-preview .preview-same:not(.preview-selected)){background:color-mix(in srgb,var(--selection-same) 70%,var(--selection-frame))}
+html[data-np-selection-design][data-np-same-strength="3"] :is(#board.play-board .same:not(.selected,.wrong,.vh-unit,.vh-witness,.vh-focus,.vh-cut),.np-access-preview .np-preview-same:not(.np-preview-selected)){background:color-mix(in srgb,var(--np-selection-same) 70%,var(--np-selection-frame))}
+#board.hundred-board .cell:nth-child(n+901):nth-child(-n+1000){border-bottom-width:var(--np-region-line,2px)}
+#board.hundred-board .cell:nth-child(n+1901):nth-child(-n+2000){border-bottom-width:var(--np-region-line,2px)}
+#board.hundred-board .cell:nth-child(n+2901):nth-child(-n+3000){border-bottom-width:var(--np-region-line,2px)}
+#board.hundred-board .cell:nth-child(n+3901):nth-child(-n+4000){border-bottom-width:var(--np-region-line,2px)}
+#board.hundred-board .cell:nth-child(n+4901):nth-child(-n+5000){border-bottom-width:var(--np-region-line,2px)}
+#board.hundred-board .cell:nth-child(n+5901):nth-child(-n+6000){border-bottom-width:var(--np-region-line,2px)}
+#board.hundred-board .cell:nth-child(n+6901):nth-child(-n+7000){border-bottom-width:var(--np-region-line,2px)}
+#board.hundred-board .cell:nth-child(n+7901):nth-child(-n+8000){border-bottom-width:var(--np-region-line,2px)}
+#board.hundred-board .cell:nth-child(n+8901):nth-child(-n+9000){border-bottom-width:var(--np-region-line,2px)}
+#board.hundred-board .cell:nth-child(n+9901):nth-child(-n+10000){border-bottom-width:var(--np-region-line,2px)}
+}
