@@ -188,6 +188,18 @@
       ]
     ],
     "allVisible": true,
-    "fixFound": "9人対戦の568×256ではNEXTと相手盤面が重なったため、対戦時は盤面・情報・相手の3列に分離。修正後に再確認。"
+    "fixFound": "9人対戦の568×256ではNEXTと相手盤面が重なったため、対戦時は盤面・情報・相手の3列に分離。修正後に再確認。",
+    "ninePlayerLandscape": {
+      "size": [
+        568,
+        256
+      ],
+      "rivals": 8,
+      "boardWidth": 96,
+      "boardHeight": 190,
+      "informationRight": 228.8125,
+      "rivalsLeft": 235.8125,
+      "overlap": false
+    }
   }
 }
