@@ -1,0 +1,94 @@
+/* Task-sized screens, with the same paper-and-green controls as ナンプレ帳. */
+@media screen{
+ body.workspace{--ws-scale:var(--ui-scale,var(--wado-ui-scale,1));font-size:calc(16px * var(--ws-scale));background:#f6f5ef;color:#20362f;line-height:1.65}
+ .workspace *{box-sizing:border-box}
+ .workspace [hidden]{display:none!important}
+ .workspace .workspace-header{max-width:900px;margin:auto;padding:12px 20px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #d8dfd4}
+ .workspace .workspace-brand{font-weight:800;font-size:calc(18px * var(--ws-scale));line-height:1.4;text-decoration:none;color:inherit;min-width:0}
+ .workspace .workspace-brand small{display:block;font-size:calc(11px * var(--ws-scale));font-weight:500;color:#637266;letter-spacing:.08em}
+ .workspace .workspace-header-actions{display:flex;align-items:center;gap:8px;flex:none}
+ .workspace .workspace-header button,.workspace .workspace-header a.secondary{width:auto;flex:none;white-space:nowrap;padding:9px 12px;min-height:44px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:calc(14px * var(--ws-scale));line-height:1.4}
+ .workspace .workspace-header svg{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8}
+ .workspace main.workspace-main,.workspace.wado-page #app{max-width:900px;min-height:0;margin:auto;padding:0 20px 28px}
+ .workspace .workspace-tabs{position:sticky;top:0;z-index:5;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:10px 0;background:#f6f5ef;border-bottom:1px solid #d8dfd4;margin-bottom:18px}
+ .workspace .workspace-tabs button{display:flex;align-items:center;justify-content:center;gap:7px;background:transparent;border:1px solid transparent;box-shadow:none;border-radius:10px;padding:10px 5px;min-height:48px;color:#586b60;font-size:calc(15px * var(--ws-scale));line-height:1.3;min-width:0;font-weight:700}
+ .workspace .workspace-tabs [aria-selected=true]{background:#285849;color:white;border-color:#285849}
+ .workspace .workspace-tabs i{font-style:normal;font-size:.75em;display:grid;place-items:center;border:1px solid currentColor;border-radius:50%;width:1.55em;height:1.55em;flex:none;opacity:.8}
+ .workspace .workspace-panel{padding:22px;border:1px solid #d8dfd4;border-radius:16px;background:#fffefa;margin:0}
+ .workspace .workspace-panel>h1,.workspace .workspace-panel>h2{font-size:calc(24px * var(--ws-scale));line-height:1.4;margin:0 0 8px;letter-spacing:.02em}
+ .workspace .workspace-panel>h1:focus,.workspace .workspace-panel>h2:focus{outline:none}
+ .workspace .workspace-lead{margin:0 0 20px;color:#607165;font-size:calc(14px * var(--ws-scale));line-height:1.7}
+ .workspace .workspace-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+ .workspace .workspace-fields label{display:block;min-width:0;max-width:100%;font-size:calc(14px * var(--ws-scale));font-weight:700;margin:0}
+ .workspace .workspace-fields label:first-child:last-child{grid-column:1/-1}
+ .workspace .workspace-fields select,.workspace .workspace-dialog select{display:block;width:100%;min-width:0;max-width:100%;min-height:48px;margin:7px 0 0;padding:10px 9px;border:1px solid #a8baac;border-radius:9px;background:white;color:#20362f;font:inherit;font-size:calc(16px * var(--ws-scale));line-height:1.5}
+ .workspace .workspace-span{grid-column:1/-1}
+ .workspace .workspace-help{font-size:calc(13px * var(--ws-scale));line-height:1.75;color:#607165;margin:12px 0}
+ .workspace .workspace-details{border:1px solid #d8dfd4;border-radius:10px;margin:14px 0;padding:0 14px}
+ .workspace .workspace-details>summary{cursor:pointer;font-size:calc(14px * var(--ws-scale));font-weight:700;min-height:48px;padding:12px 0;line-height:1.6}
+ .workspace .workspace-details>summary small{font-size:.85em;font-weight:400;color:#637266;margin-left:8px}
+ .workspace .workspace-details[open]{padding-bottom:16px}
+ .workspace .workspace-details .paper-fields,.workspace .workspace-details .wado-paper-fields{border:0;padding:0;margin:16px 0 0;min-width:0}
+ .workspace .workspace-details legend{font-size:calc(14px * var(--ws-scale));margin-bottom:12px}
+ .workspace .workspace-actions{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 0}
+ .workspace .workspace-actions>*{flex:1 1 150px;min-width:0}
+ .workspace button,.workspace a.secondary{font:inherit;font-size:calc(15px * var(--ws-scale));font-weight:700;min-height:48px;border:1px solid #b6c6bd;border-radius:10px;padding:10px 14px;box-shadow:none;color:#285849;background:white;cursor:pointer;text-decoration:none}
+ .workspace button.primary{background:#285849;color:white;border-color:#285849}
+ .workspace button:disabled{opacity:.45;cursor:default}
+ .workspace button:focus-visible,.workspace a:focus-visible,.workspace select:focus-visible,.workspace summary:focus-visible,.workspace input:focus-visible{outline:3px solid #c28b2c;outline-offset:3px}
+ .workspace .workspace-note{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:12px 14px;border-radius:10px;background:#edf2e9;margin:16px 0;font-size:calc(14px * var(--ws-scale));font-weight:700}
+ .workspace .workspace-note button{font-size:calc(13px * var(--ws-scale));min-height:40px;padding:7px 10px}
+ .workspace .workspace-status{font-size:calc(13px * var(--ws-scale));line-height:1.6;margin:0 0 12px;min-height:0!important;color:#456650}
+ .workspace .workspace-status:empty{display:none}
+ .workspace .workspace-empty{border:1px dashed #b6c6bd;border-radius:12px;text-align:center;padding:25px 12px;color:#637266;font-size:calc(14px * var(--ws-scale))}
+ .workspace .workspace-selection{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:12px 0}
+ .workspace .workspace-selection button{font-size:calc(13px * var(--ws-scale));min-height:40px;padding:7px 10px}
+ .workspace .workspace-pager{display:flex;justify-content:center;align-items:center;gap:12px;margin:14px 0;font-size:calc(14px * var(--ws-scale));flex-wrap:wrap}
+ .workspace .workspace-pager button{min-height:40px;padding:7px 12px;font-size:inherit}
+ .workspace .cards,.workspace #wado-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0}
+ .workspace #wado-list>.wado-question{margin:0;padding:14px;min-width:0}
+ .workspace .diagram{max-width:240px}
+ .workspace .wado-board{--cell:clamp(36px,7vw,60px);grid-template-columns:var(--cell) 18px var(--cell) 18px var(--cell);grid-template-rows:var(--cell) 18px var(--cell) 18px var(--cell);margin:16px auto;max-width:100%}
+ .workspace .wado-cell{font-size:clamp(25px,4vw,38px)}
+ .workspace .wado-arrow{font-size:22px}
+ .workspace .wado-question-meta{font-size:calc(11px * var(--ws-scale))}
+ .workspace .wado-question-head{gap:4px}
+ .workspace .wado-question-head label{font-size:calc(14px * var(--ws-scale))}
+ .workspace .wado-hints{font-size:calc(13px * var(--ws-scale));line-height:1.7}
+ .workspace .wado-hint-current>strong{font-size:.85em}
+ .workspace .wado-hint-picker>summary,.workspace .wado-answer>summary,.workspace .wado-web-panel>summary{font-size:calc(12px * var(--ws-scale));min-height:40px;padding:9px 0}
+ .workspace .workspace-dialog{width:min(620px,calc(100% - 24px));max-width:none;max-height:85vh;max-height:85dvh;overflow:auto;overscroll-behavior:contain;padding:0 20px 20px;border:1px solid #a8baac;border-radius:16px;background:#fffefa;color:#20362f;font:inherit;box-shadow:0 18px 60px #14281e33}
+ .workspace .workspace-dialog::backdrop{background:#14281e77}
+ .workspace .workspace-dialog-head{display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;z-index:2;background:#fffefa;padding:14px 0;border-bottom:1px solid #d8dfd4;margin-bottom:18px}
+ .workspace .workspace-dialog-head h2{font-size:calc(20px * var(--ws-scale));margin:0}
+ .workspace .workspace-dialog-head button{font-size:calc(13px * var(--ws-scale));padding:7px 12px;min-height:44px;flex:none}
+ .workspace .workspace-dialog>label{font-size:calc(14px * var(--ws-scale));display:block;font-weight:700;min-width:0}
+ .workspace .workspace-dialog .panel,.workspace .workspace-dialog .wado-credits,.workspace .workspace-dialog .wado-checker,.workspace .workspace-dialog .wado-network-tools{background:transparent;font-size:calc(14px * var(--ws-scale));padding:12px 0;margin:12px 0;border:0;border-top:1px solid #d8dfd4;border-radius:0}
+ .workspace .workspace-dialog summary{font-size:calc(14px * var(--ws-scale));padding:10px 0;min-height:44px}
+ .workspace .workspace-dialog p{font-size:calc(13px * var(--ws-scale));line-height:1.8;margin:12px 0}
+ .workspace .workspace-dialog h3{font-size:calc(17px * var(--ws-scale))}
+ .workspace:has(.workspace-dialog[open]){overflow:hidden}
+ .workspace .workspace-print-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:18px}
+ .workspace .workspace-print-actions>.primary{grid-column:1/-1}
+ .workspace .workspace-print-actions button{min-width:0;font-size:calc(15px * var(--ws-scale))}
+ .workspace .workspace-footnote{font-size:calc(11px * var(--ws-scale));color:#637266;text-align:center;margin:16px 0 0}
+ .workspace[data-workspace-large=true] .workspace-fields,.workspace[data-workspace-large=true] .cards,.workspace[data-workspace-large=true] #wado-list{grid-template-columns:1fr}
+ .workspace[data-workspace-large=true] .workspace-tabs i{display:none}
+ .workspace[data-workspace-large=true] .workspace-tabs button{white-space:nowrap}
+ @media(max-width:560px){
+  .workspace .workspace-header{padding:10px 14px}.workspace main.workspace-main,.workspace.wado-page #app{padding:0 12px 24px}
+  .workspace .workspace-panel{padding:18px 15px}.workspace .workspace-panel>h1,.workspace .workspace-panel>h2{font-size:calc(22px * var(--ws-scale))}
+  .workspace .workspace-lead{margin-bottom:16px}.workspace .workspace-fields{gap:14px 10px}
+  .workspace .workspace-fields .workspace-wide{grid-column:1/-1}
+  .workspace .cards,.workspace #wado-list{grid-template-columns:1fr}
+  .workspace .puzzle-card,.workspace #wado-list>.wado-question{padding:14px}.workspace .puzzle-card.selected{padding:13px}
+  .workspace .diagram{max-width:220px}.workspace .wado-board{--cell:60px}.workspace .wado-cell{font-size:36px}
+  .workspace .workspace-header-actions>a{font-size:calc(12px * var(--ws-scale))!important;padding:9px 7px!important}
+ }
+ @media(max-width:370px){.workspace .workspace-tabs button{gap:4px}.workspace .workspace-brand{font-size:calc(16px * var(--ws-scale))}.workspace .workspace-header{gap:8px}}
+}
+@media print{.workspace-tabs,.workspace-dialog{display:none!important}}
+
+@media screen{.workspace[data-workspace-large=true] .workspace-tabs button{white-space:normal}.workspace .wado-question-head label{cursor:pointer;min-height:44px;padding:7px 0}.workspace .wado-question-head label small{display:block;font-size:.8em;font-weight:500}.workspace .wado-question:has(input[data-wado-select]:checked){border-color:#285849;background:#f0f5eb}.workspace [data-workspace-selection-empty]{display:block;width:100%;margin:8px 0}.workspace .live-preview-tools{flex-wrap:wrap}.workspace .live-preview-tools select{min-width:0;max-width:100%}@media(max-width:560px){.workspace .workspace-tabs i{display:none}.workspace .workspace-tabs button{font-size:calc(13px * var(--ws-scale));white-space:normal}.workspace .workspace-header-actions{flex-wrap:wrap}.workspace .workspace-header-actions>a{white-space:normal!important}}}
+
+@media screen{.workspace #workspace-print>#wado-print-title{display:block;position:static;width:auto;height:auto;overflow:visible;clip:auto;margin:0 0 12px;font-size:calc(22px * var(--ws-scale))}.workspace .wado-print-action{padding:16px;border:2px solid #285849;border-radius:14px;background:#eef5ec;margin-bottom:20px}.workspace .wado-print-action>.primary{display:flex;justify-content:center;align-items:center;gap:10px;width:100%;min-height:54px;font-size:calc(18px * var(--ws-scale))}.workspace .wado-print-action svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.7;flex:none}.workspace .wado-print-action p{line-height:1.7;font-size:calc(14px * var(--ws-scale))}.workspace .wado-print-action summary{min-height:44px;padding:12px 0;cursor:pointer}.workspace .wado-batch-panel{margin:16px 0;padding:14px;border:1px solid #b7c7bb;border-radius:12px;background:#f4f7f0}.workspace .wado-batch-panel>summary{min-height:44px;font-weight:700;cursor:pointer;padding:8px 0;font-size:calc(16px * var(--ws-scale))}.workspace .wado-batch-panel input{box-sizing:border-box;width:100%;min-width:0;min-height:44px;font:inherit;padding:10px;border:1px solid #a7b9ac;border-radius:8px;background:white;color:inherit}.workspace .wado-batch-preview{white-space:pre-line;overflow-wrap:anywhere;line-height:1.8;background:#e6eee3;padding:12px;border-radius:8px;max-height:260px;overflow:auto;font-size:calc(14px * var(--ws-scale))}.workspace .wado-print-hint-label{display:block;margin:14px 0;font-weight:700;font-size:calc(14px * var(--ws-scale))}.workspace .wado-print-hint-label select{display:block;width:100%;min-width:0;max-width:100%;margin-top:6px}.workspace .wado-batch-panel .workspace-selection button{font-size:calc(14px * var(--ws-scale));min-height:44px}.workspace #wado-batch-uniform>label{display:block;font-size:calc(14px * var(--ws-scale));font-weight:700}.workspace .wado-print-action[hidden]{display:none}}

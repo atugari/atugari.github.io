@@ -31,7 +31,7 @@
   $('live-zoom').addEventListener('click',()=>{const items=[...stage.querySelectorAll('.wp-item')],frames=[...stage.children];if(mode==='page'){position=items.findIndex(n=>n.closest('.live-page')===frames[position]);mode='detail';}else{position=frames.indexOf(items[position]?.closest('.live-page'));mode='page';}$('live-zoom').textContent=mode==='page'?'1問ずつ見る':'用紙全体へ';$('live-zoom').setAttribute('aria-pressed',String(mode==='detail'));viewport.scrollLeft=0;fit();});
   $('live-previous').addEventListener('click',()=>{position--;fit();});$('live-next').addEventListener('click',()=>{position++;fit();});
   $('live-undo').addEventListener('click',()=>{if(!history.length)return;config.restore(history.pop());$('live-undo').disabled=!history.length;refresh();});
-  $('live-print').addEventListener('click',()=>{if(refresh())config.print(kind);});
+  $('live-print').addEventListener('click',()=>{if(config.ready())config.print(config.preferences().printKind||kind);});
   document.addEventListener('wado-workspace-change',()=>{if(visible()){if(dirty)refresh();else fit();}});
   window.addEventListener('resize',fit);window.visualViewport?.addEventListener('resize',fit);if(typeof ResizeObserver!=='undefined')new ResizeObserver(fit).observe(viewport);
   category('size');return{capture,schedule,refresh,fit};

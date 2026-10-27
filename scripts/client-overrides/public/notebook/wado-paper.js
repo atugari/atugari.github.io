@@ -15,7 +15,8 @@
   measure.style.setProperty('--wp-glyph-ratio',({normal:.142,large:.165,largest:.182}[p.kanjiSize]||.165));measure.style.setProperty('--wp-glyph-stroke',({normal:'0',bold:'.004em',heavy:'.008em'}[p.kanjiWeight]||'0'));
   doc.body.append(measure);
   let pages=[],columns=kind==='hints'?1:0;
-  const grades=kind==='hints'?[1,2,3]:[0],gradeLabels=['','難しめ','ふつう','やさしめ'];
+  const stageFor=x=>[0,1,2,3].includes(x.p.printHintStage)?x.p.printHintStage:p.hint,hasHints=items.some(x=>stageFor(x)>0);
+  const grades=kind==='hints'?[1,2,3]:[0],gradeLabels=['なし','大まか','詳しい','より詳しい'];
   function page(stage){const el=doc.createElement('section');el.className='sheet wado-sheet wp-sheet';el.dataset.kind=kind;if(stage)el.dataset.stage=stage;
    const title=kind==='answers'?'解答例':kind==='hints'?'ヒント · '+gradeLabels[stage]:combined?'問題と解答例':'問題';
    const help=kind==='questions'?'矢印の向きに読んで、2文字の熟語を作りましょう。':kind==='answers'||combined?'掲載しているのは解答例です。他の言葉が成り立つ場合もあります。':'手がかりの具体性による難しさの目安です。感じ方には個人差があります。';
@@ -23,20 +24,20 @@
    const grid=doc.createElement('div');grid.className='sheet-grid wp-grid';el.append(grid);
    const tails=[];
    if(kind==='cut'){
-    for(const type of [...(p.separateHints&&p.hint?['hints']:[]),'answers']){const section=doc.createElement('section');section.className='wp-cut-section wp-cut-'+type;section.innerHTML='<h2>'+(type==='hints'?'ヒント · '+gradeLabels[p.hint]:'解答例')+'<small>点線で切り分け</small></h2><div class="wp-key-list"></div>';el.append(section);tails.push({type,list:section.lastElementChild});}
+    for(const type of [...(p.separateHints&&hasHints?['hints']:[]),'answers']){const section=doc.createElement('section');section.className='wp-cut-section wp-cut-'+type;section.innerHTML='<h2>'+(type==='hints'?'ヒント':'解答例')+'<small>点線で切り分け</small></h2><div class="wp-key-list"></div>';el.append(section);tails.push({type,list:section.lastElementChild});}
    }
    if(p.showFooter){const foot=doc.createElement('footer');foot.className='wp-foot';foot.innerHTML='<span>'+escape(edition)+'</span><span class="wp-page-number">000 / 000</span>';el.append(foot);}
    measure.append(el);pages.push(el);return{el,grid,tails,rows:0};
   }
   function compactAnswer(x){return'<div class="wp-answer-value">解答例：<strong>'+escape(x.p.answer)+'</strong></div><div class="wp-answers">'+words(x)+'</div>';}
   function item(x,stage){const el=doc.createElement('article');el.className='sheet-item wado-question wp-item';
-   el.dataset.number=x.number;
+   el.dataset.number=x.number;el.dataset.hintStage=kind==='hints'?stage:stageFor(x);
    const labels=[p.showNumber||combined?'問題 '+x.number:'',p.showDifficulty?'難しさ '+x.p.level+' / '+x.p.count+'語':'',p.showId?paperId(x.p):''].filter(Boolean);
-   el.innerHTML=(labels.length?'<div class="wp-item-label">'+labels.map(escape).join(' · ')+'</div>':'')+(kind==='hints'?hint(x,stage,true):board(x,kind==='answers')+(kind==='answers'?'<div class="wp-answers">'+words(x)+'</div>':kind==='cut'&&p.separateHints?'':hint(x,p.hint,false)))+(kind==='together'?'<section class="wp-paired-answer">'+compactAnswer(x)+'</section>':'');
+   el.innerHTML=(labels.length?'<div class="wp-item-label">'+labels.map(escape).join(' · ')+'</div>':'')+(kind==='hints'?hint(x,stage,true):board(x,kind==='answers')+(kind==='answers'?'<div class="wp-answers">'+words(x)+'</div>':kind==='cut'&&p.separateHints?'':hint(x,stageFor(x),false)))+(kind==='together'?'<section class="wp-paired-answer">'+compactAnswer(x)+'</section>':'');
    return el;
   }
   function addRow(page,rowItems,stage){const nodes=rowItems.map(x=>item(x,stage));for(const n of nodes)page.grid.append(n);
-   for(const tail of page.tails){for(const x of rowItems){const entry=doc.createElement('article');entry.className='wp-key';entry.dataset.number=x.number;entry.innerHTML='<div class="wp-key-number">問題 '+x.number+'</div>'+(tail.type==='answers'?compactAnswer(x):hint(x,p.hint,false)||'<p>この問題の文章ヒントは未収録です。</p>');tail.list.append(entry);nodes.push(entry);}tail.list.style.gridTemplateColumns='repeat('+Math.min(2,tail.list.children.length)+',minmax(0,1fr))';}return nodes;
+   for(const tail of page.tails){for(const x of rowItems){const entry=doc.createElement('article');entry.className='wp-key';entry.dataset.number=x.number;entry.innerHTML='<div class="wp-key-number">問題 '+x.number+'</div>'+(tail.type==='answers'?compactAnswer(x):stageFor(x)?hint(x,stageFor(x),false)||'<p>この段階の文章ヒントは未収録です。</p>':'<p>ヒントなし</p>');tail.list.append(entry);nodes.push(entry);}tail.list.style.gridTemplateColumns='repeat('+Math.min(2,tail.list.children.length)+',minmax(0,1fr))';}return nodes;
   }
   function fits(page){const r=page.grid.getBoundingClientRect(),sheet=page.el.getBoundingClientRect();return page.el.scrollHeight<=page.el.clientHeight+2&&[...page.grid.children].every(n=>{const b=n.getBoundingClientRect();return b.bottom<=r.bottom+1&&b.right<=r.right+1&&n.scrollWidth<=n.clientWidth+1;})&&page.tails.every(t=>[...t.list.children].every(n=>{const b=n.getBoundingClientRect();return b.bottom<=sheet.bottom+1&&n.scrollWidth<=n.clientWidth+1;}));}
   try{
