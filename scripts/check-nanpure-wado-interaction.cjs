@@ -1,0 +1,23 @@
+// Exercise actual viewer event handlers without a browser or public writes.
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict'),{parseHTML}=require(process.argv[2]||'linkedom');
+require('./client-overrides/public/notebook/wado-engine.js');require('./client-overrides/public/notebook/wado-clues.js');
+const base='scripts/client-overrides/public/notebook/',data=JSON.parse(fs.readFileSync(base+'wado-data.json')),bank=JSON.parse(fs.readFileSync(base+'wado-hints.json')),engine=NPWado.create(data),clues=WadoClues.create(bank),key='np-wado-v1';
+const flush=async()=>{for(let i=0;i<8;i++)await new Promise(setImmediate);};
+(async()=>{
+ const items=[];for(let seed=1;items.length<2;seed++){const p=engine.generate({level:1,count:4,seed,seen:items.map(engine.fingerprint)});if(clues.rich(p))items.push(p);}
+ const p=items[0],id=engine.fingerprint(p),hard=clues.suggestions(p).find(h=>h.grade===1);p.hintChoice=hard.id;
+ const stored={version:1,items,preferences:{level:1,wordCount:4},play:{active:id,states:{[id]:{revealed:true,hint:true,grade:3,hintIndex:0}}}},storage=new Map([[key,JSON.stringify(stored)]]);
+ const{window,document}=parseHTML(fs.readFileSync(base+'wado-play.html','utf8'));
+ for(const s of document.querySelectorAll('select')){let value=s.querySelector('option[selected]')?.value||s.querySelector('option')?.value||'';Object.defineProperty(s,'value',{get:()=>value,set:v=>value=String(v)});}
+ for(const n of document.querySelectorAll('*'))n.focus=()=>{};window.scrollTo=()=>{};const dialog=document.querySelector('dialog');dialog.showModal=()=>dialog.open=true;dialog.close=()=>dialog.open=false;
+ const requests=[],context=vm.createContext({window,document,NPWado,WadoClues,URLSearchParams,location:{search:'?p='+encodeURIComponent(id)},navigator:{},localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)},fetch:async url=>{requests.push(url);return Response.json(url==='wado-data.json'?data:bank);},console});
+ vm.runInContext(fs.readFileSync(base+'wado-play.js','utf8'),context);await flush();const $=id=>document.getElementById(id),click=n=>n.dispatchEvent(new window.Event('click',{bubbles:true}));
+ assert.equal($('play-game').hidden,false);assert.match($('play-hint-text').textContent,/やさしめ/,'print manual selection cannot override viewer grade');assert.equal($('play-center').textContent,p.answer);assert.match($('play-print-current').getAttribute('href'),/view=print/);
+ click($('play-reveal'));await flush();assert.equal($('play-center').textContent,'？');assert.equal(JSON.parse(storage.get(key)).play.states[id].revealed,false);assert.equal(JSON.parse(storage.get(key)).items[0].hintChoice,hard.id,'viewer preserves print choice');
+ click($('play-hint-levels').querySelector('[data-hint-grade="1"]'));await flush();assert.match($('play-hint-text').textContent,/難しめ/);click($('play-hint-more'));await flush();assert.match($('play-hint-text').textContent,/ふつう/);click($('play-hint-more'));await flush();assert.match($('play-hint-text').textContent,/やさしめ/);assert.equal($('play-hint-more').hidden,true);
+ click($('play-next'));await flush();assert.equal(JSON.parse(storage.get(key)).play.active,engine.fingerprint(items[1]));assert.equal(JSON.parse(storage.get(key)).items.length,2);click($('play-previous-question'));await flush();assert.equal(JSON.parse(storage.get(key)).play.active,id);assert.match($('play-hint-text').textContent,/やさしめ/);assert.equal($('play-center').textContent,'？');
+ click($('play-settings-open'));assert.equal(dialog.open,true);click($('play-settings-close'));assert.equal(dialog.open,false);click($('play-back'));assert.equal($('play-library').hidden,false);assert.equal(document.querySelectorAll('.library-item').length,2);
+ click($('play-library-back'));assert.equal($('play-start').hidden,true);assert.equal($('play-resume').hidden,false);click($('play-resume'));await flush();assert.equal($('play-game').hidden,false);assert.equal($('play-error').hidden,true);
+ assert.deepEqual(requests,['wado-data.json','wado-hints.json']);assert.equal(document.querySelectorAll('input,textarea').length,0);
+ console.log('PASS Wado interaction: grade isolation, graded hints, reveal/hide center, previous/next without extra generation, resume, library, settings, shared storage and print deep link.');
+})().catch(e=>{console.error(e);process.exit(1);});

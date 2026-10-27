@@ -20,7 +20,7 @@
    canvas.style.transform=`translate(${x}px,${y}px) scale(${scale})`;
   }
   function refresh(){clearTimeout(timer);timer=0;if(!visible()){dirty=true;return false;}dirty=false;stage.replaceChildren();packed=null;$('live-print').disabled=true;
-   if(!config.ready()){$('live-empty').hidden=false;$('live-empty').textContent='「選ぶ」で印刷する問題を選んでください。';$('live-status').textContent='';fit();return false;}
+   if(!config.ready()){$('live-empty').hidden=false;$('live-empty').textContent='「問題を選ぶ」で印刷する問題を選んでください。';$('live-status').textContent='';fit();return false;}
    try{kind=config.preferences().printKind||kind;$('live-kind').value=kind;$('wado-separateHints').disabled=kind!=='cut';$('live-layout-help').textContent=kind==='cut'?'問題を上に、解答例を下にまとめます。点線で切り分けられます。対応する番号は必ず載ります。':kind==='together'?'各問題のすぐ下に解答例を載せます。用紙を分けずに印刷できます。対応する番号は必ず載ります。':'拡大率を上げると横にもスクロールできます。';packed=config.build(stage,kind);for(const sheet of [...stage.children]){const frame=document.createElement('div'),canvas=document.createElement('div');frame.className='live-page';canvas.className='live-canvas';canvas.append(sheet);frame.append(canvas);stage.append(frame);}
     $('live-empty').hidden=true;$('live-status').textContent=packed.counts.reduce((a,b)=>a+b,0)+'問 · '+packed.pages+'ページ · 最大'+Math.max(...packed.counts)+'問/ページ';$('live-print').disabled=false;fit();return true;
    }catch(e){stage.replaceChildren();$('live-empty').hidden=false;$('live-empty').textContent=e.message;$('live-status').textContent='設定を調整してください';fit();return false;}
