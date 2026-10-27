@@ -1,0 +1,8 @@
+import test from'node:test';import assert from'node:assert/strict';import{mkdtemp,readFile,rm}from'node:fs/promises';import{tmpdir}from'node:os';import{join}from'node:path';import{execFileSync}from'node:child_process';import vm from'node:vm';import{world}from'./client-world.mjs';
+test('downloaded HTML includes every asset and runs solo, rapid touch, restart and resume without a network',async()=>{
+ const dir=await mkdtemp(join(tmpdir(),'block-battle-offline-'));try{
+ const path=join(dir,'game.html');execFileSync(process.execPath,['scripts/offline.mjs',path]);const html=await readFile(path,'utf8'),script=html.match(/<script>([\s\S]*?)<\/script>/)[1],markup=html.split('<script>')[0],ids=[...markup.matchAll(/\bid="([^"]+)"/g)].map(x=>x[1]);assert.equal(new Set(ids).size,ids.length);for(const id of['solo','sound','restart','play','controls','name','random','private','rematch','leave','n','code'])assert.ok(ids.includes(id),id);
+ assert.ok(!/<script[^>]+src=/.test(html));assert.ok(!html.includes('__CLIENT__'));assert.match(markup,/オンライン対戦を開く/);new vm.Script(script);
+ const w=world({script});await w.elements.get('solo').click();assert.equal(w.elements.get('status').textContent,'練習中');assert.equal(w.document.activeElement.id,'play');const x=w.touchButtons.find(x=>x.dataset.k==='x');x.onpointerdown({pointerId:1,preventDefault(){}});assert.ok(+w.elements.get('score').textContent>0);await w.elements.get('restart').click();assert.equal(w.elements.get('score').textContent,0);w.elements.get('controlopen').click();assert.equal(w.elements.get('pause').textContent,'再開');w.elements.get('controlback').click();assert.equal(w.elements.get('pause').textContent,'一時停止');
+ }finally{await rm(dir,{recursive:true,force:true})}
+});

@@ -1,0 +1,11 @@
+import{readFile,writeFile,mkdir}from'node:fs/promises';import{dirname}from'node:path';import{transform}from'esbuild';
+const root='https://block-battle.puzzle-hub-4826.workers.dev/',version=JSON.parse(await readFile('package.json','utf8')).version.split('.')[0];
+let html=await readFile('game/shell.html','utf8'),client=await readFile('game/client.js','utf8');
+html=html.replace('<title>BLOCK BATTLE · X20K</title>',`<title>BLOCK BATTLE v${version} ダウンロード版</title>`).replace(`全コード 2万文字以内 · v${version}`,`ダウンロード版 · v${version}`).replace('<a href="/block-battle.mjs" download>全コード</a>','').replace('href="/test-checklist.html"',`href="${root}test-checklist" target="_blank" rel="noopener"`);
+const a=html.indexOf('<section class="panel">'),b=html.indexOf('<section id="play"');
+html=html.slice(0,a)+`<section class="panel"><p>このファイルは1人練習用です。対戦はオンライン版で遊べます。</p><div class="actions"><button id="solo" class="primary">1人で練習</button><a href="${root}" target="_blank" rel="noopener">オンライン対戦を開く</a></div><div hidden><input id="name" value="PLAYER"><select id="n"><option>9</option></select><input id="code"><button id="random"></button><button id="private"></button><button id="rematch"></button><button id="leave"></button></div></section>`+html.slice(b);
+html=html.replace('練習するか、対戦方法を選んでください。','「1人で練習」を押すと始まります。').replace('外部のゲームライブラリ不使用。対戦はサーバーへ接続します。','このファイルだけで1人練習を遊べます。対戦はオンライン版へ。');
+client+=`\n$('random').onclick=$('private').onclick=()=>window.open('${root}','_blank','noopener');`;
+const js=(await transform(client,{minify:true,format:'iife',charset:'utf8',target:'es2022'})).code.trim();
+html=html.replace('__CLIENT__',js.replaceAll('</script','<\\/script'));
+const target=process.argv[2]||`downloads/BLOCK_BATTLE_v${version}.html`;await mkdir(dirname(target),{recursive:true});await writeFile(target,html);console.log(target);
