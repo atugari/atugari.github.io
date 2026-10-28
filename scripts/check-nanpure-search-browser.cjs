@@ -50,6 +50,8 @@ async function setup(browser,javaScriptEnabled=true){
     assert.equal(await game.locator('#search-directory').isVisible(),true);
     await game.locator('.main-choice').click();await game.locator('.site-shell.mode-practice').waitFor();
     assert.equal(await game.locator('#search-directory').isVisible(),false,'Directory must not intrude on gameplay');
+    await game.goto(origin+'/nanpure/?lang=en&view=privacy');await game.locator('.legal').waitFor();
+    assert.equal(await game.locator('#search-directory').isVisible(),false,'Directory must not appear below the privacy page');
     await context.close();
     console.log('PASS browser search: 20 mobile pages without JS, Arabic RTL at 320px, 19 translated game handoffs and home-only directory');
   }finally{await browser.close();}
