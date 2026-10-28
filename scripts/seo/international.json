@@ -1,0 +1,290 @@
+{
+  "updated": "2026-10-28",
+  "locales": [
+    {
+      "code": "en", "slug": "en", "ogLocale": "en_US",
+      "title": "Free Sudoku Online, Daily Puzzles & Print | Sudoku Notebook",
+      "description": "Play free Sudoku online without signing up. Try three daily puzzles, classic, Jigsaw and Killer Sudoku, pencil marks, local saves and printable A4/A3 puzzles.",
+      "heading": "Free Sudoku online, at your own pace",
+      "lead": "Sudoku Notebook (Nanpure Cho) is a free browser puzzle game for phones, tablets and computers. Play in English with no account or installation. Generate a puzzle, return to a saved game or choose one of today's three puzzles.",
+      "labels": ["Play Sudoku", "Today's puzzles", "Practice the controls", "Choose your language", "Privacy", "Contact", "Skip to content"],
+      "sections": [
+        ["How to play Sudoku", "In classic 9×9 Sudoku, fill each row, column and 3×3 box with the digits 1–9, without repeating a digit. The starting clues stay fixed. Select an empty cell and enter a number; use pencil marks to track candidates, undo a move or check a hint while practising."],
+        ["Three daily Sudoku puzzles", "There are three new daily puzzles, refreshed at midnight in Japan (UTC+9). The puzzle type and size vary. Play at your own pace or choose a ranking challenge. Publishing your result is optional; ranked attempts use their own timer and do not allow hints or answers."],
+        ["Classic, Jigsaw, Killer and more", "Generate classic Sudoku in sizes including 4×4, 6×6, 9×9 and 16×16. Try Jigsaw Sudoku with irregular regions or Killer Sudoku with sum cages. Available sizes and difficulty levels depend on the variant. Read the rules shown for each puzzle before starting."],
+        ["Printable Sudoku and PDF", "Create puzzles, open the print menu and select A4 or A3 paper. Put one or several puzzles on a sheet, add separate answer pages or split a large grid across sheets. To save a PDF, choose the PDF option in your browser's print dialog."],
+        ["Save your progress", "Free-play puzzles and progress are stored in the browser you use. Continue in that same browser, or export a transfer file from the save menu to keep a backup or move to another device. Clearing browser data can erase local progress. Puzzle creation, play and printing are free."]
+      ]
+    },
+    {
+      "code": "zh-Hans", "slug": "zh-hans", "ogLocale": "zh_CN",
+      "title": "免费在线数独、每日题目与打印｜Sudoku Notebook 数独笔记本",
+      "description": "免费在线玩数独，无需注册或安装。每天3道新题，支持标准数独、锯齿数独、杀手数独、候选数标记、本地保存及A4/A3打印。",
+      "heading": "免费在线数独，按自己的节奏解题",
+      "lead": "Sudoku Notebook（ナンプレ帳）是一款可在手机、平板和电脑浏览器中游玩的免费益智游戏。可使用简体中文界面，无需账号或安装。生成喜欢的题目、继续保存的进度，或挑战今天的3道题。",
+      "labels": ["开始玩数独", "今日题目", "练习操作", "选择语言", "隐私说明", "联系我们", "跳转到正文"],
+      "sections": [
+        ["标准数独怎么玩", "在9×9标准数独中，将1至9填入空格，使每行、每列和每个3×3宫内的数字都不重复。题目给出的数字不能修改。选中空格后输入数字；练习时可用候选数标记整理思路，也可撤销操作或查看提示。"],
+        ["每天3道数独题", "每日题目在日本时间午夜0点（UTC+9）更新，共3道，题型和大小也会变化。可以按自己的节奏游玩，或选择排行榜挑战。是否公开成绩由你决定；排行榜挑战采用独立计时规则，不能使用提示或答案。"],
+        ["标准、锯齿和杀手数独", "标准数独可选择4×4、6×6、9×9、16×16等大小。锯齿数独使用不规则宫；杀手数独增加虚线框内的数字总和条件。各题型可选的大小和难度不同，开始前请阅读题目显示的规则。"],
+        ["打印数独或保存PDF", "生成题目后，打开打印菜单，选择A4或A3纸张。可每页放一道或多道题，另外附上答案页，也可将大棋盘拆分到多张纸上。需要PDF时，在浏览器的打印对话框中选择保存为PDF。"],
+        ["保存进度和备份", "自由游玩的题目与进度保存在当前浏览器中，可在同一浏览器继续。通过保存菜单导出转移文件，可备份数据或迁移到其他设备。清除浏览器数据可能导致本地进度丢失。生成题目、游玩和打印均免费。"]
+      ]
+    },
+    {
+      "code": "zh-Hant", "slug": "zh-hant", "ogLocale": "zh_TW",
+      "title": "免費線上數獨、每日題目與列印｜Sudoku Notebook 數獨筆記本",
+      "description": "免費線上玩數獨，不必註冊或安裝。每天3道新題，支援標準數獨、鋸齒數獨、殺手數獨、候選數註記、本機儲存與A4/A3列印。",
+      "heading": "免費線上數獨，用自己的步調解題",
+      "lead": "Sudoku Notebook（ナンプレ帳）是可在手機、平板與電腦瀏覽器中遊玩的免費益智遊戲。可使用繁體中文介面，不必建立帳號或安裝。產生喜歡的題目、繼續已儲存的進度，或挑戰今天的3道題。",
+      "labels": ["開始玩數獨", "今日題目", "練習操作", "選擇語言", "隱私說明", "聯絡我們", "跳至正文"],
+      "sections": [
+        ["標準數獨怎麼玩", "在9×9標準數獨中，將1到9填入空格，使每列、每行與每個3×3宮內的數字都不重複。題目原有的數字不能更改。選取空格後輸入數字；練習時可使用候選數註記整理想法，也能復原操作或查看提示。"],
+        ["每天3道數獨題", "每日題目在日本時間午夜0點（UTC+9）更新，共3道，題型與大小也會變化。可依自己的步調遊玩，或選擇排行榜挑戰。是否公開成績由你決定；排行榜挑戰採用獨立計時規則，不能使用提示或答案。"],
+        ["標準、鋸齒與殺手數獨", "標準數獨可選4×4、6×6、9×9、16×16等大小。鋸齒數獨使用不規則宮；殺手數獨增加虛線框內數字的總和條件。各題型可選的大小與難度不同，開始前請閱讀題目顯示的規則。"],
+        ["列印數獨或儲存PDF", "產生題目後開啟列印選單，選擇A4或A3紙張。可每頁放一道或多道題，另外附上解答頁，也能將大棋盤分割到多張紙上。需要PDF時，請在瀏覽器的列印對話框選擇儲存為PDF。"],
+        ["儲存進度與備份", "自由遊玩的題目與進度儲存在目前的瀏覽器中，可在同一瀏覽器繼續。透過儲存選單匯出轉移檔案，即可備份資料或移至其他裝置。清除瀏覽器資料可能使本機進度遺失。產生題目、遊玩與列印皆免費。"]
+      ]
+    },
+    {
+      "code": "ko", "slug": "ko", "ogLocale": "ko_KR",
+      "title": "무료 온라인 스도쿠·매일 새 문제·인쇄 | Sudoku Notebook",
+      "description": "가입이나 설치 없이 무료 스도쿠를 즐기세요. 매일 3문제, 일반·직소·킬러 스도쿠, 후보 메모, 브라우저 저장과 A4/A3 인쇄를 지원합니다.",
+      "heading": "내 속도로 즐기는 무료 온라인 스도쿠",
+      "lead": "Sudoku Notebook(ナンプレ帳)은 휴대폰, 태블릿, 컴퓨터 브라우저에서 즐기는 무료 퍼즐 게임입니다. 가입이나 설치 없이 한국어로 이용할 수 있습니다. 원하는 문제를 만들고, 저장한 게임을 이어 하거나 오늘의 3문제에 도전하세요.",
+      "labels": ["스도쿠 시작", "오늘의 문제", "조작 연습", "언어 선택", "개인정보 안내", "문의", "본문으로 이동"],
+      "sections": [
+        ["스도쿠 기본 규칙", "일반 9×9 스도쿠는 각 가로줄, 세로줄, 3×3 구역에 1부터 9까지 중복 없이 채우는 퍼즐입니다. 처음 주어진 숫자는 바꾸지 않습니다. 빈칸을 선택해 숫자를 입력하고, 연습할 때는 후보 메모, 실행 취소와 힌트를 활용할 수 있습니다."],
+        ["매일 새로운 스도쿠 3문제", "매일 일본 시간 자정(UTC+9)에 3문제가 새로 공개되며 종류와 크기도 달라집니다. 편하게 풀거나 랭킹에 도전할 수 있습니다. 기록 공개는 선택 사항입니다. 랭킹 도전에는 별도 시간 측정 규칙이 적용되며 힌트와 정답을 사용할 수 없습니다."],
+        ["일반·직소·킬러 스도쿠", "일반 스도쿠는 4×4, 6×6, 9×9, 16×16 등 여러 크기를 지원합니다. 직소는 불규칙한 구역을, 킬러는 점선 안 숫자의 합 조건을 사용합니다. 선택 가능한 크기와 난이도는 종류마다 다르므로 시작 전에 문제의 규칙을 확인하세요."],
+        ["스도쿠 인쇄와 PDF 저장", "문제를 만든 다음 인쇄 메뉴에서 A4 또는 A3를 선택하세요. 한 장에 하나 또는 여러 문제를 배치하고 정답 페이지를 따로 붙일 수 있습니다. 큰 판을 여러 장으로 나눌 수도 있습니다. PDF는 브라우저의 인쇄 창에서 저장합니다."],
+        ["진행 상황 저장", "자유 플레이의 문제와 진행 상황은 사용하는 브라우저에 저장됩니다. 같은 브라우저에서 이어 하거나 저장 메뉴에서 인계 파일을 내보내 백업하고 다른 기기로 옮길 수 있습니다. 브라우저 데이터를 지우면 로컬 기록도 사라질 수 있습니다. 문제 생성·플레이·인쇄는 무료입니다."]
+      ]
+    },
+    {
+      "code": "es", "slug": "es", "ogLocale": "es_ES",
+      "title": "Sudoku gratis online, diario y para imprimir | Sudoku Notebook",
+      "description": "Juega al sudoku gratis sin registro. Tres retos diarios, sudoku clásico, irregular y Killer, notas, guardado local y puzles para imprimir en A4 o A3.",
+      "heading": "Sudoku gratis online, a tu ritmo",
+      "lead": "Sudoku Notebook (Nanpure Cho) es un juego gratuito para el navegador del móvil, la tableta o el ordenador. Juega en español sin instalar nada ni crear una cuenta. Genera un puzle, continúa una partida guardada o elige uno de los tres retos de hoy.",
+      "labels": ["Jugar al sudoku", "Retos de hoy", "Practicar los controles", "Elegir idioma", "Privacidad", "Contacto", "Saltar al contenido"],
+      "sections": [
+        ["Cómo se juega al sudoku", "En el sudoku clásico de 9×9, completa cada fila, columna y región de 3×3 con los números del 1 al 9 sin repetirlos. Las pistas iniciales no se cambian. Selecciona una casilla vacía e introduce un número. Al practicar puedes anotar candidatos, deshacer movimientos y consultar pistas."],
+        ["Tres sudokus nuevos cada día", "Los tres retos diarios se renuevan a medianoche de Japón (UTC+9), con distintos tipos y tamaños. Resuelve con calma o participa en la clasificación. Publicar tu resultado es opcional. Los intentos clasificatorios tienen sus propias reglas de cronometraje y no permiten pistas ni soluciones."],
+        ["Clásico, irregular y Killer", "Genera sudokus clásicos de 4×4, 6×6, 9×9, 16×16 y otros tamaños. El sudoku irregular utiliza regiones de formas distintas; el Killer añade grupos con una suma indicada. Los tamaños y niveles disponibles dependen de la variante. Lee las reglas de cada puzle antes de empezar."],
+        ["Sudoku para imprimir y guardar en PDF", "Crea los puzles y abre el menú de impresión. Elige A4 o A3, coloca uno o varios por hoja y añade las soluciones en páginas separadas. También puedes repartir una cuadrícula grande entre varias hojas. Para guardar un PDF, usa esa opción en el diálogo de impresión del navegador."],
+        ["Guardar y continuar la partida", "Los puzles y el progreso del juego libre se guardan en el navegador que utilizas. Continúa en ese mismo navegador o exporta un archivo de transferencia desde el menú de guardado para hacer una copia o cambiar de dispositivo. Borrar los datos del navegador puede eliminar el progreso local. Crear, jugar e imprimir es gratis."]
+      ]
+    },
+    {
+      "code": "fr", "slug": "fr", "ogLocale": "fr_FR",
+      "title": "Sudoku gratuit en ligne, quotidien et à imprimer | Sudoku Notebook",
+      "description": "Jouez au sudoku gratuitement, sans inscription : trois grilles par jour, sudoku classique, irrégulier et Killer, notes, sauvegarde locale et impression A4/A3.",
+      "heading": "Du sudoku gratuit en ligne, à votre rythme",
+      "lead": "Sudoku Notebook (Nanpure Cho) est un jeu gratuit pour le navigateur de votre téléphone, tablette ou ordinateur. Jouez en français sans compte ni installation. Créez une grille, reprenez une partie sauvegardée ou choisissez l'un des trois défis du jour.",
+      "labels": ["Jouer au sudoku", "Grilles du jour", "Essayer les commandes", "Choisir la langue", "Confidentialité", "Contact", "Aller au contenu"],
+      "sections": [
+        ["Les règles du sudoku", "Dans un sudoku classique de 9×9, placez les chiffres de 1 à 9 dans chaque ligne, colonne et région de 3×3, sans répétition. Les chiffres donnés au départ restent fixes. Sélectionnez une case vide puis un chiffre. En entraînement, utilisez les notes de candidats, l'annulation et les indices."],
+        ["Trois nouvelles grilles chaque jour", "Les trois défis quotidiens sont renouvelés à minuit au Japon (UTC+9). Le type et la taille des grilles varient. Jouez tranquillement ou tentez le classement. La publication du résultat est facultative. Les tentatives classées suivent un chronométrage spécifique et ne permettent ni indice ni solution."],
+        ["Sudoku classique, irrégulier et Killer", "Générez des grilles classiques de 4×4, 6×6, 9×9, 16×16 et d'autres tailles. Le sudoku irrégulier emploie des régions de formes variées ; le Killer ajoute des groupes dont la somme est indiquée. Les tailles et difficultés disponibles dépendent de la variante. Consultez ses règles avant de commencer."],
+        ["Imprimer des sudokus ou enregistrer un PDF", "Créez vos grilles, puis ouvrez le menu d'impression et choisissez du papier A4 ou A3. Placez une ou plusieurs grilles par feuille, ajoutez les solutions sur des pages séparées ou répartissez une grande grille sur plusieurs feuilles. Pour créer un PDF, utilisez l'option correspondante du dialogue d'impression du navigateur."],
+        ["Sauvegarder sa progression", "Les grilles et la progression du jeu libre sont conservées dans le navigateur utilisé. Reprenez dans ce même navigateur ou exportez un fichier de transfert depuis le menu de sauvegarde pour garder une copie ou changer d'appareil. Effacer les données du navigateur peut supprimer la progression locale. La création, le jeu et l'impression sont gratuits."]
+      ]
+    },
+    {
+      "code": "de", "slug": "de", "ogLocale": "de_DE",
+      "title": "Sudoku kostenlos online, täglich und zum Drucken | Sudoku Notebook",
+      "description": "Sudoku kostenlos und ohne Anmeldung spielen: drei tägliche Rätsel, klassisches Sudoku, Jigsaw und Killer, Notizen, lokale Spielstände und A4/A3-Druck.",
+      "heading": "Sudoku kostenlos online – in deinem Tempo",
+      "lead": "Sudoku Notebook (Nanpure Cho) ist ein kostenloses Rätselspiel im Browser für Smartphone, Tablet und Computer. Spiele auf Deutsch ohne Konto oder Installation. Erstelle ein Rätsel, setze einen Spielstand fort oder wähle eines der drei heutigen Rätsel.",
+      "labels": ["Sudoku spielen", "Heutige Rätsel", "Bedienung üben", "Sprache wählen", "Datenschutz", "Kontakt", "Zum Inhalt springen"],
+      "sections": [
+        ["So funktioniert Sudoku", "Beim klassischen 9×9-Sudoku trägst du die Ziffern 1 bis 9 in jede Zeile, Spalte und jedes 3×3-Feld ein, ohne Wiederholung. Vorgegebene Ziffern bleiben unverändert. Wähle eine leere Zelle und gib eine Zahl ein. Beim Üben helfen Kandidatennotizen, Rückgängig und Hinweise."],
+        ["Jeden Tag drei neue Sudokus", "Die drei Tagesrätsel wechseln um Mitternacht in Japan (UTC+9); Art und Größe variieren. Spiele entspannt oder starte einen Ranglistenversuch. Ob du dein Ergebnis veröffentlichst, entscheidest du selbst. Für Ranglistenversuche gelten eigene Zeitregeln; Hinweise und Lösungen sind dabei nicht erlaubt."],
+        ["Klassisch, Jigsaw und Killer", "Erstelle klassische Sudokus in 4×4, 6×6, 9×9, 16×16 und weiteren Größen. Jigsaw verwendet unregelmäßige Gebiete; Killer ergänzt Käfige mit vorgegebenen Summen. Welche Größen und Schwierigkeitsstufen verfügbar sind, hängt von der Variante ab. Lies vor dem Start die jeweiligen Regeln."],
+        ["Sudoku ausdrucken und als PDF speichern", "Erstelle Rätsel und öffne das Druckmenü. Wähle A4 oder A3 und platziere ein oder mehrere Rätsel auf einer Seite. Lösungen lassen sich auf getrennten Seiten ergänzen; große Gitter können auf mehrere Blätter verteilt werden. Ein PDF speicherst du über den Druckdialog deines Browsers."],
+        ["Spielstand speichern", "Rätsel und Fortschritt im freien Spiel werden im verwendeten Browser gespeichert. Spiele dort weiter oder exportiere über das Speichermenü eine Übertragungsdatei als Sicherung oder für ein anderes Gerät. Das Löschen von Browserdaten kann lokale Spielstände entfernen. Rätsel erstellen, spielen und drucken ist kostenlos."]
+      ]
+    },
+    {
+      "code": "pt", "slug": "pt", "ogLocale": "pt_BR",
+      "title": "Sudoku grátis online, diário e para imprimir | Sudoku Notebook",
+      "description": "Jogue sudoku grátis sem cadastro. Três desafios diários, sudoku clássico, irregular e Killer, anotações, progresso local e impressão em A4 ou A3.",
+      "heading": "Sudoku grátis online, no seu ritmo",
+      "lead": "Sudoku Notebook (Nanpure Cho) é um jogo gratuito para o navegador do celular, tablet ou computador. Jogue em português sem instalar nada nem criar uma conta. Gere um passatempo, continue uma partida salva ou escolha um dos três desafios de hoje.",
+      "labels": ["Jogar sudoku", "Desafios de hoje", "Praticar os controles", "Escolher idioma", "Privacidade", "Contato", "Pular para o conteúdo"],
+      "sections": [
+        ["Como jogar sudoku", "No sudoku clássico de 9×9, preencha cada linha, coluna e região de 3×3 com os números de 1 a 9, sem repetição. Os números iniciais não podem ser alterados. Selecione uma célula vazia e insira um número. Ao praticar, use anotações de candidatos, desfaça jogadas ou consulte dicas."],
+        ["Três novos sudokus por dia", "Os três desafios diários são renovados à meia-noite no Japão (UTC+9), com tipos e tamanhos variados. Jogue com calma ou tente o ranking. A publicação do resultado é opcional. As tentativas do ranking têm regras próprias de tempo e não permitem dicas nem respostas."],
+        ["Clássico, irregular e Killer", "Gere sudokus clássicos de 4×4, 6×6, 9×9, 16×16 e outros tamanhos. O irregular usa regiões de formas diferentes; o Killer acrescenta grupos com uma soma indicada. Os tamanhos e níveis disponíveis dependem da variante. Leia as regras apresentadas em cada problema antes de começar."],
+        ["Sudoku para imprimir ou salvar em PDF", "Crie os problemas e abra o menu de impressão. Escolha A4 ou A3, coloque um ou vários problemas por folha e acrescente as respostas em páginas separadas. Também é possível dividir uma grade grande entre várias folhas. Para salvar um PDF, use essa opção na janela de impressão do navegador."],
+        ["Salvar o progresso", "Os problemas e o progresso do jogo livre ficam no navegador utilizado. Continue no mesmo navegador ou exporte um arquivo de transferência pelo menu de salvamento para fazer um backup ou mudar de dispositivo. Apagar os dados do navegador pode remover o progresso local. Criar, jogar e imprimir é grátis."]
+      ]
+    },
+    {
+      "code": "it", "slug": "it", "ogLocale": "it_IT",
+      "title": "Sudoku gratis online, giornalieri e da stampare | Sudoku Notebook",
+      "description": "Gioca a sudoku gratis senza registrarti: tre sfide al giorno, sudoku classico, irregolare e Killer, note, salvataggi locali e stampa A4/A3.",
+      "heading": "Sudoku gratis online, al tuo ritmo",
+      "lead": "Sudoku Notebook (Nanpure Cho) è un gioco gratuito per il browser di telefono, tablet e computer. Gioca in italiano senza account né installazione. Genera uno schema, riprendi una partita salvata o scegli una delle tre sfide di oggi.",
+      "labels": ["Gioca a sudoku", "Sfide di oggi", "Prova i comandi", "Scegli la lingua", "Privacy", "Contatti", "Vai al contenuto"],
+      "sections": [
+        ["Come si gioca a sudoku", "Nel sudoku classico 9×9, inserisci i numeri da 1 a 9 in ogni riga, colonna e riquadro 3×3, senza ripetizioni. I numeri iniziali restano fissi. Seleziona una casella vuota e inserisci un numero. Durante la pratica puoi annotare candidati, annullare mosse e consultare suggerimenti."],
+        ["Tre nuovi sudoku ogni giorno", "Le tre sfide giornaliere cambiano a mezzanotte in Giappone (UTC+9), con tipi e dimensioni variabili. Gioca con calma o tenta la classifica. Pubblicare il risultato è facoltativo. I tentativi per la classifica hanno regole di cronometraggio specifiche e non consentono suggerimenti o soluzioni."],
+        ["Classico, irregolare e Killer", "Genera sudoku classici 4×4, 6×6, 9×9, 16×16 e di altre dimensioni. Il sudoku irregolare usa regioni di forme diverse; il Killer aggiunge gruppi con una somma indicata. Le dimensioni e i livelli disponibili dipendono dalla variante. Leggi le regole dello schema prima di iniziare."],
+        ["Sudoku da stampare e salvare in PDF", "Crea gli schemi e apri il menu di stampa. Scegli carta A4 o A3, disponi uno o più schemi per foglio e aggiungi le soluzioni su pagine separate. Puoi anche dividere una grande griglia tra più fogli. Per salvare un PDF, usa l'opzione nella finestra di stampa del browser."],
+        ["Salvare i progressi", "Gli schemi e i progressi del gioco libero vengono salvati nel browser utilizzato. Continua nello stesso browser oppure esporta un file di trasferimento dal menu di salvataggio per creare una copia o cambiare dispositivo. Cancellare i dati del browser può eliminare i progressi locali. Creare, giocare e stampare è gratuito."]
+      ]
+    },
+    {
+      "code": "nl", "slug": "nl", "ogLocale": "nl_NL",
+      "title": "Gratis sudoku online, dagelijks en om te printen | Sudoku Notebook",
+      "description": "Speel gratis sudoku zonder account. Drie dagelijkse puzzels, klassieke sudoku, Jigsaw en Killer, notities, lokaal opslaan en afdrukken op A4/A3.",
+      "heading": "Gratis sudoku online, op jouw tempo",
+      "lead": "Sudoku Notebook (Nanpure Cho) is een gratis puzzelspel in de browser van je telefoon, tablet of computer. Speel in het Nederlands zonder account of installatie. Maak een puzzel, hervat een opgeslagen spel of kies een van de drie puzzels van vandaag.",
+      "labels": ["Sudoku spelen", "Puzzels van vandaag", "Bediening oefenen", "Taal kiezen", "Privacy", "Contact", "Naar de inhoud"],
+      "sections": [
+        ["Zo speel je sudoku", "Vul bij een klassieke 9×9-sudoku elke rij, kolom en elk 3×3-vak met de cijfers 1 tot en met 9, zonder herhaling. De gegeven cijfers blijven staan. Kies een lege cel en voer een cijfer in. Tijdens het oefenen kun je kandidaten noteren, zetten ongedaan maken en hints bekijken."],
+        ["Elke dag drie nieuwe sudoku's", "De drie dagelijkse puzzels worden om middernacht in Japan (UTC+9) vernieuwd. Soort en formaat wisselen. Speel rustig of doe mee aan de ranglijst. Je bepaalt zelf of je je resultaat publiceert. Ranglijstpogingen hebben eigen tijdregels en staan geen hints of oplossingen toe."],
+        ["Klassiek, Jigsaw en Killer", "Maak klassieke sudoku's van 4×4, 6×6, 9×9, 16×16 en andere formaten. Jigsaw gebruikt onregelmatige gebieden; Killer voegt groepen met een opgegeven som toe. Beschikbare formaten en niveaus verschillen per variant. Lees voor het beginnen de regels van de puzzel."],
+        ["Sudoku's printen of als PDF bewaren", "Maak puzzels en open het afdrukmenu. Kies A4 of A3, zet een of meer puzzels op een vel en voeg antwoorden op aparte pagina's toe. Een groot rooster kan over meerdere vellen worden verdeeld. Gebruik de PDF-optie in het afdrukvenster van je browser om een PDF te bewaren."],
+        ["Je voortgang opslaan", "Puzzels en voortgang bij vrij spelen worden in de gebruikte browser opgeslagen. Ga verder in diezelfde browser of exporteer via het opslagmenu een overdrachtsbestand als reservekopie of voor een ander apparaat. Het wissen van browsergegevens kan lokale voortgang verwijderen. Maken, spelen en printen is gratis."]
+      ]
+    },
+    {
+      "code": "sv", "slug": "sv", "ogLocale": "sv_SE",
+      "title": "Gratis sudoku online, dagliga pussel och utskrift | Sudoku Notebook",
+      "description": "Spela gratis sudoku utan konto. Tre dagliga pussel, klassiskt sudoku, Jigsaw och Killer, anteckningar, lokala sparningar och utskrift på A4/A3.",
+      "heading": "Gratis sudoku online, i din egen takt",
+      "lead": "Sudoku Notebook (Nanpure Cho) är ett gratis pusselspel i webbläsaren på mobil, surfplatta och dator. Spela på svenska utan konto eller installation. Skapa ett pussel, fortsätt ett sparat spel eller välj ett av dagens tre pussel.",
+      "labels": ["Spela sudoku", "Dagens pussel", "Öva på kontrollerna", "Välj språk", "Integritet", "Kontakt", "Hoppa till innehållet"],
+      "sections": [
+        ["Så spelar du sudoku", "I klassiskt 9×9-sudoku fyller du varje rad, kolumn och 3×3-ruta med siffrorna 1–9 utan upprepningar. De givna siffrorna ändras inte. Välj en tom cell och ange en siffra. När du övar kan du anteckna kandidater, ångra drag och använda ledtrådar."],
+        ["Tre nya sudokupussel varje dag", "De tre dagliga pusslen förnyas vid midnatt i Japan (UTC+9). Typ och storlek varierar. Spela i lugn och ro eller försök på topplistan. Du väljer själv om du publicerar resultatet. Rankade försök har egna regler för tidtagning och tillåter inte ledtrådar eller facit."],
+        ["Klassiskt, Jigsaw och Killer", "Skapa klassiska sudokun i 4×4, 6×6, 9×9, 16×16 och andra storlekar. Jigsaw har oregelbundna regioner; Killer lägger till grupper med en angiven summa. Tillgängliga storlekar och svårighetsnivåer beror på varianten. Läs pusslets regler innan du börjar."],
+        ["Skriv ut sudoku eller spara som PDF", "Skapa pussel och öppna utskriftsmenyn. Välj A4 eller A3, placera ett eller flera pussel per ark och lägg till facit på separata sidor. Stora rutnät kan delas över flera ark. För att spara en PDF använder du PDF-alternativet i webbläsarens utskriftsdialog."],
+        ["Spara dina framsteg", "Pussel och framsteg i fritt spel sparas i webbläsaren du använder. Fortsätt i samma webbläsare eller exportera en överföringsfil från sparmenyn för säkerhetskopiering eller byte av enhet. Att rensa webbläsarens data kan radera lokala framsteg. Att skapa, spela och skriva ut är gratis."]
+      ]
+    },
+    {
+      "code": "pl", "slug": "pl", "ogLocale": "pl_PL",
+      "title": "Darmowe sudoku online, codzienne i do druku | Sudoku Notebook",
+      "description": "Graj w sudoku za darmo, bez rejestracji. Trzy zadania dziennie, sudoku klasyczne, nieregularne i Killer, notatki, lokalny zapis oraz druk A4/A3.",
+      "heading": "Darmowe sudoku online, we własnym tempie",
+      "lead": "Sudoku Notebook (Nanpure Cho) to darmowa gra logiczna w przeglądarce telefonu, tabletu lub komputera. Graj po polsku bez konta i instalacji. Wygeneruj zadanie, wróć do zapisanej gry albo wybierz jedną z trzech dzisiejszych łamigłówek.",
+      "labels": ["Zagraj w sudoku", "Dzisiejsze zadania", "Przećwicz sterowanie", "Wybierz język", "Prywatność", "Kontakt", "Przejdź do treści"],
+      "sections": [
+        ["Jak grać w sudoku", "W klasycznym sudoku 9×9 wpisz cyfry od 1 do 9 w każdym wierszu, kolumnie i bloku 3×3, bez powtórzeń. Początkowe cyfry pozostają niezmienione. Wybierz puste pole i wpisz cyfrę. Podczas ćwiczeń możesz notować kandydatów, cofać ruchy i korzystać z podpowiedzi."],
+        ["Trzy nowe sudoku każdego dnia", "Trzy codzienne zadania zmieniają się o północy w Japonii (UTC+9). Ich rodzaj i rozmiar są różne. Rozwiązuj spokojnie lub spróbuj rywalizacji w rankingu. Publikacja wyniku jest dobrowolna. Próby rankingowe mają własne zasady pomiaru czasu i nie pozwalają na podpowiedzi ani odpowiedzi."],
+        ["Klasyczne, nieregularne i Killer", "Generuj klasyczne sudoku w rozmiarach 4×4, 6×6, 9×9, 16×16 i innych. Sudoku nieregularne używa obszarów o różnych kształtach; Killer dodaje grupy pól z podaną sumą. Dostępne rozmiary i poziomy trudności zależą od wariantu. Przed grą przeczytaj zasady danego zadania."],
+        ["Sudoku do druku i w PDF", "Utwórz zadania i otwórz menu drukowania. Wybierz papier A4 lub A3, umieść jedno lub kilka zadań na arkuszu i dodaj rozwiązania na osobnych stronach. Dużą planszę można podzielić na kilka arkuszy. Aby zapisać PDF, użyj odpowiedniej opcji w oknie drukowania przeglądarki."],
+        ["Zapisywanie postępów", "Zadania i postępy w grze swobodnej są zapisywane w używanej przeglądarce. Kontynuuj w tej samej przeglądarce albo wyeksportuj plik przenoszenia z menu zapisu, aby zachować kopię lub zmienić urządzenie. Usunięcie danych przeglądarki może skasować lokalne postępy. Tworzenie, granie i drukowanie są bezpłatne."]
+      ]
+    },
+    {
+      "code": "cs", "slug": "cs", "ogLocale": "cs_CZ",
+      "title": "Sudoku online zdarma, denní úlohy a tisk | Sudoku Notebook",
+      "description": "Hrajte sudoku zdarma bez registrace. Tři denní úlohy, klasické sudoku, nepravidelné a Killer, poznámky, místní ukládání a tisk na A4/A3.",
+      "heading": "Sudoku online zdarma, vlastním tempem",
+      "lead": "Sudoku Notebook (Nanpure Cho) je bezplatná logická hra v prohlížeči telefonu, tabletu i počítače. Hrajte česky bez účtu a instalace. Vytvořte úlohu, pokračujte v uložené hře nebo vyberte jednu ze tří dnešních hádanek.",
+      "labels": ["Hrát sudoku", "Dnešní úlohy", "Procvičit ovládání", "Vybrat jazyk", "Soukromí", "Kontakt", "Přejít na obsah"],
+      "sections": [
+        ["Jak hrát sudoku", "V klasickém sudoku 9×9 vyplňte každý řádek, sloupec a blok 3×3 číslicemi 1 až 9 bez opakování. Zadané číslice se nemění. Vyberte prázdné políčko a zadejte číslo. Při tréninku můžete zapisovat kandidáty, vracet tahy a používat nápovědu."],
+        ["Tři nové úlohy každý den", "Tři denní úlohy se obnovují o půlnoci v Japonsku (UTC+9). Jejich typ a velikost se mění. Hrajte v klidu nebo zkuste žebříček. Zveřejnění výsledku je dobrovolné. Pokusy do žebříčku mají vlastní pravidla měření času a nepovolují nápovědu ani řešení."],
+        ["Klasické, nepravidelné a Killer sudoku", "Vytvářejte klasické sudoku o velikostech 4×4, 6×6, 9×9, 16×16 a dalších. Nepravidelné sudoku používá oblasti různých tvarů; Killer přidává skupiny s určeným součtem. Dostupné velikosti a obtížnosti závisí na variantě. Před začátkem si přečtěte pravidla konkrétní úlohy."],
+        ["Sudoku k tisku a uložení do PDF", "Vytvořte úlohy a otevřete nabídku tisku. Vyberte papír A4 nebo A3, umístěte jednu či více úloh na list a přidejte řešení na samostatné stránky. Velkou mřížku lze rozdělit na více listů. Pro uložení PDF použijte příslušnou volbu v tiskovém dialogu prohlížeče."],
+        ["Ukládání postupu", "Úlohy a postup ve volné hře se ukládají v používaném prohlížeči. Pokračujte v něm nebo z nabídky ukládání vyexportujte přenosový soubor jako zálohu či pro jiné zařízení. Vymazání dat prohlížeče může odstranit místní postup. Vytváření, hraní a tisk jsou zdarma."]
+      ]
+    },
+    {
+      "code": "ru", "slug": "ru", "ogLocale": "ru_RU",
+      "title": "Судоку онлайн бесплатно, на каждый день и для печати | Sudoku Notebook",
+      "description": "Играйте в судоку бесплатно без регистрации. Три задачи в день, классическое, нерегулярное и Killer судоку, заметки, локальное сохранение и печать A4/A3.",
+      "heading": "Бесплатные судоку онлайн в своём темпе",
+      "lead": "Sudoku Notebook (Nanpure Cho) — бесплатная головоломка для браузера телефона, планшета или компьютера. Играйте на русском без аккаунта и установки. Создайте задачу, продолжите сохранённую игру или выберите одну из трёх задач на сегодня.",
+      "labels": ["Играть в судоку", "Задачи на сегодня", "Освоить управление", "Выбрать язык", "Конфиденциальность", "Связаться", "Перейти к содержимому"],
+      "sections": [
+        ["Как играть в судоку", "В классическом судоку 9×9 заполните каждую строку, столбец и блок 3×3 цифрами от 1 до 9 без повторений. Исходные цифры менять нельзя. Выберите пустую клетку и введите число. В тренировке можно записывать кандидатов, отменять ходы и пользоваться подсказками."],
+        ["Три новые задачи каждый день", "Три ежедневные задачи обновляются в полночь по времени Японии (UTC+9). Типы и размеры меняются. Решайте спокойно или участвуйте в рейтинге. Публиковать результат необязательно. В рейтинговых попытках действуют особые правила отсчёта времени; подсказки и ответы недоступны."],
+        ["Классическое, нерегулярное и Killer", "Создавайте классические судоку размером 4×4, 6×6, 9×9, 16×16 и других размеров. Нерегулярное судоку использует области разной формы, а Killer добавляет группы с указанной суммой. Размеры и уровни сложности зависят от варианта. Перед началом прочитайте правила конкретной задачи."],
+        ["Судоку для печати и сохранения в PDF", "Создайте задачи и откройте меню печати. Выберите бумагу A4 или A3, разместите одну или несколько задач на листе и добавьте ответы на отдельных страницах. Большую сетку можно разделить на несколько листов. Для сохранения PDF выберите соответствующий пункт в окне печати браузера."],
+        ["Сохранение прогресса", "Задачи и прогресс свободной игры хранятся в используемом браузере. Продолжайте в том же браузере или экспортируйте файл переноса из меню сохранения для резервной копии либо другого устройства. Очистка данных браузера может удалить локальный прогресс. Создание задач, игра и печать бесплатны."]
+      ]
+    },
+    {
+      "code": "id", "slug": "id", "ogLocale": "id_ID",
+      "title": "Sudoku online gratis, harian dan untuk dicetak | Sudoku Notebook",
+      "description": "Main sudoku gratis tanpa daftar. Tiga teka-teki harian, sudoku klasik, Jigsaw dan Killer, catatan kandidat, simpan lokal serta cetak A4/A3.",
+      "heading": "Sudoku online gratis, sesuai ritmemu",
+      "lead": "Sudoku Notebook (Nanpure Cho) adalah permainan teka-teki gratis di browser ponsel, tablet, dan komputer. Main dalam bahasa Indonesia tanpa akun atau instalasi. Buat teka-teki, lanjutkan permainan tersimpan, atau pilih salah satu dari tiga soal hari ini.",
+      "labels": ["Main sudoku", "Soal hari ini", "Latihan kontrol", "Pilih bahasa", "Privasi", "Kontak", "Lewati ke isi"],
+      "sections": [
+        ["Cara bermain sudoku", "Pada sudoku klasik 9×9, isi setiap baris, kolom, dan kotak 3×3 dengan angka 1–9 tanpa pengulangan. Angka awal tidak dapat diubah. Pilih sel kosong lalu masukkan angka. Saat berlatih, gunakan catatan kandidat, batalkan langkah, atau lihat petunjuk."],
+        ["Tiga sudoku baru setiap hari", "Tiga soal harian diperbarui pada tengah malam waktu Jepang (UTC+9), dengan jenis dan ukuran yang bervariasi. Main santai atau ikuti tantangan peringkat. Publikasi hasil bersifat opsional. Percobaan peringkat memakai aturan waktu tersendiri dan tidak mengizinkan petunjuk maupun jawaban."],
+        ["Klasik, Jigsaw, dan Killer", "Buat sudoku klasik berukuran 4×4, 6×6, 9×9, 16×16, dan lainnya. Jigsaw memakai wilayah tidak beraturan; Killer menambahkan kelompok dengan jumlah tertentu. Ukuran dan tingkat kesulitan yang tersedia bergantung pada variannya. Baca aturan setiap soal sebelum memulai."],
+        ["Cetak sudoku atau simpan PDF", "Buat soal dan buka menu cetak. Pilih kertas A4 atau A3, tempatkan satu atau beberapa soal per lembar, serta tambahkan jawaban pada halaman terpisah. Papan besar bisa dibagi ke beberapa lembar. Untuk menyimpan PDF, gunakan pilihan PDF pada dialog cetak browser."],
+        ["Simpan kemajuan permainan", "Soal dan kemajuan permainan bebas tersimpan di browser yang digunakan. Lanjutkan di browser yang sama atau ekspor berkas transfer dari menu simpan untuk cadangan maupun perangkat lain. Menghapus data browser dapat menghapus kemajuan lokal. Membuat soal, bermain, dan mencetak semuanya gratis."]
+      ]
+    },
+    {
+      "code": "vi", "slug": "vi", "ogLocale": "vi_VN",
+      "title": "Sudoku online miễn phí, hằng ngày và để in | Sudoku Notebook",
+      "description": "Chơi sudoku miễn phí, không cần đăng ký. Ba câu đố mỗi ngày, sudoku cổ điển, Jigsaw và Killer, ghi chú, lưu trên trình duyệt và in A4/A3.",
+      "heading": "Sudoku online miễn phí, theo nhịp của bạn",
+      "lead": "Sudoku Notebook (Nanpure Cho) là trò chơi giải đố miễn phí trên trình duyệt điện thoại, máy tính bảng và máy tính. Chơi bằng tiếng Việt, không cần tài khoản hay cài đặt. Tạo câu đố, tiếp tục ván đã lưu hoặc chọn một trong ba câu đố hôm nay.",
+      "labels": ["Chơi sudoku", "Câu đố hôm nay", "Luyện thao tác", "Chọn ngôn ngữ", "Quyền riêng tư", "Liên hệ", "Đến nội dung"],
+      "sections": [
+        ["Cách chơi sudoku", "Trong sudoku cổ điển 9×9, điền các số từ 1 đến 9 vào mỗi hàng, cột và vùng 3×3 mà không lặp số. Không thay đổi các số cho sẵn. Chọn một ô trống rồi nhập số. Khi luyện tập, bạn có thể ghi chú các số ứng viên, hoàn tác hoặc xem gợi ý."],
+        ["Ba câu đố mới mỗi ngày", "Ba câu đố hằng ngày được làm mới lúc nửa đêm tại Nhật Bản (UTC+9), với loại và kích thước thay đổi. Giải thong thả hoặc thử thách bảng xếp hạng. Việc công bố kết quả là tùy chọn. Lượt chơi xếp hạng có quy tắc tính giờ riêng và không cho phép gợi ý hay đáp án."],
+        ["Cổ điển, Jigsaw và Killer", "Tạo sudoku cổ điển với các cỡ 4×4, 6×6, 9×9, 16×16 và nhiều cỡ khác. Jigsaw dùng vùng có hình dạng bất quy tắc; Killer thêm các nhóm ô có tổng cho trước. Kích thước và độ khó tùy thuộc từng biến thể. Hãy đọc quy tắc của câu đố trước khi bắt đầu."],
+        ["In sudoku hoặc lưu PDF", "Tạo câu đố rồi mở menu in. Chọn giấy A4 hoặc A3, đặt một hay nhiều câu đố trên mỗi tờ và thêm trang đáp án riêng. Bạn cũng có thể chia bảng lớn ra nhiều tờ. Muốn lưu PDF, hãy chọn tùy chọn PDF trong hộp thoại in của trình duyệt."],
+        ["Lưu tiến độ", "Câu đố và tiến độ ở chế độ chơi tự do được lưu trong trình duyệt đang dùng. Tiếp tục tại đó hoặc xuất tệp chuyển dữ liệu từ menu lưu để sao lưu hay đổi thiết bị. Xóa dữ liệu trình duyệt có thể làm mất tiến độ cục bộ. Tạo câu đố, chơi và in đều miễn phí."]
+      ]
+    },
+    {
+      "code": "th", "slug": "th", "ogLocale": "th_TH",
+      "title": "ซูโดกุออนไลน์ฟรี โจทย์ประจำวันและพิมพ์ได้ | Sudoku Notebook",
+      "description": "เล่นซูโดกุฟรี ไม่ต้องสมัคร มีโจทย์ใหม่วันละ 3 ข้อ แบบคลาสสิก จิ๊กซอว์ และคิลเลอร์ จดตัวเลือก บันทึกในเบราว์เซอร์ และพิมพ์ A4/A3 ได้",
+      "heading": "ซูโดกุออนไลน์ฟรี เล่นตามจังหวะของคุณ",
+      "lead": "Sudoku Notebook (Nanpure Cho) คือเกมปริศนาฟรีบนเบราว์เซอร์ของมือถือ แท็บเล็ต และคอมพิวเตอร์ เล่นเป็นภาษาไทยได้โดยไม่ต้องสร้างบัญชีหรือติดตั้ง สร้างโจทย์ เล่นต่อจากที่บันทึกไว้ หรือเลือกหนึ่งในโจทย์ 3 ข้อของวันนี้",
+      "labels": ["เล่นซูโดกุ", "โจทย์วันนี้", "ฝึกวิธีควบคุม", "เลือกภาษา", "ความเป็นส่วนตัว", "ติดต่อ", "ข้ามไปยังเนื้อหา"],
+      "sections": [
+        ["วิธีเล่นซูโดกุ", "ในซูโดกุคลาสสิก 9×9 ให้เติมเลข 1–9 ลงในแต่ละแถว คอลัมน์ และกรอบ 3×3 โดยไม่ซ้ำกัน ตัวเลขที่โจทย์ให้มาเปลี่ยนไม่ได้ เลือกช่องว่างแล้วใส่ตัวเลข ระหว่างฝึกสามารถจดตัวเลือก ย้อนกลับการเดิน หรือดูคำใบ้ได้"],
+        ["โจทย์ซูโดกุใหม่วันละ 3 ข้อ", "โจทย์ประจำวัน 3 ข้อจะเปลี่ยนตอนเที่ยงคืนตามเวลาญี่ปุ่น (UTC+9) โดยชนิดและขนาดจะแตกต่างกัน เล่นสบาย ๆ หรือท้าทายอันดับก็ได้ การเผยแพร่ผลเป็นทางเลือก โหมดจัดอันดับใช้กติกาจับเวลาเฉพาะและไม่ให้ใช้คำใบ้หรือเฉลย"],
+        ["คลาสสิก จิ๊กซอว์ และคิลเลอร์", "สร้างซูโดกุคลาสสิกขนาด 4×4, 6×6, 9×9, 16×16 และขนาดอื่น ๆ จิ๊กซอว์ใช้กรอบรูปร่างไม่สม่ำเสมอ ส่วนคิลเลอร์เพิ่มกลุ่มช่องที่กำหนดผลรวม ขนาดและระดับความยากที่เลือกได้ขึ้นอยู่กับชนิดของโจทย์ ควรอ่านกติกาก่อนเริ่ม"],
+        ["พิมพ์ซูโดกุหรือบันทึกเป็น PDF", "สร้างโจทย์แล้วเปิดเมนูพิมพ์ เลือกกระดาษ A4 หรือ A3 วางโจทย์หนึ่งข้อหรือหลายข้อต่อแผ่น และเพิ่มหน้าเฉลยแยกได้ กระดานขนาดใหญ่สามารถแบ่งออกเป็นหลายแผ่น หากต้องการ PDF ให้เลือกบันทึกเป็น PDF ในหน้าต่างพิมพ์ของเบราว์เซอร์"],
+        ["บันทึกความคืบหน้า", "โจทย์และความคืบหน้าในโหมดเล่นอิสระจะเก็บไว้ในเบราว์เซอร์ที่ใช้ เล่นต่อในเบราว์เซอร์เดิม หรือส่งออกไฟล์โอนข้อมูลจากเมนูบันทึกเพื่อสำรองหรือย้ายไปอุปกรณ์อื่น การล้างข้อมูลเบราว์เซอร์อาจลบความคืบหน้าในเครื่อง การสร้างโจทย์ เล่น และพิมพ์ใช้งานได้ฟรี"]
+      ]
+    },
+    {
+      "code": "hi", "slug": "hi", "ogLocale": "hi_IN",
+      "title": "मुफ़्त ऑनलाइन सुडोकू, दैनिक पहेलियाँ और प्रिंट | Sudoku Notebook",
+      "description": "बिना पंजीकरण मुफ़्त सुडोकू खेलें। रोज़ 3 पहेलियाँ, क्लासिक, जिगसॉ और किलर सुडोकू, नोट्स, स्थानीय सेव और A4/A3 प्रिंट की सुविधा।",
+      "heading": "मुफ़्त ऑनलाइन सुडोकू, अपनी रफ़्तार से",
+      "lead": "Sudoku Notebook (Nanpure Cho) फ़ोन, टैबलेट और कंप्यूटर के ब्राउज़र में चलने वाला मुफ़्त पहेली गेम है। बिना खाता बनाए या इंस्टॉल किए हिंदी में खेलें। नई पहेली बनाएँ, सहेजी हुई बाज़ी जारी रखें या आज की तीन पहेलियों में से एक चुनें।",
+      "labels": ["सुडोकू खेलें", "आज की पहेलियाँ", "नियंत्रण का अभ्यास", "भाषा चुनें", "गोपनीयता", "संपर्क", "मुख्य सामग्री पर जाएँ"],
+      "sections": [
+        ["सुडोकू कैसे खेलें", "क्लासिक 9×9 सुडोकू में हर पंक्ति, कॉलम और 3×3 खंड में 1 से 9 तक के अंक बिना दोहराव भरें। शुरुआत में दिए गए अंक नहीं बदलते। खाली खाने को चुनकर अंक डालें। अभ्यास के दौरान संभावित अंकों के नोट्स बना सकते हैं, चाल वापस ले सकते हैं और संकेत देख सकते हैं।"],
+        ["हर दिन तीन नई पहेलियाँ", "तीन दैनिक पहेलियाँ जापान के समय के अनुसार आधी रात (UTC+9) को बदलती हैं। प्रकार और आकार अलग-अलग होते हैं। आराम से खेलें या रैंकिंग चुनौती चुनें। परिणाम प्रकाशित करना वैकल्पिक है। रैंकिंग प्रयासों में समय मापने के अलग नियम हैं और संकेत या उत्तर की अनुमति नहीं है।"],
+        ["क्लासिक, जिगसॉ और किलर", "4×4, 6×6, 9×9, 16×16 और अन्य आकारों में क्लासिक सुडोकू बनाएँ। जिगसॉ में अनियमित आकार के क्षेत्र होते हैं; किलर में दिए हुए योग वाले समूह जुड़ते हैं। उपलब्ध आकार और कठिनाई प्रकार पर निर्भर करते हैं। शुरू करने से पहले हर पहेली के नियम पढ़ें।"],
+        ["सुडोकू प्रिंट करें या PDF सहेजें", "पहेलियाँ बनाकर प्रिंट मेनू खोलें। A4 या A3 काग़ज़ चुनें, एक पन्ने पर एक या कई पहेलियाँ रखें और उत्तर अलग पन्नों पर जोड़ें। बड़े ग्रिड को कई पन्नों में बाँट भी सकते हैं। PDF सहेजने के लिए ब्राउज़र के प्रिंट संवाद में PDF विकल्प चुनें।"],
+        ["अपनी प्रगति सहेजें", "स्वतंत्र खेल की पहेलियाँ और प्रगति आपके इस्तेमाल किए गए ब्राउज़र में सहेजी जाती हैं। उसी ब्राउज़र में जारी रखें या सेव मेनू से ट्रांसफ़र फ़ाइल निकालकर बैकअप बनाएँ अथवा दूसरे डिवाइस पर ले जाएँ। ब्राउज़र डेटा मिटाने से स्थानीय प्रगति खो सकती है। पहेली बनाना, खेलना और प्रिंट करना मुफ़्त है।"]
+      ]
+    },
+    {
+      "code": "ar", "slug": "ar", "ogLocale": "ar_SA",
+      "title": "سودوكو مجانية أونلاين، ألغاز يومية وطباعة | Sudoku Notebook",
+      "description": "العب سودوكو مجانًا دون تسجيل. ثلاثة ألغاز يومية، سودوكو كلاسيكية وجيغسو وكيلر، ملاحظات وحفظ محلي وطباعة على ورق A4 أو A3.",
+      "heading": "سودوكو مجانية أونلاين بالوتيرة التي تناسبك",
+      "lead": "Sudoku Notebook (Nanpure Cho) لعبة ألغاز مجانية تعمل في متصفح الهاتف واللوحي والكمبيوتر. العب بالعربية دون حساب أو تثبيت. أنشئ لغزًا، أو تابع لعبة محفوظة، أو اختر أحد ألغاز اليوم الثلاثة.",
+      "labels": ["العب سودوكو", "ألغاز اليوم", "تدرّب على التحكم", "اختر اللغة", "الخصوصية", "تواصل معنا", "انتقل إلى المحتوى"],
+      "sections": [
+        ["كيف تلعب سودوكو", "في سودوكو الكلاسيكية 9×9، املأ كل صف وعمود ومربع 3×3 بالأرقام من 1 إلى 9 دون تكرار. لا تتغير الأرقام المعطاة في البداية. اختر خانة فارغة ثم أدخل رقمًا. أثناء التدريب يمكنك تدوين الأرقام المحتملة والتراجع عن الحركات والاستعانة بالتلميحات."],
+        ["ثلاثة ألغاز جديدة كل يوم", "تتجدد ألغاز اليوم الثلاثة عند منتصف الليل بتوقيت اليابان (UTC+9)، وتختلف أنواعها وأحجامها. العب بهدوء أو اختر تحدي الترتيب. نشر النتيجة اختياري. لمحاولات الترتيب قواعد خاصة لقياس الوقت، ولا تسمح بالتلميحات أو الإجابات."],
+        ["الكلاسيكية وجيغسو وكيلر", "أنشئ سودوكو كلاسيكية بأحجام 4×4 و6×6 و9×9 و16×16 وغيرها. تستخدم جيغسو مناطق غير منتظمة، وتضيف كيلر مجموعات ذات مجموع محدد. تعتمد الأحجام ومستويات الصعوبة المتاحة على النوع. اقرأ قواعد كل لغز قبل البدء."],
+        ["اطبع سودوكو أو احفظ ملف PDF", "أنشئ الألغاز وافتح قائمة الطباعة. اختر ورق A4 أو A3، وضع لغزًا واحدًا أو عدة ألغاز في الورقة، وأضف الحلول في صفحات منفصلة. يمكنك أيضًا تقسيم شبكة كبيرة على عدة أوراق. لحفظ PDF، اختر هذا الخيار في نافذة الطباعة بالمتصفح."],
+        ["حفظ التقدم", "تُحفظ ألغاز اللعب الحر والتقدم في المتصفح الذي تستخدمه. تابع في المتصفح نفسه أو صدّر ملف نقل من قائمة الحفظ لإنشاء نسخة احتياطية أو الانتقال إلى جهاز آخر. قد يؤدي مسح بيانات المتصفح إلى حذف التقدم المحلي. إنشاء الألغاز واللعب والطباعة مجانية."]
+      ]
+    }
+  ]
+}

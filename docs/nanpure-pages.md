@@ -3,6 +3,25 @@
 公開先: https://atugari.github.io/nanpure/
 旧リンク https://atugari.github.io/nanpure.html も同じ画面へ移動します。
 
+## 2026-10-28 検索用ページ
+
+日本語ホームと19言語の静的紹介ページを相互リンクし、言語別の自己参照canonicalと、20言語・x-defaultのhreflangを付けています。英語は `/nanpure/en/`、簡体字は `/nanpure/zh-hans/`、繁体字は `/nanpure/zh-hant/`、その他は既存ゲームの言語コードと同じディレクトリです。紹介ページからは `?lang=...` 付きで既存のゲームを開きます。自動転送や位置情報による切り替えはしません。
+
+本文・ルール・日替わり・印刷・端末内保存の説明はJavaScriptなしでも読めます。日本語の日替わり専用ガイドは `/nanpure/daily-sudoku/`。ホームの追加案内はゲーム中に表示しません。ゲームの配布アセット、保存形式、版番号は今回の検索用ページ更新では変更していません。
+
+案内を更新するときは `scripts/seo/content.json` と `scripts/seo/international.json` を編集し、次を実行します。
+
+```sh
+node scripts/seo/build-pages.mjs
+node scripts/check-nanpure-search.cjs /path/to/linkedom
+PLAYWRIGHT_MODULE=/path/to/playwright node scripts/check-nanpure-search-browser.cjs .
+python3 scripts/enhance-nanpure.py .
+```
+
+ビルドは既存マニフェストとの一致を先に確認し、検索用として再生成したファイルのハッシュだけを更新します。既存のゲーム版を再生成せず実行できます。`export-nanpure.mjs` からの次回ゲーム出力でも同じ検索ページ生成処理を使います。サイトマップに既存の別ページがある場合は保持し、変更していないゲーム一覧ページの更新日は進めません。
+
+公開前のCIで、全言語のリンク・メタデータ・サイトマップ、日本語と19言語のスマホ表示、320pxのアラビア語表示、ゲームの言語引き継ぎを確認します。ブラウザ検証はAPIを模擬し、公開記録を書き込みません。検索用ページの公開と、検索エンジンによる登録・順位の更新は別の処理です。
+
 ## 2026.10.23.36（現在）
 
 PCでキーボードだけでも遊べるように、盤面と画面移動の操作を揃えました。
