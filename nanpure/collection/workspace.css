@@ -1,0 +1,47 @@
+/* Use the whole iframe. Board gestures stay in board-input.js. */
+body.np-collection-workspace{margin:0!important;overflow:hidden!important;height:100dvh}
+.np-collection-workspace #app{width:100%!important;max-width:none!important;height:100dvh!important;padding:0!important;overflow:hidden!important}
+.np-workspace-screen{box-sizing:border-box!important;display:grid!important;width:100%!important;max-width:none!important;height:100dvh!important;min-height:0!important;padding:6px 10px!important;margin:0!important;gap:6px!important;overflow:hidden!important;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto minmax(80px,1fr) auto auto auto auto;grid-template-areas:"head" "layout" "board" "hints" "actions" "numbers" "feedback"}
+.np-workspace-screen>h1,.np-workspace-screen>.top,.np-workspace-screen>.play-caption,.np-workspace-screen>.play-feedback,.np-workspace-screen #input-mode-status{display:none!important}
+.np-workspace-screen>.play-head{grid-area:head;margin:0!important;min-height:32px;font-size:13px!important;gap:8px!important}
+.np-workspace-screen>.play-head>b{margin-right:auto}.np-workspace-screen>.play-head button{min-height:32px!important;padding:3px 9px!important}
+.np-workspace-tools{grid-area:layout;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px}
+.np-workspace-tools button,.np-workspace-tools select,.np-number-bar button,.np-number-bar select{font:600 13px system-ui!important;box-sizing:border-box!important;min-height:40px!important;width:auto!important;margin:0!important;border:1px solid #b6c7bb!important;border-radius:9px!important;padding:5px 10px!important;background:#fff!important;color:#285849!important;touch-action:manipulation}
+.np-workspace-tools [data-wide][aria-pressed=true]{background:#285849!important;color:#fff!important}
+.np-workspace-tools label{display:flex!important;align-items:center;gap:6px;font-size:12px!important;margin:0!important}
+.np-direct-zoom{display:flex;gap:3px}.np-direct-zoom button{min-width:40px!important}
+.np-workspace-screen>#board-scroll.np-pan-viewport{grid-area:board!important;align-self:stretch!important;justify-self:stretch!important;min-width:0!important;min-height:0!important;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;margin:0!important;box-shadow:0 0 0 1px #8b988c;border-radius:2px;overscroll-behavior:contain}
+.np-workspace-screen>.play-dock{grid-area:actions;position:static!important;min-width:0!important;width:100%!important;max-width:560px!important;justify-self:center;padding:0!important;margin:0!important;box-shadow:none!important;border:0!important}
+.np-workspace-screen>.play-dock>.tools{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px!important;margin:0!important}
+.np-workspace-screen>.play-dock>.tools>button{min-height:40px!important;padding:4px!important;font-size:13px!important}
+.np-workspace-screen>#hint-panel{grid-area:hints;max-height:28dvh;overflow:auto;margin:0!important}
+.np-workspace-screen>#mistake-status{grid-area:feedback;max-height:44px;overflow:auto;font-size:12px}.np-workspace-screen>#mistake-status:empty{display:none}
+.np-workspace-screen>#np-answer-status:not([hidden]){position:fixed;inset:auto 8px 8px;z-index:100;max-height:35dvh;overflow:auto}
+.np-number-panel{grid-area:numbers;box-sizing:border-box!important;min-width:0!important;width:min(100%,560px)!important;justify-self:center;align-self:stretch;margin:0!important;padding:4px 6px 6px!important;border:1px solid #b7c6b5;border-radius:12px;background:#f4f5ee;box-shadow:0 3px 10px #193c2410;overflow:hidden;display:flex;flex-direction:column;gap:4px}
+.np-number-panel>#number-controls{min-height:0;overflow:auto;overscroll-behavior:contain}
+.np-number-panel .number-pad{display:grid!important;grid-template-columns:repeat(var(--np-workspace-columns,5),minmax(0,1fr))!important;gap:4px!important;max-width:none!important;width:100%!important;margin:0!important}
+.np-number-panel .number-pad>button{width:100%!important;min-width:0!important;min-height:44px!important;height:44px!important;max-height:none!important;aspect-ratio:auto!important;padding:3px!important;font-size:18px!important;line-height:1.2!important}
+.np-number-panel .number-pad>button>span{font-size:inherit!important}
+.np-number-bar{display:flex;align-items:center;gap:4px;flex-shrink:0}.np-number-bar .np-number-handle{margin-right:auto!important;cursor:grab;touch-action:none!important;user-select:none}.np-key-dragging .np-number-handle{cursor:grabbing!important}
+.np-number-bar .np-shape-label{display:none!important;align-items:center;gap:3px;margin:0!important;font-size:12px!important}.np-number-bar select{max-width:82px;padding:4px!important}.np-number-bar button,.np-number-bar select{min-height:32px!important}
+.np-keys-collapsed>#number-controls{display:none!important}
+.np-workspace-screen[data-number-position=top]{grid-template-rows:auto auto auto minmax(80px,1fr) auto auto auto;grid-template-areas:"head" "layout" "numbers" "board" "hints" "actions" "feedback"}
+.np-workspace-screen[data-number-position=left],.np-workspace-screen[data-number-position=right]{grid-template-columns:minmax(0,1fr) minmax(176px,224px);grid-template-rows:auto auto minmax(80px,1fr) auto auto auto;grid-template-areas:"head head" "layout layout" "board numbers" "hints hints" "actions actions" "feedback feedback"}
+.np-workspace-screen[data-number-position=left]{grid-template-columns:minmax(176px,224px) minmax(0,1fr);grid-template-areas:"head head" "layout layout" "numbers board" "hints hints" "actions actions" "feedback feedback"}
+.np-workspace-screen[data-number-position=float]{grid-template-rows:auto auto minmax(80px,1fr) auto auto auto;grid-template-areas:"head" "layout" "board" "hints" "actions" "feedback"}
+.np-workspace-screen[data-number-position=float]>.np-number-panel{position:fixed!important;grid-area:auto;z-index:60;width:min(264px,calc(100vw - 8px))!important;max-height:calc(100dvh - 8px);box-shadow:0 8px 28px #102c2b36;align-self:auto}
+.np-workspace-screen[data-number-position=float][data-key-shape=wide]>.np-number-panel{width:min(456px,calc(100vw - 8px))!important}
+.np-workspace-screen[data-number-position=float][data-key-shape=tall]>.np-number-panel{width:min(204px,calc(100vw - 8px))!important}
+.np-workspace-screen[data-number-position=float] .np-shape-label{display:flex!important}
+.np-workspace-screen.np-wide{padding:4px!important;gap:4px!important}
+@media(max-width:600px){.np-workspace-screen{padding:4px!important;gap:4px!important}.np-workspace-tools{justify-content:space-between;gap:3px}.np-workspace-tools button,.np-workspace-tools select{padding:4px 7px!important;min-height:38px!important;font-size:12px!important}.np-direct-zoom button{min-width:34px!important}.np-workspace-tools label{gap:2px;font-size:11px!important}.np-workspace-screen[data-number-position=left],.np-workspace-screen[data-number-position=right]{grid-template-columns:minmax(0,1fr) 160px}.np-workspace-screen[data-number-position=left]{grid-template-columns:160px minmax(0,1fr)}.np-number-panel .number-pad>button{height:44px!important;min-height:44px!important;font-size:16px!important}}
+@media(prefers-reduced-motion:reduce){.np-number-panel{transition:none}}
+@media print{.np-workspace-tools,.np-number-panel{display:none!important}.np-workspace-screen{display:block!important;height:auto!important;overflow:visible!important}.np-workspace-screen>#board-scroll.np-pan-viewport{height:auto!important}}
+/* The accessibility runtime also styles number pads; this scope owns their grid. */
+html body.np-collection-workspace #app .np-number-panel #number-controls .number-pad{grid-template-columns:repeat(var(--np-workspace-columns,5),minmax(0,1fr))!important}
+html:has(body.np-collection-workspace){overflow:hidden!important}
+.np-workspace-screen[data-number-position=bottom]>.np-number-panel,.np-workspace-screen[data-number-position=top]>.np-number-panel{max-height:45dvh}
+
+html body.np-collection-workspace #app{scrollbar-gutter:auto!important}
+
+.np-number-bar{flex-wrap:wrap}.np-number-panel{min-height:0!important}
