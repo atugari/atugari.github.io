@@ -14,7 +14,7 @@
     "nanpure/print/index.html": "3cccfa2367316fe5c78ae37782a70e60589d8d4af6352eec7398a577d9f67cdb",
     "nanpure/shirupure/index.html": "b7730a13c71aaa9a7aea8f255a190d3e1ec6bca9665738a759b72f809fe65362",
     "nanpure/assets/guide.css": "e2ad889ff6ac2eeb3d0df9fa1aac273c604f0ccc7c45e2f9ecc39c525fd3e29a",
-    "sitemap.xml": "2c0ef6c1a99ce2bdbc231e1e657a6b5f2b43417becc5510ef89985cf967fdc10",
+    "sitemap.xml": "bc2acf60ce30507ebc03c2efc396a4d770f68ee9e2283773b5084b0ade1ff944",
     "robots.txt": "2db5cf4197d5e667816a3e61269f0d0d1694992481834e46e2baa07809471583",
     "nanpure/releases/2026.10.27.65/achievements-catalog.js": "0ba29d1d693bd2b567aa507a56a8247a2f746a637f0d705e530018b8f7813279",
     "nanpure/releases/2026.10.27.65/achievements-core.js": "9a06808a6d2a85310fb08f3d4c47f5f82997b6cbd212f6ef2c6928d1b084df79",
@@ -203,3 +203,4 @@
   "cloudRetirementNoticeSha256": "ca409e0c8d230d1a90661ccaed56fc9e0492b0135f9099cd4b4f9070e1915a87",
   "supportSourceSha256": "8982af0266a87b774f64c68ca24385f768d00f3f9b127143dbec37a8af227e6a"
 }
+
