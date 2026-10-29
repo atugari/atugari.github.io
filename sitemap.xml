@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://atugari.github.io/plaza.html</loc><lastmod>2026-10-26</lastmod></url>
+  <url><loc>https://atugari.github.io/plaza.html</loc><lastmod>2026-10-29</lastmod></url>
   <url><loc>https://atugari.github.io/nanpure/</loc><lastmod>2026-10-28</lastmod></url>
   <url><loc>https://atugari.github.io/nanpure/guide/</loc><lastmod>2026-10-28</lastmod></url>
   <url><loc>https://atugari.github.io/nanpure/sudoku-types/</loc><lastmod>2026-10-28</lastmod></url>
@@ -26,4 +26,8 @@
   <url><loc>https://atugari.github.io/nanpure/th/</loc><lastmod>2026-10-28</lastmod></url>
   <url><loc>https://atugari.github.io/nanpure/hi/</loc><lastmod>2026-10-28</lastmod></url>
   <url><loc>https://atugari.github.io/nanpure/ar/</loc><lastmod>2026-10-28</lastmod></url>
+  <url><loc>https://atugari.github.io/puzzles/shirupure/</loc><lastmod>2026-10-29</lastmod></url>
+  <url><loc>https://atugari.github.io/puzzles/wado/</loc><lastmod>2026-10-29</lastmod></url>
+  <url><loc>https://atugari.github.io/puzzles/crossword/</loc><lastmod>2026-10-29</lastmod></url>
+  <url><loc>https://atugari.github.io/puzzles/cross/</loc><lastmod>2026-10-29</lastmod></url>
 </urlset>
