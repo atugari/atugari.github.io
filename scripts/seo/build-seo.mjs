@@ -76,8 +76,8 @@ function decorateHome(repo,base,write) {
   html=html.replace(metadata,searchHead({title:content.title,description:content.description,icon:base+'favicon.svg',graph:[applicationData(content),{'@type':'WebPage','@id':siteURL,url:siteURL,name:content.title,inLanguage:'ja',about:{'@id':siteURL+'#app'}}],alternates:locales}));
   html=html.replace(/<link rel="stylesheet" href="\/nanpure\/assets\/international\.css">\s*/g,'').replace('</head>','<link rel="stylesheet" href="/nanpure/assets/international.css">\n</head>');
   // Keep the stable collection entry when rebuilding the pre-rendered home.
-  html=html.replace(/<link rel="stylesheet" href="\/nanpure\/collection\/entry\.css[^"]*">\s*/g,'').replace(/<script defer src="\/nanpure\/collection\/entry\.js[^"]*"><\/script>\s*/g,'');
-  html=html.replace('</head>',"<link rel=\"stylesheet\" href=\"/nanpure/collection/entry.css?v=20261030\">\n<script defer src=\"/nanpure/collection/entry.js?v=20261030\"></script>\n"+'</head>');
+  html=html.replace(/<link rel="stylesheet" href="\/nanpure\/collection\/entry\.css[^"]*">\s*/g,'').replace(/<script (?:defer )?src="\/nanpure\/collection\/entry\.js[^"]*"><\/script>\s*/g,'');
+  html=html.replace('</head>',"<link rel=\"stylesheet\" href=\"/nanpure/collection/entry.css?v=20261030\">\n<script src=\"/nanpure/collection/entry.js?v=20261030\"></script>\n"+'</head>');
   html=html.replace(/<a\b[^>]*data-collection-entry[^>]*>[\s\S]*?<\/a>/g,'');
   const collectionEntry="<a class=\"np-collection-entry\" data-collection-entry href=\"/nanpure/collection/\"><span class=\"np-collection-copy\"><strong>すぐ遊べる10万問</strong><small>23ルール・生成を待たずに遊ぶ</small></span><span aria-hidden=\"true\">›</span></a>";
   const collectionTarget=/<button\b(?=[^>]*class="[^"]*\bshiru-entry\b)[^>]*>/;
