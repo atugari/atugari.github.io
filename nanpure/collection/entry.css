@@ -1,0 +1,8 @@
+.designed-home .np-collection-entry{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0;min-height:48px;padding:9px 14px;border:1px solid var(--theme-line,#b8cbbd);border-radius:14px;background:var(--theme-surface,#fffdf7);color:var(--theme-ink,#20372c);text-decoration:none;box-sizing:border-box}
+.np-collection-entry:focus-visible{outline:3px solid var(--theme-accent,#3d7659);outline-offset:3px}
+.np-collection-copy{display:flex;flex-direction:column;gap:2px;min-width:0}
+.np-collection-copy strong{font-size:18px;line-height:1.3}
+.np-collection-copy small{font-size:12px;line-height:1.4}
+.np-collection-entry>span:last-child{font-size:24px;flex:none}
+@media print{.np-collection-entry{display:none!important}}
+@media(max-height:650px) and (max-width:600px){.designed-home .np-collection-entry{min-height:40px;padding:7px 12px}.np-collection-copy small{display:none}.np-collection-copy strong{font-size:17px}}

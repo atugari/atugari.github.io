@@ -5,7 +5,7 @@
   "base": "/nanpure/releases/2026.10.27.65/",
   "online": "https://puzzle-api.puzzle-hub-4826.workers.dev",
   "files": {
-    "nanpure/index.html": "51aa2965bf8137b2fe248822dcc3982e5456f05a910a674dce98e48381e2a8ca",
+    "nanpure/index.html": "5285044a7885f9f424f82ef31105627c9bb46e81f4b809b914ccb2ef73a7c825",
     "nanpure.html": "396a2c1d26e062b39ecef7cbb3ab3bd4c3d96dbbccc985752bc1087f1774967b",
     "nanpure/version.json": "65b6a121ba0f871c14a5fd2e015f38ec1214120607c0c457b75c2b12ba190b51",
     "nanpure/releases.json": "194c54131932777ad296133d1be97a2976ca12ddc940a96b2edd31d91d103314",
@@ -14,7 +14,7 @@
     "nanpure/print/index.html": "3cccfa2367316fe5c78ae37782a70e60589d8d4af6352eec7398a577d9f67cdb",
     "nanpure/shirupure/index.html": "b7730a13c71aaa9a7aea8f255a190d3e1ec6bca9665738a759b72f809fe65362",
     "nanpure/assets/guide.css": "e2ad889ff6ac2eeb3d0df9fa1aac273c604f0ccc7c45e2f9ecc39c525fd3e29a",
-    "sitemap.xml": "bc2acf60ce30507ebc03c2efc396a4d770f68ee9e2283773b5084b0ade1ff944",
+    "sitemap.xml": "a9f3d0eab5fdbdd6d70e7e74f4f8558cd684efc8ce975978c495a51153ea6aa9",
     "robots.txt": "2db5cf4197d5e667816a3e61269f0d0d1694992481834e46e2baa07809471583",
     "nanpure/releases/2026.10.27.65/achievements-catalog.js": "0ba29d1d693bd2b567aa507a56a8247a2f746a637f0d705e530018b8f7813279",
     "nanpure/releases/2026.10.27.65/achievements-core.js": "9a06808a6d2a85310fb08f3d4c47f5f82997b6cbd212f6ef2c6928d1b084df79",
@@ -194,7 +194,9 @@
     "nanpure/vi/index.html": "df2c732ce319f15344f3f388264362f77d82cecb238bade231253a85a76df5ca",
     "nanpure/th/index.html": "88e01b524744c62a6527c9637347f073ee06b117ad9175eb69f4b50777d386a4",
     "nanpure/hi/index.html": "e8c090cc3592320d41c88ba4c45c5af3f3e279c8b29379ee5922758af3f5869f",
-    "nanpure/ar/index.html": "7ccb189454eb13dcd1424961771adbd84f0d6bb35fbef959bc4c0948c9f26203"
+    "nanpure/ar/index.html": "7ccb189454eb13dcd1424961771adbd84f0d6bb35fbef959bc4c0948c9f26203",
+    "nanpure/collection/entry.js": "252573dc1664f0fdbed17e87544e930b338bdd0f32d009bf806cecffd9b898f2",
+    "nanpure/collection/entry.css": "63b54534e37cbcd318a6e037a8c877eada038495a44a91444f558c025d0c8fca"
   },
   "announcementVersion": "2026.10.26.58",
   "baseRelease": "2026.10.27.64",
@@ -203,4 +205,3 @@
   "cloudRetirementNoticeSha256": "ca409e0c8d230d1a90661ccaed56fc9e0492b0135f9099cd4b4f9070e1915a87",
   "supportSourceSha256": "8982af0266a87b774f64c68ca24385f768d00f3f9b127143dbec37a8af227e6a"
 }
-
