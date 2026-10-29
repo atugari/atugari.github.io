@@ -1,0 +1,16 @@
+const crypto=require('node:crypto');
+const key=c=>[c.game,c.kind||'',c.n||'',c.level,c.complexity||'',c.multiShape||c.linkedShape||'',c.variant||'',c.area||'',c.rows||'',c.count||'',c.clue??''].join('-');
+function configurations(c){const jobs=c.NPBatch.jobs({kinds:Object.keys(c.NP.KIND),sizes:'all',allShapes:true,allComplexities:true,each:1}).map(j=>{const {count,...cfg}=j;return{...cfg,game:'number',name:c.NP.KIND[j.kind].name,size:c.NP.sizeLabel(j),difficulty:c.NP.levelNames(j.kind,j.n)[j.level-1],detail:j.multiShape?c.NanpureMulti.names[j.multiShape]:j.linkedShape?c.NanpureLinked.names[j.linkedShape]:j.complexity?c.NP.COMPLEXITY[j.complexity-1]:''}});
+for(let size=0;size<3;size++)for(let level=1;level<=3;level++)for(let clue=0;clue<3;clue++)jobs.push({game:'crossword',n:c.Crossword.sizes[size].n,sizeIndex:size,level,clue,name:'クロスワード',size:c.Crossword.sizes[size].n+'×'+c.Crossword.sizes[size].n,difficulty:c.Crossword.levels[level],detail:'ヒント：'+c.Crossword.clueLevels[clue]});
+for(let level=1;level<=10;level++)for(const count of [2,3,4])jobs.push({game:'wado',level,count,name:'和同開珎',size:count+'つの言葉',difficulty:c.NPWado.levels[level-1].name,detail:''});
+for(let level=1;level<=10;level++)jobs.push({game:'tenbin',level,name:'記号の天秤',size:'',difficulty:c.Tenbin.levels[level-1].name,detail:'試作'});
+for(const variant of ['classic','four'])for(const area of variant==='four'?[6]:[6,8,9,10])for(const rows of variant==='four'?[4,6,8]:[c.ShiruGenerator.presets[area].rows])for(let level=1;level<=3;level++)jobs.push({game:'shiru',variant,area,rows,level,name:variant==='four'?'シルプレ・4種':'シルプレ',size:rows+'×6',difficulty:['やさしい','ふつう','むずかしい'][level-1],detail:''});
+return jobs.map(j=>({...j,key:key(j)}));}
+function generate(c,cfg){let p;const seed=crypto.randomBytes(4).readUInt32LE();switch(cfg.game){case 'number':p=c.NPGenerate({...cfg,count:1},()=>{});c.NP.validate(p);if(!c.NPGenerationMatches(p,cfg))throw Error('Difficulty mismatch');break;
+case 'crossword':p=c.Crossword.generate(cfg.sizeIndex,seed,{level:cfg.level,clue:cfg.clue,genre:'all',blackCount:null},{});if(!c.Crossword.valid(p))throw Error('Crossword validation');break;
+case 'wado':for(let i=0;i<100;i++){p=c.wado.generate({level:cfg.level,count:cfg.count,seed:(seed+i)>>>0,seen:[]});c.wado.validate(p);if(c.clues.rich(p))break;p=null;}if(!p)throw Error('No rich clue');break;
+case 'tenbin':p=c.Tenbin.generate(cfg.level-1,seed);if(!c.Tenbin.valid(p)||!c.Tenbin.provenWinner(p.rows,p.weights.length,c.Tenbin.winner(p)))throw Error('Tenbin validation');break;
+case 'shiru':{const g=c.ShiruGenerator.create(cfg.area,seed,cfg.variant,cfg.rows);for(let i=0;i<200;i++){p=g.attempt(cfg.level);if(p&&p.rating?.verified&&p.level===cfg.level)break;p=null;}if(!p)throw Error('No exact shiru');break;}
+}return JSON.parse(JSON.stringify(p));}
+function fingerprint(c,p,cfg){let identity;if(cfg.game==='number')identity=c.NPLanIdentity(p);else if(cfg.game==='wado')identity=c.wado.fingerprint(p);else if(cfg.game==='shiru')identity=p.fingerprint;else if(cfg.game==='crossword')identity=JSON.stringify([p.n,p.grid]);else identity=JSON.stringify([p.level,p.rows]);return crypto.createHash('sha256').update(cfg.game+':'+identity).digest('hex')}
+module.exports={configurations,generate,fingerprint,key};
