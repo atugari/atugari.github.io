@@ -71,11 +71,11 @@ for(const viewport of [{width:1920,height:870},{width:1280,height:800},{width:37
  }
  const unchanged=await page.evaluate(()=>document.querySelector('#game').contentWindow.NanpureAppTest.getCurrent().grid.slice());
  const settings=child.locator('[data-board-settings]'),dialog=child.locator('.np-workspace-dialog');
- await settings.click();await dialog.locator('select[data-digit-size]').selectOption('100');await dialog.locator('select[data-board-align]').selectOption('left');await dialog.getByRole('button',{name:'閉じる',exact:true}).click();
+ await settings.click();await dialog.locator('select[data-digit-size]').selectOption('100');await dialog.locator('select[data-board-align]').selectOption('left');await dialog.locator('form button').click();
  await child.locator('[data-zoom="fit"]').click();
  const originalFont=await child.locator('[data-cell="0"]>span').evaluate(el=>parseFloat(getComputedStyle(el).fontSize));
  for(const align of ['left','center','right']){
-  await settings.click();await dialog.locator('select[data-digit-size]').selectOption('200');await dialog.locator('select[data-board-align]').selectOption(align);await dialog.getByRole('button',{name:'閉じる',exact:true}).click();
+  await settings.click();await dialog.locator('select[data-digit-size]').selectOption('200');await dialog.locator('select[data-board-align]').selectOption(align);await dialog.locator('form button').click();
   await page.waitForFunction(align=>{const d=document.querySelector('#game').contentDocument,b=d.getElementById('board'),v=d.getElementById('board-scroll'),br=b.getBoundingClientRect(),vr=v.getBoundingClientRect(),gap=Math.max(0,v.clientWidth-br.width),fraction={left:0,center:.5,right:1}[align];return b.dataset.panAlign===align&&Math.abs(br.left-vr.left-v.clientLeft-gap*fraction)<3},align);
  }
  const font=await child.locator('[data-cell="0"]>span').evaluate(el=>parseFloat(getComputedStyle(el).fontSize));
@@ -96,7 +96,7 @@ for(const viewport of [{width:1920,height:870},{width:1280,height:800},{width:37
  assert.equal(saved.stored,value,'25x25 durable save before reload: '+JSON.stringify(saved));
  await page.reload();await page.waitForFunction(({index,value})=>document.querySelector('#game')?.contentWindow?.NanpureAppTest?.getCurrent()?.grid[index]===value,{index,value});
  await child.locator('#board[data-digit-size="200"][data-pan-align="right"]').waitFor();
- await settings.click();assert.equal(await dialog.locator('select[data-digit-size]').inputValue(),'200');assert.equal(await dialog.locator('select[data-board-align]').inputValue(),'right');await dialog.getByRole('button',{name:'閉じる',exact:true}).click();
+ await settings.click();assert.equal(await dialog.locator('select[data-digit-size]').inputValue(),'200');assert.equal(await dialog.locator('select[data-board-align]').inputValue(),'right');await dialog.locator('form button').click();
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'25x25 outer width');
  console.log('PASS 25x25 '+viewport.width+'x'+viewport.height+': larger digits, left/center/right, unchanged board, editing, undo and persisted preferences/entry');
 }
