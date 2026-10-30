@@ -63,6 +63,7 @@ jobs:
           npm install --prefix "$RUNNER_TEMP/nanpure-browser" --no-audit --no-fund playwright@1.62.1 linkedom@0.18.13
           npm run build --prefix nanpure-api
           node scripts/check-pareasobi-move.cjs
+          node scripts/check-pareasobi-navigation.cjs
           node --experimental-vm-modules scripts/collection-100k/check-filters.cjs
           node scripts/check-public-release-policy.cjs
           node scripts/check-nanpure-achievements.cjs

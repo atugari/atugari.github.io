@@ -28,7 +28,7 @@ function wire(w){
   if(b.dataset.proto==='back'&&atPrototypeRoot){e.preventDefault();e.stopImmediatePropagation();saveAndGo('/plaza.html');return}
   if(b.tagName==='A'){
    const url=new URL(b.getAttribute('href')||'',w.location.href);
-   if(url.origin===location.origin&&url.pathname===base+'index.html'){
+   if(url.origin===location.origin&&[base+'index.html','/plaza.html'].includes(url.pathname)){
     e.preventDefault();e.stopImmediatePropagation();saveAndGo('/plaza.html');return;
    }
   }
@@ -37,7 +37,7 @@ function wire(w){
    e.preventDefault();e.stopImmediatePropagation();void Promise.resolve(w.appPause?.()).then(()=>{initialized=false;ready()});
   }
  },true);
- function labels(){d.querySelectorAll('[data-action="exit"]').forEach(b=>{if(b.textContent!=='‹ パレあそび')b.textContent='‹ パレあそび'});d.querySelectorAll('a[href]').forEach(a=>{if(new URL(a.getAttribute('href'),w.location.href).pathname!==base+'index.html')return;if(a.textContent!=='‹ パレあそび')a.textContent='‹ パレあそび';if(a.getAttribute('aria-label')!=='パレあそびに戻る')a.setAttribute('aria-label','パレあそびに戻る')});}
+ function labels(){d.querySelectorAll('[data-action="exit"]').forEach(b=>{if(b.textContent!=='‹ パレあそび')b.textContent='‹ パレあそび'});d.querySelectorAll('a[href]').forEach(a=>{const url=new URL(a.getAttribute('href'),w.location.href);if(url.origin!==location.origin||![base+'index.html','/plaza.html'].includes(url.pathname))return;if(a.getAttribute('href')!=='/plaza.html')a.setAttribute('href','/plaza.html');if(a.textContent!=='‹ パレあそび')a.textContent='‹ パレあそび';if(a.getAttribute('aria-label')!=='パレあそびに戻る')a.setAttribute('aria-label','パレあそびに戻る')});}
  let queued=false;new w.MutationObserver(()=>{if(queued)return;queued=true;w.requestAnimationFrame(()=>{queued=false;labels()})}).observe(d.body,{childList:true,subtree:true});labels();
  const oldBack=w.appBack;if(oldBack)w.appBack=()=>{
   const screen=w.ShirupureCourse?.getScreen?.()||w.NPTenbin?.getScreen?.()||w.NPCrossword?.getScreen?.();
