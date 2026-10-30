@@ -77,10 +77,10 @@ for(const viewport of [{width:1920,height:870},{width:1280,height:800},{width:37
  await child.locator('[data-action="undo"]').click();await page.waitForFunction(i=>document.querySelector('#game').contentWindow.NanpureAppTest.getCurrent().grid[i]===0,index);
  await child.locator('.np-number-panel [data-number="'+value+'"]').click();
  await page.waitForFunction(({index,value})=>document.querySelector('#game').contentWindow.NanpureAppTest.getCurrent().grid[index]===value,{index,value});
- // Grid painting precedes the asynchronous IndexedDB commit. Reload only once
- // the normal input handler confirms the save, then inspect the durable record.
- await child.locator('#play-status').filter({hasText:'入力しました。途中の状態は保存されています。'}).waitFor({state:'attached'});
- assert.equal(await page.evaluate(async({index})=>{const w=document.querySelector('#game').contentWindow,p=w.NanpureAppTest.getCurrent();return(await w.NPStorage.get(p.uid)).grid[index]},{index}),value,'25x25 durable save before reload');
+ // Grid painting precedes the asynchronous IndexedDB commit. Await the queued
+ // native write (without requesting a new save), then inspect the durable record.
+ const saved=await page.evaluate(async({index})=>{const w=document.querySelector('#game').contentWindow,p=w.NanpureAppTest.getCurrent();await w.NPStorage.flush();const stored=await w.NPStorage.get(p.uid);return{uid:p.uid,grid:p.grid[index],stored:stored?.grid[index],status:w.document.querySelector('#play-status')?.textContent}},{index});
+ assert.equal(saved.stored,value,'25x25 durable save before reload: '+JSON.stringify(saved));
  await page.reload();await page.waitForFunction(({index,value})=>document.querySelector('#game')?.contentWindow?.NanpureAppTest?.getCurrent()?.grid[index]===value,{index,value});
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'25x25 outer width');
  console.log('PASS 25x25 '+viewport.width+'x'+viewport.height+': usable board space, editing, undo and persisted entry');
