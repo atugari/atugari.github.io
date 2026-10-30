@@ -4,21 +4,26 @@
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
 const {parseHTML}=require(process.argv[3]||'linkedom');
 const source=fs.readFileSync(process.argv[2]||path.join(__dirname,'client-overrides/public/notebook/board-input.js'),'utf8');
-function fixture(){
- const {window:w}=parseHTML('<html><head></head><body><main><div class="board-scroll"><div id="board" data-pan-key="gesture-test"><button data-action="cell" data-cell="0">1</button></div></div></main></body></html>');
+function fixture({width=300,height=300}={}){
+ const {window:w}=parseHTML('<html><head></head><body><dialog id="np-play-settings"><div class="np-board-options"></div></dialog><main><div class="board-scroll"><div id="board" data-pan-key="gesture-test"><button data-action="cell" data-cell="0">1</button></div></div></main></body></html>');
  const board=w.document.getElementById('board'),viewport=board.parentElement,cell=board.firstElementChild;
  const frames=[];let clicks=0;
+ // Linkedom has no browser capture phase. Deliver window capture handlers
+ // before the target so the existing collection touch guard is modeled correctly.
+ const captured=new Map(),add=w.addEventListener.bind(w),remove=w.removeEventListener.bind(w);
+ w.addEventListener=(type,fn,options)=>{if(options===true||options?.capture){if(!captured.has(type))captured.set(type,new Set());captured.get(type).add(fn);}else add(type,fn,options);};
+ w.removeEventListener=(type,fn,options)=>{if(options===true||options?.capture)captured.get(type)?.delete(fn);else remove(type,fn,options);};
  Object.assign(w,{window:w,self:w,requestAnimationFrame:fn=>{frames.push(fn);return frames.length;},MutationObserver:class{observe(){}disconnect(){}},ResizeObserver:class{observe(){}disconnect(){}},scrollBy(){},getComputedStyle:el=>({zoom:'1',overflowY:'visible'})});
- Object.defineProperties(viewport,{clientWidth:{value:300},clientHeight:{value:300},clientLeft:{value:0},clientTop:{value:0}});
+ Object.defineProperties(viewport,{clientWidth:{value:width},clientHeight:{value:height},clientLeft:{value:0},clientTop:{value:0}});
  Object.defineProperties(board,{offsetWidth:{value:1000},offsetHeight:{value:1000}});
- viewport.getBoundingClientRect=()=>({left:0,top:0,right:300,bottom:300,width:300,height:300});
+ viewport.getBoundingClientRect=()=>({left:0,top:0,right:width,bottom:height,width,height});
  viewport.setPointerCapture=()=>{};viewport.releasePointerCapture=()=>{};
  viewport.scrollLeft=200;viewport.scrollTop=200;
  w.document.addEventListener('click',e=>{if(e.target.closest('[data-action="cell"]'))clicks++;});
  vm.runInContext(source,vm.createContext(w),{filename:'board-input.js'});
  // The controller restores its own saved scroll position on attach.
  viewport.scrollLeft=200;viewport.scrollTop=200;
- function pointer(type,id,x,y,target=cell){const e=new w.Event(type,{bubbles:true,cancelable:true});Object.assign(e,{pointerId:id,pointerType:'touch',isPrimary:id===1,button:0,clientX:x,clientY:y});target.dispatchEvent(e);return e;}
+ function pointer(type,id,x,y,target=cell){const e=new w.Event(type,{bubbles:true,cancelable:true});Object.assign(e,{pointerId:id,pointerType:'touch',isPrimary:id===1,button:0,clientX:x,clientY:y});for(const fn of captured.get(type)||[])fn(e);target.dispatchEvent(e);return e;}
  function click(detail=1){const e=new w.Event('click',{bubbles:true,cancelable:true});Object.assign(e,{detail});cell.dispatchEvent(e);return e;}
  return{w,board,viewport,cell,pointer,click,clicks:()=>clicks,scale:()=>Number(viewport.dataset.scale)};
 }
@@ -71,5 +76,18 @@ check('ordinary resize refresh retains manual zoom and same-puzzle reattachment 
  f.pointer('pointerup',1,80,100);f.pointer('pointerup',2,230,100);f.w.NPBoardInput.refresh(f.board);near(f.scale(),scale,'refresh');
  const replacement=f.board.cloneNode(true);delete replacement.dataset.panReady;replacement.classList.remove('np-pan-board');replacement.style.transform='';
  Object.defineProperties(replacement,{offsetWidth:{value:1000},offsetHeight:{value:1000}});f.viewport.replaceChildren(replacement);f.w.NPBoardInput.scan();near(f.scale(),scale,'same-puzzle reattachment');
+});
+check('fit boards align in free space and centered zoom keeps the same board midpoint',()=>{
+ const f=fixture({width:1000,height:300}),api=f.w.NPBoardInput;
+ api.fit(f.board);
+ for(const [align,left]of [['left',0],['center',350],['right',700]]){api.align(f.board,align,true);near(parseFloat(f.board.parentElement.style.marginLeft),left,align+' placement');}
+ api.align(f.board,'center',true);
+ for(let i=0;i<6;i++)f.w.document.querySelectorAll('.np-pan-tools button')[2].click();
+ near(f.viewport.scrollLeft,(1000*f.scale()-1000)/2,'center remains anchored when zoom crosses viewport width');
+ assert.equal(f.clicks(),0,'Display operations never edit a cell');
+});
+check('alignment reveals oversized boards without leaving an inaccessible margin',()=>{
+ const f=fixture(),api=f.w.NPBoardInput;
+ for(const [align,left]of [['right',700],['center',350],['left',0]]){api.align(f.board,align,true);near(f.viewport.scrollLeft,left,align+' oversized view');near(parseFloat(f.board.parentElement.style.marginLeft),0,'No negative or hidden margin');}
 });
 console.log(JSON.stringify({passed:checks.length,checks},null,2));

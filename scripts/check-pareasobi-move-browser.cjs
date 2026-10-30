@@ -69,6 +69,19 @@ for(const viewport of [{width:1920,height:870},{width:1280,height:800},{width:37
  if(desktop){
   await page.waitForFunction(()=>{const w=document.querySelector('#game').contentWindow,b=w.document.getElementById('board-scroll').getBoundingClientRect(),a=w.document.querySelector('.play-dock').getBoundingClientRect();return b.top<60&&b.height>w.innerHeight*.85&&a.bottom<=b.top});
  }
+ const unchanged=await page.evaluate(()=>document.querySelector('#game').contentWindow.NanpureAppTest.getCurrent().grid.slice());
+ const settings=child.locator('[data-board-settings]'),dialog=child.locator('.np-workspace-dialog');
+ await settings.click();await dialog.locator('select[data-digit-size]').selectOption('100');await dialog.locator('select[data-board-align]').selectOption('left');await dialog.locator('form button').click();
+ await child.locator('[data-zoom="fit"]').click();
+ const originalFont=await child.locator('[data-cell="0"]>span').evaluate(el=>parseFloat(getComputedStyle(el).fontSize));
+ for(const align of ['left','center','right']){
+  await settings.click();await dialog.locator('select[data-digit-size]').selectOption('200');await dialog.locator('select[data-board-align]').selectOption(align);await dialog.locator('form button').click();
+  await page.waitForFunction(align=>{const d=document.querySelector('#game').contentDocument,b=d.getElementById('board'),v=d.getElementById('board-scroll'),br=b.getBoundingClientRect(),vr=v.getBoundingClientRect(),gap=Math.max(0,v.clientWidth-br.width),fraction={left:0,center:.5,right:1}[align];return b.dataset.panAlign===align&&Math.abs(br.left-vr.left-v.clientLeft-gap*fraction)<3},align);
+ }
+ const font=await child.locator('[data-cell="0"]>span').evaluate(el=>parseFloat(getComputedStyle(el).fontSize));
+ if(desktop)assert(font>originalFont,'25x25 digits visibly increase');if(viewport.width===1920)assert(font>originalFont*1.5,'Large desktop digits visibly increase');
+ const overflowing=await child.locator('#board .np-workspace-digit').evaluateAll(nodes=>nodes.filter(el=>el.getBoundingClientRect().width>el.parentElement.getBoundingClientRect().width+1).map(el=>({text:el.textContent,font:getComputedStyle(el).fontSize,width:el.getBoundingClientRect().width,cell:el.parentElement.getBoundingClientRect().width})));assert.deepEqual(overflowing,[],'Main digits fit their cells: '+JSON.stringify(overflowing.slice(0,3)));
+ assert.deepEqual(await page.evaluate(()=>document.querySelector('#game').contentWindow.NanpureAppTest.getCurrent().grid),unchanged,'Display choices preserve all entered numbers');
  const {index,value}=await page.evaluate(()=>{const p=document.querySelector('#game').contentWindow.NanpureAppTest.getCurrent(),index=p.puzzle.findIndex(v=>!v);return{index,value:p.solution[index]}});
  await child.locator('[data-action="cell"][data-cell="'+index+'"]').click();await child.locator('[data-action="erase"]').click();
  await page.waitForFunction(i=>document.querySelector('#game').contentWindow.NanpureAppTest.getCurrent().grid[i]===0,index);
@@ -82,8 +95,10 @@ for(const viewport of [{width:1920,height:870},{width:1280,height:800},{width:37
  const saved=await page.evaluate(async({index})=>{const w=document.querySelector('#game').contentWindow,p=w.NanpureAppTest.getCurrent();await w.NPStorage.flush();const stored=await w.NPStorage.get(p.uid);return{uid:p.uid,grid:p.grid[index],stored:stored?.grid[index],status:w.document.querySelector('#play-status')?.textContent}},{index});
  assert.equal(saved.stored,value,'25x25 durable save before reload: '+JSON.stringify(saved));
  await page.reload();await page.waitForFunction(({index,value})=>document.querySelector('#game')?.contentWindow?.NanpureAppTest?.getCurrent()?.grid[index]===value,{index,value});
+ await child.locator('#board[data-digit-size="200"][data-pan-align="right"]').waitFor();
+ await settings.click();assert.equal(await dialog.locator('select[data-digit-size]').inputValue(),'200');assert.equal(await dialog.locator('select[data-board-align]').inputValue(),'right');await dialog.locator('form button').click();
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'25x25 outer width');
- console.log('PASS 25x25 '+viewport.width+'x'+viewport.height+': usable board space, editing, undo and persisted entry');
+ console.log('PASS 25x25 '+viewport.width+'x'+viewport.height+': larger digits, left/center/right, unchanged board, editing, undo and persisted preferences/entry');
 }
 assert.deepEqual(errors,[]);await context.close();console.log('PASS public relocation: nine tools start, hub returns, Sudoku-only shell, audio controls, scoped original collection ids, reload/resume and legacy bookmarks.');
 }finally{await browser.close()}})().catch(e=>{console.error(e);process.exitCode=1});

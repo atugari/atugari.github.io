@@ -2,9 +2,10 @@
 (function(w){
  'use strict';
  const storeKey='collection-workspace-v1',positions=['bottom','top','left','right','float'];
- const prefs={position:'bottom',shape:'grid',wide:false,x:null,y:null};
- try{const saved=JSON.parse(localStorage.getItem(storeKey)||'{}');if(positions.includes(saved.position))prefs.position=saved.position;if(['grid','wide','tall'].includes(saved.shape))prefs.shape=saved.shape;prefs.wide=saved.wide===true;for(const key of ['x','y'])if(Number.isFinite(saved[key]))prefs[key]=Math.max(0,Math.min(1,saved[key]));}catch{}
- let screen=null,board=null,viewport=null,panel=null,tools=null,drag=null,scheduled=false,collapsed=false,beforeWide='bottom';
+ const digitSizes=[100,125,150,175,200],alignments=['left','center','right'];
+ const prefs={position:'bottom',shape:'grid',wide:false,x:null,y:null,digitSize:100,align:'left'};
+ try{const saved=JSON.parse(localStorage.getItem(storeKey)||'{}');if(positions.includes(saved.position))prefs.position=saved.position;if(['grid','wide','tall'].includes(saved.shape))prefs.shape=saved.shape;prefs.wide=saved.wide===true;if(digitSizes.includes(saved.digitSize))prefs.digitSize=saved.digitSize;if(alignments.includes(saved.align))prefs.align=saved.align;for(const key of ['x','y'])if(Number.isFinite(saved[key]))prefs[key]=Math.max(0,Math.min(1,saved[key]));}catch{}
+ let screen=null,board=null,viewport=null,panel=null,tools=null,dialog=null,boardObserver=null,drag=null,scheduled=false,collapsed=false,beforeWide='bottom';
  const px=n=>(Math.round(n*100)/100)+'px';
  function save(){try{localStorage.setItem(storeKey,JSON.stringify(prefs));}catch{}}
  function parentFocus(){try{if(parent!==w)parent.document.body.classList.toggle('collection-focus',prefs.wide&&!!screen);}catch{}}
@@ -23,15 +24,53 @@
   const columns=Math.max(1,Math.min(n,desired,Math.floor((available+4)/48)));
   pad.style.setProperty('--np-workspace-columns',String(columns));
  }
- function refresh(){
+ function refresh(revealBoard=false){
   if(!screen||!screen.isConnected)return;
-  sizeKeys();clampPanel();w.NPBoardInput?.refresh(board);
+  sizeKeys();sizeDigits();clampPanel();w.NPBoardInput?.align(board,prefs.align,revealBoard);
+ }
+ function sizeDigits(){
+  if(!board)return;
+  board.dataset.digitSize=String(prefs.digitSize);
+  board.style.setProperty('--np-workspace-digit-scale',String(prefs.digitSize/100));
+  const digitsInCells=Array.from(board.querySelectorAll('.cell>span:not(.notes,.hundred-notes,.cage-label,.cage-border)')).filter(text=>!text.children.length&&/^\d+$/.test(text.textContent.trim()));
+  for(const text of digitsInCells)text.classList.add('np-workspace-digit');
+  const cell=board.querySelector('.cell');
+  if(cell){
+   const columns=getComputedStyle(board).gridTemplateColumns.trim().split(/\s+/).length;
+   const digits=String(board.classList.contains('hundred-board')?100:columns).length;
+   const limit=Math.min(cell.clientHeight*(board.querySelector('.cage-label') ? .7 : .88),cell.clientWidth/(digits*.64));
+   board.style.setProperty('--np-workspace-digit-limit',px(Math.max(1,limit)));
+   if(prefs.digitSize!==100){
+    // Font families and uneven cell borders have different glyph widths. Check
+    // the rendered numeric spans as well, rather than trusting a character ratio.
+    let fitted=limit;
+    for(const text of digitsInCells){
+     const rect=text.getBoundingClientRect(),box=text.parentElement.getBoundingClientRect(),available=Math.max(1,box.width-Math.min(2,box.width*.04));
+     if(rect.width>available)fitted=Math.min(fitted,parseFloat(getComputedStyle(text).fontSize)*available/rect.width);
+    }
+    if(fitted<limit)board.style.setProperty('--np-workspace-digit-limit',px(Math.max(1,fitted)));
+   }
+  }
+  // Linked boards draw their main digits in SVG; candidate notes and clues keep
+  // their own sizes. SVG's cell coordinates are 40 units wide.
+  for(const text of board.querySelectorAll('text[data-linked-digit],text[data-multi-digit]')){
+   if(prefs.digitSize===100){text.style.removeProperty('--np-workspace-linked-font');continue;}
+   const original=Number(text.getAttribute('font-size'))||22,digits=text.textContent.trim().length||1;
+   text.style.setProperty('--np-workspace-linked-font',px(Math.max(original,Math.min(original*prefs.digitSize/100,34,40/(digits*.64)))));
+  }
+ }
+ function makeDialog(){
+  dialog?.remove();dialog=document.createElement('dialog');dialog.className='np-workspace-dialog';dialog.setAttribute('aria-label','盤面の文字と位置');
+  dialog.innerHTML='<h2>盤面の文字と位置</h2><label>文字サイズ<select data-digit-size aria-label="盤面の文字サイズ">'+digitSizes.map(n=>'<option value="'+n+'">'+n+'%'+(n===100?'（標準）':'')+'</option>').join('')+'</select></label><p>数字がマスに収まる範囲で大きくします。</p><label>盤面の位置<select data-board-align aria-label="盤面の位置"><option value="left">左</option><option value="center">中央</option><option value="right">右</option></select></label><form method="dialog"><button type="submit">閉じる</button></form>';
+  dialog.querySelector('[data-digit-size]').onchange=e=>{prefs.digitSize=Number(e.target.value);refresh();save();};
+  dialog.querySelector('[data-board-align]').onchange=e=>{prefs.align=e.target.value;refresh(true);save();};
+  document.body.append(dialog);
  }
  function setPosition(value){
   if(!positions.includes(value))return;
   finishDrag();prefs.position=value;collapsed=false;apply();save();
  }
- function apply(){
+ function apply(revealBoard=false){
   if(!screen)return;
   screen.dataset.numberPosition=prefs.position;screen.dataset.keyShape=prefs.shape;
   screen.classList.toggle('np-wide',prefs.wide);panel.classList.toggle('np-keys-collapsed',collapsed);
@@ -39,7 +78,7 @@
   const wide=tools.querySelector('[data-wide]');wide.textContent=prefs.wide?'通常表示':'盤面を広く';wide.setAttribute('aria-pressed',String(prefs.wide));
   panel.querySelector('[data-shape]').value=prefs.shape;
   const collapse=panel.querySelector('[data-collapse]');collapse.textContent=collapsed?'数字を表示':'たたむ';collapse.setAttribute('aria-expanded',String(!collapsed));
-  parentFocus();refresh();
+  parentFocus();refresh(revealBoard);
  }
  function finishDrag(){
   if(!drag)return;
@@ -57,18 +96,19 @@
  function mount(){
   scheduled=false;
   const current=document.getElementById('board'),nextViewport=current?.closest('#board-scroll'),nextScreen=current?.closest('.screen');
-  if(!current||!nextViewport||!nextScreen){screen=null;board=null;viewport=null;panel=null;tools=null;document.body.classList.remove('np-collection-workspace');parentFocus();return;}
-  if(current===board&&screen?.isConnected){sizeKeys();return;}
+  if(!current||!nextViewport||!nextScreen){boardObserver?.disconnect();dialog?.remove();dialog=null;screen=null;board=null;viewport=null;panel=null;tools=null;document.body.classList.remove('np-collection-workspace');parentFocus();return;}
+  if(current===board&&screen?.isConnected){sizeKeys();sizeDigits();return;}
   finishDrag();board=current;viewport=nextViewport;screen=nextScreen;
   const numbers=screen.querySelector('#number-controls');if(!numbers)return;
   document.body.classList.add('np-collection-workspace');screen.classList.add('np-workspace-screen');collapsed=false;
   tools=document.createElement('div');tools.className='np-workspace-tools';tools.setAttribute('aria-label','盤面と数字の配置');
-  tools.innerHTML='<button type="button" data-wide aria-pressed="false">盤面を広く</button><div class="np-direct-zoom" role="group" aria-label="盤面の拡大"><button type="button" data-zoom="out" aria-label="盤面を縮小する">−</button><button type="button" data-zoom="fit">全体</button><button type="button" data-zoom="in" aria-label="盤面を拡大する">＋</button></div><label>数字<select data-position aria-label="数字の位置"><option value="bottom">下</option><option value="top">上</option><option value="left">左</option><option value="right">右</option><option value="float">浮かせる</option></select></label>';
+  tools.innerHTML='<button type="button" data-wide aria-pressed="false">盤面を広く</button><div class="np-direct-zoom" role="group" aria-label="盤面の拡大"><button type="button" data-zoom="out" aria-label="盤面を縮小する">−</button><button type="button" data-zoom="fit">全体</button><button type="button" data-zoom="in" aria-label="盤面を拡大する">＋</button></div><button type="button" data-board-settings>文字・位置</button><label>数字<select data-position aria-label="数字の位置"><option value="bottom">下</option><option value="top">上</option><option value="left">左</option><option value="right">右</option><option value="float">浮かせる</option></select></label>';
   viewport.before(tools);
   panel=document.createElement('section');panel.className='np-number-panel';panel.setAttribute('aria-label','移動できる数字ボタン');
   panel.innerHTML='<div class="np-number-bar"><button type="button" class="np-number-handle" aria-label="数字ボタンを移動する。ドラッグまたは矢印キーで移動">⠿ 数字</button><label class="np-shape-label"><span>形</span><select data-shape aria-label="数字ボタンの形"><option value="grid">格子</option><option value="wide">横長</option><option value="tall">縦長</option></select></label><button type="button" data-collapse aria-expanded="true">たたむ</button></div>';
   panel.append(numbers);screen.append(panel);
   tools.querySelector('[data-position]').onchange=e=>setPosition(e.target.value);
+  makeDialog();tools.querySelector('[data-board-settings]').onclick=()=>{dialog.querySelector('[data-digit-size]').value=String(prefs.digitSize);dialog.querySelector('[data-board-align]').value=prefs.align;dialog.showModal();};
   tools.querySelector('[data-wide]').onclick=()=>{prefs.wide=!prefs.wide;if(prefs.wide){beforeWide=prefs.position;if(prefs.position==='bottom'||prefs.position==='top')prefs.position='float';}else if(prefs.position==='float')prefs.position=beforeWide;apply();save();};
   tools.querySelectorAll('[data-zoom]').forEach(button=>button.onclick=()=>{if(button.dataset.zoom==='fit')w.NPBoardInput?.fit(board);else{const key=board.dataset.panKey;const controls=Array.from(document.querySelectorAll('.np-pan-tools')).find(el=>el.dataset.boardKey===key)||document.querySelector('.np-pan-tools');controls?.querySelectorAll('button')[button.dataset.zoom==='in'?2:0]?.click();}refresh();});
   panel.querySelector('[data-shape]').onchange=e=>{prefs.shape=e.target.value;apply();save();};
@@ -88,11 +128,12 @@
    if(!delta&&e.key!=='Home')return;e.preventDefault();if(prefs.position!=='float')setPosition('float');
    if(e.key==='Home'){prefs.x=1;prefs.y=.85;clampPanel();}else{const rect=panel.getBoundingClientRect();movePanel(rect.left+delta[0],rect.top+delta[1]);}save();
   });
-  apply();
+  boardObserver?.disconnect();if(w.ResizeObserver){boardObserver=new ResizeObserver(sizeDigits);boardObserver.observe(board);}
+  apply(true);
  }
  function schedule(){if(!scheduled){scheduled=true;requestAnimationFrame(mount);}}
  new MutationObserver(records=>{if(records.some(r=>r.addedNodes.length||r.removedNodes.length))schedule();}).observe(document.getElementById('app'),{childList:true,subtree:true});
- for(const type of ['resize','orientationchange'])w.addEventListener(type,()=>{finishDrag();requestAnimationFrame(refresh);});
+ for(const type of ['resize','orientationchange'])w.addEventListener(type,()=>{finishDrag();requestAnimationFrame(()=>refresh());});
  w.addEventListener('blur',finishDrag);w.addEventListener('pagehide',finishDrag);document.addEventListener('visibilitychange',()=>{if(document.hidden)finishDrag();});
  w.NPCollectionWorkspace={refresh};mount();
 })(window);

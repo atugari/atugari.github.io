@@ -210,7 +210,7 @@
     "puzzles/shirupure/index.html": "da84b847b5c35a10bdeb67fc3d91f915b089e82c9f70f1e23a207918f02384f8",
     "puzzles/workshop/index.html": "8d487812bb830759cac5279d00c133168329068664d95a459d380c54f072e36e",
     "puzzles/cross/index.html": "7a4b370ccf089399b184bb581c0eb13b03d8f0ff3372025c22b3b2f8e22f1ed7",
-    "puzzles/cross/stock/index.html": "9c836d29041aa02bc6f7a3d6e510df0d51ef0ec63f213c28d71915641dffac14"
+    "puzzles/cross/stock/index.html": "c77ab62a0fe8b82b93ee7460b164f45cf18433c5fe3bcc41eff8dbbb9d5fbf2d"
   },
   "announcementVersion": "2026.10.26.58",
   "baseRelease": "2026.10.27.64",
@@ -223,9 +223,14 @@
     "sources": {
       "puzzles/entry.js": "3a5aeaf131747eac27aab0a8ec8f414e1368f6a15a938d786dd31cd34dc18303",
       "puzzles/navigation.js": "583c9a847d4f366937f9c771eb01c6caf169449818c45785dcd900228be66a22",
-      "nanpure/collection/app.js": "bc25a04062ad48081e9f3f870d482610808b4be5eaccbde5b9b5128527d60309",
-      "nanpure/collection/workspace.css": "80d18ae29b124bf81ec34547fa8a48ba4d2a19ca44ecfff200d0b14b7fa31fcd",
+      "nanpure/collection/app.js": "47fe9bd5c440ff8e35c5193d466b19d806b202bdfd1f6cf5f92beb7b9c52052d",
+      "nanpure/collection/workspace.css": "f40b59a88fe34c37a7f1e597f47aa76b23e7b5708222dcbfbb69323beb6b8d7e",
+      "nanpure/collection/workspace.js": "794736a2fe5c770b9a126c8a5dc5845f58f371c5581d2150022710c77ccff759",
+      "nanpure/collection/board-input.js": "4ee7ea511130646993a184c6c9b19c1b2ca6f796088f5777aee1f50b4f41fb95",
+      "nanpure/collection/player.html": "ad64abacfefaaa0db3b14f3172aaba22bc8542028167516b83bab352cc9b2b03",
+      "scripts/prepare-pareasobi-move.mjs": "7b32581bdfeba91ec03d934e1907edffff5f1d64478f58846ada7e5281c5aeac",
       "scripts/export-nanpure.mjs": "6e0c739a227199a329f1806840a8aee3d7150882fbc4cdf7987664d91792baad",
+      "scripts/client-overrides/public/notebook/board-input.js": "4ee7ea511130646993a184c6c9b19c1b2ca6f796088f5777aee1f50b4f41fb95",
       "scripts/client-overrides/app/game.tsx": "581397c06f3a10073ca4cf1956f48249c3a00c9c037739f3934ae371c7c1e908",
       "scripts/client-overrides/app/site-intro.tsx": "f34000e273a92612d7629fd0a413f6004fdc1053844497b9652a384ba2bc87d0"
     }
