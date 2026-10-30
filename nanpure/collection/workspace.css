@@ -10,6 +10,17 @@ body.np-collection-workspace{margin:0!important;overflow:hidden!important;height
 .np-workspace-tools [data-wide][aria-pressed=true]{background:#285849!important;color:#fff!important}
 .np-workspace-tools label{display:flex!important;align-items:center;gap:6px;font-size:12px!important;margin:0!important}
 .np-direct-zoom{display:flex;gap:3px}.np-direct-zoom button{min-width:40px!important}
+@media screen{
+ #board[data-digit-size]:not([data-digit-size="100"]) :is(text[data-linked-digit],text[data-multi-digit]){font-size:var(--np-workspace-linked-font)!important}
+ #board[data-digit-size]:not([data-digit-size="100"]) .cell>span:not(.notes,.hundred-notes,.cage-label,.cage-border){font-size:max(1em,min(calc(1em * var(--np-workspace-digit-scale)),var(--np-workspace-digit-limit)))!important;line-height:1!important;white-space:nowrap}
+}
+.np-workspace-dialog{box-sizing:border-box;width:min(360px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto;border:1px solid #b6c7bb;border-radius:14px;padding:20px;background:#f7f8f1;color:#214c40;box-shadow:0 12px 40px #102c2b40}
+.np-workspace-dialog::backdrop{background:#102c2b70}
+.np-workspace-dialog h2{font-size:19px;margin:0 0 18px}
+.np-workspace-dialog label{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:14px 0;font-size:15px}
+.np-workspace-dialog select,.np-workspace-dialog button{font:inherit;min-height:44px;border:1px solid #b6c7bb;border-radius:8px;padding:7px 12px;color:#285849;background:#fff}
+.np-workspace-dialog p{font-size:13px;line-height:1.6;margin:0 0 20px}
+.np-workspace-dialog form{display:flex;justify-content:flex-end;margin:20px 0 0}
 .np-workspace-screen>#board-scroll.np-pan-viewport{grid-area:board!important;align-self:stretch!important;justify-self:stretch!important;min-width:0!important;min-height:0!important;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;margin:0!important;box-shadow:0 0 0 1px #8b988c;border-radius:2px;overscroll-behavior:contain}
 .np-workspace-screen>.play-dock{grid-area:actions;position:static!important;min-width:0!important;width:100%!important;max-width:560px!important;justify-self:center;padding:0!important;margin:0!important;box-shadow:none!important;border:0!important}
 .np-workspace-screen>.play-dock>.tools{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px!important;margin:0!important}
@@ -36,7 +47,7 @@ body.np-collection-workspace{margin:0!important;overflow:hidden!important;height
 .np-workspace-screen.np-wide{padding:4px!important;gap:4px!important}
 @media(max-width:600px){.np-workspace-screen{padding:4px!important;gap:4px!important}.np-workspace-tools{justify-content:space-between;gap:3px}.np-workspace-tools button,.np-workspace-tools select{padding:4px 7px!important;min-height:38px!important;font-size:12px!important}.np-direct-zoom button{min-width:34px!important}.np-workspace-tools label{gap:2px;font-size:11px!important}.np-workspace-screen[data-number-position=left],.np-workspace-screen[data-number-position=right]{grid-template-columns:minmax(0,1fr) 160px}.np-workspace-screen[data-number-position=left]{grid-template-columns:160px minmax(0,1fr)}.np-number-panel .number-pad>button{height:44px!important;min-height:44px!important;font-size:16px!important}}
 @media(prefers-reduced-motion:reduce){.np-number-panel{transition:none}}
-@media print{.np-workspace-tools,.np-number-panel{display:none!important}.np-workspace-screen{display:block!important;height:auto!important;overflow:visible!important}.np-workspace-screen>#board-scroll.np-pan-viewport{height:auto!important}}
+@media print{.np-workspace-dialog,.np-workspace-tools,.np-number-panel{display:none!important}.np-workspace-screen{display:block!important;height:auto!important;overflow:visible!important}.np-workspace-screen>#board-scroll.np-pan-viewport{height:auto!important}}
 /* The accessibility runtime also styles number pads; this scope owns their grid. */
 html body.np-collection-workspace #app .np-number-panel #number-controls .number-pad{grid-template-columns:repeat(var(--np-workspace-columns,5),minmax(0,1fr))!important}
 html:has(body.np-collection-workspace){overflow:hidden!important}
