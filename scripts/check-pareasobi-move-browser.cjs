@@ -58,5 +58,28 @@ for(const viewport of [{width:1280,height:800},{width:375,height:812},{width:812
  await page.locator('#library header a').click();await page.locator('.game-list').waitFor();
  console.log('PASS viewport '+viewport.width+'x'+viewport.height+': eight starts/returns and actual saved-grid reload');
 }
+// The screenshot's large board must gain usable height, with real editing and
+// reload still working. Smaller layouts retain their usable docked keypad.
+for(const viewport of [{width:1920,height:870},{width:1280,height:800},{width:375,height:812},{width:812,height:375}]){
+ await page.setViewportSize(viewport);await page.goto(origin+'/nanpure/collection/?p=P-060782');
+ await page.waitForFunction(()=>document.querySelector('#game')?.contentWindow?.NanpureAppTest?.getCurrent()?.n===25);
+ const child=page.frameLocator('#game'),wide=child.locator('[data-wide]'),desktop=viewport.width>=1000;
+ await wide.waitFor();if((await wide.getAttribute('aria-pressed')==='true')!==desktop)await wide.click();
+ await page.waitForFunction(wide=>document.querySelector('#game').contentDocument.querySelector('[data-wide]')?.getAttribute('aria-pressed')===String(wide),desktop);
+ if(desktop){
+  await page.waitForFunction(()=>{const w=document.querySelector('#game').contentWindow,b=w.document.getElementById('board-scroll').getBoundingClientRect(),a=w.document.querySelector('.play-dock').getBoundingClientRect();return b.top<60&&b.height>w.innerHeight*.85&&a.bottom<=b.top});
+ }
+ const {index,value}=await page.evaluate(()=>{const p=document.querySelector('#game').contentWindow.NanpureAppTest.getCurrent(),index=p.puzzle.findIndex(v=>!v);return{index,value:p.solution[index]}});
+ await child.locator('[data-action="cell"][data-cell="'+index+'"]').click();await child.locator('[data-action="erase"]').click();
+ await page.waitForFunction(i=>document.querySelector('#game').contentWindow.NanpureAppTest.getCurrent().grid[i]===0,index);
+ await child.locator('.np-number-panel [data-number="'+value+'"]').click();
+ await page.waitForFunction(({index,value})=>document.querySelector('#game').contentWindow.NanpureAppTest.getCurrent().grid[index]===value,{index,value});
+ await child.locator('[data-action="undo"]').click();await page.waitForFunction(i=>document.querySelector('#game').contentWindow.NanpureAppTest.getCurrent().grid[i]===0,index);
+ await child.locator('.np-number-panel [data-number="'+value+'"]').click();
+ await page.waitForFunction(({index,value})=>document.querySelector('#game').contentWindow.NanpureAppTest.getCurrent().grid[index]===value,{index,value});
+ await page.reload();await page.waitForFunction(({index,value})=>document.querySelector('#game')?.contentWindow?.NanpureAppTest?.getCurrent()?.grid[index]===value,{index,value});
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'25x25 outer width');
+ console.log('PASS 25x25 '+viewport.width+'x'+viewport.height+': usable board space, editing, undo and persisted entry');
+}
 assert.deepEqual(errors,[]);await context.close();console.log('PASS public relocation: nine tools start, hub returns, Sudoku-only shell, audio controls, scoped original collection ids, reload/resume and legacy bookmarks.');
 }finally{await browser.close()}})().catch(e=>{console.error(e);process.exitCode=1});
