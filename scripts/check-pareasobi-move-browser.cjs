@@ -47,7 +47,8 @@ for(const viewport of [{width:1280,height:800},{width:375,height:812},{width:812
  await page.waitForFunction(()=>document.querySelector('#game')?.contentWindow?.NanpureAppTest?.getCurrent()?.kind==='cross');
  const value=await page.evaluate(()=>document.querySelector('#game').contentWindow.NanpureAppTest.getCurrent().solution[0]);
  await page.frameLocator('#game').locator('[data-action="cell"][data-cell="0"]').click();
- await page.frameLocator('#game').getByRole('button',{name:String(value),exact:true}).click();
+ await page.waitForFunction(v=>{const w=document.querySelector('#game').contentWindow,b=w.document.querySelector('.np-number-panel [data-number="'+v+'"]');if(!b)return false;const r=b.getBoundingClientRect(),hit=w.document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return r.y>=0&&r.bottom<=w.innerHeight&&!!hit&&b.contains(hit)},value);
+ await page.frameLocator('#game').locator('.np-number-panel [data-number="'+value+'"]').click();
  await page.waitForFunction(v=>document.querySelector('#game').contentWindow.NanpureAppTest.getCurrent().grid[0]===v,value);
  const before=await page.evaluate(()=>{const p=document.querySelector('#game').contentWindow.NanpureAppTest.getCurrent();return{uid:p.uid,grid:p.grid.slice()}});
  await page.reload();await page.waitForFunction(()=>document.querySelector('#game')?.contentWindow?.NanpureAppTest?.getCurrent()?.kind==='cross');

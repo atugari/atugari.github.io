@@ -123,8 +123,10 @@ try {
  fs.writeFileSync(path.join(repo,'nanpure/releases.json'),JSON.stringify({version,announcementVersion:announcementVersion(allUpdates),releases:publicUpdates},null,2)+'\n');
  const audioPackage=spawnSync('python3',[path.join(repo,'scripts/pack-nanpure-audio.py'),version],{stdio:'inherit'});
  if(audioPackage.error||audioPackage.status!==0)throw Error('Audio packaging failed: '+(audioPackage.error?.message||audioPackage.status));
- const files=[path.join(repo,'nanpure/index.html'),path.join(repo,'nanpure.html'),path.join(repo,'nanpure/version.json'),path.join(repo,'nanpure/releases.json'),...searchFiles,...walk(output)];
+ const files=[path.join(repo,'nanpure/index.html'),path.join(repo,'nanpure.html'),path.join(repo,'nanpure/version.json'),path.join(repo,'nanpure/releases.json'),path.join(repo,'nanpure/collection/entry.js'),...walk(path.join(repo,'puzzles')),...searchFiles,...walk(output)];
  const manifest={version,sourceCommit:revision,clientOverridesSha256:overrideHash,base,online,files:Object.fromEntries(files.map(file=>[path.relative(repo,file),crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex')]))};
  fs.writeFileSync(path.join(repo,'nanpure/release-manifest.json'),JSON.stringify(manifest,null,2)+'\n');
+ const navigation=spawnSync(process.execPath,[path.join(repo,'scripts/prepare-pareasobi-move.mjs')],{stdio:'inherit'});
+ if(navigation.error||navigation.status!==0)throw Error('Pareasobi navigation preparation failed: '+(navigation.error?.message||navigation.status));
  console.log('Exported',version,files.length,'files from',revision);
 }finally{fs.rmSync(scratch,{recursive:true,force:true})}

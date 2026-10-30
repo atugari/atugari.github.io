@@ -210,7 +210,7 @@
     "puzzles/shirupure/index.html": "da84b847b5c35a10bdeb67fc3d91f915b089e82c9f70f1e23a207918f02384f8",
     "puzzles/workshop/index.html": "8d487812bb830759cac5279d00c133168329068664d95a459d380c54f072e36e",
     "puzzles/cross/index.html": "7a4b370ccf089399b184bb581c0eb13b03d8f0ff3372025c22b3b2f8e22f1ed7",
-    "puzzles/cross/stock/index.html": "6ebede073caf2d4204c85e3ea4460b7138ffeb0aa7b7322c84501c2e99ad5995"
+    "puzzles/cross/stock/index.html": "9999ced90d0da053cee76248e3f64178394a0fbcc716968a7b168e506b1870d4"
   },
   "announcementVersion": "2026.10.26.58",
   "baseRelease": "2026.10.27.64",
@@ -223,7 +223,8 @@
     "sources": {
       "puzzles/entry.js": "3a5aeaf131747eac27aab0a8ec8f414e1368f6a15a938d786dd31cd34dc18303",
       "puzzles/navigation.js": "583c9a847d4f366937f9c771eb01c6caf169449818c45785dcd900228be66a22",
-      "scripts/export-nanpure.mjs": "788610be1f80ed47f4de29cdb6c6bc8fa0e35b8def90c2a8f5350795377930df",
+      "nanpure/collection/app.js": "fb7c5bd9be57aba999ebf375b6c521cecbb95f6dc7cd561dc84ada8f1c229fdd",
+      "scripts/export-nanpure.mjs": "6e0c739a227199a329f1806840a8aee3d7150882fbc4cdf7987664d91792baad",
       "scripts/client-overrides/app/game.tsx": "581397c06f3a10073ca4cf1956f48249c3a00c9c037739f3934ae371c7c1e908",
       "scripts/client-overrides/app/site-intro.tsx": "f34000e273a92612d7629fd0a413f6004fdc1053844497b9652a384ba2bc87d0"
     }
