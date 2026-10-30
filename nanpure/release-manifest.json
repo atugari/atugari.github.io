@@ -5,7 +5,7 @@
   "base": "/nanpure/releases/2026.10.27.65/",
   "online": "https://puzzle-api.puzzle-hub-4826.workers.dev",
   "files": {
-    "nanpure/index.html": "c070406f33b7f395b1afe4126ef55a9e88a8bd7339eadd7b016afb72c65aa8f4",
+    "nanpure/index.html": "e52cfbe4f9159026c60854d8cc2c8bc1f34e89a29c039d4ecd4db270a74203f8",
     "nanpure.html": "396a2c1d26e062b39ecef7cbb3ab3bd4c3d96dbbccc985752bc1087f1774967b",
     "nanpure/version.json": "65b6a121ba0f871c14a5fd2e015f38ec1214120607c0c457b75c2b12ba190b51",
     "nanpure/releases.json": "194c54131932777ad296133d1be97a2976ca12ddc940a96b2edd31d91d103314",
@@ -14,7 +14,7 @@
     "nanpure/print/index.html": "3cccfa2367316fe5c78ae37782a70e60589d8d4af6352eec7398a577d9f67cdb",
     "nanpure/shirupure/index.html": "b7730a13c71aaa9a7aea8f255a190d3e1ec6bca9665738a759b72f809fe65362",
     "nanpure/assets/guide.css": "e2ad889ff6ac2eeb3d0df9fa1aac273c604f0ccc7c45e2f9ecc39c525fd3e29a",
-    "sitemap.xml": "dc17a2072e2adb2ce1c72bd0bf1bcb4f8492db77b62f26d397c4fb657a7849bf",
+    "sitemap.xml": "c1eadf163894075736ba3d7494a957c10c5379fed23f0edbebf406c5946ba062",
     "robots.txt": "2db5cf4197d5e667816a3e61269f0d0d1694992481834e46e2baa07809471583",
     "nanpure/releases/2026.10.27.65/achievements-catalog.js": "0ba29d1d693bd2b567aa507a56a8247a2f746a637f0d705e530018b8f7813279",
     "nanpure/releases/2026.10.27.65/achievements-core.js": "9a06808a6d2a85310fb08f3d4c47f5f82997b6cbd212f6ef2c6928d1b084df79",
