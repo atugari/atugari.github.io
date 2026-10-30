@@ -22,7 +22,7 @@ for(const slug of ['shirupure','wado','crossword','cross','tenbin','paths','stud
  await page.locator('[data-hub]').click();await page.locator('.game-list').waitFor();
 }
 await page.goto(origin+'/puzzles/cross/stock/');await page.locator('#summary').filter({hasText:'6,340'}).waitFor();assert.deepEqual(await page.locator('#kind option[value]:not([value=""])').evaluateAll(nodes=>nodes.map(n=>n.value)),['cross']);await page.locator('#size').selectOption({label:'6×6'});await page.locator('#quick').click();await page.waitForFunction(()=>document.querySelector('#playing-title').textContent.includes('P-010296'));
-await page.waitForFunction(()=>document.querySelector('#game')?.contentWindow?.NPCollectionBridge?.current()?.kind==='cross');assert.match(page.url(),/\/puzzles\/cross\/stock\/\?scope=cross&p=P-010296$/);
+await page.waitForFunction(()=>document.querySelector('#game')?.contentWindow?.NanpureAppTest?.getCurrent()?.kind==='cross');assert.match(page.url(),/\/puzzles\/cross\/stock\/\?scope=cross&p=P-010296$/);
 await page.reload();await page.waitForFunction(()=>document.querySelector('#player')?.hidden===false&&document.querySelector('#playing-title').textContent.includes('P-010296'));
 await page.locator('#back').click();await page.locator('#library:not([hidden])').waitFor();assert.match(page.url(),/\/puzzles\/cross\/stock\/\?scope=cross$/);
 await page.goto(origin+'/nanpure/collection/');await page.locator('#summary').filter({hasText:'93,660'}).waitFor();assert.equal(await page.locator('#kind option[value="cross"]').count(),0);assert.equal(await page.locator('#kind option[value]:not([value=""])').count(),22);
