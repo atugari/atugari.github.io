@@ -68,5 +68,6 @@ html body.np-collection-workspace #app{scrollbar-gutter:auto!important}
  .np-workspace-screen.np-wide[data-number-position=float]>.play-dock{align-self:center!important}
  .np-workspace-screen.np-wide[data-number-position=float]>.play-dock>.tools>button{min-height:34px!important;padding:3px!important}
  .np-workspace-screen.np-wide[data-number-position=float]>.linked-controls{grid-area:linked;display:flex;gap:4px;margin:0!important}
+ .np-workspace-screen.np-wide[data-number-position=float]>#hundred-nav{grid-area:linked;min-width:0}
  .np-workspace-screen.np-wide[data-number-position=float]>.linked-controls button{min-height:30px!important;padding:3px 8px!important}
 }
