@@ -13,6 +13,8 @@ await page.goto(origin+'/plaza.html');for(const slug of ['shirupure','wado','cro
 await page.goto(origin+'/nanpure/?lang=ja');await page.locator('[data-pare-entry]').waitFor();assert.equal(await page.locator('.shiru-entry').isVisible(),false);
 await page.goto(origin+'/nanpure/?lang=en');await page.locator('[data-pare-entry] strong').filter({hasText:'More puzzles on Pareasobi'}).waitFor();assert(!/[\u3041-\u3096\u30a1-\u30fa]/.test(await page.locator('[data-pare-entry]').innerText()),'Relocation copy follows the selected language');
 await page.goto(origin+'/nanpure/?lang=ja');await page.locator('[data-pare-entry] strong').filter({hasText:'ほかのパズルはパレあそびへ'}).waitFor();
+await page.locator('.daily-choice').click();await page.locator('.site-shell.mode-challenge').waitFor();await page.locator('a[data-pare-entry]').waitFor({state:'detached'});
+await page.goto(origin+'/nanpure/?lang=ja');await page.locator('[data-pare-entry]').waitFor();
 await page.locator('.main-choice').click();const notebook=page.frameLocator('iframe.notebook');await notebook.locator('[data-pare-entry]').waitFor();assert.equal(await notebook.locator('[data-action="open-crossword"]').isVisible(),false);assert.equal(await notebook.locator('[data-action="open-prototype"]').isVisible(),false);
 for(const slug of ['shirupure','wado','crossword','cross','tenbin','paths','studio','workshop','magic-square']){
  await page.goto(origin+'/puzzles/'+slug+'/');await page.locator('#game:not([hidden])').waitFor();await page.waitForFunction(()=>document.querySelector('#status').hidden);
