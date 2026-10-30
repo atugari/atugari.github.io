@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {execFileSync} from 'node:child_process';
 import {DatabaseSync} from 'node:sqlite';
 import {createHash} from 'node:crypto';
 import worker,{SLOTS,dueFor,windowFor,MAX_LATENESS,queueToken,oauthHeader,validateMeta,runScheduled,dryRun,xClient} from '../src/index.js';
@@ -48,6 +49,18 @@ test('scheduled publication sends the exact text and four IDs through the real J
 });
 
 test('all four Japan slots map to the correct UTC dates',()=>{assert.equal(new Date(dueFor(DAY,'08:00')).toISOString(),'2026-10-25T23:00:00.000Z');for(const slot of SLOTS){const due=dueFor(DAY,slot);assert.equal(windowFor(due,due).key,DAY+'@'+slot)}assert.throws(()=>dueFor('2026-02-30','08:00'));assert.throws(()=>dueFor(DAY,'09:00'))});
+test('real Python post text satisfies the Worker contract across calendar boundaries',()=>{
+ const days=['2026-10-31','2026-11-01','2026-11-09','2026-11-10','2026-12-31','2027-01-01','2027-01-09','2027-01-10','2027-09-09','2027-09-10','2027-10-09','2027-10-10','2028-02-29'];
+ const source='import json,sys; from post_text import render_text; from daily_plan import daily_plan; print(json.dumps([{ "date":day, "text":render_text(day, include_url), "questions":daily_plan(day) } for day in sys.argv[1:] for include_url in (False,True)]))';
+ const generated=JSON.parse(execFileSync(process.env.PYTHON||'python3',['-c',source,...days],{cwd:new URL('../../scripts/x-four/',import.meta.url),encoding:'utf8'}));
+ for(const data of generated)for(const slot of SLOTS){
+  const due=dueFor(data.date,slot),meta={...post(slot).meta,...data,slot,publication_id:data.date+'@'+slot};
+  meta.images=meta.images.map((image,n)=>({...image,file:data.questions[n].file}));
+  assert.deepEqual(validateMeta(meta,due-3600000),{key:meta.publication_id,due});
+  const wrong={...meta,text:meta.text.replace(/^【[^\n]+】/, '【今日の4問｜12/32】')};
+  assert.throws(()=>validateMeta(wrong,due-3600000),/Post date and text do not match/);
+ }
+});
 test('the actual 25th 21:00 -> 26th 00:34 incident cannot publish',()=>{const due=dueFor('2026-10-25','21:00');assert.equal(windowFor(due,Date.parse('2026-10-26T00:34:57+09:00')),null)});
 test('window rejects early, over 15 minutes and next-day runs',()=>{const due=dueFor(DAY,'21:00');assert.equal(windowFor(due,due-1),null);assert(windowFor(due,due+MAX_LATENESS));assert.equal(windowFor(due,due+MAX_LATENESS+1),null)});
 test('wrong image date and stale preparation are rejected',()=>{const p=post().meta;p.text='【今日の4問｜10/25】\n古い日付';assert.throws(()=>validateMeta(p,BASE));p.text='【今日の4問｜10/26】\n本文';assert.throws(()=>validateMeta(p,dueFor(DAY,'08:00')))});

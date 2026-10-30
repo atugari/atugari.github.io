@@ -5,7 +5,8 @@ import re
 from daily_plan import daily_plan
 
 def render_text(day,include_url=False):
-    label=date.fromisoformat(day).strftime('%m/%d')
+    parsed=date.fromisoformat(day)
+    label=f'{parsed.month}/{parsed.day}'  # Match the Worker's M/D contract on every platform.
     text=(Path(__file__).parent/'approved-post.txt').read_text(encoding='utf-8').rstrip('\n')
     text=text.replace('{date_label}',label)
     text=text.replace('シルプレ・数独・和同開珎・クロスワード。','・'.join(item['title'] for item in daily_plan(day))+'。')
