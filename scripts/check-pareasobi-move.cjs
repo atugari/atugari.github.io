@@ -9,4 +9,8 @@ for(const slug of games){assert(read('plaza.html').includes('href="/puzzles/'+sl
 for(const p of ['puzzles/entry.js','puzzles/navigation.js','nanpure/collection/entry.js'])new vm.Script(read(p));
 assert(!/localStorage\.(?:clear|removeItem)|indexedDB\.deleteDatabase/.test(read('puzzles/navigation.js')+read('puzzles/entry.js')));
 assert(read('puzzles/magic-square/index.html').includes('プレイは準備中'));
+assert(!read('scripts/client-overrides/app/game.tsx').includes('className="shiru-entry"'),'The generating source must not restore the old home entry');
+assert(read('scripts/client-overrides/app/game.tsx').includes('data-pare-entry=""'),'The home source owns the relocation link');
+const manifest=JSON.parse(read('nanpure/release-manifest.json'));
+for(const [file,expected]of Object.entries(manifest.pareasobiNavigation.sources))assert.equal(require('node:crypto').createHash('sha256').update(read(file)).digest('hex'),expected,'Navigation source manifest: '+file);
 console.log('PASS Pareasobi routes: eight direct entries, 93,660 + 6,340 original puzzles, save keys preserved, creation-only magic square.');

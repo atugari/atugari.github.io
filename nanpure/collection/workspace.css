@@ -45,3 +45,13 @@ html:has(body.np-collection-workspace){overflow:hidden!important}
 html body.np-collection-workspace #app{scrollbar-gutter:auto!important}
 
 .np-number-bar{flex-wrap:wrap}.np-number-panel{min-height:0!important}
+/* On a short landscape screen the bottom keypad has no usable height.
+   Keep the existing position preference, but place docked keys beside the board. */
+@media(max-height:500px) and (min-width:600px){
+ .np-workspace-screen:not([data-number-position=float]){grid-template-columns:minmax(0,1fr) 220px!important;grid-template-rows:auto auto minmax(40px,1fr) auto auto auto auto!important;grid-template-areas:"head head" "layout layout" "board numbers" "linked numbers" "actions numbers" "hints hints" "feedback feedback"!important;padding:4px!important;gap:4px!important}
+ .np-workspace-screen:not([data-number-position=float])>.linked-controls{grid-area:linked;display:flex;gap:4px;margin:0!important}
+ .np-workspace-screen:not([data-number-position=float])>.linked-controls button{min-height:32px!important;padding:3px 8px!important}
+ .np-workspace-screen:not([data-number-position=float])>.np-number-panel{max-height:none!important;width:100%!important}
+ .np-workspace-screen:not([data-number-position=float])>.np-number-panel .np-number-handle{font-size:12px!important}
+ .np-workspace-screen:not([data-number-position=float])>.np-number-panel .np-number-bar button{padding:3px 6px!important}
+}

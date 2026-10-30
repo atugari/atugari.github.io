@@ -5,7 +5,6 @@ const guides=[
  ['guide','遊び方と保存','基本ルール・始め方・引き継ぎ'],
  ['sudoku-types','種類とサイズ','ジグソー・キラーなどの違い'],
  ['print','印刷の使い方','A4・A3・PDF保存'],
- ['shirupure','シルプレの遊び方','記号を仕切る660問'],
 ] as const;
 
 export default function SiteIntro(){
