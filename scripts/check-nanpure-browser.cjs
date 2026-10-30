@@ -171,7 +171,7 @@ async function checkResponsiveDailyPlay(browser,root,viewport,n){
  },saved);
  page.on('pageerror',error=>errors.push(error.message));
  const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp','.mp3':'audio/mpeg','.ogg':'audio/ogg','.wav':'audio/wav'};
- await page.route('https://atugari.github.io/nanpure/**',route=>{
+ await page.route(/^https:\/\/atugari\.github\.io\/(?:nanpure|puzzles)\//,route=>{
   const url=new URL(route.request().url()),file=path.join(root,url.pathname.endsWith('/')?url.pathname+'index.html':url.pathname);
   if(!file.startsWith(root)||!fs.existsSync(file))return route.fulfill({status:404,body:'Missing asset'});
   return route.fulfill({status:200,contentType:types[path.extname(file)]||'application/octet-stream',body:fs.readFileSync(file)});
@@ -308,7 +308,7 @@ async function checkResponsiveFreePlay(browser,root,viewport){
  const notebookGate=new Promise(resolve=>{releaseNotebook=resolve;});
  const isNotebookIndex=url=>/\/notebook\/index\.html$/.test(new URL(url).pathname);
  const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp','.mp3':'audio/mpeg','.ogg':'audio/ogg','.wav':'audio/wav'};
- await page.route('https://atugari.github.io/nanpure/**',async route=>{
+ await page.route(/^https:\/\/atugari\.github\.io\/(?:nanpure|puzzles)\//,async route=>{
   const url=new URL(route.request().url());
   if(url.pathname.includes('/notebook/')&&!/\/notebook\/i18n(?:-data)?\.js$|\/notebook\/i18n\//.test(url.pathname))notebookRequests++;
   if(isNotebookIndex(url.href)){indexRequests++;await notebookGate;}
@@ -576,7 +576,7 @@ async function checkJigsawCreationAndPrint(page,lang,expected){
 (async()=>{const browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_BIN||undefined,args:['--no-sandbox']});try{
  const context=await browser.newContext({viewport:{width:390,height:844}}),page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
  const root=path.resolve(process.argv[2]||'_site');const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp','.mp3':'audio/mpeg','.ogg':'audio/ogg','.wav':'audio/wav'};
- await page.route('https://atugari.github.io/nanpure/**',async route=>{const u=new URL(route.request().url()),file=path.join(root,u.pathname.endsWith('/')?u.pathname+'index.html':u.pathname);if(!file.startsWith(root)||!fs.existsSync(file))return route.fulfill({status:404,body:'Missing asset'});await route.fulfill({status:200,contentType:types[path.extname(file)]||'application/octet-stream',body:fs.readFileSync(file)})});
+ await page.route(/^https:\/\/atugari\.github\.io\/(?:nanpure|puzzles)\//,async route=>{const u=new URL(route.request().url()),file=path.join(root,u.pathname.endsWith('/')?u.pathname+'index.html':u.pathname);if(!file.startsWith(root)||!fs.existsSync(file))return route.fulfill({status:404,body:'Missing asset'});await route.fulfill({status:200,contentType:types[path.extname(file)]||'application/octet-stream',body:fs.readFileSync(file)})});
  for(const view of['','daily','ranking','calendar','contact','replies','backup','privacy','manage']){
   const apiPath={daily:'/api/daily',ranking:'/api/ranking',calendar:'/api/daily/archive',contact:'/api/contact',replies:'/api/contact',backup:'/api/cloud'}[view];
   const response=apiPath?page.waitForResponse(r=>{const u=new URL(r.url());return u.hostname==='puzzle-api.puzzle-hub-4826.workers.dev'&&u.pathname===apiPath&&!u.searchParams.has('summary')&&r.request().method()==='GET'},{timeout:20000}):null;
