@@ -13,18 +13,19 @@ class Select{
 const fields=['kind','size','level','state'],els=Object.fromEntries(fields.map(k=>[k,new Select()]));
 els.state.innerHTML='<option value="all">すべて</option>';
 for(const k of ['search','summary','count','cards','more','quick','back','next','background','game','notice','player-status'])els[k]={value:'',checked:true,scrollIntoView(){}};
-const context=vm.createContext({document:{getElementById:k=>els[k],addEventListener(){}},window:{addEventListener(){}},setTimeout(){},fetch(){throw Error('Selection must not fetch packs');}});
+const context=vm.createContext({URLSearchParams,location:{search:''},document:{getElementById:k=>els[k],addEventListener(){}},window:{addEventListener(){}},setTimeout(){},fetch(){throw Error('Selection must not fetch packs');}});
 const end=source.lastIndexOf('try{const loaded=await Promise.all');
-vm.runInContext(source.slice(source.indexOf('\n')+1,end)+'\nglobalThis.test={init(c){catalog=c;progress=new Map();render()},render,matching};',context);
+vm.runInContext(source.slice(source.indexOf('\n')+1,end)+'\nglobalThis.test={init(c){catalog=selectCatalog(c);progress=new Map();render()},render,matching};',context);
 context.test.init(catalog);
 assert.equal(els.size.disabled,true);assert.equal(els.level.disabled,true);assert.equal(els.quick.disabled,true);assert.ok(!els.cards.innerHTML.includes('data-id='));
 const offered=k=>els[k].options.filter(o=>o.value&&!o.disabled).map(o=>o.value);
+assert.ok(!offered('kind').includes('cross'),'Cross is owned by Pareasobi');
 const choose=(k,v)=>{assert.ok(offered(k).includes(String(v)),k+' offers '+v);els[k].value=v;els[k].onchange();};
 const sizeKey=c=>[c.n,c.multiShape||c.linkedShape||'',c.complexity||''].join(':');
 let cases=0;
-for(const c of catalog.configs){
+for(const c of catalog.configs.filter(c=>c.kind!=='cross')){
  choose('kind',c.kind);
- assert.equal(offered('kind').length,23,'Earlier rules stay reachable');
+ assert.equal(offered('kind').length,22,'Earlier rules stay reachable');
  const sizes=new Set(catalog.configs.filter(x=>x.kind===c.kind).map(sizeKey));
  assert.deepEqual(new Set(offered('size')),sizes);
  if(sizes.size>1){assert.equal(els.size.value,'');assert.equal(els.level.disabled,true);assert.equal(els.quick.disabled,true);}

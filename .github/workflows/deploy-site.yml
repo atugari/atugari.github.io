@@ -62,6 +62,8 @@ jobs:
         run: |
           npm install --prefix "$RUNNER_TEMP/nanpure-browser" --no-audit --no-fund playwright@1.62.1 linkedom@0.18.13
           npm run build --prefix nanpure-api
+          node scripts/check-pareasobi-move.cjs
+          node --experimental-vm-modules scripts/collection-100k/check-filters.cjs
           node scripts/check-public-release-policy.cjs
           node scripts/check-nanpure-achievements.cjs
           node scripts/check-nanpure-achievements-ui.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
@@ -89,6 +91,7 @@ jobs:
           node --experimental-vm-modules scripts/check-nanpure-ranking.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
           export PLAYWRIGHT_MODULE="$RUNNER_TEMP/nanpure-browser/node_modules/playwright"
           export CHROME_BIN="$(command -v google-chrome || command -v chromium)"
+          node scripts/check-pareasobi-move-browser.cjs _site
           node scripts/check-nanpure-search-browser.cjs _site
           node scripts/check-nanpure-home-titles-browser.cjs _site
           node scripts/check-nanpure-keyboard-dialogs.cjs
