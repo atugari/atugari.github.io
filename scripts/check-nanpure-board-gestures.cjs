@@ -5,7 +5,7 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),asse
 const {parseHTML}=require(process.argv[3]||'linkedom');
 const source=fs.readFileSync(process.argv[2]||path.join(__dirname,'client-overrides/public/notebook/board-input.js'),'utf8');
 function fixture({width=300,height=300}={}){
- const {window:w}=parseHTML('<html><head></head><body><main><div class="board-scroll"><div id="board" data-pan-key="gesture-test"><button data-action="cell" data-cell="0">1</button></div></div></main></body></html>');
+ const {window:w}=parseHTML('<html><head></head><body><dialog id="np-play-settings"><div class="np-board-options"></div></dialog><main><div class="board-scroll"><div id="board" data-pan-key="gesture-test"><button data-action="cell" data-cell="0">1</button></div></div></main></body></html>');
  const board=w.document.getElementById('board'),viewport=board.parentElement,cell=board.firstElementChild;
  const frames=[];let clicks=0;
  // Linkedom has no browser capture phase. Deliver window capture handlers
