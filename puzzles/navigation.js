@@ -3,6 +3,7 @@
 (()=>{'use strict';
 if(window.NPPuzzleNavigation)return;
 const routes={'open-shirupure':'shirupure','open-crossword':'crossword','open-tenbin':'tenbin','wado-generator':'wado','magic-generator':'magic-square','open-prototype':'workshop'};
+const copy={"ja":["ほかのパズルはパレあそびへ","シルプレ・和同開珎・クロスワードなど"],"en":["More puzzles on Pareasobi","Shirupure, kanji puzzles and crosswords"],"zh-Hans":["更多谜题，请前往 Pareasobi","符号分区、汉字填空、纵横字谜等"],"zh-Hant":["更多謎題，請前往 Pareasobi","符號分區、漢字填空、縱橫字謎等"],"ko":["더 많은 퍼즐은 Pareasobi에서","시루푸레, 한자 퍼즐, 크로스워드 등"],"es":["Más puzles en Pareasobi","Shirupure, puzles de kanji y crucigramas"],"fr":["Plus de jeux sur Pareasobi","Shirupure, énigmes de kanji et mots croisés"],"de":["Weitere Rätsel auf Pareasobi","Shirupure, Kanji-Rätsel und Kreuzworträtsel"],"pt":["Mais desafios em Pareasobi","Shirupure, desafios de kanji e palavras cruzadas"],"it":["Altri puzzle su Pareasobi","Shirupure, enigmi di kanji e cruciverba"],"nl":["Meer puzzels op Pareasobi","Shirupure, kanjipuzzels en kruiswoordraadsels"],"sv":["Fler pussel på Pareasobi","Shirupure, kanjipussel och korsord"],"pl":["Więcej łamigłówek w Pareasobi","Shirupure, łamigłówki kanji i krzyżówki"],"cs":["Další hlavolamy na Pareasobi","Shirupure, hlavolamy s kandži a křížovky"],"ru":["Больше головоломок на Pareasobi","Shirupure, головоломки с кандзи и кроссворды"],"id":["Teka-teki lainnya di Pareasobi","Shirupure, teka-teki kanji dan teka-teki silang"],"vi":["Thêm câu đố trên Pareasobi","Shirupure, câu đố kanji và ô chữ"],"th":["ปริศนาเพิ่มเติมที่ Pareasobi","Shirupure ปริศนาคันจิ และปริศนาอักษรไขว้"],"hi":["Pareasobi पर और पहेलियाँ","Shirupure, कांजी पहेलियाँ और वर्ग पहेलियाँ"],"ar":["المزيد من الألغاز على Pareasobi","Shirupure وألغاز الكانجي والكلمات المتقاطعة"]};
 const seen=new WeakSet();
 function install(w){
  try{
@@ -22,14 +23,18 @@ function install(w){
    d.querySelectorAll('[data-web-field="kind"][value="cross"]').forEach(input=>{input.disabled=true;if(input.closest('label'))input.closest('label').setAttribute('data-np-moved','')});
    d.querySelectorAll('.homechoices>a[href*="wado-play.html"]').forEach(b=>{if(!b.hasAttribute('data-np-moved'))b.setAttribute('data-np-moved','')});
    for(const host of d.querySelectorAll('.designed-home,.homechoices')){
-    if(host.querySelector('[data-pare-entry]'))continue;
-    const a=d.createElement('a');a.href='/puzzles/';a.className='np-pare-entry';a.dataset.pareEntry='';a.setAttribute('data-i18n-skip','');
-    a.innerHTML='<span><strong>ほかのパズルはパレあそびへ</strong><small>シルプレ・和同開珎・クロスワードなど</small></span><span aria-hidden="true">›</span>';
-    const old=host.querySelector('.shiru-entry');if(old)old.after(a);else host.append(a);
+    let a=host.querySelector('[data-pare-entry]');
+    if(!a){a=d.createElement('a');a.href='/puzzles/';a.className='np-pare-entry';a.dataset.pareEntry='';a.setAttribute('data-i18n-skip','');
+     a.innerHTML='<span><strong></strong><small></small></span><span aria-hidden="true">›</span>';
+     const old=host.querySelector('.shiru-entry');if(old)old.after(a);else host.append(a);
+    }
+    const language=w.NPI18n?.get?.()||d.documentElement.lang||'ja',text=copy[language]||copy.en;
+    for(const [selector,value]of [['strong',text[0]],['small',text[1]]])if(a.querySelector(selector).textContent!==value)a.querySelector(selector).textContent=value;
    }
    d.querySelectorAll('iframe').forEach(f=>{if(f.dataset.pareWatching)return;f.dataset.pareWatching='';f.addEventListener('load',()=>visit(f));visit(f)});
   }
   let queued=false;function schedule(){if(queued)return;queued=true;w.requestAnimationFrame(()=>{queued=false;update()})}
+  w.addEventListener('np-language-change',schedule);
   new w.MutationObserver(schedule).observe(d.documentElement,{childList:true,subtree:true});
   d.addEventListener('click',e=>{
    const b=e.target.closest?.('button,a');if(!b||b.disabled)return;
