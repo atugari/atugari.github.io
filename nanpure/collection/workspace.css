@@ -12,7 +12,7 @@ body.np-collection-workspace{margin:0!important;overflow:hidden!important;height
 .np-direct-zoom{display:flex;gap:3px}.np-direct-zoom button{min-width:40px!important}
 @media screen{
  #board[data-digit-size]:not([data-digit-size="100"]) :is(text[data-linked-digit],text[data-multi-digit]){font-size:var(--np-workspace-linked-font)!important}
- #board[data-digit-size]:not([data-digit-size="100"]) .cell>span:not(.notes,.hundred-notes,.cage-label,.cage-border){font-size:max(1em,min(calc(1em * var(--np-workspace-digit-scale)),var(--np-workspace-digit-limit)))!important;line-height:1!important;white-space:nowrap}
+ #board[data-digit-size]:not([data-digit-size="100"]) .np-workspace-digit{font-size:min(calc(1em * var(--np-workspace-digit-scale)),var(--np-workspace-digit-limit))!important;line-height:1!important;white-space:nowrap}
 }
 .np-workspace-dialog{box-sizing:border-box;width:min(360px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto;border:1px solid #b6c7bb;border-radius:14px;padding:20px;background:#f7f8f1;color:#214c40;box-shadow:0 12px 40px #102c2b40}
 .np-workspace-dialog::backdrop{background:#102c2b70}

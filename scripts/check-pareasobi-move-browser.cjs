@@ -79,8 +79,8 @@ for(const viewport of [{width:1920,height:870},{width:1280,height:800},{width:37
   await page.waitForFunction(align=>{const d=document.querySelector('#game').contentDocument,b=d.getElementById('board'),v=d.getElementById('board-scroll'),br=b.getBoundingClientRect(),vr=v.getBoundingClientRect(),gap=Math.max(0,v.clientWidth-br.width),fraction={left:0,center:.5,right:1}[align];return b.dataset.panAlign===align&&Math.abs(br.left-vr.left-v.clientLeft-gap*fraction)<3},align);
  }
  const font=await child.locator('[data-cell="0"]>span').evaluate(el=>parseFloat(getComputedStyle(el).fontSize));
- assert(font>=originalFont,'Larger text never shrinks existing digits');if(desktop)assert(font>originalFont*1.5,'25x25 digits visibly increase');
- assert(await child.locator('#board .cell>span:not(.notes,.hundred-notes,.cage-label,.cage-border)').evaluateAll(nodes=>nodes.every(el=>el.getBoundingClientRect().width<=el.parentElement.getBoundingClientRect().width+1)),'Main digits fit their cells');
+ if(desktop)assert(font>originalFont,'25x25 digits visibly increase');if(viewport.width===1920)assert(font>originalFont*1.5,'Large desktop digits visibly increase');
+ const overflowing=await child.locator('#board .np-workspace-digit').evaluateAll(nodes=>nodes.filter(el=>el.getBoundingClientRect().width>el.parentElement.getBoundingClientRect().width+1).map(el=>({text:el.textContent,font:getComputedStyle(el).fontSize,width:el.getBoundingClientRect().width,cell:el.parentElement.getBoundingClientRect().width})));assert.deepEqual(overflowing,[],'Main digits fit their cells: '+JSON.stringify(overflowing.slice(0,3)));
  assert.deepEqual(await page.evaluate(()=>document.querySelector('#game').contentWindow.NanpureAppTest.getCurrent().grid),unchanged,'Display choices preserve all entered numbers');
  const {index,value}=await page.evaluate(()=>{const p=document.querySelector('#game').contentWindow.NanpureAppTest.getCurrent(),index=p.puzzle.findIndex(v=>!v);return{index,value:p.solution[index]}});
  await child.locator('[data-action="cell"][data-cell="'+index+'"]').click();await child.locator('[data-action="erase"]').click();

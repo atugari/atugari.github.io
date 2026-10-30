@@ -32,12 +32,24 @@
   if(!board)return;
   board.dataset.digitSize=String(prefs.digitSize);
   board.style.setProperty('--np-workspace-digit-scale',String(prefs.digitSize/100));
+  const digitsInCells=Array.from(board.querySelectorAll('.cell>span:not(.notes,.hundred-notes,.cage-label,.cage-border)')).filter(text=>!text.children.length&&/^\d+$/.test(text.textContent.trim()));
+  for(const text of digitsInCells)text.classList.add('np-workspace-digit');
   const cell=board.querySelector('.cell');
   if(cell){
    const columns=getComputedStyle(board).gridTemplateColumns.trim().split(/\s+/).length;
    const digits=String(board.classList.contains('hundred-board')?100:columns).length;
    const limit=Math.min(cell.clientHeight*(board.querySelector('.cage-label') ? .7 : .88),cell.clientWidth/(digits*.64));
    board.style.setProperty('--np-workspace-digit-limit',px(Math.max(1,limit)));
+   if(prefs.digitSize!==100){
+    // Font families and uneven cell borders have different glyph widths. Check
+    // the rendered numeric spans as well, rather than trusting a character ratio.
+    let fitted=limit;
+    for(const text of digitsInCells){
+     const rect=text.getBoundingClientRect(),box=text.parentElement.getBoundingClientRect(),available=Math.max(1,box.width-Math.min(2,box.width*.04));
+     if(rect.width>available)fitted=Math.min(fitted,parseFloat(getComputedStyle(text).fontSize)*available/rect.width);
+    }
+    if(fitted<limit)board.style.setProperty('--np-workspace-digit-limit',px(Math.max(1,fitted)));
+   }
   }
   // Linked boards draw their main digits in SVG; candidate notes and clues keep
   // their own sizes. SVG's cell coordinates are 40 units wide.
