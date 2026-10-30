@@ -55,3 +55,19 @@ html body.np-collection-workspace #app{scrollbar-gutter:auto!important}
  .np-workspace-screen:not([data-number-position=float])>.np-number-panel .np-number-handle{font-size:12px!important}
  .np-workspace-screen:not([data-number-position=float])>.np-number-panel .np-number-bar button{padding:3px 6px!important}
 }
+/* Wide desktop play keeps the real controls in one row and gives their former
+   header/footer space back to the board. DOM order and input handlers stay intact. */
+@media(min-width:1000px){
+ .np-workspace-screen.np-wide[data-number-position=float]{grid-template-columns:minmax(180px,1fr) auto minmax(280px,.95fr)!important;grid-template-rows:auto minmax(0,1fr) auto auto auto!important;grid-template-areas:"head layout actions" "board board board" "linked linked linked" "hints hints hints" "feedback feedback feedback"!important;gap:3px 6px!important;padding:3px!important}
+ .np-workspace-screen.np-wide[data-number-position=float]>.play-head{min-height:36px!important;justify-content:flex-start!important;flex-wrap:nowrap!important}
+ .np-workspace-screen.np-wide[data-number-position=float]>.play-head>b{display:none!important}
+ .np-workspace-screen.np-wide[data-number-position=float]>.play-head button{min-height:32px!important;padding:2px 6px!important}
+ .np-workspace-screen.np-wide[data-number-position=float] #np-play-settings-button{height:32px!important;width:34px!important;min-width:34px!important}
+ .np-workspace-screen.np-wide[data-number-position=float]>.np-workspace-tools{flex-wrap:nowrap;gap:4px}
+ .np-workspace-screen.np-wide[data-number-position=float]>.np-workspace-tools button,.np-workspace-screen.np-wide[data-number-position=float]>.np-workspace-tools select{min-height:34px!important;padding:3px 8px!important}
+ .np-workspace-screen.np-wide[data-number-position=float]>.play-dock{align-self:center!important}
+ .np-workspace-screen.np-wide[data-number-position=float]>.play-dock>.tools>button{min-height:34px!important;padding:3px!important}
+ .np-workspace-screen.np-wide[data-number-position=float]>.linked-controls{grid-area:linked;display:flex;gap:4px;margin:0!important}
+ .np-workspace-screen.np-wide[data-number-position=float]>#hundred-nav{grid-area:linked;min-width:0}
+ .np-workspace-screen.np-wide[data-number-position=float]>.linked-controls button{min-height:30px!important;padding:3px 8px!important}
+}
