@@ -36,7 +36,7 @@
   if(cell){
    const columns=getComputedStyle(board).gridTemplateColumns.trim().split(/\s+/).length;
    const digits=String(board.classList.contains('hundred-board')?100:columns).length;
-   const limit=Math.min(cell.clientHeight*.88,cell.clientWidth/(digits*.64));
+   const limit=Math.min(cell.clientHeight*(board.querySelector('.cage-label') ? .7 : .88),cell.clientWidth/(digits*.64));
    board.style.setProperty('--np-workspace-digit-limit',px(Math.max(1,limit)));
   }
   // Linked boards draw their main digits in SVG; candidate notes and clues keep
@@ -121,7 +121,7 @@
  }
  function schedule(){if(!scheduled){scheduled=true;requestAnimationFrame(mount);}}
  new MutationObserver(records=>{if(records.some(r=>r.addedNodes.length||r.removedNodes.length))schedule();}).observe(document.getElementById('app'),{childList:true,subtree:true});
- for(const type of ['resize','orientationchange'])w.addEventListener(type,()=>{finishDrag();requestAnimationFrame(refresh);});
+ for(const type of ['resize','orientationchange'])w.addEventListener(type,()=>{finishDrag();requestAnimationFrame(()=>refresh());});
  w.addEventListener('blur',finishDrag);w.addEventListener('pagehide',finishDrag);document.addEventListener('visibilitychange',()=>{if(document.hidden)finishDrag();});
  w.NPCollectionWorkspace={refresh};mount();
 })(window);

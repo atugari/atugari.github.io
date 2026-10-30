@@ -8,6 +8,11 @@ function fixture({width=300,height=300}={}){
  const {window:w}=parseHTML('<html><head></head><body><main><div class="board-scroll"><div id="board" data-pan-key="gesture-test"><button data-action="cell" data-cell="0">1</button></div></div></main></body></html>');
  const board=w.document.getElementById('board'),viewport=board.parentElement,cell=board.firstElementChild;
  const frames=[];let clicks=0;
+ // Linkedom has no browser capture phase. Deliver window capture handlers
+ // before the target so the existing collection touch guard is modeled correctly.
+ const captured=new Map(),add=w.addEventListener.bind(w),remove=w.removeEventListener.bind(w);
+ w.addEventListener=(type,fn,options)=>{if(options===true||options?.capture){if(!captured.has(type))captured.set(type,new Set());captured.get(type).add(fn);}else add(type,fn,options);};
+ w.removeEventListener=(type,fn,options)=>{if(options===true||options?.capture)captured.get(type)?.delete(fn);else remove(type,fn,options);};
  Object.assign(w,{window:w,self:w,requestAnimationFrame:fn=>{frames.push(fn);return frames.length;},MutationObserver:class{observe(){}disconnect(){}},ResizeObserver:class{observe(){}disconnect(){}},scrollBy(){},getComputedStyle:el=>({zoom:'1',overflowY:'visible'})});
  Object.defineProperties(viewport,{clientWidth:{value:width},clientHeight:{value:height},clientLeft:{value:0},clientTop:{value:0}});
  Object.defineProperties(board,{offsetWidth:{value:1000},offsetHeight:{value:1000}});
@@ -18,7 +23,7 @@ function fixture({width=300,height=300}={}){
  vm.runInContext(source,vm.createContext(w),{filename:'board-input.js'});
  // The controller restores its own saved scroll position on attach.
  viewport.scrollLeft=200;viewport.scrollTop=200;
- function pointer(type,id,x,y,target=cell){const e=new w.Event(type,{bubbles:true,cancelable:true});Object.assign(e,{pointerId:id,pointerType:'touch',isPrimary:id===1,button:0,clientX:x,clientY:y});target.dispatchEvent(e);return e;}
+ function pointer(type,id,x,y,target=cell){const e=new w.Event(type,{bubbles:true,cancelable:true});Object.assign(e,{pointerId:id,pointerType:'touch',isPrimary:id===1,button:0,clientX:x,clientY:y});for(const fn of captured.get(type)||[])fn(e);target.dispatchEvent(e);return e;}
  function click(detail=1){const e=new w.Event('click',{bubbles:true,cancelable:true});Object.assign(e,{detail});cell.dispatchEvent(e);return e;}
  return{w,board,viewport,cell,pointer,click,clicks:()=>clicks,scale:()=>Number(viewport.dataset.scale)};
 }
