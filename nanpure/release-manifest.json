@@ -223,7 +223,8 @@
     "sources": {
       "puzzles/entry.js": "3a5aeaf131747eac27aab0a8ec8f414e1368f6a15a938d786dd31cd34dc18303",
       "puzzles/navigation.js": "583c9a847d4f366937f9c771eb01c6caf169449818c45785dcd900228be66a22",
-      "nanpure/collection/app.js": "fb7c5bd9be57aba999ebf375b6c521cecbb95f6dc7cd561dc84ada8f1c229fdd",
+      "nanpure/collection/app.js": "d545e8d865c60441e5a7fde446c338f60c580ba17d249cbeb6dc0facd1f7f37f",
+      "nanpure/collection/workspace.css": "c982635f0e78ae9f76e15540bf02e740747d15bdfbbbbd5a4ffafdaddbde4037",
       "scripts/export-nanpure.mjs": "6e0c739a227199a329f1806840a8aee3d7150882fbc4cdf7987664d91792baad",
       "scripts/client-overrides/app/game.tsx": "581397c06f3a10073ca4cf1956f48249c3a00c9c037739f3934ae371c7c1e908",
       "scripts/client-overrides/app/site-intro.tsx": "f34000e273a92612d7629fd0a413f6004fdc1053844497b9652a384ba2bc87d0"
