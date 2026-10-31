@@ -16,7 +16,7 @@ await page.goto(origin+'/nanpure/?lang=en');await page.locator('[data-pare-entry
 await page.goto(origin+'/nanpure/?lang=ja');await page.locator('[data-pare-entry] strong').filter({hasText:'ほかのパズルはパレあそびへ'}).waitFor();
 await page.locator('.daily-choice').click();await page.locator('.site-shell.mode-challenge').waitFor();await page.locator('a[data-pare-entry]').waitFor({state:'detached'});
 await page.goto(origin+'/nanpure/?lang=ja');await page.locator('[data-pare-entry]').waitFor();
-await page.locator('.main-choice').click();const notebook=page.frameLocator('iframe.notebook');await notebook.locator('[data-pare-entry]').waitFor();assert.equal(await notebook.locator('[data-action="open-crossword"]').isVisible(),false);assert.equal(await notebook.locator('[data-action="open-prototype"]').isVisible(),false);
+await page.locator('.main-choice').click();const notebook=page.frameLocator('iframe.notebook');await notebook.locator('[data-pare-entry]').waitFor();await notebook.locator('[data-action="open-crossword"]').waitFor({state:'hidden'});await notebook.locator('[data-action="open-prototype"]').waitFor({state:'hidden'});assert.equal(await notebook.locator('[data-action="open-crossword"]').isVisible(),false);assert.equal(await notebook.locator('[data-action="open-prototype"]').isVisible(),false);
 for(const slug of ['shirupure','wado','crossword','cross','tenbin','paths','studio','workshop','magic-square']){
  await page.goto(origin+'/puzzles/'+slug+'/');await page.locator('#game:not([hidden])').waitFor();await page.waitForFunction(()=>document.querySelector('#status').hidden);
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,slug+' outer width');

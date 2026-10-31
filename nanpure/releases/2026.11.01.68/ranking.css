@@ -1,0 +1,47 @@
+/* Worldwide daily rankings, with room for names and large scores on phones. */
+.game-dialog.ranking-dialog{width:min(94vw,580px);max-height:calc(100dvh - 24px);padding:16px 18px 24px}
+.world-ranking{min-width:0;color:var(--theme-ink,#213c32)}
+.world-ranking h2{margin:14px 0 10px;color:inherit}
+.world-ranking p{overflow-wrap:anywhere}
+.world-ranking .ranking-intro,.world-ranking .ranking-mode-description{font-size:max(13px,var(--ui-min-font,0px));line-height:1.7;color:var(--theme-muted,#59695c);margin:10px 0 14px}
+.ranking-mode-controls,.ranking-filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:14px 0}
+.ranking-mode-controls button,.ranking-filters button{min-width:0;min-height:46px;padding:9px 8px;border:1px solid var(--theme-line,#c7c9b4);border-radius:9px;background:var(--theme-surface,#fffdf6);color:var(--theme-ink,#213c32);font-size:max(14px,var(--ui-min-font,0px));font-weight:700;line-height:1.4;overflow-wrap:anywhere}
+.ranking-mode-controls button{display:flex;align-items:center;justify-content:center;gap:7px;min-height:52px}
+.ranking-mode-controls svg{flex:none}
+.ranking-filters{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.ranking-periods{grid-template-columns:repeat(4,minmax(0,1fr))}
+.world-ranking button[aria-pressed=true]{background:var(--theme-accent,#245b45);border-color:var(--theme-accent,#245b45);color:#fff}
+.world-ranking button:focus-visible,.ranking-guide summary:focus-visible{outline:3px solid var(--theme-accent,#245b45);outline-offset:3px}
+.ranking-results{min-height:120px}
+.ranking-range{margin:16px 0 8px;font-size:max(14px,var(--ui-min-font,0px));line-height:1.6;font-weight:650}
+.ranking-summary-line{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:max(13px,var(--ui-min-font,0px));color:var(--theme-muted,#59695c)}
+.ranking-refresh{display:flex;gap:5px;align-items:center;justify-content:center;flex:none;min-height:44px;padding:7px 10px;background:transparent;border:1px solid var(--theme-line,#c7c9b4);border-radius:8px;font:inherit;color:var(--theme-ink,#213c32)}
+.ranking-my-place{display:flex;justify-content:space-between;align-items:center;gap:14px;background:var(--theme-soft,#e8eddf);border:1px solid var(--theme-line,#c7c9b4);border-radius:12px;margin:16px 0 18px;padding:15px}
+.ranking-my-place>div{min-width:0}
+.ranking-my-place>div:first-child{display:flex;flex-direction:column;gap:5px}
+.ranking-my-place span{font-size:max(13px,var(--ui-min-font,0px));font-weight:650}
+.ranking-my-place strong{font-size:max(24px,var(--ui-min-font,0px));font-variant-numeric:tabular-nums;line-height:1.3;overflow-wrap:anywhere}
+.ranking-my-score{text-align:right;display:flex;flex-direction:column;gap:5px}
+.ranking-my-score b{font-size:max(18px,var(--ui-min-font,0px));font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ranking-my-place small{font-size:max(12px,var(--ui-min-font,0px))}
+.ranking-my-place p{flex:1;max-width:60%;margin:0;font-size:max(13px,var(--ui-min-font,0px));line-height:1.7}
+.ranking-list-head{display:flex;justify-content:space-between;gap:10px;font-size:max(12px,var(--ui-min-font,0px));font-weight:650;color:var(--theme-muted,#59695c);padding:0 8px 9px}
+.world-rank-list{list-style:none;padding:0;margin:0}
+.world-rank-list li{display:grid;grid-template-columns:minmax(28px,max-content) minmax(0,1fr) auto;align-items:center;gap:10px;min-width:0;min-height:64px;padding:12px 8px;border-top:1px solid var(--theme-line,#c7c9b4);font-size:max(14px,var(--ui-min-font,0px))}
+.world-rank-list .ranking-is-me{background:var(--theme-soft,#e8eddf);border-radius:8px}
+.ranking-position{font-weight:750;min-width:28px;text-align:center;font-variant-numeric:tabular-nums;color:var(--theme-accent,#245b45)}
+.ranking-player{min-width:0;display:flex;align-items:baseline;gap:5px 7px;flex-wrap:wrap}
+.ranking-player-name{min-width:0;max-width:100%;overflow-wrap:anywhere;word-break:break-word}
+.ranking-you{padding:1px 5px;border:1px solid currentColor;border-radius:5px;font-size:max(10px,var(--ui-min-font,0px));font-weight:700;line-height:1.5;color:var(--theme-accent,#245b45)}
+.ranking-clears{flex-basis:100%;font-size:max(12px,var(--ui-min-font,0px));color:var(--theme-muted,#59695c)}
+.ranking-value{font-size:max(14px,var(--ui-min-font,0px));font-variant-numeric:tabular-nums;text-align:right;max-width:180px;overflow-wrap:anywhere}
+.world-ranking .ranking-footnote,.world-ranking .ranking-join-note{font-size:max(12px,var(--ui-min-font,0px));line-height:1.7;color:var(--theme-muted,#59695c);margin:13px 0}
+.ranking-notice{padding:24px 6px;text-align:center;font-size:max(14px,var(--ui-min-font,0px));line-height:1.8}
+.ranking-notice p{margin:0 0 16px}
+.ranking-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:26px 10px;color:var(--theme-muted,#59695c)}
+.ranking-empty p{margin:0;font-size:max(14px,var(--ui-min-font,0px))}
+.ranking-guide{margin-top:22px;border-top:1px solid var(--theme-line,#c7c9b4);padding-top:8px}
+.ranking-guide summary{cursor:pointer;min-height:44px;padding:11px 2px;font-size:max(14px,var(--ui-min-font,0px));font-weight:700}
+.ranking-guide p{font-size:max(13px,var(--ui-min-font,0px));line-height:1.8;color:var(--theme-muted,#59695c);margin:10px 0}
+@media(max-width:380px){.game-dialog.ranking-dialog{padding:13px 12px 20px}.ranking-mode-controls{gap:6px}.ranking-mode-controls button{padding-inline:5px}.ranking-periods{grid-template-columns:repeat(2,minmax(0,1fr))}.world-rank-list li{gap:7px;padding-inline:4px}.ranking-value{max-width:110px}.ranking-my-place{gap:10px;padding:12px}}
+@media(forced-colors:active){.world-ranking button[aria-pressed=true]{outline:2px solid Highlight}.ranking-my-place,.world-rank-list .ranking-is-me{border:2px solid CanvasText}}

@@ -75,11 +75,13 @@ try {
  buildTranslationAssets(path.join(output,'notebook'),version,{previousDirectory:path.join(repo,'nanpure/releases/2026.10.23.43/notebook')});
  patchNotebook(path.join(output,'notebook'));
  // Keep the mixed-size engine available in the main document, generation workers and print view.
+ for(const ext of ['js','css'])fs.copyFileSync(path.join(repo,'nanpure/collection/workspace.'+ext),path.join(output,'notebook/play-workspace.'+ext));
  const notebookIndex=path.join(output,'notebook/index.html');
  let notebookHTML=fs.readFileSync(notebookIndex,'utf8');
  notebookHTML=notebookHTML.replace(/(<script id="common-source">)[\s\S]*?(<\/script>)/,(_,a,b)=>a+fs.readFileSync(path.join(overrides,'public/notebook/common.js'),'utf8')+b);
  if(!notebookHTML.includes('id="core-mixed-multi"'))notebookHTML=notebookHTML.replace(/(<script id="generator-source">[\s\S]*?<\/script>)/,all=>all+'<script id="core-mixed-multi">'+fs.readFileSync(path.join(overrides,'public/notebook/mixed-multi.js'),'utf8')+'</script>');
  if(!notebookHTML.includes('id="core-mixed-multi"'))throw Error('Mixed multi worker source is missing');
+ notebookHTML=notebookHTML.replace('</head>',['multi-editor.css','play-workspace.css','board-comfort.css'].map(name=>'<link rel="stylesheet" href="'+name+'">').join('')+'</head>').replace('</body>',['play-workspace.js','board-comfort-model.js','board-comfort.js'].map(name=>'<script src="'+name+'"></script>').join('')+'</body>');
  fs.writeFileSync(notebookIndex,notebookHTML);
  for(const f of walk(path.join(output,'notebook')).filter(f=>f.endsWith('.html')&&f!==notebookIndex)){
   const h=fs.readFileSync(f,'utf8');if(h.includes('src="multi.js"')&&h.includes('src="common.js"')&&!h.includes('src="mixed-multi.js"'))fs.writeFileSync(f,h.replace('<script src="common.js"></script>','<script src="common.js"></script><script src="mixed-multi.js"></script>'));

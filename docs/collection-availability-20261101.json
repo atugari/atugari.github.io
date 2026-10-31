@@ -1,0 +1,3830 @@
+{
+  "playability": {
+    "catalogTotal": 104619,
+    "verifiedRecords": 104619,
+    "verifiedPacks": 4561,
+    "playerSamples": 604,
+    "numberRules": 22,
+    "numberConditions": 294,
+    "numberPuzzles": 98279,
+    "movedCrossPuzzles": 6340,
+    "unplayable": [],
+    "conditions": [
+      {
+        "cid": "C001",
+        "kind": "antiknight",
+        "n": 9,
+        "level": 1,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C002",
+        "kind": "antiknight",
+        "n": 9,
+        "level": 2,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C003",
+        "kind": "antiknight",
+        "n": 9,
+        "level": 3,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C004",
+        "kind": "antiknight",
+        "n": 9,
+        "level": 4,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C005",
+        "kind": "antiknight",
+        "n": 9,
+        "level": 5,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C006",
+        "kind": "antiknight",
+        "n": 9,
+        "level": 6,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C007",
+        "kind": "antiknight",
+        "n": 9,
+        "level": 7,
+        "detail": "",
+        "count": 427,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C008",
+        "kind": "antiknight",
+        "n": 9,
+        "level": 8,
+        "detail": "",
+        "count": 425,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C009",
+        "kind": "arrow",
+        "n": 9,
+        "level": 1,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C010",
+        "kind": "arrow",
+        "n": 9,
+        "level": 2,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C011",
+        "kind": "arrow",
+        "n": 9,
+        "level": 3,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C012",
+        "kind": "arrow",
+        "n": 9,
+        "level": 4,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C013",
+        "kind": "arrow",
+        "n": 9,
+        "level": 5,
+        "detail": "",
+        "count": 435,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C014",
+        "kind": "arrow",
+        "n": 9,
+        "level": 6,
+        "detail": "",
+        "count": 435,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C015",
+        "kind": "arrow",
+        "n": 9,
+        "level": 7,
+        "detail": "",
+        "count": 427,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C016",
+        "kind": "arrow",
+        "n": 9,
+        "level": 8,
+        "detail": "",
+        "count": 425,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C017",
+        "kind": "clone",
+        "n": 9,
+        "level": 1,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C018",
+        "kind": "clone",
+        "n": 9,
+        "level": 2,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C019",
+        "kind": "clone",
+        "n": 9,
+        "level": 3,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C020",
+        "kind": "clone",
+        "n": 9,
+        "level": 4,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C021",
+        "kind": "clone",
+        "n": 9,
+        "level": 5,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C022",
+        "kind": "clone",
+        "n": 9,
+        "level": 6,
+        "detail": "",
+        "count": 427,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C023",
+        "kind": "clone",
+        "n": 9,
+        "level": 7,
+        "detail": "",
+        "count": 425,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C024",
+        "kind": "clone",
+        "n": 9,
+        "level": 8,
+        "detail": "",
+        "count": 425,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C025",
+        "kind": "cross",
+        "n": 6,
+        "level": 1,
+        "detail": "",
+        "count": 1152,
+        "scope": "pareasobi",
+        "playable": true
+      },
+      {
+        "cid": "C026",
+        "kind": "cross",
+        "n": 6,
+        "level": 2,
+        "detail": "",
+        "count": 1152,
+        "scope": "pareasobi",
+        "playable": true
+      },
+      {
+        "cid": "C027",
+        "kind": "cross",
+        "n": 6,
+        "level": 3,
+        "detail": "",
+        "count": 1152,
+        "scope": "pareasobi",
+        "playable": true
+      },
+      {
+        "cid": "C028",
+        "kind": "cross",
+        "n": 6,
+        "level": 4,
+        "detail": "",
+        "count": 1152,
+        "scope": "pareasobi",
+        "playable": true
+      },
+      {
+        "cid": "C029",
+        "kind": "cross",
+        "n": 9,
+        "level": 1,
+        "detail": "",
+        "count": 430,
+        "scope": "pareasobi",
+        "playable": true
+      },
+      {
+        "cid": "C030",
+        "kind": "cross",
+        "n": 9,
+        "level": 2,
+        "detail": "",
+        "count": 436,
+        "scope": "pareasobi",
+        "playable": true
+      },
+      {
+        "cid": "C031",
+        "kind": "cross",
+        "n": 9,
+        "level": 3,
+        "detail": "",
+        "count": 436,
+        "scope": "pareasobi",
+        "playable": true
+      },
+      {
+        "cid": "C032",
+        "kind": "cross",
+        "n": 9,
+        "level": 4,
+        "detail": "",
+        "count": 430,
+        "scope": "pareasobi",
+        "playable": true
+      },
+      {
+        "cid": "C033",
+        "kind": "diagonal",
+        "n": 9,
+        "level": 1,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C034",
+        "kind": "diagonal",
+        "n": 9,
+        "level": 2,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C035",
+        "kind": "diagonal",
+        "n": 9,
+        "level": 3,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C036",
+        "kind": "diagonal",
+        "n": 9,
+        "level": 4,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C037",
+        "kind": "diagonal",
+        "n": 9,
+        "level": 5,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C038",
+        "kind": "diagonal",
+        "n": 9,
+        "level": 6,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C039",
+        "kind": "diagonal",
+        "n": 9,
+        "level": 7,
+        "detail": "",
+        "count": 427,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C040",
+        "kind": "diagonal",
+        "n": 9,
+        "level": 8,
+        "detail": "",
+        "count": 425,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C041",
+        "kind": "doubleArrow",
+        "n": 9,
+        "level": 1,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C042",
+        "kind": "doubleArrow",
+        "n": 9,
+        "level": 2,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C043",
+        "kind": "doubleArrow",
+        "n": 9,
+        "level": 3,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C044",
+        "kind": "doubleArrow",
+        "n": 9,
+        "level": 4,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C045",
+        "kind": "doubleArrow",
+        "n": 9,
+        "level": 5,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C046",
+        "kind": "doubleArrow",
+        "n": 9,
+        "level": 6,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C047",
+        "kind": "doubleArrow",
+        "n": 9,
+        "level": 7,
+        "detail": "",
+        "count": 427,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C048",
+        "kind": "doubleArrow",
+        "n": 9,
+        "level": 8,
+        "detail": "",
+        "count": 425,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C049",
+        "kind": "doubleSandwich",
+        "n": 9,
+        "level": 1,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C050",
+        "kind": "doubleSandwich",
+        "n": 9,
+        "level": 2,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C051",
+        "kind": "doubleSandwich",
+        "n": 9,
+        "level": 3,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C052",
+        "kind": "doubleSandwich",
+        "n": 9,
+        "level": 4,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C053",
+        "kind": "doubleSandwich",
+        "n": 9,
+        "level": 5,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C054",
+        "kind": "doubleSandwich",
+        "n": 9,
+        "level": 6,
+        "detail": "",
+        "count": 427,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C055",
+        "kind": "doubleSandwich",
+        "n": 9,
+        "level": 7,
+        "detail": "",
+        "count": 418,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C056",
+        "kind": "doubleSandwich",
+        "n": 9,
+        "level": 8,
+        "detail": "",
+        "count": 425,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C057",
+        "kind": "hyper",
+        "n": 9,
+        "level": 1,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C058",
+        "kind": "hyper",
+        "n": 9,
+        "level": 2,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C059",
+        "kind": "hyper",
+        "n": 9,
+        "level": 3,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C060",
+        "kind": "hyper",
+        "n": 9,
+        "level": 4,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C061",
+        "kind": "hyper",
+        "n": 9,
+        "level": 5,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C062",
+        "kind": "hyper",
+        "n": 9,
+        "level": 6,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C063",
+        "kind": "hyper",
+        "n": 9,
+        "level": 7,
+        "detail": "",
+        "count": 427,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C064",
+        "kind": "hyper",
+        "n": 9,
+        "level": 8,
+        "detail": "",
+        "count": 425,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C065",
+        "kind": "jigsaw",
+        "n": 16,
+        "level": 1,
+        "detail": "少し複雑",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C066",
+        "kind": "jigsaw",
+        "n": 16,
+        "level": 2,
+        "detail": "少し複雑",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C067",
+        "kind": "jigsaw",
+        "n": 16,
+        "level": 3,
+        "detail": "少し複雑",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C068",
+        "kind": "jigsaw",
+        "n": 16,
+        "level": 4,
+        "detail": "少し複雑",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C069",
+        "kind": "jigsaw",
+        "n": 16,
+        "level": 5,
+        "detail": "少し複雑",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C070",
+        "kind": "jigsaw",
+        "n": 25,
+        "level": 1,
+        "detail": "少し複雑",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C071",
+        "kind": "jigsaw",
+        "n": 25,
+        "level": 2,
+        "detail": "少し複雑",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C072",
+        "kind": "jigsaw",
+        "n": 25,
+        "level": 3,
+        "detail": "少し複雑",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C073",
+        "kind": "jigsaw",
+        "n": 25,
+        "level": 4,
+        "detail": "少し複雑",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C074",
+        "kind": "jigsaw",
+        "n": 9,
+        "level": 1,
+        "detail": "少し複雑",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C075",
+        "kind": "jigsaw",
+        "n": 9,
+        "level": 2,
+        "detail": "少し複雑",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C076",
+        "kind": "jigsaw",
+        "n": 9,
+        "level": 3,
+        "detail": "少し複雑",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C077",
+        "kind": "jigsaw",
+        "n": 9,
+        "level": 3,
+        "detail": "とても複雑",
+        "count": 6,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C078",
+        "kind": "jigsaw",
+        "n": 9,
+        "level": 4,
+        "detail": "少し複雑",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C079",
+        "kind": "jigsaw",
+        "n": 9,
+        "level": 4,
+        "detail": "とても複雑",
+        "count": 6,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C080",
+        "kind": "jigsaw",
+        "n": 9,
+        "level": 5,
+        "detail": "少し複雑",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C081",
+        "kind": "jigsaw",
+        "n": 9,
+        "level": 5,
+        "detail": "とても複雑",
+        "count": 6,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C082",
+        "kind": "killer",
+        "n": 16,
+        "level": 1,
+        "detail": "少し複雑",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C083",
+        "kind": "killer",
+        "n": 16,
+        "level": 2,
+        "detail": "少し複雑",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C084",
+        "kind": "killer",
+        "n": 16,
+        "level": 3,
+        "detail": "少し複雑",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C085",
+        "kind": "killer",
+        "n": 16,
+        "level": 4,
+        "detail": "少し複雑",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C086",
+        "kind": "killer",
+        "n": 16,
+        "level": 5,
+        "detail": "少し複雑",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C087",
+        "kind": "killer",
+        "n": 25,
+        "level": 1,
+        "detail": "少し複雑",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C088",
+        "kind": "killer",
+        "n": 25,
+        "level": 2,
+        "detail": "少し複雑",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C089",
+        "kind": "killer",
+        "n": 25,
+        "level": 3,
+        "detail": "少し複雑",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C090",
+        "kind": "killer",
+        "n": 25,
+        "level": 4,
+        "detail": "少し複雑",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C091",
+        "kind": "killer",
+        "n": 25,
+        "level": 5,
+        "detail": "少し複雑",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C092",
+        "kind": "killer",
+        "n": 9,
+        "level": 1,
+        "detail": "少し複雑",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C093",
+        "kind": "killer",
+        "n": 9,
+        "level": 2,
+        "detail": "少し複雑",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C094",
+        "kind": "killer",
+        "n": 9,
+        "level": 3,
+        "detail": "少し複雑",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C095",
+        "kind": "killer",
+        "n": 9,
+        "level": 4,
+        "detail": "少し複雑",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C096",
+        "kind": "killer",
+        "n": 9,
+        "level": 4,
+        "detail": "とても複雑",
+        "count": 6,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C097",
+        "kind": "killer",
+        "n": 9,
+        "level": 5,
+        "detail": "少し複雑",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C098",
+        "kind": "killer",
+        "n": 9,
+        "level": 5,
+        "detail": "とても複雑",
+        "count": 6,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C099",
+        "kind": "kropki",
+        "n": 9,
+        "level": 1,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C100",
+        "kind": "kropki",
+        "n": 9,
+        "level": 2,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C101",
+        "kind": "kropki",
+        "n": 9,
+        "level": 3,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C102",
+        "kind": "kropki",
+        "n": 9,
+        "level": 4,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C103",
+        "kind": "kropki",
+        "n": 9,
+        "level": 5,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C104",
+        "kind": "kropki",
+        "n": 9,
+        "level": 6,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C105",
+        "kind": "kropki",
+        "n": 9,
+        "level": 7,
+        "detail": "",
+        "count": 427,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C106",
+        "kind": "kropki",
+        "n": 9,
+        "level": 8,
+        "detail": "",
+        "count": 425,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C107",
+        "kind": "multi",
+        "n": 9,
+        "level": 1,
+        "detail": "2面連結",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C108",
+        "kind": "multi",
+        "n": 9,
+        "level": 1,
+        "detail": "5面サムライ",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C109",
+        "kind": "multi",
+        "n": 9,
+        "level": 1,
+        "detail": "3面リレー",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C110",
+        "kind": "multi",
+        "n": 9,
+        "level": 2,
+        "detail": "3面リレー",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C111",
+        "kind": "multi",
+        "n": 9,
+        "level": 2,
+        "detail": "2面連結",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C112",
+        "kind": "multi",
+        "n": 9,
+        "level": 2,
+        "detail": "5面サムライ",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C113",
+        "kind": "multi",
+        "n": 9,
+        "level": 3,
+        "detail": "3面リレー",
+        "count": 433,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C114",
+        "kind": "multi",
+        "n": 9,
+        "level": 3,
+        "detail": "2面連結",
+        "count": 433,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C115",
+        "kind": "multi",
+        "n": 9,
+        "level": 3,
+        "detail": "5面サムライ",
+        "count": 433,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C116",
+        "kind": "multi",
+        "n": 9,
+        "level": 4,
+        "detail": "3面リレー",
+        "count": 432,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C117",
+        "kind": "multi",
+        "n": 9,
+        "level": 4,
+        "detail": "2面連結",
+        "count": 432,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C118",
+        "kind": "multi",
+        "n": 9,
+        "level": 4,
+        "detail": "5面サムライ",
+        "count": 432,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C119",
+        "kind": "multi",
+        "n": 9,
+        "level": 5,
+        "detail": "5面サムライ",
+        "count": 428,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C120",
+        "kind": "multi",
+        "n": 9,
+        "level": 5,
+        "detail": "2面連結",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C121",
+        "kind": "multi",
+        "n": 9,
+        "level": 5,
+        "detail": "3面リレー",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C122",
+        "kind": "neighbor",
+        "n": 6,
+        "level": 1,
+        "detail": "",
+        "count": 1152,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C123",
+        "kind": "neighbor",
+        "n": 6,
+        "level": 2,
+        "detail": "",
+        "count": 1152,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C124",
+        "kind": "neighbor",
+        "n": 6,
+        "level": 3,
+        "detail": "",
+        "count": 1152,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C125",
+        "kind": "neighbor",
+        "n": 6,
+        "level": 4,
+        "detail": "",
+        "count": 1152,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C126",
+        "kind": "neighbor",
+        "n": 9,
+        "level": 1,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C127",
+        "kind": "neighbor",
+        "n": 9,
+        "level": 2,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C128",
+        "kind": "neighbor",
+        "n": 9,
+        "level": 3,
+        "detail": "",
+        "count": 436,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C129",
+        "kind": "neighbor",
+        "n": 9,
+        "level": 4,
+        "detail": "",
+        "count": 436,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C130",
+        "kind": "normal",
+        "n": 16,
+        "level": 1,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C131",
+        "kind": "normal",
+        "n": 16,
+        "level": 2,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C132",
+        "kind": "normal",
+        "n": 16,
+        "level": 3,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C133",
+        "kind": "normal",
+        "n": 16,
+        "level": 4,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C134",
+        "kind": "normal",
+        "n": 25,
+        "level": 1,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C135",
+        "kind": "normal",
+        "n": 25,
+        "level": 2,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C136",
+        "kind": "normal",
+        "n": 25,
+        "level": 3,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C137",
+        "kind": "normal",
+        "n": 25,
+        "level": 4,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C138",
+        "kind": "normal",
+        "n": 25,
+        "level": 5,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C139",
+        "kind": "normal",
+        "n": 25,
+        "level": 6,
+        "detail": "",
+        "count": 423,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C140",
+        "kind": "normal",
+        "n": 9,
+        "level": 1,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C141",
+        "kind": "normal",
+        "n": 9,
+        "level": 10,
+        "detail": "",
+        "count": 425,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C142",
+        "kind": "normal",
+        "n": 9,
+        "level": 11,
+        "detail": "",
+        "count": 431,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C143",
+        "kind": "normal",
+        "n": 9,
+        "level": 12,
+        "detail": "",
+        "count": 431,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C144",
+        "kind": "normal",
+        "n": 9,
+        "level": 13,
+        "detail": "",
+        "count": 431,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C145",
+        "kind": "normal",
+        "n": 9,
+        "level": 14,
+        "detail": "",
+        "count": 431,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C146",
+        "kind": "normal",
+        "n": 9,
+        "level": 15,
+        "detail": "",
+        "count": 431,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C147",
+        "kind": "normal",
+        "n": 9,
+        "level": 16,
+        "detail": "",
+        "count": 419,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C148",
+        "kind": "normal",
+        "n": 9,
+        "level": 17,
+        "detail": "",
+        "count": 274,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C149",
+        "kind": "normal",
+        "n": 9,
+        "level": 18,
+        "detail": "",
+        "count": 319,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C150",
+        "kind": "normal",
+        "n": 9,
+        "level": 2,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C151",
+        "kind": "normal",
+        "n": 9,
+        "level": 3,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C152",
+        "kind": "normal",
+        "n": 9,
+        "level": 4,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C153",
+        "kind": "normal",
+        "n": 9,
+        "level": 5,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C154",
+        "kind": "normal",
+        "n": 9,
+        "level": 6,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C155",
+        "kind": "normal",
+        "n": 9,
+        "level": 7,
+        "detail": "",
+        "count": 427,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C156",
+        "kind": "normal",
+        "n": 9,
+        "level": 8,
+        "detail": "",
+        "count": 425,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C157",
+        "kind": "normal",
+        "n": 9,
+        "level": 9,
+        "detail": "",
+        "count": 420,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C158",
+        "kind": "palindrome",
+        "n": 9,
+        "level": 1,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C159",
+        "kind": "palindrome",
+        "n": 9,
+        "level": 2,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C160",
+        "kind": "palindrome",
+        "n": 9,
+        "level": 3,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C161",
+        "kind": "palindrome",
+        "n": 9,
+        "level": 4,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C162",
+        "kind": "palindrome",
+        "n": 9,
+        "level": 5,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C163",
+        "kind": "palindrome",
+        "n": 9,
+        "level": 6,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C164",
+        "kind": "palindrome",
+        "n": 9,
+        "level": 7,
+        "detail": "",
+        "count": 427,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C165",
+        "kind": "palindrome",
+        "n": 9,
+        "level": 8,
+        "detail": "",
+        "count": 425,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C166",
+        "kind": "renban",
+        "n": 9,
+        "level": 1,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C167",
+        "kind": "renban",
+        "n": 9,
+        "level": 2,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C168",
+        "kind": "renban",
+        "n": 9,
+        "level": 3,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C169",
+        "kind": "renban",
+        "n": 9,
+        "level": 4,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C170",
+        "kind": "renban",
+        "n": 9,
+        "level": 5,
+        "detail": "",
+        "count": 435,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C171",
+        "kind": "renban",
+        "n": 9,
+        "level": 6,
+        "detail": "",
+        "count": 435,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C172",
+        "kind": "renban",
+        "n": 9,
+        "level": 7,
+        "detail": "",
+        "count": 427,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C173",
+        "kind": "renban",
+        "n": 9,
+        "level": 8,
+        "detail": "",
+        "count": 425,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C174",
+        "kind": "sandwich",
+        "n": 9,
+        "level": 1,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C175",
+        "kind": "sandwich",
+        "n": 9,
+        "level": 2,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C176",
+        "kind": "sandwich",
+        "n": 9,
+        "level": 3,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C177",
+        "kind": "sandwich",
+        "n": 9,
+        "level": 4,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C178",
+        "kind": "sandwich",
+        "n": 9,
+        "level": 5,
+        "detail": "",
+        "count": 435,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C179",
+        "kind": "sandwich",
+        "n": 9,
+        "level": 6,
+        "detail": "",
+        "count": 435,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C180",
+        "kind": "sandwich",
+        "n": 9,
+        "level": 7,
+        "detail": "",
+        "count": 427,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C181",
+        "kind": "sandwich",
+        "n": 9,
+        "level": 8,
+        "detail": "",
+        "count": 424,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C182",
+        "kind": "skyscraper",
+        "n": 9,
+        "level": 1,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C183",
+        "kind": "skyscraper",
+        "n": 9,
+        "level": 2,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C184",
+        "kind": "skyscraper",
+        "n": 9,
+        "level": 3,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C185",
+        "kind": "skyscraper",
+        "n": 9,
+        "level": 4,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C186",
+        "kind": "skyscraper",
+        "n": 9,
+        "level": 5,
+        "detail": "",
+        "count": 435,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C187",
+        "kind": "skyscraper",
+        "n": 9,
+        "level": 6,
+        "detail": "",
+        "count": 435,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C188",
+        "kind": "skyscraper",
+        "n": 9,
+        "level": 7,
+        "detail": "",
+        "count": 426,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C189",
+        "kind": "skyscraper",
+        "n": 9,
+        "level": 8,
+        "detail": "",
+        "count": 425,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C190",
+        "kind": "slowThermo",
+        "n": 9,
+        "level": 1,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C191",
+        "kind": "slowThermo",
+        "n": 9,
+        "level": 2,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C192",
+        "kind": "slowThermo",
+        "n": 9,
+        "level": 3,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C193",
+        "kind": "slowThermo",
+        "n": 9,
+        "level": 4,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C194",
+        "kind": "slowThermo",
+        "n": 9,
+        "level": 5,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C195",
+        "kind": "slowThermo",
+        "n": 9,
+        "level": 6,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C196",
+        "kind": "slowThermo",
+        "n": 9,
+        "level": 7,
+        "detail": "",
+        "count": 427,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C197",
+        "kind": "slowThermo",
+        "n": 9,
+        "level": 8,
+        "detail": "",
+        "count": 425,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C198",
+        "kind": "step",
+        "n": 9,
+        "level": 1,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C199",
+        "kind": "step",
+        "n": 9,
+        "level": 2,
+        "detail": "",
+        "count": 436,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C200",
+        "kind": "step",
+        "n": 9,
+        "level": 3,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C201",
+        "kind": "step",
+        "n": 9,
+        "level": 4,
+        "detail": "",
+        "count": 436,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C202",
+        "kind": "thermo",
+        "n": 9,
+        "level": 1,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C203",
+        "kind": "thermo",
+        "n": 9,
+        "level": 2,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C204",
+        "kind": "thermo",
+        "n": 9,
+        "level": 3,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C205",
+        "kind": "thermo",
+        "n": 9,
+        "level": 4,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C206",
+        "kind": "thermo",
+        "n": 9,
+        "level": 5,
+        "detail": "",
+        "count": 435,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C207",
+        "kind": "thermo",
+        "n": 9,
+        "level": 6,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C208",
+        "kind": "thermo",
+        "n": 9,
+        "level": 7,
+        "detail": "",
+        "count": 433,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C209",
+        "kind": "thermo",
+        "n": 9,
+        "level": 8,
+        "detail": "",
+        "count": 425,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C210",
+        "kind": "twinKiller",
+        "n": 9,
+        "level": 1,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C211",
+        "kind": "twinKiller",
+        "n": 9,
+        "level": 2,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C212",
+        "kind": "twinKiller",
+        "n": 9,
+        "level": 3,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C213",
+        "kind": "twinKiller",
+        "n": 9,
+        "level": 4,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C214",
+        "kind": "twinKiller",
+        "n": 9,
+        "level": 5,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C215",
+        "kind": "twinKiller",
+        "n": 9,
+        "level": 6,
+        "detail": "",
+        "count": 427,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C216",
+        "kind": "twinKiller",
+        "n": 9,
+        "level": 7,
+        "detail": "",
+        "count": 425,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C217",
+        "kind": "twinKiller",
+        "n": 9,
+        "level": 8,
+        "detail": "",
+        "count": 425,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C218",
+        "kind": "whisper",
+        "n": 9,
+        "level": 1,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C219",
+        "kind": "whisper",
+        "n": 9,
+        "level": 2,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C220",
+        "kind": "whisper",
+        "n": 9,
+        "level": 3,
+        "detail": "",
+        "count": 430,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C221",
+        "kind": "whisper",
+        "n": 9,
+        "level": 4,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C222",
+        "kind": "whisper",
+        "n": 9,
+        "level": 5,
+        "detail": "",
+        "count": 429,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C223",
+        "kind": "whisper",
+        "n": 9,
+        "level": 6,
+        "detail": "",
+        "count": 428,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C224",
+        "kind": "whisper",
+        "n": 9,
+        "level": 7,
+        "detail": "",
+        "count": 427,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C225",
+        "kind": "whisper",
+        "n": 9,
+        "level": 8,
+        "detail": "",
+        "count": 425,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C226",
+        "kind": "normal",
+        "n": 4,
+        "level": 1,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C227",
+        "kind": "normal",
+        "n": 4,
+        "level": 2,
+        "detail": "",
+        "count": 59,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C228",
+        "kind": "normal",
+        "n": 6,
+        "level": 1,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C229",
+        "kind": "normal",
+        "n": 6,
+        "level": 2,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C230",
+        "kind": "normal",
+        "n": 6,
+        "level": 3,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C231",
+        "kind": "normal",
+        "n": 8,
+        "level": 1,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C232",
+        "kind": "normal",
+        "n": 8,
+        "level": 2,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C233",
+        "kind": "normal",
+        "n": 8,
+        "level": 3,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C234",
+        "kind": "normal",
+        "n": 8,
+        "level": 4,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C235",
+        "kind": "normal",
+        "n": 10,
+        "level": 1,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C236",
+        "kind": "normal",
+        "n": 10,
+        "level": 2,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C237",
+        "kind": "normal",
+        "n": 10,
+        "level": 3,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C238",
+        "kind": "normal",
+        "n": 10,
+        "level": 4,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C239",
+        "kind": "normal",
+        "n": 12,
+        "level": 1,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C240",
+        "kind": "normal",
+        "n": 12,
+        "level": 2,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C241",
+        "kind": "normal",
+        "n": 12,
+        "level": 3,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C242",
+        "kind": "normal",
+        "n": 12,
+        "level": 4,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C243",
+        "kind": "normal",
+        "n": 14,
+        "level": 1,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C244",
+        "kind": "normal",
+        "n": 14,
+        "level": 2,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C245",
+        "kind": "normal",
+        "n": 14,
+        "level": 3,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C246",
+        "kind": "normal",
+        "n": 14,
+        "level": 4,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C247",
+        "kind": "normal",
+        "n": 15,
+        "level": 1,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C248",
+        "kind": "normal",
+        "n": 15,
+        "level": 2,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C249",
+        "kind": "normal",
+        "n": 15,
+        "level": 3,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C250",
+        "kind": "normal",
+        "n": 15,
+        "level": 4,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C251",
+        "kind": "normal",
+        "n": 18,
+        "level": 1,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C252",
+        "kind": "normal",
+        "n": 18,
+        "level": 2,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C253",
+        "kind": "normal",
+        "n": 18,
+        "level": 3,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C254",
+        "kind": "normal",
+        "n": 18,
+        "level": 4,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C255",
+        "kind": "normal",
+        "n": 18,
+        "level": 5,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C256",
+        "kind": "normal",
+        "n": 18,
+        "level": 6,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C257",
+        "kind": "normal",
+        "n": 20,
+        "level": 1,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C258",
+        "kind": "normal",
+        "n": 20,
+        "level": 2,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C259",
+        "kind": "normal",
+        "n": 20,
+        "level": 3,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C260",
+        "kind": "normal",
+        "n": 20,
+        "level": 4,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C261",
+        "kind": "normal",
+        "n": 20,
+        "level": 5,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C262",
+        "kind": "normal",
+        "n": 20,
+        "level": 6,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C263",
+        "kind": "normal",
+        "n": 21,
+        "level": 1,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C264",
+        "kind": "normal",
+        "n": 21,
+        "level": 2,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C265",
+        "kind": "normal",
+        "n": 21,
+        "level": 3,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C266",
+        "kind": "normal",
+        "n": 21,
+        "level": 4,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C267",
+        "kind": "normal",
+        "n": 21,
+        "level": 5,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C268",
+        "kind": "normal",
+        "n": 21,
+        "level": 6,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C269",
+        "kind": "normal",
+        "n": 22,
+        "level": 1,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C270",
+        "kind": "normal",
+        "n": 22,
+        "level": 2,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C271",
+        "kind": "normal",
+        "n": 22,
+        "level": 3,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C272",
+        "kind": "normal",
+        "n": 22,
+        "level": 4,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C273",
+        "kind": "normal",
+        "n": 22,
+        "level": 5,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C274",
+        "kind": "normal",
+        "n": 22,
+        "level": 6,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C275",
+        "kind": "normal",
+        "n": 24,
+        "level": 1,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C276",
+        "kind": "normal",
+        "n": 24,
+        "level": 2,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C277",
+        "kind": "normal",
+        "n": 24,
+        "level": 3,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C278",
+        "kind": "normal",
+        "n": 24,
+        "level": 4,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C279",
+        "kind": "normal",
+        "n": 24,
+        "level": 5,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C280",
+        "kind": "normal",
+        "n": 24,
+        "level": 6,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C281",
+        "kind": "normal",
+        "n": 36,
+        "level": 1,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C282",
+        "kind": "normal",
+        "n": 36,
+        "level": 2,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C283",
+        "kind": "normal",
+        "n": 36,
+        "level": 3,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C284",
+        "kind": "normal",
+        "n": 36,
+        "level": 4,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C285",
+        "kind": "normal",
+        "n": 36,
+        "level": 5,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C286",
+        "kind": "normal",
+        "n": 36,
+        "level": 6,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C287",
+        "kind": "normal",
+        "n": 49,
+        "level": 1,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C288",
+        "kind": "normal",
+        "n": 49,
+        "level": 2,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C289",
+        "kind": "normal",
+        "n": 49,
+        "level": 3,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C290",
+        "kind": "normal",
+        "n": 49,
+        "level": 4,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C291",
+        "kind": "normal",
+        "n": 49,
+        "level": 5,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C292",
+        "kind": "normal",
+        "n": 49,
+        "level": 6,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C293",
+        "kind": "normal",
+        "n": 100,
+        "level": 1,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C294",
+        "kind": "normal",
+        "n": 100,
+        "level": 2,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C295",
+        "kind": "normal",
+        "n": 100,
+        "level": 3,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C296",
+        "kind": "normal",
+        "n": 100,
+        "level": 4,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C297",
+        "kind": "normal",
+        "n": 100,
+        "level": 5,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C298",
+        "kind": "normal",
+        "n": 100,
+        "level": 6,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C299",
+        "kind": "normal",
+        "n": 100,
+        "level": 7,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C300",
+        "kind": "normal",
+        "n": 100,
+        "level": 8,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C301",
+        "kind": "normal",
+        "n": 100,
+        "level": 9,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      },
+      {
+        "cid": "C302",
+        "kind": "normal",
+        "n": 100,
+        "level": 10,
+        "detail": "",
+        "count": 60,
+        "scope": "nanpure",
+        "playable": true
+      }
+    ]
+  },
+  "unstocked": {
+    "supported": 427,
+    "missing": 109,
+    "byKind": {
+      "step": {
+        "name": "ステップナンプレ",
+        "count": 8,
+        "sizes": [
+          6,
+          8
+        ],
+        "shapes": []
+      },
+      "neighbor": {
+        "name": "おとなりナンプレ",
+        "count": 19,
+        "sizes": [
+          4,
+          8,
+          6
+        ],
+        "shapes": []
+      },
+      "jigsaw": {
+        "name": "ジグソーナンプレ",
+        "count": 39,
+        "sizes": [
+          9,
+          16,
+          25
+        ],
+        "shapes": []
+      },
+      "killer": {
+        "name": "キラーナンプレ",
+        "count": 43,
+        "sizes": [
+          9,
+          16,
+          25
+        ],
+        "shapes": []
+      }
+    },
+    "conditions": [
+      {
+        "kind": "step",
+        "n": 6,
+        "level": 1,
+        "count": 1
+      },
+      {
+        "kind": "step",
+        "n": 8,
+        "level": 1,
+        "count": 1
+      },
+      {
+        "kind": "neighbor",
+        "n": 4,
+        "level": 1,
+        "count": 1
+      },
+      {
+        "kind": "neighbor",
+        "n": 8,
+        "level": 1,
+        "count": 1
+      },
+      {
+        "kind": "neighbor",
+        "n": 6,
+        "level": 1,
+        "count": 1,
+        "linkedShape": "pair"
+      },
+      {
+        "kind": "neighbor",
+        "n": 6,
+        "level": 1,
+        "count": 1,
+        "linkedShape": "ell"
+      },
+      {
+        "kind": "neighbor",
+        "n": 6,
+        "level": 1,
+        "count": 1,
+        "linkedShape": "cross"
+      },
+      {
+        "kind": "jigsaw",
+        "n": 9,
+        "level": 1,
+        "count": 1,
+        "complexity": 1
+      },
+      {
+        "kind": "jigsaw",
+        "n": 9,
+        "level": 1,
+        "count": 1,
+        "complexity": 3
+      },
+      {
+        "kind": "jigsaw",
+        "n": 9,
+        "level": 1,
+        "count": 1,
+        "complexity": 4
+      },
+      {
+        "kind": "jigsaw",
+        "n": 16,
+        "level": 1,
+        "count": 1,
+        "complexity": 1
+      },
+      {
+        "kind": "jigsaw",
+        "n": 16,
+        "level": 1,
+        "count": 1,
+        "complexity": 3
+      },
+      {
+        "kind": "jigsaw",
+        "n": 16,
+        "level": 1,
+        "count": 1,
+        "complexity": 4
+      },
+      {
+        "kind": "jigsaw",
+        "n": 25,
+        "level": 1,
+        "count": 1,
+        "complexity": 1
+      },
+      {
+        "kind": "jigsaw",
+        "n": 25,
+        "level": 1,
+        "count": 1,
+        "complexity": 3
+      },
+      {
+        "kind": "jigsaw",
+        "n": 25,
+        "level": 1,
+        "count": 1,
+        "complexity": 4
+      },
+      {
+        "kind": "killer",
+        "n": 9,
+        "level": 1,
+        "count": 1,
+        "complexity": 1
+      },
+      {
+        "kind": "killer",
+        "n": 9,
+        "level": 1,
+        "count": 1,
+        "complexity": 3
+      },
+      {
+        "kind": "killer",
+        "n": 9,
+        "level": 1,
+        "count": 1,
+        "complexity": 4
+      },
+      {
+        "kind": "killer",
+        "n": 16,
+        "level": 1,
+        "count": 1,
+        "complexity": 1
+      },
+      {
+        "kind": "killer",
+        "n": 16,
+        "level": 1,
+        "count": 1,
+        "complexity": 3
+      },
+      {
+        "kind": "killer",
+        "n": 16,
+        "level": 1,
+        "count": 1,
+        "complexity": 4
+      },
+      {
+        "kind": "killer",
+        "n": 25,
+        "level": 1,
+        "count": 1,
+        "complexity": 1
+      },
+      {
+        "kind": "killer",
+        "n": 25,
+        "level": 1,
+        "count": 1,
+        "complexity": 3
+      },
+      {
+        "kind": "killer",
+        "n": 25,
+        "level": 1,
+        "count": 1,
+        "complexity": 4
+      },
+      {
+        "kind": "step",
+        "n": 6,
+        "level": 2,
+        "count": 1
+      },
+      {
+        "kind": "step",
+        "n": 8,
+        "level": 2,
+        "count": 1
+      },
+      {
+        "kind": "neighbor",
+        "n": 4,
+        "level": 2,
+        "count": 1
+      },
+      {
+        "kind": "neighbor",
+        "n": 8,
+        "level": 2,
+        "count": 1
+      },
+      {
+        "kind": "neighbor",
+        "n": 6,
+        "level": 2,
+        "count": 1,
+        "linkedShape": "pair"
+      },
+      {
+        "kind": "neighbor",
+        "n": 6,
+        "level": 2,
+        "count": 1,
+        "linkedShape": "ell"
+      },
+      {
+        "kind": "neighbor",
+        "n": 6,
+        "level": 2,
+        "count": 1,
+        "linkedShape": "cross"
+      },
+      {
+        "kind": "jigsaw",
+        "n": 9,
+        "level": 2,
+        "count": 1,
+        "complexity": 1
+      },
+      {
+        "kind": "jigsaw",
+        "n": 9,
+        "level": 2,
+        "count": 1,
+        "complexity": 3
+      },
+      {
+        "kind": "jigsaw",
+        "n": 9,
+        "level": 2,
+        "count": 1,
+        "complexity": 4
+      },
+      {
+        "kind": "jigsaw",
+        "n": 16,
+        "level": 2,
+        "count": 1,
+        "complexity": 1
+      },
+      {
+        "kind": "jigsaw",
+        "n": 16,
+        "level": 2,
+        "count": 1,
+        "complexity": 3
+      },
+      {
+        "kind": "jigsaw",
+        "n": 16,
+        "level": 2,
+        "count": 1,
+        "complexity": 4
+      },
+      {
+        "kind": "jigsaw",
+        "n": 25,
+        "level": 2,
+        "count": 1,
+        "complexity": 1
+      },
+      {
+        "kind": "jigsaw",
+        "n": 25,
+        "level": 2,
+        "count": 1,
+        "complexity": 3
+      },
+      {
+        "kind": "jigsaw",
+        "n": 25,
+        "level": 2,
+        "count": 1,
+        "complexity": 4
+      },
+      {
+        "kind": "killer",
+        "n": 9,
+        "level": 2,
+        "count": 1,
+        "complexity": 1
+      },
+      {
+        "kind": "killer",
+        "n": 9,
+        "level": 2,
+        "count": 1,
+        "complexity": 3
+      },
+      {
+        "kind": "killer",
+        "n": 9,
+        "level": 2,
+        "count": 1,
+        "complexity": 4
+      },
+      {
+        "kind": "killer",
+        "n": 16,
+        "level": 2,
+        "count": 1,
+        "complexity": 1
+      },
+      {
+        "kind": "killer",
+        "n": 16,
+        "level": 2,
+        "count": 1,
+        "complexity": 3
+      },
+      {
+        "kind": "killer",
+        "n": 16,
+        "level": 2,
+        "count": 1,
+        "complexity": 4
+      },
+      {
+        "kind": "killer",
+        "n": 25,
+        "level": 2,
+        "count": 1,
+        "complexity": 1
+      },
+      {
+        "kind": "killer",
+        "n": 25,
+        "level": 2,
+        "count": 1,
+        "complexity": 3
+      },
+      {
+        "kind": "killer",
+        "n": 25,
+        "level": 2,
+        "count": 1,
+        "complexity": 4
+      },
+      {
+        "kind": "step",
+        "n": 6,
+        "level": 3,
+        "count": 1
+      },
+      {
+        "kind": "step",
+        "n": 8,
+        "level": 3,
+        "count": 1
+      },
+      {
+        "kind": "neighbor",
+        "n": 4,
+        "level": 3,
+        "count": 1
+      },
+      {
+        "kind": "neighbor",
+        "n": 8,
+        "level": 3,
+        "count": 1
+      },
+      {
+        "kind": "neighbor",
+        "n": 6,
+        "level": 3,
+        "count": 1,
+        "linkedShape": "pair"
+      },
+      {
+        "kind": "neighbor",
+        "n": 6,
+        "level": 3,
+        "count": 1,
+        "linkedShape": "ell"
+      },
+      {
+        "kind": "neighbor",
+        "n": 6,
+        "level": 3,
+        "count": 1,
+        "linkedShape": "cross"
+      },
+      {
+        "kind": "jigsaw",
+        "n": 9,
+        "level": 3,
+        "count": 1,
+        "complexity": 1
+      },
+      {
+        "kind": "jigsaw",
+        "n": 9,
+        "level": 3,
+        "count": 1,
+        "complexity": 3
+      },
+      {
+        "kind": "jigsaw",
+        "n": 16,
+        "level": 3,
+        "count": 1,
+        "complexity": 1
+      },
+      {
+        "kind": "jigsaw",
+        "n": 16,
+        "level": 3,
+        "count": 1,
+        "complexity": 3
+      },
+      {
+        "kind": "jigsaw",
+        "n": 16,
+        "level": 3,
+        "count": 1,
+        "complexity": 4
+      },
+      {
+        "kind": "jigsaw",
+        "n": 25,
+        "level": 3,
+        "count": 1,
+        "complexity": 1
+      },
+      {
+        "kind": "jigsaw",
+        "n": 25,
+        "level": 3,
+        "count": 1,
+        "complexity": 3
+      },
+      {
+        "kind": "jigsaw",
+        "n": 25,
+        "level": 3,
+        "count": 1,
+        "complexity": 4
+      },
+      {
+        "kind": "killer",
+        "n": 9,
+        "level": 3,
+        "count": 1,
+        "complexity": 1
+      },
+      {
+        "kind": "killer",
+        "n": 9,
+        "level": 3,
+        "count": 1,
+        "complexity": 3
+      },
+      {
+        "kind": "killer",
+        "n": 9,
+        "level": 3,
+        "count": 1,
+        "complexity": 4
+      },
+      {
+        "kind": "killer",
+        "n": 16,
+        "level": 3,
+        "count": 1,
+        "complexity": 1
+      },
+      {
+        "kind": "killer",
+        "n": 16,
+        "level": 3,
+        "count": 1,
+        "complexity": 3
+      },
+      {
+        "kind": "killer",
+        "n": 16,
+        "level": 3,
+        "count": 1,
+        "complexity": 4
+      },
+      {
+        "kind": "killer",
+        "n": 25,
+        "level": 3,
+        "count": 1,
+        "complexity": 1
+      },
+      {
+        "kind": "killer",
+        "n": 25,
+        "level": 3,
+        "count": 1,
+        "complexity": 3
+      },
+      {
+        "kind": "killer",
+        "n": 25,
+        "level": 3,
+        "count": 1,
+        "complexity": 4
+      },
+      {
+        "kind": "step",
+        "n": 6,
+        "level": 4,
+        "count": 1
+      },
+      {
+        "kind": "step",
+        "n": 8,
+        "level": 4,
+        "count": 1
+      },
+      {
+        "kind": "neighbor",
+        "n": 8,
+        "level": 4,
+        "count": 1
+      },
+      {
+        "kind": "neighbor",
+        "n": 6,
+        "level": 4,
+        "count": 1,
+        "linkedShape": "pair"
+      },
+      {
+        "kind": "neighbor",
+        "n": 6,
+        "level": 4,
+        "count": 1,
+        "linkedShape": "ell"
+      },
+      {
+        "kind": "neighbor",
+        "n": 6,
+        "level": 4,
+        "count": 1,
+        "linkedShape": "cross"
+      },
+      {
+        "kind": "jigsaw",
+        "n": 9,
+        "level": 4,
+        "count": 1,
+        "complexity": 1
+      },
+      {
+        "kind": "jigsaw",
+        "n": 9,
+        "level": 4,
+        "count": 1,
+        "complexity": 3
+      },
+      {
+        "kind": "jigsaw",
+        "n": 16,
+        "level": 4,
+        "count": 1,
+        "complexity": 1
+      },
+      {
+        "kind": "jigsaw",
+        "n": 16,
+        "level": 4,
+        "count": 1,
+        "complexity": 3
+      },
+      {
+        "kind": "jigsaw",
+        "n": 16,
+        "level": 4,
+        "count": 1,
+        "complexity": 4
+      },
+      {
+        "kind": "jigsaw",
+        "n": 25,
+        "level": 4,
+        "count": 1,
+        "complexity": 1
+      },
+      {
+        "kind": "jigsaw",
+        "n": 25,
+        "level": 4,
+        "count": 1,
+        "complexity": 3
+      },
+      {
+        "kind": "jigsaw",
+        "n": 25,
+        "level": 4,
+        "count": 1,
+        "complexity": 4
+      },
+      {
+        "kind": "killer",
+        "n": 9,
+        "level": 4,
+        "count": 1,
+        "complexity": 1
+      },
+      {
+        "kind": "killer",
+        "n": 9,
+        "level": 4,
+        "count": 1,
+        "complexity": 3
+      },
+      {
+        "kind": "killer",
+        "n": 16,
+        "level": 4,
+        "count": 1,
+        "complexity": 1
+      },
+      {
+        "kind": "killer",
+        "n": 16,
+        "level": 4,
+        "count": 1,
+        "complexity": 3
+      },
+      {
+        "kind": "killer",
+        "n": 16,
+        "level": 4,
+        "count": 1,
+        "complexity": 4
+      },
+      {
+        "kind": "killer",
+        "n": 25,
+        "level": 4,
+        "count": 1,
+        "complexity": 1
+      },
+      {
+        "kind": "killer",
+        "n": 25,
+        "level": 4,
+        "count": 1,
+        "complexity": 3
+      },
+      {
+        "kind": "killer",
+        "n": 25,
+        "level": 4,
+        "count": 1,
+        "complexity": 4
+      },
+      {
+        "kind": "jigsaw",
+        "n": 9,
+        "level": 5,
+        "count": 1,
+        "complexity": 1
+      },
+      {
+        "kind": "jigsaw",
+        "n": 9,
+        "level": 5,
+        "count": 1,
+        "complexity": 3
+      },
+      {
+        "kind": "jigsaw",
+        "n": 16,
+        "level": 5,
+        "count": 1,
+        "complexity": 1
+      },
+      {
+        "kind": "jigsaw",
+        "n": 16,
+        "level": 5,
+        "count": 1,
+        "complexity": 3
+      },
+      {
+        "kind": "jigsaw",
+        "n": 16,
+        "level": 5,
+        "count": 1,
+        "complexity": 4
+      },
+      {
+        "kind": "killer",
+        "n": 9,
+        "level": 5,
+        "count": 1,
+        "complexity": 1
+      },
+      {
+        "kind": "killer",
+        "n": 9,
+        "level": 5,
+        "count": 1,
+        "complexity": 3
+      },
+      {
+        "kind": "killer",
+        "n": 16,
+        "level": 5,
+        "count": 1,
+        "complexity": 1
+      },
+      {
+        "kind": "killer",
+        "n": 16,
+        "level": 5,
+        "count": 1,
+        "complexity": 3
+      },
+      {
+        "kind": "killer",
+        "n": 16,
+        "level": 5,
+        "count": 1,
+        "complexity": 4
+      },
+      {
+        "kind": "killer",
+        "n": 25,
+        "level": 5,
+        "count": 1,
+        "complexity": 1
+      },
+      {
+        "kind": "killer",
+        "n": 25,
+        "level": 5,
+        "count": 1,
+        "complexity": 3
+      },
+      {
+        "kind": "killer",
+        "n": 25,
+        "level": 5,
+        "count": 1,
+        "complexity": 4
+      }
+    ]
+  }
+}
