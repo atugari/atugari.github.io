@@ -35,6 +35,15 @@ if(shell.split(oldMarker).length!==2)throw Error('Shell version anchor changed')
 shell=shell.replace(oldMarker,marker);const start=shell.indexOf(marker)+marker.length,end=shell.indexOf(';',start);
 shell=shell.slice(0,start)+JSON.stringify(publicReleases(notes))+shell.slice(end);
 shell=shell.replace(/let p="2026\.10\.26\.58"/,'let p="'+announcementVersion(notes)+'"');fs.writeFileSync(shellFile,shell);
+// Source overrides use origin-root asset paths; Pages serves them under this release.
+// Match only a path beginning at a quoted value or CSS url(), so existing versioned
+// paths are not prefixed a second time.
+for(const file of walk(out).filter(f=>/\.(html|js|css)$/.test(f))){
+ const source=fs.readFileSync(file,'utf8');
+ const mapped=source.replace(/(["'(])\/(notebook|audio|themes)\//g,(_,q,kind)=>q+base+kind+'/')
+  .replace(/(["'(])\/(site-theme|site-audio|tap-aid|furigana|ui-text)\.(js|css)/g,(_,q,name,ext)=>q+base+name+'.'+ext);
+ if(mapped!==source)fs.writeFileSync(file,mapped);
+}
 const home=path.join(root,'nanpure/index.html');fs.writeFileSync(home,fs.readFileSync(home,'utf8').replaceAll(oldBase,base).replaceAll(previous,version));
 const overrides=path.join(root,'scripts/client-overrides');
 const digest=crypto.createHash('sha256').update(walk(overrides).sort().map(f=>path.relative(overrides,f)+'\0'+fs.readFileSync(f)).join('\0')).digest('hex');

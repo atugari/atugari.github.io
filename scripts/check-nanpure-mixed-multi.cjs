@@ -2,6 +2,7 @@
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
 const root=path.resolve(__dirname,'..'),version=JSON.parse(fs.readFileSync(path.join(root,'nanpure/version.json'))).version;
 const base=path.join(root,'nanpure/releases',version,'notebook'),html=fs.readFileSync(path.join(base,'index.html'),'utf8');
+for(const name of ['app.js','common.js','batch.js','portable.js','memo-help.js','logical-hints.js','video-features.js','mixed-multi.js'])assert(!/["'(]\/(?:notebook|audio|themes)\//.test(fs.readFileSync(path.join(base,name),'utf8')),'origin-root asset path escaped the release: '+name);
 const ctx=vm.createContext({console,Date,performance,TextDecoder,TextEncoder,Uint8Array,Uint16Array,ArrayBuffer,DataView,atob,btoa,setTimeout,clearTimeout});ctx.window=ctx;ctx.self=ctx;
 for(const id of ['core-normal','core-rect','core-variants','core-multi','common-source','generator-source','core-mixed-multi']){
  const source=html.match(new RegExp('<script id="'+id+'">([\\s\\S]*?)</script>'))?.[1];assert(source,`worker source ${id}`);vm.runInContext(source,ctx,{filename:id});
