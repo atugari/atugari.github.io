@@ -14,7 +14,7 @@
  function compactBoard(){return !!board&&w.innerWidth<=600&&getComputedStyle(board).gridTemplateColumns.trim().split(/\s+/).length===16;}
  function scheduleReadability(){if(noticeQueued)return;noticeQueued=true;requestAnimationFrame(()=>{
   noticeQueued=false;if(!notice||!board?.isConnected)return;
-  const size=w.NPBoardInput?.measure(board),small=!!size&&(size.cellSize<24||(size.digitSize!==null&&size.digitSize<11));
+  const size=w.NPBoardInput?.measure?.(board),small=!!size&&(size.cellSize<24||(size.digitSize!==null&&size.digitSize<11));
   notice.hidden=noticeDismissed||!small;
   clampPanel();
  });}
@@ -37,7 +37,7 @@
  function refresh(revealBoard=false){
   if(!screen||!screen.isConnected)return;
   screen.dataset.numberPosition=position();screen.dataset.compactBoard=String(compactBoard());parentFocus();
-  sizeKeys();sizeDigits();clampPanel();w.NPBoardInput?.align(board,prefs.align,revealBoard);scheduleReadability();
+  sizeKeys();sizeDigits();clampPanel();w.NPBoardInput?.align?.(board,prefs.align,revealBoard);scheduleReadability();
  }
  function sizeDigits(){
   if(!board)return;
@@ -125,7 +125,7 @@
   notice=document.createElement('div');notice.className='np-small-board-notice';notice.setAttribute('role','status');notice.hidden=true;
   notice.innerHTML='<span>⚠ マスが小さめ</span><button type="button" data-readable aria-label="マスを見やすい大きさに拡大する" title="拡大後は盤面をドラッグして移動できます">拡大</button><button type="button" data-dismiss-size aria-label="小さいマスの案内を閉じる">×</button>';
   panel.querySelector('[data-collapse]').before(notice);
-  notice.querySelector('[data-readable]').onclick=()=>w.NPBoardInput?.readable(board);
+  notice.querySelector('[data-readable]').onclick=()=>w.NPBoardInput?.readable?.(board);
   notice.querySelector('[data-dismiss-size]').onclick=()=>{noticeDismissed=true;notice.hidden=true;clampPanel();};
   tools.querySelector('[data-position]').onchange=e=>setPosition(e.target.value);
   makeDialog();tools.querySelector('[data-board-settings]').onclick=()=>{dialog.querySelector('[data-digit-size]').value=String(prefs.digitSize);dialog.querySelector('[data-board-align]').value=prefs.align;dialog.querySelector('[data-dialog-position]').value=prefs.position;dialog.showModal();};

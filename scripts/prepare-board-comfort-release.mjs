@@ -16,7 +16,7 @@ const hash=value=>crypto.createHash('sha256').update(value).digest('hex');
 fs.cpSync(path.join(root,oldBase),out,{recursive:true});
 for(const file of walk(out).filter(f=>/\.(html|js|css)$/.test(f))){const text=fs.readFileSync(file,'utf8');if(text.includes(oldBase))fs.writeFileSync(file,text.replaceAll(oldBase,base));}
 const source=path.join(root,'scripts/client-overrides/public/notebook');
-for(const name of ['app.js','multi-editor.css','board-comfort-model.js','board-comfort.js','board-comfort.css'])fs.copyFileSync(path.join(source,name),path.join(out,'notebook',name));
+for(const name of ['app.js','board-input.js','multi-editor.css','board-comfort-model.js','board-comfort.js','board-comfort.css'])fs.copyFileSync(path.join(source,name),path.join(out,'notebook',name));
 patchNotebookApp(path.join(out,'notebook'));
 for(const ext of ['js','css'])fs.copyFileSync(path.join(root,'nanpure/collection/workspace.'+ext),path.join(out,'notebook/play-workspace.'+ext));
 const indexFile=path.join(out,'notebook/index.html');let html=fs.readFileSync(indexFile,'utf8');
