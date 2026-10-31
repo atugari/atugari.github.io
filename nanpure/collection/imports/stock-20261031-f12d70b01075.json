@@ -1,0 +1,673 @@
+{
+  "format": "collection-append-v1",
+  "inputs": [
+    {
+      "file": "nanpure-backup (11).json",
+      "sha256": "00ef674cd78134db5424899f37e2fc9bae1af0b22d869a82953e5b8c6f017892",
+      "count": 1540
+    },
+    {
+      "file": "nanpure-backup (12).json",
+      "sha256": "1aa97ef8a2309cf67e9bc79a5bd1e6ecae81c74c0b06626576d4ebed02bd8dbf",
+      "count": 1540
+    },
+    {
+      "file": "nanpure-backup (13).json",
+      "sha256": "cdced0930999f27ef1bd4abf3cf58ed4f42fd863961538697ffc2e3285a130c7",
+      "count": 1540
+    }
+  ],
+  "baseline": {
+    "total": 100000,
+    "configCount": 225,
+    "catalogSha256": "c0adef4aad97ae5df83ff3ea44f7b9d29c113592912e2b982ea9bf75c3a2112c",
+    "configPrefixSha256": "eb74c0ec8ff3f735f0e42dffdeb335b5934e764ef3d899f2d5572a919b4b0635"
+  },
+  "checkedExisting": 100000,
+  "checkedPacks": 3753,
+  "received": 4620,
+  "duplicates": 1,
+  "added": 4619,
+  "total": 104619,
+  "independentUniqueVerified": 4620,
+  "solverSha256": "5e4af84b5bfc98e9422f6961dcf3a273b31d4ab4990e84ccc9b60ad01a5fd171",
+  "maxSearchVisits": 23316,
+  "bySize": {
+    "4": 119,
+    "6": 180,
+    "8": 240,
+    "10": 240,
+    "12": 240,
+    "14": 240,
+    "15": 240,
+    "18": 360,
+    "20": 360,
+    "21": 360,
+    "22": 360,
+    "24": 360,
+    "36": 360,
+    "49": 360,
+    "100": 600
+  },
+  "segments": [
+    {
+      "cid": "C226",
+      "key": "number-normal-4-1-------",
+      "n": 4,
+      "level": 1,
+      "start": 100001,
+      "count": 60
+    },
+    {
+      "cid": "C227",
+      "key": "number-normal-4-2-------",
+      "n": 4,
+      "level": 2,
+      "start": 100061,
+      "count": 59
+    },
+    {
+      "cid": "C228",
+      "key": "number-normal-6-1-------",
+      "n": 6,
+      "level": 1,
+      "start": 100120,
+      "count": 60
+    },
+    {
+      "cid": "C229",
+      "key": "number-normal-6-2-------",
+      "n": 6,
+      "level": 2,
+      "start": 100180,
+      "count": 60
+    },
+    {
+      "cid": "C230",
+      "key": "number-normal-6-3-------",
+      "n": 6,
+      "level": 3,
+      "start": 100240,
+      "count": 60
+    },
+    {
+      "cid": "C231",
+      "key": "number-normal-8-1-------",
+      "n": 8,
+      "level": 1,
+      "start": 100300,
+      "count": 60
+    },
+    {
+      "cid": "C232",
+      "key": "number-normal-8-2-------",
+      "n": 8,
+      "level": 2,
+      "start": 100360,
+      "count": 60
+    },
+    {
+      "cid": "C233",
+      "key": "number-normal-8-3-------",
+      "n": 8,
+      "level": 3,
+      "start": 100420,
+      "count": 60
+    },
+    {
+      "cid": "C234",
+      "key": "number-normal-8-4-------",
+      "n": 8,
+      "level": 4,
+      "start": 100480,
+      "count": 60
+    },
+    {
+      "cid": "C235",
+      "key": "number-normal-10-1-------",
+      "n": 10,
+      "level": 1,
+      "start": 100540,
+      "count": 60
+    },
+    {
+      "cid": "C236",
+      "key": "number-normal-10-2-------",
+      "n": 10,
+      "level": 2,
+      "start": 100600,
+      "count": 60
+    },
+    {
+      "cid": "C237",
+      "key": "number-normal-10-3-------",
+      "n": 10,
+      "level": 3,
+      "start": 100660,
+      "count": 60
+    },
+    {
+      "cid": "C238",
+      "key": "number-normal-10-4-------",
+      "n": 10,
+      "level": 4,
+      "start": 100720,
+      "count": 60
+    },
+    {
+      "cid": "C239",
+      "key": "number-normal-12-1-------",
+      "n": 12,
+      "level": 1,
+      "start": 100780,
+      "count": 60
+    },
+    {
+      "cid": "C240",
+      "key": "number-normal-12-2-------",
+      "n": 12,
+      "level": 2,
+      "start": 100840,
+      "count": 60
+    },
+    {
+      "cid": "C241",
+      "key": "number-normal-12-3-------",
+      "n": 12,
+      "level": 3,
+      "start": 100900,
+      "count": 60
+    },
+    {
+      "cid": "C242",
+      "key": "number-normal-12-4-------",
+      "n": 12,
+      "level": 4,
+      "start": 100960,
+      "count": 60
+    },
+    {
+      "cid": "C243",
+      "key": "number-normal-14-1-------",
+      "n": 14,
+      "level": 1,
+      "start": 101020,
+      "count": 60
+    },
+    {
+      "cid": "C244",
+      "key": "number-normal-14-2-------",
+      "n": 14,
+      "level": 2,
+      "start": 101080,
+      "count": 60
+    },
+    {
+      "cid": "C245",
+      "key": "number-normal-14-3-------",
+      "n": 14,
+      "level": 3,
+      "start": 101140,
+      "count": 60
+    },
+    {
+      "cid": "C246",
+      "key": "number-normal-14-4-------",
+      "n": 14,
+      "level": 4,
+      "start": 101200,
+      "count": 60
+    },
+    {
+      "cid": "C247",
+      "key": "number-normal-15-1-------",
+      "n": 15,
+      "level": 1,
+      "start": 101260,
+      "count": 60
+    },
+    {
+      "cid": "C248",
+      "key": "number-normal-15-2-------",
+      "n": 15,
+      "level": 2,
+      "start": 101320,
+      "count": 60
+    },
+    {
+      "cid": "C249",
+      "key": "number-normal-15-3-------",
+      "n": 15,
+      "level": 3,
+      "start": 101380,
+      "count": 60
+    },
+    {
+      "cid": "C250",
+      "key": "number-normal-15-4-------",
+      "n": 15,
+      "level": 4,
+      "start": 101440,
+      "count": 60
+    },
+    {
+      "cid": "C251",
+      "key": "number-normal-18-1-------",
+      "n": 18,
+      "level": 1,
+      "start": 101500,
+      "count": 60
+    },
+    {
+      "cid": "C252",
+      "key": "number-normal-18-2-------",
+      "n": 18,
+      "level": 2,
+      "start": 101560,
+      "count": 60
+    },
+    {
+      "cid": "C253",
+      "key": "number-normal-18-3-------",
+      "n": 18,
+      "level": 3,
+      "start": 101620,
+      "count": 60
+    },
+    {
+      "cid": "C254",
+      "key": "number-normal-18-4-------",
+      "n": 18,
+      "level": 4,
+      "start": 101680,
+      "count": 60
+    },
+    {
+      "cid": "C255",
+      "key": "number-normal-18-5-------",
+      "n": 18,
+      "level": 5,
+      "start": 101740,
+      "count": 60
+    },
+    {
+      "cid": "C256",
+      "key": "number-normal-18-6-------",
+      "n": 18,
+      "level": 6,
+      "start": 101800,
+      "count": 60
+    },
+    {
+      "cid": "C257",
+      "key": "number-normal-20-1-------",
+      "n": 20,
+      "level": 1,
+      "start": 101860,
+      "count": 60
+    },
+    {
+      "cid": "C258",
+      "key": "number-normal-20-2-------",
+      "n": 20,
+      "level": 2,
+      "start": 101920,
+      "count": 60
+    },
+    {
+      "cid": "C259",
+      "key": "number-normal-20-3-------",
+      "n": 20,
+      "level": 3,
+      "start": 101980,
+      "count": 60
+    },
+    {
+      "cid": "C260",
+      "key": "number-normal-20-4-------",
+      "n": 20,
+      "level": 4,
+      "start": 102040,
+      "count": 60
+    },
+    {
+      "cid": "C261",
+      "key": "number-normal-20-5-------",
+      "n": 20,
+      "level": 5,
+      "start": 102100,
+      "count": 60
+    },
+    {
+      "cid": "C262",
+      "key": "number-normal-20-6-------",
+      "n": 20,
+      "level": 6,
+      "start": 102160,
+      "count": 60
+    },
+    {
+      "cid": "C263",
+      "key": "number-normal-21-1-------",
+      "n": 21,
+      "level": 1,
+      "start": 102220,
+      "count": 60
+    },
+    {
+      "cid": "C264",
+      "key": "number-normal-21-2-------",
+      "n": 21,
+      "level": 2,
+      "start": 102280,
+      "count": 60
+    },
+    {
+      "cid": "C265",
+      "key": "number-normal-21-3-------",
+      "n": 21,
+      "level": 3,
+      "start": 102340,
+      "count": 60
+    },
+    {
+      "cid": "C266",
+      "key": "number-normal-21-4-------",
+      "n": 21,
+      "level": 4,
+      "start": 102400,
+      "count": 60
+    },
+    {
+      "cid": "C267",
+      "key": "number-normal-21-5-------",
+      "n": 21,
+      "level": 5,
+      "start": 102460,
+      "count": 60
+    },
+    {
+      "cid": "C268",
+      "key": "number-normal-21-6-------",
+      "n": 21,
+      "level": 6,
+      "start": 102520,
+      "count": 60
+    },
+    {
+      "cid": "C269",
+      "key": "number-normal-22-1-------",
+      "n": 22,
+      "level": 1,
+      "start": 102580,
+      "count": 60
+    },
+    {
+      "cid": "C270",
+      "key": "number-normal-22-2-------",
+      "n": 22,
+      "level": 2,
+      "start": 102640,
+      "count": 60
+    },
+    {
+      "cid": "C271",
+      "key": "number-normal-22-3-------",
+      "n": 22,
+      "level": 3,
+      "start": 102700,
+      "count": 60
+    },
+    {
+      "cid": "C272",
+      "key": "number-normal-22-4-------",
+      "n": 22,
+      "level": 4,
+      "start": 102760,
+      "count": 60
+    },
+    {
+      "cid": "C273",
+      "key": "number-normal-22-5-------",
+      "n": 22,
+      "level": 5,
+      "start": 102820,
+      "count": 60
+    },
+    {
+      "cid": "C274",
+      "key": "number-normal-22-6-------",
+      "n": 22,
+      "level": 6,
+      "start": 102880,
+      "count": 60
+    },
+    {
+      "cid": "C275",
+      "key": "number-normal-24-1-------",
+      "n": 24,
+      "level": 1,
+      "start": 102940,
+      "count": 60
+    },
+    {
+      "cid": "C276",
+      "key": "number-normal-24-2-------",
+      "n": 24,
+      "level": 2,
+      "start": 103000,
+      "count": 60
+    },
+    {
+      "cid": "C277",
+      "key": "number-normal-24-3-------",
+      "n": 24,
+      "level": 3,
+      "start": 103060,
+      "count": 60
+    },
+    {
+      "cid": "C278",
+      "key": "number-normal-24-4-------",
+      "n": 24,
+      "level": 4,
+      "start": 103120,
+      "count": 60
+    },
+    {
+      "cid": "C279",
+      "key": "number-normal-24-5-------",
+      "n": 24,
+      "level": 5,
+      "start": 103180,
+      "count": 60
+    },
+    {
+      "cid": "C280",
+      "key": "number-normal-24-6-------",
+      "n": 24,
+      "level": 6,
+      "start": 103240,
+      "count": 60
+    },
+    {
+      "cid": "C281",
+      "key": "number-normal-36-1-------",
+      "n": 36,
+      "level": 1,
+      "start": 103300,
+      "count": 60
+    },
+    {
+      "cid": "C282",
+      "key": "number-normal-36-2-------",
+      "n": 36,
+      "level": 2,
+      "start": 103360,
+      "count": 60
+    },
+    {
+      "cid": "C283",
+      "key": "number-normal-36-3-------",
+      "n": 36,
+      "level": 3,
+      "start": 103420,
+      "count": 60
+    },
+    {
+      "cid": "C284",
+      "key": "number-normal-36-4-------",
+      "n": 36,
+      "level": 4,
+      "start": 103480,
+      "count": 60
+    },
+    {
+      "cid": "C285",
+      "key": "number-normal-36-5-------",
+      "n": 36,
+      "level": 5,
+      "start": 103540,
+      "count": 60
+    },
+    {
+      "cid": "C286",
+      "key": "number-normal-36-6-------",
+      "n": 36,
+      "level": 6,
+      "start": 103600,
+      "count": 60
+    },
+    {
+      "cid": "C287",
+      "key": "number-normal-49-1-------",
+      "n": 49,
+      "level": 1,
+      "start": 103660,
+      "count": 60
+    },
+    {
+      "cid": "C288",
+      "key": "number-normal-49-2-------",
+      "n": 49,
+      "level": 2,
+      "start": 103720,
+      "count": 60
+    },
+    {
+      "cid": "C289",
+      "key": "number-normal-49-3-------",
+      "n": 49,
+      "level": 3,
+      "start": 103780,
+      "count": 60
+    },
+    {
+      "cid": "C290",
+      "key": "number-normal-49-4-------",
+      "n": 49,
+      "level": 4,
+      "start": 103840,
+      "count": 60
+    },
+    {
+      "cid": "C291",
+      "key": "number-normal-49-5-------",
+      "n": 49,
+      "level": 5,
+      "start": 103900,
+      "count": 60
+    },
+    {
+      "cid": "C292",
+      "key": "number-normal-49-6-------",
+      "n": 49,
+      "level": 6,
+      "start": 103960,
+      "count": 60
+    },
+    {
+      "cid": "C293",
+      "key": "number-normal-100-1-------",
+      "n": 100,
+      "level": 1,
+      "start": 104020,
+      "count": 60
+    },
+    {
+      "cid": "C294",
+      "key": "number-normal-100-2-------",
+      "n": 100,
+      "level": 2,
+      "start": 104080,
+      "count": 60
+    },
+    {
+      "cid": "C295",
+      "key": "number-normal-100-3-------",
+      "n": 100,
+      "level": 3,
+      "start": 104140,
+      "count": 60
+    },
+    {
+      "cid": "C296",
+      "key": "number-normal-100-4-------",
+      "n": 100,
+      "level": 4,
+      "start": 104200,
+      "count": 60
+    },
+    {
+      "cid": "C297",
+      "key": "number-normal-100-5-------",
+      "n": 100,
+      "level": 5,
+      "start": 104260,
+      "count": 60
+    },
+    {
+      "cid": "C298",
+      "key": "number-normal-100-6-------",
+      "n": 100,
+      "level": 6,
+      "start": 104320,
+      "count": 60
+    },
+    {
+      "cid": "C299",
+      "key": "number-normal-100-7-------",
+      "n": 100,
+      "level": 7,
+      "start": 104380,
+      "count": 60
+    },
+    {
+      "cid": "C300",
+      "key": "number-normal-100-8-------",
+      "n": 100,
+      "level": 8,
+      "start": 104440,
+      "count": 60
+    },
+    {
+      "cid": "C301",
+      "key": "number-normal-100-9-------",
+      "n": 100,
+      "level": 9,
+      "start": 104500,
+      "count": 60
+    },
+    {
+      "cid": "C302",
+      "key": "number-normal-100-10-------",
+      "n": 100,
+      "level": 10,
+      "start": 104560,
+      "count": 60
+    }
+  ],
+  "packs": 808,
+  "transportBytes": 17249284,
+  "roundtrip": 4619
+}

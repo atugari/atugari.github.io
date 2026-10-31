@@ -65,6 +65,7 @@ jobs:
           node scripts/check-pareasobi-move.cjs
           node scripts/check-pareasobi-navigation.cjs
           node --experimental-vm-modules scripts/collection-100k/check-filters.cjs
+          node scripts/collection-100k/check-append.cjs
           node scripts/check-public-release-policy.cjs
           node scripts/check-nanpure-achievements.cjs
           node scripts/check-nanpure-achievements-ui.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
