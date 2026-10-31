@@ -65,7 +65,6 @@ jobs:
           node scripts/check-pareasobi-move.cjs
           node scripts/check-pareasobi-navigation.cjs
           node --experimental-vm-modules scripts/collection-100k/check-filters.cjs
-          node scripts/collection-100k/check-append.cjs
           node scripts/check-public-release-policy.cjs
           node scripts/check-nanpure-mixed-multi.cjs
           node scripts/check-nanpure-board-comfort.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
@@ -110,6 +109,7 @@ jobs:
           node scripts/check-nanpure-smooth-play.cjs _site
           node scripts/check-nanpure-keybindings-browser.cjs _site
           node scripts/check-nanpure-appearance-browser.cjs _site
+          node scripts/collection-100k/check-append.cjs
 
       - name: Configure Pages
         if: github.event_name != 'pull_request'

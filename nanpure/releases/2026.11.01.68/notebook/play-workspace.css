@@ -113,4 +113,6 @@ html body.np-collection-workspace #app .np-number-panel .number-pad>button{font-
 .np-workspace-tools{min-width:0}.np-workspace-tools label{min-width:0}.np-workspace-tools select{min-width:0;max-width:100%;flex:1}
 .np-workspace-tools .np-direct-zoom{min-width:0;max-width:100%}
 .np-workspace-screen>.play-dock:not(:has(.tools,#number-controls)){display:none!important}
+.np-workspace-screen[data-compact-board=true]>.np-number-panel{gap:2px;padding:2px 4px!important}
+.np-workspace-screen[data-compact-board=true] .np-workspace-actions{margin:0!important}
 @media(min-width:900px){html body.np-collection-workspace #app .np-number-panel .number-pad>button{font-size:max(clamp(18px,2vw,28px),var(--ui-min-font,0px))!important}}

@@ -145,7 +145,10 @@ for(const viewport of [{width:360,height:680},{width:844,height:390},{width:1280
  const wide=child.locator('[data-wide]');if(await wide.getAttribute('aria-pressed')==='true')await wide.click();
  await child.locator('[data-zoom="fit"]').click();
  if(viewport.width===360){
-  await page.waitForFunction(()=>{const d=document.querySelector('#game').contentDocument,r=d.querySelector('#board .cell').getBoundingClientRect();return r.width>=20&&r.height>=20});
+  try{await page.waitForFunction(()=>{const d=document.querySelector('#game').contentDocument,r=d.querySelector('#board .cell').getBoundingClientRect();return r.width>=20&&r.height>=20});}catch(error){
+   const geometry=await child.locator('.np-workspace-screen').evaluate(el=>{const r=el.querySelector('#board .cell').getBoundingClientRect();return{width:innerWidth,height:innerHeight,cell:[r.width,r.height],rows:getComputedStyle(el).gridTemplateRows,position:el.dataset.numberPosition,preference:el.dataset.numberPreference,wide:el.classList.contains('np-wide')};});
+   throw Error('Phone 16x16 fit: '+JSON.stringify(geometry),{cause:error});
+  }
   const keys=await child.locator('.np-number-panel .number-pad>button').evaluateAll(nodes=>({count:nodes.length,rows:new Set(nodes.map(el=>Math.round(el.getBoundingClientRect().top))).size}));
   assert.equal(keys.count,16);assert(keys.rows<=2,'Sixteen keys take at most two rows at phone width');
  }
