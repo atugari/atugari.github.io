@@ -71,5 +71,6 @@
   '枠{n}（{row}行{col}列から）':'Block {n} (from row {row}, column {col})','盤面{board}：枠{n}':'Board {board}: block {n}'
  };
  root.NPTranslations=root.NPTranslations||{};
- for(const [source,en]of Object.entries(labels))root.NPTranslations[source]={en,...root.NPTranslations[source]};
+ const languages=Object.keys(root.NPI18n?.names||root.NPTranslationAssets?.names||{en:'English'}).filter(code=>code!=='ja');
+ for(const [source,en]of Object.entries(labels))root.NPTranslations[source]={...Object.fromEntries(languages.map(code=>[code,en])),en,...root.NPTranslations[source]};
 })(typeof window==='undefined'?globalThis:window);

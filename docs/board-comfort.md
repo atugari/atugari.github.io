@@ -16,7 +16,7 @@ Validation: `check-nanpure-board-comfort.cjs` exercises the actual model and run
 
 Comparing stocked conditions with the current batch generator finds 109 unstocked Sudoku conditions: jigsaw 39, killer 43, neighbor 19 and step 8. These are absent stock conditions, rather than broken choices in the catalog. Full condition-level results are in `collection-availability-20261101.json`. This comparison covers the enumerated batch configurations; arbitrary custom multi layouts are not a finite stock catalog.
 
-The compact play header retains the rule and size. The side controls retain the saved minimum text size, and short landscape layouts give the keypad the full available height. The generated player shares reversible translation registrations with the collection.
+The compact play header retains the rule and size. The side controls retain the saved minimum text size, and short landscape layouts give the keypad the full available height. The generated player shares reversible translation registrations with the collection. New labels use English when the selected locale has no reviewed translation; existing reviewed translations take priority.
 
 ![Whole board with side controls and a gentle region palette](board-comfort-1793476213478.jpg)
 
