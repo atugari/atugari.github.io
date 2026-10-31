@@ -16,27 +16,28 @@
     if (!Object.hasOwn(counts, shape) || !Array.isArray(values) || (shape==='custom' ? values.length<2||values.length>8 : values.length !== counts[shape]) || values.some(n => !sizes.includes(n))) throw Error('各盤面の大きさを選び直してください。');
     return values;
   }
-  function layout(shape, values, links) {
+  function layout(shape, values, links, preview = false) {
     validSizes(shape, values);
     const boards = values.map(spec);
     if (shape === 'custom') {
       if (!Array.isArray(links)) links=values.slice(1).map((_,i)=>({parent:i,corner:'se'}));
-      if(links.length!==values.length-1||links.some((l,i)=>!Number.isInteger(l.parent)||l.parent<0||l.parent>i||!['nw','ne','sw','se'].includes(l.corner)))throw Error('つなぐ盤面と角を選び直してください。');
+      if(links.length!==values.length-1||links.some((l,i)=>!l||!Number.isInteger(l.parent)||l.parent<0||l.parent>i||(('dx' in l||'dy' in l)?![l.dx,l.dy].every(v=>Number.isInteger(v)&&Math.abs(v)<=200):!['nw','ne','sw','se'].includes(l.corner))))throw Error('接続先と、整数の配置位置を選び直してください。');
     }
     const overlap = (a, b) => shape==='custom'||values.length>2&&new Set(values).size>1 ? [1,1] : [Math.min(a.blockCols, b.blockCols), Math.min(a.blockRows, b.blockRows)];
     boards[0].x = 0; boards[0].y = 0;
     for (let i = 1; i < boards.length; i++) {
       const b = boards[i], a = boards[shape === 'custom' ? links[i-1].parent : shape === 'samurai' ? 0 : i - 1], [w, h] = overlap(a, b);
       if (shape === 'custom') {
-        const c=links[i-1].corner;b.x=c.endsWith('w')?a.x-b.n+w:a.x+a.n-w;b.y=c.startsWith('n')?a.y-b.n+h:a.y+a.n-h;
+        const l=links[i-1],c=l.corner;if('dx' in l){b.x=a.x+l.dx;b.y=a.y+l.dy;}else{b.x=c.endsWith('w')?a.x-b.n+w:a.x+a.n-w;b.y=c.startsWith('n')?a.y-b.n+h:a.y+a.n-h;}
       } else if (shape === 'samurai') {
         b.x = i === 1 || i === 3 ? a.x - b.n + w : a.x + a.n - w;
         b.y = i <= 2 ? a.y - b.n + h : a.y + a.n - h;
       } else { b.x = a.x + a.n - w; b.y = a.y + a.n - h; }
     }
-    if(shape==='custom')for(let i=0;i<boards.length;i++)for(let j=0;j<i;j++) {
-      const a=boards[i],b=boards[j],w=Math.min(a.x+a.n,b.x+b.n)-Math.max(a.x,b.x),h=Math.min(a.y+a.n,b.y+b.n)-Math.max(a.y,b.y);
-      if(w>0&&h>0&&(j!==links[i-1].parent||w!==1||h!==1))throw Error('盤面が重なりすぎています。つなぐ盤面や角を変えてください。');
+    if(shape==='custom'&&!preview)for(let i=1;i<boards.length;i++) {
+      const a=boards[i],b=boards[links[i-1].parent],w=Math.min(a.x+a.n,b.x+b.n)-Math.max(a.x,b.x),h=Math.min(a.y+a.n,b.y+b.n)-Math.max(a.y,b.y);
+      if(w<=0||h<=0)throw Error('盤面'+String.fromCharCode(65+i)+'を接続先に1マス以上重ねてください。');
+      if(boards.slice(0,i).some(b=>a.x===b.x&&a.y===b.y&&a.n===b.n))throw Error('同じ大きさの盤面が完全に一致しています。位置をずらしてください。');
     }
     const minX = Math.min(...boards.map(b => b.x)), minY = Math.min(...boards.map(b => b.y));
     const cells = [], indices = new Map();
@@ -48,7 +49,12 @@
         b.map.push(indices.get(key));
       }
     }
-    return {shape, ...(shape==='custom'?{links:links.map(l=>({parent:l.parent,corner:l.corner}))}:{}), boards, cells, width: Math.max(...boards.map(b => b.x + b.n)), height: Math.max(...boards.map(b => b.y + b.n))};
+    const linked={shape, ...(shape==='custom'?{links:links.map(l=>'dx' in l?{parent:l.parent,dx:l.dx,dy:l.dy}:{parent:l.parent,corner:l.corner})}:{}), boards, cells, width: Math.max(...boards.map(b => b.x + b.n)), height: Math.max(...boards.map(b => b.y + b.n))};
+    if(!preview){
+      const model=setup(linked);
+      for(const u of model.units){const limits=u.map(i=>digit(model.domains[i])).sort((a,b)=>a-b);if(limits.some((n,i)=>n<=i))throw Error('この重なりでは行・列・枠の数字が足りません。小さい盤面の重なりを減らしてください。');}
+    }
+    return linked;
   }
   function localUnits(b) {
     const units = [], {n, blockRows: h, blockCols: w} = b;
@@ -149,7 +155,7 @@
     }
     visit(); return {count, nodes, timeout, solution};
   }
-  function completed(linked, rng) {
+  function completed(linked, rng, deadline) {
     const result = linked.cells.map(() => 0), domains = setup(linked).domains;
     // Restrict shared symbols before filling adjacent boards, including smaller ones.
     for (const b of linked.boards) {
@@ -182,9 +188,32 @@
         if (!pending.every(d=>match(d,new Set()))) continue;
         b.map.forEach((i, j) => { result[i] = mapping.get(base[j]); }); done = true;
       }
-      if (!done) return null;
+      if (!done) return completeSearch(linked, rng, deadline);
     }
     return result;
+  }
+  function completeSearch(linked, rng, deadline) {
+    const model=setup(linked),grid=linked.cells.map(()=>0),used=model.units.map(()=>0);
+    const end=Math.min(deadline,Date.now()+2500);let nodes=0,stopped=false;
+    function visit(){
+      if(++nodes%128===0&&(Date.now()>=end||nodes>80000)){stopped=true;return false;}
+      let at=-1,options=0,best=26;
+      for(let i=0;i<grid.length;i++)if(!grid[i]){
+        let m=model.domains[i];for(const u of model.members[i])m&=~used[u];
+        const k=pop(m);if(!k)return false;if(k<best){at=i;options=m;best=k;if(k===1)break;}
+      }
+      if(at<0)return true;
+      const choices=[];for(let m=options;m;m&=m-1)choices.push(m&-m);
+      for(const bit of shuffle(choices,rng)){
+        grid[at]=digit(bit);for(const u of model.members[at])used[u]|=bit;
+        if(visit())return true;
+        for(const u of model.members[at])used[u]^=bit;grid[at]=0;if(stopped)return false;
+      }
+      return false;
+    }
+    if(visit())return grid;
+    if(!stopped)throw Object.assign(Error('この配置では各盤面のルールを同時に満たせません。重なり方を変えてください。'),{code:'NP_LAYOUT_UNSAT'});
+    return null;
   }
   function needsShared(p) {
     return p.linked.boards.some(b => {
@@ -211,7 +240,7 @@
     let tries = 0;
     while (Date.now() < end) {
       progress?.('各盤面の大きさ・共有マス・難易度を確認中（' + ++tries + '回目）');
-      const solution = completed(linked, rng); if (!solution) continue;
+      const solution = completed(linked, rng, end); if (!solution) continue;
       const p = {kind: 'multi', n: Math.max(...values), level, id, linked, multiVersion: 2, solution, puzzle: solution.slice()};
       const shared = linked.cells.map((_, i) => linked.boards.filter(b => b.map.includes(i)).length > 1);
       let seeded = false;
@@ -244,23 +273,45 @@
     }
     throw Object.assign(Error('指定した組み合わせと難易度を引き続き探しています。'), {code: 'NP_SEARCH_EXHAUSTED'});
   }
+  const palette=[
+    {name:'緑',color:'#26734b',tint:'#eef8f0'},{name:'青',color:'#2366b1',tint:'#edf4ff'},
+    {name:'橙',color:'#a95413',tint:'#fff3e8'},{name:'紫',color:'#8251ab',tint:'#f6efff'},
+    {name:'桃',color:'#b24472',tint:'#fff0f6'},{name:'水色',color:'#087a88',tint:'#e9f8fa'},
+    {name:'茶',color:'#806219',tint:'#faf4df'},{name:'藍',color:'#4b54a4',tint:'#f0f1ff'}
+  ];
+  function boardLabel(p,i){const b=p.linked.boards[i];return String.fromCharCode(65+i)+' · '+palette[i].name+' · '+b.n+'×'+b.n;}
+  function miniMap(p,focus){const l=p.linked;return '<svg class="multi-mini-map" viewBox="-1 -1 '+(l.width+2)+' '+(l.height+2)+'" aria-hidden="true">'+l.boards.map((b,i)=>'<rect x="'+b.x+'" y="'+b.y+'" width="'+b.n+'" height="'+b.n+'" fill="'+(i===focus?palette[i].tint:'none')+'" stroke="'+(i===focus?palette[i].color:'#929b96')+'" stroke-width="'+(i===focus?1:.4)+'"/>').join('')+'</svg>';}
+  function cellDescription(p,at){
+    if(at<0||!p.linked.cells[at])return 'マスを選ぶと、所属する盤面と各盤面内の位置を表示します。';
+    const {x,y}=p.linked.cells[at],members=p.linked.boards.flatMap((b,i)=>b.map.includes(at)?[boardLabel(p,i)+' の '+(y-b.y+1)+'行'+(x-b.x+1)+'列']:[]);
+    return (members.length>1?'共有マス：':'選択中：')+members.join(' ／ ')+'。使える数字は1〜'+multi.cellMax(p,at)+'。';
+  }
   function art(p, grid, notes = {}, selected = -1, errors = [], focus = -1) {
-    const l = p.linked, model = setup(l); let out = '';
-    l.cells.forEach(({x, y}, i) => { const fill = i === selected ? '#d5e7ce' : errors.includes(i) ? '#fce2dc' : focus >= 0 && l.boards[focus].map.includes(i) ? '#edf4e8' : model.domains[i] && l.boards.filter(b => b.map.includes(i)).length > 1 ? '#fff2ca' : 'white'; out += `<rect x="${x * 40}" y="${y * 40}" width="40" height="40" fill="${fill}" stroke="#aeb7b0" stroke-width=".7"/>`; });
+    const l = p.linked, model = setup(l),members=l.cells.map((_,i)=>l.boards.flatMap((b,j)=>b.map.includes(i)?[j]:[])); let out = '';
+    l.cells.forEach(({x, y}, i) => { const own=members[i],inside=focus<0||own.includes(focus),fill=i===selected?'#d5e7ce':errors.includes(i)?'#fce2dc':!inside?'#f5f5f5':own.length>1?'#fff2ca':palette[own[0]].tint; out += `<rect x="${x * 40}" y="${y * 40}" width="40" height="40" fill="${fill}" stroke="#aeb7b0" stroke-width=".7"/>`; });
     const paths = new Set();
     l.boards.forEach((b, i) => {
       for (let r = 0; r <= b.n; r += b.blockRows) paths.add(`M${b.x * 40} ${(b.y + r) * 40}H${(b.x + b.n) * 40}`);
       for (let c = 0; c <= b.n; c += b.blockCols) paths.add(`M${(b.x + c) * 40} ${b.y * 40}V${(b.y + b.n) * 40}`);
-      out += `<text x="${b.x * 40 + 3}" y="${b.y * 40 + 9}" font-size="8" fill="#285849">${String.fromCharCode(65 + i)} ${b.n}×${b.n}</text>`;
-      if (focus === i) out += `<rect x="${b.x * 40}" y="${b.y * 40}" width="${b.n * 40}" height="${b.n * 40}" fill="none" stroke="#224b8a" stroke-width="4"/>`;
     });
     out += `<path data-multi-blocks="1" d="${[...paths].join(' ')}" fill="none" stroke="#263e35" stroke-width="2"/>`;
+    l.boards.forEach((b,i)=>{
+      const {color}=palette[i],inset=1+i*.18,active=focus===i;
+      out+=`<rect data-multi-outline="${i}" x="${b.x*40+inset}" y="${b.y*40+inset}" width="${b.n*40-2*inset}" height="${b.n*40-2*inset}" fill="none" stroke="${color}" stroke-width="${active?5:2.5}" opacity="${focus<0||active?1:.25}"/>`;
+      if(active){const paths=[];for(let r=b.blockRows;r<b.n;r+=b.blockRows)paths.push(`M${b.x*40} ${(b.y+r)*40}H${(b.x+b.n)*40}`);for(let c=b.blockCols;c<b.n;c+=b.blockCols)paths.push(`M${(b.x+c)*40} ${b.y*40}V${(b.y+b.n)*40}`);out+=`<path data-multi-focus="${i}" d="${paths.join(' ')}" fill="none" stroke="${color}" stroke-width="3"/>`;}
+      out+=`<text data-multi-label="${i}" x="${b.x*40+3}" y="${b.y*40+9}" font-size="8" font-weight="bold" fill="${color}">${String.fromCharCode(65+i)} ${b.n}×${b.n}</text>`;
+    });
     if (grid) l.cells.forEach(({x, y}, i) => {
       if (grid[i]) out += `<text data-multi-digit="${i}" x="${x * 40 + 20}" y="${y * 40 + 28}" font-family="sans-serif" font-size="${grid[i] > 9 ? 20 : 23}" text-anchor="middle" fill="${errors.includes(i) ? '#b13228' : p.puzzle[i] ? '#202823' : '#2a6b92'}">${Number(grid[i])}</text>`;
       else if (notes[i]) { const n = digit(model.domains[i]), cols = Math.ceil(Math.sqrt(n)), rows = Math.ceil(n / cols); for (const d of notes[i]) if (Number.isInteger(d) && d >= 1 && d <= n) out += `<text data-memo-cell="${i}" data-memo-digit="${d}" x="${x * 40 + (d - 1) % cols * 40 / cols + 20 / cols}" y="${y * 40 + Math.floor((d - 1) / cols) * 36 / rows + 36 / rows}" font-family="sans-serif" font-size="${Math.min(9, 32 / cols)}" text-anchor="middle" fill="#526e59">${d}</text>`; }
     });
     return out;
   }
+  multi.palette = palette;
+  multi.boardLabel = boardLabel;
+  multi.miniMap = miniMap;
+  multi.cellDescription = cellDescription;
+  multi.previewLayout = (shape,values,links) => layout(shape,values,links,true);
   multi.mixedSizes = sizes;
   multi.mixedLayout = layout;
   multi.generateMixed = generate;
@@ -290,7 +341,7 @@
         Object.assign(p, {created: Date.now(), uid: 'multi-' + p.id + '-' + Date.now().toString(36), elapsed: 0, completed: false, grid: p.puzzle.slice(), notes: {}});
         if (!root.NPGenerationMatches(p, cfg)) throw Error('盤面の組み合わせが一致しません。');
         return p;
-      } catch (e) { if (e.code !== 'NP_SEARCH_EXHAUSTED') throw e; progress?.(e.message); }
+      } catch (e) { if (e.code !== 'NP_SEARCH_EXHAUSTED') throw e; if(cfg.multiShape==='custom')throw Error('指定した配置と難易度では問題を見つけられませんでした。重なり方か難易度を変えて、もう一度作ってください。'); progress?.(e.message); }
     }
   };
 })(typeof window !== 'undefined' ? window : self);
