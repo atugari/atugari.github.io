@@ -104,3 +104,10 @@ html body.np-collection-workspace #app{scrollbar-gutter:auto!important}
 }
 
 .np-workspace-screen:is([data-number-position=bottom],[data-number-position=top]) .np-workspace-actions{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+/* Keep the rule visible in the compact header and honor the saved text size. */
+.np-workspace-screen>.play-head{min-width:0}
+.np-workspace-screen .play-head>h1{display:block!important;flex:0 1 auto;min-width:0;margin:0!important;font-size:max(13px,var(--ui-min-font,0px))!important;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html body.np-collection-workspace #app .np-workspace-actions>button{min-height:44px!important;font-size:max(13px,var(--ui-min-font,0px))!important}
+html body.np-collection-workspace #app .np-number-panel .number-pad>button{font-size:max(18px,var(--ui-min-font,0px))!important}
+.np-workspace-tools label{min-width:0}.np-workspace-tools select{min-width:0;max-width:100%;flex:1}
+@media(min-width:900px){html body.np-collection-workspace #app .np-number-panel .number-pad>button{font-size:max(clamp(18px,2vw,28px),var(--ui-min-font,0px))!important}}

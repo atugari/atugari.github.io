@@ -112,6 +112,7 @@
   if(current===board&&screen?.isConnected){refresh();return;}
   finishDrag();board=current;viewport=nextViewport;screen=nextScreen;
   const numbers=screen.querySelector('#number-controls');if(!numbers)return;
+  const heading=screen.querySelector(':scope>h1'),head=screen.querySelector('.play-head');if(heading&&head)head.prepend(heading);
   document.body.classList.add('np-collection-workspace');screen.classList.add('np-workspace-screen');collapsed=false;noticeDismissed=false;
   tools=document.createElement('div');tools.className='np-workspace-tools';tools.setAttribute('aria-label','盤面と数字の配置');
   tools.innerHTML='<button type="button" data-wide aria-pressed="false">盤面を広く</button><div class="np-direct-zoom" role="group" aria-label="盤面の拡大"><button type="button" data-zoom="out" aria-label="盤面を縮小する">−</button><button type="button" data-zoom="fit">全体</button><button type="button" data-zoom="in" aria-label="盤面を拡大する">＋</button></div><button type="button" data-board-settings>文字・位置</button><label>数字<select data-position aria-label="数字の位置"><option value="auto">自動（余白を使う）</option><option value="bottom">下</option><option value="top">上</option><option value="left">左</option><option value="right">右</option><option value="float">浮かせる</option></select></label>';

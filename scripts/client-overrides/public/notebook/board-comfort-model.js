@@ -45,4 +45,31 @@
  }
  function fill(prefs,region,index){const own=prefs.regions[region.key];if(own)return own;const colors=templates[prefs.template].regions;return colors.length?colors[index%colors.length]:null;}
  root.NPBoardComfortModel={key,templates,defaults,normalize,color,ink,groups,fill};
+ // The shared translator keeps Japanese source text reversible on language changes.
+ // Reviewed locale packs take priority over these English fallback additions.
+ const labels={
+  '数字':'Numbers','上':'Top','左':'Left','文字サイズ':'Text size','同じ数字':'Matching digits','完了':'Done',
+  '盤面と数字の配置':'Board and keypad layout','盤面を広く':'Expand board','通常表示':'Normal view',
+  '盤面の拡大':'Board zoom','盤面を縮小する':'Zoom out','盤面を拡大する':'Zoom in','全体':'Fit',
+  '文字・位置':'Text and layout','数字の位置':'Keypad position','自動（余白を使う）':'Automatic (use free space)',
+  '浮かせる':'Floating','移動できる数字ボタン':'Movable keypad','数字ボタンを移動する。ドラッグまたは矢印キーで移動':'Move keypad: drag or use arrow keys',
+  '⠿ 数字':'⠿ Numbers','数字ボタンの形':'Keypad shape','格子':'Grid','横長':'Wide','縦長':'Tall','たたむ':'Collapse','数字を表示':'Show numbers',
+  '⚠ マスが小さめ':'⚠ Small cells','マスを見やすい大きさに拡大する':'Enlarge cells for readability',
+  '拡大後は盤面をドラッグして移動できます':'After zooming in, drag to move the board','小さいマスの案内を閉じる':'Dismiss small-cell notice',
+  '盤面の文字と位置':'Board text and layout','盤面の文字サイズ':'Board text size','数字がマスに収まる範囲で大きくします。':'Enlarge digits while keeping them inside their cells.',
+  '盤面の位置':'Board alignment','100%（標準）':'100% (default)',
+  '配色・強調':'Colors and highlighting','枠の配色と選択色':'Block and highlight colors',
+  '配色は作った問題と問題集で共通です。数字や途中経過は変わりません。':'Color settings are shared by created puzzles and the collection. Numbers and progress stay unchanged.',
+  '淡い配色のテンプレ':'Gentle color templates','色なし':'No block colors','淡い緑':'Soft green','あたたかな紙色':'Warm paper','淡い青':'Soft blue','控えめな多色':'Subtle mixed colors',
+  '配色の見本':'Color preview','枠ごとに色を変える':'Color individual blocks','色を変える枠':'Block to color','この枠の色':'This block’s color',
+  'この枠の色を戻す':'Reset this block','盤面でマスを選んでから開くと、そのマスを含む枠を選びます。':'Select a cell before opening this dialog to choose its block.',
+  '強調する色':'Highlight colors','選択マス':'Selected cell','選択マスの色':'Selected-cell color','縦・横':'Row and column','縦・横の色':'Row and column color',
+  '同じ数字の色':'Matching-digit color','強調表示を消す条件':'When to hide highlighting','消し方':'Hide highlighting',
+  '消さない':'Keep visible','一定時間後':'After a delay','盤面外を押したとき':'When pressing outside the board','時間＋盤面外':'Delay or outside press',
+  '消えるまで':'Delay','色だけを消します。選択したマスと数字の入力先は保持します。マスを選び直すと色が戻ります。':'Only the highlight disappears. The selected cell remains the input target. Select a cell again to restore highlighting.',
+  '配色と強調を初期設定に戻す':'Reset colors and highlighting','設定を保存できませんでした。':'Could not save settings.',
+  '枠{n}（{row}行{col}列から）':'Block {n} (from row {row}, column {col})','盤面{board}：枠{n}':'Board {board}: block {n}'
+ };
+ root.NPTranslations=root.NPTranslations||{};
+ for(const [source,en]of Object.entries(labels))root.NPTranslations[source]={en,...root.NPTranslations[source]};
 })(typeof window==='undefined'?globalThis:window);

@@ -365,7 +365,7 @@ async function checkResponsiveFreePlay(browser,root,viewport){
    await checkBoardPinch(page,frame,{boardSelector:'#board',viewportSelector:'#board-scroll',label:'Free Play 9×9 at '+label});
    await frame.locator('#np-play-settings-button').click();await frame.locator('[aria-controls="np-settings-page-view"]').click();await frame.locator('.np-pan-fit').click();await frame.locator('.np-settings-close').click();await twoAnimationFrames(frame);
   }
-  await expectNotebookText(frame,'#app .screen > h1','Classic Sudoku',label+' classic type heading',{contains:true});
+  await expectNotebookText(frame,'#app .screen h1','Classic Sudoku',label+' classic type heading',{contains:true});
   await expectNotebookText(frame,'[data-video="pause"]','Pause',label+' pause action');
   await frame.locator('[data-video="pause"]').click();
   await expectNotebookText(frame,'#video-pause h2','Paused',label+' paused state');
@@ -388,7 +388,7 @@ async function checkResponsiveFreePlay(browser,root,viewport){
   await checkNotebookInterface(frame,'en','language round trip '+label);
   assert.equal(await frame.locator('#np-play-settings-button').count(),1,'One play settings entrance: '+label);
   assert.equal(await frame.locator('.play-head #np-play-settings-button').count(),1,'Play settings are in the header: '+label);
-  assert.equal(await frame.locator('.play-dock > .tools > button').count(),4,'Four main play actions: '+label);
+  assert.equal(await frame.locator('.play-dock > .tools > button,.np-workspace-actions > button').count(),4,'Four main play actions in the current dock: '+label);
   assert.equal(await frame.locator('.play-head [data-video="pause"]').count(),1,'Pause stays beside the clock: '+label);
   assert.equal(await frame.locator('.screen > .video-hud,.screen > #video-flash').count(),0,'Secondary scores and completion details stay out of the play surface: '+label);
   assert.equal(await frame.locator('.screen > .np-pan-tools').count(),0,'Zoom controls are absent from the main play area: '+label);
@@ -421,18 +421,18 @@ async function checkResponsiveFreePlay(browser,root,viewport){
   await page.evaluate(()=>window.NPUIText.set('20'));
   await frame.waitForFunction(()=>getComputedStyle(document.documentElement).getPropertyValue('--ui-min-font').trim()==='20px');
   await twoAnimationFrames(frame);
-  const controls=await frame.locator('.play-dock .tools button,.number-pad button').evaluateAll(nodes=>nodes.map(node=>({text:node.textContent,width:node.getBoundingClientRect().width,height:node.getBoundingClientRect().height,font:parseFloat(getComputedStyle(node).fontSize)})));
+  const controls=await frame.locator('.play-dock .tools button,.np-workspace-actions > button,.number-pad button').evaluateAll(nodes=>nodes.map(node=>({text:node.textContent,width:node.getBoundingClientRect().width,height:node.getBoundingClientRect().height,font:parseFloat(getComputedStyle(node).fontSize)})));
   assert(controls.length>0,'Play controls exist: '+label);
   assert.deepEqual(controls.filter(c=>c.width<43.5||c.height<43.5||c.font<19.5),[],'Useful tap targets and minimum text size: '+label);
   const keys=await frame.locator('.number-pad button').evaluateAll(nodes=>nodes.map(node=>({text:node.textContent,width:node.getBoundingClientRect().width,height:node.getBoundingClientRect().height})));
-  assert.deepEqual(keys.filter(c=>Math.abs(c.width-c.height)>1),[],'Number keys stay square with larger text: '+label);
+  assert.deepEqual(keys.filter(c=>c.width<43.5||c.height<43.5),[],'Flexible number keys retain useful tap targets with larger text: '+label);
   await page.evaluate(()=>window.NPUIText.set('auto'));await twoAnimationFrames(frame);
 
   await frame.locator('[data-action="open-hints"]').click();
   await frame.locator('#hint-panel:not([hidden]) .vh-stage').waitFor();await twoAnimationFrames(frame);
   const hint=await frame.evaluate(()=>{
    const rect=selector=>{const r=document.querySelector(selector).getBoundingClientRect();return{left:r.left,right:r.right,top:r.top,bottom:r.bottom};};
-   const panel=rect('#hint-panel'),board=rect('#board-scroll'),keys=rect('.play-dock');
+   const panel=rect('#hint-panel'),board=rect('#board-scroll'),keys=rect(document.querySelector('.np-number-panel')?'.np-number-panel':'.play-dock');
    const overlaps=(a,b)=>Math.min(a.right,b.right)-Math.max(a.left,b.left)>1&&Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top)>1;
    return{boardOverlap:overlaps(panel,board),keyOverlap:overlaps(panel,keys),position:getComputedStyle(document.getElementById('hint-panel')).position};
   });
@@ -442,7 +442,7 @@ async function checkResponsiveFreePlay(browser,root,viewport){
   await frame.locator('[data-vh="close"]').click();
 
   await openPuzzle(fixtures[1],true);
-  await expectNotebookText(frame,'#app .screen > h1','Classic Sudoku',label+' large classic type heading',{contains:true});
+  await expectNotebookText(frame,'#app .screen h1','Classic Sudoku',label+' large classic type heading',{contains:true});
   const cells=await frame.evaluateHandle(()=>Array.from(document.querySelectorAll('#board .cell')));
   await frame.locator('#board [data-cell="0"]').click();
   await frame.locator('[data-action="number"][data-number="1"]').click();

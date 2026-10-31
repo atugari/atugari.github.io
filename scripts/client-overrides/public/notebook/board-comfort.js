@@ -3,7 +3,7 @@
  'use strict';
  const model=w.NPBoardComfortModel;if(!model)return;
  let prefs=read(),revision=0,queued=false,timer=null,lastBoard=null,lastCell=null,lastPaint=null,dialog=null,opener=null;
- const t=s=>w.NPI18n?.t(s)||s,esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const t=s=>s,esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  function current(){return w.NanpureAppTest?.getCurrent?.();}
  function read(){try{return model.normalize(JSON.parse(localStorage.getItem(model.key)||'null'));}catch{return model.normalize(null);}}
  function save(next){
