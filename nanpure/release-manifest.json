@@ -706,7 +706,7 @@
     "nanpure/releases/2026.11.01.68/notebook/pako.min.js": "29cfa0542b9864b6640cfdcc8f15b184db6431b532db2702a3ce97e5f2a7fc1c",
     "nanpure/releases/2026.11.01.68/notebook/path-samples.js": "84e05567c5544dda0832f86931f46de43ec72baef5891aa97f61c22040163bc2",
     "nanpure/releases/2026.11.01.68/notebook/play-options.js": "a669f619cd2df74b25ff21d258268b99da07d006591d5a708936032ee0e748b8",
-    "nanpure/releases/2026.11.01.68/notebook/play-workspace.css": "85c2df9614c6413e5a8bbe75fd588f3e33030835c9faa83aea9127866becc649",
+    "nanpure/releases/2026.11.01.68/notebook/play-workspace.css": "4211767c979045411fba25aa2087cb4dd125e78ae42ae3a9381e85f14b3024fd",
     "nanpure/releases/2026.11.01.68/notebook/play-workspace.js": "6c2147111ab1bcc4c415bb15a7f5795725ce40bd464b12b521f100d4689fd837",
     "nanpure/releases/2026.11.01.68/notebook/portable.js": "65afbc0ceb75937d7959678fc6f8b23a94b6955ef9b88b9dd4395708c4332eb2",
     "nanpure/releases/2026.11.01.68/notebook/print-layout.js": "ba1b961f6e7e354075e84ca38b47b4de97bbafb46de2578b38b0ccc0c45399fa",
@@ -776,7 +776,7 @@
     "nanpure/collection/index.html": "5cc8cca3f0092d2e7bdffa5ed229c04b516464186820bc06c3e7dc0469c70426",
     "nanpure/collection/player.html": "e79aac34ab85bc86e9a4e65f12b2cca9cf49f2ead2ac7f59e0c30250f6a42a11",
     "nanpure/collection/workspace.js": "6c2147111ab1bcc4c415bb15a7f5795725ce40bd464b12b521f100d4689fd837",
-    "nanpure/collection/workspace.css": "85c2df9614c6413e5a8bbe75fd588f3e33030835c9faa83aea9127866becc649"
+    "nanpure/collection/workspace.css": "4211767c979045411fba25aa2087cb4dd125e78ae42ae3a9381e85f14b3024fd"
   },
   "announcementVersion": "2026.11.01.68",
   "baseRelease": "2026.11.01.67",
@@ -795,7 +795,7 @@
       "nanpure/collection/catalog-model.mjs": "f20bc440da026a79cafab808dcb515b0926086d0e3dc66eb5b68060f484d7f00",
       "nanpure/collection/pack-reader.mjs": "7e4a2902ac7e25b280478ab68158ad6ef28e94de11e1b6e41b4885d699a5db3f",
       "scripts/seo/build-seo.mjs": "e68e4b995a6a59c4050b1e9fcbffe352a3a7566a3fea8750c8761c2790e266cc",
-      "nanpure/collection/workspace.css": "85c2df9614c6413e5a8bbe75fd588f3e33030835c9faa83aea9127866becc649",
+      "nanpure/collection/workspace.css": "4211767c979045411fba25aa2087cb4dd125e78ae42ae3a9381e85f14b3024fd",
       "nanpure/collection/workspace.js": "6c2147111ab1bcc4c415bb15a7f5795725ce40bd464b12b521f100d4689fd837",
       "nanpure/collection/board-input.js": "92acb148272145a2aa202d44ce7093004a70ee30de8d11adc44e19ab31de56c4",
       "nanpure/collection/player.html": "e79aac34ab85bc86e9a4e65f12b2cca9cf49f2ead2ac7f59e0c30250f6a42a11",

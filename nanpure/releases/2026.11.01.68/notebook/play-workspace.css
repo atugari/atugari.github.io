@@ -111,4 +111,5 @@ html body.np-collection-workspace #app .np-workspace-actions>button{min-height:4
 html body.np-collection-workspace #app .np-number-panel .number-pad>button{font-size:max(18px,var(--ui-min-font,0px))!important}
 .np-workspace-tools{min-width:0}.np-workspace-tools label{min-width:0}.np-workspace-tools select{min-width:0;max-width:100%;flex:1}
 .np-workspace-tools .np-direct-zoom{min-width:0;max-width:100%}
+.np-workspace-screen>.play-dock:not(:has(.tools,#number-controls)){display:none!important}
 @media(min-width:900px){html body.np-collection-workspace #app .np-number-panel .number-pad>button{font-size:max(clamp(18px,2vw,28px),var(--ui-min-font,0px))!important}}
