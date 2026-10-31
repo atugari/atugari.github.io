@@ -51,7 +51,9 @@ for(const viewport of [{width:1280,height:800},{width:375,height:812},{width:812
  await page.waitForFunction(v=>{const w=document.querySelector('#game').contentWindow,b=w.document.querySelector('.np-number-panel [data-number="'+v+'"]');if(!b)return false;const r=b.getBoundingClientRect(),hit=w.document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return r.y>=0&&r.bottom<=w.innerHeight&&!!hit&&b.contains(hit)},value);
  await page.frameLocator('#game').locator('.np-number-panel [data-number="'+value+'"]').click();
  await page.waitForFunction(v=>document.querySelector('#game').contentWindow.NanpureAppTest.getCurrent().grid[0]===v,value);
- const before=await page.evaluate(()=>{const p=document.querySelector('#game').contentWindow.NanpureAppTest.getCurrent();return{uid:p.uid,grid:p.grid.slice()}});
+ const saved=await page.evaluate(async()=>{const w=document.querySelector('#game').contentWindow;await w.NPStorage.flush();const p=w.NanpureAppTest.getCurrent(),stored=await w.NPStorage.get(p.uid);return{uid:p.uid,grid:p.grid.slice(),stored:stored?.grid}});
+ assert.deepEqual(saved.stored,saved.grid,'Cross-balance durable save before reload at '+viewport.width);
+ const before={uid:saved.uid,grid:saved.grid};
  await page.reload();await page.waitForFunction(()=>document.querySelector('#game')?.contentWindow?.NanpureAppTest?.getCurrent()?.kind==='cross');
  const after=await page.evaluate(()=>{const p=document.querySelector('#game').contentWindow.NanpureAppTest.getCurrent();return{uid:p.uid,grid:p.grid.slice()}});
  assert.deepEqual(after,before,'Actual saved grid at '+viewport.width);
