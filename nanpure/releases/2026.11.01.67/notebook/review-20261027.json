@@ -1,0 +1,1102 @@
+{
+  "reviewedOn": "2026-10-27",
+  "baselineRelease": "2026.10.27.62",
+  "selection": "日常の指示語・生活語・文章での呼称から選定した保留20表記。すべてを初級日常語として採用するものではない。",
+  "sources": {
+    "baselineAuditSha256": "b112f36ce23e4992e43d8de1ddb442d189c027524b19623a64f376b04c3aebe7",
+    "sudachiSmallSha256": "dfe6480f7264bf8a9810aeec29d0e7da571e46316532526e24e80970c71314fd",
+    "jmdictInputSha256": "12c39ce51f2e257d04968e5557f4e30249998bb13a7ae07420066a309e6b3a9a",
+    "jumanInputSha256": "30d411a91c91be5ad0b356c3bee273399e07a71ba1b77ff3b228b7e7c805b017",
+    "jmdictLicenseUrl": "https://www.edrdg.org/edrdg/licence.html",
+    "sudachiLicenseUrl": "https://github.com/WorksApplications/SudachiDict/blob/830bf9e1313f6f75235ba87ee041e144dbcad8c1/LEGAL",
+    "jumanLicenseUrl": "https://github.com/ku-nlp/juman/blob/82ac584202dda36da30751ef3a9c5418ff2ca48d/COPYING",
+    "licenseNotices": "wado-licenses.txt",
+    "licenseReviewedOn": "2026-10-27"
+  },
+  "counts": {
+    "reviewed": 20,
+    "adopted": 6,
+    "pending": 14
+  },
+  "entries": [
+    {
+      "text": "何処",
+      "beforeDecision": "pending",
+      "decision": "adopted",
+      "reading": "どこ",
+      "reason": "場所を尋ねる独立した代名詞。JMdictとSudachiの「どこ」が一致。",
+      "before": {
+        "text": "何処",
+        "decision": "pending",
+        "reason": "single-family",
+        "reading": "",
+        "readingSources": "",
+        "zipf": "",
+        "rank": "",
+        "foundIn": "jmdict",
+        "eligibleReadings": "jmdict:いずこ/どこ"
+      },
+      "zipf": 4.35,
+      "readingSources": [
+        "jmdict",
+        "sudachi"
+      ],
+      "sudachiRows": [
+        {
+          "line": 291967,
+          "columns": [
+            "何処",
+            "1",
+            "1",
+            "10119",
+            "何処",
+            "代名詞",
+            "*",
+            "*",
+            "*",
+            "*",
+            "*",
+            "イズコ",
+            "何処",
+            "*",
+            "A",
+            "*",
+            "*",
+            "*",
+            "013267"
+          ],
+          "sha256": "4b792bf00216c66fccfc6d90e0b94e71f8f141421c65c9459f5fab31bf6857ec"
+        },
+        {
+          "line": 291968,
+          "columns": [
+            "何処",
+            "1",
+            "1",
+            "7102",
+            "何処",
+            "代名詞",
+            "*",
+            "*",
+            "*",
+            "*",
+            "*",
+            "ドコ",
+            "何処",
+            "*",
+            "A",
+            "*",
+            "*",
+            "*",
+            "013267"
+          ],
+          "sha256": "e7143bbd8ffbca829ec7a7d7626e2f71513b51cd062b1d5d3e94070f4aeeb415"
+        }
+      ],
+      "acceptedRowSha256": [
+        "e7143bbd8ffbca829ec7a7d7626e2f71513b51cd062b1d5d3e94070f4aeeb415"
+      ],
+      "commercialUseReview": {
+        "jmdict": "CC BY-SA 4.0; 既存の帰属・継承・許諾文を保持",
+        "sudachi": "Apache-2.0 / UniDic BSD-3-Clause; 既存の著作権・条件・免責を保持",
+        "juman": "BSD-3-Clause; 既存の著作権・条件・免責を保持"
+      },
+      "evidenceScope": "Existing pinned audit readings plus direct inspection of the pinned Sudachi Small CSV. No inference from a search result count."
+    },
+    {
+      "text": "何方",
+      "beforeDecision": "pending",
+      "decision": "adopted",
+      "reading": "どなた",
+      "reason": "人を丁寧に尋ねる独立した代名詞。両辞書で「どなた」が一致。「どちら」は今回の採用読みとしない。",
+      "before": {
+        "text": "何方",
+        "decision": "pending",
+        "reason": "single-family",
+        "reading": "",
+        "readingSources": "",
+        "zipf": "",
+        "rank": "",
+        "foundIn": "jmdict",
+        "eligibleReadings": "jmdict:いずかた/いずち/どなた"
+      },
+      "zipf": 2.68,
+      "readingSources": [
+        "jmdict",
+        "sudachi"
+      ],
+      "sudachiRows": [
+        {
+          "line": 291985,
+          "columns": [
+            "何方",
+            "1",
+            "1",
+            "8890",
+            "何方",
+            "代名詞",
+            "*",
+            "*",
+            "*",
+            "*",
+            "*",
+            "ドチラ",
+            "何方",
+            "*",
+            "A",
+            "*",
+            "*",
+            "*",
+            "022496"
+          ],
+          "sha256": "3a84ba7ef74c32ff46a62c649d6fac501adcf0ab000c0ddba28a341912775a33"
+        },
+        {
+          "line": 291986,
+          "columns": [
+            "何方",
+            "1",
+            "1",
+            "7487",
+            "何方",
+            "代名詞",
+            "*",
+            "*",
+            "*",
+            "*",
+            "*",
+            "ドナタ",
+            "何方",
+            "*",
+            "A",
+            "*",
+            "*",
+            "*",
+            "*"
+          ],
+          "sha256": "505e203c68aac710ee2092cf6cf5879d9c4f524cc7d28da8d5774e2df593df5d"
+        }
+      ],
+      "acceptedRowSha256": [
+        "505e203c68aac710ee2092cf6cf5879d9c4f524cc7d28da8d5774e2df593df5d"
+      ],
+      "commercialUseReview": {
+        "jmdict": "CC BY-SA 4.0; 既存の帰属・継承・許諾文を保持",
+        "sudachi": "Apache-2.0 / UniDic BSD-3-Clause; 既存の著作権・条件・免責を保持",
+        "juman": "BSD-3-Clause; 既存の著作権・条件・免責を保持"
+      },
+      "evidenceScope": "Existing pinned audit readings plus direct inspection of the pinned Sudachi Small CSV. No inference from a search result count."
+    },
+    {
+      "text": "御宅",
+      "beforeDecision": "pending",
+      "decision": "adopted",
+      "reading": "おたく",
+      "reason": "相手・相手の家を指す表現。JUMANの既存抽出とSudachiの「おたく」が一致。",
+      "before": {
+        "text": "御宅",
+        "decision": "pending",
+        "reason": "single-family",
+        "reading": "",
+        "readingSources": "",
+        "zipf": "",
+        "rank": "",
+        "foundIn": "jmdict,juman",
+        "eligibleReadings": "juman:おたく"
+      },
+      "zipf": 0,
+      "readingSources": [
+        "juman",
+        "sudachi"
+      ],
+      "sudachiRows": [
+        {
+          "line": 425761,
+          "columns": [
+            "御宅",
+            "1",
+            "1",
+            "10000",
+            "御宅",
+            "代名詞",
+            "*",
+            "*",
+            "*",
+            "*",
+            "*",
+            "オタク",
+            "御宅",
+            "*",
+            "A",
+            "*",
+            "*",
+            "*",
+            "021468"
+          ],
+          "sha256": "163b27f701b1a63d45fe505db4cadb1555f18bd9109e877210ceacbdd8c5fc6a"
+        }
+      ],
+      "acceptedRowSha256": [
+        "163b27f701b1a63d45fe505db4cadb1555f18bd9109e877210ceacbdd8c5fc6a"
+      ],
+      "commercialUseReview": {
+        "jmdict": "CC BY-SA 4.0; 既存の帰属・継承・許諾文を保持",
+        "sudachi": "Apache-2.0 / UniDic BSD-3-Clause; 既存の著作権・条件・免責を保持",
+        "juman": "BSD-3-Clause; 既存の著作権・条件・免責を保持"
+      },
+      "evidenceScope": "Existing pinned audit readings plus direct inspection of the pinned Sudachi Small CSV. No inference from a search result count."
+    },
+    {
+      "text": "貴兄",
+      "beforeDecision": "pending",
+      "decision": "adopted",
+      "reading": "きけい",
+      "reason": "手紙などで相手を敬う呼び方。日常会話の初級語とは扱わず、表記頻度に従う。",
+      "before": {
+        "text": "貴兄",
+        "decision": "pending",
+        "reason": "single-family",
+        "reading": "",
+        "readingSources": "",
+        "zipf": "",
+        "rank": "",
+        "foundIn": "jmdict",
+        "eligibleReadings": "jmdict:きけい"
+      },
+      "zipf": 1.61,
+      "readingSources": [
+        "jmdict",
+        "sudachi"
+      ],
+      "sudachiRows": [
+        {
+          "line": 690184,
+          "columns": [
+            "貴兄",
+            "3",
+            "3",
+            "7312",
+            "貴兄",
+            "代名詞",
+            "*",
+            "*",
+            "*",
+            "*",
+            "*",
+            "キケイ",
+            "貴兄",
+            "*",
+            "A",
+            "*",
+            "*",
+            "*",
+            "*"
+          ],
+          "sha256": "40a05dcedae0d97575c17b55994e8fa9860eb418a84020d2f5d7e97f3ed37383"
+        }
+      ],
+      "acceptedRowSha256": [
+        "40a05dcedae0d97575c17b55994e8fa9860eb418a84020d2f5d7e97f3ed37383"
+      ],
+      "commercialUseReview": {
+        "jmdict": "CC BY-SA 4.0; 既存の帰属・継承・許諾文を保持",
+        "sudachi": "Apache-2.0 / UniDic BSD-3-Clause; 既存の著作権・条件・免責を保持",
+        "juman": "BSD-3-Clause; 既存の著作権・条件・免責を保持"
+      },
+      "evidenceScope": "Existing pinned audit readings plus direct inspection of the pinned Sudachi Small CSV. No inference from a search result count."
+    },
+    {
+      "text": "貴君",
+      "beforeDecision": "pending",
+      "decision": "adopted",
+      "reading": "きくん",
+      "reason": "文章で相手を呼ぶ表現。日常会話の初級語とは扱わず、表記頻度に従う。",
+      "before": {
+        "text": "貴君",
+        "decision": "pending",
+        "reason": "single-family",
+        "reading": "",
+        "readingSources": "",
+        "zipf": "",
+        "rank": "",
+        "foundIn": "jmdict",
+        "eligibleReadings": "jmdict:きくん"
+      },
+      "zipf": 2.6,
+      "readingSources": [
+        "jmdict",
+        "sudachi"
+      ],
+      "sudachiRows": [
+        {
+          "line": 690196,
+          "columns": [
+            "貴君",
+            "3",
+            "3",
+            "7312",
+            "貴君",
+            "代名詞",
+            "*",
+            "*",
+            "*",
+            "*",
+            "*",
+            "キクン",
+            "貴君",
+            "*",
+            "A",
+            "*",
+            "*",
+            "*",
+            "*"
+          ],
+          "sha256": "02bfe95207aa1aa484ee6803acef190ca78e462971c478445d66f13609fdf62b"
+        }
+      ],
+      "acceptedRowSha256": [
+        "02bfe95207aa1aa484ee6803acef190ca78e462971c478445d66f13609fdf62b"
+      ],
+      "commercialUseReview": {
+        "jmdict": "CC BY-SA 4.0; 既存の帰属・継承・許諾文を保持",
+        "sudachi": "Apache-2.0 / UniDic BSD-3-Clause; 既存の著作権・条件・免責を保持",
+        "juman": "BSD-3-Clause; 既存の著作権・条件・免責を保持"
+      },
+      "evidenceScope": "Existing pinned audit readings plus direct inspection of the pinned Sudachi Small CSV. No inference from a search result count."
+    },
+    {
+      "text": "貴殿",
+      "beforeDecision": "pending",
+      "decision": "adopted",
+      "reading": "きでん",
+      "reason": "文書で相手を敬う表現。日常会話の初級語とは扱わず、表記頻度に従う。",
+      "before": {
+        "text": "貴殿",
+        "decision": "pending",
+        "reason": "single-family",
+        "reading": "",
+        "readingSources": "",
+        "zipf": "",
+        "rank": "",
+        "foundIn": "jmdict",
+        "eligibleReadings": "jmdict:きでん"
+      },
+      "zipf": 2.91,
+      "readingSources": [
+        "jmdict",
+        "sudachi"
+      ],
+      "sudachiRows": [
+        {
+          "line": 690253,
+          "columns": [
+            "貴殿",
+            "3",
+            "3",
+            "7312",
+            "貴殿",
+            "代名詞",
+            "*",
+            "*",
+            "*",
+            "*",
+            "*",
+            "キデン",
+            "貴殿",
+            "*",
+            "A",
+            "*",
+            "*",
+            "*",
+            "*"
+          ],
+          "sha256": "262b2886dcbdfbfa434a6893bd096fd391d49032ec993eed087a6136baada93a"
+        }
+      ],
+      "acceptedRowSha256": [
+        "262b2886dcbdfbfa434a6893bd096fd391d49032ec993eed087a6136baada93a"
+      ],
+      "commercialUseReview": {
+        "jmdict": "CC BY-SA 4.0; 既存の帰属・継承・許諾文を保持",
+        "sudachi": "Apache-2.0 / UniDic BSD-3-Clause; 既存の著作権・条件・免責を保持",
+        "juman": "BSD-3-Clause; 既存の著作権・条件・免責を保持"
+      },
+      "evidenceScope": "Existing pinned audit readings plus direct inspection of the pinned Sudachi Small CSV. No inference from a search result count."
+    },
+    {
+      "text": "一周",
+      "beforeDecision": "pending",
+      "decision": "pending",
+      "reading": null,
+      "reason": "現行抽出範囲で同じ読みを2系統確認できない。実在しないという判断ではない。",
+      "before": {
+        "text": "一周",
+        "decision": "pending",
+        "reason": "single-family",
+        "reading": "",
+        "readingSources": "",
+        "zipf": "",
+        "rank": "",
+        "foundIn": "jmdict",
+        "eligibleReadings": "jmdict:いっしゅう"
+      },
+      "zipf": 3.92,
+      "readingSources": [],
+      "sudachiRows": [],
+      "acceptedRowSha256": [],
+      "commercialUseReview": {
+        "jmdict": "CC BY-SA 4.0; 既存の帰属・継承・許諾文を保持",
+        "sudachi": "Apache-2.0 / UniDic BSD-3-Clause; 既存の著作権・条件・免責を保持",
+        "juman": "BSD-3-Clause; 既存の著作権・条件・免責を保持"
+      },
+      "evidenceScope": "Existing pinned audit readings plus direct inspection of the pinned Sudachi Small CSV. No inference from a search result count."
+    },
+    {
+      "text": "二階",
+      "beforeDecision": "pending",
+      "decision": "pending",
+      "reading": null,
+      "reason": "Sudachi Smallの該当行は姓。「建物の2階」の独立語の裏付けに数えない。",
+      "before": {
+        "text": "二階",
+        "decision": "pending",
+        "reason": "single-family",
+        "reading": "",
+        "readingSources": "",
+        "zipf": "",
+        "rank": "",
+        "foundIn": "jmdict",
+        "eligibleReadings": "jmdict:にかい"
+      },
+      "zipf": 0,
+      "readingSources": [],
+      "sudachiRows": [
+        {
+          "line": 280699,
+          "columns": [
+            "二階",
+            "4790",
+            "4790",
+            "10416",
+            "二階",
+            "名詞",
+            "固有名詞",
+            "人名",
+            "姓",
+            "*",
+            "*",
+            "ニカイ",
+            "二階",
+            "*",
+            "A",
+            "*",
+            "*",
+            "*",
+            "*"
+          ],
+          "sha256": "9d3d416e7e280e9a224071fc6b9499b05eeea67df3ad96f966cc872389556a6a"
+        }
+      ],
+      "acceptedRowSha256": [],
+      "commercialUseReview": {
+        "jmdict": "CC BY-SA 4.0; 既存の帰属・継承・許諾文を保持",
+        "sudachi": "Apache-2.0 / UniDic BSD-3-Clause; 既存の著作権・条件・免責を保持",
+        "juman": "BSD-3-Clause; 既存の著作権・条件・免責を保持"
+      },
+      "evidenceScope": "Existing pinned audit readings plus direct inspection of the pinned Sudachi Small CSV. No inference from a search result count."
+    },
+    {
+      "text": "二度",
+      "beforeDecision": "pending",
+      "decision": "pending",
+      "reading": null,
+      "reason": "現行抽出範囲で同じ読みを2系統確認できない。数詞を一括で出題に加えない。",
+      "before": {
+        "text": "二度",
+        "decision": "pending",
+        "reason": "single-family",
+        "reading": "",
+        "readingSources": "",
+        "zipf": "",
+        "rank": "",
+        "foundIn": "jmdict",
+        "eligibleReadings": "jmdict:にど/ふたたび"
+      },
+      "zipf": 0,
+      "readingSources": [],
+      "sudachiRows": [],
+      "acceptedRowSha256": [],
+      "commercialUseReview": {
+        "jmdict": "CC BY-SA 4.0; 既存の帰属・継承・許諾文を保持",
+        "sudachi": "Apache-2.0 / UniDic BSD-3-Clause; 既存の著作権・条件・免責を保持",
+        "juman": "BSD-3-Clause; 既存の著作権・条件・免責を保持"
+      },
+      "evidenceScope": "Existing pinned audit readings plus direct inspection of the pinned Sudachi Small CSV. No inference from a search result count."
+    },
+    {
+      "text": "数回",
+      "beforeDecision": "pending",
+      "decision": "pending",
+      "reading": null,
+      "reason": "現行抽出範囲で同じ読みを2系統確認できない。数詞を一括で出題に加えない。",
+      "before": {
+        "text": "数回",
+        "decision": "pending",
+        "reason": "single-family",
+        "reading": "",
+        "readingSources": "",
+        "zipf": "",
+        "rank": "",
+        "foundIn": "jmdict",
+        "eligibleReadings": "jmdict:すうかい"
+      },
+      "zipf": 0,
+      "readingSources": [],
+      "sudachiRows": [],
+      "acceptedRowSha256": [],
+      "commercialUseReview": {
+        "jmdict": "CC BY-SA 4.0; 既存の帰属・継承・許諾文を保持",
+        "sudachi": "Apache-2.0 / UniDic BSD-3-Clause; 既存の著作権・条件・免責を保持",
+        "juman": "BSD-3-Clause; 既存の著作権・条件・免責を保持"
+      },
+      "evidenceScope": "Existing pinned audit readings plus direct inspection of the pinned Sudachi Small CSV. No inference from a search result count."
+    },
+    {
+      "text": "番目",
+      "beforeDecision": "pending",
+      "decision": "pending",
+      "reading": null,
+      "reason": "順序の表現として実在するが、独立語・同一読みの2系統条件を今回確認できない。",
+      "before": {
+        "text": "番目",
+        "decision": "pending",
+        "reason": "single-family",
+        "reading": "",
+        "readingSources": "",
+        "zipf": "",
+        "rank": "",
+        "foundIn": "jmdict",
+        "eligibleReadings": "jmdict:つがいめ/ばんめ"
+      },
+      "zipf": 0,
+      "readingSources": [],
+      "sudachiRows": [],
+      "acceptedRowSha256": [],
+      "commercialUseReview": {
+        "jmdict": "CC BY-SA 4.0; 既存の帰属・継承・許諾文を保持",
+        "sudachi": "Apache-2.0 / UniDic BSD-3-Clause; 既存の著作権・条件・免責を保持",
+        "juman": "BSD-3-Clause; 既存の著作権・条件・免責を保持"
+      },
+      "evidenceScope": "Existing pinned audit readings plus direct inspection of the pinned Sudachi Small CSV. No inference from a search result count."
+    },
+    {
+      "text": "身近",
+      "beforeDecision": "pending",
+      "decision": "pending",
+      "reading": null,
+      "reason": "既存抽出でJMdict「みぢか」とSudachi「みじか」が異なる。機械的に同一読みへ正規化しない。",
+      "before": {
+        "text": "身近",
+        "decision": "pending",
+        "reason": "reading-unconfirmed",
+        "reading": "",
+        "readingSources": "",
+        "zipf": "",
+        "rank": "",
+        "foundIn": "jmdict,sudachi",
+        "eligibleReadings": "jmdict:みぢか;sudachi:みじか"
+      },
+      "zipf": 4.03,
+      "readingSources": [],
+      "sudachiRows": [
+        {
+          "line": 704359,
+          "columns": [
+            "身近",
+            "5669",
+            "5669",
+            "8988",
+            "身近",
+            "形状詞",
+            "一般",
+            "*",
+            "*",
+            "*",
+            "*",
+            "ミジカ",
+            "身近",
+            "*",
+            "A",
+            "*",
+            "*",
+            "*",
+            "*"
+          ],
+          "sha256": "4bd2b9d1ea2f069c04364359df2e9418d27397e8beb5c4de930a6c4212f7a3fd"
+        }
+      ],
+      "acceptedRowSha256": [],
+      "commercialUseReview": {
+        "jmdict": "CC BY-SA 4.0; 既存の帰属・継承・許諾文を保持",
+        "sudachi": "Apache-2.0 / UniDic BSD-3-Clause; 既存の著作権・条件・免責を保持",
+        "juman": "BSD-3-Clause; 既存の著作権・条件・免責を保持"
+      },
+      "evidenceScope": "Existing pinned audit readings plus direct inspection of the pinned Sudachi Small CSV. No inference from a search result count."
+    },
+    {
+      "text": "間近",
+      "beforeDecision": "pending",
+      "decision": "pending",
+      "reading": null,
+      "reason": "既存抽出でJMdict「まぢか」とSudachi「まじか」が異なる。機械的に同一読みへ正規化しない。",
+      "before": {
+        "text": "間近",
+        "decision": "pending",
+        "reason": "reading-unconfirmed",
+        "reading": "",
+        "readingSources": "",
+        "zipf": "",
+        "rank": "",
+        "foundIn": "jmdict,sudachi",
+        "eligibleReadings": "jmdict:まぢか;sudachi:まじか"
+      },
+      "zipf": 3.81,
+      "readingSources": [],
+      "sudachiRows": [
+        {
+          "line": 733126,
+          "columns": [
+            "間近",
+            "5170",
+            "5170",
+            "11584",
+            "間近",
+            "形容詞",
+            "一般",
+            "*",
+            "*",
+            "形容詞",
+            "語幹-一般",
+            "マジカ",
+            "間近い",
+            "733127",
+            "A",
+            "*",
+            "*",
+            "*",
+            "*"
+          ],
+          "sha256": "422643767cdb3dd24add32f53a73d2b2c567544d6dcd0a502e384a31496c6b9b"
+        },
+        {
+          "line": 733127,
+          "columns": [
+            "間近",
+            "5669",
+            "5669",
+            "8577",
+            "間近",
+            "形状詞",
+            "一般",
+            "*",
+            "*",
+            "*",
+            "*",
+            "マジカ",
+            "間近",
+            "*",
+            "A",
+            "*",
+            "*",
+            "*",
+            "*"
+          ],
+          "sha256": "b5c470297a74445e5a973b7d8ecec05360c38a527c2812ad4371da71abb7af79"
+        }
+      ],
+      "acceptedRowSha256": [],
+      "commercialUseReview": {
+        "jmdict": "CC BY-SA 4.0; 既存の帰属・継承・許諾文を保持",
+        "sudachi": "Apache-2.0 / UniDic BSD-3-Clause; 既存の著作権・条件・免責を保持",
+        "juman": "BSD-3-Clause; 既存の著作権・条件・免責を保持"
+      },
+      "evidenceScope": "Existing pinned audit readings plus direct inspection of the pinned Sudachi Small CSV. No inference from a search result count."
+    },
+    {
+      "text": "一寸",
+      "beforeDecision": "pending",
+      "decision": "pending",
+      "reading": null,
+      "reason": "既存抽出でJMdict「いっすん」とSudachi「ちょっと」が異なる。意味の異なる読みを同意票にしない。",
+      "before": {
+        "text": "一寸",
+        "decision": "pending",
+        "reason": "reading-unconfirmed",
+        "reading": "",
+        "readingSources": "",
+        "zipf": "",
+        "rank": "",
+        "foundIn": "jmdict,sudachi",
+        "eligibleReadings": "jmdict:いっすん;sudachi:ちょっと"
+      },
+      "zipf": 2.86,
+      "readingSources": [],
+      "sudachiRows": [
+        {
+          "line": 268409,
+          "columns": [
+            "一寸",
+            "5",
+            "5",
+            "6817",
+            "一寸",
+            "副詞",
+            "*",
+            "*",
+            "*",
+            "*",
+            "*",
+            "チョット",
+            "一寸",
+            "*",
+            "A",
+            "*",
+            "*",
+            "*",
+            "*"
+          ],
+          "sha256": "3c1e3e6fa16e572d9eec8cfd10ffa1adde0c4bf7cce5172b3dffbf2bdada08f3"
+        }
+      ],
+      "acceptedRowSha256": [],
+      "commercialUseReview": {
+        "jmdict": "CC BY-SA 4.0; 既存の帰属・継承・許諾文を保持",
+        "sudachi": "Apache-2.0 / UniDic BSD-3-Clause; 既存の著作権・条件・免責を保持",
+        "juman": "BSD-3-Clause; 既存の著作権・条件・免責を保持"
+      },
+      "evidenceScope": "Existing pinned audit readings plus direct inspection of the pinned Sudachi Small CSV. No inference from a search result count."
+    },
+    {
+      "text": "面白",
+      "beforeDecision": "pending",
+      "decision": "pending",
+      "reading": null,
+      "reason": "Sudachiの該当行は「面白い」の語幹。終止形の独立語として数えない。",
+      "before": {
+        "text": "面白",
+        "decision": "pending",
+        "reason": "single-family",
+        "reading": "",
+        "readingSources": "",
+        "zipf": "",
+        "rank": "",
+        "foundIn": "jmdict",
+        "eligibleReadings": "jmdict:おもしろ"
+      },
+      "zipf": 4.55,
+      "readingSources": [],
+      "sudachiRows": [
+        {
+          "line": 743290,
+          "columns": [
+            "面白",
+            "5170",
+            "5170",
+            "7336",
+            "面白",
+            "形容詞",
+            "一般",
+            "*",
+            "*",
+            "形容詞",
+            "語幹-一般",
+            "オモシロ",
+            "面白い",
+            "743290",
+            "A",
+            "*",
+            "*",
+            "*",
+            "*"
+          ],
+          "sha256": "b244ffc52f4c9b8b581362aee57ad2d8f5db6c967bfc2d94d41315528077aba5"
+        }
+      ],
+      "acceptedRowSha256": [],
+      "commercialUseReview": {
+        "jmdict": "CC BY-SA 4.0; 既存の帰属・継承・許諾文を保持",
+        "sudachi": "Apache-2.0 / UniDic BSD-3-Clause; 既存の著作権・条件・免責を保持",
+        "juman": "BSD-3-Clause; 既存の著作権・条件・免責を保持"
+      },
+      "evidenceScope": "Existing pinned audit readings plus direct inspection of the pinned Sudachi Small CSV. No inference from a search result count."
+    },
+    {
+      "text": "可愛",
+      "beforeDecision": "pending",
+      "decision": "pending",
+      "reading": null,
+      "reason": "Sudachiの該当行は人名、または「可愛い」の語幹。独立語の裏付けに数えない。",
+      "before": {
+        "text": "可愛",
+        "decision": "pending",
+        "reason": "single-family",
+        "reading": "",
+        "readingSources": "",
+        "zipf": "",
+        "rank": "",
+        "foundIn": "jmdict",
+        "eligibleReadings": "jmdict:かわい"
+      },
+      "zipf": 4.2,
+      "readingSources": [],
+      "sudachiRows": [
+        {
+          "line": 340963,
+          "columns": [
+            "可愛",
+            "4789",
+            "4789",
+            "12147",
+            "可愛",
+            "名詞",
+            "固有名詞",
+            "人名",
+            "名",
+            "*",
+            "*",
+            "カワイ",
+            "可愛",
+            "*",
+            "A",
+            "*",
+            "*",
+            "*",
+            "*"
+          ],
+          "sha256": "a016ae3d52a3fc6d8ab90da8359579721fc3f26d89e1f72b281b7afb9a48d6ac"
+        },
+        {
+          "line": 340964,
+          "columns": [
+            "可愛",
+            "4790",
+            "4790",
+            "11204",
+            "可愛",
+            "名詞",
+            "固有名詞",
+            "人名",
+            "姓",
+            "*",
+            "*",
+            "カワイ",
+            "可愛",
+            "*",
+            "A",
+            "*",
+            "*",
+            "*",
+            "*"
+          ],
+          "sha256": "8f7867f0fdfd21ad7cf9578966f583cad09c675363c0e528123dc12448a19cbf"
+        },
+        {
+          "line": 340965,
+          "columns": [
+            "可愛",
+            "5170",
+            "5170",
+            "8540",
+            "可愛",
+            "形容詞",
+            "一般",
+            "*",
+            "*",
+            "形容詞",
+            "語幹-一般",
+            "カワイ",
+            "可愛い",
+            "340965",
+            "A",
+            "*",
+            "*",
+            "*",
+            "*"
+          ],
+          "sha256": "4ea517529bb6bc94ddcd1a93ade444944ed485c4683711cea871fa8f84a3e886"
+        }
+      ],
+      "acceptedRowSha256": [],
+      "commercialUseReview": {
+        "jmdict": "CC BY-SA 4.0; 既存の帰属・継承・許諾文を保持",
+        "sudachi": "Apache-2.0 / UniDic BSD-3-Clause; 既存の著作権・条件・免責を保持",
+        "juman": "BSD-3-Clause; 既存の著作権・条件・免責を保持"
+      },
+      "evidenceScope": "Existing pinned audit readings plus direct inspection of the pinned Sudachi Small CSV. No inference from a search result count."
+    },
+    {
+      "text": "人達",
+      "beforeDecision": "pending",
+      "decision": "pending",
+      "reading": null,
+      "reason": "現行抽出範囲で同じ読みを2系統確認できない。表記頻度だけで採用しない。",
+      "before": {
+        "text": "人達",
+        "decision": "pending",
+        "reason": "single-family",
+        "reading": "",
+        "readingSources": "",
+        "zipf": "",
+        "rank": "",
+        "foundIn": "jmdict",
+        "eligibleReadings": "jmdict:ひとたち"
+      },
+      "zipf": 4.71,
+      "readingSources": [],
+      "sudachiRows": [],
+      "acceptedRowSha256": [],
+      "commercialUseReview": {
+        "jmdict": "CC BY-SA 4.0; 既存の帰属・継承・許諾文を保持",
+        "sudachi": "Apache-2.0 / UniDic BSD-3-Clause; 既存の著作権・条件・免責を保持",
+        "juman": "BSD-3-Clause; 既存の著作権・条件・免責を保持"
+      },
+      "evidenceScope": "Existing pinned audit readings plus direct inspection of the pinned Sudachi Small CSV. No inference from a search result count."
+    },
+    {
+      "text": "彼等",
+      "beforeDecision": "pending",
+      "decision": "pending",
+      "reading": null,
+      "reason": "現行抽出範囲で同じ読みを2系統確認できない。今回のSmall該当行からは補えない。",
+      "before": {
+        "text": "彼等",
+        "decision": "pending",
+        "reason": "single-family",
+        "reading": "",
+        "readingSources": "",
+        "zipf": "",
+        "rank": "",
+        "foundIn": "jmdict",
+        "eligibleReadings": "jmdict:かれら"
+      },
+      "zipf": 3.56,
+      "readingSources": [],
+      "sudachiRows": [],
+      "acceptedRowSha256": [],
+      "commercialUseReview": {
+        "jmdict": "CC BY-SA 4.0; 既存の帰属・継承・許諾文を保持",
+        "sudachi": "Apache-2.0 / UniDic BSD-3-Clause; 既存の著作権・条件・免責を保持",
+        "juman": "BSD-3-Clause; 既存の著作権・条件・免責を保持"
+      },
+      "evidenceScope": "Existing pinned audit readings plus direct inspection of the pinned Sudachi Small CSV. No inference from a search result count."
+    },
+    {
+      "text": "成程",
+      "beforeDecision": "pending",
+      "decision": "pending",
+      "reading": null,
+      "reason": "Sudachiで読みは確認できるが、現行のJMdict普通語抽出と一致する第二系統がない。",
+      "before": {
+        "text": "成程",
+        "decision": "pending",
+        "reason": "single-family",
+        "reading": "",
+        "readingSources": "",
+        "zipf": "",
+        "rank": "",
+        "foundIn": "jmdict,sudachi",
+        "eligibleReadings": "sudachi:なるほど"
+      },
+      "zipf": 0,
+      "readingSources": [],
+      "sudachiRows": [
+        {
+          "line": 443641,
+          "columns": [
+            "成程",
+            "5",
+            "5",
+            "8886",
+            "成程",
+            "副詞",
+            "*",
+            "*",
+            "*",
+            "*",
+            "*",
+            "ナルホド",
+            "成る程",
+            "*",
+            "A",
+            "*",
+            "*",
+            "*",
+            "*"
+          ],
+          "sha256": "559a5248deee90a4c627d4f273cafe5b40bc9e5fd744d8225d1b3a184392f9b5"
+        }
+      ],
+      "acceptedRowSha256": [],
+      "commercialUseReview": {
+        "jmdict": "CC BY-SA 4.0; 既存の帰属・継承・許諾文を保持",
+        "sudachi": "Apache-2.0 / UniDic BSD-3-Clause; 既存の著作権・条件・免責を保持",
+        "juman": "BSD-3-Clause; 既存の著作権・条件・免責を保持"
+      },
+      "evidenceScope": "Existing pinned audit readings plus direct inspection of the pinned Sudachi Small CSV. No inference from a search result count."
+    },
+    {
+      "text": "此度",
+      "beforeDecision": "pending",
+      "decision": "pending",
+      "reading": null,
+      "reason": "Sudachiで読みは確認できるが、現行のJMdict普通語抽出と一致する第二系統がない。",
+      "before": {
+        "text": "此度",
+        "decision": "pending",
+        "reason": "single-family",
+        "reading": "",
+        "readingSources": "",
+        "zipf": "",
+        "rank": "",
+        "foundIn": "jmdict,sudachi",
+        "eligibleReadings": "sudachi:こたび"
+      },
+      "zipf": 2.19,
+      "readingSources": [],
+      "sudachiRows": [
+        {
+          "line": 524315,
+          "columns": [
+            "此度",
+            "5148",
+            "5148",
+            "10000",
+            "此度",
+            "名詞",
+            "普通名詞",
+            "副詞可能",
+            "*",
+            "*",
+            "*",
+            "コタビ",
+            "此度",
+            "*",
+            "A",
+            "*",
+            "*",
+            "*",
+            "*"
+          ],
+          "sha256": "5a5d71da555d437cada109e293349bbb690d4c332a5e56a2642ad0a14603b68c"
+        }
+      ],
+      "acceptedRowSha256": [],
+      "commercialUseReview": {
+        "jmdict": "CC BY-SA 4.0; 既存の帰属・継承・許諾文を保持",
+        "sudachi": "Apache-2.0 / UniDic BSD-3-Clause; 既存の著作権・条件・免責を保持",
+        "juman": "BSD-3-Clause; 既存の著作権・条件・免責を保持"
+      },
+      "evidenceScope": "Existing pinned audit readings plus direct inspection of the pinned Sudachi Small CSV. No inference from a search result count."
+    }
+  ]
+}
