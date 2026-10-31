@@ -12,7 +12,7 @@ fs.copyFileSync(path.join(root,'scripts/client-overrides/public/notebook/board-i
 const playerFile=path.join(root,'nanpure/collection/player.html');
 const player=fs.readFileSync(playerFile,'utf8');
 if(!/src="\/nanpure\/collection\/board-input\.js(?:\?[^"]*)?"/.test(player))throw Error('Collection gesture loader was not found');
-fs.writeFileSync(playerFile,player.replace(/src="\/nanpure\/collection\/board-input\.js(?:\?[^"]*)?"/,'src="/nanpure/collection/board-input.js?v=20261031-type1"'));
+fs.writeFileSync(playerFile,player.replace(/src="\/nanpure\/collection\/board-input\.js(?:\?[^"]*)?"/,'src="/nanpure/collection/board-input.js?v=20261031-mobile1"'));
 const hash=file=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,file))).digest('hex');
 const manifestFile=path.join(root,'nanpure/release-manifest.json');
 const manifest=JSON.parse(fs.readFileSync(manifestFile));

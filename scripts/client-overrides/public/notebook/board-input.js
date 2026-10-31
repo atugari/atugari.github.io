@@ -3,6 +3,13 @@
  'use strict';
  const states=new Map(),controllers=new Set();
  let queued=false;
+ function measure(board){
+  const cell=board?.querySelector('.cell');if(!cell)return null;
+  const rect=cell.getBoundingClientRect(),cellSize=Math.min(rect.width,rect.height);
+  if(!cellSize||!cell.offsetHeight)return null;
+  const digit=Array.from(board.querySelectorAll('.cell>span:not(.notes,.hundred-notes,.cage-label,.cage-border)')).find(el=>!el.children.length&&/^\d+$/.test(el.textContent.trim()));
+  return{cellSize,digitSize:digit?parseFloat(getComputedStyle(digit).fontSize)*rect.height/cell.offsetHeight:null};
+ }
  function attach(board){
   if(board.dataset.panReady)return;
   board.dataset.panReady='1';
@@ -52,6 +59,7 @@
    const value=Math.round(state.scale*100)+'%';if(percent.textContent!==value)percent.textContent=value;
    buttons[0].disabled=state.scale<=minimum()+.0001;buttons[2].disabled=state.scale>=4;
    viewport.dataset.scale=String(state.scale);
+   if(typeof w.CustomEvent==='function')board.dispatchEvent(new w.CustomEvent('np-board-viewchange',{bubbles:true}));
   }
   function zoom(next,clientX,clientY){
    const rect=viewport.getBoundingClientRect(),x=clientX-rect.left-viewport.clientLeft,y=clientY-rect.top-viewport.clientTop;
@@ -61,6 +69,7 @@
    state.x=viewport.scrollLeft;state.y=viewport.scrollTop;
   }
   function zoomCenter(next){const rect=viewport.getBoundingClientRect();zoom(next,rect.left+viewport.clientWidth/2,rect.top+viewport.clientHeight/2);}
+  function readable(){const size=measure(board);if(size)zoomCenter(state.scale*Math.max(1,32/size.cellSize,size.digitSize?14/size.digitSize:1));}
   function fit(){state.fit=true;paint();viewport.scrollLeft=viewport.scrollTop=0;state.x=state.y=0;}
   function align(reveal){paint();if(reveal){const fraction={left:0,center:.5,right:1}[board.dataset.panAlign]||0;viewport.scrollLeft=Math.max(0,dimensions().width*state.scale-viewport.clientWidth)*fraction;state.x=viewport.scrollLeft;}}
   function pointerCenter(){
@@ -131,7 +140,7 @@
   viewport.addEventListener('scroll',()=>{state.x=viewport.scrollLeft;state.y=viewport.scrollTop;},{passive:true});
   paint();viewport.scrollLeft=state.x;viewport.scrollTop=state.y;
   if(w.ResizeObserver){observer=new ResizeObserver(paint);observer.observe(board);observer.observe(viewport);}
-  controllers.add({board,refresh:paint,fit,align,placeTools,dispose:()=>{cancelPointers();w.removeEventListener('pointerdown',startGesture,true);w.removeEventListener('pointerup',finish,true);w.removeEventListener('pointercancel',finish,true);w.removeEventListener('touchend',touchEnded);w.removeEventListener('touchcancel',cancelPointers);w.removeEventListener('blur',cancelPointers);w.removeEventListener('pagehide',cancelPointers);document.removeEventListener('visibilitychange',hidden);observer?.disconnect();tools.remove();}});
+  controllers.add({board,refresh:paint,fit,align,readable,placeTools,dispose:()=>{cancelPointers();w.removeEventListener('pointerdown',startGesture,true);w.removeEventListener('pointerup',finish,true);w.removeEventListener('pointercancel',finish,true);w.removeEventListener('touchend',touchEnded);w.removeEventListener('touchcancel',cancelPointers);w.removeEventListener('blur',cancelPointers);w.removeEventListener('pagehide',cancelPointers);document.removeEventListener('visibilitychange',hidden);observer?.disconnect();tools.remove();}});
  }
  function scan(){
   queued=false;
@@ -146,6 +155,6 @@
   new MutationObserver(records=>{if(!queued&&records.some(record=>record.addedNodes.length||record.removedNodes.length)){queued=true;requestAnimationFrame(scan);}}).observe(document.body,{childList:true,subtree:true});
   scan();
  }
- w.NPBoardInput={scan,refresh,align(board,value,reveal=false){if(!['left','center','right'].includes(value))return;board.dataset.panAlign=value;for(const controller of controllers)if(controller.board===board)controller.align(reveal);},fit(board){for(const controller of controllers)if(controller.board===board)controller.fit();}};
+ w.NPBoardInput={scan,refresh,measure,readable(board){for(const controller of controllers)if(controller.board===board)controller.readable();},align(board,value,reveal=false){if(!['left','center','right'].includes(value))return;board.dataset.panAlign=value;for(const controller of controllers)if(controller.board===board)controller.align(reveal);},fit(board){for(const controller of controllers)if(controller.board===board)controller.fit();}};
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })(window);
