@@ -95,8 +95,9 @@ jobs:
           node --experimental-vm-modules scripts/check-nanpure-ranking.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
           export PLAYWRIGHT_MODULE="$RUNNER_TEMP/nanpure-browser/node_modules/playwright"
           export CHROME_BIN="$(command -v google-chrome || command -v chromium)"
-          node scripts/check-pareasobi-move-browser.cjs _site
           node scripts/check-nanpure-comfort-browser.cjs _site
+          node scripts/check-nanpure-smooth-play.cjs _site
+          node scripts/check-pareasobi-move-browser.cjs _site
           node scripts/check-nanpure-search-browser.cjs _site
           node scripts/check-nanpure-home-titles-browser.cjs _site
           node scripts/check-nanpure-keyboard-dialogs.cjs
@@ -106,7 +107,6 @@ jobs:
           node scripts/check-nanpure-languages-browser.cjs _site
           node scripts/check-nanpure-browser.cjs _site
           node scripts/check-nanpure-keyboard-browser.cjs _site
-          node scripts/check-nanpure-smooth-play.cjs _site
           node scripts/check-nanpure-keybindings-browser.cjs _site
           node scripts/check-nanpure-appearance-browser.cjs _site
 

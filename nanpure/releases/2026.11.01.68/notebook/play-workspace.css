@@ -121,3 +121,7 @@ html body.np-collection-workspace #app .np-number-panel .number-pad>button{heigh
 .np-workspace-screen[data-compact-board=true] .np-small-board-notice span{max-width:1.1em;overflow:hidden}
 @media(min-width:900px){.np-workspace-screen:is([data-number-position=left],[data-number-position=right])>.np-number-panel{--np-workspace-key-height:clamp(44px,7vh,64px)}html body.np-collection-workspace #app .np-number-panel .number-pad>button{font-size:max(calc(clamp(18px,2vw,28px) * var(--np-key-scale,1)),var(--ui-min-font,0px))!important}}
 body.np-collection-workspace>#np-language-bar{display:none!important}
+/* Failed saves stay visible without moving the board or the input targets. */
+.np-workspace-screen>.play-feedback:has(#play-status:not([hidden])){display:block!important;position:fixed!important;inset:auto 8px 8px;z-index:900;box-sizing:border-box;max-height:20dvh;overflow:auto;margin:0!important;padding:6px 10px;border:1px solid #b56b00;border-radius:8px;background:#fff0ce;color:#633d00;pointer-events:none}
+.np-workspace-screen .play-feedback #play-status{margin:0!important}
+body.np-collection-workspace>.storage-warning{top:50px;bottom:auto;left:8px;right:8px;max-height:25dvh;overflow:auto;box-sizing:border-box}
