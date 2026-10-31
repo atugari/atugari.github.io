@@ -90,4 +90,26 @@ check('alignment reveals oversized boards without leaving an inaccessible margin
  const f=fixture(),api=f.w.NPBoardInput;
  for(const [align,left]of [['right',700],['center',350],['left',0]]){api.align(f.board,align,true);near(f.viewport.scrollLeft,left,align+' oversized view');near(parseFloat(f.board.parentElement.style.marginLeft),0,'No negative or hidden margin');}
 });
+function measuredFixture(){
+ const f=fixture();f.cell.classList.add('cell');f.cell.innerHTML='<span>12</span>';
+ Object.defineProperty(f.cell,'offsetHeight',{value:62.5});
+ f.cell.getBoundingClientRect=()=>({width:62.5*f.scale(),height:62.5*f.scale()});
+ f.w.getComputedStyle=()=>({zoom:'1',overflowY:'visible',fontSize:'22px'});
+ return f;
+}
+check('readability measures the rendered cell and glyph after fit transforms',()=>{
+ const f=measuredFixture(),api=f.w.NPBoardInput;api.fit(f.board);
+ const size=api.measure(f.board);near(size.cellSize,18.75,'Fitted cell');near(size.digitSize,6.6,'Rendered font includes transform');
+});
+check('readable zoom reaches useful cell and glyph sizes without editing or changing fit controls',()=>{
+ const f=measuredFixture(),api=f.w.NPBoardInput;let views=0;
+ f.board.addEventListener('np-board-viewchange',()=>views++);api.fit(f.board);api.readable(f.board);
+ const size=api.measure(f.board);assert(size.cellSize>=32-.001);assert(size.digitSize>=14-.001);
+ const scale=f.scale();api.readable(f.board);near(f.scale(),scale,'Repeated readable action retains scale');
+ api.fit(f.board);near(f.scale(),.3,'Whole board remains available');assert(views>=3);assert.equal(f.clicks(),0);
+});
+check('readability ignores non-cell boards and retains the existing zoom limit',()=>{
+ const f=fixture(),api=f.w.NPBoardInput;assert.equal(api.measure(f.board),null);api.readable(f.board);near(f.scale(),1,'No inferred geometry');
+ const g=measuredFixture();g.cell.getBoundingClientRect=()=>({width:.01,height:.01});g.w.NPBoardInput.readable(g.board);near(g.scale(),4,'Existing maximum zoom');assert.equal(g.clicks(),0);
+});
 console.log(JSON.stringify({passed:checks.length,checks},null,2));

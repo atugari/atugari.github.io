@@ -134,5 +134,32 @@ for(const viewport of [{width:1280,height:800},{width:375,height:812},{width:812
  }
  console.log('PASS appended sizes '+viewport.width+'x'+viewport.height+': filters, start, keypad, erase, undo, durable grid, reload and notebook return');
 }
+// The phone recording's 16x16 board used under two thirds of the available
+// width because docked controls consumed the height. Keep all keys accessible,
+// and check the warning against rendered geometry on desktop as well.
+for(const viewport of [{width:360,height:680},{width:844,height:390},{width:1280,height:800}]){
+ await page.setViewportSize(viewport);await page.goto(origin+'/nanpure/collection/?p=P-059062');
+ const child=page.frameLocator('#game'),dialog=child.locator('.np-workspace-dialog');
+ await child.locator('[data-board-settings]').waitFor();await child.locator('[data-board-settings]').click();
+ await dialog.locator('[data-digit-size]').selectOption('100');await dialog.locator('[data-dialog-position]').selectOption('bottom');await dialog.locator('form button').click();
+ const wide=child.locator('[data-wide]');if(await wide.getAttribute('aria-pressed')==='true')await wide.click();
+ await child.locator('[data-zoom="fit"]').click();
+ if(viewport.width===360){
+  await page.waitForFunction(()=>{const d=document.querySelector('#game').contentDocument,r=d.querySelector('#board .cell').getBoundingClientRect();return r.width>=20&&r.height>=20});
+  const keys=await child.locator('.np-number-panel .number-pad>button').evaluateAll(nodes=>({count:nodes.length,rows:new Set(nodes.map(el=>Math.round(el.getBoundingClientRect().top))).size}));
+  assert.equal(keys.count,16);assert(keys.rows<=2,'Sixteen keys take at most two rows at phone width');
+ }
+ for(let i=0;i<4;i++)await child.locator('[data-zoom="out"]').click();
+ await child.locator('.np-small-board-notice:not([hidden])').waitFor();
+ const before=await page.evaluate(()=>document.querySelector('#game').contentWindow.NanpureAppTest.getCurrent().grid.slice());
+ await child.locator('[data-readable]').click();
+ await page.waitForFunction(()=>{const d=document.querySelector('#game').contentDocument,r=d.querySelector('#board .cell').getBoundingClientRect();return Math.min(r.width,r.height)>=31.9&&d.querySelector('.np-small-board-notice').hidden});
+ assert.deepEqual(await page.evaluate(()=>document.querySelector('#game').contentWindow.NanpureAppTest.getCurrent().grid),before,'Readability choices never edit the puzzle');
+ for(let i=0;i<4;i++)await child.locator('[data-zoom="out"]').click();
+ await child.locator('.np-small-board-notice:not([hidden])').waitFor();await child.locator('[data-dismiss-size]').click();assert(await child.locator('.np-small-board-notice').isHidden());
+ await child.locator('[data-zoom="fit"]').click();assert(await child.locator('.np-small-board-notice').isHidden(),'Dismissal lasts for this open puzzle');
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'16x16 outer width');
+ console.log('PASS readable 16x16 '+viewport.width+'x'+viewport.height+': compact phone keys, actual-size warning, one-tap readable zoom, dismiss and unchanged grid');
+}
 assert.deepEqual(errors,[]);await context.close();console.log('PASS public relocation: nine tools start, hub returns, Sudoku-only shell, audio controls, scoped original collection ids, reload/resume and legacy bookmarks.');
 }finally{await browser.close()}})().catch(e=>{console.error(e);process.exitCode=1});
