@@ -109,7 +109,9 @@ jobs:
           node scripts/check-nanpure-smooth-play.cjs _site
           node scripts/check-nanpure-keybindings-browser.cjs _site
           node scripts/check-nanpure-appearance-browser.cjs _site
-          node scripts/collection-100k/check-append.cjs
+
+      - name: Verify appended puzzle uniqueness
+        run: node scripts/collection-100k/check-append.cjs
 
       - name: Configure Pages
         if: github.event_name != 'pull_request'
