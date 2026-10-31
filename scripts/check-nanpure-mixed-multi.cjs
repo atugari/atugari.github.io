@@ -26,7 +26,7 @@ function verify(p){
  const memo=ctx.NPMemo.candidates(p);
  for(let i=0;i<p.grid.length;i++)if(!p.grid[i]){assert(model.candidates[i].includes(p.solution[i]));assert(memo[i].includes(p.solution[i]));assert(model.candidates[i].every(v=>v<=ctx.NanpureMulti.cellMax(p,i)));}
  const restored=ctx.NPCompact.parse(ctx.NPCompact.stringify({format:'nanpure-chou-v3',puzzles:[p]})).puzzles[0];assert.equal(ctx.NP.validate(restored),true);assert.equal(JSON.stringify(restored),JSON.stringify(p));
- const printed=ctx.NPPrint.buildPrint([p],{paper:'A4',mode:'single',answers:'yes'});assert.equal(printed.pages.length,2);assert(printed.pages.every(page=>page.includes('data-multi-blocks')));assert(printed.pages[0].includes('A '));
+ const printed=ctx.NPPrint.buildPrint([p],{paper:'A4',mode:'single',answers:'yes'});assert.equal(printed.pages.length,2);assert(printed.pages.every(page=>page.includes('data-multi-blocks')));assert(printed.pages[0].includes('A '));assert(!printed.pages[0].includes('各9×9で普通のルール'));assert(printed.pages[0].includes('各盤面の大きさに合わせたルール'));
  // A free layout may be taller than it is wide; the print viewport must contain
  // every physical cell, including the last board, for all packing modes.
  const extent=Math.max(p.linked.width,p.linked.height);
