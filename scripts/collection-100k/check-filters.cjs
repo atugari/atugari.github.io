@@ -15,7 +15,7 @@ els.state.innerHTML='<option value="all">すべて</option>';
 for(const k of ['search','summary','count','cards','more','quick','back','next','background','game','notice','player-status'])els[k]={value:'',checked:true,scrollIntoView(){}};
 const context=vm.createContext({URLSearchParams,location:{search:''},document:{getElementById:k=>els[k],addEventListener(){}},window:{addEventListener(){}},setTimeout(){},fetch(){throw Error('Selection must not fetch packs');}});
 const end=source.lastIndexOf('try{const loaded=await Promise.all');
-vm.runInContext(source.slice(source.indexOf('\n')+1,end)+'\nglobalThis.test={init(c){catalog=selectCatalog(c);progress=new Map();render()},render,matching};',context);
+vm.runInContext(source.slice(source.indexOf('\n')+1,end)+'\nglobalThis.test={init(c){catalog=selectCatalog(c);progress=new Map();render()},render,matching,nextNumber};',context);
 context.test.init(catalog);
 assert.equal(els.size.disabled,true);assert.equal(els.level.disabled,true);assert.equal(els.quick.disabled,true);assert.ok(!els.cards.innerHTML.includes('data-id='));
 const offered=k=>els[k].options.filter(o=>o.value&&!o.disabled).map(o=>o.value);
@@ -31,8 +31,8 @@ for(const c of catalog.configs.filter(c=>c.kind!=='cross')){
  if(sizes.size>1){assert.equal(els.size.value,'');assert.equal(els.level.disabled,true);assert.equal(els.quick.disabled,true);}
  else assert.equal(els.size.value,sizeKey(c),'Only size is selected automatically');
  choose('size',sizeKey(c));choose('level',c.level);
- const list=context.test.matching();assert.equal(list.length,c.count);
- assert.ok(list.every(n=>n>=c.start&&n<c.start+c.count));
+ const list=context.test.matching();const expected=catalog.configs.filter(x=>x.kind===c.kind&&sizeKey(x)===sizeKey(c)&&x.level===c.level);assert.equal(list.length,expected.reduce((n,x)=>n+x.count,0));
+ assert.ok(list.every(n=>expected.some(x=>n>=x.start&&n<x.start+x.count)));
  assert.equal(els.quick.disabled,false);assert.ok((els.cards.innerHTML.match(/data-id=/g)||[]).length<=36);
  choose('kind',c.kind==='normal'?'antiknight':'normal');
  assert.equal(els.level.value,'','Changing a rule resets its difficulty');
@@ -43,4 +43,8 @@ choose('kind','normal');choose('size','25::');choose('level','6');
 els.size.value='9::';els.size.onchange();assert.equal(els.level.value,'');assert.ok(offered('level').includes('18'));
 choose('kind','jigsaw');choose('size','9::4');choose('level','3');assert.equal(context.test.matching().length,6);
 els.kind.value='';els.kind.onchange();assert.equal(els.size.disabled,true);assert.equal(els.level.disabled,true);assert.equal(els.quick.disabled,true);
+const first=catalog.configs.find(c=>c.kind==='normal'&&c.n===9);
+context.test.init({...catalog,total:catalog.total+2,configs:[...catalog.configs,{...first,cid:'CAPPENDTEST',start:catalog.total+1,count:2}]});
+assert.equal(context.test.nextNumber(first.start+first.count-1),catalog.total+1,'Next reaches a later imported segment with the same configuration');
+assert.equal(context.test.nextNumber(catalog.total+2),first.start,'Next wraps to the original segment');
 console.log(cases+' catalog conditions passed: ordered steps, resets, all rules reachable, exact counts, page size.');

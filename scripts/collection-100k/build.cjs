@@ -1,6 +1,8 @@
 const fs=require('fs'),path=require('path'),zlib=require('zlib'),crypto=require('crypto'),assert=require('assert/strict');
 const repo=path.resolve(__dirname,'../..'),out=path.resolve(process.argv[2]||'nanpure/collection');fs.mkdirSync(out,{recursive:true});if(process.argv.length<4)throw Error('Usage: node scripts/collection-100k/build.cjs OUTPUT BACKUP...');
 const {c}=require('./engines.cjs').load(),{configurations,fingerprint}=require('./model.cjs'),codec=require(repo+'/nanpure/collection/compact-codec.js');
+if(fs.existsSync(path.join(out,'catalog.json')))throw Error('Existing collection: use append.cjs to preserve its IDs and packs');
+const {publicPuzzle,writePacks}=require('./pack-writer.cjs');
 const configs=configurations(c).filter(x=>x.game==='number'),candidates=new Map();
 for(const cfg of configs){const k=[cfg.kind,cfg.n,cfg.level].join(':');if(!candidates.has(k))candidates.set(k,[]);candidates.get(k).push(cfg);}
 const groups=new Map(),seen=new Set(),report={inputs:[],duplicates:0,excluded:0,total:0,packs:0,packBytes:0,transportBytes:0,roundtrip:0,configs:0};
@@ -17,17 +19,12 @@ let count=seen.size;while(count>100000){let largest;for(const g of groups.values
 assert.equal(count,100000);const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
 const manifest={format:2,total:count,packSize:32,release:'2026.10.27.65',configs:[]};let serial=1,groupNo=0,maxDecoded=0,maxPacked=0;
 for(const g of groups.values()){
- const cid='C'+String(++groupNo).padStart(3,'0'),start=serial,packs=[];let batch=[];
- fs.mkdirSync(path.join(out,'data',cid),{recursive:true});
- function flush(){if(!batch.length)return;const plain=JSON.stringify(batch),small=JSON.stringify({format:'np-compact-v1',records:batch.map(codec.compactRecord)}),a=zlib.gzipSync(plain,{level:9}),b=zlib.gzipSync(small,{level:9}),bytes=a.length<=b.length?a:b;
-  const restored=JSON.parse(zlib.gunzipSync(bytes)),rows=restored.format==='np-compact-v1'?restored.records.map(codec.restoreRecord):restored;assert.deepEqual(rows,batch);report.roundtrip+=batch.length;
-  const file='data/'+cid+'/'+String(packs.length).padStart(4,'0')+'.gz.b64';fs.writeFileSync(path.join(out,file),bytes.toString('base64'));
-  packs.push({file,first:Number(batch[0].id.slice(2)),count:batch.length,bytes:bytes.length,sha256:sha(bytes)});report.packs++;report.packBytes+=bytes.length;report.transportBytes+=Buffer.byteLength(bytes.toString('base64'));maxDecoded=Math.max(maxDecoded,Buffer.byteLength(plain));maxPacked=Math.max(maxPacked,bytes.length);batch=[];
- }
- for(const {p,fp}of g.rows){const id='P-'+String(serial++).padStart(6,'0');const puzzle={...p,uid:'ready100k-'+id,grid:p.puzzle.slice(),notes:{},elapsed:0,completed:false};delete puzzle.batchToken;delete puzzle.batchJob;delete puzzle.created;delete puzzle.printedAt;
-  const row={id,key:g.cfg.key,puzzle};if(batch.length&&Buffer.byteLength(JSON.stringify([...batch,row]))>131072)flush();batch.push(row);if(batch.length===32)flush();
- }flush();const index=JSON.stringify({key:g.cfg.key,packs}),file='data/'+cid+'/index.json';fs.writeFileSync(path.join(out,file),index);
- manifest.configs.push({...g.cfg,cid,start,count:g.rows.length,index:{file,bytes:Buffer.byteLength(index),sha256:sha(index)}});
+ const cid='C'+String(++groupNo).padStart(3,'0'),start=serial;
+ const rows=g.rows.map(({p})=>{const id='P-'+String(serial++).padStart(6,'0');return{id,key:g.cfg.key,puzzle:publicPuzzle(p,id)}});
+ const built=writePacks(out,cid,g.cfg.key,rows);
+ for(const k of ['roundtrip','packs','packBytes','transportBytes'])report[k]+=built.stats[k];
+ maxDecoded=Math.max(maxDecoded,built.stats.maxDecodedPackBytes);maxPacked=Math.max(maxPacked,built.stats.maxCompressedPackBytes);
+ manifest.configs.push({...g.cfg,cid,start,count:g.rows.length,index:built.index});
 }
 assert.equal(serial-1,100000);fs.writeFileSync(path.join(out,'catalog.json'),JSON.stringify(manifest));
 Object.assign(report,{total:100000,configs:groups.size,maxDecodedPackBytes:maxDecoded,maxCompressedPackBytes:maxPacked,catalogBytes:fs.statSync(path.join(out,'catalog.json')).size});

@@ -3,6 +3,7 @@
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 const root=path.resolve(process.argv[2]||'_site'),origin='https://atugari.github.io';
+const catalog=JSON.parse(fs.readFileSync(path.join(root,'nanpure/collection/catalog.json'))),sudokuCount=catalog.configs.filter(c=>c.kind!=='cross').reduce((n,c)=>n+c.count,0).toLocaleString('en-US');
 const types={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml','.mp3':'audio/mpeg','.png':'image/png','.webp':'image/webp'};
 (async()=>{const browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_BIN||undefined,args:['--no-sandbox','--disable-dev-shm-usage']});
 try{const context=await browser.newContext({viewport:{width:375,height:812},serviceWorkers:'block'}),page=await context.newPage(),errors=[];
@@ -29,7 +30,7 @@ await page.goto(origin+'/puzzles/cross/stock/');await page.locator('#summary').f
 await page.waitForFunction(()=>document.querySelector('#game')?.contentWindow?.NanpureAppTest?.getCurrent()?.kind==='cross');assert.match(page.url(),/\/puzzles\/cross\/stock\/\?scope=cross&p=P-010296$/);
 await page.reload();await page.waitForFunction(()=>document.querySelector('#player')?.hidden===false&&document.querySelector('#playing-title').textContent.includes('P-010296'));
 await page.locator('#back').click();await page.locator('#library:not([hidden])').waitFor();assert.match(page.url(),/\/puzzles\/cross\/stock\/\?scope=cross$/);
-await page.goto(origin+'/nanpure/collection/');await page.locator('#summary').filter({hasText:'93,660'}).waitFor();assert.equal(await page.locator('#kind option[value="cross"]').count(),0);assert.equal(await page.locator('#kind option[value]:not([value=""])').count(),22);
+await page.goto(origin+'/nanpure/collection/');await page.locator('#summary').filter({hasText:sudokuCount}).waitFor();assert.equal(await page.locator('#kind option[value="cross"]').count(),0);assert.equal(await page.locator('#kind option[value]:not([value=""])').count(),22);
 await page.goto(origin+'/nanpure/collection/?p=P-010296');await page.waitForURL('**/puzzles/cross/stock/**');await page.waitForFunction(()=>document.querySelector('#playing-title')?.textContent.includes('P-010296'));
 // All public cards must start and return at each requested viewport. Verify an
 // actual input survives reload, not just that the same puzzle ID is displayed.
@@ -99,6 +100,37 @@ for(const viewport of [{width:1920,height:870},{width:1280,height:800},{width:37
  await settings.click();assert.equal(await dialog.locator('select[data-digit-size]').inputValue(),'200');assert.equal(await dialog.locator('select[data-board-align]').inputValue(),'right');await dialog.locator('form button').click();
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'25x25 outer width');
  console.log('PASS 25x25 '+viewport.width+'x'+viewport.height+': larger digits, left/center/right, unchanged board, editing, undo and persisted preferences/entry');
+}
+// Appended rectangular and large boards use the existing player and storage.
+// Start through the actual filters, edit via the keypad, inspect the queued
+// durable write, reload, then return through the collection and notebook.
+const importInfo=catalog.imports?.at(-1),baseline=importInfo?JSON.parse(fs.readFileSync(path.join(root,'nanpure/collection',importInfo.file))).baseline.configCount:catalog.configs.length;
+const appended=catalog.configs.slice(baseline).filter(c=>c.kind==='normal'),sizes=[...new Set(appended.map(c=>c.n))];
+for(const viewport of [{width:1280,height:800},{width:375,height:812},{width:812,height:375}]){
+ await page.setViewportSize(viewport);
+ for(const n of sizes.filter(n=>viewport.width===1280||[4,14,49,100].includes(n))){
+  const cfg=appended.filter(c=>c.n===n).sort((a,b)=>b.level-a.level)[0],id='P-'+String(cfg.start).padStart(6,'0');
+  await page.goto(origin+'/nanpure/collection/');await page.locator('#kind').selectOption('normal');await page.locator('#size').selectOption([n,cfg.multiShape||cfg.linkedShape||'',cfg.complexity||''].join(':'));await page.locator('#level').selectOption(String(cfg.level));
+  await page.locator('#search').fill(id);await page.locator('.card[data-id="'+id+'"]').waitFor();await page.locator('#quick').click();
+  await page.waitForFunction(n=>document.querySelector('#game')?.contentWindow?.NanpureAppTest?.getCurrent()?.n===n,n);
+  const child=page.frameLocator('#game'),{index,value}=await page.evaluate(()=>{const w=document.querySelector('#game').contentWindow,p=w.NanpureAppTest.getCurrent(),index=[...w.document.querySelectorAll('[data-action="cell"][data-cell]')].map(el=>+el.dataset.cell).find(i=>!p.puzzle[i]);return{index,value:p.solution[index]}});
+  assert(Number.isInteger(index),'Visible editable cell for '+n);
+  await child.locator('[data-action="cell"][data-cell="'+index+'"]').click();await child.locator('[data-action="erase"]').click();
+  await page.waitForFunction(i=>document.querySelector('#game').contentWindow.NanpureAppTest.getCurrent().grid[i]===0,index);
+  if(!await child.locator('.np-number-panel [data-number="'+value+'"]').count())await child.locator('[data-action="number-range"][data-range="'+Math.floor((value-1)/(n===36?18:n===49?25:20))+'"]').click();
+  await child.locator('.np-number-panel [data-number="'+value+'"]').click();
+  await page.waitForFunction(({index,value})=>document.querySelector('#game').contentWindow.NanpureAppTest.getCurrent().grid[index]===value,{index,value});
+  await child.locator('[data-action="undo"]').click();await page.waitForFunction(i=>document.querySelector('#game').contentWindow.NanpureAppTest.getCurrent().grid[i]===0,index);
+  await child.locator('.np-number-panel [data-number="'+value+'"]').click();
+  await page.waitForFunction(({index,value})=>document.querySelector('#game').contentWindow.NanpureAppTest.getCurrent().grid[index]===value,{index,value});
+  const before=await page.evaluate(async()=>{const w=document.querySelector('#game').contentWindow;await w.NPStorage.flush();const p=w.NanpureAppTest.getCurrent(),stored=await w.NPStorage.get(p.uid);return{uid:p.uid,grid:p.grid,stored:stored?.grid}});
+  assert.deepEqual(before.stored,before.grid,'New '+n+'x'+n+' durable grid');await page.reload();
+  await page.waitForFunction(uid=>document.querySelector('#game')?.contentWindow?.NanpureAppTest?.getCurrent()?.uid===uid,before.uid);
+  assert.deepEqual(await page.evaluate(()=>document.querySelector('#game').contentWindow.NanpureAppTest.getCurrent().grid),before.grid,'New '+n+'x'+n+' reload at '+viewport.width);
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'New board outer width');
+  await page.locator('#back').click();await page.locator('#library:not([hidden])').waitFor();await page.locator('#library header a').click();await page.locator('[data-collection-entry]').waitFor();
+ }
+ console.log('PASS appended sizes '+viewport.width+'x'+viewport.height+': filters, start, keypad, erase, undo, durable grid, reload and notebook return');
 }
 assert.deepEqual(errors,[]);await context.close();console.log('PASS public relocation: nine tools start, hub returns, Sudoku-only shell, audio controls, scoped original collection ids, reload/resume and legacy bookmarks.');
 }finally{await browser.close()}})().catch(e=>{console.error(e);process.exitCode=1});

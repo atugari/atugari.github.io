@@ -4,7 +4,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {fileURLToPath} from 'node:url';
+import {refreshMetadata} from './collection-100k/refresh-metadata.cjs';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+refreshMetadata(root);
 // The collection uses the common gesture source, including alignment-aware zoom.
 fs.copyFileSync(path.join(root,'scripts/client-overrides/public/notebook/board-input.js'),path.join(root,'nanpure/collection/board-input.js'));
 const playerFile=path.join(root,'nanpure/collection/player.html');
@@ -21,7 +23,8 @@ for(const [file,expected]of Object.entries(manifest.files)){
  if(!allowed(file))throw Error('Unexpected release change: '+file);
  manifest.files[file]=actual;changed++;
 }
-const sources=['puzzles/entry.js','puzzles/navigation.js','nanpure/collection/app.js','nanpure/collection/workspace.css','nanpure/collection/workspace.js','nanpure/collection/board-input.js','nanpure/collection/player.html','scripts/prepare-pareasobi-move.mjs','scripts/export-nanpure.mjs','scripts/client-overrides/public/notebook/board-input.js','scripts/client-overrides/app/game.tsx','scripts/client-overrides/app/site-intro.tsx'];
-manifest.pareasobiNavigation={revision:'20261031-move4',sources:Object.fromEntries(sources.map(file=>[file,hash(file)]))};
+const sources=['puzzles/entry.js','puzzles/navigation.js','nanpure/collection/app.js','nanpure/collection/catalog-model.mjs','nanpure/collection/pack-reader.mjs','scripts/seo/build-seo.mjs','nanpure/collection/workspace.css','nanpure/collection/workspace.js','nanpure/collection/board-input.js','nanpure/collection/player.html','scripts/prepare-pareasobi-move.mjs','scripts/export-nanpure.mjs','scripts/client-overrides/public/notebook/board-input.js','scripts/client-overrides/app/game.tsx','scripts/client-overrides/app/site-intro.tsx'];
+sources.push('scripts/collection-100k/refresh-metadata.cjs');
+manifest.pareasobiNavigation={revision:'20261031-stock1',sources:Object.fromEntries(sources.map(file=>[file,hash(file)]))};
 fs.writeFileSync(manifestFile,JSON.stringify(manifest,null,2)+'\n');
 console.log('Prepared stable Pareasobi navigation:',changed,'manifest entries; immutable engines and puzzle data unchanged.');

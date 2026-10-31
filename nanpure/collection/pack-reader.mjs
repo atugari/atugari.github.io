@@ -1,3 +1,4 @@
+export {validCatalog} from './catalog-model.mjs';
 import './sha256.js';
 import './compact-codec.js';
 // Standalone reader for future distribution integration. Does not load all packs.
