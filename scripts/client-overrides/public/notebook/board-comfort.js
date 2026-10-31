@@ -66,7 +66,7 @@
   const b=board();if(!b)return;
   const screen=b.closest('.screen'),host=screen?.querySelector('.np-workspace-tools')||screen?.querySelector('.play-head');if(!host)return;
   for(const old of document.querySelectorAll('[data-board-comfort]'))if(!old.closest('#np-play-settings')&&old.parentElement!==host)old.remove();
-  if(!host.querySelector('[data-board-comfort]')){const button=document.createElement('button');button.type='button';button.dataset.boardComfort='';button.textContent=t('配色・強調');button.onclick=show;host.append(button);}
+  if(!host.querySelector('[data-board-comfort]')){const button=document.createElement('button');button.type='button';button.dataset.boardComfort='';button.setAttribute('aria-label','配色・強調');button.setAttribute('title','配色・強調');button.innerHTML='<span class="np-tool-full">配色・強調</span><span class="np-tool-short" aria-hidden="true">配色</span>';button.onclick=show;host.append(button);}
   const panel=document.querySelector('#np-play-settings [data-settings-panel="view"]');if(panel&&!panel.querySelector('[data-board-comfort]')){const button=document.createElement('button');button.type='button';button.dataset.boardComfort='';button.textContent=t('枠の配色と選択色');button.onclick=show;panel.append(button);}
  }
  function refresh(){

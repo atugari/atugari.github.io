@@ -48,7 +48,7 @@
  // The shared translator keeps Japanese source text reversible on language changes.
  // Reviewed locale packs take priority over these English fallback additions.
  const labels={
-  '数字':'Numbers','上':'Top','左':'Left','文字サイズ':'Text size','同じ数字':'Matching digits','完了':'Done',
+  '数字':'Numbers','上':'Top','左':'Left','文字サイズ':'Text size','同じ数字':'Matching digits','完了':'Done','広く':'Expand','文字':'Text','配色':'Colors','通常':'Normal',
   '盤面と数字の配置':'Board and keypad layout','盤面を広く':'Expand board','通常表示':'Normal view',
   '盤面の拡大':'Board zoom','盤面を縮小する':'Zoom out','盤面を拡大する':'Zoom in','全体':'Fit',
   '文字・位置':'Text and layout','数字の位置':'Keypad position','自動（余白を使う）':'Automatic (use free space)',

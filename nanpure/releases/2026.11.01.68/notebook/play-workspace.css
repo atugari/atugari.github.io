@@ -115,4 +115,8 @@ html body.np-collection-workspace #app .np-number-panel .number-pad>button{font-
 .np-workspace-screen>.play-dock:not(:has(.tools,#number-controls)){display:none!important}
 .np-workspace-screen[data-compact-board=true]>.np-number-panel{gap:2px;padding:2px 4px!important}
 .np-workspace-screen[data-compact-board=true] .np-workspace-actions{margin:0!important}
+.np-workspace-tools .np-tool-short{display:none}
+.np-workspace-screen[data-compact-board=true] .np-workspace-tools .np-tool-full{display:none}
+.np-workspace-screen[data-compact-board=true] .np-workspace-tools .np-tool-short{display:inline}
+.np-workspace-screen[data-compact-board=true] .np-small-board-notice span{max-width:1.1em;overflow:hidden}
 @media(min-width:900px){html body.np-collection-workspace #app .np-number-panel .number-pad>button{font-size:max(clamp(18px,2vw,28px),var(--ui-min-font,0px))!important}}
