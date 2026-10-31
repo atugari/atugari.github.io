@@ -32,7 +32,8 @@
   const compact=screen.dataset.compactBoard==='true'&&['bottom','top'].includes(position());
   let desired=compact?8:position()==='float'?(prefs.shape==='wide'?9:prefs.shape==='tall'?3:(n<=9?3:5)):(position()==='left'||position()==='right')?5:9;
   const columns=Math.max(1,Math.min(n,desired,Math.floor((available+4)/((compact?40:48)*scale))));
-  pad.style.setProperty('--np-workspace-columns',String(columns));
+  // The keypad is redrawn during input; keep its columns on the stable panel.
+  pad.style.removeProperty('--np-workspace-columns');panel.style.setProperty('--np-workspace-columns',String(columns));
  }
  function refresh(revealBoard=false){
   if(!screen||!screen.isConnected)return;
