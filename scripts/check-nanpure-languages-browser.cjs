@@ -33,12 +33,15 @@ async function audit(target,selector,label){
  // New notebook dialogs are translated by a MutationObserver/rAF batch. Wait
  // for its visible text, as the existing creation/print journeys do, without
  // forcing NPI18n.apply() or treating one pending frame as a missing message.
- await target.waitForFunction(selector=>{
+ try{await target.waitForFunction(selector=>{
   const root=document.querySelector(selector);if(!root)return false;
   const skip='script,style,textarea,[translate="no"],[data-i18n-skip],[contenteditable="true"]',walk=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let node;
   while(node=walk.nextNode())if(node.parentElement.getClientRects().length&&!node.parentElement.closest(skip)&&/[\u3041-\u3096\u30a1-\u30fa]/.test(node.nodeValue))return false;
   return true;
- },selector,{timeout:10000});
+ },selector,{timeout:10000});}catch(error){
+  const bad=await target.locator(selector).evaluate(root=>{const bad=[],walk=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let node;while(node=walk.nextNode())if(node.parentElement.getClientRects().length&&!node.parentElement.closest('script,style,textarea,[translate="no"],[data-i18n-skip],[contenteditable="true"]')&&/[\u3041-\u3096\u30a1-\u30fa]/.test(node.nodeValue))bad.push(node.nodeValue.trim());return[...new Set(bad)];});
+  throw Error(label+' untranslated visible strings: '+JSON.stringify(bad),{cause:error});
+ }
  const result=await target.locator(selector).evaluate(root=>{
   const skip='script,style,textarea,[translate="no"],[data-i18n-skip],[contenteditable="true"]',bad=[],walk=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let node;
   while(node=walk.nextNode())if(node.parentElement.getClientRects().length&&!node.parentElement.closest(skip)&&/[\u3041-\u3096\u30a1-\u30fa]/.test(node.nodeValue))bad.push(node.nodeValue.trim());

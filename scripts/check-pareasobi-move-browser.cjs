@@ -16,7 +16,7 @@ await page.goto(origin+'/nanpure/?lang=en');await page.locator('[data-pare-entry
 await page.goto(origin+'/nanpure/?lang=ja');await page.locator('[data-pare-entry] strong').filter({hasText:'ほかのパズルはパレあそびへ'}).waitFor();
 await page.locator('.daily-choice').click();await page.locator('.site-shell.mode-challenge').waitFor();await page.locator('a[data-pare-entry]').waitFor({state:'detached'});
 await page.goto(origin+'/nanpure/?lang=ja');await page.locator('[data-pare-entry]').waitFor();
-await page.locator('.main-choice').click();const notebook=page.frameLocator('iframe.notebook');await notebook.locator('[data-pare-entry]').waitFor();assert.equal(await notebook.locator('[data-action="open-crossword"]').isVisible(),false);assert.equal(await notebook.locator('[data-action="open-prototype"]').isVisible(),false);
+await page.locator('.main-choice').click();const notebook=page.frameLocator('iframe.notebook');await notebook.locator('[data-pare-entry]').waitFor();await notebook.locator('[data-action="open-crossword"]').waitFor({state:'hidden'});await notebook.locator('[data-action="open-prototype"]').waitFor({state:'hidden'});assert.equal(await notebook.locator('[data-action="open-crossword"]').isVisible(),false);assert.equal(await notebook.locator('[data-action="open-prototype"]').isVisible(),false);
 for(const slug of ['shirupure','wado','crossword','cross','tenbin','paths','studio','workshop','magic-square']){
  await page.goto(origin+'/puzzles/'+slug+'/');await page.locator('#game:not([hidden])').waitFor();await page.waitForFunction(()=>document.querySelector('#status').hidden);
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,slug+' outer width');
@@ -145,7 +145,10 @@ for(const viewport of [{width:360,height:680},{width:844,height:390},{width:1280
  const wide=child.locator('[data-wide]');if(await wide.getAttribute('aria-pressed')==='true')await wide.click();
  await child.locator('[data-zoom="fit"]').click();
  if(viewport.width===360){
-  await page.waitForFunction(()=>{const d=document.querySelector('#game').contentDocument,r=d.querySelector('#board .cell').getBoundingClientRect();return r.width>=20&&r.height>=20});
+  try{await page.waitForFunction(()=>{const d=document.querySelector('#game').contentDocument,r=d.querySelector('#board .cell').getBoundingClientRect();return r.width>=20&&r.height>=20});}catch(error){
+   const geometry=await child.locator('.np-workspace-screen').evaluate(el=>{const r=el.querySelector('#board .cell').getBoundingClientRect();return{width:innerWidth,height:innerHeight,cell:[r.width,r.height],rows:getComputedStyle(el).gridTemplateRows,position:el.dataset.numberPosition,preference:el.dataset.numberPreference,wide:el.classList.contains('np-wide')};});
+   throw Error('Phone 16x16 fit: '+JSON.stringify(geometry),{cause:error});
+  }
   const keys=await child.locator('.np-number-panel .number-pad>button').evaluateAll(nodes=>({count:nodes.length,rows:new Set(nodes.map(el=>Math.round(el.getBoundingClientRect().top))).size}));
   assert.equal(keys.count,16);assert(keys.rows<=2,'Sixteen keys take at most two rows at phone width');
  }

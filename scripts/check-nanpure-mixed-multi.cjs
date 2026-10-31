@@ -116,6 +116,8 @@ const pointer={target:{closest:()=>editor},pointerId:7,button:0,clientX:330,clie
 handlers.pointerdown(pointer);handlers.pointermove({...pointer,clientX:266,clientY:308});handlers.pointerup({...pointer,clientX:266,clientY:308});
 assert.equal(JSON.stringify(editorCtx.E.multiLinks),JSON.stringify([{parent:0,dx:4,dy:5}]));assert(redraws>0);assert(attributes.transform.includes('-80 -40'));
 const before=JSON.stringify(editorCtx.E);handlers.pointerdown(pointer);handlers.pointercancel(pointer);assert.equal(JSON.stringify(editorCtx.E),before);
+const rootPointer={...pointer,clientX:42,clientY:52};handlers.pointerdown(rootPointer);handlers.pointerup({...rootPointer,clientX:74,clientY:84});assert.equal(JSON.stringify(editorCtx.E.multiLinks),JSON.stringify([{parent:0,dx:3,dy:4}]));
+const overlapPointer={...pointer,clientX:170,clientY:180},beforeTap=JSON.stringify(editorCtx.E);handlers.pointerdown(overlapPointer);handlers.pointerup(overlapPointer);assert.equal(vm.runInContext('mixedEditing',editorCtx),1);assert.equal(JSON.stringify(editorCtx.E),beforeTap);
 editorCtx.mixedPlace(1,-2,3);assert.equal(editorCtx.E.multiLinks[0].dx,-2);assert.equal(editorCtx.E.multiLinks[0].dy,3);
 const print=fs.readFileSync(path.join(base,'print.html'),'utf8');assert(print.includes('<script src="common.js"></script><script src="mixed-multi.js"></script>'));
 assert(fs.readFileSync(path.join(base,'app.js'),'utf8').includes('"generator-source","core-mixed-multi"].map'));

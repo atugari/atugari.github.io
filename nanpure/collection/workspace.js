@@ -1,23 +1,25 @@
-/* Collection-only board workspace; move the real keypad, preserving input handlers. */
+/* Shared play workspace; move the real controls and preserve their handlers. */
 (function(w){
  'use strict';
- const storeKey='collection-workspace-v1',positions=['bottom','top','left','right','float'];
+ const storeKey='collection-workspace-v1',positions=['auto','bottom','top','left','right','float'];
  const digitSizes=[100,125,150,175,200],alignments=['left','center','right'];
- const prefs={position:'bottom',shape:'grid',wide:false,x:null,y:null,digitSize:100,align:'left'};
+ const prefs={position:'auto',shape:'grid',wide:false,x:null,y:null,digitSize:100,align:'center'};
  try{const saved=JSON.parse(localStorage.getItem(storeKey)||'{}');if(positions.includes(saved.position))prefs.position=saved.position;if(['grid','wide','tall'].includes(saved.shape))prefs.shape=saved.shape;prefs.wide=saved.wide===true;if(digitSizes.includes(saved.digitSize))prefs.digitSize=saved.digitSize;if(alignments.includes(saved.align))prefs.align=saved.align;for(const key of ['x','y'])if(Number.isFinite(saved[key]))prefs[key]=Math.max(0,Math.min(1,saved[key]));}catch{}
  let screen=null,board=null,viewport=null,panel=null,tools=null,dialog=null,boardObserver=null,drag=null,scheduled=false,collapsed=false,beforeWide='bottom',notice=null,noticeQueued=false,noticeDismissed=false;
  const px=n=>(Math.round(n*100)/100)+'px';
+ function labelTool(button,full,short){if(button.dataset.npToolLabel===full)return;button.dataset.npToolLabel=full;button.setAttribute('aria-label',full);button.setAttribute('title',full);button.innerHTML='<span class="np-tool-full">'+full+'</span><span class="np-tool-short" aria-hidden="true">'+short+'</span>';}
  function save(){try{localStorage.setItem(storeKey,JSON.stringify(prefs));}catch{}}
  function parentFocus(){try{if(parent!==w){parent.document.body.classList.toggle('collection-focus',prefs.wide&&!!screen);parent.document.body.classList.toggle('collection-compact',!!screen&&screen.dataset.compactBoard==='true');}}catch{}}
+ function position(){return prefs.position==='auto'?(w.innerWidth>=900||w.innerWidth>=600&&w.innerHeight<=500?'right':'bottom'):prefs.position;}
  function compactBoard(){return !!board&&w.innerWidth<=600&&getComputedStyle(board).gridTemplateColumns.trim().split(/\s+/).length===16;}
  function scheduleReadability(){if(noticeQueued)return;noticeQueued=true;requestAnimationFrame(()=>{
   noticeQueued=false;if(!notice||!board?.isConnected)return;
-  const size=w.NPBoardInput?.measure(board),small=!!size&&(size.cellSize<24||(size.digitSize!==null&&size.digitSize<11));
+  const size=w.NPBoardInput?.measure?.(board),small=!!size&&(size.cellSize<24||(size.digitSize!==null&&size.digitSize<11));
   notice.hidden=noticeDismissed||!small;
   clampPanel();
  });}
  function clampPanel(){
-  if(!panel||prefs.position!=='float')return;
+  if(!panel||position()!=='float')return;
   const width=w.innerWidth,height=w.innerHeight,rect=panel.getBoundingClientRect();
   const maxX=Math.max(4,width-rect.width-4),maxY=Math.max(4,height-rect.height-4);
   const x=4+(maxX-4)*(prefs.x??1),y=4+(maxY-4)*(prefs.y??.85);
@@ -26,16 +28,17 @@
  function sizeKeys(){
   if(!panel)return;
   const pad=panel.querySelector('.number-pad');if(!pad)return;
-  const n=pad.querySelectorAll('button').length,available=panel.clientWidth-12;
-  const compact=screen.dataset.compactBoard==='true'&&['bottom','top'].includes(prefs.position);
-  let desired=compact?8:prefs.position==='float'?(prefs.shape==='wide'?9:prefs.shape==='tall'?3:(n<=9?3:5)):(prefs.position==='left'||prefs.position==='right')?4:9;
-  const columns=Math.max(1,Math.min(n,desired,Math.floor((available+4)/(compact?40:48))));
-  pad.style.setProperty('--np-workspace-columns',String(columns));
+  const n=pad.querySelectorAll('button').length,available=panel.clientWidth-12,scale=Math.max(1,Math.min(1.5,parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--np-key-scale'))||1));
+  const compact=screen.dataset.compactBoard==='true'&&['bottom','top'].includes(position());
+  let desired=compact?8:position()==='float'?(prefs.shape==='wide'?9:prefs.shape==='tall'?3:(n<=9?3:5)):(position()==='left'||position()==='right')?5:9;
+  const columns=Math.max(1,Math.min(n,desired,Math.floor((available+4)/((compact?40:48)*scale))));
+  // The keypad is redrawn during input; keep its columns on the stable panel.
+  pad.style.removeProperty('--np-workspace-columns');panel.style.setProperty('--np-workspace-columns',String(columns));
  }
  function refresh(revealBoard=false){
   if(!screen||!screen.isConnected)return;
-  screen.dataset.compactBoard=String(compactBoard());parentFocus();
-  sizeKeys();sizeDigits();clampPanel();w.NPBoardInput?.align(board,prefs.align,revealBoard);scheduleReadability();
+  screen.dataset.numberPosition=position();screen.dataset.compactBoard=String(compactBoard());parentFocus();
+  sizeKeys();sizeDigits();clampPanel();w.NPBoardInput?.align?.(board,prefs.align,revealBoard);scheduleReadability();
  }
  function sizeDigits(){
   if(!board)return;
@@ -70,7 +73,7 @@
  }
  function makeDialog(){
   dialog?.remove();dialog=document.createElement('dialog');dialog.className='np-workspace-dialog';dialog.setAttribute('aria-label','盤面の文字と位置');
-  dialog.innerHTML='<h2>盤面の文字と位置</h2><label>文字サイズ<select data-digit-size aria-label="盤面の文字サイズ">'+digitSizes.map(n=>'<option value="'+n+'">'+n+'%'+(n===100?'（標準）':'')+'</option>').join('')+'</select></label><p>数字がマスに収まる範囲で大きくします。</p><label>盤面の位置<select data-board-align aria-label="盤面の位置"><option value="left">左</option><option value="center">中央</option><option value="right">右</option></select></label><label>数字ボタンの位置<select data-dialog-position aria-label="数字ボタンの位置"><option value="bottom">下</option><option value="top">上</option><option value="left">左</option><option value="right">右</option><option value="float">浮かせる</option></select></label><form method="dialog"><button type="submit">閉じる</button></form>';
+  dialog.innerHTML='<h2>盤面の文字と位置</h2><label>文字サイズ<select data-digit-size aria-label="盤面の文字サイズ">'+digitSizes.map(n=>'<option value="'+n+'">'+n+'%'+(n===100?'（標準）':'')+'</option>').join('')+'</select></label><p>数字がマスに収まる範囲で大きくします。</p><label>盤面の位置<select data-board-align aria-label="盤面の位置"><option value="left">左</option><option value="center">中央</option><option value="right">右</option></select></label><label>数字ボタンの位置<select data-dialog-position aria-label="数字ボタンの位置"><option value="auto">自動（余白を使う）</option><option value="bottom">下</option><option value="top">上</option><option value="left">左</option><option value="right">右</option><option value="float">浮かせる</option></select></label><form method="dialog"><button type="submit">閉じる</button></form>';
   dialog.querySelector('[data-digit-size]').onchange=e=>{prefs.digitSize=Number(e.target.value);refresh();save();};
   dialog.querySelector('[data-board-align]').onchange=e=>{prefs.align=e.target.value;refresh(true);save();};
   dialog.querySelector('[data-dialog-position]').onchange=e=>setPosition(e.target.value);
@@ -78,15 +81,15 @@
  }
  function setPosition(value){
   if(!positions.includes(value))return;
-  finishDrag();prefs.position=value;collapsed=false;apply();save();
+  finishDrag();prefs.position=value;collapsed=false;apply();if(value==='auto')requestAnimationFrame(()=>{if(board?.isConnected){w.NPBoardInput?.fit(board);refresh();}});save();
  }
  function apply(revealBoard=false){
   if(!screen)return;
-  screen.dataset.numberPosition=prefs.position;screen.dataset.keyShape=prefs.shape;
+  screen.dataset.numberPosition=position();screen.dataset.numberPreference=prefs.position;screen.dataset.keyShape=prefs.shape;
   screen.classList.toggle('np-wide',prefs.wide);panel.classList.toggle('np-keys-collapsed',collapsed);
   tools.querySelector('[data-position]').value=prefs.position;
   if(dialog)dialog.querySelector('[data-dialog-position]').value=prefs.position;
-  const wide=tools.querySelector('[data-wide]');wide.textContent=prefs.wide?'通常表示':'盤面を広く';wide.setAttribute('aria-pressed',String(prefs.wide));
+  const wide=tools.querySelector('[data-wide]');labelTool(wide,prefs.wide?'通常表示':'盤面を広く',prefs.wide?'通常':'広く');wide.setAttribute('aria-pressed',String(prefs.wide));
   panel.querySelector('[data-shape]').value=prefs.shape;
   const collapse=panel.querySelector('[data-collapse]');collapse.textContent=collapsed?'数字を表示':'たたむ';collapse.setAttribute('aria-expanded',String(!collapsed));
   parentFocus();refresh(revealBoard);
@@ -111,21 +114,23 @@
   if(current===board&&screen?.isConnected){refresh();return;}
   finishDrag();board=current;viewport=nextViewport;screen=nextScreen;
   const numbers=screen.querySelector('#number-controls');if(!numbers)return;
+  const heading=screen.querySelector(':scope>h1'),head=screen.querySelector('.play-head');if(heading&&head)head.prepend(heading);
   document.body.classList.add('np-collection-workspace');screen.classList.add('np-workspace-screen');collapsed=false;noticeDismissed=false;
   tools=document.createElement('div');tools.className='np-workspace-tools';tools.setAttribute('aria-label','盤面と数字の配置');
-  tools.innerHTML='<button type="button" data-wide aria-pressed="false">盤面を広く</button><div class="np-direct-zoom" role="group" aria-label="盤面の拡大"><button type="button" data-zoom="out" aria-label="盤面を縮小する">−</button><button type="button" data-zoom="fit">全体</button><button type="button" data-zoom="in" aria-label="盤面を拡大する">＋</button></div><button type="button" data-board-settings>文字・位置</button><label>数字<select data-position aria-label="数字の位置"><option value="bottom">下</option><option value="top">上</option><option value="left">左</option><option value="right">右</option><option value="float">浮かせる</option></select></label>';
+  tools.innerHTML='<button type="button" data-wide aria-pressed="false">盤面を広く</button><div class="np-direct-zoom" role="group" aria-label="盤面の拡大"><button type="button" data-zoom="out" aria-label="盤面を縮小する">−</button><button type="button" data-zoom="fit">全体</button><button type="button" data-zoom="in" aria-label="盤面を拡大する">＋</button></div><button type="button" data-board-settings>文字・位置</button><label>数字<select data-position aria-label="数字の位置"><option value="auto">自動（余白を使う）</option><option value="bottom">下</option><option value="top">上</option><option value="left">左</option><option value="right">右</option><option value="float">浮かせる</option></select></label>';
   viewport.before(tools);
+  labelTool(tools.querySelector('[data-board-settings]'),'文字・位置','文字');
   panel=document.createElement('section');panel.className='np-number-panel';panel.setAttribute('aria-label','移動できる数字ボタン');
   panel.innerHTML='<div class="np-number-bar"><button type="button" class="np-number-handle" aria-label="数字ボタンを移動する。ドラッグまたは矢印キーで移動">⠿ 数字</button><label class="np-shape-label"><span>形</span><select data-shape aria-label="数字ボタンの形"><option value="grid">格子</option><option value="wide">横長</option><option value="tall">縦長</option></select></label><button type="button" data-collapse aria-expanded="true">たたむ</button></div>';
-  panel.append(numbers);screen.append(panel);
+  const actions=screen.querySelector('.play-dock>.tools');if(actions){actions.classList.add('np-workspace-actions');panel.append(actions);}panel.append(numbers);screen.append(panel);
   notice=document.createElement('div');notice.className='np-small-board-notice';notice.setAttribute('role','status');notice.hidden=true;
   notice.innerHTML='<span>⚠ マスが小さめ</span><button type="button" data-readable aria-label="マスを見やすい大きさに拡大する" title="拡大後は盤面をドラッグして移動できます">拡大</button><button type="button" data-dismiss-size aria-label="小さいマスの案内を閉じる">×</button>';
   panel.querySelector('[data-collapse]').before(notice);
-  notice.querySelector('[data-readable]').onclick=()=>w.NPBoardInput?.readable(board);
+  notice.querySelector('[data-readable]').onclick=()=>w.NPBoardInput?.readable?.(board);
   notice.querySelector('[data-dismiss-size]').onclick=()=>{noticeDismissed=true;notice.hidden=true;clampPanel();};
   tools.querySelector('[data-position]').onchange=e=>setPosition(e.target.value);
   makeDialog();tools.querySelector('[data-board-settings]').onclick=()=>{dialog.querySelector('[data-digit-size]').value=String(prefs.digitSize);dialog.querySelector('[data-board-align]').value=prefs.align;dialog.querySelector('[data-dialog-position]').value=prefs.position;dialog.showModal();};
-  tools.querySelector('[data-wide]').onclick=()=>{prefs.wide=!prefs.wide;if(prefs.wide){beforeWide=prefs.position;if(prefs.position==='bottom'||prefs.position==='top')prefs.position='float';}else if(prefs.position==='float')prefs.position=beforeWide;apply();save();};
+  tools.querySelector('[data-wide]').onclick=()=>{prefs.wide=!prefs.wide;if(prefs.wide){beforeWide=prefs.position;prefs.position='float';}else if(prefs.position==='float')prefs.position=beforeWide;apply();save();};
   tools.querySelectorAll('[data-zoom]').forEach(button=>button.onclick=()=>{if(button.dataset.zoom==='fit')w.NPBoardInput?.fit(board);else{const key=board.dataset.panKey;const controls=Array.from(document.querySelectorAll('.np-pan-tools')).find(el=>el.dataset.boardKey===key)||document.querySelector('.np-pan-tools');controls?.querySelectorAll('button')[button.dataset.zoom==='in'?2:0]?.click();}refresh();});
   panel.querySelector('[data-shape]').onchange=e=>{prefs.shape=e.target.value;apply();save();};
   panel.querySelector('[data-collapse]').onclick=()=>{collapsed=!collapsed;apply();};
@@ -145,12 +150,14 @@
    if(e.key==='Home'){prefs.x=1;prefs.y=.85;clampPanel();}else{const rect=panel.getBoundingClientRect();movePanel(rect.left+delta[0],rect.top+delta[1]);}save();
   });
   boardObserver?.disconnect();if(w.ResizeObserver){boardObserver=new ResizeObserver(()=>{sizeDigits();scheduleReadability();});boardObserver.observe(board);boardObserver.observe(viewport);}
-  apply(true);
+  apply(true);if(prefs.position==='auto'){const mounted=board;requestAnimationFrame(()=>{if(board===mounted&&mounted.isConnected){w.NPBoardInput?.fit(mounted);refresh();}});}
  }
  function schedule(){if(!scheduled){scheduled=true;requestAnimationFrame(mount);}}
  new MutationObserver(records=>{if(records.some(r=>r.addedNodes.length||r.removedNodes.length))schedule();}).observe(document.getElementById('app'),{childList:true,subtree:true});
  for(const type of ['resize','orientationchange'])w.addEventListener(type,()=>{finishDrag();requestAnimationFrame(()=>refresh());});
  document.addEventListener('np-board-viewchange',scheduleReadability);
+ let observedKeyScale=document.documentElement.style.getPropertyValue('--np-key-scale');
+ new MutationObserver(()=>{const next=document.documentElement.style.getPropertyValue('--np-key-scale');if(next!==observedKeyScale){observedKeyScale=next;schedule();}}).observe(document.documentElement,{attributes:true,attributeFilter:['style']});
  w.addEventListener('blur',finishDrag);w.addEventListener('pagehide',finishDrag);document.addEventListener('visibilitychange',()=>{if(document.hidden)finishDrag();});
- w.NPCollectionWorkspace={refresh};mount();
+ w.NPCollectionWorkspace={refresh};w.NPPlayWorkspace=w.NPCollectionWorkspace;mount();
 })(window);
