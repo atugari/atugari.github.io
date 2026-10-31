@@ -109,7 +109,7 @@ html body.np-collection-workspace #app{scrollbar-gutter:auto!important}
 .np-workspace-screen .play-head>b,.np-workspace-screen .play-head #timer{white-space:nowrap;flex-shrink:0}
 .np-workspace-screen .play-head>h1{display:block!important;flex:0 1 auto;min-width:0;margin:0!important;font-size:max(13px,var(--ui-min-font,0px))!important;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 html body.np-collection-workspace #app .np-workspace-actions>button{min-height:44px!important;font-size:max(13px,var(--ui-min-font,0px))!important}
-html body.np-collection-workspace #app .np-number-panel .number-pad>button{font-size:max(18px,var(--ui-min-font,0px))!important}
+html body.np-collection-workspace #app .np-number-panel .number-pad>button{height:calc(var(--np-workspace-key-height,44px) * var(--np-key-scale,1))!important;min-height:calc(44px * var(--np-key-scale,1))!important;font-size:max(calc(18px * var(--np-key-scale,1)),var(--ui-min-font,0px))!important}
 .np-workspace-tools{min-width:0}.np-workspace-tools label{min-width:0}.np-workspace-tools select{min-width:0;max-width:100%;flex:1}
 .np-workspace-tools .np-direct-zoom{min-width:0;max-width:100%}
 .np-workspace-screen>.play-dock:not(:has(.tools,#number-controls)){display:none!important}
@@ -119,4 +119,5 @@ html body.np-collection-workspace #app .np-number-panel .number-pad>button{font-
 .np-workspace-screen[data-compact-board=true] .np-workspace-tools .np-tool-full{display:none}
 .np-workspace-screen[data-compact-board=true] .np-workspace-tools .np-tool-short{display:inline}
 .np-workspace-screen[data-compact-board=true] .np-small-board-notice span{max-width:1.1em;overflow:hidden}
-@media(min-width:900px){html body.np-collection-workspace #app .np-number-panel .number-pad>button{font-size:max(clamp(18px,2vw,28px),var(--ui-min-font,0px))!important}}
+@media(min-width:900px){.np-workspace-screen:is([data-number-position=left],[data-number-position=right])>.np-number-panel{--np-workspace-key-height:clamp(44px,7vh,64px)}html body.np-collection-workspace #app .np-number-panel .number-pad>button{font-size:max(calc(clamp(18px,2vw,28px) * var(--np-key-scale,1)),var(--ui-min-font,0px))!important}}
+body.np-collection-workspace>#np-language-bar{display:none!important}

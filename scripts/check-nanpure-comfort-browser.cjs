@@ -30,7 +30,7 @@ async function colors(frame){
  await frame.locator('.np-workspace-tools [data-board-comfort]').click();await dialog.locator('[data-comfort=hide]').selectOption('timer');await dialog.locator('[data-comfort=delay]').selectOption('1000');await dialog.locator('[data-comfort-close]').last().click();await frame.locator('#board [data-cell="0"]').click();
  assert.equal(await frame.locator('#board').getAttribute('data-np-highlight-hidden'),'false');await frame.waitForFunction(()=>document.querySelector('#board').dataset.npHighlightHidden==='true');
  assert.equal(await frame.evaluate(()=>JSON.stringify({grid:NanpureAppTest.getCurrent().grid,notes:NanpureAppTest.getCurrent().notes})),before,'Layout and colors preserve the puzzle');
- const geom=await frame.locator('.np-number-panel').evaluate(el=>{const r=el.getBoundingClientRect();return{left:r.left,right:r.right,bottom:r.bottom,w:innerWidth,h:innerHeight};});assert(geom.left>=-1&&geom.right<=geom.w+1&&geom.bottom<=geom.h+2,'Real controls remain in the viewport');
+ const geom=await frame.locator('.np-number-panel').evaluate(el=>{const r=el.getBoundingClientRect();return{left:r.left,right:r.right,bottom:r.bottom,w:innerWidth,h:innerHeight};});assert(geom.left>=-1&&geom.right<=geom.w+1&&geom.bottom<=geom.h+2,'Real controls remain in the viewport: '+JSON.stringify(geom));
 }
 (async()=>{const browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_BIN||undefined,args:['--no-sandbox','--disable-dev-shm-usage']});try{
  for(const [viewport,n]of [[{width:1440,height:900},25],[{width:390,height:780},16],[{width:844,height:390},16]]){
@@ -40,5 +40,12 @@ async function colors(frame){
  const f=await setup(browser,{width:1440,height:900});await f.page.goto(origin+'/nanpure/releases/'+version+'/notebook/index.html');await f.page.waitForFunction(()=>window.NanpureAppTest&&window.NPBoardComfort);
  await f.page.evaluate(p=>{NanpureAppTest.validate(p);const lib=NanpureAppTest.getLibrary();lib.splice(0,lib.length,p);},classic(16));
  for(const selector of ['[data-action="open-notebook"]','[data-action="start"][data-flow="play"]','[data-action="pick-play"][data-id="comfort-browser-16"]','[data-action="begin-play"][data-id="comfort-browser-16"]'])await f.page.locator(selector).click();
- await colors(f.page);assert.deepEqual(f.errors,[]);await f.context.close();console.log('PASS generated puzzle comfort: same controls, region colors, custom colors, timer and unchanged progress');
+ await colors(f.page);
+ const originalHeight=await f.page.locator('.number-pad>button').first().evaluate(el=>el.getBoundingClientRect().height);
+ await f.page.locator('#np-play-settings-button').click();await f.page.locator('[aria-controls="np-settings-page-input"]').click();
+ const access=f.page.locator('.np-access-tools');if(await access.getAttribute('open')===null)await access.locator('summary').click();
+ const keySize=access.locator('label:has(select option[value="150"]) select');await keySize.selectOption('150');
+ await f.page.waitForFunction(original=>document.querySelector('.number-pad>button').getBoundingClientRect().height>=original*1.45,originalHeight);
+ await keySize.selectOption('100');await f.page.locator('.np-settings-close').click();
+ assert.deepEqual(f.errors,[]);await f.context.close();console.log('PASS generated puzzle comfort: same controls, region colors, custom colors, timer, saved key-size setting and unchanged progress');
 }finally{await browser.close();}})().catch(error=>{console.error(error);process.exitCode=1;});
