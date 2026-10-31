@@ -16,14 +16,14 @@ fs.writeFileSync(playerFile,player.replace(/src="\/nanpure\/collection\/board-in
 const hash=file=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,file))).digest('hex');
 const manifestFile=path.join(root,'nanpure/release-manifest.json');
 const manifest=JSON.parse(fs.readFileSync(manifestFile));
-const allowed=file=>file==='nanpure/index.html'||['nanpure/collection/entry.js','nanpure/collection/app.js','nanpure/collection/index.html','nanpure/collection/workspace.css'].includes(file)||/^puzzles\/(?:entry\.js|navigation\.js|(?:[a-z-]+\/)?index\.html|cross\/stock\/index\.html)$/.test(file);
+const allowed=file=>file==='nanpure/index.html'||['nanpure/collection/entry.js','nanpure/collection/app.js','nanpure/collection/index.html','nanpure/collection/style.css','nanpure/collection/workspace.css'].includes(file)||/^puzzles\/(?:entry\.js|navigation\.js|(?:[a-z-]+\/)?index\.html|cross\/stock\/index\.html)$/.test(file);
 let changed=0;
 for(const [file,expected]of Object.entries(manifest.files)){
  const actual=hash(file);if(actual===expected)continue;
  if(!allowed(file))throw Error('Unexpected release change: '+file);
  manifest.files[file]=actual;changed++;
 }
-const sources=['puzzles/entry.js','puzzles/navigation.js','nanpure/collection/app.js','nanpure/collection/catalog-model.mjs','nanpure/collection/pack-reader.mjs','scripts/seo/build-seo.mjs','nanpure/collection/workspace.css','nanpure/collection/workspace.js','nanpure/collection/board-input.js','nanpure/collection/player.html','scripts/prepare-pareasobi-move.mjs','scripts/export-nanpure.mjs','scripts/client-overrides/public/notebook/board-input.js','scripts/client-overrides/app/game.tsx','scripts/client-overrides/app/site-intro.tsx'];
+const sources=['puzzles/entry.js','puzzles/navigation.js','nanpure/collection/app.js','nanpure/collection/progress-model.mjs','nanpure/collection/style.css','nanpure/collection/catalog-model.mjs','nanpure/collection/pack-reader.mjs','scripts/seo/build-seo.mjs','nanpure/collection/workspace.css','nanpure/collection/workspace.js','nanpure/collection/board-input.js','nanpure/collection/player.html','scripts/prepare-pareasobi-move.mjs','scripts/export-nanpure.mjs','scripts/client-overrides/public/notebook/board-input.js','scripts/client-overrides/app/game.tsx','scripts/client-overrides/app/site-intro.tsx'];
 sources.push('scripts/collection-100k/refresh-metadata.cjs');
 manifest.pareasobiNavigation={revision:'20261031-stock1',sources:Object.fromEntries(sources.map(file=>[file,hash(file)]))};
 fs.writeFileSync(manifestFile,JSON.stringify(manifest,null,2)+'\n');
