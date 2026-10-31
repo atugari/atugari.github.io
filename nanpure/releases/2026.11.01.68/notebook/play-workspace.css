@@ -78,17 +78,18 @@ html body.np-collection-workspace #app{scrollbar-gutter:auto!important}
 /* On a short landscape screen the bottom keypad has no usable height.
    Keep the existing position preference, but place docked keys beside the board. */
 @media(max-height:500px) and (min-width:600px){
- .np-workspace-screen:not([data-number-position=float]){grid-template-columns:minmax(0,1fr) 220px!important;grid-template-rows:auto auto minmax(40px,1fr) auto auto auto auto!important;grid-template-areas:"head head" "layout layout" "board numbers" "linked numbers" "actions numbers" "hints hints" "feedback feedback"!important;padding:4px!important;gap:4px!important}
+ .np-workspace-screen:not([data-number-position=float]){grid-template-columns:minmax(0,1fr) 220px!important;grid-template-rows:auto auto minmax(40px,1fr) auto auto auto auto!important;grid-template-areas:"head numbers" "layout numbers" "board numbers" "linked numbers" "membership numbers" "hints numbers" "feedback numbers"!important;padding:4px!important;gap:4px!important}
  .np-workspace-screen:not([data-number-position=float])>.linked-controls{grid-area:linked;display:flex;gap:4px;margin:0!important}
  .np-workspace-screen:not([data-number-position=float])>.linked-controls button{min-height:32px!important;padding:3px 8px!important}
  .np-workspace-screen:not([data-number-position=float])>.np-number-panel{max-height:none!important;width:100%!important}
  .np-workspace-screen:not([data-number-position=float])>.np-number-panel .np-number-handle{font-size:12px!important}
  .np-workspace-screen:not([data-number-position=float])>.np-number-panel .np-number-bar button{padding:3px 6px!important}
+ .np-workspace-screen:not([data-number-position=float]) .np-small-board-notice span{max-width:1.1em;overflow:hidden}
 }
 /* Wide desktop play keeps the real controls in one row and gives their former
    header/footer space back to the board. DOM order and input handlers stay intact. */
 @media(min-width:1000px){
- .np-workspace-screen.np-wide[data-number-position=float]{grid-template-columns:minmax(180px,1fr) auto minmax(280px,.95fr)!important;grid-template-rows:auto minmax(0,1fr) auto auto auto!important;grid-template-areas:"head layout actions" "board board board" "linked linked linked" "hints hints hints" "feedback feedback feedback"!important;gap:3px 6px!important;padding:3px!important}
+ .np-workspace-screen.np-wide[data-number-position=float]{grid-template-columns:minmax(160px,1fr) auto!important;grid-template-rows:auto minmax(0,1fr) auto auto auto auto!important;grid-template-areas:"head layout" "board board" "linked linked" "membership membership" "hints hints" "feedback feedback"!important;gap:3px 6px!important;padding:3px!important}
  .np-workspace-screen.np-wide[data-number-position=float]>.play-head{min-height:36px!important;justify-content:flex-start!important;flex-wrap:nowrap!important}
  .np-workspace-screen.np-wide[data-number-position=float]>.play-head>b{display:none!important}
  .np-workspace-screen.np-wide[data-number-position=float]>.play-head button{min-height:32px!important;padding:2px 6px!important}

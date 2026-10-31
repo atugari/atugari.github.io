@@ -126,7 +126,7 @@
   notice.querySelector('[data-dismiss-size]').onclick=()=>{noticeDismissed=true;notice.hidden=true;clampPanel();};
   tools.querySelector('[data-position]').onchange=e=>setPosition(e.target.value);
   makeDialog();tools.querySelector('[data-board-settings]').onclick=()=>{dialog.querySelector('[data-digit-size]').value=String(prefs.digitSize);dialog.querySelector('[data-board-align]').value=prefs.align;dialog.querySelector('[data-dialog-position]').value=prefs.position;dialog.showModal();};
-  tools.querySelector('[data-wide]').onclick=()=>{prefs.wide=!prefs.wide;if(prefs.wide){beforeWide=prefs.position;if(prefs.position==='bottom'||prefs.position==='top')prefs.position='float';}else if(prefs.position==='float')prefs.position=beforeWide;apply();save();};
+  tools.querySelector('[data-wide]').onclick=()=>{prefs.wide=!prefs.wide;if(prefs.wide){beforeWide=prefs.position;prefs.position='float';}else if(prefs.position==='float')prefs.position=beforeWide;apply();save();};
   tools.querySelectorAll('[data-zoom]').forEach(button=>button.onclick=()=>{if(button.dataset.zoom==='fit')w.NPBoardInput?.fit(board);else{const key=board.dataset.panKey;const controls=Array.from(document.querySelectorAll('.np-pan-tools')).find(el=>el.dataset.boardKey===key)||document.querySelector('.np-pan-tools');controls?.querySelectorAll('button')[button.dataset.zoom==='in'?2:0]?.click();}refresh();});
   panel.querySelector('[data-shape]').onchange=e=>{prefs.shape=e.target.value;apply();save();};
   panel.querySelector('[data-collapse]').onclick=()=>{collapsed=!collapsed;apply();};
