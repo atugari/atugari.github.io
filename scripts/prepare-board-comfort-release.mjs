@@ -44,6 +44,6 @@ const audio=path.join(root,'nanpure-audio',version);fs.cpSync(path.join(root,'na
 const ai=JSON.parse(fs.readFileSync(path.join(audio,'index.json')));ai.version=version;fs.writeFileSync(path.join(audio,'index.json'),JSON.stringify(ai,null,2)+'\n');
 const files=[...new Set([...Object.keys(prior.files),...walk(out).map(f=>path.relative(root,f)),...['nanpure/collection/app.js','nanpure/collection/index.html','nanpure/collection/player.html','nanpure/collection/workspace.js','nanpure/collection/workspace.css']])];
 const manifest={...prior,...info,base,files:Object.fromEntries(files.map(f=>[f,hash(fs.readFileSync(path.join(root,f)))]))};
-if(manifest.pareasobiNavigation?.sources?.['scripts/export-nanpure.mjs'])manifest.pareasobiNavigation.sources['scripts/export-nanpure.mjs']=hash(fs.readFileSync(path.join(root,'scripts/export-nanpure.mjs')));
+for(const file of Object.keys(manifest.pareasobiNavigation?.sources||{}))manifest.pareasobiNavigation.sources[file]=hash(fs.readFileSync(path.join(root,file)));
 fs.writeFileSync(path.join(root,'nanpure/release-manifest.json'),JSON.stringify(manifest,null,2)+'\n');
 console.log('Prepared board-comfort release',version,files.length,'verified files');
