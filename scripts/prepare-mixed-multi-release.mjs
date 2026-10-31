@@ -4,6 +4,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {publicReleases, announcementVersion} from './public-release-policy.mjs';
+import {patchNotebookApp} from './i18n/patch-notebook.mjs';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const previous='2026.10.27.65',version='2026.11.01.66';
 const oldBase=`/nanpure/releases/${previous}/`,base=`/nanpure/releases/${version}/`;
@@ -16,6 +17,11 @@ fs.cpSync(path.join(root,oldBase),out,{recursive:true});
 for(const file of walk(out).filter(f=>/\.(html|js|css)$/.test(f))){const text=fs.readFileSync(file,'utf8');if(text.includes(oldBase))fs.writeFileSync(file,text.replaceAll(oldBase,base));}
 const changed=['app.js','common.js','batch.js','portable.js','memo-help.js','logical-hints.js','video-features.js','mixed-multi.js'];
 for(const name of changed)fs.copyFileSync(path.join(pub,name),path.join(out,'notebook',name));
+patchNotebookApp(path.join(out,'notebook'));
+const videoFile=path.join(out,'notebook/video-features.js');
+fs.writeFileSync(videoFile,fs.readFileSync(videoFile,'utf8')
+ .replace('!async function(e){try{navigator.share?','!async function(e){e=window.NPI18n?.t(e)||e;try{navigator.share?')
+ .replace('title:"ナンプレ帳の統計"','title:window.NPI18n?.t("ナンプレ帳の統計")||"ナンプレ帳の統計"'));
 // Keep the previously appended appearance and language CSS while adding only new rules.
 const cssFile=path.join(out,'notebook/app.css'),css=fs.readFileSync(path.join(pub,'app.css'),'utf8');
 fs.appendFileSync(cssFile,'\n'+css.slice(css.indexOf('.multi-size-fields')));
