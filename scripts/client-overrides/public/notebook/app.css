@@ -191,3 +191,9 @@ body.compact-playing #hundred-nav label{font-size:max(13px,var(--ui-min-font,0px
 body.compact-playing #hundred-nav select{padding:8px;font-size:max(14px,var(--ui-min-font,0px));min-height:44px}
 body.compact-playing #hundred-nav .play-caption{display:none}
 @media(max-width:380px){body.compact-playing #app{padding-inline:7px}body.compact-playing .tools button{flex-basis:76px;min-width:76px}}
+
+.multi-size-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin:16px 0}.multi-size-fields label{display:grid;gap:6px;font-weight:700}.multi-size-fields select{width:100%;min-height:48px;padding:10px;font:inherit;border:1px solid #8b9b8d;border-radius:10px;background:var(--paper,#fff);color:inherit}.multi-layout-preview{max-width:540px;margin:18px auto}.multi-layout-preview svg{width:100%;max-height:55vh}.number-pad button:disabled{opacity:.3}
+
+.multi-board-settings{min-width:0;border:1px solid #a5b3a7;border-radius:12px;padding:12px;display:grid;gap:10px}.multi-board-settings legend{font-weight:700;padding:0 5px}#multi-sizes-form>label{display:grid;gap:6px;max-width:220px}#multi-sizes-form>label select{min-height:46px;font:inherit;padding:8px}
+
+.multi-board-settings,.multi-board-settings label{align-content:start}
