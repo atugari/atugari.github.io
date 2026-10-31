@@ -54,5 +54,6 @@ const audio=path.join(root,'nanpure-audio',version);fs.cpSync(path.join(root,'na
 const ai=JSON.parse(fs.readFileSync(path.join(audio,'index.json')));ai.version=version;fs.writeFileSync(path.join(audio,'index.json'),JSON.stringify(ai,null,2)+'\n');
 const files=[...new Set([...Object.keys(prior.files),...walk(out).map(f=>path.relative(root,f))])];
 const manifest={...prior,...info,base,files:Object.fromEntries(files.map(name=>[name,hash(path.join(root,name))]))};
+if(manifest.pareasobiNavigation?.sources?.['scripts/export-nanpure.mjs'])manifest.pareasobiNavigation.sources['scripts/export-nanpure.mjs']=hash(path.join(root,'scripts/export-nanpure.mjs'));
 fs.writeFileSync(path.join(root,'nanpure/release-manifest.json'),JSON.stringify(manifest,null,2)+'\n');
 console.log('Prepared mixed-size multi release',version,files.length,'verified files');
