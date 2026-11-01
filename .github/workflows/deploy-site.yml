@@ -66,6 +66,14 @@ jobs:
           export CHROME_BIN="$(command -v google-chrome || command -v chromium)"
           node scripts/check-nanpure-fullscreen-browser.cjs _site
 
+      - name: Check exact 9x9 pattern creation
+        shell: bash
+        run: |
+          node scripts/check-nanpure-pattern.cjs
+          export PLAYWRIGHT_MODULE="$RUNNER_TEMP/nanpure-browser/node_modules/playwright"
+          export CHROME_BIN="$(command -v google-chrome || command -v chromium)"
+          node scripts/check-nanpure-pattern-browser.cjs _site
+
       - name: Check Nanpure keyboard and mobile client before publication
         shell: bash
         run: |
