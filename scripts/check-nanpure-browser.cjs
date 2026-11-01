@@ -155,6 +155,7 @@ async function checkResponsiveDailyPlay(browser,root,viewport,n){
  const label=n+'×'+n+' at '+viewport.width+'×'+viewport.height;
  const pinchCase=n===16&&viewport.width===375;
  const context=await browser.newContext({viewport,...(pinchCase?{isMobile:true,hasTouch:true}:{})}),page=await context.newPage(),errors=[],apiWrites=[];
+ await context.route('https://pagead2.googlesyndication.com/**',route=>route.fulfill({status:200,contentType:'application/javascript',body:'/* AdSense is disabled in automated checks. */'}));
  const block=Math.sqrt(n),solution=Array.from({length:n*n},(_,i)=>{const row=Math.floor(i/n),col=i%n;return(row*block+Math.floor(row/block)+col)%n+1;});
  // Leave two rows empty: exercising input can never complete this fixture or
  // submit a result. Resume is local to this disposable browser context.
@@ -303,6 +304,7 @@ async function checkResponsiveFreePlay(browser,root,viewport){
  const label=viewport.width+'×'+viewport.height;
  const pinchCase=viewport.width===375;
  const context=await browser.newContext({viewport,...(pinchCase?{isMobile:true,hasTouch:true}:{})}),page=await context.newPage(),errors=[];
+ await context.route('https://pagead2.googlesyndication.com/**',route=>route.fulfill({status:200,contentType:'application/javascript',body:'/* AdSense is disabled in automated checks. */'}));
  page.on('pageerror',error=>errors.push(error.message));
  let releaseNotebook,indexRequests=0,notebookRequests=0;
  const notebookGate=new Promise(resolve=>{releaseNotebook=resolve;});
@@ -575,6 +577,7 @@ async function checkJigsawCreationAndPrint(page,lang,expected){
 }
 (async()=>{const browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_BIN||undefined,args:['--no-sandbox']});try{
  const context=await browser.newContext({viewport:{width:390,height:844}}),page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await context.route('https://pagead2.googlesyndication.com/**',route=>route.fulfill({status:200,contentType:'application/javascript',body:'/* AdSense is disabled in automated checks. */'}));
  const root=path.resolve(process.argv[2]||'_site');const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp','.mp3':'audio/mpeg','.ogg':'audio/ogg','.wav':'audio/wav'};
  await page.route(/^https:\/\/atugari\.github\.io\/(?:nanpure|puzzles)\//,async route=>{const u=new URL(route.request().url()),file=path.join(root,u.pathname.endsWith('/')?u.pathname+'index.html':u.pathname);if(!file.startsWith(root)||!fs.existsSync(file))return route.fulfill({status:404,body:'Missing asset'});await route.fulfill({status:200,contentType:types[path.extname(file)]||'application/octet-stream',body:fs.readFileSync(file)})});
  for(const view of['','daily','ranking','calendar','contact','replies','backup','privacy','manage']){
