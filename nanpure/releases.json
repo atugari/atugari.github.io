@@ -1,7 +1,16 @@
 {
-  "version": "2026.11.01.70",
-  "announcementVersion": "2026.11.01.70",
+  "version": "2026.11.01.71",
+  "announcementVersion": "2026.11.01.71",
   "releases": [
+    {
+      "version": "2026.11.01.71",
+      "kind": "fix",
+      "date": "2026-11-01",
+      "title": "ほかの盤面を経由する自由配置でも作成できるようにしました。",
+      "items": [
+        "ほかの盤面を経由する自由配置でも作成できるようにしました。"
+      ]
+    },
     {
       "version": "2026.11.01.70",
       "kind": "improvement",
