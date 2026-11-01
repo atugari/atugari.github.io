@@ -1,0 +1,8 @@
+.np-cloud-retirement-dialog{box-sizing:border-box;width:min(34rem,calc(100vw - 24px));max-width:calc(100vw - 24px);max-height:calc(100dvh - 24px);margin:auto;padding:24px;border:2px solid #c7d2df;border-radius:20px;background:#fffdf7;color:#25384d;box-shadow:0 18px 70px #14283c40;font-family:inherit;font-size:max(16px,var(--ui-min-font,16px));line-height:1.7;overflow:auto;overflow-wrap:anywhere}
+.np-cloud-retirement-dialog::backdrop{background:#13263688}
+.np-cloud-retirement-dialog h2{margin:0 0 16px;font-size:1.2em;line-height:1.5}
+.np-cloud-retirement-date{display:block;padding:14px;border-left:5px solid #ae4b35;border-radius:8px;background:#fff0e5;font-size:1.1em;line-height:1.7}
+.np-cloud-retirement-dialog p{margin:16px 0}
+.np-cloud-retirement-dialog button{box-sizing:border-box;display:block;min-height:48px;width:100%;padding:12px 16px;border:0;border-radius:12px;background:#285a51;color:white;font:inherit;font-weight:700;white-space:normal;cursor:pointer}
+.np-cloud-retirement-dialog button:focus-visible{outline:3px solid #246ac4;outline-offset:3px}
+@media(max-width:360px){.np-cloud-retirement-dialog{padding:16px}.np-cloud-retirement-date{padding:10px}}
