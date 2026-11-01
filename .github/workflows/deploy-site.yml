@@ -57,6 +57,15 @@ jobs:
       - name: Bundle Nanpure help and contact
         run: python3 scripts/enhance-nanpure.py _site
 
+      - name: Check fullscreen board and exit controls
+        shell: bash
+        run: |
+          npm install --prefix "$RUNNER_TEMP/nanpure-browser" --no-audit --no-fund playwright@1.62.1 linkedom@0.18.13
+          node scripts/check-nanpure-fullscreen.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
+          export PLAYWRIGHT_MODULE="$RUNNER_TEMP/nanpure-browser/node_modules/playwright"
+          export CHROME_BIN="$(command -v google-chrome || command -v chromium)"
+          node scripts/check-nanpure-fullscreen-browser.cjs _site
+
       - name: Check Nanpure keyboard and mobile client before publication
         shell: bash
         run: |
