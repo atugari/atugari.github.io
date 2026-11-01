@@ -1,13 +1,13 @@
 {
   "version": "2026.11.02.78",
   "sourceCommit": "1222640c9a34beb3f57d065e7504b11bcae1e994",
-  "clientOverridesSha256": "d3428ffa4cb75697ef50c84f7d1b7b49ba39e525ced55e03ba9edc535855e0bd",
+  "clientOverridesSha256": "32abd374e8c27f3dba41e85ad9c1f1a1db184886434b7de2765b1e2d05894304",
   "base": "/nanpure/releases/2026.11.02.78/",
   "online": "https://puzzle-api.puzzle-hub-4826.workers.dev",
   "files": {
     "nanpure/index.html": "2c1969203a373b4b5fe52ef0f5e626756722529f2751a46d00a81b848d4ececa",
     "nanpure.html": "396a2c1d26e062b39ecef7cbb3ab3bd4c3d96dbbccc985752bc1087f1774967b",
-    "nanpure/version.json": "ead4c73c7a3108c9ab623714ded91f8e61831e04622658773882c2af0695fb17",
+    "nanpure/version.json": "d77a0fa90b85440a69f5ee79a6ff5daca42f260b92c276c137214f35f8629076",
     "nanpure/releases.json": "101ebe222722d0173dec63918302a7353d812694bb39154b566fdd6be2a748f2",
     "nanpure/guide/index.html": "53ecc04bb0c8c4e22a7a6ebbdbcd2d90ff4e5c798d35832301cde2eeeb73c42d",
     "nanpure/sudoku-types/index.html": "289a15ead5d6bf9375c9cad2a57fab71b28087a89843dcfac55cde4182075db2",
@@ -2344,7 +2344,7 @@
     "nanpure/releases/2026.11.02.78/native-board.css": "82f557ee170155cec32193735a64394fc24af85f153269d77a89bfc9b51c82c8",
     "nanpure/releases/2026.11.02.78/notebook/access-tools.js": "d4258d6fe191fbe133e7211f32f02ffc3ebe24248e8f5b8c0318f893530c71c8",
     "nanpure/releases/2026.11.02.78/notebook/app.css": "66667ad16f0a6ec2ebeffbe7675d7b889ffc0cc0fb3e980973c46eeb02ebee60",
-    "nanpure/releases/2026.11.02.78/notebook/app.js": "7cf544b51423319468a4ecf632e04766d549641ab98f076f9926d8be49251e5f",
+    "nanpure/releases/2026.11.02.78/notebook/app.js": "6a025870add869ac94c27b0d198c3879eb4560389f8c397ef70fdd569447ab15",
     "nanpure/releases/2026.11.02.78/notebook/appearance-controls.js": "1bd72d654c05370dd52368070abaca18c21aa9b2990f456155954e3b9bd4cd74",
     "nanpure/releases/2026.11.02.78/notebook/batch.js": "5756f25c1dd2bf5728d113beaa13ad364d57ca5e8e451a803983afe840ab5e95",
     "nanpure/releases/2026.11.02.78/notebook/board-appearance.js": "6c7c40268b25186b835252c3e5fcab3bd588fd459304ad13a58a3b33b98cc0d1",
@@ -2428,7 +2428,7 @@
     "nanpure/releases/2026.11.02.78/notebook/pattern-model.js": "706ea7514787515bed3e5f7b8d16fefdcc455c593fb581a0f8632b3e85a289c0",
     "nanpure/releases/2026.11.02.78/notebook/pattern-share.js": "76bbe42ef6b5f7d5a55c249abfa412a156feeadd3ad991ca36bea01dbc8d8482",
     "nanpure/releases/2026.11.02.78/notebook/pattern-ui.js": "d25b8f84ca1df6cac5ba4705be8b2180b9ac2c248f0179cc1ae9f969e9836001",
-    "nanpure/releases/2026.11.02.78/notebook/pattern.css": "483c14a4f5e11a7eb9ad23e0bafe4ef80d3e9fb6a533d7016d6ff89662e20d51",
+    "nanpure/releases/2026.11.02.78/notebook/pattern.css": "a2ae21df309ccdda26f9766cc86f7a050f7a7da7fe5a3c94a7560dae28497b1b",
     "nanpure/releases/2026.11.02.78/notebook/play-options.js": "a669f619cd2df74b25ff21d258268b99da07d006591d5a708936032ee0e748b8",
     "nanpure/releases/2026.11.02.78/notebook/play-workspace.css": "8e818961ad1275ea10b6b29f592513051f1bd9a70d6e7a9b9a33c4288dc5e9bb",
     "nanpure/releases/2026.11.02.78/notebook/play-workspace.js": "4ee5f124556941c5bcd61cc87b4de944a7bc316df2bdf0e1caf47c6c607b38a0",
@@ -2540,7 +2540,7 @@
   "connectedLayouts": {
     "sources": {
       "scripts/client-overrides/public/notebook/mixed-multi.js": "3f91c44379b94db154198903661dd75cb5eafe599463cd7d31ab80477cda5d78",
-      "scripts/client-overrides/public/notebook/app.js": "1a54b7c89871427e521ce906aa7a4f92699fbcde1c56fa10116ef8dd9730a34b",
+      "scripts/client-overrides/public/notebook/app.js": "a13dfe66966126f538d0e3d745410040097db1c782a53a36b85cf1b53203d37b",
       "scripts/i18n/catalog-connected-layout-71.cjs": "7852ef8506bd92d5686b91f4491ff5a647f716f46a409e5ab4d91c4d7b3092dc",
       "scripts/fixtures/multi-recorded-flower.json": "1622ddabfd7ed153374a06c48c8da003c57bfd154bbdf044b26e67e2a4020bab",
       "scripts/check-nanpure-mixed-multi.cjs": "ab6e78561015da257ea9bc12b7bcbc40e87bce2bd8057f990090eaec9aed4ff9",
@@ -2551,8 +2551,8 @@
     "sources": {
       "scripts/client-overrides/public/notebook/pattern-model.js": "706ea7514787515bed3e5f7b8d16fefdcc455c593fb581a0f8632b3e85a289c0",
       "scripts/client-overrides/public/notebook/pattern-ui.js": "d25b8f84ca1df6cac5ba4705be8b2180b9ac2c248f0179cc1ae9f969e9836001",
-      "scripts/client-overrides/public/notebook/pattern.css": "483c14a4f5e11a7eb9ad23e0bafe4ef80d3e9fb6a533d7016d6ff89662e20d51",
-      "scripts/client-overrides/public/notebook/app.js": "1a54b7c89871427e521ce906aa7a4f92699fbcde1c56fa10116ef8dd9730a34b",
+      "scripts/client-overrides/public/notebook/pattern.css": "a2ae21df309ccdda26f9766cc86f7a050f7a7da7fe5a3c94a7560dae28497b1b",
+      "scripts/client-overrides/public/notebook/app.js": "a13dfe66966126f538d0e3d745410040097db1c782a53a36b85cf1b53203d37b",
       "scripts/client-overrides/public/notebook/common.js": "fee5b3b99abb8c0009522d8b6796e8544b59ceab205a961493420825f2eb38d2",
       "scripts/check-nanpure-pattern.cjs": "d31ea8e49c32d2b6cc9ab76db9898dbbc98c2363fb0716ac5e5f8c76481cd6f6",
       "scripts/check-nanpure-pattern-browser.cjs": "e4db4879cc87488051a9d8d662c4971cf6dd00da487b852a03637f3f73d69d61",
@@ -2563,7 +2563,7 @@
     "sources": {
       "scripts/client-overrides/public/notebook/pattern-model.js": "706ea7514787515bed3e5f7b8d16fefdcc455c593fb581a0f8632b3e85a289c0",
       "scripts/client-overrides/public/notebook/pattern-ui.js": "d25b8f84ca1df6cac5ba4705be8b2180b9ac2c248f0179cc1ae9f969e9836001",
-      "scripts/client-overrides/public/notebook/pattern.css": "483c14a4f5e11a7eb9ad23e0bafe4ef80d3e9fb6a533d7016d6ff89662e20d51",
+      "scripts/client-overrides/public/notebook/pattern.css": "a2ae21df309ccdda26f9766cc86f7a050f7a7da7fe5a3c94a7560dae28497b1b",
       "scripts/check-nanpure-pattern.cjs": "d31ea8e49c32d2b6cc9ab76db9898dbbc98c2363fb0716ac5e5f8c76481cd6f6",
       "scripts/check-nanpure-pattern-math.cjs": "5e7067b1e3f2c3bd58dd3909f5c9795746deac75b6caef3a38b7babb9f5cf92f",
       "scripts/check-nanpure-pattern-browser.cjs": "e4db4879cc87488051a9d8d662c4971cf6dd00da487b852a03637f3f73d69d61",
@@ -2574,56 +2574,56 @@
     "sources": {
       "scripts/client-overrides/public/notebook/pattern-model.js": "706ea7514787515bed3e5f7b8d16fefdcc455c593fb581a0f8632b3e85a289c0",
       "scripts/client-overrides/public/notebook/pattern-ui.js": "d25b8f84ca1df6cac5ba4705be8b2180b9ac2c248f0179cc1ae9f969e9836001",
-      "scripts/client-overrides/public/notebook/pattern.css": "483c14a4f5e11a7eb9ad23e0bafe4ef80d3e9fb6a533d7016d6ff89662e20d51",
+      "scripts/client-overrides/public/notebook/pattern.css": "a2ae21df309ccdda26f9766cc86f7a050f7a7da7fe5a3c94a7560dae28497b1b",
       "scripts/check-nanpure-pattern.cjs": "d31ea8e49c32d2b6cc9ab76db9898dbbc98c2363fb0716ac5e5f8c76481cd6f6",
       "scripts/check-nanpure-pattern-math.cjs": "5e7067b1e3f2c3bd58dd3909f5c9795746deac75b6caef3a38b7babb9f5cf92f",
       "scripts/check-nanpure-pattern-browser.cjs": "e4db4879cc87488051a9d8d662c4971cf6dd00da487b852a03637f3f73d69d61",
       "scripts/prepare-pattern-usability-release.mjs": "11bfe00db1bfd559786fd4f3c3e5f890a74dd154cff1a66d01de7c2b6e34f8fa",
-      "scripts/client-overrides/public/notebook/app.js": "1a54b7c89871427e521ce906aa7a4f92699fbcde1c56fa10116ef8dd9730a34b"
+      "scripts/client-overrides/public/notebook/app.js": "a13dfe66966126f538d0e3d745410040097db1c782a53a36b85cf1b53203d37b"
     }
   },
   "patternPage": {
     "sources": {
       "scripts/client-overrides/public/notebook/pattern-model.js": "706ea7514787515bed3e5f7b8d16fefdcc455c593fb581a0f8632b3e85a289c0",
       "scripts/client-overrides/public/notebook/pattern-ui.js": "d25b8f84ca1df6cac5ba4705be8b2180b9ac2c248f0179cc1ae9f969e9836001",
-      "scripts/client-overrides/public/notebook/pattern.css": "483c14a4f5e11a7eb9ad23e0bafe4ef80d3e9fb6a533d7016d6ff89662e20d51",
+      "scripts/client-overrides/public/notebook/pattern.css": "a2ae21df309ccdda26f9766cc86f7a050f7a7da7fe5a3c94a7560dae28497b1b",
       "scripts/check-nanpure-pattern.cjs": "d31ea8e49c32d2b6cc9ab76db9898dbbc98c2363fb0716ac5e5f8c76481cd6f6",
       "scripts/check-nanpure-pattern-math.cjs": "5e7067b1e3f2c3bd58dd3909f5c9795746deac75b6caef3a38b7babb9f5cf92f",
       "scripts/check-nanpure-pattern-browser.cjs": "e4db4879cc87488051a9d8d662c4971cf6dd00da487b852a03637f3f73d69d61",
       "scripts/prepare-pattern-page-release.mjs": "1de713099237bf86d7e92db6bf93c1310e04c4c5cc1b42605f44e3f27a471289",
-      "scripts/client-overrides/public/notebook/app.js": "1a54b7c89871427e521ce906aa7a4f92699fbcde1c56fa10116ef8dd9730a34b"
+      "scripts/client-overrides/public/notebook/app.js": "a13dfe66966126f538d0e3d745410040097db1c782a53a36b85cf1b53203d37b"
     }
   },
   "patternWorkspace": {
     "sources": {
       "scripts/client-overrides/public/notebook/pattern-model.js": "706ea7514787515bed3e5f7b8d16fefdcc455c593fb581a0f8632b3e85a289c0",
       "scripts/client-overrides/public/notebook/pattern-ui.js": "d25b8f84ca1df6cac5ba4705be8b2180b9ac2c248f0179cc1ae9f969e9836001",
-      "scripts/client-overrides/public/notebook/pattern.css": "483c14a4f5e11a7eb9ad23e0bafe4ef80d3e9fb6a533d7016d6ff89662e20d51",
+      "scripts/client-overrides/public/notebook/pattern.css": "a2ae21df309ccdda26f9766cc86f7a050f7a7da7fe5a3c94a7560dae28497b1b",
       "scripts/check-nanpure-pattern.cjs": "d31ea8e49c32d2b6cc9ab76db9898dbbc98c2363fb0716ac5e5f8c76481cd6f6",
       "scripts/check-nanpure-pattern-math.cjs": "5e7067b1e3f2c3bd58dd3909f5c9795746deac75b6caef3a38b7babb9f5cf92f",
       "scripts/check-nanpure-pattern-browser.cjs": "e4db4879cc87488051a9d8d662c4971cf6dd00da487b852a03637f3f73d69d61",
       "scripts/prepare-pattern-fixed-release.mjs": "dd31a1d3a25a52329f80d0ec7f27faeab508aab752fc5e228b2c11eb00e30aa0",
-      "scripts/client-overrides/public/notebook/app.js": "1a54b7c89871427e521ce906aa7a4f92699fbcde1c56fa10116ef8dd9730a34b"
+      "scripts/client-overrides/public/notebook/app.js": "a13dfe66966126f538d0e3d745410040097db1c782a53a36b85cf1b53203d37b"
     }
   },
   "patternNoScroll": {
     "sources": {
       "scripts/client-overrides/public/notebook/pattern-model.js": "706ea7514787515bed3e5f7b8d16fefdcc455c593fb581a0f8632b3e85a289c0",
       "scripts/client-overrides/public/notebook/pattern-ui.js": "d25b8f84ca1df6cac5ba4705be8b2180b9ac2c248f0179cc1ae9f969e9836001",
-      "scripts/client-overrides/public/notebook/pattern.css": "483c14a4f5e11a7eb9ad23e0bafe4ef80d3e9fb6a533d7016d6ff89662e20d51",
+      "scripts/client-overrides/public/notebook/pattern.css": "a2ae21df309ccdda26f9766cc86f7a050f7a7da7fe5a3c94a7560dae28497b1b",
       "scripts/check-nanpure-pattern.cjs": "d31ea8e49c32d2b6cc9ab76db9898dbbc98c2363fb0716ac5e5f8c76481cd6f6",
       "scripts/check-nanpure-pattern-math.cjs": "5e7067b1e3f2c3bd58dd3909f5c9795746deac75b6caef3a38b7babb9f5cf92f",
       "scripts/check-nanpure-pattern-browser.cjs": "e4db4879cc87488051a9d8d662c4971cf6dd00da487b852a03637f3f73d69d61",
       "scripts/prepare-pattern-no-scroll-release.mjs": "7a321acd5d66c8b530de63a26ede16045589dbdcb26e4293fcd2b4ab18858991",
-      "scripts/client-overrides/public/notebook/app.js": "1a54b7c89871427e521ce906aa7a4f92699fbcde1c56fa10116ef8dd9730a34b"
+      "scripts/client-overrides/public/notebook/app.js": "a13dfe66966126f538d0e3d745410040097db1c782a53a36b85cf1b53203d37b"
     }
   },
   "patternSharing": {
     "sources": {
       "scripts/client-overrides/public/notebook/pattern-share.js": "76bbe42ef6b5f7d5a55c249abfa412a156feeadd3ad991ca36bea01dbc8d8482",
       "scripts/client-overrides/public/notebook/pattern-ui.js": "d25b8f84ca1df6cac5ba4705be8b2180b9ac2c248f0179cc1ae9f969e9836001",
-      "scripts/client-overrides/public/notebook/pattern.css": "483c14a4f5e11a7eb9ad23e0bafe4ef80d3e9fb6a533d7016d6ff89662e20d51",
-      "scripts/client-overrides/public/notebook/app.js": "1a54b7c89871427e521ce906aa7a4f92699fbcde1c56fa10116ef8dd9730a34b",
+      "scripts/client-overrides/public/notebook/pattern.css": "a2ae21df309ccdda26f9766cc86f7a050f7a7da7fe5a3c94a7560dae28497b1b",
+      "scripts/client-overrides/public/notebook/app.js": "a13dfe66966126f538d0e3d745410040097db1c782a53a36b85cf1b53203d37b",
       "scripts/i18n/catalog-pattern-share-78.cjs": "875e4d40429cff56903bc724c46bb7b2b338cc480736ebe44be1685aded799df",
       "scripts/check-nanpure-pattern-share-browser.cjs": "73e2895aa7075f8268dd13ed8a7fdebcedd8cf2b17053facca7d4bd9d14fe1d2",
       "scripts/prepare-pattern-share-release.mjs": "70b7d14ae1d4bb9b41b94388dd08ab853c259f4234021d4606dbf169ac3666cf"

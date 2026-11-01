@@ -90,7 +90,7 @@ html.np-pattern-fit,body.np-pattern-fit{overflow:hidden!important;scrollbar-gutt
 /* Sharing uses a clean clue-only canvas, independent of the editing theme. */
 .np-pattern-page[data-docked=true][data-right-area=advice] .pattern-info-advice,.np-pattern-page[data-docked=true][data-mobile-area=advice] .pattern-info-advice{grid-template-rows:minmax(0,1fr) 44px 44px;gap:4px}
 .np-pattern-page[data-docked=true] .pattern-info-advice>[data-pattern-retry]{height:44px;min-height:44px;padding:4px;font-size:16px}
-.pattern-saved-share{display:block;margin:12px auto;min-height:48px}
+.pattern-saved-share{display:block;margin:0;min-height:48px}
 .created-puzzle-share{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;margin:16px 0}
 .created-puzzle-share label{grid-column:1/-1}
 .created-puzzle-share select{min-width:0;min-height:48px;padding:8px;font:inherit;border:1px solid #8da994;border-radius:10px;background:#fff;color:#243f35}
