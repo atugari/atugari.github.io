@@ -24,7 +24,7 @@ const types={'.html':'text/html','.js':'application/javascript','.mjs':'applicat
   await dialog.locator('[data-share-close]').click();await page.locator('[data-pattern-save]').click();await page.locator('[data-action="pattern-share"]').waitFor();
   const savedClues=await page.evaluate(()=>{const p=NanpureAppTest.getLibrary().find(p=>p.patternVersion===1);p.grid=p.solution.slice();return p.puzzle.slice();});
   await page.locator('[data-action="pattern-share"]').click();await dialog.locator('[data-share-image]:not([hidden])').waitFor();rendered=await pixels(savedClues);rendered.cells.forEach((ink,i)=>assert.equal(ink>0,savedClues[i]>0,'Solved grid never appears in the image'));
-  await page.keyboard.press('Escape');assert.equal(await page.locator('.pattern-share-dialog').count(),0);
+  await page.keyboard.press('Escape');await dialog.waitFor({state:'detached'});assert.equal(await page.locator('.pattern-share-dialog').count(),0);
   await page.evaluate(()=>Object.defineProperty(navigator,'canShare',{value:()=>false}));await page.locator('[data-action="pattern-share"]').click();await dialog.locator('[data-share-image]:not([hidden])').waitFor();assert(await dialog.locator('[data-share-native]').isHidden());assert(await dialog.locator('[data-share-save]').getAttribute('href'));
   await dialog.locator('[data-share-close]').click();
   // Exercise the actual custom multi creation worker and its completed-screen selector.

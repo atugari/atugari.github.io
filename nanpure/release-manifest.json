@@ -1,13 +1,13 @@
 {
   "version": "2026.11.02.78",
   "sourceCommit": "1222640c9a34beb3f57d065e7504b11bcae1e994",
-  "clientOverridesSha256": "32abd374e8c27f3dba41e85ad9c1f1a1db184886434b7de2765b1e2d05894304",
+  "clientOverridesSha256": "57dc8c0da7c603793cfcc8052948e5b7b9ab2cecd2bd2dd777046c221acb41f7",
   "base": "/nanpure/releases/2026.11.02.78/",
   "online": "https://puzzle-api.puzzle-hub-4826.workers.dev",
   "files": {
     "nanpure/index.html": "2c1969203a373b4b5fe52ef0f5e626756722529f2751a46d00a81b848d4ececa",
     "nanpure.html": "396a2c1d26e062b39ecef7cbb3ab3bd4c3d96dbbccc985752bc1087f1774967b",
-    "nanpure/version.json": "d77a0fa90b85440a69f5ee79a6ff5daca42f260b92c276c137214f35f8629076",
+    "nanpure/version.json": "0bf28da576553847c9e8ca8c7ca58fe50eb1b3d926c45df38ea3e706522f5453",
     "nanpure/releases.json": "101ebe222722d0173dec63918302a7353d812694bb39154b566fdd6be2a748f2",
     "nanpure/guide/index.html": "53ecc04bb0c8c4e22a7a6ebbdbcd2d90ff4e5c798d35832301cde2eeeb73c42d",
     "nanpure/sudoku-types/index.html": "289a15ead5d6bf9375c9cad2a57fab71b28087a89843dcfac55cde4182075db2",
@@ -2426,7 +2426,7 @@
     "nanpure/releases/2026.11.02.78/notebook/pako.min.js": "29cfa0542b9864b6640cfdcc8f15b184db6431b532db2702a3ce97e5f2a7fc1c",
     "nanpure/releases/2026.11.02.78/notebook/path-samples.js": "84e05567c5544dda0832f86931f46de43ec72baef5891aa97f61c22040163bc2",
     "nanpure/releases/2026.11.02.78/notebook/pattern-model.js": "706ea7514787515bed3e5f7b8d16fefdcc455c593fb581a0f8632b3e85a289c0",
-    "nanpure/releases/2026.11.02.78/notebook/pattern-share.js": "76bbe42ef6b5f7d5a55c249abfa412a156feeadd3ad991ca36bea01dbc8d8482",
+    "nanpure/releases/2026.11.02.78/notebook/pattern-share.js": "e51500d678c3b5c66fa108d7508591e0ad13ae08f569efe3cef3f06d1f445fad",
     "nanpure/releases/2026.11.02.78/notebook/pattern-ui.js": "d25b8f84ca1df6cac5ba4705be8b2180b9ac2c248f0179cc1ae9f969e9836001",
     "nanpure/releases/2026.11.02.78/notebook/pattern.css": "a2ae21df309ccdda26f9766cc86f7a050f7a7da7fe5a3c94a7560dae28497b1b",
     "nanpure/releases/2026.11.02.78/notebook/play-options.js": "a669f619cd2df74b25ff21d258268b99da07d006591d5a708936032ee0e748b8",
@@ -2620,12 +2620,12 @@
   },
   "patternSharing": {
     "sources": {
-      "scripts/client-overrides/public/notebook/pattern-share.js": "76bbe42ef6b5f7d5a55c249abfa412a156feeadd3ad991ca36bea01dbc8d8482",
+      "scripts/client-overrides/public/notebook/pattern-share.js": "e51500d678c3b5c66fa108d7508591e0ad13ae08f569efe3cef3f06d1f445fad",
       "scripts/client-overrides/public/notebook/pattern-ui.js": "d25b8f84ca1df6cac5ba4705be8b2180b9ac2c248f0179cc1ae9f969e9836001",
       "scripts/client-overrides/public/notebook/pattern.css": "a2ae21df309ccdda26f9766cc86f7a050f7a7da7fe5a3c94a7560dae28497b1b",
       "scripts/client-overrides/public/notebook/app.js": "a13dfe66966126f538d0e3d745410040097db1c782a53a36b85cf1b53203d37b",
       "scripts/i18n/catalog-pattern-share-78.cjs": "875e4d40429cff56903bc724c46bb7b2b338cc480736ebe44be1685aded799df",
-      "scripts/check-nanpure-pattern-share-browser.cjs": "73e2895aa7075f8268dd13ed8a7fdebcedd8cf2b17053facca7d4bd9d14fe1d2",
+      "scripts/check-nanpure-pattern-share-browser.cjs": "faeabb8eb78ad0e79a0b92b3b6a3611cbba47cc00776ec31485f8c648919312f",
       "scripts/prepare-pattern-share-release.mjs": "70b7d14ae1d4bb9b41b94388dd08ab853c259f4234021d4606dbf169ac3666cf"
     }
   }
