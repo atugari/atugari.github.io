@@ -17,7 +17,7 @@
   let pages=[],columns=kind==='hints'?1:0;
   const stageFor=x=>[0,1,2,3].includes(x.p.printHintStage)?x.p.printHintStage:p.hint,hasHints=items.some(x=>stageFor(x)>0);
   const grades=kind==='hints'?[1,2,3]:[0],gradeLabels=['なし','大まか','詳しい','より詳しい'];
-  function page(stage){const el=doc.createElement('section');el.className='sheet wado-sheet wp-sheet';el.dataset.kind=kind;if(stage)el.dataset.stage=stage;
+  function page(stage){const el=doc.createElement('section');el.className='sheet wado-sheet wp-sheet';el.lang='ja';el.setAttribute('translate','no');el.dataset.kind=kind;if(stage)el.dataset.stage=stage;
    const title=kind==='answers'?'解答例':kind==='hints'?'ヒント · '+gradeLabels[stage]:combined?'問題と解答例':'問題';
    const help=kind==='questions'?'矢印の向きに読んで、2文字の熟語を作りましょう。':kind==='answers'||combined?'掲載しているのは解答例です。他の言葉が成り立つ場合もあります。':'手がかりの具体性による難しさの目安です。感じ方には個人差があります。';
    if(p.showHeading||(kind==='questions'||combined)&&p.showNameDate){const head=doc.createElement('header');head.className='wp-head';head.innerHTML=(p.showHeading?'<div><h1>漢字穴埋め '+title+'</h1><p>'+help+'</p></div>':'')+((kind==='questions'||combined)&&p.showNameDate?'<div class="wp-person">お名前 __________________<br>日付 ______月______日</div>':'');el.append(head);}

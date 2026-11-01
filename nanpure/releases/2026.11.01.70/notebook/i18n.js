@@ -179,7 +179,7 @@
   }
 
   // These are puzzle answers or text written by a player, not application copy.
-  const protectedContent='script,style,[translate="no"],[data-i18n-skip],#recovery-person option[value]:not([value=""]),#profile-select option,.cluelist button,.paper-clues p,.clue-head span,[data-action="finder-use"],.welcome-board .sample,#play-board .cell,.mini-board,#play-hint-text,#play-example ul,.wado-cell,.wado-word-list,.wado-hint-current,.wado-hint-option';
+  const protectedContent='script,style,[translate="no"],[data-i18n-skip],#recovery-person option[value]:not([value=""]),#profile-select option,.cluelist button,.paper-clues p,.clue-head span,[data-action="finder-use"],.welcome-board .sample,#play-board .cell,.mini-board,#play-hint-text,#play-example ul,.wp-sheet,.wado-cell,.wado-word-list,.wado-hint-current,.wado-hint-option';
   const skip=protectedContent+',textarea,[contenteditable="true"]';
   const attributes=['placeholder','aria-label','aria-description','title','alt','data-tooltip'];
   // A small reviewed set of sentences spans emphasis nodes. Translate the whole

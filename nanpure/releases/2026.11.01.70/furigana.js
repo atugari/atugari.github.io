@@ -4,7 +4,7 @@
  try{enabled=localStorage.getItem(key)==='on'}catch{}
  const keys=Object.keys(readings).sort((a,b)=>b.length-a.length);
  const pattern=new RegExp(keys.map(k=>k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|'),'g');
- const skip='script,style,noscript,textarea,input,select,option,svg,canvas,ruby,rt,code,pre,[contenteditable=true],[data-i18n-skip],[translate=no],#np-furigana-toggle,#np-language-bar,#board .cell,#board text,.cluelist button,.paper-clues p,.clue-head span,.welcome-board,#play-board,.mini-board,#play-example ul,#play-hint-text';
+ const skip='script,style,noscript,textarea,input,select,option,svg,canvas,ruby,rt,code,pre,[contenteditable=true],[data-i18n-skip],[translate=no],#np-furigana-toggle,#np-language-bar,.wp-sheet,#board .cell,#board text,.cluelist button,.paper-clues p,.clue-head span,.welcome-board,#play-board,.mini-board,#play-example ul,#play-hint-text';
  try{const hint=new URLSearchParams(location.search).get('ruby');if(hint==='1'||hint==='0')enabled=hint==='1';else if(parent!==window&&parent.NPFurigana)enabled=parent.NPFurigana.getEnabled()}catch{}
  const japanese=()=>/^ja(?:-|$)/i.test(document.documentElement.lang||'ja');
  function clean(){const parents=new Set();document.querySelectorAll('ruby[data-np-ruby]').forEach(el=>{const p=el.parentNode;el.replaceWith(document.createTextNode(el.dataset.npBase));if(p)parents.add(p)});parents.forEach(p=>p.normalize())}

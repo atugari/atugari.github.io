@@ -43,5 +43,5 @@ Object.assign(module.exports,require('./catalog-reading-70.cjs'));
 require('./reading-aliases.cjs')(module.exports);
 require('./wado-reading-70.cjs')(module.exports);
 
-// Preserve distinct vocabulary-level names over generic label aliases.
-for(const key of ['いちばんやさしい','とてもやさしい','日常のことば','少し背伸び','ことばを広げる','手ごたえあり','かなりむずかしい','いちばんむずかしい','文字・ボタンの大きさ'])module.exports[key]=require('./catalog-reading-70.cjs')[key];
+// Explicit native translations take priority over composed label aliases.
+Object.assign(module.exports,require('./catalog-reading-70.cjs'));
