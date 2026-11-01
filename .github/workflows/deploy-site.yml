@@ -80,6 +80,7 @@ jobs:
           node scripts/collection-100k/audit-playable.cjs
           node scripts/check-nanpure-achievements.cjs
           node scripts/check-nanpure-achievements-ui.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
+          node scripts/check-reading-tools.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
           node scripts/check-nanpure-i18n-delta.cjs
           node scripts/check-nanpure-search.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
           python3 scripts/check-nanpure-wado-dictionary.py

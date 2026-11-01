@@ -37,8 +37,8 @@ function wire(w){
    e.preventDefault();e.stopImmediatePropagation();void Promise.resolve(w.appPause?.()).then(()=>{initialized=false;ready()});
   }
  },true);
- function labels(){d.querySelectorAll('[data-action="exit"]').forEach(b=>{if(b.textContent!=='‹ パレあそび')b.textContent='‹ パレあそび'});d.querySelectorAll('a[href]').forEach(a=>{const url=new URL(a.getAttribute('href'),w.location.href);if(url.origin!==location.origin||![base+'index.html','/plaza.html'].includes(url.pathname))return;if(a.getAttribute('href')!=='/plaza.html')a.setAttribute('href','/plaza.html');if(a.textContent!=='‹ パレあそび')a.textContent='‹ パレあそび';if(a.getAttribute('aria-label')!=='パレあそびに戻る')a.setAttribute('aria-label','パレあそびに戻る')});}
- let queued=false;new w.MutationObserver(()=>{if(queued)return;queued=true;w.requestAnimationFrame(()=>{queued=false;labels()})}).observe(d.body,{childList:true,subtree:true});labels();
+ function labels(){const translated=w.NPI18n?.t('‹ パレあそび')||'‹ パレあそび';d.querySelectorAll('[data-action="exit"]').forEach(b=>{b.setAttribute('data-i18n-skip','');if(b.textContent!==translated)b.textContent=translated});d.querySelectorAll('a[href]').forEach(a=>{const url=new URL(a.getAttribute('href'),w.location.href);if(url.origin!==location.origin||![base+'index.html','/plaza.html'].includes(url.pathname))return;a.setAttribute('data-i18n-skip','');if(a.getAttribute('href')!=='/plaza.html')a.setAttribute('href','/plaza.html');if(a.textContent!==translated)a.textContent=translated;if(a.getAttribute('aria-label')!==(w.NPI18n?.t('パレあそびに戻る')||'パレあそびに戻る'))a.setAttribute('aria-label',w.NPI18n?.t('パレあそびに戻る')||'パレあそびに戻る')});}
+ let queued=false;new w.MutationObserver(()=>{if(queued)return;queued=true;w.requestAnimationFrame(()=>{queued=false;labels()})}).observe(d.body,{childList:true,subtree:true});labels();w.addEventListener('np-language-change',labels);window.NPReadingTools?.sync();
  const oldBack=w.appBack;if(oldBack)w.appBack=()=>{
   const screen=w.ShirupureCourse?.getScreen?.()||w.NPTenbin?.getScreen?.()||w.NPCrossword?.getScreen?.();
   if(screen==='home')saveAndGo('/plaza.html');else oldBack();

@@ -26,7 +26,7 @@
  function example(){
   $('play-center').textContent=state.revealed?current.answer:'？';$('play-board').classList.toggle('revealed',state.revealed);
   $('play-board').setAttribute('aria-label',engine.positions.filter(k=>current.arms[k]).map(k=>labels[k]+'：'+current.arms[k]).join('、')+'。中央：'+(state.revealed?current.answer:'空欄。同じ漢字を入れます'));
-  $('play-example').innerHTML='<h2>解答例：'+esc(current.answer)+'</h2><ul>'+engine.positions.filter(k=>current.arms[k]).map(k=>'<li>'+(['top','left'].includes(k)?esc(current.arms[k])+'<b>'+esc(current.answer)+'</b>':'<b>'+esc(current.answer)+'</b>'+esc(current.arms[k]))+'</li>').join('')+'</ul><p class="help">別の漢字でも、すべての熟語が成り立つ場合があります。</p>';
+  $('play-example').innerHTML='<h2><span>解答例</span>：<span data-i18n-skip>'+esc(current.answer)+'</span></h2><ul>'+engine.positions.filter(k=>current.arms[k]).map(k=>'<li>'+(['top','left'].includes(k)?esc(current.arms[k])+'<b>'+esc(current.answer)+'</b>':'<b>'+esc(current.answer)+'</b>'+esc(current.arms[k]))+'</li>').join('')+'</ul><p class="help">別の漢字でも、すべての熟語が成り立つ場合があります。</p>';
   $('play-example').hidden=!state.revealed;$('play-reveal').textContent=state.revealed?'答えを隠す':'答えを見る';$('play-reveal').setAttribute('aria-expanded',String(state.revealed));$('play-direction').textContent=state.revealed?'答えの一例を表示しています。':'矢印の向きに、2文字の言葉。';
  }
  function open(p){stop();error('');current=p;w.NPAchievementHooks?.wadoView(p);const data=read(),saved=playData(data).states[engine.fingerprint(p)];state={...fresh(),revealed:!!saved?.revealed,hint:!!saved?.hint,grade:saved?.grade||1,hintIndex:saved?.hintIndex||0};if(![1,2,3].includes(state.grade))state.grade=1;if(!Number.isInteger(state.hintIndex)||state.hintIndex<0)state.hintIndex=0;
