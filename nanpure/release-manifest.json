@@ -1,13 +1,13 @@
 {
   "version": "2026.11.01.72",
   "sourceCommit": "1222640c9a34beb3f57d065e7504b11bcae1e994",
-  "clientOverridesSha256": "6d84acf741c2e3a6cdbdcdcbd1340911856e9ffb78679d1b68851b26aa194bb1",
+  "clientOverridesSha256": "47ce4aab588403ad72e1cba4c29b604f9c20261f988aba68289f4b8b69aa50c9",
   "base": "/nanpure/releases/2026.11.01.72/",
   "online": "https://puzzle-api.puzzle-hub-4826.workers.dev",
   "files": {
     "nanpure/index.html": "03bf4ddceb0c7e295a679b52bf6eb05575ad432d78fbe826b9a485361fcdf21f",
     "nanpure.html": "396a2c1d26e062b39ecef7cbb3ab3bd4c3d96dbbccc985752bc1087f1774967b",
-    "nanpure/version.json": "42e57166fbdbde2d5a545a08e9ce80f0cec0a0d16a02954d7f0d4208551afc0e",
+    "nanpure/version.json": "db76682db7b0c5841e6c57f3b869a4f7941549a55a006d67cc73e3d11cc6ab5b",
     "nanpure/releases.json": "7258d02b6e01a690374bf359c308cfdb7e023d037bd1ca0bd8e522f42de7652a",
     "nanpure/guide/index.html": "53ecc04bb0c8c4e22a7a6ebbdbcd2d90ff4e5c798d35832301cde2eeeb73c42d",
     "nanpure/sudoku-types/index.html": "289a15ead5d6bf9375c9cad2a57fab71b28087a89843dcfac55cde4182075db2",
@@ -1379,7 +1379,7 @@
     "nanpure/releases/2026.11.01.72/notebook/pako-LICENSE.txt": "b3c1f8b11310775ffdf1c9218e3da258d0eb891917f830b8d4a57d5f21991ab8",
     "nanpure/releases/2026.11.01.72/notebook/pako.min.js": "29cfa0542b9864b6640cfdcc8f15b184db6431b532db2702a3ce97e5f2a7fc1c",
     "nanpure/releases/2026.11.01.72/notebook/path-samples.js": "84e05567c5544dda0832f86931f46de43ec72baef5891aa97f61c22040163bc2",
-    "nanpure/releases/2026.11.01.72/notebook/pattern-model.js": "14f69de50b335a64cfdedfc575d0b05b57f760a80e1928aa52e767c8efb95b34",
+    "nanpure/releases/2026.11.01.72/notebook/pattern-model.js": "1f04c0245e5c048c95366f5322dda8640c409488106c101971fd8377b6b8187f",
     "nanpure/releases/2026.11.01.72/notebook/pattern-ui.js": "faa2d05e89eb7c906c3e304cda131134e23d98a237340d41339638fffa18697b",
     "nanpure/releases/2026.11.01.72/notebook/pattern.css": "a7c89d99edb444d48dcf21a8f33f921b98d794c3ba147716cc3aac3d3668cf1e",
     "nanpure/releases/2026.11.01.72/notebook/play-options.js": "a669f619cd2df74b25ff21d258268b99da07d006591d5a708936032ee0e748b8",
@@ -1502,12 +1502,12 @@
   },
   "patternSudoku": {
     "sources": {
-      "scripts/client-overrides/public/notebook/pattern-model.js": "14f69de50b335a64cfdedfc575d0b05b57f760a80e1928aa52e767c8efb95b34",
+      "scripts/client-overrides/public/notebook/pattern-model.js": "1f04c0245e5c048c95366f5322dda8640c409488106c101971fd8377b6b8187f",
       "scripts/client-overrides/public/notebook/pattern-ui.js": "faa2d05e89eb7c906c3e304cda131134e23d98a237340d41339638fffa18697b",
       "scripts/client-overrides/public/notebook/pattern.css": "a7c89d99edb444d48dcf21a8f33f921b98d794c3ba147716cc3aac3d3668cf1e",
       "scripts/client-overrides/public/notebook/app.js": "09e58609f6a820efe66652a0aab0ac51019cc509d9736607444cde1fb496e9a2",
       "scripts/client-overrides/public/notebook/common.js": "fee5b3b99abb8c0009522d8b6796e8544b59ceab205a961493420825f2eb38d2",
-      "scripts/check-nanpure-pattern.cjs": "3ea8a387bc05429a60ac7c7ef923244c55f365adee45844736a4dad5a7572f83",
+      "scripts/check-nanpure-pattern.cjs": "d31ea8e49c32d2b6cc9ab76db9898dbbc98c2363fb0716ac5e5f8c76481cd6f6",
       "scripts/check-nanpure-pattern-browser.cjs": "f72f9cc1d2e1c34ace380c39a4b69d41beec11ecae6e5abb077964f057077c96",
       "scripts/prepare-pattern-release.mjs": "ad1117f37b655d315413ff6c5d6e1ed9deee945ddb4bb2e57ca171ba96508d84"
     }

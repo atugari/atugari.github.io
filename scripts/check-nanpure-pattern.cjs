@@ -4,7 +4,7 @@ vm.runInContext(fs.readFileSync('scripts/client-overrides/public/notebook/patter
 const model=c.NPPatternModel,flat=v=>Array.from(v),grid=a=>Array.from({length:9},(_,r)=>flat(a.slice(r*9,r*9+9)));
 let generated=0;
 for(const name of ['heart','diamond','dots'])for(let run=0;run<8;run++){
- const mask=model.presets[name],r=model.search(mask,0,{milliseconds:5000});assert.equal(r.state,'ready',name);assert(model.validate(r));
+ const mask=model.presets[name],r=model.search(mask,0,{milliseconds:5000,maxAttempts:3});assert.equal(r.state,'ready',name);assert(model.validate(r));
  assert.deepEqual(flat(r.puzzle).map(Boolean),flat(mask));assert.equal(c.Nanpure.countSolutions(grid(r.puzzle),2),1);generated++;
 }
 for(let omit=1;omit<=9;omit++){

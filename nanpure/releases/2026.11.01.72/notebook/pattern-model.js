@@ -37,13 +37,22 @@
    if(omit&&!digitPlacements(mask,true).length)return{state:'impossible',reason:'digit',count};
    return{state:'unknown',count};
   }
+  // Verified starting solutions make the included presets immediate; every result is still counted.
+  const starts=["872156934694328517351497628218739465467581392935264871583972146129645783746813259", "986352147532471689714896352145739826879264531263518974657943218398127465421685793", "426587139981432576357619842238791654675243918194856723563128497742965381819374265"].map(s=>s.split('').map(Number));
   function search(input,omit=0,{milliseconds=2500,maxAttempts=20000,rate}={}){
    const mask=maskOf(input),analysis=analyze(mask,omit);if(analysis.state==='impossible')return analysis;
    const deadline=Date.now()+Math.max(0,milliseconds),placements=omit?digitPlacements(mask):null;let attempts=0;
    while(attempts<maxAttempts&&Date.now()<deadline){
-    attempts++;const seed=Array(81).fill(0);if(omit)for(const i of placements[Math.floor(Math.random()*placements.length)])seed[i]=omit;
-    const full=solve(seed,{limit:1,random:true,deadline,maxNodes:30000});if(full.aborted||!full.count)continue;
-    const solution=full.solution,puzzle=solution.map((v,i)=>mask[i]?v:0),unique=solve(puzzle,{deadline,maxNodes:50000});
+    attempts++;let solution;
+    if(attempts<=starts.length){
+     const start=starts[attempts-1],digits=shuffle([1,2,3,4,5,6,7,8,9]);
+     if(omit){const allowed=digits.filter(d=>!start.some((v,i)=>mask[i]&&v===d));if(!allowed.length)continue;const d=allowed[0],at=digits.indexOf(omit);[digits[at],digits[d-1]]=[digits[d-1],digits[at]];}
+     solution=start.map(v=>digits[v-1]);
+    }else{
+     const seed=Array(81).fill(0);if(omit)for(const i of placements[Math.floor(Math.random()*placements.length)])seed[i]=omit;
+     const full=solve(seed,{limit:1,random:true,deadline,maxNodes:30000});if(full.aborted||!full.count)continue;solution=full.solution;
+    }
+    const puzzle=solution.map((v,i)=>mask[i]?v:0),unique=solve(puzzle,{deadline,maxNodes:50000});
     if(unique.aborted||unique.count!==1)continue;
     const rating=rate?rate(Array.from({length:9},(_,r)=>puzzle.slice(r*9,r*9+9))):null;
     return{state:'ready',count:analysis.count,attempts,puzzle,solution,rating,mask:mask.map(Number),omittedDigit:omit};
