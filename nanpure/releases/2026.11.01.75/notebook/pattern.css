@@ -13,3 +13,5 @@ html.np-pattern-page-open{overflow-y:scroll;scrollbar-gutter:stable}.pattern-lau
 @media(max-width:759px){.np-pattern-page .pattern-view-switch button{min-height:80px}.pattern-board-meta{height:96px;align-content:center}}
 @media(max-width:360px){.np-pattern-page .pattern-header{min-height:118px}}
 @media(max-width:360px){.np-pattern-page .pattern-view-switch button{min-height:96px}}
+
+.np-pattern-page [hidden]{display:none!important}.pattern-pan-controls{display:grid;grid-template-columns:48px 1fr 48px;gap:8px;align-items:center;margin-top:8px;font-size:16px;text-align:center}.pattern-pan-controls button{padding:6px;font-size:24px}

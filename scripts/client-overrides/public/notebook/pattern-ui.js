@@ -6,14 +6,15 @@
  function persist(){try{localStorage.setItem(key,JSON.stringify({mask:mask.map(Number),omit,symmetry}));}catch(_){$('[data-pattern-warning]').textContent='模様を端末に記憶できませんでした。この画面では続けて編集できます。';}}
  function stop(){revision++;clearTimeout(timer);timer=null;if(worker){worker.terminate();worker=null;}result=null;}
  function sizeBoard(){
-  if(!page)return;const width=window.innerWidth,height=window.innerHeight,minimum=width>=980?600:width>=760?540:330;
-  const available=width>=1500?width-640:width>=980?width-370:width-32;
-  const base=Math.max(minimum,Math.min(900,available,width<760?width-24:height-280));
+  if(!page)return;const width=window.innerWidth,usable=document.documentElement.clientWidth,height=window.innerHeight,minimum=width>=980?600:width>=760?540:330;
+  const available=width>=1500?usable-640:width>=980?usable-370:usable-32;
+  const base=Math.max(minimum,Math.min(900,available,width<760?usable-24:height-280));
   const size=Math.min(1080,Math.max(minimum,Math.round(base+sizeStep*90)));
   page.style.setProperty('--pattern-board-size',size+'px');
   $('[data-pattern-size-label]').textContent=size+' × '+size;
-  $('[data-pattern-size="smaller"]').disabled=size<=minimum||saving;
+  $('[data-pattern-size="smaller"]').disabled=size<=minimum||saving;updatePan();
  }
+ function updatePan(){if(!page)return;const scroller=$('.pattern-board-scroll'),box=$('[data-pattern-pan-controls]'),maximum=scroller.scrollWidth-scroller.clientWidth;box.hidden=maximum<1;$('[data-pattern-pan="left"]').disabled=saving||scroller.scrollLeft<1;$('[data-pattern-pan="right"]').disabled=saving||scroller.scrollLeft>=maximum-1;}
  function showCanvas(){const r=$('.pattern-grid').getBoundingClientRect();if(r.bottom<=0||r.top>=window.innerHeight)$('.pattern-canvas').scrollIntoView({block:'start'});}
  function status(state,message){if(!page)return;const el=$('[data-pattern-status]');el.dataset.state=state;el.textContent=message;const indicator=$('[data-pattern-indicator]');indicator.dataset.state=state;indicator.textContent=({ready:'作成OK',checking:'確認中…',impossible:'作れません',unknown:'未確認',error:'確認エラー'})[state]||'';$('[data-pattern-save]').disabled=state!=='ready'||saving;$('[data-pattern-view="preview"]').disabled=state!=='ready'||saving;$('[data-pattern-retry]').hidden=!['unknown','error','ready'].includes(state);}
  function showAdvice(data){
@@ -81,6 +82,7 @@
      <div class="pattern-board-meta"><span data-pattern-count></span><strong data-pattern-indicator role="status"></strong><button type="button" class="pattern-presets-link" data-pattern-show-presets>見本を選ぶ</button></div>
      <div class="pattern-board-scroll"><div class="pattern-grid" role="group" aria-label="数字を置くマスを選ぶ">${Array.from({length:81},(_,i)=>'<button type="button" data-pixel="'+i+'" tabindex="'+(i===0?'0':'-1')+'" class="'+(i%9===2||i%9===5?'block-right ':'')+(Math.floor(i/9)===2||Math.floor(i/9)===5?'block-bottom':'')+'"></button>').join('')}</div>
      </div>
+     <div class="pattern-pan-controls" data-pattern-pan-controls hidden><button type="button" data-pattern-pan="left" aria-label="盤面を左に動かす">←</button><span>盤面を横に移動</span><button type="button" data-pattern-pan="right" aria-label="盤面を右に動かす">→</button></div>
      <p class="pattern-footnote" data-pattern-paint-help>タップで塗る・消す。なぞるとまとめて変更できます。<br>キーボード：矢印で移動、Space・Enterで切り替え。</p>
     </section>
    <footer class="pattern-footer"><div class="pattern-check"><p data-pattern-status role="status" aria-live="polite"></p><p data-pattern-advice class="pattern-advice" hidden></p><p data-pattern-rating>難易度は模様に合わせて自動判定します。</p></div><div class="pattern-actions"><button type="button" data-pattern-retry hidden>もう一度調べる</button><button type="button" class="primary" data-pattern-save disabled>3 保存して遊ぶ</button></div></footer>
@@ -100,6 +102,7 @@
   document.documentElement.classList.add('np-pattern-page-open');document.body.classList.add('np-pattern-page-open');container.replaceChildren(page);window.addEventListener('resize',sizeBoard);sizeBoard();
   page.addEventListener('click',async e=>{const el=e.composedPath().find(node=>node?.matches?.('button')&&page.contains(node));if(!el||saving)return;
    if(el.hasAttribute('data-pattern-close'))return backHandler?.();
+   if(el.hasAttribute('data-pattern-pan')){const area=$('.pattern-board-scroll');area.scrollBy({left:(el.dataset.patternPan==='left'?-1:1)*Math.max(100,area.clientWidth*.6),behavior:'auto'});updatePan();return;}
    if(el.hasAttribute('data-pattern-size')){const action=el.dataset.patternSize;sizeStep=action==='reset'?0:action==='larger'?sizeStep+1:sizeStep-1;sizeBoard();return;}
    if(el.hasAttribute('data-pattern-brush')){brush=el.dataset.patternBrush;for(const b of page.querySelectorAll('[data-pattern-brush]'))b.setAttribute('aria-pressed',String(b.dataset.patternBrush===brush));return;}
    if(el.hasAttribute('data-pattern-show-presets')){$('.pattern-starters').scrollIntoView({block:'start'});$('.pattern-starters [data-pattern-preset]').focus({preventScroll:true});return;}
@@ -117,7 +120,7 @@
    }
   });
   page.addEventListener('change',e=>{if(e.target.hasAttribute('data-pattern-omit')){omit=Number(e.target.value);changed();}if(e.target.hasAttribute('data-pattern-symmetry')){symmetry=e.target.value;persist();}});
-  const grid=$('.pattern-grid');grid.addEventListener('pointerdown',e=>{const cell=e.target.closest('[data-pixel]');if(!cell||saving||view==='preview'||e.button!==0)return;e.preventDefault();for(const el of grid.querySelectorAll("[data-pixel]"))el.tabIndex=-1;cell.tabIndex=0;cell.focus();stroke={id:e.pointerId,before:mask.slice(),value:brush==='auto'?!mask[Number(cell.dataset.pixel)]:brush==='paint',last:-1,edited:false};grid.setPointerCapture(e.pointerId);paint(Number(cell.dataset.pixel));});
+  $('.pattern-board-scroll').addEventListener('scroll',updatePan);const grid=$('.pattern-grid');grid.addEventListener('pointerdown',e=>{const cell=e.target.closest('[data-pixel]');if(!cell||saving||view==='preview'||e.button!==0)return;e.preventDefault();for(const el of grid.querySelectorAll("[data-pixel]"))el.tabIndex=-1;cell.tabIndex=0;cell.focus();stroke={id:e.pointerId,before:mask.slice(),value:brush==='auto'?!mask[Number(cell.dataset.pixel)]:brush==='paint',last:-1,edited:false};grid.setPointerCapture(e.pointerId);paint(Number(cell.dataset.pixel));});
   grid.addEventListener('pointermove',e=>{if(stroke&&e.pointerId===stroke.id)paint(cellAt(e.clientX,e.clientY));});grid.addEventListener('pointerup',finish);grid.addEventListener('pointercancel',finish);grid.addEventListener('lostpointercapture',finish);
   grid.addEventListener('keydown',e=>{const cell=e.target.closest('[data-pixel]');if(!cell)return;const i=Number(cell.dataset.pixel),delta={ArrowLeft:-1,ArrowRight:1,ArrowUp:-9,ArrowDown:9}[e.key];if(delta){e.preventDefault();const at=Math.max(0,Math.min(80,i+delta));cell.tabIndex=-1;const next=$('[data-pixel="'+at+'"]');next.tabIndex=0;next.focus();}});
   brush='auto';changed();$('#np-pattern-title').focus({preventScroll:true});
