@@ -48,6 +48,9 @@
  // The shared translator keeps Japanese source text reversible on language changes.
  // Reviewed locale packs take priority over these English fallback additions.
  const labels={
+  '全画面':'Full screen','全画面を終了':'Exit full screen','全画面で表示':'Show full screen','盤面一覧':'Boards','盤面の切り替え':'Switch board',
+  'Escキーでも通常表示に戻れます':'Press Esc to return to normal view','ブラウザ上部も隠して、盤面を大きく表示します':'Hide browser bars and enlarge the board',
+  'Escキーで全画面を終了できます':'Press Esc to exit full screen','ページ内で広く表示しています。ブラウザの全画面はF11キーでも切り替えられます。':'Expanded within this page. You can also use F11 for browser full screen.',
   '数字':'Numbers','上':'Top','左':'Left','文字サイズ':'Text size','同じ数字':'Matching digits','完了':'Done','広く':'Expand','文字':'Text','配色':'Colors','通常':'Normal',
   '盤面と数字の配置':'Board and keypad layout','盤面を広く':'Expand board','通常表示':'Normal view',
   '盤面の拡大':'Board zoom','盤面を縮小する':'Zoom out','盤面を拡大する':'Zoom in','全体':'Fit',
