@@ -46,3 +46,9 @@
  .workspace .live-viewport{width:100%;min-width:0;contain:inline-size}
  .workspace .live-setting-tabs{min-width:0;max-width:100%}
 }
+@media screen{
+ /* Isolate transformed paper overflow from WebKit's root scroll range. */
+ .workspace .live-preview{contain:inline-size layout paint}
+ .workspace .live-viewport{contain:inline-size layout}
+ .workspace[data-workspace-view=print] main.workspace-main{overflow-x:clip}
+}
