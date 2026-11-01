@@ -38,3 +38,11 @@
  @media(max-width:760px){.workspace .live-editor{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto;gap:8px}.workspace .live-preview{grid-column:1;grid-row:1}.workspace .live-settings{grid-row:2}.workspace .live-footer{grid-row:3}.workspace .live-preview-tools{padding:5px 8px}.workspace .live-setting-panel{padding:12px}.workspace .live-setting-tabs{padding:4px}.workspace .live-setting-tabs button{padding:8px;min-height:38px}.workspace .live-status{padding:3px 6px}.workspace .live-preview{border-radius:10px}}
 }
 @media print{.live-editor{display:none!important}}
+/* Keep an enlarged A4 canvas inside its scrollport, including WebKit grids. */
+@media screen{
+ .workspace main.workspace-main,.workspace.wado-page #app{width:100%;min-width:0}
+ .workspace #workspace-print,.workspace .live-editor,.workspace .live-preview{min-width:0;max-width:100%}
+ .workspace .live-preview{width:100%;contain:inline-size}
+ .workspace .live-viewport{width:100%;min-width:0;contain:inline-size}
+ .workspace .live-setting-tabs{min-width:0;max-width:100%}
+}

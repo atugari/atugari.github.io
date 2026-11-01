@@ -15,7 +15,7 @@ const walk=dir=>fs.readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirector
 const hash=value=>crypto.createHash('sha256').update(value).digest('hex');
 fs.cpSync(path.join(root,oldBase),out,{recursive:true});
 for(const file of walk(out).filter(f=>/\.(html|js|css)$/.test(f))){const text=fs.readFileSync(file,'utf8');if(text.includes(oldBase))fs.writeFileSync(file,text.replaceAll(oldBase,base));}
-for(const name of ['board-comfort-model.js','wado-play.html','wado-play.js','wado.html','wado-ui.js']){
+for(const name of ['board-comfort-model.js','wado-play.html','wado-play.js','wado.html','wado-ui.js','wado-live.css']){
  let text=fs.readFileSync(path.join(root,'scripts/client-overrides/public/notebook',name),'utf8');
  text=text.replace(/(["'(])\/(site-theme|ui-text)\.(js|css)/g,(_,q,name,ext)=>q+base+name+'.'+ext);
  fs.writeFileSync(path.join(out,'notebook',name),text);
