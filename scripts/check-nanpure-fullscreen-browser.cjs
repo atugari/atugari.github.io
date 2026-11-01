@@ -24,6 +24,15 @@ async function journey(page,frame,{multi=false,native=true}={}){
  assert(await frame.locator('.np-fullscreen').count());const after=await frame.locator('#board-scroll').boundingBox();
  assert(after.height>before.height+20,'Full screen enlarges the board: '+JSON.stringify({before,after}));
  assert.equal(await frame.evaluate(()=>JSON.stringify({grid:NanpureAppTest.getCurrent().grid,notes:NanpureAppTest.getCurrent().notes})),state,'Entering preserves all input');
+ if(await frame.evaluate(()=>innerWidth>=900)){
+  const position=frame.locator('.np-workspace-tools [data-position]'),original=await position.inputValue();
+  for(const value of ['left','top','bottom','auto']){
+   await position.selectOption(value);await tick(frame);
+   const b=await frame.locator('#board-scroll').boundingBox(),k=await frame.locator('.np-number-panel').boundingBox();
+   assert(value==='left'?k.x+k.width<=b.x+1:value==='top'?k.y+k.height<=b.y+1:value==='bottom'?k.y>=b.y+b.height-1:k.x>=b.x+b.width-1,'Keypad follows its selected fullscreen position: '+value+' '+JSON.stringify({b,k}));
+  }
+  await position.selectOption(original);await tick(frame);
+ }
  const bounds=await frame.locator('.np-number-panel').evaluate(el=>{const r=el.getBoundingClientRect();return{left:r.left,top:r.top,right:r.right,bottom:r.bottom,width:innerWidth,height:innerHeight};});assert(bounds.left>=-1&&bounds.top>=-1&&bounds.right<=bounds.width+1&&bounds.bottom<=bounds.height+1,'Keypad remains on screen');
  if(multi){assert.equal(await frame.locator('.np-workspace-screen>.linked-controls,.np-workspace-screen>.multi-board-legend').count(),0);await frame.locator('[data-fullscreen-boards]').click();assert(await frame.locator('.np-fullscreen-boards').isVisible());await frame.locator('.np-fullscreen-boards [data-action="linked-focus"]').last().click();await frame.locator('.np-fullscreen [data-fullscreen]').waitFor();assert(!await frame.locator('.np-fullscreen-boards').isVisible());}
  const cell=await frame.locator('#board [data-cell]').evaluateAll(els=>els.find(e=>e.getAttribute('aria-label')?.includes('空')&&!e.classList.contains('given'))?.getAttribute('data-cell'));
