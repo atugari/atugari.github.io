@@ -35,6 +35,11 @@ html body.np-fullscreen-playing #app>.np-workspace-screen.np-fullscreen[data-num
  .np-fullscreen>.np-number-panel{max-height:none!important;align-self:stretch!important}
  html body.np-fullscreen-playing #app .np-workspace-actions{grid-template-columns:repeat(2,minmax(0,1fr))!important}
  .np-fullscreen .np-workspace-tools>.play-head button{flex-shrink:0;max-width:100%;font-size:12px!important;padding:4px 6px!important}
+ html body.np-fullscreen-playing #app>.np-workspace-screen.np-fullscreen[data-number-position=left]{grid-template-columns:clamp(200px,19vw,300px) minmax(0,1fr) clamp(144px,12vw,190px)!important;grid-template-areas:"numbers board layout"!important}
+ html body.np-fullscreen-playing #app>.np-workspace-screen.np-fullscreen:is([data-number-position=top],[data-number-position=bottom]){grid-template-columns:clamp(144px,12vw,190px) minmax(0,1fr)!important;grid-template-rows:auto minmax(0,1fr)!important;grid-template-areas:"layout numbers" "layout board"!important}
+ html body.np-fullscreen-playing #app>.np-workspace-screen.np-fullscreen[data-number-position=bottom]{grid-template-rows:minmax(0,1fr) auto!important;grid-template-areas:"layout board" "layout numbers"!important}
+ .np-fullscreen:is([data-number-position=top],[data-number-position=bottom])>.np-number-panel{max-height:45dvh!important}
+ html body.np-fullscreen-playing #app .np-fullscreen:is([data-number-position=top],[data-number-position=bottom]) .np-workspace-actions{grid-template-columns:repeat(4,minmax(0,1fr))!important}
  html body.np-fullscreen-playing #app>.np-workspace-screen.np-fullscreen[data-number-position=float]{grid-template-columns:clamp(144px,12vw,190px) minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr)!important;grid-template-areas:"layout board"!important}
 }
 @media print{.np-fullscreen-message,.np-fullscreen-boards{display:none!important}}
