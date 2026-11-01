@@ -1,13 +1,13 @@
 {
   "version": "2026.11.01.70",
   "sourceCommit": "1222640c9a34beb3f57d065e7504b11bcae1e994",
-  "clientOverridesSha256": "7be5f31b848c29ccdae9ea82b30f9d0af46f0a5ee7d8a70716f3da8d1b6f13b6",
+  "clientOverridesSha256": "20782f7d1699cc8a9eba932ca912f9604f6ec24903a2ad4e969a8f8fe173bdeb",
   "base": "/nanpure/releases/2026.11.01.70/",
   "online": "https://puzzle-api.puzzle-hub-4826.workers.dev",
   "files": {
     "nanpure/index.html": "55749b277eef43f5dd68fd0cb0ad0b43ed15ffda44e4514dafbe2bab03299395",
     "nanpure.html": "396a2c1d26e062b39ecef7cbb3ab3bd4c3d96dbbccc985752bc1087f1774967b",
-    "nanpure/version.json": "82de6aa5dc368afa55d4c2d24c9426e3dc91757d6d720ba7103b17df717a571b",
+    "nanpure/version.json": "facc470b48850b067079ea9a948e99cc69621910144484e034bf9b156ca345ff",
     "nanpure/releases.json": "56c7954841efefca6f325d0b58ff688b76f278eec6ea9f7183b75b47912c054b",
     "nanpure/guide/index.html": "53ecc04bb0c8c4e22a7a6ebbdbcd2d90ff4e5c798d35832301cde2eeeb73c42d",
     "nanpure/sudoku-types/index.html": "289a15ead5d6bf9375c9cad2a57fab71b28087a89843dcfac55cde4182075db2",
@@ -1025,7 +1025,7 @@
     "nanpure/releases/2026.11.01.70/notebook/i18n-data.js": "a349409f7abfaa4709a3cacf6642de9a91d2682d7efa115acd19c68402ff4df4",
     "nanpure/releases/2026.11.01.70/notebook/i18n.js": "a642cf332b5c71c303af19e4b5b72c8f14a121c2d2c3f4be6162db567d98ef4b",
     "nanpure/releases/2026.11.01.70/notebook/icon.png": "c5218ebc2cfb308244ee0ab0f53a3e94ec1d75d2fdae0360b2ff73c92dbc5865",
-    "nanpure/releases/2026.11.01.70/notebook/index.html": "1e8b544014a431f7bb5eac29621567d9926d778331b044063bd13cdf920653d1",
+    "nanpure/releases/2026.11.01.70/notebook/index.html": "a59040b0605cbdcb2296998ab5a3bd640694fb409fddae0e35ec8e1850f4827c",
     "nanpure/releases/2026.11.01.70/notebook/lan-identity.js": "b302a51bf1305fa0d1dc594c90607414edf8aa78fdd82bf25e798a6f31fc67aa",
     "nanpure/releases/2026.11.01.70/notebook/linked.js": "71bf5448f6a753c277be7303d150575da6cbe6e43bee34c135c82d7d866135d4",
     "nanpure/releases/2026.11.01.70/notebook/logical-hints.js": "176f1a097a413bfe9d91feab06d9883df2576f07e4d3b63c76ddd31a0d407b3d",
@@ -1079,8 +1079,8 @@
     "nanpure/releases/2026.11.01.70/notebook/wado-licenses.txt": "00c04c2fa7085fca47a97ed943670ecf70bc7cd88584e1dae4b2701b276cc8e3",
     "nanpure/releases/2026.11.01.70/notebook/wado-live.css": "142232cacbcc49f217f15ab5066c6eb88cb2c401eadc4a239a4db1313d5e9a83",
     "nanpure/releases/2026.11.01.70/notebook/wado-live.js": "aedf354be1c9beaeba751c0a29c382ea3259181e98526d307072d1a925f0be27",
-    "nanpure/releases/2026.11.01.70/notebook/wado-paper.css": "bc2c2d04d4decb7ffb2d04d5193fc72e1f94c85dc682f0026144e38da1512398",
-    "nanpure/releases/2026.11.01.70/notebook/wado-paper.js": "cd5b6d74cf4f94087e01ee96b44e2d4afb940ba358888a191e1e45add17a8f34",
+    "nanpure/releases/2026.11.01.70/notebook/wado-paper.css": "1a1b35c3aa34ed50ecba2a484dc9f68c71775dcf061b5c54ece443f165799cf6",
+    "nanpure/releases/2026.11.01.70/notebook/wado-paper.js": "c8fdaaeeaf3c1ad098e1f86f1df241bc028b4256d3d1977d6d4936bf33fe3fd6",
     "nanpure/releases/2026.11.01.70/notebook/wado-play.css": "950473c988db3fc8360da6370e4e896a12314a0904f1234e253863294d6c85ac",
     "nanpure/releases/2026.11.01.70/notebook/wado-play.html": "a32b5a526562c1b34aef579f347188a453227242616cad3e3550a5dfdbf76c9d",
     "nanpure/releases/2026.11.01.70/notebook/wado-play.js": "f422b2fcbc2bf696e23b80ab6bb3502e0ae623a5aa1db124027827c347642969",
@@ -1135,7 +1135,7 @@
       "nanpure/collection/board-input.js": "92acb148272145a2aa202d44ce7093004a70ee30de8d11adc44e19ab31de56c4",
       "nanpure/collection/player.html": "3a1ba271dc0565de41b8e2b25bd90b00ef74f9baee6cb8c160ea56e006b6189a",
       "scripts/prepare-pareasobi-move.mjs": "3d7f983715b77fb53ee22e4cb944d39f8abcf9dd0f1ac0a518408aa6426a2961",
-      "scripts/export-nanpure.mjs": "5fdb955c597ed7733f02658936f0a59e7e90e32e29c426c09c7118f703f01327",
+      "scripts/export-nanpure.mjs": "031ecc45d54a839f2d7d1b5246c24c0e6a893b9431bb1eadec90a325bef43e72",
       "scripts/client-overrides/public/notebook/board-input.js": "92acb148272145a2aa202d44ce7093004a70ee30de8d11adc44e19ab31de56c4",
       "scripts/client-overrides/app/game.tsx": "581397c06f3a10073ca4cf1956f48249c3a00c9c037739f3934ae371c7c1e908",
       "scripts/client-overrides/app/site-intro.tsx": "f34000e273a92612d7629fd0a413f6004fdc1053844497b9652a384ba2bc87d0",
@@ -1150,7 +1150,7 @@
       "scripts/i18n/runtime.js": "a642cf332b5c71c303af19e4b5b72c8f14a121c2d2c3f4be6162db567d98ef4b",
       "scripts/furigana.js": "e25d4accef69d427d9283437b95363d574a3dc1c823e75031519d3936ec23b9f",
       "nanpure/assets/reading-tools.js": "d7c2fa6870309c85dad351d428ea644f36074a0082adcbceb28da3454c256560",
-      "scripts/prepare-reading-release.mjs": "0972d912de6c76a3c2381b3b9fcc1a92b1bbbdc74249d3698bf4d36880c636eb"
+      "scripts/prepare-reading-release.mjs": "48cd2665708ca44ed09b34c5b3c999dca2bb30a83e361e6890b7ae6f035506d9"
     }
   }
 }

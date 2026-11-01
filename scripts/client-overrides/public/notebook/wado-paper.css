@@ -38,3 +38,5 @@
 :is(#paper,#wado-print-root,#live-stage,.wp-measure) .wp-paired-answer{border-top:.2mm dashed #888;padding-top:2mm;margin-top:1mm;font-size:calc(11pt * var(--wp-text-scale,1));line-height:1.5}
 :is(#paper,#wado-print-root,#live-stage,.wp-measure) .wp-answer-value{font-size:inherit;line-height:1.5}
 :is(#paper,#wado-print-root,#live-stage,.wp-measure) .wp-answer-value strong{font-size:1.25em;font-weight:600}
+
+.wp-id{display:inline-block;white-space:nowrap;overflow-wrap:normal;word-break:normal}
