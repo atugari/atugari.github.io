@@ -17,7 +17,7 @@
   let pages=[],columns=kind==='hints'?1:0;
   const stageFor=x=>[0,1,2,3].includes(x.p.printHintStage)?x.p.printHintStage:p.hint,hasHints=items.some(x=>stageFor(x)>0);
   const grades=kind==='hints'?[1,2,3]:[0],gradeLabels=['なし','大まか','詳しい','より詳しい'];
-  function page(stage){const el=doc.createElement('section');el.className='sheet wado-sheet wp-sheet';el.dataset.kind=kind;if(stage)el.dataset.stage=stage;
+  function page(stage){const el=doc.createElement('section');el.className='sheet wado-sheet wp-sheet';el.lang='ja';el.setAttribute('translate','no');el.dataset.kind=kind;if(stage)el.dataset.stage=stage;
    const title=kind==='answers'?'解答例':kind==='hints'?'ヒント · '+gradeLabels[stage]:combined?'問題と解答例':'問題';
    const help=kind==='questions'?'矢印の向きに読んで、2文字の熟語を作りましょう。':kind==='answers'||combined?'掲載しているのは解答例です。他の言葉が成り立つ場合もあります。':'手がかりの具体性による難しさの目安です。感じ方には個人差があります。';
    if(p.showHeading||(kind==='questions'||combined)&&p.showNameDate){const head=doc.createElement('header');head.className='wp-head';head.innerHTML=(p.showHeading?'<div><h1>漢字穴埋め '+title+'</h1><p>'+help+'</p></div>':'')+((kind==='questions'||combined)&&p.showNameDate?'<div class="wp-person">お名前 __________________<br>日付 ______月______日</div>':'');el.append(head);}
@@ -29,11 +29,11 @@
    if(p.showFooter){const foot=doc.createElement('footer');foot.className='wp-foot';foot.innerHTML='<span>'+escape(edition)+'</span><span class="wp-page-number">000 / 000</span>';el.append(foot);}
    measure.append(el);pages.push(el);return{el,grid,tails,rows:0};
   }
-  function compactAnswer(x){return'<div class="wp-answer-value">解答例：<strong>'+escape(x.p.answer)+'</strong></div><div class="wp-answers">'+words(x)+'</div>';}
+  function compactAnswer(x){return'<div class="wp-answer-value">解答例：<strong data-i18n-skip>'+escape(x.p.answer)+'</strong></div><div class="wp-answers">'+words(x)+'</div>';}
   function item(x,stage){const el=doc.createElement('article');el.className='sheet-item wado-question wp-item';
    el.dataset.number=x.number;el.dataset.hintStage=kind==='hints'?stage:stageFor(x);
    const labels=[p.showNumber||combined?'問題 '+x.number:'',p.showDifficulty?'難しさ '+x.p.level+' / '+x.p.count+'語':'',p.showId?paperId(x.p):''].filter(Boolean);
-   el.innerHTML=(labels.length?'<div class="wp-item-label">'+labels.map(escape).join(' · ')+'</div>':'')+(kind==='hints'?hint(x,stage,true):board(x,kind==='answers')+(kind==='answers'?'<div class="wp-answers">'+words(x)+'</div>':kind==='cut'&&p.separateHints?'':hint(x,stageFor(x),false)))+(kind==='together'?'<section class="wp-paired-answer">'+compactAnswer(x)+'</section>':'');
+   el.innerHTML=(labels.length?'<div class="wp-item-label">'+labels.map((label,i)=>p.showId&&i===labels.length-1?'<span class="wp-id" data-i18n-skip>'+escape(label)+'</span>':escape(label)).join(' · ')+'</div>':'')+(kind==='hints'?hint(x,stage,true):board(x,kind==='answers')+(kind==='answers'?'<div class="wp-answers">'+words(x)+'</div>':kind==='cut'&&p.separateHints?'':hint(x,stageFor(x),false)))+(kind==='together'?'<section class="wp-paired-answer">'+compactAnswer(x)+'</section>':'');
    return el;
   }
   function addRow(page,rowItems,stage){const nodes=rowItems.map(x=>item(x,stage));for(const n of nodes)page.grid.append(n);

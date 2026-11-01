@@ -1,7 +1,16 @@
 {
-  "version": "2026.11.01.69",
-  "announcementVersion": "2026.11.01.69",
+  "version": "2026.11.01.70",
+  "announcementVersion": "2026.11.01.70",
   "releases": [
+    {
+      "version": "2026.11.01.70",
+      "kind": "improvement",
+      "date": "2026-11-01",
+      "title": "翻訳とふりがなの対応を広げました。",
+      "items": [
+        "翻訳とふりがなの対応を広げました。"
+      ]
+    },
     {
       "version": "2026.11.01.69",
       "date": "2026-11-01",

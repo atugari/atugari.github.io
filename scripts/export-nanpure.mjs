@@ -71,6 +71,7 @@ try {
  fs.rmSync(path.join(output,'notebook/wado-web.js'),{force:true});
  fs.writeFileSync(path.join(output,'keyboard-access.js'),['key-bindings.js','keyboard-access.js'].map(name=>fs.readFileSync(path.join(overrides,'public',name),'utf8')).join('\n'));
  await esbuild.build({entryPoints:[path.join(overrides,'lib/board-appearance.ts')],outfile:path.join(output,'notebook/board-appearance.js'),bundle:true,format:'iife',globalName:'NPBoardAppearance',target:['es2022'],minify:true,logLevel:'warning'});
+ fs.copyFileSync(path.join(repo,'scripts/furigana.js'),path.join(output,'furigana.js'));
  fs.copyFileSync(path.join(repo,'scripts/i18n/runtime.js'),path.join(output,'notebook/i18n.js'));
  buildTranslationAssets(path.join(output,'notebook'),version,{previousDirectory:path.join(repo,'nanpure/releases/2026.10.23.43/notebook')});
  patchNotebook(path.join(output,'notebook'));
@@ -92,6 +93,9 @@ try {
  // Do not block their directory in robots.txt: crawlers still need the scripts and styles.
  for(const file of walk(path.join(output,'notebook')).filter(file=>file.endsWith('.html'))){
   let text=fs.readFileSync(file,'utf8');
+  if(!text.includes('src="i18n.js"'))text=text.replace('</head>','<script src="i18n-data.js"></script><script src="i18n.js"></script></head>');
+  if(!text.includes('furigana.js'))text=text.replace('</body>','<script defer src="'+base+'furigana.js"></script></body>');
+  text=text.replace('</head>','<script>if(parent!==window)document.documentElement.dataset.embedded="true";</script><style>html[data-embedded="true"] #np-language-bar{display:none!important}</style></head>');
   if(!/<meta[^>]+name=["']robots["']/i.test(text))text=text.replace(/<head([^>]*)>/i,'<head$1><meta name="robots" content="noindex, follow">');
   text=text.replace('</head>',`<script defer src="${base}keyboard-access.js"></script>`+["achievements-core.js","achievements-catalog.js","achievements.js","achievements-hooks.js"].map(n=>`<script defer src="${base+n}"></script>`).join("")+"</head>");
   if(text.includes('access-tools.js'))text=text.replace('<script src="access-tools.js"></script>','<script src="board-appearance.js"></script><script src="access-tools.js"></script><script src="appearance-controls.js"></script>');

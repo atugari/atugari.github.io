@@ -151,12 +151,14 @@
     const qualified=key.match(/^(.+?)([（(][^（）()]+[）)])$/u);
     if(qualified){const qualifier=translatedExact(qualified[2],locale);if(qualifier)return translate(qualified[1],locale,params,depth+1)+(locale.startsWith('zh')?'':' ')+qualifier}
     // Decorative arrows, bullets and brackets do not change a label's meaning.
+    const stepLabel=key.match(/^([①②③④⑤⑥⑦⑧⑨⑩])\s*(.+)$/u);
+    if(stepLabel){const label=translate(stepLabel[2],locale,params,depth+1);if(label!==stepLabel[2])return stepLabel[1]+' '+label}
     const decorated=key.match(/^([‹›←→↗★☆○●✓✔☑☰♫⚙︎\s]+)(.*?)([×↗›\s]*)$/u);
     if(decorated) {
       const center=translate(decorated[2],locale,params,depth+1);
       if(center!==decorated[2]) return decorated[1].trim()+' '+center+(decorated[3].trim()?' '+decorated[3].trim():'');
     }
-    const trailing=key.match(/^(.*?)\s+([×↗›])$/u);
+    const trailing=key.match(/^(.*?)\s+([×↗›→＋])$/u);
     if(trailing) {const body=translate(trailing[1],locale,params,depth+1);if(body!==trailing[1])return body+' '+trailing[2]}
     // Existing HTML often splits a sentence into complete sentences or labels.
     // Translate only complete known segments, never arbitrary Japanese tokens.
@@ -165,7 +167,7 @@
       const values=sentences.map(part=>translate(part,locale,params,depth+1));
       if(values.every((part,index)=>part!==sentences[index]||!japanese.test(part)))return values.join(' ');
     }
-    for(const separator of [/\s+[·・|｜]\s+/u,/\n+/u]) {
+    for(const separator of [/(?:\s+[·・|]\s+|｜)/u,/\n+/u]) {
       const parts=raw.split(separator);
       if(parts.length>1) {
         const values=parts.map(part=>translate(part,locale,params,depth+1));
@@ -177,7 +179,7 @@
   }
 
   // These are puzzle answers or text written by a player, not application copy.
-  const protectedContent='script,style,[translate="no"],[data-i18n-skip],#recovery-person option[value]:not([value=""]),#profile-select option,.cluelist button,.paper-clues p,.clue-head span,[data-action="finder-use"]';
+  const protectedContent='script,style,[translate="no"],[data-i18n-skip],#recovery-person option[value]:not([value=""]),#profile-select option,.cluelist button,.paper-clues p,.clue-head span,[data-action="finder-use"],.welcome-board .sample,#play-board .cell,.mini-board,#play-hint-text,#play-example ul,.wp-sheet,.wado-cell,.wado-word-list,.wado-hint-current,.wado-hint-option';
   const skip=protectedContent+',textarea,[contenteditable="true"]';
   const attributes=['placeholder','aria-label','aria-description','title','alt','data-tooltip'];
   // A small reviewed set of sentences spans emphasis nodes. Translate the whole

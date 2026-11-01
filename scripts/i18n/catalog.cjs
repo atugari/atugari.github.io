@@ -39,3 +39,9 @@ Object.assign(module.exports,require('./catalog-cloud-retirement-58.cjs'));
 
 Object.assign(module.exports,require('./catalog-cloud-notice-59.cjs'));
 Object.assign(module.exports,require('./catalog-ofuse-membership-61.cjs'));
+Object.assign(module.exports,require('./catalog-reading-70.cjs'));
+require('./reading-aliases.cjs')(module.exports);
+require('./wado-reading-70.cjs')(module.exports);
+
+// Explicit native translations take priority over composed label aliases.
+Object.assign(module.exports,require('./catalog-reading-70.cjs'));
