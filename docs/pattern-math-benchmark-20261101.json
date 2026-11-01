@@ -1,0 +1,12 @@
+{
+  "cases": 121,
+  "previous": {
+    "milliseconds": 102,
+    "nodes": 19362
+  },
+  "exactCover": {
+    "milliseconds": 23,
+    "nodes": 7705
+  },
+  "note": "One local run; timings depend on the machine. Counts agree with two independent implementations."
+}
