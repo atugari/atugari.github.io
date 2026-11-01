@@ -3,6 +3,51 @@
  const model=window.NPPatternModel,key='nanpure-pattern-draft-v1',viewKey='nanpure-pattern-workspace-v1';let page=null,worker=null,timer=null,revision=0,result=null,mask=[],omit=0,brush='auto',view='paint',symmetry="none",adviceCells=new Set(),history=[],future=[],stroke=null,saveHandler=null,backHandler=null,savedHandler=null,saving=false,sizeStep=0,workspace='fit',panel='tools';
  const reasons={few:'作れません：初期数字は17マス以上必要です。',full:'空きマスを1つ以上残してください。',rows:'作れません：同じ3行の帯に、数字のない行が2本あるため答えが1つに定まりません。',cols:'作れません：同じ3列の帯に、数字のない列が2本あるため答えが1つに定まりません。',digit:'作れません：白いマスだけでは、抜く数字を各行・列・3×3の枠に1つずつ置けません。'};
  const $=selector=>page.querySelector(selector);
+ let workspaceMoves=[],toolArea='draw',rightArea='footer',mobileArea='draw',statusMessage='',adviceMessage='',guideText='',infoIndex={advice:0,guide:0},digitWasOpen=false;
+ function hostLayout(enabled){try{const frame=window.frameElement;if(!frame?.classList.contains('notebook'))return;const doc=frame.ownerDocument;if(enabled&&!doc.getElementById('np-pattern-host-style')){const style=doc.createElement('style');style.id='np-pattern-host-style';style.textContent='body.np-pattern-host{overflow:hidden!important}iframe.notebook.np-pattern-host-frame{position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;min-height:0!important;max-height:none!important;max-width:none!important;border:0!important;margin:0!important;padding:0!important;z-index:2147482000!important;display:block!important}';doc.head.append(style);}frame.classList.toggle('np-pattern-host-frame',enabled);doc.body.classList.toggle('np-pattern-host',enabled);}catch(_){}}
+ function leaveHost(){hostLayout(false);}
+ function moveForWorkspace(el,target){const anchor=document.createComment('pattern-original-position');el.before(anchor);workspaceMoves.push({el,anchor});target.append(el);}
+ function arrangeWorkspace(docked){
+  if(docked&&!workspaceMoves.length){digitWasOpen=$('.pattern-digit-options').open;$('.pattern-digit-options').open=true;
+   const left=$('.pattern-side-left'),right=$('.pattern-side-right');
+   for(const selector of ['.pattern-header','.pattern-view-switch','.pattern-tools'])moveForWorkspace($(selector),left);
+   moveForWorkspace($('.pattern-board-meta'),$('.pattern-header'));
+   for(const selector of ['.pattern-footer','.pattern-settings'])moveForWorkspace($(selector),right);
+  }else if(!docked&&workspaceMoves.length){$('.pattern-digit-options').open=digitWasOpen||omit>0;for(const {el,anchor} of workspaceMoves.reverse()){anchor.replaceWith(el);}workspaceMoves=[];}
+ }
+ function setArea(side,value){
+  if(side==='tool')toolArea=value;else if(side==='right')rightArea=value;else{mobileArea=value;if(['draw','transform','size'].includes(value))toolArea=value;else rightArea=value;}
+  page.dataset.toolArea=toolArea;page.dataset.rightArea=rightArea;page.dataset.mobileArea=mobileArea;
+  $('[data-pattern-tool-select]').value=toolArea;$('[data-pattern-right-select]').value=rightArea;$('[data-pattern-area-select]').value=mobileArea;
+  renderInfo('advice');renderInfo('guide');
+ }
+ function renderInfo(kind){
+  if(!page||!$('.pattern-info-'+kind))return;const box=$('.pattern-info-'+kind),text=box.querySelector('[data-pattern-info-text]');
+  const source=(kind==='guide'?guideText:(statusMessage+' '+adviceMessage+' '+$('[data-pattern-warning]').textContent)).replace(/\s+/g,' ').trim();
+  const width=text.clientWidth||240,height=text.clientHeight||64,capacity=Math.max(16,Math.floor(width/18)*Math.max(1,Math.floor(height/34)));
+  const chars=Array.from(source),pages=[];for(let i=0;i<chars.length;i+=capacity)pages.push(chars.slice(i,i+capacity).join(''));if(!pages.length)pages.push('模様を塗ると、自動で作成できるか確認します。');
+  const count=pages.length+(kind==='guide'?1:0);infoIndex[kind]=Math.min(infoIndex[kind],count-1);
+  if(kind==='guide'&&infoIndex[kind]===pages.length){text.replaceChildren();for(const a of $('.pattern-math-guide').querySelectorAll('a'))text.append(a.cloneNode(true));}else text.textContent=pages[infoIndex[kind]];
+  box.querySelector('output').textContent=(infoIndex[kind]+1)+' / '+count;
+  box.querySelector('[data-pattern-info-prev]').disabled=infoIndex[kind]===0;box.querySelector('[data-pattern-info-next]').disabled=infoIndex[kind]===count-1;
+ }
+ function installWorkspace(){
+  const tools=$('.pattern-tools'),settings=$('.pattern-settings');
+  const wrap=(name,els)=>{const box=document.createElement('section');box.className='pattern-tool-page';box.dataset.toolPage=name;els[0].before(box);for(const el of els)box.append(el);};
+  wrap('draw',[tools.querySelector('h2'),$('[data-pattern-view-help]'),$('.pattern-brushes'),$('.pattern-symmetry-label')]);
+  wrap('transform',[$('.pattern-transforms')]);
+  wrap('size',[...tools.querySelectorAll(':scope>h2,:scope>.pattern-size-tools,:scope>[data-pattern-size="reset"],:scope>.pattern-fit-note')]);
+  tools.querySelector('[data-tool-page="size"]').insertAdjacentHTML('afterbegin','<select data-pattern-workspace-select class="pattern-mobile-workspace" aria-label="画面の表示方法"><option value="normal">通常表示</option><option value="pinned">盤面を固定</option><option value="fit">一画面に収める</option></select>');
+  for(const p of tools.querySelectorAll(':scope>p'))p.classList.add('pattern-normal-only');
+  tools.insertAdjacentHTML('afterbegin','<label class="pattern-area-label">道具<select data-pattern-tool-select><option value="draw">塗る・消す</option><option value="transform">回転・反転</option><option value="size">表示・大きさ</option></select></label>');
+  $('.pattern-header').insertAdjacentHTML('beforeend','<select data-pattern-workspace-select class="pattern-desktop-workspace" aria-label="画面の表示方法"><option value="normal">通常表示</option><option value="pinned">盤面を固定</option><option value="fit">一画面に収める</option></select>');
+  guideText=[...$('.pattern-math-guide').querySelectorAll('p'),...$('.pattern-digit-options').querySelectorAll('p'),$('.pattern-footnote')].map(p=>p.textContent).join(' ');
+  for(const [selector,key] of [['.pattern-footer','footer'],['.pattern-starters','presets'],['.pattern-digit-options','digit']])$(selector).dataset.rightPane=key;
+  const info=kind=>'<section class="pattern-info pattern-info-'+kind+'" data-right-pane="'+kind+'"><div data-pattern-info-text></div><nav aria-label="説明のページ送り"><button type="button" data-pattern-info-prev="'+kind+'" aria-label="前の説明">‹</button><output></output><button type="button" data-pattern-info-next="'+kind+'" aria-label="次の説明">›</button></nav></section>';
+  settings.insertAdjacentHTML('beforeend',info('advice')+info('guide'));
+  $('.pattern-footer').insertAdjacentHTML('afterbegin','<p class="pattern-result-summary" data-pattern-result-summary></p>');
+  $('.pattern-layout').insertAdjacentHTML('afterbegin','<aside class="pattern-side-left" aria-label="編集の道具"></aside><aside class="pattern-side-right" aria-label="作成・見本・説明"><label class="pattern-area-label">作業欄<select data-pattern-right-select><option value="footer">作成・保存</option><option value="advice">作成状態・直し方</option><option value="presets">見本</option><option value="digit">数字を1種類抜く</option><option value="guide">描き方・作成のコツ</option></select></label></aside><select class="pattern-mobile-area" data-pattern-area-select aria-label="使う道具・作業欄"><optgroup label="道具"><option value="draw">塗る・消す</option><option value="transform">回転・反転</option><option value="size">表示・大きさ</option></optgroup><optgroup label="作業欄"><option value="footer">作成・保存</option><option value="advice">作成状態・直し方</option><option value="presets">見本</option><option value="digit">数字を1種類抜く</option><option value="guide">描き方・作成のコツ</option></optgroup></select>');
+ }
  function persist(){try{localStorage.setItem(key,JSON.stringify({mask:mask.map(Number),omit,symmetry}));}catch(_){$('[data-pattern-warning]').textContent='模様を端末に記憶できませんでした。この画面では続けて編集できます。';}}
  function stop(){revision++;clearTimeout(timer);timer=null;if(worker){worker.terminate();worker=null;}result=null;}
  function sizeBoard(){
@@ -10,18 +55,16 @@
   const docked=workspace!=='normal';page.dataset.docked=String(docked);
   document.documentElement.classList.toggle('np-pattern-fit',docked);document.body.classList.toggle('np-pattern-fit',docked);
   if(docked){
-   const canvas=$('.pattern-canvas'),layout=$('.pattern-layout'),narrow=width<980;
-   const chrome=$('.pattern-view-switch').offsetHeight+$('.pattern-board-meta').offsetHeight+8;
-   const availableHeight=layout.clientHeight-(narrow?(height<680?172:196):0)-chrome;
-   const availableWidth=narrow?layout.clientWidth:Math.max(0,layout.clientWidth-560-24);
-   const maximum=Math.max(180,Math.floor(Math.min(900,availableHeight,availableWidth)));
-   const size=workspace==='fit'?maximum:Math.max(180,maximum+Math.min(0,sizeStep)*60);
+   const canvas=$('.pattern-canvas'),landscape=width>=620&&width<980&&height<600,narrow=width<980&&!landscape;page.dataset.landscape=String(landscape);
+   const availableHeight=height-(narrow?340:16),availableWidth=narrow?usable-16:usable-(landscape?472:532);
+   const maximum=Math.max(144,Math.floor(Math.min(availableHeight,availableWidth)));
+   const size=workspace==='fit'?maximum:Math.max(144,maximum+Math.min(0,sizeStep)*60);
    page.style.setProperty('--pattern-board-size',size+'px');
    $('[data-pattern-size-label]').textContent=size+' × '+size;
    for(const b of page.querySelectorAll('[data-pattern-size]'))b.disabled=workspace==='fit'||saving;
-   $('[data-pattern-size="smaller"]').disabled=workspace==='fit'||size<=180||saving;
+   $('[data-pattern-size="smaller"]').disabled=workspace==='fit'||size<=144||saving;
    $('[data-pattern-size="larger"]').disabled=workspace==='fit'||size>=maximum||saving;
-   canvas.classList.toggle('pattern-small-fit',size<270);updatePan();return;
+   canvas.classList.toggle('pattern-small-fit',size<270);updatePan();renderInfo('advice');renderInfo('guide');return;
   }
   $('.pattern-canvas').classList.remove('pattern-small-fit');
   const available=width>=1500?usable-640:width>=980?usable-370:usable-32;
@@ -32,17 +75,19 @@
   for(const b of page.querySelectorAll('[data-pattern-size]'))b.disabled=saving;
   $('[data-pattern-size="smaller"]').disabled=size<=minimum||saving;updatePan();
  }
- function setPanel(next,focus=false){panel=next;page.dataset.panel=panel;for(const b of page.querySelectorAll('[data-pattern-panel]'))b.setAttribute('aria-pressed',String(b.dataset.patternPanel===panel));if(focus)$('.pattern-'+panel).focus({preventScroll:true});}
+ function setPanel(next){panel=next;page.dataset.panel=panel;setArea(window.innerWidth<980?'mobile':next==='tools'?'tool':'right',next==='tools'?'draw':next==='settings'?'presets':'footer');}
  function setWorkspace(next){
   finish();workspace=next;page.dataset.workspace=workspace;
-  document.documentElement.classList.toggle('np-pattern-fit',workspace==='fit');document.body.classList.toggle('np-pattern-fit',workspace==='fit');
+  arrangeWorkspace(workspace!=='normal');hostLayout(workspace!=='normal');
+  document.documentElement.classList.toggle('np-pattern-fit',workspace!=='normal');document.body.classList.toggle('np-pattern-fit',workspace!=='normal');
   for(const b of page.querySelectorAll('[data-pattern-workspace]'))b.setAttribute('aria-pressed',String(b.dataset.patternWorkspace===workspace));
+  for(const s of page.querySelectorAll('[data-pattern-workspace-select]'))s.value=workspace;
   try{localStorage.setItem(viewKey,workspace);}catch(_){}
   window.scrollTo({top:0,behavior:'instant'});sizeBoard();draw();
  }
  function updatePan(){if(!page)return;const scroller=$('.pattern-board-scroll'),box=$('[data-pattern-pan-controls]'),maximum=scroller.scrollWidth-scroller.clientWidth;box.hidden=maximum<1;$('[data-pattern-pan="left"]').disabled=saving||scroller.scrollLeft<1;$('[data-pattern-pan="right"]').disabled=saving||scroller.scrollLeft>=maximum-1;}
  function showCanvas(){if(workspace!=='normal')return;const r=$('.pattern-grid').getBoundingClientRect();if(r.bottom<=0||r.top>=window.innerHeight)$('.pattern-canvas').scrollIntoView({block:'start'});}
- function status(state,message){if(!page)return;const el=$('[data-pattern-status]');el.dataset.state=state;el.textContent=message;const indicator=$('[data-pattern-indicator]');indicator.dataset.state=state;indicator.textContent=({ready:'作成OK',checking:'確認中…',impossible:'作れません',unknown:'未確認',error:'確認エラー'})[state]||'';$('[data-pattern-save]').disabled=state!=='ready'||saving;$('[data-pattern-view="preview"]').disabled=state!=='ready'||saving;$('[data-pattern-retry]').hidden=!['unknown','error','ready'].includes(state);}
+ function status(state,message){if(!page)return;statusMessage=message;infoIndex.advice=0;const el=$('[data-pattern-status]');el.dataset.state=state;el.textContent=message;const indicator=$('[data-pattern-indicator]');indicator.dataset.state=state;indicator.textContent=({ready:'作成OK',checking:'確認中…',impossible:'作れません',unknown:'未確認',error:'確認エラー'})[state]||'';$('[data-pattern-save]').disabled=state!=='ready'||saving;$('[data-pattern-view="preview"]').disabled=state!=='ready'||saving;$('[data-pattern-retry]').hidden=!['unknown','error','ready'].includes(state);$('[data-pattern-result-summary]').textContent=message.startsWith('保存できません')?'保存できません':message.startsWith('保存しています')?'保存しています…':indicator.textContent;renderInfo('advice');}
  function showAdvice(data){
   adviceCells=new Set(data?.cells||[]);if(!page)return;
   const line=$('[data-pattern-advice]');let message='';
@@ -50,7 +95,7 @@
   if(data?.reason==='rows'||data?.reason==='cols')message=data.indices.map(i=>i+1).join('・')+(data.reason==='rows'?'行':'列')+'のうち'+data.needed+'本以上に、数字を置くマスを作ってください。オレンジの点線で場所を示しています。';
   if(data?.reason==='digit'&&data.unit)message=(data.index+1)+(data.unit==='row'?'行目':data.unit==='col'?'列目':'番目の3×3の枠')+'に、抜く数字のための白いマスを1つ以上残してください。点線の場所を「消す」で白くできます。';
   if(data?.reason==='digit'&&!data.unit)message='白いマスの位置の組み合わせが条件を満たしません。「数字抜き用」の見本から描き直す方法もあります。';
-  line.textContent=message;line.hidden=!message;
+  adviceMessage=message;line.textContent=message;line.hidden=!message;
   for(const el of page.querySelectorAll('[data-pixel]'))el.classList.toggle('needs-work',adviceCells.has(Number(el.dataset.pixel)));
  }
  function draw(){
@@ -60,7 +105,7 @@
   for(const el of page.querySelectorAll('[data-pattern-view]'))el.setAttribute('aria-pressed',String(el.dataset.patternView===view));
   for(const el of page.querySelectorAll('[data-pattern-preset]'))el.setAttribute('aria-pressed',String(model.presets[el.dataset.patternPreset].every((v,i)=>!!v===!!mask[i])));
   $('[data-pattern-view-help]').textContent=view==='paint'?'塗ったマス＝数字が入る ／ 白いマス＝空欄':'数字の配置を確認。「マスを塗る」で編集に戻れます。';
-  $('[data-pattern-count]').textContent=mask.filter(Boolean).length+(page.dataset.docked==='true'&&window.innerWidth<980?' / 81マス':' / 81マスに数字を配置');
+  $('[data-pattern-count]').textContent=mask.filter(Boolean).length+(page.dataset.docked==='true'?' / 81マス':' / 81マスに数字を配置');
   $('[data-pattern-undo]').disabled=!history.length;$('[data-pattern-redo]').disabled=!future.length;$('[data-pattern-omit]').value=String(omit);$('[data-pattern-symmetry]').value=symmetry;
  }
  function changed(){view='paint';stop();showAdvice(null);persist();draw();$('[data-pattern-rating]').textContent='難易度は模様に合わせて自動判定します。';status('checking','確認中… 塗ったマスだけで作れるか調べています。');const token=revision;timer=setTimeout(()=>check(token,2500),180);}
@@ -83,7 +128,7 @@
    worker.postMessage({mask:mask.slice(),omit,milliseconds});
   }catch(_){if(url)URL.revokeObjectURL(url);if(worker)worker.terminate();worker=null;status('error','確認を開始できませんでした。もう一度調べてください。');}
  }
- function close(force=false){if(!page)return true;if(saving&&!force)return false;finish();stop();window.removeEventListener('resize',sizeBoard);page.remove();page=null;saving=false;document.body.classList.remove('np-pattern-page-open','np-pattern-fit');document.documentElement.classList.remove('np-pattern-page-open','np-pattern-fit');return true;}
+ function close(force=false){if(!page)return true;if(saving&&!force)return false;finish();stop();window.removeEventListener('resize',sizeBoard);window.removeEventListener('pagehide',leaveHost);hostLayout(false);workspaceMoves=[];page.remove();page=null;saving=false;document.body.classList.remove('np-pattern-page-open','np-pattern-fit');document.documentElement.classList.remove('np-pattern-page-open','np-pattern-fit');return true;}
  function cellAt(x,y){const el=document.elementFromPoint(x,y)?.closest('[data-pixel]');return el&&page.contains(el)?Number(el.dataset.pixel):-1;}
  function paint(i){if(!stroke||i<0)return;const old=stroke.last,steps=old<0?0:Math.max(Math.abs(i%9-old%9),Math.abs(Math.floor(i/9)-Math.floor(old/9)));let edited=false;
   for(let s=0;s<=steps;s++){const f=steps?s/steps:1,c=old<0?i%9:Math.round(old%9+(i%9-old%9)*f),r=old<0?Math.floor(i/9):Math.round(Math.floor(old/9)+(Math.floor(i/9)-Math.floor(old/9))*f),at=r*9+c;for(const target of model.symmetricCells(at,symmetry))if(mask[target]!==stroke.value){mask[target]=stroke.value;edited=true;}}
@@ -127,10 +172,11 @@
      <p data-pattern-warning role="status"></p>
     </aside>
 </div>`;
-  for(const name of ['tools','settings','footer'])$('.pattern-'+name).tabIndex=-1;
-  document.documentElement.classList.add('np-pattern-page-open');document.body.classList.add('np-pattern-page-open');container.replaceChildren(page);window.addEventListener('resize',sizeBoard);setPanel(panel);setWorkspace(workspace);
+  workspaceMoves=[];toolArea='draw';rightArea='footer';mobileArea='draw';infoIndex={advice:0,guide:0};installWorkspace();for(const name of ['tools','settings','footer'])$('.pattern-'+name).tabIndex=-1;
+  document.documentElement.classList.add('np-pattern-page-open');document.body.classList.add('np-pattern-page-open');container.replaceChildren(page);window.addEventListener('resize',sizeBoard);window.addEventListener('pagehide',leaveHost);setPanel(panel);setWorkspace(workspace);
   page.addEventListener('click',async e=>{const el=e.composedPath().find(node=>node?.matches?.('button')&&page.contains(node));if(!el||saving)return;
    if(el.hasAttribute('data-pattern-close'))return backHandler?.();
+   if(el.hasAttribute('data-pattern-info-prev')||el.hasAttribute('data-pattern-info-next')){const kind=el.dataset.patternInfoPrev||el.dataset.patternInfoNext;infoIndex[kind]+=el.hasAttribute('data-pattern-info-prev')?-1:1;renderInfo(kind);return;}
    if(el.hasAttribute('data-pattern-workspace')){setWorkspace(el.dataset.patternWorkspace);return;}
    if(el.hasAttribute('data-pattern-panel')){setPanel(el.dataset.patternPanel);return;}
    if(el.hasAttribute('data-pattern-pan')){const area=$('.pattern-board-scroll');area.scrollBy({left:(el.dataset.patternPan==='left'?-1:1)*Math.max(100,area.clientWidth*.6),behavior:'auto'});updatePan();return;}
@@ -150,7 +196,7 @@
     catch(_){if(page!==host)return;saving=false;page.querySelectorAll('button,select').forEach(b=>b.disabled=false);draw();sizeBoard();status('ready','保存できませんでした。空き容量を確認して、もう一度保存してください。');}
    }
   });
-  page.addEventListener('change',e=>{if(e.target.hasAttribute('data-pattern-omit')){omit=Number(e.target.value);changed();}if(e.target.hasAttribute('data-pattern-symmetry')){symmetry=e.target.value;persist();}});
+  page.addEventListener('change',e=>{if(saving)return;if(e.target.hasAttribute('data-pattern-workspace-select')){setWorkspace(e.target.value);return;}if(e.target.hasAttribute('data-pattern-tool-select')){setArea('tool',e.target.value);return;}if(e.target.hasAttribute('data-pattern-right-select')){setArea('right',e.target.value);return;}if(e.target.hasAttribute('data-pattern-area-select')){setArea('mobile',e.target.value);return;}if(e.target.hasAttribute('data-pattern-omit')){omit=Number(e.target.value);changed();}if(e.target.hasAttribute('data-pattern-symmetry')){symmetry=e.target.value;persist();}});
   $('.pattern-board-scroll').addEventListener('scroll',updatePan);const grid=$('.pattern-grid');grid.addEventListener('pointerdown',e=>{const cell=e.target.closest('[data-pixel]');if(!cell||saving||view==='preview'||e.button!==0)return;e.preventDefault();for(const el of grid.querySelectorAll("[data-pixel]"))el.tabIndex=-1;cell.tabIndex=0;cell.focus({preventScroll:true});stroke={id:e.pointerId,before:mask.slice(),value:brush==='auto'?!mask[Number(cell.dataset.pixel)]:brush==='paint',last:-1,edited:false};grid.setPointerCapture(e.pointerId);paint(Number(cell.dataset.pixel));});
   grid.addEventListener('pointermove',e=>{if(stroke&&e.pointerId===stroke.id)paint(cellAt(e.clientX,e.clientY));});grid.addEventListener('pointerup',finish);grid.addEventListener('pointercancel',finish);grid.addEventListener('lostpointercapture',finish);
   grid.addEventListener('keydown',e=>{const cell=e.target.closest('[data-pixel]');if(!cell)return;const i=Number(cell.dataset.pixel),delta={ArrowLeft:-1,ArrowRight:1,ArrowUp:-9,ArrowDown:9}[e.key];if(delta){e.preventDefault();const at=Math.max(0,Math.min(80,i+delta));cell.tabIndex=-1;const next=$('[data-pixel="'+at+'"]');next.tabIndex=0;next.focus();}});

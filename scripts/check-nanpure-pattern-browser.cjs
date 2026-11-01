@@ -4,7 +4,7 @@ const fs=require('node:fs'),path=require('node:path'),assert=require('node:asser
 const root=path.resolve(process.argv[2]||'_site'),origin='https://atugari.github.io',version=JSON.parse(fs.readFileSync(path.join(root,'nanpure/version.json'))).version;
 const mime={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml'};
 (async()=>{const browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_BIN||undefined,args:['--no-sandbox']});try{
- for(const viewport of [{width:1910,height:878},{width:1440,height:1000},{width:390,height:844},{width:320,height:740},{width:320,height:636}]){
+ for(const viewport of [{width:1910,height:878},{width:1440,height:1000},{width:390,height:844},{width:320,height:740},{width:320,height:636},{width:844,height:390}]){
   console.log('Checking pattern page viewport',viewport.width,viewport.height);
   const context=await browser.newContext({viewport,serviceWorkers:'block'}),page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
   await context.addInitScript(()=>{localStorage.setItem('nanpure-language-v1','ja');Object.defineProperty(navigator,'doNotTrack',{get:()=> '1'});});
@@ -15,40 +15,43 @@ const mime={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript'
   await page.locator('[data-action="pattern-open"]').click();await page.locator('#np-pattern-page').waitFor();
   await page.locator('[data-pattern-close]').click();await page.locator('[data-flow="create"]').click();await page.locator('[data-action="pattern-open"]').click();
   const editor=page.locator('#np-pattern-page');await editor.locator('[data-pattern-indicator][data-state="ready"]').waitFor({timeout:15000});
-  // The complete canvas remains visible; panels scroll without moving it.
+  const landscape=viewport.width>=620&&viewport.width<980&&viewport.height<600,narrow=viewport.width<980&&!landscape;
+  const area=async value=>{if(narrow)await editor.locator('[data-pattern-area-select]').selectOption(value);else await editor.locator(['draw','transform','size'].includes(value)?'[data-pattern-tool-select]':'[data-pattern-right-select]').selectOption(value);};
+  const workspace=async value=>{if(await editor.getAttribute('data-workspace')==='normal')await editor.locator('[data-pattern-workspace="'+value+'"]').click();else{if(narrow)await area('size');await editor.locator('[data-pattern-workspace-select]:visible').first().selectOption(value);}};
+  const noScroll=async()=>{
+   const bad=await editor.evaluate(el=>[...el.querySelectorAll('*')].filter(e=>e.getClientRects().length&&e.clientHeight>0&&getComputedStyle(e).display!=='contents'&&(e.scrollHeight>e.clientHeight+2||e.scrollWidth>e.clientWidth+2)).map(e=>({tag:e.tagName,class:e.className,height:e.clientHeight,excess:e.scrollHeight-e.clientHeight,widthExcess:e.scrollWidth-e.clientWidth})));
+   assert.deepEqual(bad,[],'Every visible control and explanation fits without inner scrolling');
+  };
   assert.equal(await editor.getAttribute('data-workspace'),'fit');
   const fitBounds=await editor.locator('.pattern-grid').boundingBox();
   assert(fitBounds.x>=0&&fitBounds.y>=0&&fitBounds.x+fitBounds.width<=viewport.width+1&&fitBounds.y+fitBounds.height<=viewport.height+1,'Entire fit board is visible');
+  if(!narrow)assert(fitBounds.height>=Math.min(viewport.height-16,viewport.width-(landscape?472:532))-1,'Use full height or the available width for the board');
   assert(await page.evaluate(()=>document.documentElement.scrollHeight<=innerHeight+1),'Fit mode has no page scrolling');
-  if(viewport.width<980){
-   for(const panel of ['settings','footer','tools']){
-    await editor.locator('[data-pattern-panel="'+panel+'"]').click();
-    await editor.locator('.pattern-'+panel).evaluate(el=>{el.scrollTop=el.scrollHeight;});
-    const after=await editor.locator('.pattern-grid').boundingBox();assert.deepEqual(after,fitBounds,'Dock switching and scrolling leaves the board fixed');
-   }
-  }else{
-   await editor.locator('.pattern-tools').evaluate(el=>{el.scrollTop=el.scrollHeight;});
-   assert.deepEqual(await editor.locator('.pattern-grid').boundingBox(),fitBounds,'Tool scrolling leaves the board fixed');
+  for(const value of ['draw','transform','size','footer','advice','presets','digit','guide']){
+   await area(value);await noScroll();assert.deepEqual(await editor.locator('.pattern-grid').boundingBox(),fitBounds,'Changing the work area keeps the board fixed');
   }
+  await area('guide');
+  while(await editor.locator('[data-pattern-info-next="guide"]').isEnabled()){await editor.locator('[data-pattern-info-next="guide"]').click();await noScroll();}
+  assert.equal(await editor.locator('.pattern-info-guide a:visible').count(),2,'Research links remain reachable');
+  await area('presets');await editor.locator('[data-pattern-clear]').click();await editor.locator('[data-pattern-indicator][data-state="impossible"]').waitFor();
+  await area('advice');await noScroll();while(await editor.locator('[data-pattern-info-next="advice"]').isEnabled()){await editor.locator('[data-pattern-info-next="advice"]').click();await noScroll();}
+  await area('presets');await editor.locator('[data-pattern-preset="heart"]').click();await editor.locator('[data-pattern-indicator][data-state="ready"]').waitFor();
+  await area('draw');
   await editor.locator('[data-pixel="80"]').click();assert.deepEqual(await editor.locator('.pattern-grid').boundingBox(),fitBounds,'Last cell can be painted without moving the fit board');
-  if(viewport.width<980)await editor.locator('[data-pattern-panel="tools"]').click();
   await editor.locator('[data-pattern-undo]').click();await editor.locator('[data-pattern-indicator][data-state="ready"]').waitFor();
-  await editor.locator('[data-pattern-workspace="pinned"]').click();
-  if(viewport.width<980)await editor.locator('[data-pattern-panel="tools"]').click();
+  await workspace('pinned');await area('size');
   const pinned=await editor.locator('.pattern-grid').boundingBox();
-  await editor.locator('.pattern-tools').evaluate(el=>{el.scrollTop=el.scrollHeight;});
   await page.evaluate(()=>window.scrollTo(0,500));assert.deepEqual(await editor.locator('.pattern-grid').boundingBox(),pinned,'Pinned board holds position during scrolling');
-  if(pinned.width>180){await editor.locator('[data-pattern-size="smaller"]').click();assert((await editor.locator('.pattern-grid').boundingBox()).width<pinned.width,'Pinned board allows deliberate sizing');await editor.locator('[data-pattern-size="reset"]').click();assert.equal((await editor.locator('.pattern-grid').boundingBox()).width,pinned.width);}
-  await page.evaluate(()=>NPFurigana.setEnabled(true));
-  await editor.locator('[data-pattern-workspace="fit"]').click();
+  if(pinned.width>144){await editor.locator('[data-pattern-size="smaller"]').click();assert((await editor.locator('.pattern-grid').boundingBox()).width<pinned.width,'Pinned board allows deliberate sizing');await editor.locator('[data-pattern-size="reset"]').click();assert.equal((await editor.locator('.pattern-grid').boundingBox()).width,pinned.width);}
+  await page.evaluate(()=>NPFurigana.setEnabled(true));await workspace('fit');
+  for(const value of ['draw','transform','size','footer','advice','presets','digit','guide']){await area(value);await noScroll();}
+  await area('draw');
   const fitRuby=await editor.locator('.pattern-grid').boundingBox();
   const fitFrames=page.evaluate(async()=>{const out=[],g=document.querySelector('.pattern-grid');for(let i=0;i<60;i++){const r=g.getBoundingClientRect();out.push([r.x,r.y,r.width,r.height]);await new Promise(requestAnimationFrame);}return out;});
   await editor.locator('[data-pixel="0"]').click();const fitGeometry=await fitFrames;for(let k=0;k<4;k++)assert(Math.max(...fitGeometry.map(r=>r[k]))-Math.min(...fitGeometry.map(r=>r[k]))<1,'Fit board is stable with furigana');
-  if(viewport.width<980)await editor.locator('[data-pattern-panel="tools"]').click();
   await editor.locator('[data-pattern-undo]').click();await editor.locator('[data-pattern-indicator][data-state="ready"]').waitFor();
   assert.deepEqual(await editor.locator('.pattern-grid').boundingBox(),fitRuby);
-  await page.evaluate(()=>NPFurigana.setEnabled(false));
-  await editor.locator('[data-pattern-workspace="normal"]').click();
+  await page.evaluate(()=>NPFurigana.setEnabled(false));await workspace('normal');
   assert.equal(await editor.locator('[data-pixel][aria-pressed="true"]').count(),55);
   assert.equal(await page.evaluate(()=>NanpureAppTest.getRoute().flow),'pattern','Editor is a navigable page');
   assert.equal(await page.locator('dialog[open]').count(),0,'No floating window');
@@ -107,5 +110,18 @@ const mime={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript'
   const saved=await page.evaluate(()=>{const p=NanpureAppTest.getLibrary()[0];return{mask:p.clueMask,omit:p.omittedDigit,puzzle:p.puzzle,uid:p.uid};});assert.equal(saved.omit,9);assert(!saved.puzzle.includes(9));assert.deepEqual(saved.puzzle.map(Boolean),saved.mask.map(Boolean));
   await page.reload();await page.locator('[data-action="open-notebook"]').waitFor();assert(await page.evaluate(uid=>NanpureAppTest.getLibrary().some(p=>p.uid===uid&&p.omittedDigit===9),saved.uid));assert.deepEqual(errors,[]);await context.close();
  }
- console.log('PASS pattern browser: fit workspace, independent scrolling, mobile panel tabs, pinned board, normal layout and minimum sizes; navigation, stable geometry, furigana, drawing, keyboard, draft restoration, digit omission, durable save and review.');
+ for(const viewport of [{width:1534,height:696},{width:1910,height:878}]){
+  const context=await browser.newContext({viewport,serviceWorkers:'block'}),page=await context.newPage();
+  await context.addInitScript(()=>{localStorage.setItem('nanpure-language-v1','ja');Object.defineProperty(navigator,'doNotTrack',{get:()=> '1'});});
+  await context.route('**/*',route=>{const u=new URL(route.request().url());if(u.origin!==origin)return route.fulfill({status:204,body:''});const file=path.resolve(root,'.'+decodeURIComponent(u.pathname)+(u.pathname.endsWith('/')?'index.html':''));if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile())return route.fulfill({status:404,body:''});return route.fulfill({contentType:mime[path.extname(file)]||'application/octet-stream',body:fs.readFileSync(file)});});
+  await page.goto(origin+'/nanpure/');await page.getByRole('button',{name:/^自由に遊ぶ/}).click();
+  const frame=page.frameLocator('iframe.notebook');await frame.locator('[data-action="open-notebook"]').click();await frame.locator('[data-action="pattern-open"]').click();
+  await frame.locator('[data-pattern-indicator][data-state="ready"]').waitFor();
+  const full=await page.locator('iframe.notebook').boundingBox();assert.equal(full.y,0);assert.equal(full.height,viewport.height,'Reclaim the outer site header area');
+  const grid=await frame.locator('.pattern-grid').boundingBox();assert(grid.height>=viewport.height-20,'The board uses almost all screen height');
+  await frame.locator('.pattern-desktop-workspace').selectOption('normal');const restored=await page.locator('iframe.notebook').boundingBox();assert(restored.y>=80&&restored.height<viewport.height-40,'Normal view restores the parent header and frame');
+  await frame.locator('[data-pattern-workspace="fit"]').click();await frame.locator('[data-pattern-close]').click();assert.equal(await page.locator('iframe.np-pattern-host-frame').count(),0,'Going back restores the outer shell');
+  await context.close();
+ }
+ console.log('PASS pattern browser: maximized workspace without outer or inner scrolling, paged controls and explanations, pinned board, normal layout and minimum sizes; navigation, stable geometry, furigana, drawing, keyboard, draft restoration, digit omission, durable save and review.');
 }finally{await browser.close();}})().catch(e=>{console.error(e);process.exit(1);});
