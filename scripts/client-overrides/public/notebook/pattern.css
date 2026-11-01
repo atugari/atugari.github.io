@@ -86,3 +86,34 @@ html.np-pattern-fit,body.np-pattern-fit{overflow:hidden!important;scrollbar-gutt
 .np-pattern-page[data-docked=true][data-landscape=true][data-right-area=advice] .pattern-info-advice,.np-pattern-page[data-docked=true][data-landscape=true][data-right-area=guide] .pattern-info-guide{display:grid!important}
 .np-pattern-page[data-docked=true][data-landscape=true] .pattern-tool-page{padding:0;border:0}.np-pattern-page[data-docked=true][data-landscape=true] .pattern-brushes{grid-template-columns:repeat(3,minmax(0,1fr));margin-bottom:4px}.np-pattern-page[data-docked=true][data-landscape=true] .pattern-brushes button{height:56px;min-height:56px}.np-pattern-page[data-docked=true][data-landscape=true] .pattern-brushes [data-pattern-undo],.np-pattern-page[data-docked=true][data-landscape=true] .pattern-brushes [data-pattern-redo]{height:44px;min-height:44px}
 .np-pattern-page[data-docked=true][data-landscape=true] .pattern-actions button{height:64px;min-height:64px}
+
+/* Sharing uses a clean clue-only canvas, independent of the editing theme. */
+.np-pattern-page[data-docked=true][data-right-area=advice] .pattern-info-advice,.np-pattern-page[data-docked=true][data-mobile-area=advice] .pattern-info-advice{grid-template-rows:minmax(0,1fr) 44px 44px;gap:4px}
+.np-pattern-page[data-docked=true] .pattern-info-advice>[data-pattern-retry]{height:44px;min-height:44px;padding:4px;font-size:16px}
+.pattern-saved-share{display:block;margin:12px auto;min-height:48px}
+.created-puzzle-share{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;margin:16px 0}
+.created-puzzle-share label{grid-column:1/-1}
+.created-puzzle-share select{min-width:0;min-height:48px;padding:8px;font:inherit;border:1px solid #8da994;border-radius:10px;background:#fff;color:#243f35}
+@media(max-width:360px){.created-puzzle-share{grid-template-columns:minmax(0,1fr)}}
+.pattern-share-dialog{box-sizing:border-box;width:min(560px,calc(100vw - 24px));max-height:calc(100dvh - 24px);margin:auto;padding:20px;border:1px solid #b8c7bb;border-radius:18px;background:#fffdf8;color:#243f35;overflow:auto;font:16px/1.5 Arial,sans-serif;box-shadow:0 20px 80px #0005}
+.pattern-share-dialog::backdrop{background:#152a2280}
+.pattern-share-dialog *{box-sizing:border-box}
+.pattern-share-dialog header{display:flex;gap:12px;align-items:center;justify-content:space-between}
+.pattern-share-dialog h2{font-size:22px;line-height:1.3;margin:0}
+.pattern-share-dialog button,.pattern-share-dialog a{display:flex;align-items:center;justify-content:center;min-height:46px;padding:8px 12px;border:1px solid #8da994;border-radius:10px;background:#fff;color:#243f35;font:inherit;line-height:1.4;text-align:center;text-decoration:none;cursor:pointer}
+.pattern-share-dialog [data-share-close]{width:44px;min-height:44px;flex:none;font-size:26px;padding:0}
+.pattern-share-dialog [data-share-native]{background:#285849;color:#fff;border-color:#285849}
+.pattern-share-actions [data-share-native]{grid-column:1/-1}
+.pattern-share-dialog [aria-disabled=true],.pattern-share-dialog :disabled{opacity:.5;cursor:default}
+.pattern-share-dialog [hidden]{display:none!important}
+.pattern-share-dialog :focus-visible{outline:3px solid #a26815;outline-offset:3px}
+.pattern-share-dialog p{font-size:16px;line-height:1.5;margin:8px 0}
+.pattern-share-preview{display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid #d7dfd8;border-radius:8px;overflow:hidden;min-height:100px}
+.pattern-share-preview img{display:block;width:auto;max-width:100%;max-height:min(48dvh,420px);object-fit:contain}
+.pattern-share-status{min-height:24px}
+.pattern-share-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.pattern-share-actions [data-share-x]{grid-column:1/-1}
+.pattern-share-help{color:#52685d}
+.pattern-share-permission{border-top:1px solid #d7dfd8;margin-top:12px;padding-top:8px}
+.pattern-share-permission h3{font-size:16px;margin:0;font-weight:700}
+@media(max-height:650px){.pattern-share-dialog{padding:12px}.pattern-share-preview img{max-height:32dvh}.pattern-share-dialog p{margin:4px 0}.pattern-share-actions{gap:6px}}

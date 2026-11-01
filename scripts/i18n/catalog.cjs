@@ -46,3 +46,5 @@ require('./wado-reading-70.cjs')(module.exports);
 
 // Explicit native translations take priority over composed label aliases.
 Object.assign(module.exports,require('./catalog-reading-70.cjs'));
+
+Object.assign(module.exports,require('./catalog-pattern-share-78.cjs'));
