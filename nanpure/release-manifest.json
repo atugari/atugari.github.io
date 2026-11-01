@@ -2403,7 +2403,7 @@
     "nanpure/releases/2026.11.02.78/notebook/i18n/vi.json": "8c81d1a4f1ad1d602aaa49fdd236be27dc846edd845ca18354ef85d145392098",
     "nanpure/releases/2026.11.02.78/notebook/i18n/zh-Hans.json": "374aaca906d5eb059a1ab52a3909288156da4a066f75419dea3da7d4dad4ffb7",
     "nanpure/releases/2026.11.02.78/notebook/i18n/zh-Hant.json": "6fd1bc50d94c52b51e2508568555f7a0c506f30c7a860f6cb315c67837fbbe2d",
-    "nanpure/releases/2026.11.02.78/notebook/i18n-data.js": "d2eb07c7b3ad44a1a8596e63deb4591fdaf20180947786fde555c5c281120e1a",
+    "nanpure/releases/2026.11.02.78/notebook/i18n-data.js": "b1e2cd7c4fa141e7dc3199ffe098bf6f0845fa99501aef4da75521929ee486c1",
     "nanpure/releases/2026.11.02.78/notebook/i18n.js": "6865fdeee2fa169ec61515cb74250f0855f1430851bb021df95503f7e2407c1a",
     "nanpure/releases/2026.11.02.78/notebook/icon.png": "c5218ebc2cfb308244ee0ab0f53a3e94ec1d75d2fdae0360b2ff73c92dbc5865",
     "nanpure/releases/2026.11.02.78/notebook/index.html": "e0d44f88272d173f55db2c566b5ea6a100ab39276b6acfc45f157db63d27f44c",
@@ -2624,7 +2624,7 @@
       "scripts/client-overrides/public/notebook/pattern-ui.js": "d25b8f84ca1df6cac5ba4705be8b2180b9ac2c248f0179cc1ae9f969e9836001",
       "scripts/client-overrides/public/notebook/pattern.css": "a2ae21df309ccdda26f9766cc86f7a050f7a7da7fe5a3c94a7560dae28497b1b",
       "scripts/client-overrides/public/notebook/app.js": "a13dfe66966126f538d0e3d745410040097db1c782a53a36b85cf1b53203d37b",
-      "scripts/i18n/catalog-pattern-share-78.cjs": "875e4d40429cff56903bc724c46bb7b2b338cc480736ebe44be1685aded799df",
+      "scripts/i18n/catalog-pattern-share-78.cjs": "0486cba6bc81e749daa1973fce3db2aae4a3d311de540c0c5a0f3f5b58f7b737",
       "scripts/check-nanpure-pattern-share-browser.cjs": "faeabb8eb78ad0e79a0b92b3b6a3611cbba47cc00776ec31485f8c648919312f",
       "scripts/prepare-pattern-share-release.mjs": "70b7d14ae1d4bb9b41b94388dd08ab853c259f4234021d4606dbf169ac3666cf"
     }
