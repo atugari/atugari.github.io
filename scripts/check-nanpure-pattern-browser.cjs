@@ -20,7 +20,7 @@ const mime={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript'
   await page.evaluate(()=>NPFurigana.setEnabled(true));await dialog.locator('[data-pattern-view="preview"] ruby').first().waitFor();
   await dialog.locator('[data-pattern-view="preview"] ruby').first().click();await page.waitForFunction(()=>document.querySelector('#np-pattern-dialog').dataset.view==='preview');
   assert.equal((await dialog.locator('[data-pixel]').allTextContents()).filter(t=>t.trim()).length,55);
-  await dialog.locator('[data-pixel="0"]').click();assert.equal(await dialog.locator('[data-pixel][aria-pressed="true"]').count(),55,'Preview does not paint');
+  assert.equal(await dialog.locator('[data-pixel="0"]').getAttribute('aria-disabled'),'true');const previewCell=await dialog.locator('[data-pixel="0"]').boundingBox();await page.mouse.click(previewCell.x+previewCell.width/2,previewCell.y+previewCell.height/2);assert.equal(await dialog.locator('[data-pixel][aria-pressed="true"]').count(),55,'Preview does not paint');
   await dialog.locator('[data-pattern-view="paint"]').click();await page.waitForFunction(()=>document.querySelector('#np-pattern-dialog').dataset.view==='paint');
   await page.evaluate(()=>NPFurigana.setEnabled(false));
   await dialog.locator('[data-pixel="0"]').click();assert.equal(await dialog.locator('[data-pixel][aria-pressed="true"]').count(),56);

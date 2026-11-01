@@ -1848,7 +1848,7 @@
       "scripts/client-overrides/public/notebook/app.js": "7336582a84796506a684c38e72ed00873bdfe2640f27443b79da198f25a134cf",
       "scripts/client-overrides/public/notebook/common.js": "fee5b3b99abb8c0009522d8b6796e8544b59ceab205a961493420825f2eb38d2",
       "scripts/check-nanpure-pattern.cjs": "d31ea8e49c32d2b6cc9ab76db9898dbbc98c2363fb0716ac5e5f8c76481cd6f6",
-      "scripts/check-nanpure-pattern-browser.cjs": "02449ea6471834d017c2b4fb5e96013a2b7d76d55851e3a14fc8da71dfb731a4",
+      "scripts/check-nanpure-pattern-browser.cjs": "adddc1dad7cfce2cc516ab42fc518c77f0caad1bf77b717f93f2b6215e6a8b23",
       "scripts/prepare-pattern-release.mjs": "ad1117f37b655d315413ff6c5d6e1ed9deee945ddb4bb2e57ca171ba96508d84"
     }
   },
@@ -1859,7 +1859,7 @@
       "scripts/client-overrides/public/notebook/pattern.css": "9ea1496f5d7b83eda9dafe1613e93b56c38126860d15946a8200e7af22458b98",
       "scripts/check-nanpure-pattern.cjs": "d31ea8e49c32d2b6cc9ab76db9898dbbc98c2363fb0716ac5e5f8c76481cd6f6",
       "scripts/check-nanpure-pattern-math.cjs": "5e7067b1e3f2c3bd58dd3909f5c9795746deac75b6caef3a38b7babb9f5cf92f",
-      "scripts/check-nanpure-pattern-browser.cjs": "02449ea6471834d017c2b4fb5e96013a2b7d76d55851e3a14fc8da71dfb731a4",
+      "scripts/check-nanpure-pattern-browser.cjs": "adddc1dad7cfce2cc516ab42fc518c77f0caad1bf77b717f93f2b6215e6a8b23",
       "scripts/prepare-pattern-math-release.mjs": "3c716f48f62a7b30cca8d92b9279ea3016d6a5038b540dc38e6e4627b5e13b60"
     }
   },
@@ -1870,7 +1870,7 @@
       "scripts/client-overrides/public/notebook/pattern.css": "9ea1496f5d7b83eda9dafe1613e93b56c38126860d15946a8200e7af22458b98",
       "scripts/check-nanpure-pattern.cjs": "d31ea8e49c32d2b6cc9ab76db9898dbbc98c2363fb0716ac5e5f8c76481cd6f6",
       "scripts/check-nanpure-pattern-math.cjs": "5e7067b1e3f2c3bd58dd3909f5c9795746deac75b6caef3a38b7babb9f5cf92f",
-      "scripts/check-nanpure-pattern-browser.cjs": "02449ea6471834d017c2b4fb5e96013a2b7d76d55851e3a14fc8da71dfb731a4",
+      "scripts/check-nanpure-pattern-browser.cjs": "adddc1dad7cfce2cc516ab42fc518c77f0caad1bf77b717f93f2b6215e6a8b23",
       "scripts/prepare-pattern-usability-release.mjs": "11bfe00db1bfd559786fd4f3c3e5f890a74dd154cff1a66d01de7c2b6e34f8fa",
       "scripts/client-overrides/public/notebook/app.js": "7336582a84796506a684c38e72ed00873bdfe2640f27443b79da198f25a134cf"
     }
