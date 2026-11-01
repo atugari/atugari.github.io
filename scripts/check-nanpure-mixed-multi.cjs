@@ -2,6 +2,7 @@
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
 const root=path.resolve(__dirname,'..'),version=JSON.parse(fs.readFileSync(path.join(root,'nanpure/version.json'))).version;
 const base=path.join(root,'nanpure/releases',version,'notebook'),html=fs.readFileSync(path.join(base,'index.html'),'utf8');
+const flower=require('./fixtures/multi-recorded-flower.json');
 for(const name of ['app.js','common.js','batch.js','portable.js','memo-help.js','logical-hints.js','video-features.js','mixed-multi.js'])assert(!/["'(]\/(?:notebook|audio|themes)\//.test(fs.readFileSync(path.join(base,name),'utf8')),'origin-root asset path escaped the release: '+name);
 const ctx=vm.createContext({console,Date,performance,TextDecoder,TextEncoder,Uint8Array,Uint16Array,ArrayBuffer,DataView,atob,btoa,setTimeout,clearTimeout});ctx.window=ctx;ctx.self=ctx;
 for(const id of ['core-normal','core-rect','core-variants','core-multi','common-source','generator-source','core-mixed-multi']){
@@ -66,12 +67,22 @@ for(const [ns,links,id] of [
  [[9,9],[{parent:0,dx:5,dy:5}],'DRAG'],
  [[4,4],[{parent:0,dx:1,dy:1}],'LARGE-OVERLAP'],
  [[4,6],[{parent:0,dx:3,dy:2}],'MIXED-OFFSET'],
- [[9,9,9],[{parent:0,dx:6,dy:0},{parent:0,dx:3,dy:6}],'TRIPLE']
+ [[9,9,9],[{parent:0,dx:6,dy:0},{parent:0,dx:3,dy:6}],'TRIPLE'],
+ // The recording's D board overlaps C and F, but not its coordinate reference A.
+ [flower.sizes,flower.links,'RECORDED-FLOWER'],
+ // A later board may bridge two earlier boards which do not overlap each other.
+ [[9,9,9],[{parent:0,dx:12,dy:0},{parent:0,dx:6,dy:0}],'LATER-BRIDGE']
 ]){
  const p=ctx.NanpureMulti.generateMixed('custom',ns,1,id,null,15000,links);verify(p);generated++;
  if(id==='MIXED-OFFSET')finderPuzzle=p;
  const cfg={kind:'multi',n:Math.max(...ns),multiShape:'custom',multiSizes:ns,multiLinks:links,level:1,count:1};assert(ctx.NPGenerationMatches(p,cfg));assert(ctx.NPBatch.valid(cfg));const queue=ctx.NPBatch.restore(JSON.stringify({version:1,token:'offset',jobs:[cfg],cursor:0,bulk:false,cfg}),[],null);assert.equal(JSON.stringify(queue.jobs[0].multiLinks),JSON.stringify(links));
  const shared=p.linked.cells.map((_,i)=>p.linked.boards.filter(b=>b.map.includes(i)).length);
+ if(id==='RECORDED-FLOWER'){
+  assert.equal(JSON.stringify(p.linked.boards.map(b=>[b.x,b.y])),JSON.stringify(flower.coordinates));
+  assert.equal(shared.filter(n=>n>1).length,flower.sharedCells);
+  const reanchored=ctx.NanpureMulti.mixedLayout('custom',flower.sizes,flower.coordinates.slice(1).map(([x,y])=>({parent:0,dx:x-flower.coordinates[0][0],dy:y-flower.coordinates[0][1]})));
+  assert.equal(JSON.stringify(reanchored.cells),JSON.stringify(p.linked.cells),'coordinate references do not change physical geometry');
+ }
  assert(shared.filter(n=>n>1).length>1);if(id==='TRIPLE')assert(shared.includes(3));
  const at=shared.findIndex(n=>n>1);assert(ctx.NanpureMulti.cellDescription(p,at).startsWith('共有マス：'));
  assert(ctx.NanpureMulti.cellDescription(p,at).includes('行'));assert(ctx.NanpureMulti.cellDescription(p,at).includes('列'));
@@ -81,6 +92,7 @@ for(const [ns,links,id] of [
 assert.throws(()=>ctx.NanpureMulti.mixedLayout('custom',[4,9],[{parent:0,dx:0,dy:0}]),/数字が足りません/);
 assert.throws(()=>ctx.NanpureMulti.mixedLayout('custom',[9,9],[{parent:0,dx:0,dy:0}]),/完全に一致/);
 assert.throws(()=>ctx.NanpureMulti.mixedLayout('custom',[9,9],[{parent:0,dx:9,dy:0}]),/1マス以上/);
+assert.throws(()=>ctx.NanpureMulti.mixedLayout('custom',[9,9,9,9],[{parent:0,dx:6,dy:6},{parent:0,dx:24,dy:0},{parent:2,dx:6,dy:6}]),/すべての盤面/,'two separate overlapping components are disconnected');
 assert.throws(()=>ctx.NanpureMulti.mixedLayout('custom',[9,9],[{parent:0,dx:1.5,dy:0}]),/整数/);
 for(const shape of ['pair','custom'])for(const level of [1,2]){verify(ctx.NanpureMulti.generateMixed(shape,[4,4],level,'SMALL-'+shape+'-'+level,null,5000));generated++;}
 assert.throws(()=>ctx.NanpureMulti.mixedLayout('custom',[4,9,6],[{parent:0,corner:'se'},{parent:0,corner:'se'}]),/重なり/);
@@ -119,6 +131,12 @@ const before=JSON.stringify(editorCtx.E);handlers.pointerdown(pointer);handlers.
 const rootPointer={...pointer,clientX:42,clientY:52};handlers.pointerdown(rootPointer);handlers.pointerup({...rootPointer,clientX:74,clientY:84});assert.equal(JSON.stringify(editorCtx.E.multiLinks),JSON.stringify([{parent:0,dx:3,dy:4}]));
 const overlapPointer={...pointer,clientX:170,clientY:180},beforeTap=JSON.stringify(editorCtx.E);handlers.pointerdown(overlapPointer);handlers.pointerup(overlapPointer);assert.equal(vm.runInContext('mixedEditing',editorCtx),1);assert.equal(JSON.stringify(editorCtx.E),beforeTap);
 editorCtx.mixedPlace(1,-2,3);assert.equal(editorCtx.E.multiLinks[0].dx,-2);assert.equal(editorCtx.E.multiLinks[0].dy,3);
+editorCtx.E={multiShape:'custom',multiSizes:flower.sizes,multiLinks:flower.links};
+const flowerForm=editorCtx.mixedSettings();
+assert(!flowerForm.includes('class="notice error"'),'recorded layout has no red validation error');
+assert(!/<button[^>]*type="submit"[^>]*disabled/.test(flowerForm),'recorded layout can continue');
+assert.equal((flowerForm.match(/min="-200" max="200"/g)||[]).length,14,'all position inputs accept the same bounds as dragging');
+assert(flowerForm.includes('value="18" data-multi-offset="3"'),'D retains the recorded offset beyond its reference board');
 const print=fs.readFileSync(path.join(base,'print.html'),'utf8');assert(print.includes('<script src="common.js"></script><script src="mixed-multi.js"></script>'));
 assert(fs.readFileSync(path.join(base,'app.js'),'utf8').includes('"generator-source","core-mixed-multi"].map'));
 assert(fs.readFileSync(path.join(base,'portable.js'),'utf8').includes('"generator-source","core-mixed-multi"].map'));

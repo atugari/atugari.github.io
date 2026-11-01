@@ -34,10 +34,20 @@
         b.y = i <= 2 ? a.y - b.n + h : a.y + a.n - h;
       } else { b.x = a.x + a.n - w; b.y = a.y + a.n - h; }
     }
-    if(shape==='custom'&&!preview)for(let i=1;i<boards.length;i++) {
-      const a=boards[i],b=boards[links[i-1].parent],w=Math.min(a.x+a.n,b.x+b.n)-Math.max(a.x,b.x),h=Math.min(a.y+a.n,b.y+b.n)-Math.max(a.y,b.y);
-      if(w<=0||h<=0)throw Error('盤面'+String.fromCharCode(65+i)+'を接続先に1マス以上重ねてください。');
-      if(boards.slice(0,i).some(b=>a.x===b.x&&a.y===b.y&&a.n===b.n))throw Error('同じ大きさの盤面が完全に一致しています。位置をずらしてください。');
+    if(shape==='custom'&&!preview) {
+      // A link stores a coordinate reference, not a required physical overlap.
+      // Dragging may connect through another board, including a later board.
+      const sharesCell=(a,b)=>a.x<b.x+b.n&&b.x<a.x+a.n&&a.y<b.y+b.n&&b.y<a.y+a.n;
+      const connected=new Set([0]),pending=[0];
+      while(pending.length){
+        const a=boards[pending.pop()];
+        boards.forEach((b,i)=>{if(!connected.has(i)&&sharesCell(a,b)){connected.add(i);pending.push(i);}});
+      }
+      if(connected.size!==boards.length)throw Error('盤面同士を1マス以上重ね、すべての盤面をつないでください。');
+      for(let i=1;i<boards.length;i++){
+        const a=boards[i];
+        if(boards.slice(0,i).some(b=>a.x===b.x&&a.y===b.y&&a.n===b.n))throw Error('同じ大きさの盤面が完全に一致しています。位置をずらしてください。');
+      }
     }
     const minX = Math.min(...boards.map(b => b.x)), minY = Math.min(...boards.map(b => b.y));
     const cells = [], indices = new Map();
