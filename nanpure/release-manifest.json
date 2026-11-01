@@ -1,13 +1,13 @@
 {
   "version": "2026.11.01.76",
   "sourceCommit": "1222640c9a34beb3f57d065e7504b11bcae1e994",
-  "clientOverridesSha256": "e842d433e0e4b8f042666754e2df57f32c468746115e6608c3d5098bc88ee6f2",
+  "clientOverridesSha256": "b8689bb9f984a5af4d378312ae25fdc69c04c4a59c23a02763607a554d70c9f9",
   "base": "/nanpure/releases/2026.11.01.76/",
   "online": "https://puzzle-api.puzzle-hub-4826.workers.dev",
   "files": {
     "nanpure/index.html": "88daabd1ce23db7aa3d0b70f31d702ea1d59ebcc49388e66126346c91185284d",
     "nanpure.html": "396a2c1d26e062b39ecef7cbb3ab3bd4c3d96dbbccc985752bc1087f1774967b",
-    "nanpure/version.json": "15f2d9d186bd49fe00603759d292d7431b336a5d906dd13626ff312e4d8d0ea2",
+    "nanpure/version.json": "13b490d191325a34dd9e57360455a33f4acadc5d383b9ccd5e2b05b32faff438",
     "nanpure/releases.json": "5b7ce861fa67246532fb3f90158d5cf3d7114ab23862363d4af631af26a9d499",
     "nanpure/guide/index.html": "53ecc04bb0c8c4e22a7a6ebbdbcd2d90ff4e5c798d35832301cde2eeeb73c42d",
     "nanpure/sudoku-types/index.html": "289a15ead5d6bf9375c9cad2a57fab71b28087a89843dcfac55cde4182075db2",
@@ -2061,7 +2061,7 @@
     "nanpure/releases/2026.11.01.76/notebook/path-samples.js": "84e05567c5544dda0832f86931f46de43ec72baef5891aa97f61c22040163bc2",
     "nanpure/releases/2026.11.01.76/notebook/pattern-model.js": "706ea7514787515bed3e5f7b8d16fefdcc455c593fb581a0f8632b3e85a289c0",
     "nanpure/releases/2026.11.01.76/notebook/pattern-ui.js": "dc1693d66f8acf0abb30a9894012944865a737458e4b52c310169a5bbe15df67",
-    "nanpure/releases/2026.11.01.76/notebook/pattern.css": "14a365e9199b42bc1b0f804d049ae92f58652dd6e0d6e460e5556619ecbc5e63",
+    "nanpure/releases/2026.11.01.76/notebook/pattern.css": "4e4ba3196e49058897a882d268809f6ecd4cc08205a8b60abe884440d6205008",
     "nanpure/releases/2026.11.01.76/notebook/play-options.js": "a669f619cd2df74b25ff21d258268b99da07d006591d5a708936032ee0e748b8",
     "nanpure/releases/2026.11.01.76/notebook/play-workspace.css": "8e818961ad1275ea10b6b29f592513051f1bd9a70d6e7a9b9a33c4288dc5e9bb",
     "nanpure/releases/2026.11.01.76/notebook/play-workspace.js": "4ee5f124556941c5bcd61cc87b4de944a7bc316df2bdf0e1caf47c6c607b38a0",
@@ -2184,7 +2184,7 @@
     "sources": {
       "scripts/client-overrides/public/notebook/pattern-model.js": "706ea7514787515bed3e5f7b8d16fefdcc455c593fb581a0f8632b3e85a289c0",
       "scripts/client-overrides/public/notebook/pattern-ui.js": "dc1693d66f8acf0abb30a9894012944865a737458e4b52c310169a5bbe15df67",
-      "scripts/client-overrides/public/notebook/pattern.css": "14a365e9199b42bc1b0f804d049ae92f58652dd6e0d6e460e5556619ecbc5e63",
+      "scripts/client-overrides/public/notebook/pattern.css": "4e4ba3196e49058897a882d268809f6ecd4cc08205a8b60abe884440d6205008",
       "scripts/client-overrides/public/notebook/app.js": "7af3e4954c71da87e6e1ea216eabd51950aa07e275e981dc5a6db0d6f24bf5d1",
       "scripts/client-overrides/public/notebook/common.js": "fee5b3b99abb8c0009522d8b6796e8544b59ceab205a961493420825f2eb38d2",
       "scripts/check-nanpure-pattern.cjs": "d31ea8e49c32d2b6cc9ab76db9898dbbc98c2363fb0716ac5e5f8c76481cd6f6",
@@ -2196,7 +2196,7 @@
     "sources": {
       "scripts/client-overrides/public/notebook/pattern-model.js": "706ea7514787515bed3e5f7b8d16fefdcc455c593fb581a0f8632b3e85a289c0",
       "scripts/client-overrides/public/notebook/pattern-ui.js": "dc1693d66f8acf0abb30a9894012944865a737458e4b52c310169a5bbe15df67",
-      "scripts/client-overrides/public/notebook/pattern.css": "14a365e9199b42bc1b0f804d049ae92f58652dd6e0d6e460e5556619ecbc5e63",
+      "scripts/client-overrides/public/notebook/pattern.css": "4e4ba3196e49058897a882d268809f6ecd4cc08205a8b60abe884440d6205008",
       "scripts/check-nanpure-pattern.cjs": "d31ea8e49c32d2b6cc9ab76db9898dbbc98c2363fb0716ac5e5f8c76481cd6f6",
       "scripts/check-nanpure-pattern-math.cjs": "5e7067b1e3f2c3bd58dd3909f5c9795746deac75b6caef3a38b7babb9f5cf92f",
       "scripts/check-nanpure-pattern-browser.cjs": "65557eee73c0aa8d3fc617666bb2a928a67ebfed04d198daae9f1c72653d8c79",
@@ -2207,7 +2207,7 @@
     "sources": {
       "scripts/client-overrides/public/notebook/pattern-model.js": "706ea7514787515bed3e5f7b8d16fefdcc455c593fb581a0f8632b3e85a289c0",
       "scripts/client-overrides/public/notebook/pattern-ui.js": "dc1693d66f8acf0abb30a9894012944865a737458e4b52c310169a5bbe15df67",
-      "scripts/client-overrides/public/notebook/pattern.css": "14a365e9199b42bc1b0f804d049ae92f58652dd6e0d6e460e5556619ecbc5e63",
+      "scripts/client-overrides/public/notebook/pattern.css": "4e4ba3196e49058897a882d268809f6ecd4cc08205a8b60abe884440d6205008",
       "scripts/check-nanpure-pattern.cjs": "d31ea8e49c32d2b6cc9ab76db9898dbbc98c2363fb0716ac5e5f8c76481cd6f6",
       "scripts/check-nanpure-pattern-math.cjs": "5e7067b1e3f2c3bd58dd3909f5c9795746deac75b6caef3a38b7babb9f5cf92f",
       "scripts/check-nanpure-pattern-browser.cjs": "65557eee73c0aa8d3fc617666bb2a928a67ebfed04d198daae9f1c72653d8c79",
@@ -2219,7 +2219,7 @@
     "sources": {
       "scripts/client-overrides/public/notebook/pattern-model.js": "706ea7514787515bed3e5f7b8d16fefdcc455c593fb581a0f8632b3e85a289c0",
       "scripts/client-overrides/public/notebook/pattern-ui.js": "dc1693d66f8acf0abb30a9894012944865a737458e4b52c310169a5bbe15df67",
-      "scripts/client-overrides/public/notebook/pattern.css": "14a365e9199b42bc1b0f804d049ae92f58652dd6e0d6e460e5556619ecbc5e63",
+      "scripts/client-overrides/public/notebook/pattern.css": "4e4ba3196e49058897a882d268809f6ecd4cc08205a8b60abe884440d6205008",
       "scripts/check-nanpure-pattern.cjs": "d31ea8e49c32d2b6cc9ab76db9898dbbc98c2363fb0716ac5e5f8c76481cd6f6",
       "scripts/check-nanpure-pattern-math.cjs": "5e7067b1e3f2c3bd58dd3909f5c9795746deac75b6caef3a38b7babb9f5cf92f",
       "scripts/check-nanpure-pattern-browser.cjs": "65557eee73c0aa8d3fc617666bb2a928a67ebfed04d198daae9f1c72653d8c79",
@@ -2231,7 +2231,7 @@
     "sources": {
       "scripts/client-overrides/public/notebook/pattern-model.js": "706ea7514787515bed3e5f7b8d16fefdcc455c593fb581a0f8632b3e85a289c0",
       "scripts/client-overrides/public/notebook/pattern-ui.js": "dc1693d66f8acf0abb30a9894012944865a737458e4b52c310169a5bbe15df67",
-      "scripts/client-overrides/public/notebook/pattern.css": "14a365e9199b42bc1b0f804d049ae92f58652dd6e0d6e460e5556619ecbc5e63",
+      "scripts/client-overrides/public/notebook/pattern.css": "4e4ba3196e49058897a882d268809f6ecd4cc08205a8b60abe884440d6205008",
       "scripts/check-nanpure-pattern.cjs": "d31ea8e49c32d2b6cc9ab76db9898dbbc98c2363fb0716ac5e5f8c76481cd6f6",
       "scripts/check-nanpure-pattern-math.cjs": "5e7067b1e3f2c3bd58dd3909f5c9795746deac75b6caef3a38b7babb9f5cf92f",
       "scripts/check-nanpure-pattern-browser.cjs": "65557eee73c0aa8d3fc617666bb2a928a67ebfed04d198daae9f1c72653d8c79",

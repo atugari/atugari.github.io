@@ -44,3 +44,5 @@ html.np-pattern-fit #np-language-bar{display:none!important}
 @media(max-width:979px){.np-pattern-page[data-docked=true] .pattern-header{height:112px;min-height:112px}.np-pattern-page[data-docked=true] .pattern-view-switch{height:80px}.np-pattern-page[data-docked=true] .pattern-board-meta [data-pattern-count]{white-space:normal}}
 @media(max-width:360px){.np-pattern-page[data-docked=true] .pattern-view-switch{height:96px}}
 @media(max-width:979px) and (max-height:679px){.np-pattern-page[data-docked=true] .pattern-layout{grid-template-rows:minmax(0,1fr) 44px 112px}}
+@media(max-width:979px){.np-pattern-page[data-workspace=normal] .pattern-header{height:160px;min-height:160px;align-content:center}.np-pattern-page[data-workspace=normal] .pattern-workspace-modes button{height:64px;min-height:64px}}
+@media(max-width:360px){.np-pattern-page[data-workspace=normal] .pattern-header{height:208px;min-height:208px}.np-pattern-page[data-workspace=normal] .pattern-workspace-modes button{height:80px;min-height:80px}}
