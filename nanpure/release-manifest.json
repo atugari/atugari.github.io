@@ -1025,7 +1025,7 @@
     "nanpure/releases/2026.11.01.70/notebook/i18n-data.js": "a349409f7abfaa4709a3cacf6642de9a91d2682d7efa115acd19c68402ff4df4",
     "nanpure/releases/2026.11.01.70/notebook/i18n.js": "a642cf332b5c71c303af19e4b5b72c8f14a121c2d2c3f4be6162db567d98ef4b",
     "nanpure/releases/2026.11.01.70/notebook/icon.png": "c5218ebc2cfb308244ee0ab0f53a3e94ec1d75d2fdae0360b2ff73c92dbc5865",
-    "nanpure/releases/2026.11.01.70/notebook/index.html": "a59040b0605cbdcb2296998ab5a3bd640694fb409fddae0e35ec8e1850f4827c",
+    "nanpure/releases/2026.11.01.70/notebook/index.html": "1e8b544014a431f7bb5eac29621567d9926d778331b044063bd13cdf920653d1",
     "nanpure/releases/2026.11.01.70/notebook/lan-identity.js": "b302a51bf1305fa0d1dc594c90607414edf8aa78fdd82bf25e798a6f31fc67aa",
     "nanpure/releases/2026.11.01.70/notebook/linked.js": "71bf5448f6a753c277be7303d150575da6cbe6e43bee34c135c82d7d866135d4",
     "nanpure/releases/2026.11.01.70/notebook/logical-hints.js": "176f1a097a413bfe9d91feab06d9883df2576f07e4d3b63c76ddd31a0d407b3d",
@@ -1135,7 +1135,7 @@
       "nanpure/collection/board-input.js": "92acb148272145a2aa202d44ce7093004a70ee30de8d11adc44e19ab31de56c4",
       "nanpure/collection/player.html": "3a1ba271dc0565de41b8e2b25bd90b00ef74f9baee6cb8c160ea56e006b6189a",
       "scripts/prepare-pareasobi-move.mjs": "3d7f983715b77fb53ee22e4cb944d39f8abcf9dd0f1ac0a518408aa6426a2961",
-      "scripts/export-nanpure.mjs": "031ecc45d54a839f2d7d1b5246c24c0e6a893b9431bb1eadec90a325bef43e72",
+      "scripts/export-nanpure.mjs": "5fdb955c597ed7733f02658936f0a59e7e90e32e29c426c09c7118f703f01327",
       "scripts/client-overrides/public/notebook/board-input.js": "92acb148272145a2aa202d44ce7093004a70ee30de8d11adc44e19ab31de56c4",
       "scripts/client-overrides/app/game.tsx": "581397c06f3a10073ca4cf1956f48249c3a00c9c037739f3934ae371c7c1e908",
       "scripts/client-overrides/app/site-intro.tsx": "f34000e273a92612d7629fd0a413f6004fdc1053844497b9652a384ba2bc87d0",
@@ -1150,7 +1150,7 @@
       "scripts/i18n/runtime.js": "a642cf332b5c71c303af19e4b5b72c8f14a121c2d2c3f4be6162db567d98ef4b",
       "scripts/furigana.js": "e25d4accef69d427d9283437b95363d574a3dc1c823e75031519d3936ec23b9f",
       "nanpure/assets/reading-tools.js": "d7c2fa6870309c85dad351d428ea644f36074a0082adcbceb28da3454c256560",
-      "scripts/prepare-reading-release.mjs": "48cd2665708ca44ed09b34c5b3c999dca2bb30a83e361e6890b7ae6f035506d9"
+      "scripts/prepare-reading-release.mjs": "cd10a724a21da2dd0d3c3b2bc36fbbaab2ab4b5f7916f8781d73af8a47ef944f"
     }
   }
 }

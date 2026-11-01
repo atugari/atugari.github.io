@@ -25,7 +25,6 @@ fs.copyFileSync(path.join(root,'scripts/furigana.js'),path.join(out,'furigana.js
 buildTranslationAssets(path.join(out,'notebook'),version,{previousDirectory:path.join(root,oldBase,'notebook')});
 for(const file of walk(path.join(out,'notebook')).filter(f=>f.endsWith('.html'))){
  let text=fs.readFileSync(file,'utf8');
- if(path.basename(file)==='index.html')text=text.replace('</head>','<style>[data-action="open-crossword"],[data-action="open-prototype"],[data-action="open-shirupure"],[data-action="open-tenbin"],[data-action="wado-generator"],[data-action="magic-generator"],.shiru-entry{display:none!important}</style></head>');
  if(!text.includes('src="i18n.js"'))text=text.replace('</head>','<script src="i18n-data.js"></script><script src="i18n.js"></script></head>');
  text=text.replace('</head>','<script>if(parent!==window)document.documentElement.dataset.embedded="true";</script><style>html[data-embedded="true"] #np-language-bar{display:none!important}</style></head>');
  if(!text.includes('furigana.js'))text=text.replace('</body>','<script defer src="'+base+'furigana.js"></script></body>');

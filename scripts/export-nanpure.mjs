@@ -79,7 +79,6 @@ try {
  for(const ext of ['js','css'])fs.copyFileSync(path.join(repo,'nanpure/collection/workspace.'+ext),path.join(output,'notebook/play-workspace.'+ext));
  const notebookIndex=path.join(output,'notebook/index.html');
  let notebookHTML=fs.readFileSync(notebookIndex,'utf8');
- notebookHTML=notebookHTML.replace('</head>','<style>[data-action="open-crossword"],[data-action="open-prototype"],[data-action="open-shirupure"],[data-action="open-tenbin"],[data-action="wado-generator"],[data-action="magic-generator"],.shiru-entry{display:none!important}</style></head>');
  notebookHTML=notebookHTML.replace(/(<script id="common-source">)[\s\S]*?(<\/script>)/,(_,a,b)=>a+fs.readFileSync(path.join(overrides,'public/notebook/common.js'),'utf8')+b);
  if(!notebookHTML.includes('id="core-mixed-multi"'))notebookHTML=notebookHTML.replace(/(<script id="generator-source">[\s\S]*?<\/script>)/,all=>all+'<script id="core-mixed-multi">'+fs.readFileSync(path.join(overrides,'public/notebook/mixed-multi.js'),'utf8')+'</script>');
  if(!notebookHTML.includes('id="core-mixed-multi"'))throw Error('Mixed multi worker source is missing');
