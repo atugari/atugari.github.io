@@ -25,8 +25,7 @@ async function journey(page,frame,{multi=false,native=true}={}){
  assert(after.height>before.height+20,'Full screen enlarges the board: '+JSON.stringify({before,after}));
  assert.equal(await frame.evaluate(()=>JSON.stringify({grid:NanpureAppTest.getCurrent().grid,notes:NanpureAppTest.getCurrent().notes})),state,'Entering preserves all input');
  const bounds=await frame.locator('.np-number-panel').evaluate(el=>{const r=el.getBoundingClientRect();return{left:r.left,top:r.top,right:r.right,bottom:r.bottom,width:innerWidth,height:innerHeight};});assert(bounds.left>=-1&&bounds.top>=-1&&bounds.right<=bounds.width+1&&bounds.bottom<=bounds.height+1,'Keypad remains on screen');
- if(multi){assert.equal(await frame.locator('.np-workspace-screen>.linked-controls,.np-workspace-screen>.multi-board-legend').count(),0);await frame.locator('[data-fullscreen-boards]').click();assert(await frame.locator('.np-fullscreen-boards').isVisible());await frame.locator('.np-fullscreen-boards [data-action="linked-focus"]').last().click();assert(!await frame.locator('.np-fullscreen-boards').isVisible());}
- const editable=frame.locator('#board [data-cell]').filter({hasNot:frame.locator('.given')});
+ if(multi){assert.equal(await frame.locator('.np-workspace-screen>.linked-controls,.np-workspace-screen>.multi-board-legend').count(),0);await frame.locator('[data-fullscreen-boards]').click();assert(await frame.locator('.np-fullscreen-boards').isVisible());await frame.locator('.np-fullscreen-boards [data-action="linked-focus"]').last().click();await frame.locator('.np-fullscreen [data-fullscreen]').waitFor();assert(!await frame.locator('.np-fullscreen-boards').isVisible());}
  const cell=await frame.locator('#board [data-cell]').evaluateAll(els=>els.find(e=>e.getAttribute('aria-label')?.includes('空')&&!e.classList.contains('given'))?.getAttribute('data-cell'));
  if(cell!==undefined){await frame.locator('#board [data-cell="'+cell+'"]').click();await frame.locator('[data-action="number"]').first().click();assert.notEqual(await frame.evaluate(()=>JSON.stringify({grid:NanpureAppTest.getCurrent().grid,notes:NanpureAppTest.getCurrent().notes})),state,'Digit input works in full screen');await frame.locator('[data-action="undo"]').click();}
  await frame.locator('[data-fullscreen]').click();await frame.waitForFunction(()=>!window.NPBoardFullscreen.isActive());await tick(frame);
@@ -45,7 +44,8 @@ async function journey(page,frame,{multi=false,native=true}={}){
  const f=await setup(browser,{width:1440,height:900});await f.page.goto(origin+'/nanpure/');await f.page.getByRole('button',{name:'自由に遊ぶ 好きなルールで、自分のペースで。',exact:true}).click();
  await f.page.waitForFunction(()=>[...document.querySelectorAll('iframe')].some(el=>el.contentWindow?.NanpureAppTest&&el.contentWindow?.NPBoardFullscreen));
  const iframe=f.page.locator('iframe[title="ナンプレ帳 問題生成とプレイ"]'),frame=await(await iframe.elementHandle()).contentFrame();
- await frame.evaluate(p=>{NanpureAppTest.validate(p);const lib=NanpureAppTest.getLibrary();lib.splice(0,lib.length,p);window.NPWebsiteTool('open-notebook');},classic(16));
- for(const selector of ['[data-action="start"][data-flow="play"]','[data-action="pick-play"][data-id="ci-fullscreen-16"]','[data-action="begin-play"][data-id="ci-fullscreen-16"]'])await frame.locator(selector).click();
+ await frame.locator('[data-action="open-notebook"]').waitFor();
+ await frame.evaluate(p=>{NanpureAppTest.validate(p);const lib=NanpureAppTest.getLibrary();lib.splice(0,lib.length,p);},classic(16));
+ for(const selector of ['[data-action="open-notebook"]','[data-action="start"][data-flow="play"]','[data-action="pick-play"][data-id="ci-fullscreen-16"]','[data-action="begin-play"][data-id="ci-fullscreen-16"]'])await frame.locator(selector).click();
  await journey(f.page,frame);assert.deepEqual(f.errors,[]);await f.context.close();console.log('PASS actual website shell: parent header reclaimed, native fullscreen, input and restoration');
 }finally{await browser.close();}})().catch(error=>{console.error(error);process.exitCode=1;});
