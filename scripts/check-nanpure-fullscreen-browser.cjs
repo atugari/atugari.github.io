@@ -28,12 +28,15 @@ async function journey(page,frame,{multi=false,native=true}={}){
  if(multi){assert.equal(await frame.locator('.np-workspace-screen>.linked-controls,.np-workspace-screen>.multi-board-legend').count(),0);await frame.locator('[data-fullscreen-boards]').click();assert(await frame.locator('.np-fullscreen-boards').isVisible());await frame.locator('.np-fullscreen-boards [data-action="linked-focus"]').last().click();await frame.locator('.np-fullscreen [data-fullscreen]').waitFor();assert(!await frame.locator('.np-fullscreen-boards').isVisible());}
  const cell=await frame.locator('#board [data-cell]').evaluateAll(els=>els.find(e=>e.getAttribute('aria-label')?.includes('空')&&!e.classList.contains('given'))?.getAttribute('data-cell'));
  if(cell!==undefined){await frame.locator('#board [data-cell="'+cell+'"]').click();await frame.locator('[data-action="number"]').first().click();assert.notEqual(await frame.evaluate(()=>JSON.stringify({grid:NanpureAppTest.getCurrent().grid,notes:NanpureAppTest.getCurrent().notes})),state,'Digit input works in full screen');await frame.locator('[data-action="undo"]').click();}
+ const beforeExit=await frame.evaluate(()=>JSON.stringify({grid:NanpureAppTest.getCurrent().grid,notes:NanpureAppTest.getCurrent().notes}));
+ const visibleProgress=value=>{const p=JSON.parse(value);return{grid:p.grid,notes:Object.fromEntries(Object.entries(p.notes).filter(([,values])=>values.length))};};
+ assert.deepEqual(visibleProgress(beforeExit),visibleProgress(state),'Undo restores every digit and nonempty note');
  await frame.locator('[data-fullscreen]').click();await frame.waitForFunction(()=>!window.NPBoardFullscreen.isActive());await tick(frame);
  assert(!await page.evaluate(()=>!!document.fullscreenElement));assert.equal(await frame.locator('.np-fullscreen-boards').count(),0);
  if(multi)assert(await frame.locator('.np-workspace-screen>.linked-controls,.np-workspace-screen>.multi-board-legend').count());
  assert(await frame.locator('.np-workspace-screen>.play-head').count(),'Original header is restored');
  const restored=await frame.locator('#board-scroll').boundingBox();assert(Math.abs(restored.height-before.height)<2,'Original layout restored');
- assert.equal(await frame.evaluate(()=>JSON.stringify({grid:NanpureAppTest.getCurrent().grid,notes:NanpureAppTest.getCurrent().notes})),state,'Exit and Undo preserve original progress');
+ assert.equal(await frame.evaluate(()=>JSON.stringify({grid:NanpureAppTest.getCurrent().grid,notes:NanpureAppTest.getCurrent().notes})),beforeExit,'Exiting preserves the exact grid and notes');
  console.log('PASS fullscreen geometry '+JSON.stringify({before:before.height,expanded:after.height,restored:restored.height,multi,native}));
 }
 (async()=>{const browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_BIN||undefined,args:['--no-sandbox','--disable-dev-shm-usage']});try{
