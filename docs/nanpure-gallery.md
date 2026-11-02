@@ -1,8 +1,9 @@
 # Personal galleries (Gallery 1)
 
-The stable entry is `/nanpure/gallery/`. Main/translated homes and the ready
+The stable entry is `/nanpure/gallery/`. The main game home and the ready
 collection link to it; `scripts/install-nanpure-gallery.mjs` keeps those entries
-after future exports. Existing immutable game release files are not changed.
+after future exports. Translated guides remain static and hand off to the game
+with their existing language links. Existing immutable game release files are not changed.
 
 One random gallery identity owns one room. The editor keeps it under
 `np-gallery-key-v1`, independently of the cloud-backup service scheduled to end
