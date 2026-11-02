@@ -1,127 +1,84 @@
-// CI browser regressions: real worker, painting, keyboard, save and mobile layout.
+// Real workers and complete editor regression across desktop, phones and landscape.
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 const root=path.resolve(process.argv[2]||'_site'),origin='https://atugari.github.io',version=JSON.parse(fs.readFileSync(path.join(root,'nanpure/version.json'))).version;
 const mime={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml'};
+async function setup(browser,viewport){
+ const context=await browser.newContext({viewport,serviceWorkers:'block'}),page=await context.newPage(),errors=[];
+ page.on('pageerror',e=>errors.push(e.message));await context.addInitScript(()=>{localStorage.setItem('nanpure-language-v1','ja');Object.defineProperty(navigator,'doNotTrack',{get:()=> '1'});});
+ await context.route('**/*',route=>{const u=new URL(route.request().url());if(u.origin!==origin)return route.fulfill({status:204,body:''});const file=path.resolve(root,'.'+decodeURIComponent(u.pathname)+(u.pathname.endsWith('/')?'index.html':''));if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile())return route.fulfill({status:404,body:''});return route.fulfill({contentType:mime[path.extname(file)]||'application/octet-stream',body:fs.readFileSync(file)});});
+ return{context,page,errors};
+}
 (async()=>{const browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_BIN||undefined,args:['--no-sandbox']});try{
  for(const viewport of [{width:1910,height:878},{width:1440,height:1000},{width:390,height:844},{width:320,height:740},{width:320,height:636},{width:844,height:390}]){
-  console.log('Checking pattern page viewport',viewport.width,viewport.height);
-  const context=await browser.newContext({viewport,serviceWorkers:'block'}),page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
-  await context.addInitScript(()=>{localStorage.setItem('nanpure-language-v1','ja');Object.defineProperty(navigator,'doNotTrack',{get:()=> '1'});});
-  await context.route('**/*',route=>{const u=new URL(route.request().url());if(u.origin!==origin)return route.fulfill({status:204,body:''});const file=path.resolve(root,'.'+decodeURIComponent(u.pathname)+(u.pathname.endsWith('/')?'index.html':''));if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile())return route.fulfill({status:404,body:''});return route.fulfill({contentType:mime[path.extname(file)]||'application/octet-stream',body:fs.readFileSync(file)});});
-  const url=origin+'/nanpure/releases/'+version+'/notebook/index.html';await page.goto(url);await page.locator('[data-action="open-notebook"]').waitFor();await page.locator('[data-action="open-notebook"]').click();
-  // Both the free-play home and the create menu have a direct, illustrated entry.
-  assert.equal(await page.locator('[data-action="pattern-open"] svg').count(),1);
-  await page.locator('[data-action="pattern-open"]').click();await page.locator('#np-pattern-page').waitFor();
-  await page.locator('[data-pattern-close]').click();await page.locator('[data-flow="create"]').click();await page.locator('[data-action="pattern-open"]').click();
-  const editor=page.locator('#np-pattern-page');await editor.locator('[data-pattern-indicator][data-state="ready"]').waitFor({state:'attached',timeout:15000});
-  const landscape=viewport.width>=620&&viewport.width<980&&viewport.height<600,narrow=viewport.width<980&&!landscape;
-  const area=async value=>{if(narrow){if(!await editor.locator('.pattern-mobile-dialog').evaluate(el=>el.open))await editor.locator('[data-pattern-quick="draw"]').click();await editor.locator('[data-pattern-area-select]').selectOption(value);if(value==='draw'&&await editor.locator('.pattern-mobile-dialog').evaluate(el=>el.open))await editor.locator('[data-pattern-tools-close]').click();}else await editor.locator(['draw','transform','size'].includes(value)?'[data-pattern-tool-select]':'[data-pattern-right-select]').selectOption(value);};
-  const workspace=async value=>{if(await editor.getAttribute('data-workspace')==='normal')await editor.locator('[data-pattern-workspace="'+value+'"]').click();else{if(narrow)await area('size');await editor.locator('[data-pattern-workspace-select]:visible').first().selectOption(value);}};
+  console.log('Checking pattern workflow',viewport);
+  const {context,page,errors}=await setup(browser,viewport);
+  await page.goto(origin+'/nanpure/releases/'+version+'/notebook/index.html');
+  const open=async()=>{await page.locator('[data-action="open-notebook"]').click();await page.locator('[data-action="pattern-open"]').click();};await open();
+  const editor=page.locator('#np-pattern-page'),dialog=editor.locator('.pattern-tools-dialog'),grid=editor.locator('.pattern-grid');
+  const ready=()=>editor.locator('[data-pattern-indicator][data-state="ready"]').waitFor({state:'attached',timeout:20000});
+  const generate=async()=>{await editor.locator('[data-pattern-view="preview"]').click();await ready();};
+  const edit=async()=>{if(await editor.getAttribute('data-view')!=='paint')await editor.locator('[data-pattern-view="paint"]').click();};
+  const tools=async()=>{await edit();if(await dialog.isHidden())await editor.locator('[data-pattern-quick="draw"]').click();};
+  const details=async selector=>{await tools();const el=dialog.locator(selector);if(!await el.evaluate(e=>e.open))await el.locator('summary').click();};
+  const close=async()=>{if(await dialog.isVisible())await dialog.locator('[data-pattern-tools-close]').click();};
+  const preset=async name=>{await edit();await editor.locator('[data-pattern-quick="presets"]').click();await editor.locator('[data-pattern-preset="'+name+'"]').click();};
+  const workspace=async value=>{await details('.pattern-display-options');await dialog.locator('[data-pattern-workspace-select]').selectOption(value);};
   const noScroll=async()=>{
-   const bad=await editor.evaluate(el=>[...el.querySelectorAll('*')].filter(e=>e.getClientRects().length&&e.clientHeight>0&&getComputedStyle(e).display!=='contents'&&!e.closest('.pattern-mobile-dialog')&&(e.scrollHeight>e.clientHeight+2||e.scrollWidth>e.clientWidth+2)).map(e=>({tag:e.tagName,class:e.className,height:e.clientHeight,excess:e.scrollHeight-e.clientHeight,widthExcess:e.scrollWidth-e.clientWidth})));
-   assert.deepEqual(bad,[],'The drawing workspace fits without outer or inner scrolling');const dialog=editor.locator('.pattern-mobile-dialog[open]');if(await dialog.count()){const r=await dialog.boundingBox();assert(r.x>=0&&r.y>=0&&r.x+r.width<=viewport.width+1&&r.y+r.height<=viewport.height+1,'Optional tools dialog stays within the viewport');}
+   assert.deepEqual(await editor.evaluate(el=>[...el.querySelectorAll('*')].filter(e=>e.getClientRects().length&&e.clientHeight>0&&getComputedStyle(e).display!=='contents'&&!e.closest('dialog')&&(e.scrollHeight>e.clientHeight+2||e.scrollWidth>e.clientWidth+2)).map(e=>({class:e.className,excess:e.scrollHeight-e.clientHeight,width:e.scrollWidth-e.clientWidth}))),[],'No internal scrolling in the fit workspace');
+   assert(await page.evaluate(()=>document.documentElement.scrollHeight<=innerHeight+1&&document.documentElement.scrollWidth<=innerWidth+1));
   };
-  assert.equal(await editor.getAttribute('data-workspace'),'fit');
-  const fitBounds=await editor.locator('.pattern-grid').boundingBox();
-  assert(fitBounds.x>=0&&fitBounds.y>=0&&fitBounds.x+fitBounds.width<=viewport.width+1&&fitBounds.y+fitBounds.height<=viewport.height+1,'Entire fit board is visible');
-  if(!narrow)assert(fitBounds.height>=Math.min(viewport.height-16,viewport.width-(landscape?472:532))-1,'Use full height or the available width for the board');
-  assert(await page.evaluate(()=>document.documentElement.scrollHeight<=innerHeight+1),'Fit mode has no page scrolling');
-  for(const value of ['draw','transform','size','footer','advice','presets','digit','guide']){
-   await area(value);await noScroll();assert.deepEqual(await editor.locator('.pattern-grid').boundingBox(),fitBounds,'Changing the work area keeps the board fixed');
-  }
-  await area('guide');
-  while(await editor.locator('[data-pattern-info-next="guide"]').isEnabled()){await editor.locator('[data-pattern-info-next="guide"]').click();await noScroll();}
-  assert.equal(await editor.locator('.pattern-info-guide a:visible').count(),2,'Research links remain reachable');
-  await area('presets');await editor.locator('[data-pattern-clear]').click();await editor.locator('[data-pattern-indicator][data-state="impossible"]').waitFor({state:'attached'});
-  await area('advice');await noScroll();while(await editor.locator('[data-pattern-info-next="advice"]').isEnabled()){await editor.locator('[data-pattern-info-next="advice"]').click();await noScroll();}
-  await area('presets');await editor.locator('[data-pattern-preset="heart"]').click();await editor.locator('[data-pattern-indicator][data-state="ready"]').waitFor({state:'attached'});
-  await area('draw');
-  await editor.locator('[data-pixel="80"]').click();assert.deepEqual(await editor.locator('.pattern-grid').boundingBox(),fitBounds,'Last cell can be painted without moving the fit board');
-  await editor.locator('[data-pattern-undo]').click();await editor.locator('[data-pattern-indicator][data-state="ready"]').waitFor({state:'attached'});
-  await workspace('pinned');await area('size');
-  const pinned=await editor.locator('.pattern-grid').boundingBox();
-  await page.evaluate(()=>window.scrollTo(0,500));assert.deepEqual(await editor.locator('.pattern-grid').boundingBox(),pinned,'Pinned board holds position during scrolling');
-  if(pinned.width>144){await editor.locator('[data-pattern-size="smaller"]').click();assert((await editor.locator('.pattern-grid').boundingBox()).width<pinned.width,'Pinned board allows deliberate sizing');await editor.locator('[data-pattern-size="reset"]').click();assert.equal((await editor.locator('.pattern-grid').boundingBox()).width,pinned.width);}
-  await page.evaluate(()=>NPFurigana.setEnabled(true));await workspace('fit');
-  for(const value of ['draw','transform','size','footer','advice','presets','digit','guide']){await area(value);await noScroll();}
-  await area('draw');
-  const fitRuby=await editor.locator('.pattern-grid').boundingBox();
-  const fitFrames=page.evaluate(async()=>{const out=[],g=document.querySelector('.pattern-grid');for(let i=0;i<60;i++){const r=g.getBoundingClientRect();out.push([r.x,r.y,r.width,r.height]);await new Promise(requestAnimationFrame);}return out;});
-  await editor.locator('[data-pixel="0"]').click();const fitGeometry=await fitFrames;for(let k=0;k<4;k++)assert(Math.max(...fitGeometry.map(r=>r[k]))-Math.min(...fitGeometry.map(r=>r[k]))<1,'Fit board is stable with furigana');
-  await editor.locator('[data-pattern-undo]').click();await editor.locator('[data-pattern-indicator][data-state="ready"]').waitFor({state:'attached'});
-  assert.deepEqual(await editor.locator('.pattern-grid').boundingBox(),fitRuby);
-  await page.evaluate(()=>NPFurigana.setEnabled(false));await workspace('normal');
-  assert.equal(await editor.locator('[data-pixel][aria-pressed="true"]').count(),55);
-  assert.equal(await page.evaluate(()=>NanpureAppTest.getRoute().flow),'pattern','Editor is a navigable page');
-  assert.equal(await page.locator('dialog[open]').count(),0,'No floating window');
-  const boardSize=await editor.locator('.pattern-grid').boundingBox();assert(boardSize.width>=(viewport.width>=980?600:330),'Board has a readable minimum size');
-  assert(await editor.evaluate(el=>[...el.querySelectorAll('button,p,label,summary,small,output')].filter(n=>n.getClientRects().length&&!n.closest('.pattern-grid')).every(n=>parseFloat(getComputedStyle(n).fontSize)>=16)),'Text is at least 16px');
-  // Check the whole geometry while a pointer is held and while the worker status changes.
-  await editor.locator('[data-pixel="0"]').scrollIntoViewIfNeeded();
-  const stability=page.evaluate(async()=>{const out=[],g=document.querySelector('.pattern-grid');for(let i=0;i<80;i++){const r=g.getBoundingClientRect();out.push([r.x,r.y,r.width,r.height]);await new Promise(requestAnimationFrame);}return out;});
-  const hit=await editor.locator('[data-pixel="0"]').boundingBox();await page.mouse.move(hit.x+hit.width/2,hit.y+hit.height/2);await page.mouse.down();await page.waitForTimeout(120);await page.mouse.up();
-  const geometry=await stability;for(let k=0;k<4;k++)assert(Math.max(...geometry.map(r=>r[k]))-Math.min(...geometry.map(r=>r[k]))<1,'No click/status pulse or movement');
-  await editor.locator('[data-pattern-undo]').click();await editor.locator('[data-pattern-status][data-state="ready"]').waitFor();
-  const oldSize=(await editor.locator('.pattern-grid').boundingBox()).width;await editor.locator('[data-pattern-size="larger"]').click();assert((await editor.locator('.pattern-grid').boundingBox()).width>oldSize,'Explicit size control enlarges the board');await editor.locator('[data-pattern-size="reset"]').click();assert.equal((await editor.locator('.pattern-grid').boundingBox()).width,oldSize);
-
-  assert((await editor.locator('[data-pixel]').allTextContents()).every(t=>!t.trim()),'Drawing is not obscured by generated digits');
-  // Ruby text is cleaned during capture; button clicks must still find their original ancestor.
-  await page.evaluate(()=>NPFurigana.setEnabled(true));await editor.locator('[data-pattern-view="preview"] ruby').first().waitFor();
-  await editor.locator('[data-pattern-view="preview"] ruby').first().click();await page.waitForFunction(()=>document.querySelector('#np-pattern-page').dataset.view==='preview');
-  assert.equal((await editor.locator('[data-pixel]').allTextContents()).filter(t=>t.trim()).length,55);
-  assert.equal(await editor.locator('[data-pixel="0"]').getAttribute('aria-disabled'),'true');const previewCell=await editor.locator('[data-pixel="0"]').boundingBox();await page.mouse.click(previewCell.x+previewCell.width/2,previewCell.y+previewCell.height/2);assert.equal(await editor.locator('[data-pixel][aria-pressed="true"]').count(),55,'Preview does not paint');
-  await editor.locator('[data-pattern-view="paint"]').click();await page.waitForFunction(()=>document.querySelector('#np-pattern-page').dataset.view==='paint');
-  await editor.locator('[data-pixel="0"]').scrollIntoViewIfNeeded();
-  const rubyGeometry=page.evaluate(async()=>{const out=[],g=document.querySelector('.pattern-grid');for(let i=0;i<60;i++){const r=g.getBoundingClientRect();out.push([r.x,r.y,r.width,r.height]);await new Promise(requestAnimationFrame);}return out;});
-  const rubyHit=await editor.locator('[data-pixel="0"]').boundingBox();await page.mouse.click(rubyHit.x+rubyHit.width/2,rubyHit.y+rubyHit.height/2);
-  const rubyBounds=await rubyGeometry;for(let k=0;k<4;k++)assert(Math.max(...rubyBounds.map(r=>r[k]))-Math.min(...rubyBounds.map(r=>r[k]))<1,'No pulse with furigana enabled');
-  await editor.locator('[data-pattern-undo]').click();
-  await page.evaluate(()=>NPFurigana.setEnabled(false));
-  await editor.locator('[data-pixel="0"]').click();assert.equal(await editor.locator('[data-pixel][aria-pressed="true"]').count(),56);
-  await editor.locator('[data-pixel="0"]').click();assert.equal(await editor.locator('[data-pixel][aria-pressed="true"]').count(),55,'Tap toggles paint and erase');
-  await editor.locator('[data-pattern-undo]').click();assert.equal(await editor.locator('[data-pixel][aria-pressed="true"]').count(),56);
-  await editor.locator('[data-pattern-redo]').click();assert.equal(await editor.locator('[data-pixel][aria-pressed="true"]').count(),55);
-  if(viewport.width>=1500){const a=await editor.locator('.pattern-grid').boundingBox();await editor.locator('[data-pattern-preset="diamond"]').click();await editor.locator('[data-pattern-status][data-state="ready"]').waitFor();const b=await editor.locator('.pattern-grid').boundingBox();for(const k of ['x','y','width','height'])assert(Math.abs(a[k]-b[k])<1,'A visible template selection does not move or resize the board');await editor.locator('[data-pattern-preset="heart"]').click();await editor.locator('[data-pattern-status][data-state="ready"]').waitFor();}
+  const simple=async()=>{const labels=await editor.locator('button:visible,select:visible').evaluateAll(els=>els.filter(e=>!e.closest('.pattern-grid,dialog')).map(e=>e.textContent.trim()));assert(labels.length<=8,'Only current actions are shown: '+labels);assert.equal(labels.length,new Set(labels).size,'No duplicate actions');};
+  assert.equal(await editor.getAttribute('data-state'),'editing');assert(await editor.locator('[data-pattern-view="preview"]').isEnabled(),'Step 2 starts work without waiting for a hidden result');
+  assert(await editor.locator('[data-pattern-save]').isHidden());assert(await editor.locator('[data-pattern-share]').isHidden());assert.equal(await editor.locator('[data-pattern-difficulty] option').count(),19);
+  const fit=await grid.boundingBox();assert(fit.x>=0&&fit.y>=0&&fit.x+fit.width<=viewport.width+1&&fit.y+fit.height<=viewport.height+1);
+  const side=viewport.width>=980||(viewport.width>=620&&viewport.height<600);
+  assert(fit.width>=Math.min(side?viewport.height-16:viewport.height-328,viewport.width-(side?(viewport.width>=980?364:264):12))-1,'Board uses the available space');
+  await noScroll();await simple();
+  await editor.locator('[data-pixel="0"]').click();assert.equal(await editor.locator('[data-pixel][aria-pressed="true"]').count(),56);assert(await editor.locator('[data-pattern-view="preview"]').isEnabled());
+  await editor.locator('[data-pattern-undo]').click();assert.equal(await editor.locator('[data-pixel][aria-pressed="true"]').count(),55);await editor.locator('[data-pattern-redo]').click();assert.equal(await editor.locator('[data-pixel][aria-pressed="true"]').count(),56);await editor.locator('[data-pattern-undo]').click();
+  await editor.locator('[data-pattern-difficulty]').selectOption('1');await generate();await noScroll();await simple();
+  assert.equal((await editor.locator('[data-pixel]').allTextContents()).filter(t=>t.trim()).length,55);assert((await editor.locator('[data-pattern-rating]').textContent()).includes('01'));
+  const count=await editor.locator('[data-pixel][aria-pressed="true"]').count();const previewHit=await editor.locator('[data-pixel="0"]').boundingBox();await page.mouse.click(previewHit.x+previewHit.width/2,previewHit.y+previewHit.height/2);assert.equal(await editor.locator('[data-pixel][aria-pressed="true"]').count(),count,'Preview cannot paint');assert(await editor.locator('[data-pattern-difficulty-label]').isHidden());
+  assert.deepEqual(await grid.boundingBox(),fit,'Status and preview never move the board');await edit();
+  // All optional controls are reachable once, without duplicating panels.
+  await tools();assert.equal(await page.locator('dialog[open]').count(),1);assert.equal(await editor.locator('[data-pattern-quick="draw"]').count(),1);
+  await page.evaluate(()=>appBack());assert(await dialog.isHidden());assert.equal(await editor.count(),1);
+  await details('.pattern-math-guide');assert.equal(await dialog.locator('.pattern-math-guide a:visible').count(),2);await close();await noScroll();
+  await preset('diamond');await editor.locator('[data-pattern-difficulty]').selectOption('10');await generate();assert((await editor.locator('[data-pattern-rating]').textContent()).includes('10'));await edit();
   const original=await editor.locator('[data-pixel]').evaluateAll(els=>els.map(e=>e.getAttribute('aria-pressed')==='true'));
-  await editor.locator('[data-pattern-transform="1"]').click();await editor.locator('[data-pattern-status][data-state="ready"]').waitFor({timeout:15000});
+  await tools();await dialog.getByText('回転・反転',{exact:true}).click();await dialog.locator('[data-pattern-transform="1"]').click();
   const rotated=await editor.locator('[data-pixel]').evaluateAll(els=>els.map(e=>e.getAttribute('aria-pressed')==='true')),expected=Array(81);original.forEach((v,i)=>expected[i%9*9+8-Math.floor(i/9)]=v);assert.deepEqual(rotated,expected);
   await editor.locator('[data-pattern-undo]').click();assert.deepEqual(await editor.locator('[data-pixel]').evaluateAll(els=>els.map(e=>e.getAttribute('aria-pressed')==='true')),original);
-  await editor.locator('.pattern-digit-options summary').click();await editor.locator('[data-pattern-omit]').selectOption('9');await editor.locator('[data-pattern-status][data-state="impossible"]').waitFor();assert.equal(await editor.locator('.needs-work').count(),9);assert((await editor.locator('[data-pattern-advice]').textContent()).includes('3行目'));
-  await editor.locator('[data-pattern-omit]').selectOption('0');
-  await editor.locator('[data-pattern-clear]').click();await editor.locator('[data-pattern-symmetry]').selectOption('horizontal');await editor.locator('[data-pixel="0"]').click();assert.equal(await editor.locator('[data-pixel][aria-pressed="true"]').count(),2);assert.equal(await editor.locator('[data-pixel="8"]').getAttribute('aria-pressed'),'true');
-  await editor.locator('[data-pattern-brush="erase"]').click();await editor.locator('[data-pixel="0"]').click();assert.equal(await editor.locator('[data-pixel][aria-pressed="true"]').count(),0);
-  await editor.locator('[data-pattern-symmetry]').selectOption('both');await editor.locator('[data-pixel="40"]').press('Enter');assert.equal(await editor.locator('[data-pixel][aria-pressed="true"]').count(),1);
-  await editor.locator('[data-pattern-symmetry]').selectOption('none');await editor.locator('[data-pattern-brush="paint"]').click();
-
-  await editor.locator('[data-pattern-clear]').click();await editor.locator('[data-pattern-status][data-state="impossible"]').waitFor();assert.equal(await editor.locator('[data-pattern-save]').isDisabled(),true);
-  // Painting invalidates an older worker immediately and keeps exact cell choices.
-  await editor.locator('[data-pattern-preset="diamond"]').click();await editor.locator('[data-pattern-clear]').click();await page.waitForTimeout(400);assert.equal(await editor.locator('[data-pattern-status]').getAttribute('data-state'),'impossible');
-  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
-  await editor.locator('[data-pixel="0"]').scrollIntoViewIfNeeded();const from=await editor.locator('[data-pixel="0"]').boundingBox(),edge=await editor.locator('.pattern-board-scroll').boundingBox();let last=8,to;while(last>=0){to=await editor.locator('[data-pixel="'+last+'"]').boundingBox();if(to.x+to.width/2<edge.x+edge.width-2)break;last--;}assert(last>=5,'At least six columns are visible at the minimum size');await page.mouse.move(from.x+from.width/2,from.y+from.height/2);await page.mouse.down();await page.mouse.move(to.x+to.width/2,to.y+to.height/2,{steps:12});await page.mouse.up();assert.equal(await editor.locator('[data-pixel][aria-pressed="true"]').count(),last+1,'One stroke paints every visible column');
-  await editor.locator('[data-pattern-undo]').click();assert.equal(await editor.locator('[data-pixel][aria-pressed="true"]').count(),0);
-  if(viewport.width<360){assert(await editor.locator('[data-pattern-pan-controls]').isVisible());await editor.locator('[data-pattern-pan="right"]').click();assert(await editor.locator('.pattern-board-scroll').evaluate(el=>el.scrollLeft>0));await editor.locator('[data-pixel="8"]').click();assert.equal(await editor.locator('[data-pixel="8"]').getAttribute('aria-pressed'),'true');await editor.locator('[data-pattern-undo]').click();await editor.locator('[data-pattern-pan="left"]').click();assert.equal(await editor.locator('.pattern-board-scroll').evaluate(el=>el.scrollLeft),0);}
+  await details('.pattern-digit-options');await dialog.locator('[data-pattern-omit]').selectOption('9');await close();assert.equal(await editor.getAttribute('data-state'),'impossible');assert.equal(await editor.locator('.needs-work').count(),9);assert(await editor.locator('[data-pattern-view="preview"]').isEnabled());
+  await editor.locator('[data-pattern-view="preview"]').click();assert((await editor.locator('[data-pattern-next]').textContent()).includes('白いマス'));assert(await editor.locator('[data-pattern-save]').isHidden());
+  await details('.pattern-digit-options');await dialog.locator('[data-pattern-omit]').selectOption('0');await close();
+  await editor.locator('[data-pattern-quick="presets"]').click();await dialog.locator('[data-pattern-clear]').click();assert.equal(await editor.getAttribute('data-state'),'impossible');
+  await tools();await dialog.locator('[data-pattern-symmetry]').selectOption('horizontal');await close();await editor.locator('[data-pixel="0"]').click();assert.equal(await editor.locator('[data-pixel][aria-pressed="true"]').count(),2);
+  await tools();await dialog.locator('[data-pattern-brush-select]').selectOption('erase');await close();await editor.locator('[data-pixel="0"]').click();assert.equal(await editor.locator('[data-pixel][aria-pressed="true"]').count(),0);
+  await tools();await dialog.locator('[data-pattern-symmetry]').selectOption('none');await dialog.locator('[data-pattern-brush-select]').selectOption('auto');await close();
   await editor.locator('[data-pixel="0"]').focus();await page.keyboard.press('Space');await page.keyboard.press('ArrowRight');await page.keyboard.press('Enter');assert.equal(await editor.locator('[data-pixel][aria-pressed="true"]').count(),2);
-  await editor.locator('[data-pattern-preset="omit"]').click();await editor.locator('[data-pattern-omit]').selectOption('9');await editor.locator('[data-pattern-status][data-state="ready"]').waitFor({timeout:15000});assert.equal(await editor.locator('[data-pixel][aria-pressed="true"]').count(),72);
-  await editor.locator('[data-pixel="80"]').scrollIntoViewIfNeeded();const boardEnd=await editor.locator('[data-pixel="80"]').boundingBox(),footer=await editor.locator('.pattern-footer').boundingBox();assert(!(Math.min(boardEnd.x+boardEnd.width,footer.x+footer.width)>Math.max(boardEnd.x,footer.x)+1&&Math.min(boardEnd.y+boardEnd.height,footer.y+footer.height)>Math.max(boardEnd.y,footer.y)+1),'Checking panel never covers drawing cells');
-  assert(await editor.evaluate(el=>el.scrollWidth<=el.clientWidth+1),'No horizontal overflow on '+viewport.width);
-  await editor.locator('[data-pattern-symmetry]').selectOption('point');await editor.locator('[data-pattern-close]').click();await page.reload();await page.locator('[data-action="open-notebook"]').waitFor();await page.locator('[data-action="open-notebook"]').click();await page.locator('[data-flow="create"]').click();await page.locator('[data-action="pattern-open"]').click();await editor.locator('[data-pattern-status][data-state="ready"]').waitFor({timeout:15000});assert.equal(await editor.locator('[data-pattern-omit]').inputValue(),'9');assert.equal(await editor.locator('[data-pattern-symmetry]').inputValue(),'point');
-  await editor.locator('[data-pattern-save]').click();await editor.waitFor({state:'detached'});await page.getByRole('heading',{name:'この問題で遊ぶ？'}).waitFor();
-  const saved=await page.evaluate(()=>{const p=NanpureAppTest.getLibrary()[0];return{mask:p.clueMask,omit:p.omittedDigit,puzzle:p.puzzle,uid:p.uid};});assert.equal(saved.omit,9);assert(!saved.puzzle.includes(9));assert.deepEqual(saved.puzzle.map(Boolean),saved.mask.map(Boolean));
+  await preset('heart');await page.evaluate(()=>NPFurigana.setEnabled(true));
+  const before=await grid.boundingBox();const frames=page.evaluate(async()=>{const out=[],g=document.querySelector('.pattern-grid');for(let i=0;i<60;i++){const r=g.getBoundingClientRect();out.push([r.x,r.y,r.width,r.height]);await new Promise(requestAnimationFrame);}return out;});
+  const hit=await editor.locator('[data-pixel="0"]').boundingBox();await page.mouse.click(hit.x+hit.width/2,hit.y+hit.height/2);for(const axis of [0,1,2,3]){const values=(await frames).map(r=>r[axis]);assert(Math.max(...values)-Math.min(...values)<1,'No pulse or shifting with furigana');}
+  await editor.locator('[data-pattern-undo]').click();assert.deepEqual(await grid.boundingBox(),before);await noScroll();await page.evaluate(()=>NPFurigana.setEnabled(false));
+  await workspace('pinned');const pinned=await grid.boundingBox();await page.evaluate(()=>scrollTo(0,500));assert.deepEqual(await grid.boundingBox(),pinned);
+  await details('.pattern-display-options');await editor.locator('[data-pattern-size="smaller"]').click();assert((await grid.boundingBox()).width<pinned.width);await editor.locator('[data-pattern-size="reset"]').click();assert.deepEqual(await grid.boundingBox(),pinned);await close();
+  await workspace('normal');assert((await grid.boundingBox()).width>=(viewport.width>=980?600:330));await details('.pattern-display-options');const old=(await grid.boundingBox()).width;await editor.locator('[data-pattern-size="larger"]').click();assert((await grid.boundingBox()).width>old);await editor.locator('[data-pattern-size="reset"]').click();await close();
+  if(viewport.width<360){assert(await editor.locator('[data-pattern-pan-controls]').isVisible());await editor.locator('[data-pattern-pan="right"]').click();assert(await editor.locator('.pattern-board-scroll').evaluate(e=>e.scrollLeft>0));await editor.locator('[data-pattern-pan="left"]').click();}
+  // Real continuous stroke, then one undo restores the complete pattern.
+  await editor.locator('[data-pixel="0"]').scrollIntoViewIfNeeded();const a=await editor.locator('[data-pixel="0"]').boundingBox(),b=await editor.locator('[data-pixel="4"]').boundingBox();const oldMask=await editor.locator('[data-pixel]').evaluateAll(els=>els.map(e=>e.getAttribute('aria-pressed')));
+  await page.mouse.move(a.x+a.width/2,a.y+a.height/2);await page.mouse.down();await page.mouse.move(b.x+b.width/2,b.y+b.height/2,{steps:12});await page.mouse.up();for(let i=0;i<=4;i++)assert.equal(await editor.locator('[data-pixel="'+i+'"]').getAttribute('aria-pressed'),'true');await editor.locator('[data-pattern-undo]').click();assert.deepEqual(await editor.locator('[data-pixel]').evaluateAll(els=>els.map(e=>e.getAttribute('aria-pressed'))),oldMask);
+  await workspace('fit');await noScroll();await preset('omit');await details('.pattern-digit-options');await dialog.locator('[data-pattern-omit]').selectOption('9');await dialog.locator('[data-pattern-symmetry]').selectOption('point');await close();await editor.locator('[data-pattern-difficulty]').selectOption('1');
+  await editor.locator('[data-pattern-close]').click();await page.reload();await open();assert.equal(await editor.locator('[data-pattern-omit]').inputValue(),'9');assert.equal(await editor.locator('[data-pattern-symmetry]').inputValue(),'point');assert.equal(await editor.locator('[data-pattern-difficulty]').inputValue(),'1');
+  await generate();await noScroll();await editor.locator('[data-pattern-save]').click();await editor.waitFor({state:'detached'});
+  const saved=await page.evaluate(()=>{const p=NanpureAppTest.getLibrary()[0];return{mask:p.clueMask,omit:p.omittedDigit,puzzle:p.puzzle,uid:p.uid,level:p.level,requested:p.requestedLevel};});assert.equal(saved.omit,9);assert.equal(saved.level,1);assert.equal(saved.requested,1);assert(!saved.puzzle.includes(9));assert.deepEqual(saved.puzzle.map(Boolean),saved.mask.map(Boolean));
   await page.reload();await page.locator('[data-action="open-notebook"]').waitFor();assert(await page.evaluate(uid=>NanpureAppTest.getLibrary().some(p=>p.uid===uid&&p.omittedDigit===9),saved.uid));assert.deepEqual(errors,[]);await context.close();
+  console.log('PASS pattern workflow',viewport,': exact difficulty, unique mask, contextual actions, all tools, keyboard/stroke, fixed geometry, furigana, three layouts, draft and durable save');
  }
- for(const viewport of [{width:1534,height:696},{width:1910,height:878}]){
-  const context=await browser.newContext({viewport,serviceWorkers:'block'}),page=await context.newPage();
-  await context.addInitScript(()=>{localStorage.setItem('nanpure-language-v1','ja');Object.defineProperty(navigator,'doNotTrack',{get:()=> '1'});});
-  await context.route('**/*',route=>{const u=new URL(route.request().url());if(u.origin!==origin)return route.fulfill({status:204,body:''});const file=path.resolve(root,'.'+decodeURIComponent(u.pathname)+(u.pathname.endsWith('/')?'index.html':''));if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile())return route.fulfill({status:404,body:''});return route.fulfill({contentType:mime[path.extname(file)]||'application/octet-stream',body:fs.readFileSync(file)});});
-  await page.goto(origin+'/nanpure/');await page.getByRole('button',{name:/^自由に遊ぶ/}).click();
-  const frame=page.frameLocator('iframe.notebook');await frame.locator('[data-action="open-notebook"]').click();await frame.locator('[data-action="pattern-open"]').click();
-  await frame.locator('[data-pattern-indicator][data-state="ready"]').waitFor({state:'attached'});
-  const full=await page.locator('iframe.notebook').boundingBox();assert.equal(full.y,0);assert.equal(full.height,viewport.height,'Reclaim the outer site header area');
-  const grid=await frame.locator('.pattern-grid').boundingBox();assert(grid.height>=viewport.height-20,'The board uses almost all screen height');
-  await frame.locator('.pattern-desktop-workspace').selectOption('normal');const restored=await page.locator('iframe.notebook').boundingBox();assert(restored.y>=80&&restored.height<viewport.height-40,'Normal view restores the parent header and frame');
-  await frame.locator('[data-pattern-workspace="fit"]').click();await frame.locator('[data-pattern-close]').click();assert.equal(await page.locator('iframe.np-pattern-host-frame').count(),0,'Going back restores the outer shell');
-  await context.close();
+ for(const viewport of [{width:1534,height:696},{width:390,height:844}]){
+  const {context,page,errors}=await setup(browser,viewport);await page.goto(origin+'/nanpure/');await page.getByRole('button',{name:/自由に遊ぶ/}).click();const frame=page.frameLocator('iframe.notebook');await frame.locator('[data-action="open-notebook"]').click();await frame.locator('[data-action="pattern-open"]').click();
+  const bounds=await page.locator('iframe.notebook').boundingBox();assert.equal(bounds.y,0);assert.equal(bounds.height,viewport.height);
+  await frame.locator('[data-pattern-view="preview"]').click();await frame.locator('[data-pattern-indicator][data-state="ready"]').waitFor({state:'attached'});await frame.locator('[data-pattern-close]').click();assert(await frame.locator('#np-pattern-page').isVisible(),'First Back returns to painting');await frame.locator('[data-pattern-close]').click();await frame.locator('#np-pattern-page').waitFor({state:'detached'});assert(!await page.locator('body').evaluate(e=>e.classList.contains('np-pattern-host')),'Host restored');assert.deepEqual(errors,[]);await context.close();
  }
- console.log('PASS pattern browser: maximized workspace without outer or inner scrolling, paged controls and explanations, pinned board, normal layout and minimum sizes; navigation, stable geometry, furigana, drawing, keyboard, draft restoration, digit omission, durable save and review.');
-}finally{await browser.close();}})().catch(e=>{console.error(e);process.exit(1);});
+}finally{await browser.close()}})().catch(error=>{console.error(error);process.exit(1)});
