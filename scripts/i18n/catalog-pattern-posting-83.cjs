@@ -23,3 +23,4 @@ ar:'نشر اللغز أو مشاركته|نص المنشور (قابل للتع
 const catalog=Object.fromEntries(keys.map(key=>[key,{}]));
 for(const [locale,row]of Object.entries(rows)){const values=row.split('|');if(values.length!==keys.length)throw Error('Share translations: '+locale+' '+values.length);keys.forEach((key,i)=>catalog[key][locale]=values[i]);}
 module.exports=catalog;
+catalog['共有する']={en:'Share','zh-Hans':'分享','zh-Hant':'分享',ko:'공유하기',es:'Compartir',fr:'Partager',de:'Teilen',pt:'Partilhar',it:'Condividi',nl:'Delen',sv:'Dela',pl:'Udostępnij',cs:'Sdílet',ru:'Поделиться',id:'Bagikan',vi:'Chia sẻ',th:'แชร์',hi:'साझा करें',ar:'مشاركة'};

@@ -48,9 +48,10 @@ async function setup(browser,viewport){
   await page.evaluate(()=>appBack());assert(await dialog.isHidden());assert.equal(await editor.count(),1);
   await details('.pattern-math-guide');assert.equal(await dialog.locator('.pattern-math-guide a:visible').count(),2);await close();await noScroll();
   await preset('diamond');await editor.locator('[data-pattern-difficulty]').selectOption('10');await generate();assert((await editor.locator('[data-pattern-rating]').textContent()).includes('10'));await edit();
+  await editor.locator('[data-pixel="0"]').click(); // Make the rotation visibly change the otherwise symmetric preset.
   const original=await editor.locator('[data-pixel]').evaluateAll(els=>els.map(e=>e.getAttribute('aria-pressed')==='true'));
   await tools();await dialog.getByText('模様を回す・反転する',{exact:true}).click();await dialog.locator('[data-pattern-transform="1"]').click();
-  const rotated=await editor.locator('[data-pixel]').evaluateAll(els=>els.map(e=>e.getAttribute('aria-pressed')==='true')),expected=Array(81);original.forEach((v,i)=>expected[i%9*9+8-Math.floor(i/9)]=v);assert.deepEqual(rotated,expected);
+  const rotated=await editor.locator('[data-pixel]').evaluateAll(els=>els.map(e=>e.getAttribute('aria-pressed')==='true')),expected=Array(81);original.forEach((v,i)=>expected[i%9*9+8-Math.floor(i/9)]=v);assert.notDeepEqual(rotated,original);assert.deepEqual(rotated,expected);
   await editor.locator('[data-pattern-undo]').click();assert.deepEqual(await editor.locator('[data-pixel]').evaluateAll(els=>els.map(e=>e.getAttribute('aria-pressed')==='true')),original);
   await details('.pattern-digit-options');await dialog.locator('[data-pattern-omit]').selectOption('9');await close();assert.equal(await editor.getAttribute('data-state'),'impossible');assert.equal(await editor.locator('.needs-work').count(),9);assert(await editor.locator('[data-pattern-view="preview"]').isEnabled());
   await editor.locator('[data-pattern-view="preview"]').click();assert((await editor.locator('[data-pattern-next]').textContent()).includes('白いマス'));assert(await editor.locator('[data-pattern-save]').isHidden());
