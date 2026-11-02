@@ -9,7 +9,7 @@ test('daily eligibility, answer privacy, replay, timing, rank and archive',async
  DB.raw.prepare('UPDATE attempts SET started=started-10000 WHERE id=?').run(id);
  r=await call('/api/daily',{data:{action:'check',level:1,id,grid:p.solution}});assert.equal(r.data.correct,true);const elapsed=r.data.elapsed;
  r=await call('/api/daily',{data:{action:'finish',level:1,id,grid:p.solution,name:'テスト'}});assert.equal(r.data.elapsed,elapsed);
- r=await call('/api/daily',{data:{action:'finish',level:1,id,grid:p.solution,name:'again'}});assert.equal(r.status,409);
+ r=await call('/api/daily',{data:{action:'finish',level:1,id,grid:p.solution,name:'again'}});assert.equal(r.status,200);assert.equal(r.data.elapsed,elapsed);
  r=await call('/api/ranking');assert.equal(r.data.rows.length,1);assert.equal(r.data.completed,1);
  r=await call('/api/daily',{who:other,data:{action:'start',level:1,mode:'practice'}});assert.deepEqual(r.data.solution,p.solution);
  r=await call('/api/daily',{who:other,data:{action:'start',level:1,mode:'ranked'}});assert.equal(r.data.ranked,false);

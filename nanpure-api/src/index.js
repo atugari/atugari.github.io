@@ -5,9 +5,10 @@ import{cloud}from'./cloud.js';
 import{cloudRetired,cloudRetirement,deleteRetiredCloudData}from'./shared/cloud-retirement.js';
 import{achievements}from'./achievements.js';
 import{gallery}from'./gallery.js';
+import{rankingProfile}from'./ranking-profile.js';
 import{importLegacy}from'./import.js';
 import{visit,overview,apiVersion}from'./owner.js';
-const tables=['attempts','daily_stock','daily_assignments','daily_maintenance','inquiries','cloud_saves','rate_limits','contact_images','cloud_uploads','cloud_chunks','visit_sessions','visit_browsers','visit_days','owner_usage_snapshots','achievement_members','achievement_owned','galleries'];
+const tables=['attempts','daily_stock','daily_assignments','daily_maintenance','inquiries','cloud_saves','rate_limits','contact_images','cloud_uploads','cloud_chunks','visit_sessions','visit_browsers','visit_days','owner_usage_snapshots','achievement_members','achievement_owned','galleries','ranking_profiles'];
 export default {async scheduled(event,env){if(cloudRetired())await deleteRetiredCloudData(env.DB);},async fetch(request,env){let response;const url=new URL(request.url),origin=request.headers.get('origin');
  try{
   if(origin!==null&&origin!==siteOrigin&&origin!==url.origin)fail(403,'送信元を確認できません。');
@@ -27,6 +28,7 @@ export default {async scheduled(event,env){if(cloudRetired())await deleteRetired
     response=json({ok:true,service:'puzzle-api',version:apiVersion,siteVersion:env.SITE_VERSION||null,database:'connected',schema:tables.every(t=>names.has(t))?'installed':'pending',gameApi:'ready',cloud:{...cloudRetirement,retired:cloudRetired()}});
    }else if(url.pathname==='/api/daily')response=await daily(request,env.DB);
    else if(url.pathname==='/api/ranking'&&request.method==='GET')response=await ranking(url,env.DB,request);
+   else if(url.pathname==='/api/ranking-profile')response=await rankingProfile(request,env.DB);
    else if(url.pathname==='/api/daily/archive'&&request.method==='GET')response=await archive(url,env.DB);
    else if(url.pathname==='/api/contact')response=await contact(request,env,url);
    else if(url.pathname==='/api/contact/image'&&request.method==='GET')response=await contactImage(request,env,url);

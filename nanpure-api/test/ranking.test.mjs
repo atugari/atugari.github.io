@@ -20,6 +20,7 @@ function publish(DB, { player, day = japanDay(), level = 1, elapsed = 405000, na
   if (n) DB.raw.prepare('INSERT INTO daily_assignments VALUES(?,?,?,?,?,?) ON CONFLICT(slot) DO NOTHING').run(day + ':' + level, day, level, 'p-' + day + '-' + level, JSON.stringify({ n }), done);
   const fields = Object.keys(row);
   DB.raw.prepare('INSERT INTO attempts (' + fields.join(',') + ') VALUES (' + fields.map(() => '?').join(',') + ')').run(...Object.values(row));
+  if (row.name && row.finished && row.solved && !row.abandoned && !row.excluded && day <= japanDay()) DB.raw.prepare('INSERT INTO ranking_profiles(player,name,updated) VALUES(?,?,?) ON CONFLICT(player) DO UPDATE SET name=excluded.name,updated=excluded.updated WHERE excluded.updated>=ranking_profiles.updated').run(player,row.name,done);
   return row;
 }
 
@@ -49,7 +50,7 @@ test('world times use equal ranks, return the viewer outside the top 50 and neve
   try {
     for (let i = 0; i < 61; i++) publish(DB, { player: i === 60 ? me : 'other-player-' + i, elapsed: i < 2 ? 10000 : 10000 + i * 1000, name: i === 60 ? '自分' : '同じ表示名', n: 9 });
     publish(DB, { player: 'private-solved', finished: null, solved: Date.now(), name: null });
-    // A solved but unshared attempt contributes only to the existing completed counter.
+    // Verified anonymous clears now participate without a separate submission.
     DB.raw.prepare('UPDATE attempts SET finished=NULL WHERE player=?').run('private-solved');
     publish(DB, { player: 'excluded', excluded: Date.now(), elapsed: 5000 });
     publish(DB, { player: 'abandoned', abandoned: Date.now(), elapsed: 5000 });
@@ -57,7 +58,7 @@ test('world times use equal ranks, return the viewer outside the top 50 and neve
     const { status, data } = await ranking(DB);
     assert.equal(status, 200);
     assert.equal(data.rows.length, 50);
-    assert.equal(data.totalPlayers, 61);
+    assert.equal(data.totalPlayers, 62);
     assert.equal(data.completed, 62);
     assert.deepEqual(data.rows.slice(0, 3).map(row => row.rank), [1, 1, 3]);
     assert.equal(data.myRank, 61);
@@ -88,7 +89,7 @@ test('score ranking aggregates published problems once per player, applies perio
     publish(DB, { player: me, day: '2026-10-01', level: 1, n: 9 });
     publish(DB, { player: me, day: '2026-11-04', level: 3, n: 9 }); // Future entries cannot affect current scores.
     publish(DB, { player: 'same-name-other-person', day: '2026-11-03', level: 1, name: '最新の名前', n: 9 });
-    const unpublished = publish(DB, { player: 'private', day: '2026-11-03', level: 3, n: 9 });
+    const unpublished = publish(DB, { player: 'private', day: '2026-11-03', level: 3, n: 9, solved: null });
     DB.raw.prepare('UPDATE attempts SET finished=NULL WHERE id=?').run(unpublished.id);
     publish(DB, { player: 'excluded', day: '2026-11-03', level: 3, excluded: Date.now() });
     publish(DB, { player: 'abandoned', day: '2026-11-03', level: 3, abandoned: Date.now() });

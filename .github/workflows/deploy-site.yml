@@ -74,6 +74,13 @@ jobs:
           node scripts/check-nanpure-gallery-browser.cjs _site
           node scripts/check-nanpure-home-titles-browser.cjs _site
 
+      - name: Check automatic ranking and nicknames on desktop and mobile
+        shell: bash
+        run: |
+          export PLAYWRIGHT_MODULE="$RUNNER_TEMP/nanpure-browser/node_modules/playwright"
+          export CHROME_BIN="$(command -v google-chrome || command -v chromium)"
+          node scripts/check-nanpure-ranking-browser.cjs _site
+
       - name: Check exact 9x9 pattern creation
         shell: bash
         run: |

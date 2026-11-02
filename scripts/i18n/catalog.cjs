@@ -54,3 +54,5 @@ Object.assign(module.exports,require('./catalog-pattern-jobs-81.cjs')());
 Object.assign(module.exports,require('./catalog-pattern-wording-82.cjs')(module.exports));
 Object.assign(module.exports,require('./catalog-pattern-posting-83.cjs'));
 Object.assign(module.exports,require('./catalog-pattern-drawing-83.cjs'));
+
+Object.assign(module.exports,require('./catalog-ranking-auto-84.json'));

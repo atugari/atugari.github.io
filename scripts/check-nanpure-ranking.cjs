@@ -18,7 +18,7 @@ for(const key of Object.keys(added)){
 }
 for(const match of fs.readFileSync(path.join(repo,'scripts/client-overrides/app/ranking-panel.tsx'),'utf8').matchAll(/\bt\('([^']+)'/g))assert(catalog[match[1]],'Missing translation: '+match[1]);
 const {window:w}=parseHTML(fs.readFileSync(path.join(repo,'nanpure/index.html'),'utf8'));
-const values=new Map([['nanpure-language-v1','ja']]),rankingRequests=[],errors=[];
+const values=new Map([['nanpure-language-v1','ja']]),rankingRequests=[],errors=[],profileWrites=[];let profileName='Initial nickname',profileFails=false;
 const today='2026-10-23';
 const challenges=[1,2,3].map(level=>({day:today,level,n:9,kind:'normal',title:'Daily',rules:'Daily'}));
 Object.assign(w,{window:w,self:w,NodeFilter:{SHOW_TEXT:4},Headers,URL,URLSearchParams,TextEncoder,TextDecoder,AbortController,structuredClone,queueMicrotask,performance,setTimeout,clearTimeout,
@@ -31,6 +31,10 @@ Object.assign(w,{window:w,self:w,NodeFilter:{SHOW_TEXT:4},Headers,URL,URLSearchP
   if(url==='/nanpure/version.json')return{ok:true,json:async()=>({version:manifest.version})};
   const parsed=new URL(String(url));
   assert.equal(parsed.origin,manifest.online);
+  if(parsed.pathname==='/api/ranking-profile'){
+   if(init.method==='POST'){profileWrites.push(JSON.parse(init.body));if(profileFails)return{ok:false,status:503,json:async()=>({error:'offline'})};profileName=JSON.parse(init.body).name.normalize('NFKC').trim();}
+   return{ok:true,json:async()=>({name:profileName,displayName:profileName||'ナンプレイヤー'})};
+  }
   if(parsed.pathname==='/api/ranking')return new Promise(resolve=>rankingRequests.push({params:parsed.searchParams,signal:init.signal,reply:(data,status=200)=>resolve({ok:status<400,status,json:async()=>data})}));
   return{ok:true,json:async()=>({day:today,serverNow:Date.now(),challenges,records:[],rows:[],items:[],days:[],signedIn:true,save:null})};
  },console:{...console,error:(...args)=>errors.push(args.map(String).join(' '))}
@@ -48,7 +52,7 @@ async function load(file){
 async function settle(condition,label){const deadline=Date.now()+5000;while(!condition()){assert(Date.now()<deadline,'Timed out: '+label);await new Promise(resolve=>setTimeout(resolve,10))}}
 function button(text){const result=[...w.document.querySelectorAll('.ranking button')].find(node=>node.textContent.trim()===text);assert(result,'Missing button: '+text);result.click()}
 function result(mode='time',period='today',rows=[],myEntry=null,extra={}){
- return{day:today,mode,period,from:period==='all'?null:period==='week'?'2026-10-19':period==='month'?'2026-10-01':today,to:today,timezone:'Asia/Tokyo',rows,totalPlayers:rows.length,myRank:myEntry?.rank||null,myEntry,completed:rows.length,scoring:{basePoints:[1000,2000,3000],maxBonusRatio:0.5,referenceMsPerCell:5000,formula:'base + floor(base * 0.5 * referenceMs / (referenceMs + elapsedMs))'},...extra};
+ return{day:today,mode,period,from:period==='all'?null:period==='week'?'2026-10-19':period==='month'?'2026-10-01':today,to:today,timezone:'Asia/Tokyo',rows,totalPlayers:rows.length,myRank:myEntry?.rank||null,myEntry,completed:rows.length,page:1,pageSize:50,totalPages:1,hasMore:false,myPage:myEntry?1:null,scoring:{basePoints:[1000,2000,3000],maxBonusRatio:0.5,referenceMsPerCell:5000,formula:'base + floor(base * 0.5 * referenceMs / (referenceMs + elapsedMs))'},...extra};
 }
 (async()=>{
  w.NPTranslations=structuredClone(catalog);
@@ -83,6 +87,7 @@ function result(mode='time',period='today',rows=[],myEntry=null,extra={}){
   await new Promise(resolve=>setTimeout(resolve,20));
   assert.equal(w.document.querySelector('.ranking-my-place strong').textContent,ownLabel,'Own rank after DOM translation '+locale);
   assert.equal(w.document.querySelector('.ranking-position').getAttribute('aria-label'),rowLabel,'Accessible rank after DOM translation '+locale);
+  assert.equal(w.document.querySelector('.ranking-profile-note').textContent,catalog['名前なしは「{name}」です。変更は過去の記録にも反映され、空欄で保存すると名前を戻せます。'][locale].replace('{name}','ナンプレイヤー'),'Nickname guidance is localized while the player name stays literal');
  }
  await w.NPI18n.set('ja');
  await settle(()=>w.document.querySelector('.ranking-my-place strong')?.textContent==='75位','return to Japanese');
@@ -112,7 +117,24 @@ function result(mode='time',period='today',rows=[],myEntry=null,extra={}){
  await settle(()=>!w.document.querySelector('.ranking [aria-busy=true]'),'time loaded');
  button('難問');await settle(()=>rankingRequests.length===8,'hard time request');assert.equal(rankingRequests[7].params.get('level'),'3');rankingRequests[7].reply(result());
  await settle(()=>!w.document.querySelector('.ranking [aria-busy=true]'),'hard loaded');
+ // Everyone remains reachable beyond the first page, with server tie ranks.
+ button('更新');await settle(()=>rankingRequests.length===9,'paged results request');rankingRequests[8].reply(result('time','today',rows,outside,{totalPlayers:122,totalPages:3,hasMore:true,myPage:3}));
+ await settle(()=>w.document.querySelectorAll('.world-rank-list li').length===50,'first page');
+ button('次へ');await settle(()=>rankingRequests.length===10,'second page request');assert.equal(rankingRequests[9].params.get('page'),'2');
+ rankingRequests[9].reply(result('time','today',rows.map(row=>({...row,rank:51,name:'ナンプレイヤー'})),outside,{page:2,totalPlayers:122,totalPages:3,hasMore:true,myPage:3}));
+ await settle(()=>w.document.querySelector('.ranking-pages span')?.textContent==='2 / 3','second page');assert.equal(w.document.querySelector('.ranking-position').textContent,'51');
+ button('自分の記録を見る');await settle(()=>rankingRequests.length===11,'own page request');assert.equal(rankingRequests[10].params.get('page'),'3');
+ rankingRequests[10].reply(result('time','today',[outside],outside,{page:3,totalPlayers:122,totalPages:3,myPage:3}));
+ await settle(()=>w.document.querySelector('.ranking-pages span')?.textContent==='3 / 3','own page');assert(w.document.querySelector('.ranking-pages button:last-of-type').disabled);
+ await settle(()=>!w.document.querySelector('#ranking-nickname').disabled,'nickname loaded');assert.equal(w.document.querySelector('#ranking-nickname').value,'Initial nickname');
+ w.document.querySelector('.ranking-profile').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));
+ await settle(()=>profileWrites.length===1&&rankingRequests.length===12,'nickname saved and ranking refreshed');assert.equal(profileWrites[0].name,'Initial nickname');
+ rankingRequests[11].reply(result('time','today',[outside],outside,{page:3,totalPlayers:122,totalPages:3,myPage:3}));
+ await settle(()=>w.document.querySelector('.ranking-profile [role=status]')?.textContent==='保存しました。','save confirmation');assert.equal(values.get('np-display-name'),'Initial nickname');
+ profileFails=true;w.document.querySelector('.ranking-profile').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));
+ await settle(()=>profileWrites.length===2&&w.document.querySelector('.ranking-profile [role=status]')?.textContent.includes('通信できませんでした'),'profile failure');
+ assert.equal(rankingRequests.length,12,'A failed name save must not refresh or invent a new public name');
  assert.equal(errors.length,0,errors.join('\n'));
- testConsole.log('PASS worldwide ranking UI: 50 rows, tie ranks, milliseconds, private names, own rank outside top 50, period/difficulty controls, stale-response protection, retry/empty, '+locales.length+'-language coverage and dynamic rank translation');
+ testConsole.log('PASS worldwide ranking UI: all-player pagination, nickname load/save/failure, tie ranks, milliseconds, private names, own page, periods, stale responses, retry/empty and '+locales.length+' languages');
  process.exit(0);
 })().catch(error=>{testConsole.error(error);process.exit(1)});
