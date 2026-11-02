@@ -146,5 +146,7 @@ try {
  fs.writeFileSync(path.join(repo,'nanpure/release-manifest.json'),JSON.stringify(manifest,null,2)+'\n');
  const navigation=spawnSync(process.execPath,[path.join(repo,'scripts/prepare-pareasobi-move.mjs')],{stdio:'inherit'});
  if(navigation.error||navigation.status!==0)throw Error('Pareasobi navigation preparation failed: '+(navigation.error?.message||navigation.status));
+ const gallery=spawnSync(process.execPath,[path.join(repo,'scripts/install-nanpure-gallery.mjs')],{stdio:'inherit'});
+ if(gallery.error||gallery.status!==0)throw Error('Gallery entry preparation failed');
  console.log('Exported',version,files.length,'files from',revision);
 }finally{fs.rmSync(scratch,{recursive:true,force:true})}

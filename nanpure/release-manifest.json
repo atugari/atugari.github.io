@@ -5,8 +5,8 @@
   "base": "/nanpure/releases/2026.11.02.83/",
   "online": "https://puzzle-api.puzzle-hub-4826.workers.dev",
   "files": {
-    "nanpure/index.html": "6d889b16c651e251113ec6d884f016a007548f0109f6ecee6730fdf089cd89b1",
-    "nanpure.html": "396a2c1d26e062b39ecef7cbb3ab3bd4c3d96dbbccc985752bc1087f1774967b",
+    "nanpure/index.html": "1fb7abb02f120ca0dd2d87e1f9586e034914e74637c3f71c43c80e207d80a5f6",
+    "nanpure.html": "995c78dd92fed5aef3110c0feee90d6fe6258a930af50549937597812cc130bb",
     "nanpure/version.json": "4385e96a12482498aae0ce2c5c08bcbeb04d859643cd911b5c0840ad93042d5b",
     "nanpure/releases.json": "fc65ab67a82b3308c0005b5bbef6e063dcfc5d1aca31b6a114d728b61a6e28e6",
     "nanpure/guide/index.html": "53ecc04bb0c8c4e22a7a6ebbdbcd2d90ff4e5c798d35832301cde2eeeb73c42d",
@@ -773,7 +773,7 @@
     "nanpure/releases/2026.11.01.68/ui-text.js": "13fa74557572adb883aae76d9b1502acc181ceb5c37543adfc516bca07c6b257",
     "nanpure/releases/2026.11.01.68/visit-stats.js": "c1cb002eefd139e0fc2a454460a05fa763e14a50ed92297c4eb7c096a13f9794",
     "nanpure/collection/app.js": "82bb51807e2ff412d2e1413f426c2ed35e7d90920b0508b947623fe95cdb9d2e",
-    "nanpure/collection/index.html": "ff0400b0be379fcfc21e9e8186f95a538478a7bd36a3c206c0e6cf3e20742925",
+    "nanpure/collection/index.html": "e5281abbf023a727a5a2a0e7bb4590eafcd8606c9cfb85510c935152e067d91c",
     "nanpure/collection/player.html": "02cc97847148517176237ae52ccf3874787b293ed3a75292ffed7210a3ce333b",
     "nanpure/collection/workspace.js": "4ee5f124556941c5bcd61cc87b4de944a7bc316df2bdf0e1caf47c6c607b38a0",
     "nanpure/collection/workspace.css": "8e818961ad1275ea10b6b29f592513051f1bd9a70d6e7a9b9a33c4288dc5e9bb",
@@ -3510,7 +3510,7 @@
       "nanpure/collection/board-input.js": "92acb148272145a2aa202d44ce7093004a70ee30de8d11adc44e19ab31de56c4",
       "nanpure/collection/player.html": "02cc97847148517176237ae52ccf3874787b293ed3a75292ffed7210a3ce333b",
       "scripts/prepare-pareasobi-move.mjs": "3d7f983715b77fb53ee22e4cb944d39f8abcf9dd0f1ac0a518408aa6426a2961",
-      "scripts/export-nanpure.mjs": "c5f71e05650c58c8ffa252c78fbc42c60ef04c4db487318a2ee9584821e3c119",
+      "scripts/export-nanpure.mjs": "b6826b93d04d19f01331e090590db979bfd48b686e138a900a932304f7784357",
       "scripts/client-overrides/public/notebook/board-input.js": "92acb148272145a2aa202d44ce7093004a70ee30de8d11adc44e19ab31de56c4",
       "scripts/client-overrides/app/game.tsx": "581397c06f3a10073ca4cf1956f48249c3a00c9c037739f3934ae371c7c1e908",
       "scripts/client-overrides/app/site-intro.tsx": "f34000e273a92612d7629fd0a413f6004fdc1053844497b9652a384ba2bc87d0",
@@ -3710,5 +3710,11 @@
       "scripts/check-nanpure-pattern-share-browser.cjs": "093da45511bfee8f889e1a3a13da325b78d5bf373acd0fd34539652d84f3d134",
       "scripts/i18n/catalog-pattern-posting-83.cjs": "014ac7212406308b08e5ef0d6dce89a9a38eaa7dc4fef3b9b5662098405ea684"
     }
+  },
+  "gallery": {
+    "version": 1,
+    "path": "/nanpure/gallery/",
+    "backend": "workers-d1",
+    "migrationTarget": "oracle-always-free"
   }
 }
