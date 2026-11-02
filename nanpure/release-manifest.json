@@ -3510,7 +3510,7 @@
       "nanpure/collection/board-input.js": "92acb148272145a2aa202d44ce7093004a70ee30de8d11adc44e19ab31de56c4",
       "nanpure/collection/player.html": "02cc97847148517176237ae52ccf3874787b293ed3a75292ffed7210a3ce333b",
       "scripts/prepare-pareasobi-move.mjs": "3d7f983715b77fb53ee22e4cb944d39f8abcf9dd0f1ac0a518408aa6426a2961",
-      "scripts/export-nanpure.mjs": "c5f71e05650c58c8ffa252c78fbc42c60ef04c4db487318a2ee9584821e3c119",
+      "scripts/export-nanpure.mjs": "b6826b93d04d19f01331e090590db979bfd48b686e138a900a932304f7784357",
       "scripts/client-overrides/public/notebook/board-input.js": "92acb148272145a2aa202d44ce7093004a70ee30de8d11adc44e19ab31de56c4",
       "scripts/client-overrides/app/game.tsx": "581397c06f3a10073ca4cf1956f48249c3a00c9c037739f3934ae371c7c1e908",
       "scripts/client-overrides/app/site-intro.tsx": "f34000e273a92612d7629fd0a413f6004fdc1053844497b9652a384ba2bc87d0",
