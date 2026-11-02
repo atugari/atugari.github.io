@@ -119,7 +119,7 @@
   const size=workspace==='fit'?max:workspace==='pinned'?Math.max(144,Math.min(max,max+Math.min(0,sizeStep)*48)):Math.max(width>=980?600:330,Math.min(1080,(width>=980?max:width-24)+sizeStep*72));
   page.style.setProperty('--pattern-board-size',size+'px');
   $('[data-pattern-size-label]').textContent=size+' × '+size;
-  updatePan();
+  updatePan();quickLabels();
  }
  function setWorkspace(next){
   finish();workspace=next;sizeStep=0;
@@ -185,6 +185,15 @@
   }catch(_){if(page!==host)return;saving=false;saveError=true;render();}
  }
  const jobStateLabel=job=>t(({queued:'待機中',checking:'作成中',ready:job.savedUid?'保存済み':'完成',stopped:'停止中',error:'再開できます',impossible:'模様の確認が必要'})[job.state]||'待機中');
+ function quickLabels(count=queue.list().length){
+  if(!page)return;const bar=$('.pattern-quick'),visible=[...bar.querySelectorAll('button')].filter(b=>!b.hidden).length,compact=bar.clientWidth/Math.max(1,visible)<140;
+  bar.dataset.compact=String(compact);
+  for(const [selector,full,short]of [
+   ['[data-pattern-undo]',t('元に戻す'),'↶'],['[data-pattern-redo]',t('やり直す'),'↷'],
+   ['[data-pattern-quick="draw"]',t('道具・条件'),t('条件')],['[data-pattern-view="paint"]',t('別の模様を描く'),'✎ '+t('模様')],
+   ['[data-pattern-retry]',t('もう一度作る'),'⟳'],['[data-pattern-jobs]',t('作成一覧')+' '+count,'≡ '+count]
+  ]){const button=$(selector);button.textContent=compact?short:full;button.setAttribute('aria-label',full);button.title=full;}
+ }
  function renderJobs(){
   if(!page)return;const all=queue.list(),button=$('[data-pattern-jobs]');
   button.hidden=!all.length;button.textContent=t('作成一覧')+' '+all.length;
@@ -207,7 +216,7 @@
    for(const control of row.querySelectorAll('button'))control.disabled=saving;
   }
   $('[data-pattern-warning]').textContent=queue.hasStorageError()?t('作成状況を端末に記録できませんでした。このページを開いたまま結果を保存してください。'):'';
-  updateDock();
+  quickLabels(all.length);updateDock();
  }
  function openJobs(){if(!page||saving)return;finish();closeTools();renderJobs();jobsDialog.showModal();}
  function selectJob(id){if(!queue.get(id))return;finish();closeTools();selectedId=id;view='preview';saveError=false;render();}

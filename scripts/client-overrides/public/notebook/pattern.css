@@ -29,6 +29,7 @@ html.np-pattern-fit,body.np-pattern-fit{overflow:hidden!important;height:100dvh;
 .np-pattern-page[data-view=preview][data-state=ready] .pattern-grid button.painted{background:#edf4ec}
 .pattern-quick{grid-area:quick;display:flex;gap:6px;min-width:0}
 .pattern-quick button{flex:1;min-height:48px;padding:3px;font-size:16px}
+.pattern-quick[data-compact=true] button{font-size:16px;overflow-wrap:anywhere}
 .pattern-footer{grid-area:footer;display:grid;grid-template-rows:84px 38px 48px;gap:3px;border-top:1px solid #b9cabc;padding-top:7px;min-height:0}
 .pattern-feedback{position:relative;min-height:0;display:flex;flex-direction:column;justify-content:center}
 .pattern-feedback p{margin:0;font-size:16px;line-height:1.3}
@@ -53,7 +54,7 @@ html.np-pattern-fit,body.np-pattern-fit{overflow:hidden!important;height:100dvh;
 .np-pattern-page[data-side=true] .pattern-feedback [data-pattern-next]{line-height:1.5;margin:8px 0 0}
 .np-pattern-page[data-side=true] .pattern-actions button{min-height:56px}
 .np-pattern-page[data-side=true] .pattern-difficulty select{min-height:48px;height:48px}
-@media(max-width:979px){.np-pattern-page[data-side=true]{grid-template-columns:minmax(0,1fr) 240px}.np-pattern-page[data-side=true] .pattern-header{grid-template-columns:minmax(0,1fr) 54px}.np-pattern-page[data-side=true] h1{font-size:19px}.np-pattern-page[data-side=true] .pattern-steps{gap:8px}.np-pattern-page[data-side=true] .pattern-footer{gap:6px;grid-template-rows:90px 44px 56px}}
+@media(max-width:979px){.np-pattern-page[data-side=true]{grid-template-columns:minmax(0,1fr) 240px}.np-pattern-page[data-side=true] .pattern-header{grid-template-columns:minmax(0,1fr) 54px}.np-pattern-page[data-side=true] h1{font-size:19px}.np-pattern-page[data-side=true] .pattern-steps{gap:0 6px;font-size:14px;flex-wrap:wrap;white-space:normal;align-content:center}.np-pattern-page[data-side=true] .pattern-footer{gap:6px;grid-template-rows:90px 44px 56px}}
 .np-pattern-page[data-workspace=normal]{height:auto;min-height:100dvh;overflow:visible;grid-template-rows:64px auto 48px 186px}
 .np-pattern-page[data-workspace=normal] .pattern-canvas{overflow:visible}
 .np-pattern-page[data-workspace=normal][data-side=true]{grid-template-rows:100px 48px minmax(380px,1fr)}

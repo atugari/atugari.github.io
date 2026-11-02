@@ -1,13 +1,13 @@
 {
   "version": "2026.11.02.81",
   "sourceCommit": "1222640c9a34beb3f57d065e7504b11bcae1e994",
-  "clientOverridesSha256": "8c46c427dbc434e8ac980e8dba0fe3fe4194a7ffecb22560b0b446e7316249e2",
+  "clientOverridesSha256": "9b78ad5bc388b11ed91872ecf009e9fd1f2482bb8a72cae50d11e7b8936a68fc",
   "base": "/nanpure/releases/2026.11.02.81/",
   "online": "https://puzzle-api.puzzle-hub-4826.workers.dev",
   "files": {
     "nanpure/index.html": "113ac04dcd5a4baebac36708a2b8665b22905f28bdd775f7afb7d7a789ac49b3",
     "nanpure.html": "396a2c1d26e062b39ecef7cbb3ab3bd4c3d96dbbccc985752bc1087f1774967b",
-    "nanpure/version.json": "560356f9c99eea8cc34ccb89c985e81f542a3f639aaf76407c05e8abb8c2952b",
+    "nanpure/version.json": "1efd9b6754a18cb4840c58174e7149d3c4024e4ae8b9c2cbb792965061332c00",
     "nanpure/releases.json": "485555007b4a26b9ad1f17296af828c8fa75305766c3a533ec00a05a66e09a1a",
     "nanpure/guide/index.html": "53ecc04bb0c8c4e22a7a6ebbdbcd2d90ff4e5c798d35832301cde2eeeb73c42d",
     "nanpure/sudoku-types/index.html": "289a15ead5d6bf9375c9cad2a57fab71b28087a89843dcfac55cde4182075db2",
@@ -3019,8 +3019,8 @@
     "nanpure/releases/2026.11.02.81/notebook/pattern-jobs.js": "47724b4da2fe63cf2191e8c8e598a904a841790ad46d9ea64c7eaf20f34ea255",
     "nanpure/releases/2026.11.02.81/notebook/pattern-model.js": "02f86ae01d011f860a5b03143a914d838e029958806ca3c4ea8aab7882afc71b",
     "nanpure/releases/2026.11.02.81/notebook/pattern-share.js": "e51500d678c3b5c66fa108d7508591e0ad13ae08f569efe3cef3f06d1f445fad",
-    "nanpure/releases/2026.11.02.81/notebook/pattern-ui.js": "1399a195f68e2ebd34038956a00bdeaeb307d78c5db9f35d523b62cd65652c9f",
-    "nanpure/releases/2026.11.02.81/notebook/pattern.css": "8b760ad9955c56a1fe28436f810208abf066708eea8349478d3f088a3941971f",
+    "nanpure/releases/2026.11.02.81/notebook/pattern-ui.js": "10755aa727c32881979a43dfe4baf6ca198e76e2975adf50fe44f1a3abdc402e",
+    "nanpure/releases/2026.11.02.81/notebook/pattern.css": "64caa4c322da268cb2e6c8b0c6a9cccd3fed8fe56d13f8d5e23c4afc081ce671",
     "nanpure/releases/2026.11.02.81/notebook/play-options.js": "a669f619cd2df74b25ff21d258268b99da07d006591d5a708936032ee0e748b8",
     "nanpure/releases/2026.11.02.81/notebook/play-workspace.css": "8e818961ad1275ea10b6b29f592513051f1bd9a70d6e7a9b9a33c4288dc5e9bb",
     "nanpure/releases/2026.11.02.81/notebook/play-workspace.js": "4ee5f124556941c5bcd61cc87b4de944a7bc316df2bdf0e1caf47c6c607b38a0",
@@ -3142,8 +3142,8 @@
   "patternSudoku": {
     "sources": {
       "scripts/client-overrides/public/notebook/pattern-model.js": "02f86ae01d011f860a5b03143a914d838e029958806ca3c4ea8aab7882afc71b",
-      "scripts/client-overrides/public/notebook/pattern-ui.js": "1399a195f68e2ebd34038956a00bdeaeb307d78c5db9f35d523b62cd65652c9f",
-      "scripts/client-overrides/public/notebook/pattern.css": "8b760ad9955c56a1fe28436f810208abf066708eea8349478d3f088a3941971f",
+      "scripts/client-overrides/public/notebook/pattern-ui.js": "10755aa727c32881979a43dfe4baf6ca198e76e2975adf50fe44f1a3abdc402e",
+      "scripts/client-overrides/public/notebook/pattern.css": "64caa4c322da268cb2e6c8b0c6a9cccd3fed8fe56d13f8d5e23c4afc081ce671",
       "scripts/client-overrides/public/notebook/app.js": "e5d3697a52e6b321066c77dd15a7817c33af056330e28d6329918475334d74a3",
       "scripts/client-overrides/public/notebook/common.js": "fee5b3b99abb8c0009522d8b6796e8544b59ceab205a961493420825f2eb38d2",
       "scripts/check-nanpure-pattern.cjs": "d31ea8e49c32d2b6cc9ab76db9898dbbc98c2363fb0716ac5e5f8c76481cd6f6",
@@ -3154,8 +3154,8 @@
   "patternMathematics": {
     "sources": {
       "scripts/client-overrides/public/notebook/pattern-model.js": "02f86ae01d011f860a5b03143a914d838e029958806ca3c4ea8aab7882afc71b",
-      "scripts/client-overrides/public/notebook/pattern-ui.js": "1399a195f68e2ebd34038956a00bdeaeb307d78c5db9f35d523b62cd65652c9f",
-      "scripts/client-overrides/public/notebook/pattern.css": "8b760ad9955c56a1fe28436f810208abf066708eea8349478d3f088a3941971f",
+      "scripts/client-overrides/public/notebook/pattern-ui.js": "10755aa727c32881979a43dfe4baf6ca198e76e2975adf50fe44f1a3abdc402e",
+      "scripts/client-overrides/public/notebook/pattern.css": "64caa4c322da268cb2e6c8b0c6a9cccd3fed8fe56d13f8d5e23c4afc081ce671",
       "scripts/check-nanpure-pattern.cjs": "d31ea8e49c32d2b6cc9ab76db9898dbbc98c2363fb0716ac5e5f8c76481cd6f6",
       "scripts/check-nanpure-pattern-math.cjs": "5e7067b1e3f2c3bd58dd3909f5c9795746deac75b6caef3a38b7babb9f5cf92f",
       "scripts/check-nanpure-pattern-browser.cjs": "31ac3d68c02958eb97e440473339660f98cadc03004a693714c91e25927edd8c",
@@ -3165,8 +3165,8 @@
   "patternUsability": {
     "sources": {
       "scripts/client-overrides/public/notebook/pattern-model.js": "02f86ae01d011f860a5b03143a914d838e029958806ca3c4ea8aab7882afc71b",
-      "scripts/client-overrides/public/notebook/pattern-ui.js": "1399a195f68e2ebd34038956a00bdeaeb307d78c5db9f35d523b62cd65652c9f",
-      "scripts/client-overrides/public/notebook/pattern.css": "8b760ad9955c56a1fe28436f810208abf066708eea8349478d3f088a3941971f",
+      "scripts/client-overrides/public/notebook/pattern-ui.js": "10755aa727c32881979a43dfe4baf6ca198e76e2975adf50fe44f1a3abdc402e",
+      "scripts/client-overrides/public/notebook/pattern.css": "64caa4c322da268cb2e6c8b0c6a9cccd3fed8fe56d13f8d5e23c4afc081ce671",
       "scripts/check-nanpure-pattern.cjs": "d31ea8e49c32d2b6cc9ab76db9898dbbc98c2363fb0716ac5e5f8c76481cd6f6",
       "scripts/check-nanpure-pattern-math.cjs": "5e7067b1e3f2c3bd58dd3909f5c9795746deac75b6caef3a38b7babb9f5cf92f",
       "scripts/check-nanpure-pattern-browser.cjs": "31ac3d68c02958eb97e440473339660f98cadc03004a693714c91e25927edd8c",
@@ -3177,8 +3177,8 @@
   "patternPage": {
     "sources": {
       "scripts/client-overrides/public/notebook/pattern-model.js": "02f86ae01d011f860a5b03143a914d838e029958806ca3c4ea8aab7882afc71b",
-      "scripts/client-overrides/public/notebook/pattern-ui.js": "1399a195f68e2ebd34038956a00bdeaeb307d78c5db9f35d523b62cd65652c9f",
-      "scripts/client-overrides/public/notebook/pattern.css": "8b760ad9955c56a1fe28436f810208abf066708eea8349478d3f088a3941971f",
+      "scripts/client-overrides/public/notebook/pattern-ui.js": "10755aa727c32881979a43dfe4baf6ca198e76e2975adf50fe44f1a3abdc402e",
+      "scripts/client-overrides/public/notebook/pattern.css": "64caa4c322da268cb2e6c8b0c6a9cccd3fed8fe56d13f8d5e23c4afc081ce671",
       "scripts/check-nanpure-pattern.cjs": "d31ea8e49c32d2b6cc9ab76db9898dbbc98c2363fb0716ac5e5f8c76481cd6f6",
       "scripts/check-nanpure-pattern-math.cjs": "5e7067b1e3f2c3bd58dd3909f5c9795746deac75b6caef3a38b7babb9f5cf92f",
       "scripts/check-nanpure-pattern-browser.cjs": "31ac3d68c02958eb97e440473339660f98cadc03004a693714c91e25927edd8c",
@@ -3189,8 +3189,8 @@
   "patternWorkspace": {
     "sources": {
       "scripts/client-overrides/public/notebook/pattern-model.js": "02f86ae01d011f860a5b03143a914d838e029958806ca3c4ea8aab7882afc71b",
-      "scripts/client-overrides/public/notebook/pattern-ui.js": "1399a195f68e2ebd34038956a00bdeaeb307d78c5db9f35d523b62cd65652c9f",
-      "scripts/client-overrides/public/notebook/pattern.css": "8b760ad9955c56a1fe28436f810208abf066708eea8349478d3f088a3941971f",
+      "scripts/client-overrides/public/notebook/pattern-ui.js": "10755aa727c32881979a43dfe4baf6ca198e76e2975adf50fe44f1a3abdc402e",
+      "scripts/client-overrides/public/notebook/pattern.css": "64caa4c322da268cb2e6c8b0c6a9cccd3fed8fe56d13f8d5e23c4afc081ce671",
       "scripts/check-nanpure-pattern.cjs": "d31ea8e49c32d2b6cc9ab76db9898dbbc98c2363fb0716ac5e5f8c76481cd6f6",
       "scripts/check-nanpure-pattern-math.cjs": "5e7067b1e3f2c3bd58dd3909f5c9795746deac75b6caef3a38b7babb9f5cf92f",
       "scripts/check-nanpure-pattern-browser.cjs": "31ac3d68c02958eb97e440473339660f98cadc03004a693714c91e25927edd8c",
@@ -3201,8 +3201,8 @@
   "patternNoScroll": {
     "sources": {
       "scripts/client-overrides/public/notebook/pattern-model.js": "02f86ae01d011f860a5b03143a914d838e029958806ca3c4ea8aab7882afc71b",
-      "scripts/client-overrides/public/notebook/pattern-ui.js": "1399a195f68e2ebd34038956a00bdeaeb307d78c5db9f35d523b62cd65652c9f",
-      "scripts/client-overrides/public/notebook/pattern.css": "8b760ad9955c56a1fe28436f810208abf066708eea8349478d3f088a3941971f",
+      "scripts/client-overrides/public/notebook/pattern-ui.js": "10755aa727c32881979a43dfe4baf6ca198e76e2975adf50fe44f1a3abdc402e",
+      "scripts/client-overrides/public/notebook/pattern.css": "64caa4c322da268cb2e6c8b0c6a9cccd3fed8fe56d13f8d5e23c4afc081ce671",
       "scripts/check-nanpure-pattern.cjs": "d31ea8e49c32d2b6cc9ab76db9898dbbc98c2363fb0716ac5e5f8c76481cd6f6",
       "scripts/check-nanpure-pattern-math.cjs": "5e7067b1e3f2c3bd58dd3909f5c9795746deac75b6caef3a38b7babb9f5cf92f",
       "scripts/check-nanpure-pattern-browser.cjs": "31ac3d68c02958eb97e440473339660f98cadc03004a693714c91e25927edd8c",
@@ -3213,8 +3213,8 @@
   "patternSharing": {
     "sources": {
       "scripts/client-overrides/public/notebook/pattern-share.js": "e51500d678c3b5c66fa108d7508591e0ad13ae08f569efe3cef3f06d1f445fad",
-      "scripts/client-overrides/public/notebook/pattern-ui.js": "1399a195f68e2ebd34038956a00bdeaeb307d78c5db9f35d523b62cd65652c9f",
-      "scripts/client-overrides/public/notebook/pattern.css": "8b760ad9955c56a1fe28436f810208abf066708eea8349478d3f088a3941971f",
+      "scripts/client-overrides/public/notebook/pattern-ui.js": "10755aa727c32881979a43dfe4baf6ca198e76e2975adf50fe44f1a3abdc402e",
+      "scripts/client-overrides/public/notebook/pattern.css": "64caa4c322da268cb2e6c8b0c6a9cccd3fed8fe56d13f8d5e23c4afc081ce671",
       "scripts/client-overrides/public/notebook/app.js": "e5d3697a52e6b321066c77dd15a7817c33af056330e28d6329918475334d74a3",
       "scripts/i18n/catalog-pattern-share-78.cjs": "0486cba6bc81e749daa1973fce3db2aae4a3d311de540c0c5a0f3f5b58f7b737",
       "scripts/check-nanpure-pattern-share-browser.cjs": "5022ce02160e29bfe1fea8e1ed10158281e412c5377c620ce0fd341abf9f8b57",
@@ -3224,8 +3224,8 @@
   "patternMobileUsage": {
     "sources": {
       "scripts/client-overrides/public/notebook/pattern-share.js": "e51500d678c3b5c66fa108d7508591e0ad13ae08f569efe3cef3f06d1f445fad",
-      "scripts/client-overrides/public/notebook/pattern-ui.js": "1399a195f68e2ebd34038956a00bdeaeb307d78c5db9f35d523b62cd65652c9f",
-      "scripts/client-overrides/public/notebook/pattern.css": "8b760ad9955c56a1fe28436f810208abf066708eea8349478d3f088a3941971f",
+      "scripts/client-overrides/public/notebook/pattern-ui.js": "10755aa727c32881979a43dfe4baf6ca198e76e2975adf50fe44f1a3abdc402e",
+      "scripts/client-overrides/public/notebook/pattern.css": "64caa4c322da268cb2e6c8b0c6a9cccd3fed8fe56d13f8d5e23c4afc081ce671",
       "scripts/client-overrides/public/notebook/app.js": "e5d3697a52e6b321066c77dd15a7817c33af056330e28d6329918475334d74a3",
       "scripts/i18n/catalog-pattern-mobile-79.cjs": "086c60f52516048a947b819bfe896533cedb3a1613edce72c26de3e0172eb7a8",
       "scripts/check-nanpure-pattern-mobile-browser.cjs": "45f64296ae5f2060db8fbc2973cca85d353144a2238a696d78697e2bf0ed4a31",
@@ -3237,8 +3237,8 @@
   "patternCreationFlow": {
     "sources": {
       "scripts/client-overrides/public/notebook/pattern-share.js": "e51500d678c3b5c66fa108d7508591e0ad13ae08f569efe3cef3f06d1f445fad",
-      "scripts/client-overrides/public/notebook/pattern-ui.js": "1399a195f68e2ebd34038956a00bdeaeb307d78c5db9f35d523b62cd65652c9f",
-      "scripts/client-overrides/public/notebook/pattern.css": "8b760ad9955c56a1fe28436f810208abf066708eea8349478d3f088a3941971f",
+      "scripts/client-overrides/public/notebook/pattern-ui.js": "10755aa727c32881979a43dfe4baf6ca198e76e2975adf50fe44f1a3abdc402e",
+      "scripts/client-overrides/public/notebook/pattern.css": "64caa4c322da268cb2e6c8b0c6a9cccd3fed8fe56d13f8d5e23c4afc081ce671",
       "scripts/client-overrides/public/notebook/app.js": "e5d3697a52e6b321066c77dd15a7817c33af056330e28d6329918475334d74a3",
       "scripts/client-overrides/public/notebook/pattern-model.js": "02f86ae01d011f860a5b03143a914d838e029958806ca3c4ea8aab7882afc71b",
       "scripts/check-nanpure-pattern-difficulty.cjs": "dfd7c98a7e7bc0e13979f24bd257c419d78bd2b3649bb4b2aba5eb4da4783ac0",
@@ -3252,8 +3252,8 @@
   "patternJobQueue": {
     "sources": {
       "scripts/client-overrides/public/notebook/pattern-share.js": "e51500d678c3b5c66fa108d7508591e0ad13ae08f569efe3cef3f06d1f445fad",
-      "scripts/client-overrides/public/notebook/pattern-ui.js": "1399a195f68e2ebd34038956a00bdeaeb307d78c5db9f35d523b62cd65652c9f",
-      "scripts/client-overrides/public/notebook/pattern.css": "8b760ad9955c56a1fe28436f810208abf066708eea8349478d3f088a3941971f",
+      "scripts/client-overrides/public/notebook/pattern-ui.js": "10755aa727c32881979a43dfe4baf6ca198e76e2975adf50fe44f1a3abdc402e",
+      "scripts/client-overrides/public/notebook/pattern.css": "64caa4c322da268cb2e6c8b0c6a9cccd3fed8fe56d13f8d5e23c4afc081ce671",
       "scripts/client-overrides/public/notebook/app.js": "e5d3697a52e6b321066c77dd15a7817c33af056330e28d6329918475334d74a3",
       "scripts/client-overrides/public/notebook/pattern-model.js": "02f86ae01d011f860a5b03143a914d838e029958806ca3c4ea8aab7882afc71b",
       "scripts/check-nanpure-pattern-difficulty.cjs": "dfd7c98a7e7bc0e13979f24bd257c419d78bd2b3649bb4b2aba5eb4da4783ac0",
