@@ -1,0 +1,27 @@
+// Exercise the shipped client on a secure origin and the real Worker/SQLite API.
+const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright'),fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const {pathToFileURL}=require('node:url');const root=path.resolve(process.argv[2]||'_site'),repo=path.resolve(__dirname,'..'),origin='https://atugari.github.io';
+(async()=>{
+ const {default:worker}=await import(pathToFileURL(path.join(repo,'nanpure-api/src/index.js'))),{database}=await import(pathToFileURL(path.join(repo,'nanpure-api/test/db.mjs'))),env={DB:database()};
+ const types={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml'};
+ const browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_BIN||undefined,args:['--no-sandbox']});
+ const n=9,solution=Array.from({length:81},(_,i)=>(Math.floor(i/9)*3+Math.floor(Math.floor(i/9)/3)+i%9)%9+1),puzzle=solution.slice();puzzle[80]=0;
+ const fixture={uid:'gallery-ci',id:'gallery-ci',kind:'normal',n,level:1,puzzle,solution,grid:puzzle.slice(),notes:{},elapsed:0,completed:false,created:Date.now(),rating:{level:1,unique:true,noGuess:true}};
+ async function setup(width,height){const context=await browser.newContext({viewport:{width,height},serviceWorkers:'block'}),page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));await context.addInitScript(()=>{Object.defineProperty(navigator,'doNotTrack',{get:()=> '1'});});await context.route('**/*',async route=>{const req=route.request(),u=new URL(req.url());
+  if(u.hostname==='puzzle-api.puzzle-hub-4826.workers.dev'&&u.pathname==='/api/gallery'){const h={...req.headers(),Origin:origin};const response=await worker.fetch(new Request(req.url(),{method:req.method(),headers:h,...(req.method()==='POST'?{body:req.postData()}:{} )}),env);return route.fulfill({status:response.status,headers:Object.fromEntries(response.headers),body:Buffer.from(await response.arrayBuffer())});}
+  if(u.origin!==origin)return route.fulfill({status:200,contentType:'application/json',body:'{}'});
+  const file=path.join(root,decodeURIComponent(u.pathname).replace(/^\//,'')+(u.pathname.endsWith('/')?'index.html':''));if(fs.existsSync(file)&&fs.statSync(file).isFile())return route.fulfill({status:200,contentType:types[path.extname(file)]||'application/octet-stream',body:fs.readFileSync(file)});return route.fulfill({status:404,body:'not found'});
+ });return {context,page,errors};}
+ try{for(const [width,height] of [[1280,900],[360,740]]){
+  const {context,page,errors}=await setup(width,height);await page.goto(origin+'/nanpure/gallery/');await page.locator('#main[aria-busy=false]').waitFor();assert.equal(await page.locator('.exhibit').count(),7);assert.equal(await page.locator('#share').isEnabled(),false);
+  await page.locator('#edit-room').click();await page.locator('input[name=name]').fill('CI展示室');await page.locator('select[name=theme]').selectOption('sage');await page.locator('input[name=published]').check();await page.locator('#room-form button.primary').click();
+  await page.locator('#puzzle-file').setInputFiles({name:'puzzle.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(fixture))});await page.locator('#pick-list button').click();assert.equal(await page.locator('.exhibit canvas').count(),1);
+  await page.locator('#save').click();await page.getByText('展示室を保存して公開しました。共有ボタンから紹介できます。',{exact:true}).waitFor();await page.locator('#share').click();assert(await page.getByText('Xで紹介する',{exact:true}).isVisible());const link=await page.locator('#detail-body input').inputValue();await page.locator('#detail [data-close]').click();
+  await page.getByRole('button',{name:'9×9 ナンプレを見る',exact:true}).click();await page.getByRole('button',{name:'この問題を遊ぶ',exact:true}).click();await page.getByText('途中の状態はこの端末に保存します。閉じるときも保存します。',{exact:true}).waitFor();
+  const frame=page.frameLocator('#play-frame');await frame.locator('#board').waitFor();const opened=await page.locator('#play-frame').evaluate(f=>{const p=f.contentWindow.NanpureAppTest.getCurrent();return {n:p.n,grid:p.grid,puzzle:p.puzzle,uid:p.uid}});assert.equal(opened.n,9);assert.equal(opened.grid[80],0);assert(opened.uid.startsWith('gallery-'));
+  await page.locator('#close-play').click();await page.reload();await page.locator('#main[aria-busy=false]').waitFor();assert.equal(await page.locator('.exhibit canvas').count(),1);
+  const overflow=await page.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth}));assert(overflow.scroll<=overflow.width+2,JSON.stringify(overflow));
+  const visitor=await context.newPage();await visitor.goto(link);await visitor.locator('#main[aria-busy=false]').waitFor();assert.equal(await visitor.locator('#owner-tools').isVisible(),false);assert.equal(await visitor.locator('.slot-controls').count(),0);assert.equal(await visitor.locator('.exhibit canvas').count(),1);
+  await page.locator('#unpublish').click();await page.getByText('公開を取り下げました。編集中の内容は端末に残しています。',{exact:true}).waitFor();await visitor.reload();await visitor.getByText('この展示室は非公開か、見つかりません。',{exact:true}).waitFor();assert.deepEqual(errors,[]);await context.close();
+ }console.log('Gallery desktop/mobile, save, share, play, reload and privacy checks passed.');}finally{await browser.close()}
+})().catch(e=>{console.error(e);process.exit(1)});
