@@ -1,11 +1,11 @@
 // Portable gallery data. The same format is used by Workers, OCI and the browser.
 export const VERSION=1,MAX_SLOTS=7,MAX_BYTES=256*1024;
 export const themes=['cream','sage','night'],frames=['wood','gold','simple'];
-export const puzzleFields=['uid','id','kind','n','level','puzzle','solution','regions','linked','cages','thermos','arrows','lines','marks','constraints','links','steps','crosses','clues','kropkiMode','blockRows','blockCols','complexity','kStyle','shapeVersion','variantVersion','expansionVersion','trioVersion','multiShape','linkedShape','rating','verification','pattern','patternVersion'];
+export const puzzleFields=['uid','id','kind','n','level','puzzle','solution','regions','linked','cages','thermos','arrows','lines','marks','constraints','links','steps','crosses','clues','kropkiMode','blockRows','blockCols','complexity','kStyle','shapeVersion','variantVersion','expansionVersion','trioVersion','multiShape','linkedShape','rating','verification','pattern','patternVersion','multiVersion','neighborVersion','crossVersion','linkedVersion','stepVersion','killerRatingVersion','sizeVersion','ratingVersion','assessment','shape','shapeStats','shapeMethod','tidyApplied'];
 const text=(v,max)=>{if(typeof v!=='string'||v.length>max)throw Error('文字数を確認してください。');return v.trim()};
 const integer=(v,min,max)=>Number.isSafeInteger(v)&&v>=min&&v<=max;
 export function cleanPuzzle(p){
- if(!p||!integer(p.n,4,100)||typeof p.kind!=='string'||!/^[a-z][a-z0-9-]{0,39}$/.test(p.kind))throw Error('問題の形式を確認してください。');
+ if(!p||!integer(p.n,4,100)||typeof p.kind!=='string'||!/^[a-z][a-zA-Z0-9-]{0,39}$/.test(p.kind))throw Error('問題の形式を確認してください。');
  const a=Array.from(p.puzzle||[]),s=Array.from(p.solution||[]),max=p.linked?Math.max(p.n,...(Array.isArray(p.linked.boards)?p.linked.boards.map(b=>integer(b.n,4,100)?b.n:p.n):[])):p.n;
  if(a.length<16||a.length>20000||s.length!==a.length||a.some((v,i)=>!integer(v,0,max)||!integer(s[i],1,max)||v&&v!==s[i]))throw Error('問題の数字を確認してください。');
  if(!['multi','samurai','linked'].includes(p.kind)&&!p.linked&&a.length!==p.n*p.n)throw Error('盤面の大きさを確認してください。');

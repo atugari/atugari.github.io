@@ -10,7 +10,7 @@ document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>b.closest('di
 document.querySelectorAll('dialog').forEach(d=>d.addEventListener('close',()=>{if(opener?.isConnected)opener.focus()}));
 function persist(){if(visitor)return;try{localStorage.setItem(DRAFT,JSON.stringify({room,published,revision,id:savedId,dirty}));return true}catch{say('端末の下書きを保存できませんでした。引き継ぎファイルを保存してください。');return false}}
 function changed(){dirty=true;persist();render()}
-const kindNames={normal:'ナンプレ',jigsaw:'ジグソー',killer:'キラー',multi:'マルチ',samurai:'サムライ',linked:'マルチ',diagonal:'対角線',hyper:'ハイパー',antiknight:'アンチナイト',nonconsecutive:'おとなり',thermo:'サーモ',arrow:'アロー',renban:'連番',sandwich:'サンドイッチ',kropki:'クロプキ'};
+const kindNames={normal:'ナンプレ',jigsaw:'ジグソー',killer:'キラー',multi:'マルチ',samurai:'サムライ',linked:'マルチ',diagonal:'対角線',hyper:'ハイパー',antiknight:'アンチナイト',neighbor:'おとなり',nonconsecutive:'おとなり',thermo:'温度計',arrow:'矢印',renban:'連番',sandwich:'サンドイッチ',kropki:'クロプキ',clone:'クローン',doubleArrow:'ダブル矢印',doubleSandwich:'ダブルサンドイッチ',palindrome:'回文',skyscraper:'ビルディング',slowThermo:'スロー温度計',step:'ステップ',twinKiller:'双子キラー',whisper:'ウィスパー'};
 function description(s){if(s.type==='title')return '獲得した称号 · '+s.titleId;const p=s.record;return `${kindNames[p.kind]||p.kind} · ${p.n}×${p.n}${p.level?' · 難易度 '+p.level:''}`;}
 function board(canvas,p,complete=false,large=false){
  const dim=large?1800:420;canvas.width=dim;canvas.height=dim;canvas.setAttribute('role','img');canvas.setAttribute('aria-label',`${p.n}×${p.n}の${complete?'完成した盤面':'問題の見本'}`);const c=canvas.getContext('2d');if(!c)return;
