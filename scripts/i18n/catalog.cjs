@@ -51,3 +51,4 @@ Object.assign(module.exports,require('./catalog-pattern-share-78.cjs'));
 Object.assign(module.exports,require('./catalog-pattern-mobile-79.cjs')(module.exports));
 Object.assign(module.exports,require('./catalog-pattern-flow-80.cjs')(module.exports));
 Object.assign(module.exports,require('./catalog-pattern-jobs-81.cjs')());
+Object.assign(module.exports,require('./catalog-pattern-wording-82.cjs')(module.exports));

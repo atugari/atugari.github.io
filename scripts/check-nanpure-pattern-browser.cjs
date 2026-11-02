@@ -28,12 +28,12 @@ async function setup(browser,viewport){
    assert.deepEqual(await editor.evaluate(el=>[...el.querySelectorAll('*')].filter(e=>e.getClientRects().length&&e.clientHeight>0&&getComputedStyle(e).display!=='contents'&&!e.closest('dialog')&&(e.scrollHeight>e.clientHeight+2||e.scrollWidth>e.clientWidth+2)).map(e=>({class:e.className,excess:e.scrollHeight-e.clientHeight,width:e.scrollWidth-e.clientWidth}))),[],'No internal scrolling in the fit workspace');
    assert(await page.evaluate(()=>document.documentElement.scrollHeight<=innerHeight+1&&document.documentElement.scrollWidth<=innerWidth+1));
   };
-  const simple=async()=>{const labels=await editor.locator('button:visible,select:visible').evaluateAll(els=>els.filter(e=>!e.closest('.pattern-grid,dialog')).map(e=>e.textContent.trim()));assert(labels.length<=8,'Only current actions are shown: '+labels);assert.equal(labels.length,new Set(labels).size,'No duplicate actions');};
+  const simple=async()=>{const labels=await editor.locator('button:visible,select:visible').evaluateAll(els=>els.filter(e=>!e.closest('.pattern-grid,dialog')).map(e=>e.textContent.trim()));assert(labels.length<=8,'Only current actions are shown: '+labels);assert.equal(labels.length,new Set(labels).size,'No duplicate actions');for(const text of await editor.locator('button:visible').evaluateAll(els=>els.filter(e=>!e.closest('.pattern-grid,dialog')).map(e=>e.textContent.trim())))assert(/[\p{L}]/u.test(text),'Every visible action has words, including on narrow screens: '+text);};
   assert.equal(await editor.getAttribute('data-state'),'editing');assert(await editor.locator('[data-pattern-view="preview"]').isEnabled(),'Step 2 starts work without waiting for a hidden result');
   assert(await editor.locator('[data-pattern-save]').isHidden());assert(await editor.locator('[data-pattern-share]').isHidden());assert.equal(await editor.locator('[data-pattern-difficulty] option').count(),19);
   const fit=await grid.boundingBox();assert(fit.x>=0&&fit.y>=0&&fit.x+fit.width<=viewport.width+1&&fit.y+fit.height<=viewport.height+1);
   const side=viewport.width>=980||(viewport.width>=620&&viewport.height<600);
-  assert(fit.width>=Math.min(side?viewport.height-16:viewport.height-328,viewport.width-(side?(viewport.width>=980?364:264):12))-1,'Board uses the available space');
+  assert(fit.width>=Math.min(side?viewport.height-(viewport.width>=980?16:96):viewport.height-398,viewport.width-(side?(viewport.width>=980?364:264):12))-1,'Board uses the available space');
   await noScroll();await simple();
   await editor.locator('[data-pixel="0"]').click();assert.equal(await editor.locator('[data-pixel][aria-pressed="true"]').count(),56);assert(await editor.locator('[data-pattern-view="preview"]').isEnabled());
   await editor.locator('[data-pattern-undo]').click();assert.equal(await editor.locator('[data-pixel][aria-pressed="true"]').count(),55);await editor.locator('[data-pattern-redo]').click();assert.equal(await editor.locator('[data-pixel][aria-pressed="true"]').count(),56);await editor.locator('[data-pattern-undo]').click();
@@ -42,12 +42,12 @@ async function setup(browser,viewport){
   const count=await editor.locator('[data-pixel][aria-pressed="true"]').count();const previewHit=await editor.locator('[data-pixel="0"]').boundingBox();await page.mouse.click(previewHit.x+previewHit.width/2,previewHit.y+previewHit.height/2);assert.equal(await editor.locator('[data-pixel][aria-pressed="true"]').count(),count,'Preview cannot paint');assert(await editor.locator('[data-pattern-difficulty-label]').isHidden());
   assert.deepEqual(await grid.boundingBox(),fit,'Status and preview never move the board');await edit();
   // All optional controls are reachable once, without duplicating panels.
-  await tools();assert.equal(await page.locator('dialog[open]').count(),1);assert.equal(await editor.locator('[data-pattern-quick="draw"]').count(),1);
+  await tools();assert.equal(await page.locator('dialog[open]').count(),1);assert.equal(await editor.locator('[data-pattern-quick="draw"]').count(),1);assert.equal(await dialog.locator('[data-pattern-dialog-title]').textContent(),await editor.locator('[data-pattern-quick="draw"]').textContent(),'Settings title matches its entry button');
   await page.evaluate(()=>appBack());assert(await dialog.isHidden());assert.equal(await editor.count(),1);
   await details('.pattern-math-guide');assert.equal(await dialog.locator('.pattern-math-guide a:visible').count(),2);await close();await noScroll();
   await preset('diamond');await editor.locator('[data-pattern-difficulty]').selectOption('10');await generate();assert((await editor.locator('[data-pattern-rating]').textContent()).includes('10'));await edit();
   const original=await editor.locator('[data-pixel]').evaluateAll(els=>els.map(e=>e.getAttribute('aria-pressed')==='true'));
-  await tools();await dialog.getByText('回転・反転',{exact:true}).click();await dialog.locator('[data-pattern-transform="1"]').click();
+  await tools();await dialog.getByText('模様を回す・反転する',{exact:true}).click();await dialog.locator('[data-pattern-transform="1"]').click();
   const rotated=await editor.locator('[data-pixel]').evaluateAll(els=>els.map(e=>e.getAttribute('aria-pressed')==='true')),expected=Array(81);original.forEach((v,i)=>expected[i%9*9+8-Math.floor(i/9)]=v);assert.deepEqual(rotated,expected);
   await editor.locator('[data-pattern-undo]').click();assert.deepEqual(await editor.locator('[data-pixel]').evaluateAll(els=>els.map(e=>e.getAttribute('aria-pressed')==='true')),original);
   await details('.pattern-digit-options');await dialog.locator('[data-pattern-omit]').selectOption('9');await close();assert.equal(await editor.getAttribute('data-state'),'impossible');assert.equal(await editor.locator('.needs-work').count(),9);assert(await editor.locator('[data-pattern-view="preview"]').isEnabled());
