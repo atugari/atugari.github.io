@@ -6,7 +6,7 @@ const labels={ja:'自分の展示室',en:'My gallery','zh-Hans':'我的展室','
 function mount(){
  const host=document.querySelector('.home-bottom-links')||document.querySelector('.home-topline')||document.querySelector('#library header');
  if(host&&!host.querySelector('[data-gallery-entry]')){const a=document.createElement('a');a.dataset.galleryEntry='';a.href='/nanpure/gallery/';a.dataset.i18nSkip='';a.setAttribute('translate','no');a.className='np-gallery-entry';host.append(a);}
- const entry=host?.querySelector('[data-gallery-entry]'),locale=window.NPI18n?.get()||'ja',label=labels[locale]||labels.en;if(entry&&entry.textContent!==label)entry.textContent=label;
+ const entry=host?.querySelector('[data-gallery-entry]'),locale=window.NPI18n?.get()||'ja',label=locale==='ja'?'展示室（制作中）':(labels[locale]||labels.en)+' (Beta)';if(entry&&entry.textContent!==label){entry.textContent=label;entry.setAttribute('aria-label',locale==='ja'?'自分の展示室（制作中）':label);}
  capture(window.NPAchievements);
  for(const f of document.querySelectorAll('iframe'))try{if(!installed.has(f)){installed.add(f);f.addEventListener('load',mount);}capture(f.contentWindow.NPAchievements);const w=f.contentWindow;if(w.NPVideo&&!installed.has(w.NPVideo)&&typeof w.NPVideo.settle==='function'){const v=w.NPVideo,original=v.settle;installed.add(v);v.settle=function(p,win){const r=original.apply(this,arguments);if(win&&p.grid?.every((x,i)=>x===p.solution?.[i])){module??=import(new URL('data.mjs',base));module.then(m=>m.addClear({game:'sudoku',valid:true,puzzle:p,elapsed:(p.elapsed||0)*1000,hints:p.video?.hints??null,errors:p.video?.errors??null,auto:!!p.video?.auto,revealed:!!p.video?.revealed})).catch(()=>{});}return r;};}}catch{}
 }

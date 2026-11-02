@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ja">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="referrer" content="no-referrer"><meta name="robots" content="noindex,follow"><meta name="theme-color" content="#f4efe4"><title>自分の展示室｜ナンプレ帳</title><link rel="stylesheet" href="style.css?v=1"><script src="config.js?v=1"></script><script type="module" src="app.mjs?v=1"></script><script defer src="entry.js?v=1"></script></head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="referrer" content="no-referrer"><meta name="robots" content="noindex,follow"><meta name="theme-color" content="#f4efe4"><title>自分の展示室（制作中）｜ナンプレ帳</title><link rel="stylesheet" href="style.css?v=1"><script src="config.js?v=1"></script><script type="module" src="app.mjs?v=2"></script><script defer src="entry.js?v=2"></script></head>
 <body>
-<header class="topbar"><a class="brand" href="/nanpure/">〈 ナンプレ帳</a><span>わたしだけの、小さな美術館。</span><a href="/nanpure/gallery/" id="my-room">自分の展示室</a></header>
+<header class="topbar"><a class="brand" href="/nanpure/">〈 ナンプレ帳</a><span>わたしだけの、小さな美術館。</span><a href="/nanpure/gallery/" id="my-room">自分の展示室（制作中）</a></header>
 <main id="main" aria-busy="true">
- <section class="intro"><p class="eyebrow">NANPURE GALLERY</p><h1 id="room-name">自分の展示室</h1><p id="room-bio">作品や、お気に入り、遊んだ足跡を飾ろう。</p><p id="room-state" class="badge">読み込み中</p></section>
+ <section class="intro"><p class="eyebrow">NANPURE GALLERY · 制作中</p><h1 id="room-name">自分の展示室（制作中）</h1><p id="room-bio">作品や、お気に入り、遊んだ足跡を飾ろう。</p><p id="room-state" class="badge">読み込み中</p></section>
  <div class="toolbar" id="owner-tools" hidden><button id="edit-room">部屋の名前と見た目を変える</button><button id="save" class="primary">展示室を保存する</button><button id="share">展示室を共有する</button><button id="recovery">引き継ぎ・バックアップ</button></div>
  <p id="status" role="status" aria-live="polite"></p>
  <section id="wall" class="wall" aria-label="展示作品"></section>
@@ -16,5 +16,5 @@
 <dialog id="detail"><div class="dialog-head"><h2 id="detail-title">作品を見る</h2><button data-close>閉じる</button></div><div id="detail-body"></div></dialog>
 <dialog id="transfer"><div class="dialog-head"><h2>引き継ぎ・バックアップ</h2><button data-close>閉じる</button></div><p>引き継ぎファイルには展示室の編集に使う秘密のキーが含まれます。公開したり、人に渡したりしないでください。</p><button id="export" class="primary">引き継ぎファイルを保存する</button><label class="file-button">引き継ぎファイルを読み込む<input type="file" id="import" accept="application/json,.json" hidden></label><p id="transfer-status" role="status"></p></dialog>
 <dialog id="play-dialog" class="play-dialog"><div class="dialog-head"><h2>展示された問題を遊ぶ</h2><button id="close-play">保存して閉じる</button></div><p id="play-status" role="status"></p><iframe id="play-frame" title="ナンプレのプレイ画面"></iframe></dialog>
-<footer>ナンプレ帳 · 自分の展示室 <span>GALLERY 1.0</span></footer>
+<footer>ナンプレ帳 · 自分の展示室（制作中） <span>GALLERY 1.0</span></footer>
 </body></html>

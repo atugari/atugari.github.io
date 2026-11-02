@@ -29,7 +29,7 @@ function board(canvas,p,complete=false,large=false){
 function drawTitle(host,s){const el=node('div',undefined,'title-emblem');el.append(node('div','✦'),node('strong',s.title));el.style.fontSize='18px';host.append(el)}
 function render(){
  document.body.dataset.theme=room.theme;document.body.dataset.frame=room.frame;$('room-name').textContent=room.name;$('room-bio').textContent=room.bio;
- document.title=room.name+'｜ナンプレ帳';$('room-state').textContent=visitor?'公開されている展示室':(published?'URLで公開':'自分だけの展示室')+(dirty?' · 未保存の変更あり':'');
+ document.title=room.name+'｜展示室（制作中）・ナンプレ帳';$('room-state').textContent=visitor?'公開されている展示室':(published?'URLで公開':'自分だけの展示室')+(dirty?' · 未保存の変更あり':'');
  $('owner-tools').hidden=visitor;$('owner-notes').hidden=visitor;$('unpublish').disabled=busy||!savedId;$('save').disabled=busy;$('share').disabled=busy||!savedId||!published||dirty;
  $('main').setAttribute('aria-busy',String(busy));$('wall').replaceChildren();
  room.slots.forEach((s,i)=>{
