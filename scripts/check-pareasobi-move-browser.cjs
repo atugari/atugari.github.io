@@ -58,7 +58,7 @@ for(const viewport of [{width:1280,height:800},{width:375,height:812},{width:812
  const after=await page.evaluate(()=>{const p=document.querySelector('#game').contentWindow.NanpureAppTest.getCurrent();return{uid:p.uid,grid:p.grid.slice()}});
  assert.deepEqual(after,before,'Actual saved grid at '+viewport.width);
  await page.locator('#back').click();await page.locator('#library:not([hidden])').waitFor();
- await page.locator('#library header a').click();await page.locator('.game-list').waitFor();
+ await page.locator('#library header a[href="/nanpure/"]').click();await page.locator('.game-list').waitFor();
  console.log('PASS viewport '+viewport.width+'x'+viewport.height+': eight starts/returns and actual saved-grid reload');
 }
 // The screenshot's large board must gain usable height, with real editing and
@@ -130,7 +130,7 @@ for(const viewport of [{width:1280,height:800},{width:375,height:812},{width:812
   await page.waitForFunction(uid=>document.querySelector('#game')?.contentWindow?.NanpureAppTest?.getCurrent()?.uid===uid,before.uid);
   assert.deepEqual(await page.evaluate(()=>document.querySelector('#game').contentWindow.NanpureAppTest.getCurrent().grid),before.grid,'New '+n+'x'+n+' reload at '+viewport.width);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'New board outer width');
-  await page.locator('#back').click();await page.locator('#library:not([hidden])').waitFor();await page.locator('#library header a').click();await page.locator('[data-collection-entry]').waitFor();
+  await page.locator('#back').click();await page.locator('#library:not([hidden])').waitFor();await page.locator('#library header a[href="/nanpure/"]').click();await page.locator('[data-collection-entry]').waitFor();
  }
  console.log('PASS appended sizes '+viewport.width+'x'+viewport.height+': filters, start, keypad, erase, undo, durable grid, reload and notebook return');
 }
