@@ -1,0 +1,332 @@
+{
+  "checkedAt": "2026-10-21",
+  "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "music": [
+    {
+      "file": "cozy-puzzle-1.mp3",
+      "title": "Cozy Puzzle In-Game 1",
+      "author": "MintoDog",
+      "source": "https://opengameart.org/content/cozy-puzzle-in-game-1",
+      "license": "CC0-1.0",
+      "durationSeconds": 130.220408,
+      "bytes": 1563003,
+      "sha256": "67404f9b347ca193fce729984373acd7a3c9cb978d578ec3ab82b7421ec0bf82",
+      "adaptation": "Re-encoded original full loop at 96 kbps MP3 for smaller website download; no music content changed."
+    },
+    {
+      "file": "cozy-puzzle-2.mp3",
+      "title": "Cozy Puzzle In-Game 2",
+      "author": "MintoDog",
+      "source": "https://opengameart.org/content/cozy-puzzle-in-game-2",
+      "license": "CC0-1.0",
+      "durationSeconds": 128.026122,
+      "bytes": 1536671,
+      "sha256": "47f000108face295ad6150b39f89a83563bedc65a502c03d3c64d3c28307dfef",
+      "adaptation": "Re-encoded original full loop at 96 kbps MP3 for smaller website download; no music content changed."
+    },
+    {
+      "file": "cozy-puzzle-3.mp3",
+      "title": "Cozy Puzzle In-Game 3",
+      "author": "MintoDog",
+      "source": "https://opengameart.org/content/cozy-puzzle-in-game-3",
+      "license": "CC0-1.0",
+      "durationSeconds": 124.473469,
+      "bytes": 1494040,
+      "sha256": "568d1d0052bc51eea357c3d628cd4ab1d8b4d5d35c44a6c956d05ebf5259c6fd",
+      "adaptation": "Re-encoded original full loop at 96 kbps MP3 for smaller website download; no music content changed."
+    },
+    {
+      "file": "magic-puzzle-1.mp3",
+      "title": "Magic Puzzle In-Game 1",
+      "author": "MintoDog",
+      "source": "https://opengameart.org/content/magic-puzzle-in-game-1",
+      "license": "CC0-1.0",
+      "durationSeconds": 122.226939,
+      "bytes": 1467081,
+      "sha256": "b45a9210f2db94268f0f19b8fbd406e7cacd45b7c9e61dc035bc4093271bb60b",
+      "adaptation": "Re-encoded original full loop at 96 kbps MP3 for smaller website download; no music content changed."
+    }
+  ],
+  "sounds": [
+    {
+      "file": "click_001.mp3",
+      "original": "Audio/click_001.ogg",
+      "author": "Kenney",
+      "source": "https://kenney.nl/assets/interface-sounds",
+      "license": "CC0-1.0",
+      "durationSeconds": 0.130612,
+      "bytes": 1925,
+      "sha256": "0849c5080331a5545d0a51776ceb7458a16b4182c710b85ee36d37e516c52f6e",
+      "adaptation": "Converted original Ogg to MP3 for browser compatibility."
+    },
+    {
+      "file": "click_003.mp3",
+      "original": "Audio/click_003.ogg",
+      "author": "Kenney",
+      "source": "https://kenney.nl/assets/interface-sounds",
+      "license": "CC0-1.0",
+      "durationSeconds": 0.052245,
+      "bytes": 985,
+      "sha256": "38c6c0cec046ad002c4305d70fb94be5d8cdf95baddf1941fe2f87473837c471",
+      "adaptation": "Converted original Ogg to MP3 for browser compatibility."
+    },
+    {
+      "file": "pluck_001.mp3",
+      "original": "Audio/pluck_001.ogg",
+      "author": "Kenney",
+      "source": "https://kenney.nl/assets/interface-sounds",
+      "license": "CC0-1.0",
+      "durationSeconds": 0.130612,
+      "bytes": 1925,
+      "sha256": "e84bf5aa01b3b558b08748a8ae7dce251ca6ac5bd10d6871a657e241fb110175",
+      "adaptation": "Converted original Ogg to MP3 for browser compatibility."
+    },
+    {
+      "file": "tick_001.mp3",
+      "original": "Audio/tick_001.ogg",
+      "author": "Kenney",
+      "source": "https://kenney.nl/assets/interface-sounds",
+      "license": "CC0-1.0",
+      "durationSeconds": 0.078367,
+      "bytes": 1298,
+      "sha256": "802e90feef648f057175e702196a19732caa1e53d996807a2d93839ed65773a9",
+      "adaptation": "Converted original Ogg to MP3 for browser compatibility."
+    },
+    {
+      "file": "glass_001.mp3",
+      "original": "Audio/glass_001.ogg",
+      "author": "Kenney",
+      "source": "https://kenney.nl/assets/interface-sounds",
+      "license": "CC0-1.0",
+      "durationSeconds": 0.313469,
+      "bytes": 4120,
+      "sha256": "acf620ed7ab90a7459ba1c815ffb14c5b31bf2c7e5b2a4db2938c9c01a57348f",
+      "adaptation": "Converted original Ogg to MP3 for browser compatibility."
+    },
+    {
+      "file": "scratch_001.mp3",
+      "original": "Audio/scratch_001.ogg",
+      "author": "Kenney",
+      "source": "https://kenney.nl/assets/interface-sounds",
+      "license": "CC0-1.0",
+      "durationSeconds": 0.182857,
+      "bytes": 2552,
+      "sha256": "222152a0747f50678f1276a89107b3c3d3c9e5448bc61347fe9b483843121541",
+      "adaptation": "Converted original Ogg to MP3 for browser compatibility."
+    },
+    {
+      "file": "confirmation_001.mp3",
+      "original": "Audio/confirmation_001.ogg",
+      "author": "Kenney",
+      "source": "https://kenney.nl/assets/interface-sounds",
+      "license": "CC0-1.0",
+      "durationSeconds": 0.339592,
+      "bytes": 4433,
+      "sha256": "0c62dde129644cf2f2c542fb0dff584239e438441cadb05550a68956c6bbe28e",
+      "adaptation": "Converted original Ogg to MP3 for browser compatibility."
+    },
+    {
+      "file": "error_001.mp3",
+      "original": "Audio/error_001.ogg",
+      "author": "Kenney",
+      "source": "https://kenney.nl/assets/interface-sounds",
+      "license": "CC0-1.0",
+      "durationSeconds": 0.20898,
+      "bytes": 2866,
+      "sha256": "b19319c074958b6f5b6497bb45d04f552095342ef7b597fea469ee6b00c98119",
+      "adaptation": "Converted original Ogg to MP3 for browser compatibility."
+    },
+    {
+      "file": "back_001.mp3",
+      "original": "Audio/back_001.ogg",
+      "author": "Kenney",
+      "source": "https://kenney.nl/assets/interface-sounds",
+      "license": "CC0-1.0",
+      "durationSeconds": 0.10449,
+      "bytes": 1612,
+      "sha256": "7c0ec69e53ae755cc4bf1e32a8d272653fefd986a978a95ecc7036ab0e170c9a",
+      "adaptation": "Converted original Ogg to MP3 for browser compatibility."
+    },
+    {
+      "file": "switch_001.mp3",
+      "original": "Audio/switch_001.ogg",
+      "author": "Kenney",
+      "source": "https://kenney.nl/assets/interface-sounds",
+      "license": "CC0-1.0",
+      "durationSeconds": 0.653061,
+      "bytes": 8195,
+      "sha256": "75b9a7dddf112a06739089d79522d6eca4f60a21f6767d65228c61a9696fc611",
+      "adaptation": "Converted original Ogg to MP3 for browser compatibility."
+    },
+    {
+      "file": "select_001.mp3",
+      "original": "Audio/select_001.ogg",
+      "author": "Kenney",
+      "source": "https://kenney.nl/assets/interface-sounds",
+      "license": "CC0-1.0",
+      "durationSeconds": 0.078367,
+      "bytes": 1298,
+      "sha256": "d1a72543085b7820ecb92c1cef9dbd37a4c1346dd5b9d09ae0f5a2a8c1588b57",
+      "adaptation": "Converted original Ogg to MP3 for browser compatibility."
+    },
+    {
+      "file": "drop_001.mp3",
+      "original": "Audio/drop_001.ogg",
+      "author": "Kenney",
+      "source": "https://kenney.nl/assets/interface-sounds",
+      "license": "CC0-1.0",
+      "durationSeconds": 0.182857,
+      "bytes": 2552,
+      "sha256": "46f7a4777daba90b841223288b82d6bc1964b98e91adcf996f6157c2c66e0686",
+      "adaptation": "Converted original Ogg to MP3 for browser compatibility."
+    },
+    {
+      "file": "back_002.mp3",
+      "original": "Audio/back_002.ogg",
+      "author": "Kenney",
+      "source": "https://kenney.nl/assets/interface-sounds",
+      "license": "CC0-1.0",
+      "durationSeconds": 0.130612,
+      "bytes": 1925,
+      "sha256": "8059380cd93ac38814b234e8c20730eb80742b0bf61fe352b189d75930f3a04a",
+      "adaptation": "Converted original Ogg to MP3 for browser compatibility."
+    },
+    {
+      "file": "back_003.mp3",
+      "original": "Audio/back_003.ogg",
+      "author": "Kenney",
+      "source": "https://kenney.nl/assets/interface-sounds",
+      "license": "CC0-1.0",
+      "durationSeconds": 0.130612,
+      "bytes": 1925,
+      "sha256": "3c1550b3ac980bdef38c56b5fb76e0501d319abc3ff741272f687078a9c38c54",
+      "adaptation": "Converted original Ogg to MP3 for browser compatibility."
+    },
+    {
+      "file": "confirmation_002.mp3",
+      "original": "Audio/confirmation_002.ogg",
+      "author": "Kenney",
+      "source": "https://kenney.nl/assets/interface-sounds",
+      "license": "CC0-1.0",
+      "durationSeconds": 0.574694,
+      "bytes": 7254,
+      "sha256": "62cfa78c87c0b175652a7077f1f1245df965f72465e0b01368c512c20eb1b820",
+      "adaptation": "Converted original Ogg to MP3 for browser compatibility."
+    },
+    {
+      "file": "confirmation_003.mp3",
+      "original": "Audio/confirmation_003.ogg",
+      "author": "Kenney",
+      "source": "https://kenney.nl/assets/interface-sounds",
+      "license": "CC0-1.0",
+      "durationSeconds": 0.365714,
+      "bytes": 4747,
+      "sha256": "df91bc83f3253f199aecbd1b0ded1b418f77a837f9cabf7e2ce12f39bcf13632",
+      "adaptation": "Converted original Ogg to MP3 for browser compatibility."
+    },
+    {
+      "file": "error_002.mp3",
+      "original": "Audio/error_002.ogg",
+      "author": "Kenney",
+      "source": "https://kenney.nl/assets/interface-sounds",
+      "license": "CC0-1.0",
+      "durationSeconds": 0.20898,
+      "bytes": 2866,
+      "sha256": "b5fa1cc59a4a8387189681a81b1ee617daee08b1974588137afdb3bc81934b79",
+      "adaptation": "Converted original Ogg to MP3 for browser compatibility."
+    },
+    {
+      "file": "error_003.mp3",
+      "original": "Audio/error_003.ogg",
+      "author": "Kenney",
+      "source": "https://kenney.nl/assets/interface-sounds",
+      "license": "CC0-1.0",
+      "durationSeconds": 0.574694,
+      "bytes": 7254,
+      "sha256": "eb71660bc01b8e59990b5f7a816b706ee6318f44e27a48cc06c36352c3fc531e",
+      "adaptation": "Converted original Ogg to MP3 for browser compatibility."
+    },
+    {
+      "file": "pluck_002.mp3",
+      "original": "Audio/pluck_002.ogg",
+      "author": "Kenney",
+      "source": "https://kenney.nl/assets/interface-sounds",
+      "license": "CC0-1.0",
+      "durationSeconds": 0.20898,
+      "bytes": 2866,
+      "sha256": "ebf8243e5305f45780ee6394b8a0b5bab8dd5fcbacb565f4dce8d83ba3dbc5ae",
+      "adaptation": "Converted original Ogg to MP3 for browser compatibility."
+    },
+    {
+      "file": "glass_002.mp3",
+      "original": "Audio/glass_002.ogg",
+      "author": "Kenney",
+      "source": "https://kenney.nl/assets/interface-sounds",
+      "license": "CC0-1.0",
+      "durationSeconds": 0.156735,
+      "bytes": 2239,
+      "sha256": "721d23a14127b7b25f8da7f889d15fddeff9f973d2a1d06f26645464edbd3e06",
+      "adaptation": "Converted original Ogg to MP3 for browser compatibility."
+    },
+    {
+      "file": "scratch_002.mp3",
+      "original": "Audio/scratch_002.ogg",
+      "author": "Kenney",
+      "source": "https://kenney.nl/assets/interface-sounds",
+      "license": "CC0-1.0",
+      "durationSeconds": 0.182857,
+      "bytes": 2552,
+      "sha256": "b0c882589d516807d85e76a20053991d23129500c60febae1a954ad58afe7635",
+      "adaptation": "Converted original Ogg to MP3 for browser compatibility."
+    },
+    {
+      "file": "tick_002.mp3",
+      "original": "Audio/tick_002.ogg",
+      "author": "Kenney",
+      "source": "https://kenney.nl/assets/interface-sounds",
+      "license": "CC0-1.0",
+      "durationSeconds": 0.052245,
+      "bytes": 985,
+      "sha256": "a35f37ec9d452c0ba87756b00566cf800c5933802f872300d34c46eff1ed0b3f",
+      "adaptation": "Converted original Ogg to MP3 for browser compatibility."
+    }
+  ],
+  "licenseSummary": "Original author/distributor pages expressly mark these works CC0. CC0 permits copying, modifying, distributing and performing, including commercial purposes. Attribution is voluntary and retained for provenance. No endorsement implied.",
+  "webSources": {
+    "music1": "turn29view0",
+    "music2": "turn29view1",
+    "music3": "turn29view2",
+    "sounds": "turn29view3",
+    "license": "turn29view4",
+    "music4": "turn31view0"
+  },
+  "suggestedSoundSets": [
+    {
+      "id": "paper",
+      "name": "かみ・ペン",
+      "input": "click_001.mp3",
+      "erase": "scratch_001.mp3",
+      "undo": "back_001.mp3",
+      "complete": "confirmation_001.mp3",
+      "error": "error_001.mp3"
+    },
+    {
+      "id": "soft",
+      "name": "やわらかい音",
+      "input": "pluck_001.mp3",
+      "erase": "tick_001.mp3",
+      "undo": "back_002.mp3",
+      "complete": "confirmation_002.mp3",
+      "error": "error_002.mp3"
+    },
+    {
+      "id": "glass",
+      "name": "すんだ音",
+      "input": "glass_001.mp3",
+      "erase": "drop_001.mp3",
+      "undo": "back_003.mp3",
+      "complete": "confirmation_003.mp3",
+      "error": "error_003.mp3"
+    }
+  ]
+}

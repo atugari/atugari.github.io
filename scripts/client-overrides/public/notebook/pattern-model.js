@@ -38,6 +38,32 @@
   function transformIndex(i,operation){let r=Math.floor(i/9),c=i%9;if(operation>=4)c=8-c;for(let t=0;t<operation%4;t++)[r,c]=[c,8-r];return r*9+c;}
   function transform(grid,operation){if(!Array.isArray(grid)||grid.length!==81||!Number.isInteger(operation)||operation<0||operation>7)throw Error('Invalid transform');const out=Array(81);grid.forEach((v,i)=>{out[transformIndex(i,operation)]=v;});return out;}
   function symmetricCells(i,mode){const operations={none:[0],horizontal:[0,4],vertical:[0,6],point:[0,2],both:[0,2,4,6]}[mode];if(!operations||!Number.isInteger(i)||i<0||i>=81)throw Error('Invalid symmetry');return [...new Set(operations.map(t=>transformIndex(i,t)))];}
+  // Draw on the clue mask only; solver inputs are unchanged until a new job is added.
+  function draw(input,from,to,{tool='pen',value=true,symmetry='none'}={}){
+   const mask=maskOf(input);
+   if(!['pen','line','rectangle','solid','fill'].includes(tool)||![from,to].every(i=>Number.isInteger(i)&&i>=0&&i<81)||typeof value!=='boolean')throw Error('Invalid drawing options');
+   symmetricCells(from,symmetry);
+   const cells=new Set(),x0=from%9,y0=Math.floor(from/9),x1=to%9,y1=Math.floor(to/9);
+   if(tool==='fill'){
+    const old=mask[from],pending=[from];cells.add(from);
+    while(pending.length){const i=pending.pop(),x=i%9,y=Math.floor(i/9);for(const [dx,dy]of [[-1,0],[1,0],[0,-1],[0,1]]){const nx=x+dx,ny=y+dy,at=ny*9+nx;if(nx>=0&&nx<9&&ny>=0&&ny<9&&!cells.has(at)&&mask[at]===old){cells.add(at);pending.push(at);}}}
+   }else if(tool==='rectangle'||tool==='solid'){
+    const left=Math.min(x0,x1),right=Math.max(x0,x1),top=Math.min(y0,y1),bottom=Math.max(y0,y1);
+    for(let y=top;y<=bottom;y++)for(let x=left;x<=right;x++)if(tool==='solid'||x===left||x===right||y===top||y===bottom)cells.add(y*9+x);
+   }else{
+    const steps=Math.max(Math.abs(x1-x0),Math.abs(y1-y0));
+    for(let s=0;s<=steps;s++){const f=steps?s/steps:0;cells.add(Math.round(y0+(y1-y0)*f)*9+Math.round(x0+(x1-x0)*f));}
+   }
+   const out=mask.slice();for(const i of cells)for(const at of symmetricCells(i,symmetry))out[at]=value;return out;
+  }
+  function shift(input,dx,dy){
+   const mask=maskOf(input);if(![dx,dy].every(v=>Number.isInteger(v)&&Math.abs(v)<=8))throw Error('Invalid movement');
+   const out=Array(81).fill(false);mask.forEach((v,i)=>{const x=i%9+dx,y=Math.floor(i/9)+dy;if(v&&x>=0&&x<9&&y>=0&&y<9)out[y*9+x]=true;});return out;
+  }
+  function center(input){
+   const mask=maskOf(input),filled=mask.map((v,i)=>v?i:-1).filter(i=>i>=0);if(!filled.length)return mask;
+   const xs=filled.map(i=>i%9),ys=filled.map(i=>Math.floor(i/9));return shift(mask,Math.floor((8-Math.min(...xs)-Math.max(...xs))/2),Math.floor((8-Math.min(...ys)-Math.max(...ys))/2));
+  }
   // One omitted digit needs one unpainted cell per row, column and box.
   function digitPlacements(mask,firstOnly=false){
    const result=[],cells=[];function visit(r,cols,boxes){if(r===9){result.push(cells.slice());return firstOnly;}for(let c=0;c<9;c++){const i=r*9+c,b=box(i);if(mask[i]||(cols&(1<<c))||(boxes&(1<<b)))continue;cells.push(i);const stop=visit(r+1,cols|1<<c,boxes|1<<b);cells.pop();if(stop)return true;}return false;}
@@ -121,7 +147,7 @@
    dots:Array.from({length:81},(_,i)=>(Math.floor(i/9)+i%9)%2===0),
    omit:Array.from({length:81},(_,i)=>(Math.floor(i/9)*3+Math.floor(Math.floor(i/9)/3)+i%9)%9!==8)
   };
-  return{maskOf,analyze,solve,search,validate,presets,digitPlacements,transform,transformIndex,symmetricCells,techniques,optionsOf,matchesRating};
+  return{maskOf,analyze,solve,search,validate,presets,digitPlacements,transform,transformIndex,symmetricCells,draw,shift,center,techniques,optionsOf,matchesRating};
  }
  root.NPPatternModel=Object.assign(create(),{create});
 })(typeof window!=='undefined'?window:typeof self!=='undefined'?self:globalThis);

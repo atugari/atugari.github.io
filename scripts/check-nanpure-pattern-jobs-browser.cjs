@@ -14,7 +14,7 @@ async function setup(browser,viewport){
   const current=()=>page.evaluate(()=>NPPatternQueue.list().at(-1));
   const start=async level=>{await editor.locator('[data-pattern-difficulty]').selectOption(String(level));await editor.locator('[data-pattern-view="preview"]').click();return current();};
   const paint=async()=>{if(await editor.getAttribute('data-view')==='preview')await editor.locator('[data-pattern-close]').click();};
-  const options=async policy=>{await editor.locator('[data-pattern-quick="draw"]').click();await tools.locator('[data-pattern-policy][value="'+policy+'"]').check();};
+  const options=async policy=>{await editor.locator('[data-pattern-quick="draw"]').click();await tools.locator('[data-pattern-tools-tab="conditions"]').click();await tools.locator('[data-pattern-policy][value="'+policy+'"]').check();};
   const close=()=>tools.locator('[data-pattern-tools-close]').click();
   const preset=async key=>{await paint();await editor.locator('[data-pattern-quick="presets"]').click();await tools.locator('[data-pattern-preset="'+key+'"]').click();};
   const a=await start(18);await page.waitForFunction(id=>NPPatternQueue.get(id).attempts>0,a.id);

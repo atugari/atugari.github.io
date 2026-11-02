@@ -7,6 +7,8 @@
  let storage;try{storage=window.localStorage;}catch(_){}
  const queue=window.NPPatternQueue||(window.NPPatternQueue=window.NPPatternJobsFactory.create({model,engine:document.getElementById('core-normal')?.textContent||'',storage,Worker:window.Worker,Blob:window.Blob,URL:window.URL,setTimeout:window.setTimeout.bind(window),clearTimeout:window.clearTimeout.bind(window)}));
  let mask=[], omit=0, symmetry='none', brush='auto', difficulty=0, workspace='fit', sizeStep=0;
+ let drawTool='pen',toolsTab='drawing',shapeStart=null;
+ const drawTools=[['pen','なぞって描く'],['line','直線を描く'],['rectangle','四角の枠を描く'],['solid','四角を塗る'],['fill','囲みの中を塗る']];
  let view='paint', state='editing', result=null, history=[], future=[], stroke=null, advice=null, saveError=false;
  let saveHandler, savedHandler, backHandler;
  const $=selector=>page.querySelector(selector);
@@ -32,7 +34,7 @@
  }
  function leaveHost(){hostLayout(false);}
  function persist(){
-  try{localStorage.setItem(draftKey,JSON.stringify({mask:mask.map(Number),omit,symmetry,difficulty,levelPolicy,required,excluded,techniqueConditions}));}
+  try{localStorage.setItem(draftKey,JSON.stringify({mask:mask.map(Number),omit,symmetry,brush,drawTool,difficulty,levelPolicy,required,excluded,techniqueConditions}));}
   catch(_){$('[data-pattern-warning]').textContent=t('模様を端末に記憶できませんでした。この画面では続けて編集できます。');}
  }
  function closeTools(){if(jobsDialog?.open){jobsDialog.close();return true;}if(!dialog?.open)return false;dialog.close();return true;}
@@ -54,6 +56,7 @@
    const i=Number(el.dataset.pixel);el.classList.toggle('painted',boardMask[i]);el.classList.toggle('needs-work',paint&&!!advice?.cells?.includes(i));
    el.setAttribute('aria-pressed',String(boardMask[i]));el.setAttribute('aria-disabled',String(!paint));
    el.setAttribute('aria-label',(Math.floor(i/9)+1)+'行'+(i%9+1)+'列・'+(boardMask[i]?'数字を置く':'空きマス')+(!paint&&ready&&result.puzzle[i]?'・'+result.puzzle[i]:''));
+   el.classList.toggle('draw-start',paint&&shapeStart===i);
    el.textContent=!paint&&ready?(result.puzzle[i]||''):'';
   }
   for(const step of page.querySelectorAll('[data-pattern-step]')){
@@ -79,7 +82,10 @@
   $('[data-pattern-techniques-state]').textContent=t(techniqueConditions?'使う':'使わない');
   $('[data-pattern-technique-panel]').hidden=!techniqueConditions;
   for(const el of page.querySelectorAll('[data-pattern-technique]'))el.checked=el.value===(required.includes(el.dataset.patternTechnique)?'required':excluded.includes(el.dataset.patternTechnique)?'excluded':'any');
-  $('[data-pattern-omit]').value=String(omit);$('[data-pattern-symmetry]').value=symmetry;$('[data-pattern-brush-select]').value=brush;
+  $('[data-pattern-omit]').value=String(omit);
+  for(const [selector,value]of [['[data-pattern-symmetry]',symmetry],['[data-pattern-brush]',brush],['[data-pattern-draw-tool]',drawTool]])for(const el of page.querySelectorAll(selector))el.checked=el.value===value;
+  for(const el of page.querySelectorAll('[data-pattern-tools-tab]'))el.setAttribute('aria-pressed',String(el.dataset.patternToolsTab===toolsTab));
+  for(const el of page.querySelectorAll('[data-pattern-draw-panel]'))el.hidden=el.dataset.patternDrawPanel!==toolsTab;
   $('[data-pattern-workspace-select]').value=workspace;
   const sizeControls=$('.pattern-size-options');sizeControls.hidden=workspace==='fit';
   $('[data-pattern-size="smaller"]').disabled=sizeStep<=-3;
@@ -92,7 +98,10 @@
   else if(ready&&!paint){title='問題ができました';help='保存して遊ぶか、画像で共有できます';}
   else if(state==='error'){title='作成を開始できませんでした';help='「再開する」で続けられます';}
   else if(state==='stopped'){title='作成を停止しました';help='「再開する」で続けられます';}
+  else if(shapeStart!==null){title='終点を選んでください';help='Escキーで始点の指定を取り消せます';}
   else if(advice?.state==='impossible'){title='模様を少し直してください';help=reasonText(advice);}
+  else if(drawTool==='fill'){title='塗る場所をタップする';help='同じ色でつながるマスをまとめて塗ります';}
+  else if(drawTool!=='pen'){title=drawTools.find(([id])=>id===drawTool)[1];help='始点から終点までなぞって、指を離すと確定します';}
   else{title='タップ・なぞって模様を描く';help='塗ったマスに数字が入ります';}
   $('[data-pattern-result-summary]').textContent=t(title);
   $('[data-pattern-next]').textContent=t(help);
@@ -136,14 +145,15 @@
   $('[data-pattern-pan="right"]').disabled=scroller.scrollLeft>=max-1;
  }
  function changed(){
+  shapeStart=null;
   view='paint';selectedId=null;state='editing';result=null;saveError=false;job=null;
   advice=model.analyze(mask,omit);if(advice.state==='impossible')state='impossible';
   persist();render();
  }
  function remember(){history.push(mask.slice());if(history.length>40)history.shift();future=[];}
- function replace(next){remember();mask=next.slice();changed();closeTools();}
+ function replace(next){finish();shapeStart=null;if(next.every((v,i)=>!!v===mask[i])){closeTools();render();return;}remember();mask=next.slice();changed();closeTools();}
  function showPaint(){
-  view='paint';selectedId=null;job=null;result=null;state='editing';saveError=false;advice=model.analyze(mask,omit);render();
+  view='paint';selectedId=null;job=null;result=null;state='editing';saveError=false;shapeStart=null;advice=model.analyze(mask,omit);render();
  }
  function startSearch(){
   finish();closeTools();result=null;saveError=false;advice=model.analyze(mask,omit);
@@ -163,12 +173,11 @@
  }
  function cellAt(x,y){const el=document.elementFromPoint(x,y)?.closest('[data-pixel]');return el&&page.contains(el)?Number(el.dataset.pixel):-1;}
  function paint(i){
-  if(!stroke||i<0)return;const old=stroke.last,steps=old<0?0:Math.max(Math.abs(i%9-old%9),Math.abs(Math.floor(i/9)-Math.floor(old/9)));let edited=false;
-  for(let s=0;s<=steps;s++){
-   const f=steps?s/steps:1,c=old<0?i%9:Math.round(old%9+(i%9-old%9)*f),r=old<0?Math.floor(i/9):Math.round(Math.floor(old/9)+(Math.floor(i/9)-Math.floor(old/9))*f);
-   for(const target of model.symmetricCells(r*9+c,symmetry))if(mask[target]!==stroke.value){mask[target]=stroke.value;edited=true;}
-  }
-  stroke.last=i;if(edited){stroke.edited=true;changed();}
+  if(!stroke||i<0||(stroke.tool==='fill'&&stroke.last>=0))return;
+  const from=stroke.tool==='pen'?(stroke.last<0?stroke.start:stroke.last):stroke.start;
+  const next=model.draw(stroke.tool==='pen'?mask:stroke.before,from,i,{tool:stroke.tool,value:stroke.value,symmetry:stroke.symmetry});
+  stroke.last=i;stroke.edited=next.some((v,at)=>v!==stroke.before[at]);
+  if(next.some((v,at)=>v!==mask[at])){mask=next;changed();}
  }
  function finish(){
   if(!stroke)return;const done=stroke;stroke=null;
@@ -236,10 +245,12 @@
   if(page?.isConnected&&page.parentElement===container)return;if(page)close(true);
   saveHandler=saver;savedHandler=saved;backHandler=goBack;
   history=[];future=[];sizeStep=0;view='paint';selectedId=null;job=null;state='editing';result=null;saveError=false;mask=model.presets.heart.slice();omit=0;symmetry='none';difficulty=0;brush='auto';workspace='fit';levelPolicy='exact';required=[];excluded=[];techniqueConditions=false;
+  drawTool='pen';toolsTab='drawing';shapeStart=null;
   try{const savedView=localStorage.getItem(viewKey);if(['normal','pinned','fit'].includes(savedView))workspace=savedView;}catch(_){}
   try{
    const draft=JSON.parse(localStorage.getItem(draftKey));if(draft){mask=model.maskOf(draft.mask);omit=Number.isInteger(draft.omit)&&draft.omit>=0&&draft.omit<=9?draft.omit:0;symmetry=['none','horizontal','vertical','point','both'].includes(draft.symmetry)?draft.symmetry:'none';difficulty=Number.isInteger(draft.difficulty)&&draft.difficulty>=0&&draft.difficulty<=18?draft.difficulty:0;const options=model.optionsOf({targetLevel:difficulty,levelPolicy:draft.levelPolicy,required:draft.required,excluded:draft.excluded});({levelPolicy,required,excluded}=options);techniqueConditions=typeof draft.techniqueConditions==='boolean'?draft.techniqueConditions:!!(required.length||excluded.length);}
   }catch(_){}
+  try{const draft=JSON.parse(localStorage.getItem(draftKey));if(draft){if(drawTools.some(([id])=>id===draft.drawTool))drawTool=draft.drawTool;if(['auto','paint','erase'].includes(draft.brush))brush=draft.brush;}}catch(_){}
   const mini=name=>'<span class="pattern-mini" aria-hidden="true">'+model.presets[name].map(v=>'<i'+(v?' class="on"':'')+'></i>').join('')+'</span>';
   page=document.createElement('section');page.id='np-pattern-page';page.className='np-pattern-page';page.setAttribute('aria-labelledby','np-pattern-title');
   page.innerHTML=`
@@ -248,19 +259,28 @@
    <nav class="pattern-quick" aria-label="模様の編集"><button type="button" data-pattern-undo hidden>元に戻す</button><button type="button" data-pattern-redo hidden>取り消しを戻す</button><button type="button" data-pattern-quick="presets">見本を見る</button><button type="button" data-pattern-quick="draw">道具と条件</button><button type="button" data-pattern-view="paint" hidden>別の模様を描く</button><button type="button" data-pattern-retry hidden>同じ条件で作る</button><button type="button" data-pattern-jobs hidden>作成一覧を見る</button></nav>
    <footer class="pattern-footer"><div class="pattern-feedback"><p data-pattern-result-summary role="status" tabindex="-1" aria-live="polite"></p><p data-pattern-next></p><span data-pattern-indicator hidden></span><p data-pattern-progress hidden></p></div>
     <label class="pattern-difficulty" data-pattern-difficulty-label>難易度<select data-pattern-difficulty><option value="0">指定しない</option>${Array.from({length:18},(_,i)=>'<option value="'+(i+1)+'">'+levelName(i+1)+'</option>').join('')}</select></label><p data-pattern-rating hidden></p>
-    <div class="pattern-actions"><button type="button" class="primary" data-pattern-view="preview">2 問題を作る</button><button type="button" data-pattern-stop hidden>生成を停止する</button><button type="button" class="primary" data-pattern-save hidden>保存して遊ぶ</button><button type="button" data-pattern-share hidden>画像を共有する</button></div>
+    <div class="pattern-actions"><button type="button" class="primary" data-pattern-view="preview">2 問題を作る</button><button type="button" data-pattern-stop hidden>生成を停止する</button><button type="button" class="primary" data-pattern-save hidden>保存して遊ぶ</button><button type="button" data-pattern-share hidden>問題を投稿・共有</button></div>
    </footer>
    <dialog class="pattern-tools-dialog" aria-labelledby="pattern-dialog-title"><header><h2 id="pattern-dialog-title" data-pattern-dialog-title></h2><button type="button" data-pattern-tools-close>閉じる</button></header>
     <section data-pattern-dialog-section="presets" hidden><p>形を選んで、自由に描き足せます。</p><div class="pattern-presets">${[['heart','ハート'],['diamond','ひし形'],['dots','市松模様'],['omit','数字抜き用']].map(([key,label])=>'<button type="button" data-pattern-preset="'+key+'" aria-pressed="false">'+mini(key)+'<span>'+label+'</span></button>').join('')}</div><button type="button" data-pattern-clear>白紙から描く</button></section>
     <section data-pattern-dialog-section="draw" hidden>
+     <nav class="pattern-tools-tabs" aria-label="道具と条件の切り替え"><button type="button" data-pattern-tools-tab="drawing" aria-pressed="true">描く道具</button><button type="button" data-pattern-tools-tab="conditions" aria-pressed="false">作成条件</button></nav>
+     <section data-pattern-draw-panel="drawing">
+      <div class="pattern-drawing-actions"><button type="button" data-pattern-fill="white">すべて白くする</button><button type="button" data-pattern-fill="black">すべて黒くする</button><button type="button" data-pattern-fill="invert">白黒を反転する</button></div>
+      <fieldset class="pattern-choice-field"><legend>対称に描く</legend><div class="pattern-choices pattern-draw-choices">${[['none','使わない'],['horizontal','左右対称'],['vertical','上下対称'],['both','上下・左右対称'],['point','点対称']].map(([id,label])=>'<label><input type="radio" name="pattern-symmetry" data-pattern-symmetry value="'+id+'"><span>'+t(label)+'</span></label>').join('')}</div></fieldset>
+      <fieldset class="pattern-choice-field"><legend>描き方</legend><div class="pattern-choices pattern-draw-choices">${drawTools.map(([id,label])=>'<label><input type="radio" name="pattern-draw-tool" data-pattern-draw-tool value="'+id+'"><span>'+t(label)+'</span></label>').join('')}</div></fieldset>
+      <fieldset class="pattern-choice-field"><legend>描く道具</legend><div class="pattern-choices">${[['auto','塗る／消す'],['paint','塗るだけ'],['erase','消すだけ']].map(([id,label])=>'<label><input type="radio" name="pattern-brush" data-pattern-brush value="'+id+'"><span>'+t(label)+'</span></label>').join('')}</div></fieldset>
+      <details><summary>模様を移動する</summary><div class="pattern-move-tools"><button type="button" data-pattern-shift="up">上へ動かす</button><button type="button" data-pattern-shift="left">左へ動かす</button><button type="button" data-pattern-shift="center">中央へ寄せる</button><button type="button" data-pattern-shift="right">右へ動かす</button><button type="button" data-pattern-shift="down">下へ動かす</button></div><p>端から出るマスは消えます。元に戻せます。</p></details>
+      <details><summary>模様を回す・反転する</summary><div class="pattern-transforms"><button type="button" data-pattern-transform="1">右に90°回す</button><button type="button" data-pattern-transform="4">左右を反転する</button><button type="button" data-pattern-transform="6">上下を反転する</button></div></details>
+     <details class="pattern-display-options"><summary>表示・大きさ</summary><label>画面の表示方法<select data-pattern-workspace-select><option value="fit">一画面に収める</option><option value="pinned">盤面を固定</option><option value="normal">通常表示</option></select></label><div class="pattern-size-options"><div class="pattern-size-tools"><button type="button" data-pattern-size="smaller">小さくする</button><output data-pattern-size-label></output><button type="button" data-pattern-size="larger">大きくする</button></div><button type="button" data-pattern-size="reset">標準に戻す</button></div></details>
+      <p>まとめて変更した操作も、元に戻せます。</p>
+     </section>
+     <section data-pattern-draw-panel="conditions" hidden>
      <fieldset class="pattern-choice-field" data-pattern-policy-label><legend>難易度の扱い</legend><div class="pattern-choices pattern-policy-choices"><label><input type="radio" name="pattern-level-policy" data-pattern-policy value="exact"><span>難易度を下げない</span></label><label><input type="radio" name="pattern-level-policy" data-pattern-policy value="easier"><span>難易度を下げてもよい</span></label></div></fieldset>
      <section class="pattern-technique-options"><label class="pattern-condition-switch"><span>解き方の条件</span><input type="checkbox" role="switch" data-pattern-techniques-enabled aria-label="解き方の条件を使う"><strong data-pattern-techniques-state>使わない</strong></label><div data-pattern-technique-panel hidden><p>「使う」は検査時の解答手順に必ず含めます。「使わない」は手順から除きます。「指定しない」は、どちらでもかまいません。</p><div class="pattern-technique-list">${model.techniques.map(([id,name])=>'<fieldset class="pattern-choice-field"><legend>'+t(name)+'</legend><div class="pattern-choices">'+[['any','指定しない'],['required','使う'],['excluded','使わない']].map(([value,label])=>'<label><input type="radio" name="pattern-technique-'+id+'" data-pattern-technique="'+id+'" value="'+value+'"><span>'+t(label)+'</span></label>').join('')+'</div></fieldset>').join('')}</div></div></section>
-     <label>描く道具<select data-pattern-brush-select><option value="auto">塗る／消す</option><option value="paint">塗るだけ</option><option value="erase">消すだけ</option></select></label>
-     <label>対称に描く<select data-pattern-symmetry><option value="none">使わない</option><option value="horizontal">左右対称</option><option value="vertical">上下対称</option><option value="point">点対称</option><option value="both">上下・左右対称</option></select></label>
-     <details><summary>模様を回す・反転する</summary><div class="pattern-transforms"><button type="button" data-pattern-transform="1">右に90°回す</button><button type="button" data-pattern-transform="4">左右を反転する</button><button type="button" data-pattern-transform="6">上下を反転する</button></div></details>
-     <details class="pattern-display-options"><summary>表示・大きさ</summary><label>画面の表示方法<select data-pattern-workspace-select><option value="fit">一画面に収める</option><option value="pinned">盤面を固定</option><option value="normal">通常表示</option></select></label><div class="pattern-size-options"><div class="pattern-size-tools"><button type="button" data-pattern-size="smaller">小さくする</button><output data-pattern-size-label></output><button type="button" data-pattern-size="larger">大きくする</button></div><button type="button" data-pattern-size="reset">標準に戻す</button></div></details>
      <details class="pattern-digit-options"><summary>数字を1種類抜く</summary><label>初期数字に使わない数字<select data-pattern-omit><option value="0">抜かない</option>${Array.from({length:9},(_,i)=>'<option value="'+(i+1)+'">'+(i+1)+'</option>').join('')}</select></label><p>選んだ数字を初期配置から抜きます。解くときは通常どおり1〜9を使います。</p></details>
      <details class="pattern-math-guide"><summary>描き方・作成のコツ</summary><p>タップで塗る・消す。なぞるとまとめて変更できます。</p><p>矢印キーで移動、Space・Enterで塗る・消す。</p><p>数字を置くマスを17個以上塗ってください。</p><p>模様によっては希望の難易度を作れない場合があります。難易度か模様を変えて試せます。</p><a href="https://arxiv.org/abs/1201.0749" target="_blank" rel="noopener noreferrer">17個以上の根拠</a><a href="https://arxiv.org/abs/2005.14098" target="_blank" rel="noopener noreferrer">模様指定の生成研究</a></details>
+     </section>
     </section><p data-pattern-warning role="status"></p>
    </dialog><dialog class="pattern-tools-dialog pattern-jobs-dialog" aria-labelledby="pattern-jobs-title"><header><h2 id="pattern-jobs-title">作成一覧</h2><button type="button" data-pattern-jobs-close>閉じる</button></header><p>戻る・編集では作成は止まりません。止めたい模様の「停止する」を押してください。</p><div data-pattern-job-list></div></dialog>`;
   container.replaceChildren(page);dialog=$('.pattern-tools-dialog');jobsDialog=$('.pattern-jobs-dialog');for(const el of [dialog,jobsDialog])el.addEventListener('cancel',event=>{event.preventDefault();closeTools();});
@@ -276,6 +296,7 @@
    if(el.hasAttribute('data-job-stop'))return queue.stop(el.dataset.jobId);
    if(el.hasAttribute('data-job-resume'))return queue.resume(el.dataset.jobId);
    if(el.hasAttribute('data-pattern-quick'))return openTools(el.dataset.patternQuick);
+   if(el.hasAttribute('data-pattern-tools-tab')){toolsTab=el.dataset.patternToolsTab;render();return;}
    if(el.hasAttribute('data-pattern-view'))return el.dataset.patternView==='paint'?showPaint():startSearch();
    if(el.hasAttribute('data-pattern-retry'))return retrySearch();
    if(el.hasAttribute('data-pattern-stop'))return stopSearch();
@@ -283,13 +304,16 @@
    if(el.hasAttribute('data-pattern-share')&&result)return void window.NPPatternShare?.open(result.puzzle);
    if(el.hasAttribute('data-pattern-preset'))return replace(model.presets[el.dataset.patternPreset]);
    if(el.hasAttribute('data-pattern-clear'))return replace(Array(81).fill(false));
+   if(el.hasAttribute('data-pattern-fill'))return replace(el.dataset.patternFill==='invert'?mask.map(v=>!v):Array(81).fill(el.dataset.patternFill==='black'));
+   if(el.hasAttribute('data-pattern-shift')){const action=el.dataset.patternShift,[dx,dy]={left:[-1,0],right:[1,0],up:[0,-1],down:[0,1],center:[0,0]}[action];return replace(action==='center'?model.center(mask):model.shift(mask,dx,dy));}
    if(el.hasAttribute('data-pattern-transform'))return replace(model.transform(mask,Number(el.dataset.patternTransform)));
    if(el.hasAttribute('data-pattern-undo')&&history.length){future.push(mask.slice());mask=history.pop();changed();return;}
    if(el.hasAttribute('data-pattern-redo')&&future.length){history.push(mask.slice());mask=future.pop();changed();return;}
    if(el.hasAttribute('data-pattern-size')){const action=el.dataset.patternSize;sizeStep=action==='reset'?0:action==='larger'?Math.min(5,sizeStep+1):Math.max(-3,sizeStep-1);sizeBoard();render();return;}
    if(el.hasAttribute('data-pattern-pan')){const area=$('.pattern-board-scroll');area.scrollBy({left:(el.dataset.patternPan==='left'?-1:1)*Math.max(100,area.clientWidth*.6),behavior:'auto'});updatePan();return;}
    if(el.hasAttribute('data-pixel')&&event.detail===0&&view==='paint'){
-    remember();const i=Number(el.dataset.pixel),value=brush==='auto'?!mask[i]:brush==='paint';for(const at of model.symmetricCells(i,symmetry))mask[at]=value;changed();
+    const i=Number(el.dataset.pixel);if(!['pen','fill'].includes(drawTool)&&shapeStart===null){shapeStart=i;render();return;}
+    const from=shapeStart??i,value=brush==='auto'?!mask[from]:brush==='paint';return replace(model.draw(mask,from,i,{tool:drawTool,value,symmetry}));
    }
   });
   page.addEventListener('change',event=>{
@@ -298,7 +322,8 @@
    if(el.hasAttribute('data-pattern-policy')){levelPolicy=el.value;persist();return;}
    if(el.hasAttribute('data-pattern-techniques-enabled')){techniqueConditions=el.checked;persist();render();return;}
    if(el.hasAttribute('data-pattern-technique')){required=[...page.querySelectorAll('[data-pattern-technique]:checked')].filter(e=>e.value==='required').map(e=>e.dataset.patternTechnique);excluded=[...page.querySelectorAll('[data-pattern-technique]:checked')].filter(e=>e.value==='excluded').map(e=>e.dataset.patternTechnique);persist();return;}
-   if(el.hasAttribute('data-pattern-brush-select')){brush=el.value;return;}
+   if(el.hasAttribute('data-pattern-draw-tool')){finish();drawTool=el.value;shapeStart=null;persist();render();return;}
+   if(el.hasAttribute('data-pattern-brush')){brush=el.value;persist();return;}
    if(el.hasAttribute('data-pattern-symmetry')){symmetry=el.value;persist();return;}
    if(el.hasAttribute('data-pattern-omit')){omit=Number(el.value);changed();return;}
    if(el.hasAttribute('data-pattern-workspace-select')){setWorkspace(el.value);closeTools();}
@@ -308,13 +333,19 @@
   grid.addEventListener('pointerdown',event=>{
    const cell=event.target.closest('[data-pixel]');if(!cell||saving||view!=='paint'||event.button!==0)return;
    event.preventDefault();for(const el of grid.querySelectorAll('[data-pixel]'))el.tabIndex=-1;cell.tabIndex=0;cell.focus({preventScroll:true});
-   stroke={id:event.pointerId,before:mask.slice(),value:brush==='auto'?!mask[Number(cell.dataset.pixel)]:brush==='paint',last:-1,edited:false};grid.setPointerCapture(event.pointerId);paint(Number(cell.dataset.pixel));
+   const start=Number(cell.dataset.pixel);shapeStart=null;stroke={id:event.pointerId,before:mask.slice(),start,tool:drawTool,symmetry,value:brush==='auto'?!mask[start]:brush==='paint',last:-1,edited:false};grid.setPointerCapture(event.pointerId);paint(start);
   });
   grid.addEventListener('pointermove',event=>{if(stroke&&event.pointerId===stroke.id)paint(cellAt(event.clientX,event.clientY));});
   for(const type of ['pointerup','pointercancel','lostpointercapture'])grid.addEventListener(type,finish);
   grid.addEventListener('keydown',event=>{
    const cell=event.target.closest('[data-pixel]');if(!cell)return;const i=Number(cell.dataset.pixel),delta={ArrowLeft:-1,ArrowRight:1,ArrowUp:-9,ArrowDown:9}[event.key];
+   if(event.key==='Escape'&&shapeStart!==null){event.preventDefault();event.stopPropagation();shapeStart=null;render();return;}
    if(delta){event.preventDefault();cell.tabIndex=-1;const next=$('[data-pixel="'+Math.max(0,Math.min(80,i+delta))+'"]');next.tabIndex=0;next.focus();}
+  });
+  page.addEventListener('keydown',event=>{
+   if(view!=='paint'||saving||(!event.ctrlKey&&!event.metaKey)||event.target.closest('input,textarea,select,[contenteditable="true"]'))return;
+   const key=event.key.toLowerCase(),redo=key==='y'||(key==='z'&&event.shiftKey);if(key!=='z'&&key!=='y')return;event.preventDefault();finish();shapeStart=null;
+   if(redo&&future.length){history.push(mask.slice());mask=future.pop();changed();}else if(!redo&&history.length){future.push(mask.slice());mask=history.pop();changed();}
   });
   $('#np-pattern-title').focus({preventScroll:true});
  }
