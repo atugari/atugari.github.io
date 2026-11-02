@@ -48,3 +48,4 @@ require('./wado-reading-70.cjs')(module.exports);
 Object.assign(module.exports,require('./catalog-reading-70.cjs'));
 
 Object.assign(module.exports,require('./catalog-pattern-share-78.cjs'));
+Object.assign(module.exports,require('./catalog-pattern-mobile-79.cjs')(module.exports));

@@ -117,3 +117,50 @@ html.np-pattern-fit,body.np-pattern-fit{overflow:hidden!important;scrollbar-gutt
 .pattern-share-permission{border-top:1px solid #d7dfd8;margin-top:12px;padding-top:8px}
 .pattern-share-permission h3{font-size:16px;margin:0;font-weight:700}
 @media(max-height:650px){.pattern-share-dialog{padding:12px}.pattern-share-preview img{max-height:32dvh}.pattern-share-dialog p{margin:4px 0}.pattern-share-actions{gap:6px}}
+
+/* Keep the mobile creation state and primary actions beside the drawing workflow. */
+.pattern-mobile-quick,.pattern-auto-note,.pattern-next,[data-pattern-mobile-retry]{display:none}
+.pattern-mobile-dialog:not([open]){display:none!important}
+.pattern-mobile-dialog{box-sizing:border-box;width:min(560px,calc(100vw - 24px));max-height:calc(100dvh - 24px);margin:auto;padding:12px;border:1px solid #a6bbaa;border-radius:16px;background:#fffdf7;color:#243f35;overflow:auto;font-size:16px}
+.pattern-mobile-dialog::backdrop{background:#152a2280}
+.pattern-mobile-dialog>header{display:flex;align-items:center;justify-content:space-between;gap:8px;position:sticky;top:-12px;background:#fffdf7;z-index:2;padding:4px 0 8px}
+.np-pattern-page .pattern-mobile-dialog h2{display:block!important;font-size:20px;margin:0}
+.np-pattern-page .pattern-mobile-dialog [data-pattern-tools-close]{min-height:44px;padding:6px 12px;font-size:16px}
+.np-pattern-page .pattern-mobile-dialog [data-pattern-area-select]{display:block;position:static;width:100%;height:auto;min-height:44px;padding:8px;margin:0 0 12px;font-size:16px}
+.np-pattern-page .pattern-mobile-dialog .pattern-tool-page,.np-pattern-page .pattern-mobile-dialog [data-right-pane]{padding:8px;overflow:visible;min-height:0;grid-area:auto}
+.np-pattern-page .pattern-mobile-dialog .pattern-view-help{display:block!important;min-height:0;height:auto;margin:8px 0;font-size:16px}
+.np-pattern-page .pattern-mobile-dialog .pattern-brushes{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:0 0 12px}
+.np-pattern-page .pattern-mobile-dialog .pattern-brushes button,.np-pattern-page .pattern-mobile-dialog .pattern-transforms button{min-height:64px;height:auto;padding:6px;font-size:16px}
+.np-pattern-page .pattern-mobile-dialog .pattern-symmetry-label{display:grid;gap:6px;height:auto;white-space:normal}
+.np-pattern-page .pattern-mobile-dialog .pattern-symmetry-label select{width:100%;height:auto;min-height:44px}
+.np-pattern-page .pattern-mobile-dialog .pattern-mobile-workspace{margin:0 0 10px;height:auto;min-height:44px}
+.np-pattern-page .pattern-mobile-dialog .pattern-size-tools{margin-bottom:10px}
+.np-pattern-page .pattern-mobile-dialog .pattern-presets button{min-height:64px;height:auto;padding:6px}
+.np-pattern-page .pattern-mobile-dialog .pattern-blank{min-height:48px;height:auto;padding:6px;margin-top:10px}
+.np-pattern-page .pattern-mobile-dialog .pattern-info{height:min(360px,50dvh);grid-template-rows:minmax(0,1fr) 44px;gap:8px;padding:12px}
+.np-pattern-page .pattern-mobile-dialog .pattern-info-advice{grid-template-rows:minmax(0,1fr) 44px 44px}
+.np-pattern-page .pattern-mobile-dialog .pattern-digit-options p{display:block;font-size:16px}
+.np-pattern-page .pattern-mobile-dialog .pattern-digit-options label{display:grid;font-size:16px}
+.np-pattern-page .pattern-mobile-dialog .pattern-digit-options select{width:100%;height:auto;min-height:44px;font-size:16px}
+.np-pattern-page .pattern-mobile-dialog .pattern-digit-options>summary{display:none}
+.pattern-footer[data-process=checking] .pattern-result-summary::before,.pattern-footer[data-process=saving] .pattern-result-summary::before{content:'';display:inline-block;width:18px;height:18px;margin-right:8px;border:3px solid #b5cbbb;border-top-color:#285849;border-radius:50%;vertical-align:-3px;animation:pattern-progress-spin .8s linear infinite}
+@keyframes pattern-progress-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.pattern-footer .pattern-result-summary::before{animation:none!important}}
+.pattern-footer[data-process=ready] .pattern-result-summary{color:#164f2f}
+.pattern-footer:is([data-process=impossible],[data-process=error],[data-process=unknown]) .pattern-result-summary{color:#874519}
+.np-pattern-page[data-mobile-workbench=true] .pattern-layout{grid-template-rows:56px 64px minmax(0,1fr) 48px 152px;grid-template-areas:'header' 'view' 'canvas' 'quick' 'footer';gap:4px}
+.np-pattern-page[data-mobile-workbench=true] .pattern-mobile-quick{display:grid;grid-area:quick;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;min-width:0}
+.np-pattern-page[data-mobile-workbench=true] .pattern-mobile-quick button{height:48px;min-height:48px;min-width:0;padding:2px;font-size:16px;line-height:1.2}
+.np-pattern-page[data-mobile-workbench=true] .pattern-board-meta [data-pattern-indicator]{display:none}
+.np-pattern-page[data-mobile-workbench=true] .pattern-auto-note{display:inline;font-size:16px;white-space:nowrap}
+.np-pattern-page[data-mobile-workbench=true] .pattern-board-meta{gap:6px}
+.np-pattern-page[data-mobile-workbench=true] .pattern-title{display:flex;align-items:center;gap:8px;min-width:0}
+.np-pattern-page[data-mobile-workbench=true] .pattern-title [data-pattern-count]{font-size:16px;white-space:nowrap}
+.np-pattern-page[data-mobile-workbench=true] .pattern-footer[data-right-pane=footer]{display:grid!important;grid-area:footer;grid-template-rows:36px 36px 64px;gap:4px;padding:3px;margin:0;border:1px solid #88a894;border-radius:12px;background:#fffdf7;min-height:0;overflow:hidden}
+.np-pattern-page[data-mobile-workbench=true] .pattern-footer .pattern-check{display:none}
+.np-pattern-page[data-mobile-workbench=true] .pattern-result-summary{align-self:center;font-size:18px;line-height:1.2;margin:0;min-height:0}
+.np-pattern-page[data-mobile-workbench=true] .pattern-next{display:block;align-self:center;font-size:16px;line-height:1.1;margin:0}
+.np-pattern-page[data-mobile-workbench=true] .pattern-actions{grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;margin:0}
+.np-pattern-page[data-mobile-workbench=true] .pattern-actions button{min-width:0;height:64px;min-height:64px;padding:2px;font-size:16px;line-height:1.3}
+.np-pattern-page[data-mobile-workbench=true] [data-pattern-mobile-retry]{display:block}
+.np-pattern-page[data-mobile-workbench=true] .pattern-actions button[hidden]+button{grid-column:auto}

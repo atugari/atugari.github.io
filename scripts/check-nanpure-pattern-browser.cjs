@@ -14,13 +14,13 @@ const mime={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript'
   assert.equal(await page.locator('[data-action="pattern-open"] svg').count(),1);
   await page.locator('[data-action="pattern-open"]').click();await page.locator('#np-pattern-page').waitFor();
   await page.locator('[data-pattern-close]').click();await page.locator('[data-flow="create"]').click();await page.locator('[data-action="pattern-open"]').click();
-  const editor=page.locator('#np-pattern-page');await editor.locator('[data-pattern-indicator][data-state="ready"]').waitFor({timeout:15000});
+  const editor=page.locator('#np-pattern-page');await editor.locator('[data-pattern-indicator][data-state="ready"]').waitFor({state:'attached',timeout:15000});
   const landscape=viewport.width>=620&&viewport.width<980&&viewport.height<600,narrow=viewport.width<980&&!landscape;
-  const area=async value=>{if(narrow)await editor.locator('[data-pattern-area-select]').selectOption(value);else await editor.locator(['draw','transform','size'].includes(value)?'[data-pattern-tool-select]':'[data-pattern-right-select]').selectOption(value);};
+  const area=async value=>{if(narrow){if(!await editor.locator('.pattern-mobile-dialog').evaluate(el=>el.open))await editor.locator('[data-pattern-quick="draw"]').click();await editor.locator('[data-pattern-area-select]').selectOption(value);if(value==='draw'&&await editor.locator('.pattern-mobile-dialog').evaluate(el=>el.open))await editor.locator('[data-pattern-tools-close]').click();}else await editor.locator(['draw','transform','size'].includes(value)?'[data-pattern-tool-select]':'[data-pattern-right-select]').selectOption(value);};
   const workspace=async value=>{if(await editor.getAttribute('data-workspace')==='normal')await editor.locator('[data-pattern-workspace="'+value+'"]').click();else{if(narrow)await area('size');await editor.locator('[data-pattern-workspace-select]:visible').first().selectOption(value);}};
   const noScroll=async()=>{
-   const bad=await editor.evaluate(el=>[...el.querySelectorAll('*')].filter(e=>e.getClientRects().length&&e.clientHeight>0&&getComputedStyle(e).display!=='contents'&&(e.scrollHeight>e.clientHeight+2||e.scrollWidth>e.clientWidth+2)).map(e=>({tag:e.tagName,class:e.className,height:e.clientHeight,excess:e.scrollHeight-e.clientHeight,widthExcess:e.scrollWidth-e.clientWidth})));
-   assert.deepEqual(bad,[],'Every visible control and explanation fits without inner scrolling');
+   const bad=await editor.evaluate(el=>[...el.querySelectorAll('*')].filter(e=>e.getClientRects().length&&e.clientHeight>0&&getComputedStyle(e).display!=='contents'&&!e.closest('.pattern-mobile-dialog')&&(e.scrollHeight>e.clientHeight+2||e.scrollWidth>e.clientWidth+2)).map(e=>({tag:e.tagName,class:e.className,height:e.clientHeight,excess:e.scrollHeight-e.clientHeight,widthExcess:e.scrollWidth-e.clientWidth})));
+   assert.deepEqual(bad,[],'The drawing workspace fits without outer or inner scrolling');const dialog=editor.locator('.pattern-mobile-dialog[open]');if(await dialog.count()){const r=await dialog.boundingBox();assert(r.x>=0&&r.y>=0&&r.x+r.width<=viewport.width+1&&r.y+r.height<=viewport.height+1,'Optional tools dialog stays within the viewport');}
   };
   assert.equal(await editor.getAttribute('data-workspace'),'fit');
   const fitBounds=await editor.locator('.pattern-grid').boundingBox();
@@ -33,12 +33,12 @@ const mime={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript'
   await area('guide');
   while(await editor.locator('[data-pattern-info-next="guide"]').isEnabled()){await editor.locator('[data-pattern-info-next="guide"]').click();await noScroll();}
   assert.equal(await editor.locator('.pattern-info-guide a:visible').count(),2,'Research links remain reachable');
-  await area('presets');await editor.locator('[data-pattern-clear]').click();await editor.locator('[data-pattern-indicator][data-state="impossible"]').waitFor();
+  await area('presets');await editor.locator('[data-pattern-clear]').click();await editor.locator('[data-pattern-indicator][data-state="impossible"]').waitFor({state:'attached'});
   await area('advice');await noScroll();while(await editor.locator('[data-pattern-info-next="advice"]').isEnabled()){await editor.locator('[data-pattern-info-next="advice"]').click();await noScroll();}
-  await area('presets');await editor.locator('[data-pattern-preset="heart"]').click();await editor.locator('[data-pattern-indicator][data-state="ready"]').waitFor();
+  await area('presets');await editor.locator('[data-pattern-preset="heart"]').click();await editor.locator('[data-pattern-indicator][data-state="ready"]').waitFor({state:'attached'});
   await area('draw');
   await editor.locator('[data-pixel="80"]').click();assert.deepEqual(await editor.locator('.pattern-grid').boundingBox(),fitBounds,'Last cell can be painted without moving the fit board');
-  await editor.locator('[data-pattern-undo]').click();await editor.locator('[data-pattern-indicator][data-state="ready"]').waitFor();
+  await editor.locator('[data-pattern-undo]').click();await editor.locator('[data-pattern-indicator][data-state="ready"]').waitFor({state:'attached'});
   await workspace('pinned');await area('size');
   const pinned=await editor.locator('.pattern-grid').boundingBox();
   await page.evaluate(()=>window.scrollTo(0,500));assert.deepEqual(await editor.locator('.pattern-grid').boundingBox(),pinned,'Pinned board holds position during scrolling');
@@ -49,7 +49,7 @@ const mime={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript'
   const fitRuby=await editor.locator('.pattern-grid').boundingBox();
   const fitFrames=page.evaluate(async()=>{const out=[],g=document.querySelector('.pattern-grid');for(let i=0;i<60;i++){const r=g.getBoundingClientRect();out.push([r.x,r.y,r.width,r.height]);await new Promise(requestAnimationFrame);}return out;});
   await editor.locator('[data-pixel="0"]').click();const fitGeometry=await fitFrames;for(let k=0;k<4;k++)assert(Math.max(...fitGeometry.map(r=>r[k]))-Math.min(...fitGeometry.map(r=>r[k]))<1,'Fit board is stable with furigana');
-  await editor.locator('[data-pattern-undo]').click();await editor.locator('[data-pattern-indicator][data-state="ready"]').waitFor();
+  await editor.locator('[data-pattern-undo]').click();await editor.locator('[data-pattern-indicator][data-state="ready"]').waitFor({state:'attached'});
   assert.deepEqual(await editor.locator('.pattern-grid').boundingBox(),fitRuby);
   await page.evaluate(()=>NPFurigana.setEnabled(false));await workspace('normal');
   assert.equal(await editor.locator('[data-pixel][aria-pressed="true"]').count(),55);
@@ -116,7 +116,7 @@ const mime={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript'
   await context.route('**/*',route=>{const u=new URL(route.request().url());if(u.origin!==origin)return route.fulfill({status:204,body:''});const file=path.resolve(root,'.'+decodeURIComponent(u.pathname)+(u.pathname.endsWith('/')?'index.html':''));if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile())return route.fulfill({status:404,body:''});return route.fulfill({contentType:mime[path.extname(file)]||'application/octet-stream',body:fs.readFileSync(file)});});
   await page.goto(origin+'/nanpure/');await page.getByRole('button',{name:/^自由に遊ぶ/}).click();
   const frame=page.frameLocator('iframe.notebook');await frame.locator('[data-action="open-notebook"]').click();await frame.locator('[data-action="pattern-open"]').click();
-  await frame.locator('[data-pattern-indicator][data-state="ready"]').waitFor();
+  await frame.locator('[data-pattern-indicator][data-state="ready"]').waitFor({state:'attached'});
   const full=await page.locator('iframe.notebook').boundingBox();assert.equal(full.y,0);assert.equal(full.height,viewport.height,'Reclaim the outer site header area');
   const grid=await frame.locator('.pattern-grid').boundingBox();assert(grid.height>=viewport.height-20,'The board uses almost all screen height');
   await frame.locator('.pattern-desktop-workspace').selectOption('normal');const restored=await page.locator('iframe.notebook').boundingBox();assert(restored.y>=80&&restored.height<viewport.height-40,'Normal view restores the parent header and frame');
