@@ -12,6 +12,15 @@ const prior=JSON.parse(fs.readFileSync(path.join(root,'nanpure/release-manifest.
 if(![previous,version].includes(prior.version)||notes[0].version!==version||(fs.existsSync(out)&&prior.version!==version))throw Error('Unexpected release state');
 const walk=dir=>fs.readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory()?walk(path.join(dir,e.name)):[path.join(dir,e.name)]),hash=value=>crypto.createHash('sha256').update(value).digest('hex');
 for(const [file,expected]of Object.entries(prior.files))if(hash(fs.readFileSync(path.join(root,file)))!==expected)throw Error('Published bytes changed: '+file);
+// Normalize the shared, unversioned collection entry before the next browser interaction.
+const entryFile=path.join(root,'nanpure/collection/entry.js');let entry=fs.readFileSync(entryFile,'utf8');
+const oldMount=" document.querySelectorAll('[data-collection-entry]').forEach(node=>{if(!node.closest('.designed-home'))node.remove()});\n const home=document.querySelector('.designed-home');if(!home||home.querySelector('[data-collection-entry]'))return;";
+const newMount=" const home=document.querySelector('.designed-home');let existing=null;\n document.querySelectorAll('[data-collection-entry]').forEach(node=>{if(home&&home.contains(node)&&!existing)existing=node;else node.remove()});\n if(!home||existing)return;";
+if(entry.includes(oldMount))entry=entry.replace(oldMount,newMount);else if(!entry.includes(newMount))throw Error('Collection entry mount changed');
+const oldObserver="let queued=false;new MutationObserver(()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;mount()})}).observe(document.documentElement,{childList:true,subtree:true});";
+const newObserver="new MutationObserver(mount).observe(document.documentElement,{childList:true,subtree:true});";
+if(entry.includes(oldObserver))entry=entry.replace(oldObserver,newObserver);else if(!entry.includes(newObserver))throw Error('Collection entry observer changed');
+fs.writeFileSync(entryFile,entry);
 fs.cpSync(path.join(root,'nanpure/releases',previous),out,{recursive:true});
 const source=path.join(root,'scripts/client-overrides/public/notebook');
 for(const name of ['app.js','pattern-ui.js','pattern-share.js','pattern.css'])fs.copyFileSync(path.join(source,name),path.join(out,'notebook',name));
@@ -30,6 +39,6 @@ fs.writeFileSync(path.join(root,'nanpure/version.json'),JSON.stringify(info));fs
 fs.writeFileSync(path.join(root,'nanpure/releases.json'),JSON.stringify({version,announcementVersion:announcementVersion(notes),releases:publicReleases(notes)},null,2)+'\n');
 const audio=path.join(root,'nanpure-audio',version);fs.cpSync(path.join(root,'nanpure-audio',previous),audio,{recursive:true});const ai=JSON.parse(fs.readFileSync(path.join(audio,'index.json')));ai.version=version;fs.writeFileSync(path.join(audio,'index.json'),JSON.stringify(ai,null,2)+'\n');
 const files=[...new Set([...Object.keys(prior.files),...walk(out).map(f=>path.relative(root,f))])];
-const manifest={...prior,...info,base,patternMobileUsage:{sources:Object.fromEntries(['scripts/client-overrides/public/notebook/pattern-share.js','scripts/client-overrides/public/notebook/pattern-ui.js','scripts/client-overrides/public/notebook/pattern.css','scripts/client-overrides/public/notebook/app.js','scripts/i18n/catalog-pattern-mobile-79.cjs','scripts/check-nanpure-pattern-mobile-browser.cjs','scripts/check-nanpure-pattern-browser.cjs','scripts/prepare-pattern-mobile-release.mjs'].map(f=>[f,hash(fs.readFileSync(path.join(root,f)))]))},files:Object.fromEntries(files.map(f=>[f,hash(fs.readFileSync(path.join(root,f)))]))};
+const manifest={...prior,...info,base,patternMobileUsage:{sources:Object.fromEntries(['scripts/client-overrides/public/notebook/pattern-share.js','scripts/client-overrides/public/notebook/pattern-ui.js','scripts/client-overrides/public/notebook/pattern.css','scripts/client-overrides/public/notebook/app.js','scripts/i18n/catalog-pattern-mobile-79.cjs','scripts/check-nanpure-pattern-mobile-browser.cjs','scripts/check-nanpure-pattern-browser.cjs','scripts/check-nanpure-collection-entry.cjs','scripts/prepare-pattern-mobile-release.mjs'].map(f=>[f,hash(fs.readFileSync(path.join(root,f)))]))},files:Object.fromEntries(files.map(f=>[f,hash(fs.readFileSync(path.join(root,f)))]))};
 for(const record of Object.values(manifest))if(record?.sources)for(const file of Object.keys(record.sources))record.sources[file]=hash(fs.readFileSync(path.join(root,file)));
 fs.writeFileSync(path.join(root,'nanpure/release-manifest.json'),JSON.stringify(manifest,null,2)+'\n');console.log('Prepared mobile pattern controls',version,files.length,'verified files');

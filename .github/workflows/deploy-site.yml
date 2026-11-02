@@ -84,6 +84,7 @@ jobs:
           npm run build --prefix nanpure-api
           node scripts/check-pareasobi-move.cjs
           node scripts/check-pareasobi-navigation.cjs
+          node scripts/check-nanpure-collection-entry.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
           node --experimental-vm-modules scripts/collection-100k/check-filters.cjs
           node scripts/check-public-release-policy.cjs
           node scripts/check-nanpure-mixed-multi.cjs

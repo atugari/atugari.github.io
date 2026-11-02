@@ -5,14 +5,15 @@ const messages={"すぐ遊べる問題集":{"en":"Ready-to-play puzzles","zh-Han
 // Register feature copy before the shared runtime walks the home text.
 w.NPTranslations=w.NPTranslations||{};for(const [source,translations]of Object.entries(messages))w.NPTranslations[source]=translations;
 function mount(){
- document.querySelectorAll('[data-collection-entry]').forEach(node=>{if(!node.closest('.designed-home'))node.remove()});
- const home=document.querySelector('.designed-home');if(!home||home.querySelector('[data-collection-entry]'))return;
+ const home=document.querySelector('.designed-home');let existing=null;
+ document.querySelectorAll('[data-collection-entry]').forEach(node=>{if(home&&home.contains(node)&&!existing)existing=node;else node.remove()});
+ if(!home||existing)return;
  const choices=home.querySelector('.start-choices');if(!choices)return;
  const link=document.createElement('a');link.className='np-collection-entry';link.dataset.collectionEntry='';link.href='/nanpure/collection/';
  link.innerHTML='<span class="np-collection-copy"><strong>すぐ遊べる問題集</strong><small>ナンプレ22ルール・生成を待たずに遊ぶ</small></span><span aria-hidden="true">›</span>';
  choices.after(link);
 }
 w.NPCollectionEntry={mount};
-let queued=false;new MutationObserver(()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;mount()})}).observe(document.documentElement,{childList:true,subtree:true});
+new MutationObserver(mount).observe(document.documentElement,{childList:true,subtree:true});
 mount();
 })(window);
