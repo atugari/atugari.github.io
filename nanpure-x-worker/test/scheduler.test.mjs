@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
 import {createHash} from 'node:crypto';
+import {spawnSync} from 'node:child_process';
 import worker,{SLOTS,dueFor,windowFor,MAX_LATENESS,queueToken,oauthHeader,validateMeta,runScheduled,dryRun,xClient} from '../src/index.js';
 const BASE=Date.parse('2026-10-26T02:00:00+09:00'),DAY='2026-10-26';
 const secrets={X_API_KEY:'test-key',X_API_SECRET:'test-secret',X_ACCESS_TOKEN:'test-token',X_ACCESS_TOKEN_SECRET:'test-token-secret',X_EXPECTED_USERNAME:'parade166'};
@@ -51,6 +52,18 @@ test('all four Japan slots map to the correct UTC dates',()=>{assert.equal(new D
 test('the actual 25th 21:00 -> 26th 00:34 incident cannot publish',()=>{const due=dueFor('2026-10-25','21:00');assert.equal(windowFor(due,Date.parse('2026-10-26T00:34:57+09:00')),null)});
 test('window rejects early, over 15 minutes and next-day runs',()=>{const due=dueFor(DAY,'21:00');assert.equal(windowFor(due,due-1),null);assert(windowFor(due,due+MAX_LATENESS));assert.equal(windowFor(due,due+MAX_LATENESS+1),null)});
 test('wrong image date and stale preparation are rejected',()=>{const p=post().meta;p.text='【今日の4問｜10/25】\n古い日付';assert.throws(()=>validateMeta(p,BASE));p.text='【今日の4問｜10/26】\n本文';assert.throws(()=>validateMeta(p,dueFor(DAY,'08:00')))});
+test('actual Python copy passes Worker validation across leap, month and year boundaries',()=>{
+ const script=`import json,sys\nfrom datetime import date,timedelta\nsys.path.insert(0,'scripts/x-four')\nfrom post_text import render_text\nrows=[]\nfor year in (2024,2026,2027):\n day=date(year,1,1)\n while day.year==year:\n  rows.append({'date':day.isoformat(),'text':render_text(day.isoformat())})\n  day+=timedelta(days=1)\nprint(json.dumps(rows))`;
+ const result=spawnSync('python3',['-c',script],{cwd:new URL('../../',import.meta.url),encoding:'utf8',maxBuffer:16*1024*1024});
+ assert.equal(result.status,0,result.stderr);
+ const rows=JSON.parse(result.stdout);assert.equal(rows.length,1096);
+ for(const row of rows)for(const slot of SLOTS){
+  const p={...post(slot).meta,...row,publication_id:row.date+'@'+slot};
+  const due=dueFor(row.date,slot);
+  assert.equal(validateMeta(p,due-60000).key,p.publication_id);
+  assert.throws(()=>validateMeta({...p,text:p.text.replace(/｜[^】]+/,'｜0/0')},due-60000));
+ }
+});
 test('queue token has the exact cross-language derivation',async()=>{assert.equal(await queueToken(secrets),createHash('sha256').update('nanpure-x-queue-v1\0test-secret\0test-token-secret').digest('hex'));const h=await oauthHeader('GET','https://api.x.com/2/users/me',secrets,{nonce:'fixed',timestamp:123456});assert.match(h,/oauth_signature="O5VOAn%2B5GgWmo%2FEMG4Af%2Fc01H%2BQ%3D"/);assert.match(h,/oauth_timestamp="123456"/)});
 test('private queue and forced publication are not public endpoints',async t=>{const f=await fixture(t);assert.equal((await f.request('/state',null,false)).status,403);assert.equal((await f.request('/prepare',f.p.meta,false)).status,403);assert.equal((await f.request('/publish',{})).status,404);assert.equal((await f.request('/health',null,false)).status,200)});
 test('incomplete image set cannot be marked ready',async t=>{const f=await fixture(t,{ready:false});assert.equal((await f.request('/ready',{key:f.p.meta.publication_id})).status,409);const c=client();assert.equal((await runScheduled(dueFor(DAY,'08:00'),f.env,{now:()=>dueFor(DAY,'08:00'),client:c})).status,'not-ready-or-already-attempted');assert.equal(c.calls.length,0)});
@@ -76,3 +89,4 @@ test('scheduled cleanup still removes old images when X is unavailable',async t=
  assert.equal(f.db.prepare('SELECT status FROM x_four_posts WHERE key=?').get('old').status,'expired');
  assert.equal(f.db.prepare('SELECT status FROM x_four_posts WHERE key=?').get(f.p.meta.publication_id).status,'failed');
 });
+

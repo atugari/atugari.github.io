@@ -40,7 +40,44 @@ class QueueTimingTests(unittest.TestCase):
         q=Queue()
         with TemporaryDirectory() as tmp:
             prepare(q,Path(tmp),Path(tmp),{'posts':{}},datetime(2026,10,26,tzinfo=ZoneInfo('Asia/Tokyo')),enabled=False,generate=lambda *args:self.fail('must not generate'))
-        self.assertEqual([p for p,b in q.calls],['/control','/state'])
-        self.assertFalse(q.calls[0][1]['enabled'])
+        self.assertEqual([p for p,b in q.calls],['/state','/control','/state'])
+        self.assertFalse(q.calls[1][1]['enabled'])
+
+    def test_unreadable_live_queue_stops_before_any_mutation(self):
+        class Queue:
+            def __init__(self):self.calls=[]
+            def api(self,path,body=None):
+                self.calls.append((path,body));raise RuntimeError('read unavailable')
+        q=Queue()
+        with TemporaryDirectory() as tmp:
+            with self.assertRaisesRegex(RuntimeError,'read unavailable'):
+                prepare(q,Path(tmp),Path(tmp),{'posts':{}},datetime(2026,11,2,21,44,tzinfo=ZoneInfo('Asia/Tokyo')),generate=lambda *args:self.fail('must not generate'))
+        self.assertEqual(q.calls,[('/state',None)])
+
+    def test_invalid_live_queue_stops_before_any_mutation(self):
+        class Queue:
+            def __init__(self):self.calls=[]
+            def api(self,path,body=None):self.calls.append((path,body));return {}
+        q=Queue()
+        with TemporaryDirectory() as tmp:
+            with self.assertRaisesRegex(RuntimeError,'no changes made'):
+                prepare(q,Path(tmp),Path(tmp),{'posts':{}},datetime(2026,11,2,21,44,tzinfo=ZoneInfo('Asia/Tokyo')),generate=lambda *args:self.fail('must not generate'))
+        self.assertEqual(q.calls,[('/state',None)])
+
+    def test_existing_ready_sent_failed_or_uncertain_slots_are_never_replaced(self):
+        now=datetime(2026,11,2,21,44,tzinfo=ZoneInfo('Asia/Tokyo'))
+        slots=list(future_slots(now))
+        self.assertEqual(slots[0],('2026-11-03','08:00'))
+        statuses=['ready','sent','failed','posting','expired','archived','ready','posting']
+        posts={day+'@'+slot:{'status':statuses[i]} for i,(day,slot) in enumerate(slots)}
+        class Queue:
+            def __init__(self):self.calls=[]
+            def api(self,path,body=None):self.calls.append((path,body));return {'posts':posts}
+        q=Queue()
+        with TemporaryDirectory() as tmp:
+            result=prepare(q,Path(tmp),Path(tmp),{'posts':{}},now,generate=lambda *args:self.fail('must not regenerate an existing slot'))
+        self.assertEqual(result['posts'],posts)
+        self.assertEqual([p for p,b in q.calls],['/state','/control','/state'])
 
 if __name__=='__main__':unittest.main()
+

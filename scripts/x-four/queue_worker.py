@@ -35,6 +35,11 @@ class Queue:
         return result['data']
 
 def prepare(q,repo,work,legacy,now,*,enabled=True,generate=None):
+    # Verify live state before even changing controls. A stale GitHub ledger is
+    # not a substitute for knowing existing reservations and attempted posts.
+    initial=q.api('/state')
+    if not isinstance(initial,dict) or not isinstance(initial.get('posts'),dict):
+        raise RuntimeError('Live queue state could not be verified; no changes made')
     q.api('/control',{'enabled':enabled,'history':legacy})
     state=q.api('/state')
     if not enabled:
@@ -80,3 +85,4 @@ def main():
         if post.get('post_id'):print('History '+key+' sent: https://x.com/parade166/status/'+post['post_id'])
 
 if __name__=='__main__':main()
+
