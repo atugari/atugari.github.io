@@ -15,7 +15,7 @@ async function setup(browser,viewport){
   const {context,page,errors}=await setup(browser,viewport);
   await page.goto(origin+'/nanpure/releases/'+version+'/notebook/index.html');
   const open=async()=>{await page.locator('[data-action="open-notebook"]').click();await page.locator('[data-action="pattern-open"]').click();};await open();
-  const editor=page.locator('#np-pattern-page'),dialog=editor.locator('.pattern-tools-dialog'),grid=editor.locator('.pattern-grid');
+  const editor=page.locator('#np-pattern-page'),dialog=editor.locator('.pattern-tools-dialog:not(.pattern-jobs-dialog)'),grid=editor.locator('.pattern-grid');
   const ready=()=>editor.locator('[data-pattern-indicator][data-state="ready"]').waitFor({state:'attached',timeout:20000});
   const generate=async()=>{await editor.locator('[data-pattern-view="preview"]').click();await ready();};
   const edit=async()=>{if(await editor.getAttribute('data-view')!=='paint')await editor.locator('[data-pattern-view="paint"]').click();};

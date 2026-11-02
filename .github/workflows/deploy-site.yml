@@ -71,12 +71,14 @@ jobs:
         run: |
           node scripts/check-nanpure-pattern.cjs
           node scripts/check-nanpure-pattern-difficulty.cjs
+          node scripts/check-nanpure-pattern-jobs.cjs
           node scripts/check-nanpure-pattern-math.cjs
           export PLAYWRIGHT_MODULE="$RUNNER_TEMP/nanpure-browser/node_modules/playwright"
           export CHROME_BIN="$(command -v google-chrome || command -v chromium)"
           node scripts/check-nanpure-pattern-browser.cjs _site
           node scripts/check-nanpure-pattern-share-browser.cjs _site
           node scripts/check-nanpure-pattern-mobile-browser.cjs _site
+          node scripts/check-nanpure-pattern-jobs-browser.cjs _site
 
       - name: Check Nanpure keyboard and mobile client before publication
         shell: bash

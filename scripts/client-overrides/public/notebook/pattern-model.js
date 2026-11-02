@@ -63,9 +63,27 @@
   // Verified starting solutions make the included presets immediate; every result is still counted.
   const starts=["872156934694328517351497628218739465467581392935264871583972146129645783746813259", "986352147532471689714896352145739826879264531263518974657943218398127465421685793", "426587139981432576357619842238791654675243918194856723563128497742965381819374265"].map(s=>s.split('').map(Number));
   const startingGrids=Array.from({length:8},(_,t)=>starts.map(grid=>transform(grid,t))).flat();
-  function search(input,omit=0,{milliseconds=2500,maxAttempts=20000,rate,targetLevel=0,offset=0}={}){
+  const techniques=[['hidden-single-box','隠れシングル（枠）'],['hidden-single-line','隠れシングル（行列）'],['naked-single','裸のシングル'],['locked-candidates','予約（ポインティング／クレーム）'],['naked-pair','裸のペア'],['hidden-pair','隠れペア'],['naked-triple','裸のトリプル'],['hidden-triple','隠れトリプル'],['x-wing','X-ウィング'],['swordfish','ソードフィッシュ'],['xy-wing','XY-ウィング'],['xyz-wing','XYZ-ウィング'],['colouring','色ぬり（同じ数字の鎖）'],['xy-chain','XY-チェーン']];
+  function optionsOf(input={}){
+   const targetLevel=input.targetLevel??0,levelPolicy=input.levelPolicy??'exact',required=input.required??[],excluded=input.excluded??[];
+   if(!Number.isInteger(targetLevel)||targetLevel<0||targetLevel>18||!['exact','easier'].includes(levelPolicy)||!Array.isArray(required)||!Array.isArray(excluded))throw Error('Invalid search options');
+   const ids=new Set(techniques.map(t=>t[0]));
+   if([...required,...excluded].some(id=>!ids.has(id))||required.some(id=>excluded.includes(id)))throw Error('Invalid technique constraints');
+   return{targetLevel,levelPolicy,required:[...new Set(required)],excluded:[...new Set(excluded)]};
+  }
+  function matchesRating(rating,input={}){
+   const options=optionsOf(input),{targetLevel,levelPolicy,required,excluded}=options;
+   if(!targetLevel&&!required.length&&!excluded.length)return true;
+   if(!rating?.humanSolvable||!Number.isInteger(rating.level)||rating.level<1||rating.level>18)return false;
+   if(targetLevel&&(levelPolicy==='exact'?rating.level!==targetLevel:rating.level>targetLevel))return false;
+   if((required.length||excluded.length)&&!Array.isArray(rating.techniques))return false;
+   const used=new Set((rating.techniques||[]).map(t=>t.id));
+   return required.every(id=>used.has(id))&&excluded.every(id=>!used.has(id));
+  }
+  function search(input,omit=0,{milliseconds=2500,maxAttempts=20000,rate,targetLevel=0,levelPolicy='exact',required=[],excluded=[],offset=0}={}){
+   const options=optionsOf({targetLevel,levelPolicy,required,excluded});
    if(!Number.isInteger(targetLevel)||targetLevel<0||targetLevel>18||!Number.isInteger(offset)||offset<0)throw Error('Invalid search options');
-   if(targetLevel&&!rate)throw Error('Difficulty evaluator required');
+   if((targetLevel||required.length||excluded.length)&&!rate)throw Error('Difficulty evaluator required');
    const mask=maskOf(input),analysis=analyze(mask,omit);if(analysis.state==='impossible')return analysis;
    const deadline=Date.now()+Math.max(0,milliseconds),placements=omit?digitPlacements(mask):null;let attempts=0;
    while(attempts<maxAttempts&&Date.now()<deadline){
@@ -81,8 +99,8 @@
     const puzzle=solution.map((v,i)=>mask[i]?v:0),unique=solve(puzzle,{deadline,maxNodes:50000});
     if(unique.aborted||unique.count!==1)continue;
     const rating=rate?rate(Array.from({length:9},(_,r)=>puzzle.slice(r*9,r*9+9))):null;
-    // A requested level is exact. Never relabel or silently lower a generated puzzle.
-    if(targetLevel&&(!rating?.humanSolvable||rating.level!==targetLevel))continue;
+    // Easier results are accepted only with explicit permission; technique constraints never relax.
+    if(!matchesRating(rating,options))continue;
     return{state:'ready',count:analysis.count,attempts,puzzle,solution,rating,mask:mask.map(Number),omittedDigit:omit};
    }
    return{state:'unknown',count:analysis.count,attempts};
@@ -103,7 +121,7 @@
    dots:Array.from({length:81},(_,i)=>(Math.floor(i/9)+i%9)%2===0),
    omit:Array.from({length:81},(_,i)=>(Math.floor(i/9)*3+Math.floor(Math.floor(i/9)/3)+i%9)%9!==8)
   };
-  return{maskOf,analyze,solve,search,validate,presets,digitPlacements,transform,transformIndex,symmetricCells};
+  return{maskOf,analyze,solve,search,validate,presets,digitPlacements,transform,transformIndex,symmetricCells,techniques,optionsOf,matchesRating};
  }
  root.NPPatternModel=Object.assign(create(),{create});
 })(typeof window!=='undefined'?window:typeof self!=='undefined'?self:globalThis);

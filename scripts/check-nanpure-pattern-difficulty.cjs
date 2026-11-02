@@ -18,4 +18,11 @@ const next=model.search(model.presets.heart,0,{targetLevel:18,offset:mismatch.at
 assert.equal(next.state,'unknown');assert.equal(next.attempts,5);
 assert.equal(model.search(model.presets.heart,0,{targetLevel:1,rate:()=>({level:1,humanSolvable:false}),maxAttempts:3,milliseconds:5000}).state,'unknown');
 for(const options of [{targetLevel:19},{targetLevel:-1},{targetLevel:1},{offset:-1},{offset:1.5}])assert.throws(()=>model.search(model.presets.heart,0,options));
+// Explicit fallback preserves the measured level; technique requirements never relax with it.
+const easier=model.search(model.presets.heart,0,{targetLevel:10,levelPolicy:'easier',rate:c.Nanpure.ratePuzzle,milliseconds:5000,maxAttempts:10});
+assert.equal(easier.state,'ready');assert.equal(easier.rating.level,1);assert.equal(c.Nanpure.ratePuzzle(grid(easier.puzzle)).level,1);
+const technique=model.search(model.presets.diamond,0,{targetLevel:10,required:['x-wing','xy-wing'],excluded:['swordfish'],rate:c.Nanpure.ratePuzzle,milliseconds:6000,maxAttempts:30});
+assert.equal(technique.state,'ready');const used=c.Nanpure.ratePuzzle(grid(technique.puzzle)).techniques.map(t=>t.id);assert(used.includes('x-wing'));assert(used.includes('xy-wing'));assert(!used.includes('swordfish'));
+for(const options of [{required:['x-wing']},{excluded:['hidden-single-box']},{required:['xy-chain'],levelPolicy:'easier',targetLevel:18}])assert.equal(model.search(model.presets.heart,0,{...options,rate:c.Nanpure.ratePuzzle,maxAttempts:3,milliseconds:5000}).state,'unknown');
+for(const options of [{levelPolicy:'automatic'},{required:['unknown']},{required:['x-wing'],excluded:['x-wing']}])assert.throws(()=>model.search(model.presets.heart,0,{...options,rate:c.Nanpure.ratePuzzle}));
 console.log('PASS pattern difficulty: selected levels independently rated, exact unique masks, no downgrade or unrated substitutes, continuation and invalid options');

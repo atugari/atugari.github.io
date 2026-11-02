@@ -1,0 +1,48 @@
+// Real workers: Back, independent patterns and conditions, fair progress, saved results and reload.
+const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright'),fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const root=path.resolve(process.argv[2]||'_site'),origin='https://atugari.github.io',version=JSON.parse(fs.readFileSync(path.join(root,'nanpure/version.json'))).version;
+const types={'.html':'text/html','.js':'application/javascript','.mjs':'application/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml'};
+async function setup(browser,viewport){
+ const context=await browser.newContext({viewport,hasTouch:true,serviceWorkers:'block'}),page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await context.route('**/*',route=>{const u=new URL(route.request().url());if(u.origin!==origin)return route.fulfill({status:204,body:''});const file=path.resolve(root,'.'+decodeURIComponent(u.pathname)+(u.pathname.endsWith('/')?'index.html':''));if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile())return route.fulfill({status:404,body:''});return route.fulfill({contentType:types[path.extname(file)]||'application/octet-stream',body:fs.readFileSync(file)});});
+ await context.addInitScript(()=>{localStorage.setItem('nanpure-language-v1','ja');Object.defineProperty(navigator,'doNotTrack',{get:()=> '1'});});return{context,page,errors};
+}
+(async()=>{const browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_BIN||undefined,args:['--no-sandbox']});try{
+ for(const viewport of [{width:320,height:636},{width:1440,height:1000}]){
+  const {context,page,errors}=await setup(browser,viewport);await page.goto(origin+'/nanpure/releases/'+version+'/notebook/index.html');await page.locator('[data-action="open-notebook"]').click();await page.locator('[data-action="pattern-open"]').click();
+  const editor=page.locator('#np-pattern-page'),tools=editor.locator('.pattern-tools-dialog:not(.pattern-jobs-dialog)'),jobs=editor.locator('.pattern-jobs-dialog');
+  const current=()=>page.evaluate(()=>NPPatternQueue.list().at(-1));
+  const start=async level=>{await editor.locator('[data-pattern-difficulty]').selectOption(String(level));await editor.locator('[data-pattern-view="preview"]').click();return current();};
+  const paint=async()=>{if(await editor.getAttribute('data-view')==='preview')await editor.locator('[data-pattern-close]').click();};
+  const options=async policy=>{await editor.locator('[data-pattern-quick="draw"]').click();await tools.locator('[data-pattern-policy]').selectOption(policy);};
+  const close=()=>tools.locator('[data-pattern-tools-close]').click();
+  const preset=async key=>{await paint();await editor.locator('[data-pattern-quick="presets"]').click();await tools.locator('[data-pattern-preset="'+key+'"]').click();};
+  const a=await start(18);await page.waitForFunction(id=>NPPatternQueue.get(id).attempts>0,a.id);
+  await editor.locator('[data-pattern-close]').click();assert.equal(await editor.getAttribute('data-view'),'paint');const before=await page.evaluate(id=>NPPatternQueue.get(id).attempts,a.id);
+  await editor.locator('[data-pixel="0"]').click();await editor.locator('[data-pattern-difficulty]').selectOption('10');await options('easier');await tools.locator('.pattern-technique-options summary').click();await tools.locator('[data-pattern-technique="hidden-single-box"]').selectOption('required');await tools.locator('[data-pattern-technique="xy-chain"]').selectOption('excluded');await close();
+  const b=await start(10);await editor.locator('[data-pattern-save]').waitFor({timeout:20000});
+  const doneB=await page.evaluate(id=>NPPatternQueue.get(id),b.id);assert.equal(doneB.result.rating.level,1);assert.equal(doneB.options.levelPolicy,'easier');assert(doneB.result.rating.techniques.some(t=>t.id==='hidden-single-box'));assert(!doneB.result.rating.techniques.some(t=>t.id==='xy-chain'));assert.equal(doneB.mask[0],true);assert.equal(await page.evaluate(id=>NPPatternQueue.get(id).mask[0],a.id),false);
+  await page.waitForFunction(({id,before})=>NPPatternQueue.get(id).attempts>before,{id:a.id,before});
+  await preset('diamond');await options('exact');await close();const c=await start(18);
+  await preset('dots');const d=await start(1);await editor.locator('[data-pattern-save]').waitFor({timeout:30000});
+  await page.waitForFunction(id=>NPPatternQueue.get(id).attempts>0,c.id);assert.equal(await page.evaluate(id=>NPPatternQueue.get(id).state,a.id),'checking');
+  await editor.locator('[data-pattern-jobs]').click();assert.equal(await jobs.locator('.pattern-job-row').count(),4);
+  await jobs.locator('[data-job-row="'+a.id+'"] [data-job-stop]').click();assert.equal(await page.evaluate(id=>NPPatternQueue.get(id).state,a.id),'stopped');const cBefore=await page.evaluate(id=>NPPatternQueue.get(id).attempts,c.id);
+  await jobs.locator('[data-pattern-jobs-close]').click();await editor.locator('[data-pattern-close]').click();await editor.locator('[data-pattern-close]').click();await editor.waitFor({state:'detached'});
+  await page.waitForFunction(({id,attempts})=>NPPatternQueue.get(id).attempts>attempts,{id:c.id,attempts:cBefore});assert(await page.locator('[data-pattern-jobs-dock]').isVisible(),'Back out of the editor keeps jobs running and discoverable');
+  await page.locator('[data-pattern-jobs-dock]').click();await jobs.locator('[data-job-row="'+b.id+'"] [data-job-open]').click();await editor.locator('[data-pattern-save]').click();await editor.waitFor({state:'detached'});
+  const saved=await page.evaluate(id=>NanpureAppTest.getLibrary().find(p=>p.patternJobId===id),b.id);assert.equal(saved.level,1);assert.equal(saved.requestedLevel,10);assert.equal(saved.patternConditions.levelPolicy,'easier');assert(saved.rating.techniques.some(t=>t.id==='hidden-single-box'));
+  const checkpoint=await page.evaluate(id=>NPPatternQueue.get(id).attempts,c.id);await page.reload();await page.locator('[data-pattern-jobs-dock]').waitFor();
+  await page.waitForFunction(({id,attempts})=>NPPatternQueue.get(id)?.attempts>attempts,{id:c.id,attempts:checkpoint});assert.equal(await page.evaluate(id=>NPPatternQueue.get(id).state,a.id),'stopped');assert.equal(await page.evaluate(id=>NPPatternQueue.get(id).state,d.id),'ready');
+  await page.locator('[data-pattern-jobs-dock]').click();await jobs.locator('[data-job-row="'+d.id+'"] [data-job-open]').click();assert((await editor.locator('[data-pattern-rating]').textContent()).includes('01'));await editor.locator('[data-pattern-jobs]').click();await jobs.locator('[data-job-row="'+c.id+'"] [data-job-stop]').click();
+  assert.deepEqual(errors,[]);await context.close();console.log('PASS independent pattern creation',viewport,': Back and drawing preserve jobs, snapshots and levels isolated, allowed easier level stays truthful, required/excluded techniques verified, fair progress with three tasks, individual Stop, completion/save/reload recovery');
+ }
+ const {context,page,errors}=await setup(browser,{width:390,height:844});await page.goto(origin+'/nanpure/');await page.getByRole('button',{name:/自由に遊ぶ/}).click();const frame=page.frameLocator('iframe.notebook');await frame.locator('[data-action="open-notebook"]').click();await frame.locator('[data-action="pattern-open"]').click();await frame.locator('[data-pattern-difficulty]').selectOption('18');await frame.locator('[data-pattern-view="preview"]').click();
+ await frame.locator('[data-pattern-close]').click();await frame.locator('[data-pattern-close]').click();
+ for(let n=0;n<3&&!await page.locator('.designed-home').isVisible();n++){await page.getByRole('button',{name:'前の画面に戻る',exact:true}).click();await page.waitForTimeout(150);}
+ assert(await page.locator('.designed-home').isVisible());
+ const notebook=page.frames().find(f=>f.url().includes('/notebook/index.html')),before=await notebook.evaluate(()=>NPPatternQueue.list()[0].attempts);
+ await notebook.waitForFunction(attempts=>NPPatternQueue.list()[0].attempts>attempts,before);assert.equal(await notebook.evaluate(()=>NPPatternQueue.list()[0].state),'checking','Returning to the outer homepage keeps generating');
+ await page.getByRole('button',{name:/自由に遊ぶ/}).click();await frame.locator('[data-pattern-jobs-dock]').click();assert(await frame.locator('.pattern-jobs-dialog').isVisible());await frame.locator('[data-job-stop]').click();assert.deepEqual(errors,[]);await context.close();
+ console.log('PASS outer homepage Back and reentry preserve the real generation worker');
+}finally{await browser.close()}})().catch(error=>{console.error(error);process.exit(1)});

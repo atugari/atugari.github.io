@@ -15,7 +15,7 @@ const types={'.html':'text/html','.js':'application/javascript','.mjs':'applicat
    };
   });
   await page.goto(origin+'/nanpure/releases/'+version+'/notebook/index.html');await page.locator('[data-action="open-notebook"]').tap();await page.locator('[data-action="pattern-open"]').tap();
-  const editor=page.locator('#np-pattern-page'),footer=editor.locator('.pattern-footer'),tools=editor.locator('.pattern-tools-dialog');
+  const editor=page.locator('#np-pattern-page'),footer=editor.locator('.pattern-footer'),tools=editor.locator('.pattern-tools-dialog:not(.pattern-jobs-dialog)');
   const state=async value=>editor.locator('[data-pattern-indicator][data-state="'+value+'"]').waitFor({state:'attached',timeout:15000});
   const grid=await editor.locator('.pattern-grid').boundingBox();
   const fixed=async()=>{assert.deepEqual(await editor.locator('.pattern-grid').boundingBox(),grid,'State and control changes keep the board fixed');assert(await page.evaluate(()=>document.documentElement.scrollHeight<=innerHeight+1&&document.documentElement.scrollWidth<=innerWidth+1));
