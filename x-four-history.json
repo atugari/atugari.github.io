@@ -613,6 +613,74 @@
         "dcc6f36bb3c4940fa64df7f7562277d68ef2767240e43c9a0dab2512321262dc",
         "73f3674d870d8e346d030511fae6991b3409d5650b800da58fde0ae9c94913bc"
       ]
+    },
+    "2026-11-05@08:00": {
+      "key": "2026-11-05@08:00",
+      "day": "2026-11-05",
+      "slot": "08:00",
+      "status": "ready",
+      "post_id": null,
+      "due": 1793833200000,
+      "sent_at": null,
+      "error": null,
+      "date": "2026-11-05",
+      "fingerprints": [
+        "fb5cfcbbba82616418972d08c3f35b78697a5010100747a936d6673c8bd14f69",
+        "575d9c91d085bb330ede075a5a2b3a7b47a39b101396f48234d50d514c852d28",
+        "2052e1e06d37955fa1a1155a18a333fe5375c56b720485e85b550fbe8bde5891",
+        "9ffbcd2098051f9251d42e8b8569a2686227318ce93736117095ab35d3217ad4"
+      ]
+    },
+    "2026-11-05@12:00": {
+      "key": "2026-11-05@12:00",
+      "day": "2026-11-05",
+      "slot": "12:00",
+      "status": "ready",
+      "post_id": null,
+      "due": 1793847600000,
+      "sent_at": null,
+      "error": null,
+      "date": "2026-11-05",
+      "fingerprints": [
+        "352b624938a1101375b331424b0ff43bc83e9f66bca57d94281344da756ddef6",
+        "043d5dceb748a885167a48a2b522d73dd446f0bf55ac1205c7e60386e4db9dcd",
+        "4790c55a0ce4a38c2411871392f9e7681372ac13d68c29e30322cf79c693d0f7",
+        "dbe8ecd92413e45032b928eb80a31ee616f0ad8d685aa3872ab4d80908d1e9da"
+      ]
+    },
+    "2026-11-05@18:00": {
+      "key": "2026-11-05@18:00",
+      "day": "2026-11-05",
+      "slot": "18:00",
+      "status": "ready",
+      "post_id": null,
+      "due": 1793869200000,
+      "sent_at": null,
+      "error": null,
+      "date": "2026-11-05",
+      "fingerprints": [
+        "ab702f9c26bf1b6e95075d6661e6a9ee8503318001affdbb8c26a590eae262ea",
+        "201666578e2bc37abeb15f111d793024e2330de8212af4fd74d9338f115a99e8",
+        "87de0a93cc697864b1ddfb9c7340baf84506f5fa254886da26b1e21037398aef",
+        "b2ad397d4b49b8e2e8577629f470ae558fabda6a40997e1a88f8defe949a1bd5"
+      ]
+    },
+    "2026-11-05@21:00": {
+      "key": "2026-11-05@21:00",
+      "day": "2026-11-05",
+      "slot": "21:00",
+      "status": "ready",
+      "post_id": null,
+      "due": 1793880000000,
+      "sent_at": null,
+      "error": null,
+      "date": "2026-11-05",
+      "fingerprints": [
+        "50c31a433c742703501df134aed67e7a75739b1391608ba1831f42841d5fe9ec",
+        "93f9658b63360515486c585cccb5a8d14a744ea9d24ceaea17fa20779feaaefb",
+        "2d7d60b4e3dfba75d4ea0cf6e3660f4dd285eba1e3f0e69be3afa45c67adc78d",
+        "2d5d708b6fe356b33cd8f97ef6218371b64d97984c0f4d17f1d66c9f2f036c29"
+      ]
     }
   }
 }
