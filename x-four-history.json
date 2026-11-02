@@ -346,10 +346,10 @@
       "key": "2026-10-30@08:00",
       "day": "2026-10-30",
       "slot": "08:00",
-      "status": "ready",
-      "post_id": null,
+      "status": "sent",
+      "post_id": "2115942015615820165",
       "due": 1793314800000,
-      "sent_at": null,
+      "sent_at": 1793314863955,
       "error": null,
       "date": "2026-10-30",
       "fingerprints": [
@@ -363,10 +363,10 @@
       "key": "2026-10-30@12:00",
       "day": "2026-10-30",
       "slot": "12:00",
-      "status": "ready",
-      "post_id": null,
+      "status": "sent",
+      "post_id": "2116002419972694355",
       "due": 1793329200000,
-      "sent_at": null,
+      "sent_at": 1793329265482,
       "error": null,
       "date": "2026-10-30",
       "fingerprints": [
@@ -380,10 +380,10 @@
       "key": "2026-10-30@18:00",
       "day": "2026-10-30",
       "slot": "18:00",
-      "status": "ready",
-      "post_id": null,
+      "status": "sent",
+      "post_id": "2116093013009019273",
       "due": 1793350800000,
-      "sent_at": null,
+      "sent_at": 1793350864492,
       "error": null,
       "date": "2026-10-30",
       "fingerprints": [
@@ -397,10 +397,10 @@
       "key": "2026-10-30@21:00",
       "day": "2026-10-30",
       "slot": "21:00",
-      "status": "ready",
-      "post_id": null,
+      "status": "sent",
+      "post_id": "2116138310003491283",
       "due": 1793361600000,
-      "sent_at": null,
+      "sent_at": 1793361664091,
       "error": null,
       "date": "2026-10-30",
       "fingerprints": [
@@ -414,10 +414,10 @@
       "key": "2026-10-31@08:00",
       "day": "2026-10-31",
       "slot": "08:00",
-      "status": "ready",
-      "post_id": null,
+      "status": "sent",
+      "post_id": "2116304423689265152",
       "due": 1793401200000,
-      "sent_at": null,
+      "sent_at": 1793401268764,
       "error": null,
       "date": "2026-10-31",
       "fingerprints": [
@@ -431,10 +431,10 @@
       "key": "2026-10-31@12:00",
       "day": "2026-10-31",
       "slot": "12:00",
-      "status": "ready",
-      "post_id": null,
+      "status": "sent",
+      "post_id": "2116364872514760740",
       "due": 1793415600000,
-      "sent_at": null,
+      "sent_at": 1793415681626,
       "error": null,
       "date": "2026-10-31",
       "fingerprints": [
@@ -448,10 +448,10 @@
       "key": "2026-10-31@18:00",
       "day": "2026-10-31",
       "slot": "18:00",
-      "status": "ready",
-      "post_id": null,
+      "status": "sent",
+      "post_id": "2116455402355454437",
       "due": 1793437200000,
-      "sent_at": null,
+      "sent_at": 1793437264789,
       "error": null,
       "date": "2026-10-31",
       "fingerprints": [
@@ -465,10 +465,10 @@
       "key": "2026-10-31@21:00",
       "day": "2026-10-31",
       "slot": "21:00",
-      "status": "ready",
-      "post_id": null,
+      "status": "sent",
+      "post_id": "2116500716395045115",
       "due": 1793448000000,
-      "sent_at": null,
+      "sent_at": 1793448068619,
       "error": null,
       "date": "2026-10-31",
       "fingerprints": [
@@ -476,6 +476,142 @@
         "12e10e9fe162f83af076b0dafad661763844278c58cdf7f7f1e00123c77ad658",
         "11c227d4597a819952c43e9f33fd698dc81c579060e2f6674e5cc97aa84421e7",
         "d893bdfe95f1b955069a968c9a5cbe57b1d3141d6dea472b0a1f9c93f5976bb2"
+      ]
+    },
+    "2026-11-03@08:00": {
+      "key": "2026-11-03@08:00",
+      "day": "2026-11-03",
+      "slot": "08:00",
+      "status": "ready",
+      "post_id": null,
+      "due": 1793660400000,
+      "sent_at": null,
+      "error": null,
+      "date": "2026-11-03",
+      "fingerprints": [
+        "6a2e37230e3085e414dc3273cef8e592388f58bc805a11b59ab89f29b0a0153c",
+        "1d7e8e5a58abf5692715c881ec66c7c84b63b7bcfc4807d3ed1fe4db589ea33a",
+        "9c03433311d569ec60282d5d64ab0f3df349ed392003dfb23c55403b4693a1f5",
+        "9f4b54642f11f0128bb957c0c5b91758535bbb50edfd8355b9151479512a16ac"
+      ]
+    },
+    "2026-11-03@12:00": {
+      "key": "2026-11-03@12:00",
+      "day": "2026-11-03",
+      "slot": "12:00",
+      "status": "ready",
+      "post_id": null,
+      "due": 1793674800000,
+      "sent_at": null,
+      "error": null,
+      "date": "2026-11-03",
+      "fingerprints": [
+        "fbd67b07468df9f23933d1301cfd21cd318b2c10de8c96f12fcc12b433983ca1",
+        "5b130f72b5c183a3a245180c7d258f2cde1771041aab3feccfeba5e404009eb3",
+        "1d18786d055ca80bafdb7e6f1f6c6fd47b5f52da093831f79d331b20c0c096b2",
+        "9f9efb1ebec9e8214183198c6823a5ca3e61e49c48f4d05d6984a4a6756410f8"
+      ]
+    },
+    "2026-11-03@18:00": {
+      "key": "2026-11-03@18:00",
+      "day": "2026-11-03",
+      "slot": "18:00",
+      "status": "ready",
+      "post_id": null,
+      "due": 1793696400000,
+      "sent_at": null,
+      "error": null,
+      "date": "2026-11-03",
+      "fingerprints": [
+        "41d7013774dbb9b4da6ccc16febe9ae4bc856c48f5629945cdf203bf0b074212",
+        "5c7a8b640b44f18fb7919b9e5e99e664ff65d64e688fa6bb68ee8d16939792e3",
+        "89f1f89b032d742391ab18726c227b3348a096087476f85309f5ef8e241fc9f7",
+        "9a325aedaf119c26bf15c1dcb8e4a5382da12fca79bc2f335e4ac50b9980306d"
+      ]
+    },
+    "2026-11-03@21:00": {
+      "key": "2026-11-03@21:00",
+      "day": "2026-11-03",
+      "slot": "21:00",
+      "status": "ready",
+      "post_id": null,
+      "due": 1793707200000,
+      "sent_at": null,
+      "error": null,
+      "date": "2026-11-03",
+      "fingerprints": [
+        "b0caf59f0ecc82ded299c3761e7d8d0f2b3fdabb18ac60259ccd52de6552270c",
+        "38748f4a4960d23578d3259ee1e8cec92f9a9f607c9e4e81e7a7d7b1cb1b0b41",
+        "6aa00356e567dd22694ffa9f5e5ca1a16ce8efea91cf3edfa34140859682b9a5",
+        "73099afbc8efcc0415e0300c9916bce4bffbe02ac0c7d395c88f8451e8770e47"
+      ]
+    },
+    "2026-11-04@08:00": {
+      "key": "2026-11-04@08:00",
+      "day": "2026-11-04",
+      "slot": "08:00",
+      "status": "ready",
+      "post_id": null,
+      "due": 1793746800000,
+      "sent_at": null,
+      "error": null,
+      "date": "2026-11-04",
+      "fingerprints": [
+        "ec968cfe88ce9236f52dd8bdd3b1c2bcc51531fc10c8005d3a27c2a0e75b0147",
+        "31a4b974c46c6f3d04bb1349d6ea15ab0b10ca62ea34771e846934c020d5972f",
+        "31ca057e0964aaa01c0755d790592785e2f34138864003076343fba6c3819f36",
+        "f85cb62069898cfa0a2f50739533f1b432e5f2e294493ca598953257ab166f28"
+      ]
+    },
+    "2026-11-04@12:00": {
+      "key": "2026-11-04@12:00",
+      "day": "2026-11-04",
+      "slot": "12:00",
+      "status": "ready",
+      "post_id": null,
+      "due": 1793761200000,
+      "sent_at": null,
+      "error": null,
+      "date": "2026-11-04",
+      "fingerprints": [
+        "fcdf3b336ac6cef9347ea47079288abccdf2845d2a9ec6ee03305186223304c7",
+        "aa7f6504971601772963553e9011ae26ba4c2f434f50c37b95a1031140e18df7",
+        "bfc3d3c006679e9ba2972ed31e33a9907e3286848d52c1b7837d6cf411178b50",
+        "221de80a49881daccca6fb1c515a64aced21c53efcb79489e5d9a1ba8cd24055"
+      ]
+    },
+    "2026-11-04@18:00": {
+      "key": "2026-11-04@18:00",
+      "day": "2026-11-04",
+      "slot": "18:00",
+      "status": "ready",
+      "post_id": null,
+      "due": 1793782800000,
+      "sent_at": null,
+      "error": null,
+      "date": "2026-11-04",
+      "fingerprints": [
+        "f3a1c76ba12c6f456a88529368944f17847806afabf7eea1128ba9c842ae2a82",
+        "b0a229aa24590692325bfc4d05bbd463c802f3df2257e669353a84a19e1f13db",
+        "ffaee73622a131061f269f9d476a645a2d1b0be2e86f0b488e644973b4eb8839",
+        "9b9ec043989e43d4ed30a98feadf21410a8d5a9d63f7fc86553da55b3c28bb26"
+      ]
+    },
+    "2026-11-04@21:00": {
+      "key": "2026-11-04@21:00",
+      "day": "2026-11-04",
+      "slot": "21:00",
+      "status": "ready",
+      "post_id": null,
+      "due": 1793793600000,
+      "sent_at": null,
+      "error": null,
+      "date": "2026-11-04",
+      "fingerprints": [
+        "71850d211f612f39bcaaba32f9e4078617cac7c3c6bd816ff8a44ee79da78682",
+        "92a38bc3c70e80ed8f60360fea0898fe3e3069914f88e87717df4cd9c389912b",
+        "dcc6f36bb3c4940fa64df7f7562277d68ef2767240e43c9a0dab2512321262dc",
+        "73f3674d870d8e346d030511fae6991b3409d5650b800da58fde0ae9c94913bc"
       ]
     }
   }
