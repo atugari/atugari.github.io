@@ -1,13 +1,13 @@
 {
   "version": "2026.11.02.82",
   "sourceCommit": "1222640c9a34beb3f57d065e7504b11bcae1e994",
-  "clientOverridesSha256": "a6a63fde8738434b4a648481a308ebd85849261bbb18890d85947d990fd847aa",
+  "clientOverridesSha256": "d5c5ff164a1ffdd00fdeb7f5440b28626440f9267ef5a961e4845f0e3bb56285",
   "base": "/nanpure/releases/2026.11.02.82/",
   "online": "https://puzzle-api.puzzle-hub-4826.workers.dev",
   "files": {
     "nanpure/index.html": "7249f1b737c61d0b11e5c43cdcf3c13902d199253d557d5d375ddf52e6b471a7",
     "nanpure.html": "396a2c1d26e062b39ecef7cbb3ab3bd4c3d96dbbccc985752bc1087f1774967b",
-    "nanpure/version.json": "202c2790d085a641069ff05def58ed942e1062c0cf3cd3e0ff477bbfbd08a98f",
+    "nanpure/version.json": "f8ba97a3d265bc361ae4059b1a6d94b526ba75bacc108ffcac41ec8882d169db",
     "nanpure/releases.json": "965a48651d5eaa146f1091bc8920eb0213bea62f07651e9e093ef4dc33bf1e55",
     "nanpure/guide/index.html": "53ecc04bb0c8c4e22a7a6ebbdbcd2d90ff4e5c798d35832301cde2eeeb73c42d",
     "nanpure/sudoku-types/index.html": "289a15ead5d6bf9375c9cad2a57fab71b28087a89843dcfac55cde4182075db2",
@@ -3218,7 +3218,7 @@
     "nanpure/releases/2026.11.02.82/notebook/pattern-model.js": "02f86ae01d011f860a5b03143a914d838e029958806ca3c4ea8aab7882afc71b",
     "nanpure/releases/2026.11.02.82/notebook/pattern-share.js": "3895f756736002c74a68f1af78e4eca8cef72846d079a44bdf580626052c8362",
     "nanpure/releases/2026.11.02.82/notebook/pattern-ui.js": "810d9eea8ab27178a1b6ff89b2470f8b7f6db782ad4cd538f82e4c1542f73469",
-    "nanpure/releases/2026.11.02.82/notebook/pattern.css": "b96c2c19a508188f05b4f7c4cb5cb35d54280ef19e4ff4d69dd20b5403f23551",
+    "nanpure/releases/2026.11.02.82/notebook/pattern.css": "ac85582521223056eddb0f0deb248468de3798a69065fb8bb221c34d1cacde0a",
     "nanpure/releases/2026.11.02.82/notebook/play-options.js": "a669f619cd2df74b25ff21d258268b99da07d006591d5a708936032ee0e748b8",
     "nanpure/releases/2026.11.02.82/notebook/play-workspace.css": "8e818961ad1275ea10b6b29f592513051f1bd9a70d6e7a9b9a33c4288dc5e9bb",
     "nanpure/releases/2026.11.02.82/notebook/play-workspace.js": "4ee5f124556941c5bcd61cc87b4de944a7bc316df2bdf0e1caf47c6c607b38a0",
@@ -3341,7 +3341,7 @@
     "sources": {
       "scripts/client-overrides/public/notebook/pattern-model.js": "02f86ae01d011f860a5b03143a914d838e029958806ca3c4ea8aab7882afc71b",
       "scripts/client-overrides/public/notebook/pattern-ui.js": "810d9eea8ab27178a1b6ff89b2470f8b7f6db782ad4cd538f82e4c1542f73469",
-      "scripts/client-overrides/public/notebook/pattern.css": "b96c2c19a508188f05b4f7c4cb5cb35d54280ef19e4ff4d69dd20b5403f23551",
+      "scripts/client-overrides/public/notebook/pattern.css": "ac85582521223056eddb0f0deb248468de3798a69065fb8bb221c34d1cacde0a",
       "scripts/client-overrides/public/notebook/app.js": "e5d3697a52e6b321066c77dd15a7817c33af056330e28d6329918475334d74a3",
       "scripts/client-overrides/public/notebook/common.js": "fee5b3b99abb8c0009522d8b6796e8544b59ceab205a961493420825f2eb38d2",
       "scripts/check-nanpure-pattern.cjs": "d31ea8e49c32d2b6cc9ab76db9898dbbc98c2363fb0716ac5e5f8c76481cd6f6",
@@ -3353,7 +3353,7 @@
     "sources": {
       "scripts/client-overrides/public/notebook/pattern-model.js": "02f86ae01d011f860a5b03143a914d838e029958806ca3c4ea8aab7882afc71b",
       "scripts/client-overrides/public/notebook/pattern-ui.js": "810d9eea8ab27178a1b6ff89b2470f8b7f6db782ad4cd538f82e4c1542f73469",
-      "scripts/client-overrides/public/notebook/pattern.css": "b96c2c19a508188f05b4f7c4cb5cb35d54280ef19e4ff4d69dd20b5403f23551",
+      "scripts/client-overrides/public/notebook/pattern.css": "ac85582521223056eddb0f0deb248468de3798a69065fb8bb221c34d1cacde0a",
       "scripts/check-nanpure-pattern.cjs": "d31ea8e49c32d2b6cc9ab76db9898dbbc98c2363fb0716ac5e5f8c76481cd6f6",
       "scripts/check-nanpure-pattern-math.cjs": "5e7067b1e3f2c3bd58dd3909f5c9795746deac75b6caef3a38b7babb9f5cf92f",
       "scripts/check-nanpure-pattern-browser.cjs": "c0cdbeb36949a41ad516fedf31fa6646e66f077121d8dfde6c4d0f86a9dff831",
@@ -3364,7 +3364,7 @@
     "sources": {
       "scripts/client-overrides/public/notebook/pattern-model.js": "02f86ae01d011f860a5b03143a914d838e029958806ca3c4ea8aab7882afc71b",
       "scripts/client-overrides/public/notebook/pattern-ui.js": "810d9eea8ab27178a1b6ff89b2470f8b7f6db782ad4cd538f82e4c1542f73469",
-      "scripts/client-overrides/public/notebook/pattern.css": "b96c2c19a508188f05b4f7c4cb5cb35d54280ef19e4ff4d69dd20b5403f23551",
+      "scripts/client-overrides/public/notebook/pattern.css": "ac85582521223056eddb0f0deb248468de3798a69065fb8bb221c34d1cacde0a",
       "scripts/check-nanpure-pattern.cjs": "d31ea8e49c32d2b6cc9ab76db9898dbbc98c2363fb0716ac5e5f8c76481cd6f6",
       "scripts/check-nanpure-pattern-math.cjs": "5e7067b1e3f2c3bd58dd3909f5c9795746deac75b6caef3a38b7babb9f5cf92f",
       "scripts/check-nanpure-pattern-browser.cjs": "c0cdbeb36949a41ad516fedf31fa6646e66f077121d8dfde6c4d0f86a9dff831",
@@ -3376,7 +3376,7 @@
     "sources": {
       "scripts/client-overrides/public/notebook/pattern-model.js": "02f86ae01d011f860a5b03143a914d838e029958806ca3c4ea8aab7882afc71b",
       "scripts/client-overrides/public/notebook/pattern-ui.js": "810d9eea8ab27178a1b6ff89b2470f8b7f6db782ad4cd538f82e4c1542f73469",
-      "scripts/client-overrides/public/notebook/pattern.css": "b96c2c19a508188f05b4f7c4cb5cb35d54280ef19e4ff4d69dd20b5403f23551",
+      "scripts/client-overrides/public/notebook/pattern.css": "ac85582521223056eddb0f0deb248468de3798a69065fb8bb221c34d1cacde0a",
       "scripts/check-nanpure-pattern.cjs": "d31ea8e49c32d2b6cc9ab76db9898dbbc98c2363fb0716ac5e5f8c76481cd6f6",
       "scripts/check-nanpure-pattern-math.cjs": "5e7067b1e3f2c3bd58dd3909f5c9795746deac75b6caef3a38b7babb9f5cf92f",
       "scripts/check-nanpure-pattern-browser.cjs": "c0cdbeb36949a41ad516fedf31fa6646e66f077121d8dfde6c4d0f86a9dff831",
@@ -3388,7 +3388,7 @@
     "sources": {
       "scripts/client-overrides/public/notebook/pattern-model.js": "02f86ae01d011f860a5b03143a914d838e029958806ca3c4ea8aab7882afc71b",
       "scripts/client-overrides/public/notebook/pattern-ui.js": "810d9eea8ab27178a1b6ff89b2470f8b7f6db782ad4cd538f82e4c1542f73469",
-      "scripts/client-overrides/public/notebook/pattern.css": "b96c2c19a508188f05b4f7c4cb5cb35d54280ef19e4ff4d69dd20b5403f23551",
+      "scripts/client-overrides/public/notebook/pattern.css": "ac85582521223056eddb0f0deb248468de3798a69065fb8bb221c34d1cacde0a",
       "scripts/check-nanpure-pattern.cjs": "d31ea8e49c32d2b6cc9ab76db9898dbbc98c2363fb0716ac5e5f8c76481cd6f6",
       "scripts/check-nanpure-pattern-math.cjs": "5e7067b1e3f2c3bd58dd3909f5c9795746deac75b6caef3a38b7babb9f5cf92f",
       "scripts/check-nanpure-pattern-browser.cjs": "c0cdbeb36949a41ad516fedf31fa6646e66f077121d8dfde6c4d0f86a9dff831",
@@ -3400,7 +3400,7 @@
     "sources": {
       "scripts/client-overrides/public/notebook/pattern-model.js": "02f86ae01d011f860a5b03143a914d838e029958806ca3c4ea8aab7882afc71b",
       "scripts/client-overrides/public/notebook/pattern-ui.js": "810d9eea8ab27178a1b6ff89b2470f8b7f6db782ad4cd538f82e4c1542f73469",
-      "scripts/client-overrides/public/notebook/pattern.css": "b96c2c19a508188f05b4f7c4cb5cb35d54280ef19e4ff4d69dd20b5403f23551",
+      "scripts/client-overrides/public/notebook/pattern.css": "ac85582521223056eddb0f0deb248468de3798a69065fb8bb221c34d1cacde0a",
       "scripts/check-nanpure-pattern.cjs": "d31ea8e49c32d2b6cc9ab76db9898dbbc98c2363fb0716ac5e5f8c76481cd6f6",
       "scripts/check-nanpure-pattern-math.cjs": "5e7067b1e3f2c3bd58dd3909f5c9795746deac75b6caef3a38b7babb9f5cf92f",
       "scripts/check-nanpure-pattern-browser.cjs": "c0cdbeb36949a41ad516fedf31fa6646e66f077121d8dfde6c4d0f86a9dff831",
@@ -3412,7 +3412,7 @@
     "sources": {
       "scripts/client-overrides/public/notebook/pattern-share.js": "3895f756736002c74a68f1af78e4eca8cef72846d079a44bdf580626052c8362",
       "scripts/client-overrides/public/notebook/pattern-ui.js": "810d9eea8ab27178a1b6ff89b2470f8b7f6db782ad4cd538f82e4c1542f73469",
-      "scripts/client-overrides/public/notebook/pattern.css": "b96c2c19a508188f05b4f7c4cb5cb35d54280ef19e4ff4d69dd20b5403f23551",
+      "scripts/client-overrides/public/notebook/pattern.css": "ac85582521223056eddb0f0deb248468de3798a69065fb8bb221c34d1cacde0a",
       "scripts/client-overrides/public/notebook/app.js": "e5d3697a52e6b321066c77dd15a7817c33af056330e28d6329918475334d74a3",
       "scripts/i18n/catalog-pattern-share-78.cjs": "0486cba6bc81e749daa1973fce3db2aae4a3d311de540c0c5a0f3f5b58f7b737",
       "scripts/check-nanpure-pattern-share-browser.cjs": "5022ce02160e29bfe1fea8e1ed10158281e412c5377c620ce0fd341abf9f8b57",
@@ -3423,7 +3423,7 @@
     "sources": {
       "scripts/client-overrides/public/notebook/pattern-share.js": "3895f756736002c74a68f1af78e4eca8cef72846d079a44bdf580626052c8362",
       "scripts/client-overrides/public/notebook/pattern-ui.js": "810d9eea8ab27178a1b6ff89b2470f8b7f6db782ad4cd538f82e4c1542f73469",
-      "scripts/client-overrides/public/notebook/pattern.css": "b96c2c19a508188f05b4f7c4cb5cb35d54280ef19e4ff4d69dd20b5403f23551",
+      "scripts/client-overrides/public/notebook/pattern.css": "ac85582521223056eddb0f0deb248468de3798a69065fb8bb221c34d1cacde0a",
       "scripts/client-overrides/public/notebook/app.js": "e5d3697a52e6b321066c77dd15a7817c33af056330e28d6329918475334d74a3",
       "scripts/i18n/catalog-pattern-mobile-79.cjs": "086c60f52516048a947b819bfe896533cedb3a1613edce72c26de3e0172eb7a8",
       "scripts/check-nanpure-pattern-mobile-browser.cjs": "45f64296ae5f2060db8fbc2973cca85d353144a2238a696d78697e2bf0ed4a31",
@@ -3436,7 +3436,7 @@
     "sources": {
       "scripts/client-overrides/public/notebook/pattern-share.js": "3895f756736002c74a68f1af78e4eca8cef72846d079a44bdf580626052c8362",
       "scripts/client-overrides/public/notebook/pattern-ui.js": "810d9eea8ab27178a1b6ff89b2470f8b7f6db782ad4cd538f82e4c1542f73469",
-      "scripts/client-overrides/public/notebook/pattern.css": "b96c2c19a508188f05b4f7c4cb5cb35d54280ef19e4ff4d69dd20b5403f23551",
+      "scripts/client-overrides/public/notebook/pattern.css": "ac85582521223056eddb0f0deb248468de3798a69065fb8bb221c34d1cacde0a",
       "scripts/client-overrides/public/notebook/app.js": "e5d3697a52e6b321066c77dd15a7817c33af056330e28d6329918475334d74a3",
       "scripts/client-overrides/public/notebook/pattern-model.js": "02f86ae01d011f860a5b03143a914d838e029958806ca3c4ea8aab7882afc71b",
       "scripts/check-nanpure-pattern-difficulty.cjs": "dfd7c98a7e7bc0e13979f24bd257c419d78bd2b3649bb4b2aba5eb4da4783ac0",
@@ -3451,7 +3451,7 @@
     "sources": {
       "scripts/client-overrides/public/notebook/pattern-share.js": "3895f756736002c74a68f1af78e4eca8cef72846d079a44bdf580626052c8362",
       "scripts/client-overrides/public/notebook/pattern-ui.js": "810d9eea8ab27178a1b6ff89b2470f8b7f6db782ad4cd538f82e4c1542f73469",
-      "scripts/client-overrides/public/notebook/pattern.css": "b96c2c19a508188f05b4f7c4cb5cb35d54280ef19e4ff4d69dd20b5403f23551",
+      "scripts/client-overrides/public/notebook/pattern.css": "ac85582521223056eddb0f0deb248468de3798a69065fb8bb221c34d1cacde0a",
       "scripts/client-overrides/public/notebook/app.js": "e5d3697a52e6b321066c77dd15a7817c33af056330e28d6329918475334d74a3",
       "scripts/client-overrides/public/notebook/pattern-model.js": "02f86ae01d011f860a5b03143a914d838e029958806ca3c4ea8aab7882afc71b",
       "scripts/check-nanpure-pattern-difficulty.cjs": "dfd7c98a7e7bc0e13979f24bd257c419d78bd2b3649bb4b2aba5eb4da4783ac0",
@@ -3469,7 +3469,7 @@
     "sources": {
       "scripts/client-overrides/public/notebook/pattern-share.js": "3895f756736002c74a68f1af78e4eca8cef72846d079a44bdf580626052c8362",
       "scripts/client-overrides/public/notebook/pattern-ui.js": "810d9eea8ab27178a1b6ff89b2470f8b7f6db782ad4cd538f82e4c1542f73469",
-      "scripts/client-overrides/public/notebook/pattern.css": "b96c2c19a508188f05b4f7c4cb5cb35d54280ef19e4ff4d69dd20b5403f23551",
+      "scripts/client-overrides/public/notebook/pattern.css": "ac85582521223056eddb0f0deb248468de3798a69065fb8bb221c34d1cacde0a",
       "scripts/client-overrides/public/notebook/app.js": "e5d3697a52e6b321066c77dd15a7817c33af056330e28d6329918475334d74a3",
       "scripts/client-overrides/public/notebook/pattern-model.js": "02f86ae01d011f860a5b03143a914d838e029958806ca3c4ea8aab7882afc71b",
       "scripts/check-nanpure-pattern-difficulty.cjs": "dfd7c98a7e7bc0e13979f24bd257c419d78bd2b3649bb4b2aba5eb4da4783ac0",

@@ -91,7 +91,7 @@ html.np-pattern-fit,body.np-pattern-fit{overflow:hidden!important;height:100dvh;
 .pattern-choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}
 .pattern-policy-choices{grid-template-columns:repeat(2,minmax(0,1fr))}
 .pattern-tools-dialog .pattern-choices label{position:relative;display:flex;margin:0;min-width:0;cursor:pointer}
-.pattern-choices input{position:absolute;width:1px;height:1px;clip-path:inset(50%);overflow:hidden;white-space:nowrap}
+.pattern-choices input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;z-index:1;cursor:pointer}
 .pattern-choices span{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;border:1px solid #a6bbaa;border-radius:8px;background:#fff;color:#243f35;font-size:14px;line-height:1.4;text-align:center;padding:6px 4px;overflow-wrap:anywhere}
 .pattern-choices input:checked+span{background:#285849;border-color:#285849;color:#fff;font-weight:700;box-shadow:inset 0 0 0 2px #fff8}
 .pattern-choices input:focus-visible+span{outline:3px solid #a26815;outline-offset:2px}
