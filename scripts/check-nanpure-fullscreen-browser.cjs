@@ -53,7 +53,7 @@ async function journey(page,frame,{multi=false,native=true}={}){
   const f=await setup(browser,viewport),cfg=catalog.configs.find(c=>c.kind===kind&&c.n===n);await f.page.goto(origin+'/nanpure/collection/?p=P-'+String(cfg.start).padStart(6,'0'));await f.page.waitForFunction(()=>document.querySelector('#game')?.contentWindow?.NPBoardFullscreen);
   const frame=await(await f.page.locator('#game').elementHandle()).contentFrame();await journey(f.page,frame,{multi:kind==='multi'});assert.deepEqual(f.errors,[]);await f.context.close();
  }
- const f=await setup(browser,{width:1440,height:900});await f.page.goto(origin+'/nanpure/');await f.page.getByRole('button',{name:'自由に遊ぶ 好きなルールで、自分のペースで。',exact:true}).click();
+ const f=await setup(browser,{width:1440,height:900});await f.page.goto(origin+'/nanpure/');await f.page.getByRole('button',{name:'自由に遊ぶ 保存した問題・印刷・作成履歴',exact:true}).click();
  await f.page.waitForFunction(()=>[...document.querySelectorAll('iframe')].some(el=>el.contentWindow?.NanpureAppTest&&el.contentWindow?.NPBoardFullscreen));
  const iframe=f.page.locator('iframe[title="ナンプレ帳 問題生成とプレイ"]'),frame=await(await iframe.elementHandle()).contentFrame();
  await frame.locator('[data-action="open-notebook"]').waitFor();
