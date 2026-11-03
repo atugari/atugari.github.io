@@ -10,6 +10,9 @@ async function setup(browser,width,height,theme='color'){
 (async()=>{const browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_BIN||undefined,args:['--no-sandbox']});try{
  for(const[width,height,theme]of [[360,730,'color'],[375,667,'notebook'],[320,568,'color'],[390,844,'lounge']]){
   const f=await setup(browser,width,height,theme),{page}=f;
+  assert.equal(await page.locator('.header h1.brand').textContent(),'ナンプレ帳');
+  assert.equal(await page.locator('.designed-home .start-title').count(),0);
+  assert.deepEqual(await page.locator('.designed-home .start-choices strong').allTextContents(),['ナンプレで遊ぶ','問題を作る','日替わり問題に挑戦する']);
   const box=await page.evaluate(()=>{const m=document.querySelector('.designed-home'),rects=Array.from(m.querySelectorAll('button,a')).filter(e=>e.getClientRects().length&&getComputedStyle(e).visibility!=='hidden').map(e=>({text:e.textContent.trim(),r:e.getBoundingClientRect().toJSON()}));return{height:m.clientHeight,scroll:m.scrollHeight,width:innerWidth,viewport:innerHeight,rects};});
   assert(box.scroll>=box.height,JSON.stringify({width,height,...box}));
   for(const a of box.rects){assert(a.r.top>=0,a.text+' is above the page');assert(a.r.left>=-1&&a.r.right<=width+1,a.text+' is outside horizontal bounds');}
@@ -19,6 +22,12 @@ async function setup(browser,width,height,theme='color'){
   const tile=page.locator('.np-title-card.earned').first();await tile.click();await page.locator('.np-title-details[open]').waitFor();assert((await page.locator('.np-title-description').textContent()).length>0);assert.equal(await page.locator('.np-title-details').evaluate(e=>getComputedStyle(e).animationName),'none');await page.locator('.np-title-details>header button').click();
   await page.locator('.np-title-notification input').uncheck();await page.waitForFunction(()=>NPAchievements.getState().notification==='off');await page.evaluate(()=>NPAchievements.capture('ui',{action:'last-book'}));await page.locator('.np-titles>header button').click();if(await page.locator('.game-dialog[open]').isVisible())await page.locator('.game-dialog .dialog-close').click();assert.equal(await page.locator('.np-title-toast').count(),0);
   await page.reload();await page.locator('.np-home-ready').waitFor();assert.equal(await page.evaluate(()=>NPAchievements.getState().notification),'off');assert(await page.evaluate(()=>!!NPAchievements.getState().earned['NP-0001']));
+  await page.locator('.create-choice').click();
+  await page.frameLocator('iframe.notebook').locator('[data-action="web-single"]').waitFor();
+  await page.goto(site+'/nanpure/');
+  await page.locator('.main-choice').click();
+  await page.frameLocator('iframe.notebook').locator('[data-action="open-notebook"]').waitFor();
+  await page.locator('.back-button').click();
   await page.locator('.daily-choice').click();await page.locator('.difficulty-screen').waitFor();await page.waitForFunction(()=>!document.querySelector('[data-np-titles],[data-home-guide]'));await page.locator('.back-button').click();await page.locator('.np-home-ready [data-np-titles]').waitFor({state:'attached'});await page.locator('.menu-button').click();await page.locator('.site-menu [data-np-titles]').click();await page.locator('.np-titles[open]').waitFor();assert.deepEqual(f.errors,[]);await f.context.close();console.log('PASS home bounds, no overlapping actions, static title details, notification preference and return home:',width,height,theme);
  }
 }finally{await browser.close()}})().catch(e=>{console.error(e);process.exit(1)});

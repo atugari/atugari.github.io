@@ -278,7 +278,7 @@ export default function Game({initialChallenges}:{initialChallenges:DailySummary
  return <div data-playing={playing?'true':undefined} data-native-playing={nativePlaying?'true':undefined} data-np-aid={settings.tapAssist} data-np-tolerance={settings.dragTolerance} className={`site-shell mode-${tab} ${settings.nonColor?'noncolor':''} hand-${settings.hand} keypad-${settings.keypadLayout} ${settings.keypadSize>100?'big-keys':''}`} style={{'--key-scale':settings.keypadSize/100} as React.CSSProperties}>
   <NumberPressPreview enabled={nativePlaying&&!panel&&!busy} tolerance={settings.tapAssist?settings.dragTolerance:12} onCancel={releaseNumber}/>
   <header className="header">
-   {tab==='home'?<span className="brand">{t('ナンプレ帳')}</span>:<button className="back-button" onClick={goBack} aria-label={t('前の画面に戻る')}>‹ {t('戻る')}</button>}
+   {tab==='home'?<h1 className="brand">{t('ナンプレ帳')}</h1>:<button className="back-button" onClick={goBack} aria-label={t('前の画面に戻る')}>‹ {t('戻る')}</button>}
    {tab!=='home'&&<span className="screen-name">{tab==='practice'?t('自由に遊ぶ'):t('日替わり問題帳')}</span>}
    <div className="header-actions">{!playing&&<><a className="header-support" href="https://ofuse.me/o?uid=228296" target="_blank" rel="noopener noreferrer">OFUSE ↗</a><LanguagePicker/></>}{nativePlaying&&<button className="play-settings-button" onClick={()=>P('settings')} aria-label={t('プレイ中の設定')} title={t('設定')}>⚙</button>}<button className="menu-button" onClick={()=>P('menu')} aria-label={t(news.latest!==currentVersion?'新しい版があります':'メニュー')}>☰{(news.unread||news.latest!==currentVersion||playing&&replyCount>0)&&<span className="news-dot" aria-hidden="true">●</span>}</button></div>
   </header>

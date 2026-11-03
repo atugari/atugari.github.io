@@ -1,16 +1,15 @@
 'use client';
-// Keep the original two-way entry. Creation, saved puzzles and printing live
-// in the notebook's existing step-by-step navigation.
+// The creation entry opens the notebook directly at its generation menu.
 export default function GroupedHome({t,onPractice,onDaily,onPanel,resume,markRead,unread,version,Theme,Intro,showRanking}:any){
  const news=()=>{markRead();onPanel('updates')};
- const art=(daily=false)=><span className="choice-art" aria-hidden="true"><span className="art-emblem">{daily?'日':'数'}</span></span>;
+ const art=(symbol:string)=><span className="choice-art" aria-hidden="true"><span className="art-emblem">{symbol}</span></span>;
  const arrow=<span className="choice-arrow" aria-hidden="true">›</span>;
  return <main className="start-screen designed-home np-stepped-home np-home-ready" data-grouped-home="" data-stepped-home="">
   <div className="home-topline"><Theme compact onOpen={()=>onPanel('theme')}/></div>
-  <div className="start-title"><span className="notebook-mark" aria-hidden="true">数</span><div><h1>{t('ナンプレ帳')}</h1><p>{t('ひと息ついて、数字と遊ぶ。')}</p></div></div>
   <div className="start-choices">
-   <button type="button" className="choice-card main-choice" onClick={()=>onPractice()}>{art()}<span className="choice-copy"><strong>{t('自由に遊ぶ')}</strong><small>{t('好きなルールで、自分のペースで。')}</small></span>{arrow}</button>
-   <button type="button" className="choice-card daily-choice" onClick={onDaily}>{art(true)}<span className="choice-copy"><strong>{t('日替わり問題帳')}</strong><small>{t('毎日3問。今日のひらめきに出会う。')}</small></span>{arrow}</button>
+   <button type="button" className="choice-card main-choice" onClick={()=>onPractice()}>{art('数')}<span className="choice-copy"><strong>{t('ナンプレで遊ぶ')}</strong></span>{arrow}</button>
+   <button type="button" className="choice-card create-choice" onClick={()=>onPractice('open-create')}>{art('作')}<span className="choice-copy"><strong>{t('問題を作る')}</strong></span>{arrow}</button>
+   <button type="button" className="choice-card daily-choice" onClick={onDaily}>{art('日')}<span className="choice-copy"><strong>{t('日替わり問題に挑戦する')}</strong></span>{arrow}</button>
   </div>
   <a className="np-collection-entry" data-collection-entry="" href="/nanpure/collection/"><span className="np-collection-copy"><strong>{t('すぐ遊べる問題集')}</strong><small>{t('ナンプレ22ルール・生成を待たずに遊ぶ')}</small></span>{arrow}</a>
   {resume&&<button type="button" className="secondary-action home-resume" onClick={resume}>{t('続きから遊ぶ')}</button>}

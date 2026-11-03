@@ -28,7 +28,7 @@ const cell=(frame,index)=>frame.locator('#board [data-cell="'+index+'"]');
 const choice=(target,key)=>target.locator('[data-appearance="'+key+'"]');
 async function openView(frame){await frame.locator('#np-play-settings-button').click();await frame.locator('[aria-controls="np-settings-page-view"]').click();await choice(frame,'regionWidth').waitFor();}
 // Independent expected menu labels catch untranslated or incorrect common UI.
-const additional={it:'Gioco libero',nl:'Vrij spelen',sv:'Spela fritt',pl:'Gra swobodna',cs:'Volná hra',ru:'Свободная игра',id:'Bermain bebas',vi:'Chơi tự do',th:'เล่นอิสระ',hi:'स्वतंत्र खेल',ar:'لعب حر'};
+const additional={"it": "Gioca a sudoku", "nl": "Sudoku spelen", "sv": "Spela sudoku", "pl": "Zagraj w sudoku", "cs": "Hrát sudoku", "ru": "Играть в судоку", "id": "Main Sudoku", "vi": "Chơi Sudoku", "th": "เล่นซูโดกุ", "hi": "सुडोकू खेलें", "ar": "العب سودوكو"};
 async function audit(target,selector,label){
  // New notebook dialogs are translated by a MutationObserver/rAF batch. Wait
  // for its visible text, as the existing creation/print journeys do, without

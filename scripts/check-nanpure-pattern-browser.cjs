@@ -80,7 +80,7 @@ async function setup(browser,viewport){
   console.log('PASS pattern workflow',viewport,': exact difficulty, unique mask, contextual actions, all tools, keyboard/stroke, fixed geometry, furigana, three layouts, draft and durable save');
  }
  for(const viewport of [{width:1534,height:696},{width:390,height:844}]){
-  const {context,page,errors}=await setup(browser,viewport);await page.goto(origin+'/nanpure/');await page.getByRole('button',{name:/自由に遊ぶ/}).click();const frame=page.frameLocator('iframe.notebook');await frame.locator('[data-action="open-notebook"]').click();await frame.locator('[data-action="pattern-open"]').click();
+  const {context,page,errors}=await setup(browser,viewport);await page.goto(origin+'/nanpure/');await page.locator('.main-choice').click();const frame=page.frameLocator('iframe.notebook');await frame.locator('[data-action="open-notebook"]').click();await frame.locator('[data-action="pattern-open"]').click();
   const bounds=await page.locator('iframe.notebook').boundingBox();assert.equal(bounds.y,0);assert.equal(bounds.height,viewport.height);
   await frame.locator('[data-pattern-view="preview"]').click();await frame.locator('[data-pattern-indicator][data-state="ready"]').waitFor({state:'attached'});await frame.locator('[data-pattern-close]').click();assert(await frame.locator('#np-pattern-page').isVisible(),'First Back returns to painting');await frame.locator('[data-pattern-close]').click();await frame.locator('#np-pattern-page').waitFor({state:'detached'});assert(!await page.locator('body').evaluate(e=>e.classList.contains('np-pattern-host')),'Host restored');assert.deepEqual(errors,[]);await context.close();
  }

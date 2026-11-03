@@ -60,3 +60,24 @@
 @media(max-width:359px){.np-home-more nav{grid-template-columns:1fr}.np-stepped-home .choice-copy strong{font-size:19px}.np-stepped-home .home-bottom-links button{flex-basis:30%}}
 
 .np-home-more:not([open]) > nav { display: none; }
+
+.site-shell.mode-home > .header .brand {
+  margin: 0;
+  line-height: 1.15;
+}
+@media (max-width: 600px) {
+  .site-shell.mode-home > .header .brand {
+    font-size: max(clamp(19px, 6vw, 30px), var(--ui-min-font, 0px));
+    overflow-wrap: anywhere;
+  }
+  .np-stepped-home .choice-card {
+    min-height: 68px;
+  }
+}
+@media (min-width: 601px) {
+  .np-stepped-home .start-choices {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    min-height: 160px;
+    flex-basis: auto;
+  }
+}

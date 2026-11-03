@@ -59,3 +59,5 @@ Object.assign(module.exports,require('./catalog-ranking-auto-84.json'));
 Object.assign(module.exports,require('./catalog-grouped-home-87.cjs'));
 
 Object.assign(module.exports,require('./catalog-stepped-home-90.json'));
+
+Object.assign(module.exports,require('./catalog-home-91.json'));
