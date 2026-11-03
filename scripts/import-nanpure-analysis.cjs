@@ -3,7 +3,7 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),cryp
 const root=path.resolve(__dirname,'..'),hash=bytes=>crypto.createHash('sha256').update(bytes).digest('hex');
 function refreshManifest(){
  const file=path.join(root,'nanpure/release-manifest.json');if(!fs.existsSync(file))return;
- const manifest=JSON.parse(fs.readFileSync(file,'utf8')),paths=['nanpure/collection/entry.js','nanpure/collection/entry.css','nanpure/collection/index.html'];
+ const manifest=JSON.parse(fs.readFileSync(file,'utf8')),paths=['nanpure/collection/entry.js','nanpure/collection/entry.css','nanpure/collection/index.html','nanpure/assets/secondary-theme.css'];
  function walk(dir){for(const entry of fs.readdirSync(dir,{withFileTypes:true})){const p=path.join(dir,entry.name);if(entry.isDirectory())walk(p);else if(entry.isFile())paths.push(path.relative(root,p).split(path.sep).join('/'));}}
  walk(path.join(root,'nanpure/learn'));for(const name of paths)manifest.files[name]=hash(fs.readFileSync(path.join(root,name)));
  fs.writeFileSync(file,JSON.stringify(manifest,null,2)+'\n');
