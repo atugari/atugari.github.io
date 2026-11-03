@@ -1,0 +1,45 @@
+.np-workspace-tools>[data-fullscreen]{display:none}
+.np-workspace-tools>[data-fullscreen-boards][hidden]{display:none!important}
+@media(min-width:900px){.np-workspace-tools>[data-fullscreen]{display:inline-block}}
+body.np-fullscreen-playing{height:100dvh!important;overflow:hidden!important}
+html body.np-fullscreen-playing #app>.np-workspace-screen.np-fullscreen{height:100dvh!important;padding:4px!important;gap:4px!important;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:auto minmax(0,1fr) auto!important;grid-template-areas:"layout" "board" "numbers"!important}
+.np-fullscreen>.np-workspace-tools{flex-wrap:nowrap!important;flex-direction:row!important;justify-content:flex-start!important;overflow:auto;align-self:stretch!important;padding:0!important;max-width:100%;gap:4px!important}
+.np-fullscreen>.np-workspace-tools>*{flex-shrink:0}
+.np-fullscreen>.np-workspace-tools>[data-fullscreen]{display:inline-block!important;position:sticky;left:0;z-index:2;background:#285849!important;color:#fff!important}
+.np-fullscreen>.np-workspace-tools>[data-wide]{display:none!important}
+.np-fullscreen .np-workspace-tools>.play-head{display:flex!important;flex-wrap:nowrap;align-items:center;gap:4px!important;margin:0!important}
+.np-fullscreen .np-workspace-tools>.play-head>h1,.np-fullscreen .np-workspace-tools>.play-head>b,.np-fullscreen .np-workspace-tools>.play-head>#timer{display:none!important}
+.np-fullscreen>.np-number-panel{position:static!important;width:100%!important;max-height:45dvh!important;grid-area:numbers!important}
+html body.np-fullscreen-playing #app>.np-workspace-screen.np-fullscreen[data-number-position=float]{grid-template-rows:auto minmax(0,1fr)!important;grid-template-areas:"layout" "board"!important}
+.np-fullscreen[data-number-position=float]>.np-number-panel{position:fixed!important;grid-area:auto!important;width:min(264px,calc(100vw - 8px))!important;max-height:calc(100dvh - 8px)!important}
+.np-fullscreen>.hint{display:none!important}
+.np-fullscreen>#hint-panel,.np-fullscreen>#mistake-status{position:fixed!important;inset:auto 8px 8px;z-index:80;max-height:30dvh;overflow:auto;max-width:calc(100vw - 16px);background:var(--np-comfort-canvas,#f6f7ee)}
+.np-fullscreen-boards{box-sizing:border-box;position:fixed;inset:0;margin:auto;width:min(720px,calc(100vw - 24px));max-height:calc(100dvh - 24px);padding:18px;border:1px solid #b6c7bb;border-radius:14px;background:#f7f8f1;color:#214c40;overflow:auto}
+.np-fullscreen-boards::backdrop{background:#102c2b70}
+.np-fullscreen-boards h2{font-size:18px;margin:0 0 14px}
+.np-fullscreen-boards .multi-board-legend,.np-fullscreen-boards .linked-controls{display:flex;flex-wrap:wrap;gap:6px;margin:0}
+.np-fullscreen-boards .multi-board-chip{min-width:180px;flex:1 1 180px;padding:6px}
+.np-fullscreen-boards .multi-cell-context{font-size:13px;margin:12px 0}
+.np-fullscreen-boards form{display:flex;justify-content:flex-end;margin-top:16px}
+.np-fullscreen-boards button{min-height:44px;font:inherit;color:inherit}
+.np-fullscreen-message{position:fixed;inset:auto auto 8px 8px;max-width:min(440px,calc(100vw - 16px));z-index:950;margin:0;padding:8px 12px;border:1px solid #b6c7bb;border-radius:8px;background:#f7f8f1;color:#214c40;font:13px/1.5 system-ui;pointer-events:none}
+.np-fullscreen-message[hidden]{display:none!important}
+@media(min-width:700px){
+ html body.np-fullscreen-playing #app>.np-workspace-screen.np-fullscreen{grid-template-columns:clamp(144px,12vw,190px) minmax(0,1fr) clamp(200px,19vw,300px)!important;grid-template-rows:minmax(0,1fr)!important;grid-template-areas:"layout board numbers"!important}
+ .np-fullscreen>.np-workspace-tools{flex-direction:column!important;align-items:stretch!important;align-self:stretch!important;overflow:auto;padding:4px 2px!important;gap:10px!important}
+ .np-fullscreen>.np-workspace-tools>button{width:100%!important;position:static!important;min-height:40px!important}
+ .np-fullscreen>.np-workspace-tools>.np-direct-zoom{justify-content:center}
+ .np-fullscreen .np-workspace-tools>.play-head{flex-wrap:wrap;margin-top:auto!important;padding-top:8px!important}
+ .np-fullscreen .np-workspace-tools>.play-head>h1{display:block!important;white-space:normal!important;font-size:13px!important;line-height:1.4;flex:1 1 100%;margin:0}
+ .np-fullscreen .np-workspace-tools>.play-head>#timer{display:inline!important;font-size:12px}
+ .np-fullscreen>.np-number-panel{max-height:none!important;align-self:stretch!important}
+ html body.np-fullscreen-playing #app .np-workspace-actions{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .np-fullscreen .np-workspace-tools>.play-head button{flex-shrink:0;max-width:100%;font-size:12px!important;padding:4px 6px!important}
+ html body.np-fullscreen-playing #app>.np-workspace-screen.np-fullscreen[data-number-position=left]{grid-template-columns:clamp(200px,19vw,300px) minmax(0,1fr) clamp(144px,12vw,190px)!important;grid-template-areas:"numbers board layout"!important}
+ html body.np-fullscreen-playing #app>.np-workspace-screen.np-fullscreen:is([data-number-position=top],[data-number-position=bottom]){grid-template-columns:clamp(144px,12vw,190px) minmax(0,1fr)!important;grid-template-rows:auto minmax(0,1fr)!important;grid-template-areas:"layout numbers" "layout board"!important}
+ html body.np-fullscreen-playing #app>.np-workspace-screen.np-fullscreen[data-number-position=bottom]{grid-template-rows:minmax(0,1fr) auto!important;grid-template-areas:"layout board" "layout numbers"!important}
+ .np-fullscreen:is([data-number-position=top],[data-number-position=bottom])>.np-number-panel{max-height:45dvh!important}
+ html body.np-fullscreen-playing #app .np-fullscreen:is([data-number-position=top],[data-number-position=bottom]) .np-workspace-actions{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+ html body.np-fullscreen-playing #app>.np-workspace-screen.np-fullscreen[data-number-position=float]{grid-template-columns:clamp(144px,12vw,190px) minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr)!important;grid-template-areas:"layout board"!important}
+}
+@media print{.np-fullscreen-message,.np-fullscreen-boards{display:none!important}}
