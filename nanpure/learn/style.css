@@ -166,7 +166,6 @@ body[data-race-active=true] .race-input .digits{margin:6px 0}
 body[data-race-active=true] .race-input .digits button{min-height:44px;padding:6px 0}
 body[data-race-active=true] .race-input .actions{margin-top:6px}
 body[data-race-active=true] #rival[data-layout=top] #player-board{max-width:min(100%,calc(100dvh - 405px))}
-body[data-race-active=true] #rival[data-layout=top][data-display=progress] #player-board{max-width:min(100%,calc(100dvh - 360px))}
 
 @media(max-width:800px){.replay-layout{grid-template-columns:1fr;gap:12px}
 .replay-caption{padding:18px}
