@@ -4,7 +4,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 const root=path.resolve(process.argv[2]||'_site'),site='https://atugari.github.io';
 const version=JSON.parse(fs.readFileSync(path.join(root,'nanpure/version.json'))).version;
-const key='np-board-appearance-v1',types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml','.webp':'image/webp','.mp3':'audio/mpeg'};
+const key='np-board-appearance-v1',types={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml','.webp':'image/webp','.mp3':'audio/mpeg'};
 const tick=page=>page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
 async function press(page,value){await page.keyboard.press(value);await tick(page);}
 function classic(n){const b=Math.sqrt(n),solution=Array.from({length:n*n},(_,i)=>(Math.floor(i/n)*b+Math.floor(Math.floor(i/n)/b)+i%n)%n+1),puzzle=solution.map((v,i)=>i<2*n?0:v);return{uid:'ci-keys-'+n,id:'CI-KEYS-'+n,kind:'normal',n,level:1,ratingVersion:2,blockRows:b,blockCols:b,created:1792627200000,completed:false,elapsed:0,notes:{},puzzle,solution,grid:puzzle.slice()};}
@@ -23,7 +23,7 @@ async function setup(browser,{daily=false,viewport={width:1280,height:900},local
   }});
  },prefs);
  page.on('pageerror',e=>errors.push(e.message));
- await context.route('**/*',route=>{const request=route.request(),u=new URL(request.url());if(u.origin===site&&u.pathname.startsWith('/nanpure/')){if(/\/i18n\/[^/]+\.json$/.test(u.pathname))packs.push(path.basename(u.pathname,'.json'));const f=path.resolve(root,'.'+decodeURIComponent(u.pathname)+(u.pathname.endsWith('/')?'index.html':''));if(!f.startsWith(root+path.sep)||!fs.existsSync(f))return route.fulfill({status:404,body:'Missing asset'});return route.fulfill({status:200,contentType:types[path.extname(f)]||'application/octet-stream',body:fs.readFileSync(f)});}if(u.pathname.startsWith('/api/')){if(!['GET','HEAD','OPTIONS'].includes(request.method()))writes.push(request.method()+' '+u.pathname);return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({items:[],records:[],rows:[],days:[],challenges:[],save:null,signedIn:true,unread:0})});}return route.fulfill({status:204,body:''});});
+ await context.route('**/*',route=>{const request=route.request(),u=new URL(request.url());if(u.origin===site){if(/\/i18n\/[^/]+\.json$/.test(u.pathname))packs.push(path.basename(u.pathname,'.json'));const f=path.resolve(root,'.'+decodeURIComponent(u.pathname)+(u.pathname.endsWith('/')?'index.html':''));if(!f.startsWith(root+path.sep)||!fs.existsSync(f)||!fs.statSync(f).isFile())return route.fulfill({status:404,body:'Missing asset'});return route.fulfill({status:200,contentType:types[path.extname(f)]||'application/octet-stream',body:fs.readFileSync(f)});}if(u.pathname.startsWith('/api/')){if(!['GET','HEAD','OPTIONS'].includes(request.method()))writes.push(request.method()+' '+u.pathname);return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({items:[],records:[],rows:[],days:[],challenges:[],save:null,signedIn:true,unread:0})});}return route.fulfill({status:204,body:''});});
  await page.goto(standalone?site+'/nanpure/releases/'+version+'/notebook/shirupure.html?lang=ja':site+'/nanpure/?lang='+locale);await page.locator(standalone?'[data-act=toggle-sound]':'.main-choice').waitFor();page.setDefaultTimeout(10000);return{context,page,errors,writes,packs};
 }
 async function openNotebook(page,n=9){
@@ -44,9 +44,11 @@ async function effect(target,filename,from=0){
  await target.waitForFunction(({filename,from})=>__media.slice(from).some(a=>a.src.endsWith('/'+filename+'.mp3')&&a.__played&&a.currentTime>0&&!a.error),{filename,from},{timeout:10000});
 }
 async function openShiru(page){
- await page.locator('.shiru-entry').click();
- await page.waitForFunction(()=>document.querySelector('iframe.notebook')?.contentWindow?.ShirupureCourse);
- return (await page.locator('iframe.notebook').elementHandle()).contentFrame();
+ // Shirupure now lives in the public Pareasobi wrapper. Exercise its real parent audio panel.
+ await page.goto(site+'/puzzles/shirupure/');
+ await page.locator('#game:not([hidden])').waitFor();
+ await page.waitForFunction(()=>document.querySelector('#game')?.contentWindow?.ShirupureCourse);
+ return (await page.locator('#game').elementHandle()).contentFrame();
 }
 async function finish(f){assert.deepEqual(f.errors,[],'no page errors');assert.deepEqual(f.writes,[],'no public writes');await f.context.close();}
 async function standalone(browser){
@@ -75,7 +77,7 @@ async function embedded(browser){
  await frame.locator('[data-act=toggle-sound]').click();assert.equal(await page.evaluate(()=>NPSiteAudio.get().effects||NPSiteAudio.get().music),false);
  await frame.locator('[data-act=toggle-sound]').click();assert.equal(await page.evaluate(()=>NPSiteAudio.get().style),'glass','legacy toggle preserves site effect style');
  // Open the real parent settings panel through the game menu, then modify it.
- await frame.locator('[data-act=menu]').click();await frame.locator('[data-act=sound]').click();await page.locator('.audio-settings').waitFor();
+ await frame.locator('[data-act=menu]').click();await frame.locator('[data-act=sound]').click();await page.locator('.audio-dialog[open]').waitFor();
  await page.evaluate(()=>NPSiteAudio.set({music:false,effects:false,track:'cozy-puzzle-3',musicVolume:75}));
  assert.match(await frame.locator('[data-act=toggle-sound]').textContent(),/音なし/,'child follows parent event');
  await page.keyboard.press('Escape');await frame.locator('[data-act=close]').last().click();
