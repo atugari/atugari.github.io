@@ -6,7 +6,7 @@ export default function GroupedHome({t,onPractice,onDaily,onPanel,resume,markRea
   const Tag=typeof action==='string'?'a':'button';return <Tag className={'np-home-tile '+tone} {...(typeof action==='string'?{href:action}:{type:'button',onClick:action})} {...extra}><span className="np-tile-icon" aria-hidden="true">{icon}</span><span><strong>{t(title)}</strong><small>{t(copy)}</small></span><span className="np-tile-arrow" aria-hidden="true">↗</span></Tag>
  };
  return <main className="start-screen designed-home np-grouped-home" data-grouped-home="">
-  <div className="np-home-hero"><div><p className="np-home-kicker">PUZZLE &amp; NOTEBOOK</p><h1>{t('ひと息ついて、数字と遊ぶ。')}</h1><p>{t('やりたいことから、ひとつ。')}</p></div>{resume&&<button type="button" className="home-resume" onClick={resume}><span aria-hidden="true">▶</span><span><strong>{t('続きから遊ぶ')}</strong><small>{t('保存した日替わりの途中経過を再開')}</small></span><span aria-hidden="true">→</span></button>}</div>
+  <div className="np-home-hero"><div><p className="np-home-kicker">PUZZLE &amp; NOTEBOOK</p><h1><span className="np-home-brand-name">{t('ナンプレ帳')} </span>{t('ひと息ついて、数字と遊ぶ。')}</h1><p>{t('やりたいことから、ひとつ。')}</p></div>{resume&&<button type="button" className="home-resume" onClick={resume}><span aria-hidden="true">▶</span><span><strong>{t('続きから遊ぶ')}</strong><small>{t('保存した日替わりの途中経過を再開')}</small></span><span aria-hidden="true">→</span></button>}</div>
   <div className="np-home-columns"><fieldset className="np-home-play"><legend>{t('遊ぶ・作る・学ぶ')}</legend><div className="np-home-action-grid start-choices">
    {tile('np-tone-play','▦','すぐ遊ぶ','問題集から選んで、すぐスタート。','/nanpure/collection/',{'data-collection-entry':''})}
    {tile('np-tone-daily daily-choice','☀','日替わり問題帳','毎日3問。今日のひらめきに出会う。',onDaily)}

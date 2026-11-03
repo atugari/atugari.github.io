@@ -7,7 +7,7 @@ const read=f=>fs.readFileSync(path.join(root,f),'utf8'),hash=v=>crypto.createHas
 const prior=JSON.parse(read('nanpure/release-manifest.json')),notes=JSON.parse(read('scripts/release-notes.json'));if(prior.version!==previous||notes[0].version!==version||fs.existsSync(out))throw Error('Unexpected release state');
 for(const f of walk(path.join(root,oldBase)))if(hash(fs.readFileSync(f))!==prior.files[path.relative(root,f)])throw Error('Published asset changed '+f);
 fs.cpSync(path.join(root,oldBase),out,{recursive:true});for(const name of ['home-layout.js','home-layout.css','site-layout.js','site-layout.css'])fs.copyFileSync(path.join(pub,name),path.join(out,name));
-for(const name of ['app.js','app.css','compact-play.js'])fs.copyFileSync(path.join(pub,'notebook',name),path.join(out,'notebook',name));patchNotebookApp(path.join(out,'notebook'));
+for(const name of ['app.js','app.css','compact-play.js','recovery.js','recovery-pack-worker.js'])fs.copyFileSync(path.join(pub,'notebook',name),path.join(out,'notebook',name));patchNotebookApp(path.join(out,'notebook'));
 for(const f of walk(out).filter(f=>/\.(html|js|css)$/.test(f))){let s=fs.readFileSync(f,'utf8'),v=s.replaceAll(oldBase,base).replace(/(["'(])\/(notebook|audio|themes)\//g,(_,q,k)=>q+base+k+'/');if(v!==s)fs.writeFileSync(f,v)}
 buildTranslationAssets(path.join(out,'notebook'),version,{previousDirectory:path.join(root,oldBase,'notebook')});
 const theme=path.join(out,'site-theme.js');fs.appendFileSync(theme,'\n(()=>{const s=document.createElement("script");s.src=new URL("site-layout.js",document.currentScript.src).href;document.head.append(s)})();\n');
