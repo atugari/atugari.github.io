@@ -69,7 +69,7 @@ async function openNotebook(page,kind){
  const frame=await (await page.locator('iframe.notebook').elementHandle()).contentFrame();
  assert(frame,'Notebook frame mounts after keyboard activation');
  await frame.waitForFunction(()=>!!window.NanpureAppTest&&window.NPI18n?.get()==='ja');
- const uid=await frame.evaluate(({kind,normal})=>{
+ const uid=await frame.evaluate(async ({kind,normal})=>{
   let p=normal;
   if(kind==='multi'){
    const linked=NanpureMulti.layout('pair'),solution=linked.cells.map(({x,y})=>(y*3+Math.floor(y/3)+x)%9+1);
@@ -77,7 +77,7 @@ async function openNotebook(page,kind){
    p={uid:'ci-keyboard-multi',id:'CI-KEYBOARD-MULTI',kind:'multi',n:9,level:1,multiVersion:1,linked,solution,puzzle,grid:puzzle.slice(),notes:{},elapsed:0,completed:false,created:1792627200000};
   }
   if(!NanpureAppTest.validate(p))throw Error('Invalid deterministic fixture');
-  const lib=NanpureAppTest.getLibrary();lib.splice(0,lib.length,p);return p.uid;
+  const lib=NanpureAppTest.getLibrary();lib.splice(0,lib.length,p);await NPStorage.save(lib,p);return p.uid;
  },{kind,normal:classic(kind===100?100:16)});
  for(const selector of ['[data-action="open-notebook"]','[data-action="start"][data-flow="play"]','[data-action="pick-play"][data-id="'+uid+'"]','[data-action="begin-play"][data-id="'+uid+'"]'])await activate(page,frame.locator(selector));
  await frame.locator('#board [data-cell="0"]').waitFor();

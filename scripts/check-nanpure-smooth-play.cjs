@@ -22,7 +22,7 @@ async function setup(browser,n,viewport){
  });
  await page.goto('https://atugari.github.io/nanpure/releases/'+version+'/notebook/index.html?lang=ja');
  await page.waitForFunction(()=>!!window.NanpureAppTest&&!!window.NPI18n);
- await page.evaluate(p=>{if(!NanpureAppTest.validate(p))throw Error('Invalid fixture');const lib=NanpureAppTest.getLibrary();lib.splice(0,lib.length,p);},classic(n));
+ await page.evaluate(async p=>{if(!NanpureAppTest.validate(p))throw Error('Invalid fixture');const lib=NanpureAppTest.getLibrary();lib.splice(0,lib.length,p);await NPStorage.save(lib,p);},classic(n));
  for(const selector of ['[data-action="open-notebook"]','[data-action="start"][data-flow="play"]','[data-action="pick-play"][data-id="ci-smooth-'+n+'"]','[data-action="begin-play"][data-id="ci-smooth-'+n+'"]'])await page.locator(selector).click();
  await page.locator('#board [data-cell="0"]').waitFor();await tick(page);
  await page.evaluate(()=>{
