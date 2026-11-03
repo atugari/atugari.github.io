@@ -7,7 +7,7 @@
   "files": {
     "nanpure/index.html": "8e96a0bc84b9f16615850548c45d0a0e3f70ada34febdea42700bd48fe30c95f",
     "nanpure.html": "b9585e4659bb2a234bede05222fb0366b49002475202499d60274c17ebef2dc3",
-    "nanpure/version.json": "c35330a2f7d5bf5d927e2f0feabf9a64c3113b3626f56fac5b1f7cb83e874549",
+    "nanpure/version.json": "2c5473c725c21f14d1d430ff708c69fc9bcea8c938cea377d047f744c4eab8e6",
     "nanpure/releases.json": "559468792889c374b6c788ab580f845dfa34d4d29ceee99145e1f3f45c0cf319",
     "nanpure/guide/index.html": "53ecc04bb0c8c4e22a7a6ebbdbcd2d90ff4e5c798d35832301cde2eeeb73c42d",
     "nanpure/sudoku-types/index.html": "289a15ead5d6bf9375c9cad2a57fab71b28087a89843dcfac55cde4182075db2",
@@ -4132,7 +4132,7 @@
       "scripts/prepare-ranking-auto-release.mjs": "52b82934c0d8da24b6d3a0498163468e1a28f2e5ee14539f039b98e363f948e4"
     }
   },
-  "communitySourceSha256": "11ad61cecdcd1658c47c7253a14a6ffedfa96d1eda5de335881ae1139737d5ff",
+  "communitySourceSha256": "5906dd4f06b455e2455d655cb0d935922207149c7d41d6cdb18bfd34d87e1491",
   "community": {
     "version": 1,
     "path": "/nanpure/exhibitions/",
@@ -4143,9 +4143,9 @@
       "nanpure/exhibitions/home-locale.mjs": "206c3978d25283ce146eed2d86e7604e5b7a103cb5c6c5b3dee4c408a9fee682",
       "nanpure/exhibitions/home.css": "cab2e1d1bea41cc36f2447d6f035a8f86316a90cf753fb1565fed9899aac0867",
       "nanpure/exhibitions/home.mjs": "bc62ddbcd895eec556aeb6abe7f8f9c48ba74ea5afb7662d72ebbd7577dc9519",
-      "nanpure/exhibitions/index.html": "bc0896d716a1c6d1faf6d519ce0f33e74bcdc9572d53d9168c5710b9319a5b95",
+      "nanpure/exhibitions/index.html": "7d97c92a697a8fe131860d28c06d164fd2987fcf15e2aecc7ca4922566c4ed52",
       "nanpure/exhibitions/journal.mjs": "b3a5fd53512b6599397dd1915410ef9d5a6c548c7c339b85f711f98a1a4ebf9d",
-      "nanpure/exhibitions/model.mjs": "261323177bd1424be5c01d991700b4f3c13aa581c325780a4702f5f91e005af5",
+      "nanpure/exhibitions/model.mjs": "748b08d351fab5a733ef11a1648579af2319bb2fdd5ac5c05bceef402eb0e4b6",
       "nanpure/exhibitions/play-support.mjs": "c34e3b5459afe7516f8b68136f3814165a8512eb20e6a7430f1778cbe9a073b5",
       "nanpure/exhibitions/recorder.js": "30e24cddf101ad16a45e5120de3e0b9949a6f1a4d5157b2bb4ddfacdde1898ef",
       "nanpure/exhibitions/replay-view.mjs": "e59647746afa35177198cc5292bc4a94858d4ce6c1f9e8380a08f319eabb8adf",

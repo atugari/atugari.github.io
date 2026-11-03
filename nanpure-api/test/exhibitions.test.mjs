@@ -36,7 +36,7 @@ test('all entries are reachable by stable pages without disclosing keys or priva
 test('replays validate every transition, strip private fields, and preserve actual undo steps and annotations',()=>{
  const r=recording(),s=r.record.solution[0];r.steps=[{at:1,i:0,v:s},{at:2,i:0,v:0},{at:3,i:0,v:s}];r.record.notes={secret:123};r.ownerKey=key;const clean=cleanReplay(r);assert.deepEqual(replayGrid(clean,2),clean.initial);assert.deepEqual(replayGrid(clean,3),clean.record.solution);assert(!JSON.stringify(clean).includes('secret'));assert(!JSON.stringify(clean).includes(key));
  for(const extra of [{steps:[{at:1,i:2,v:3}]},{steps:[{at:1,i:0,v:0}]},{steps:[{at:3,i:0,v:s},{at:1,i:0,v:s}]},{annotations:[{step:4,text:'invalid'}]},{annotations:[{step:0,text:'\u0001'}]}])assert.throws(()=>cleanReplay({...r,...extra}));
- const bad=recording();bad.initial[1]=0;assert.throws(()=>cleanReplay(bad));
+ const bad=recording();bad.initial[1]=0;assert.throws(()=>cleanReplay(bad));assert.equal(cleanReplay(recording()).annotations[0].text,'ここに気づいた！');
 });
 test('replay publication is explicit, puzzle-matched, owner-isolated and removable with revision protection',async()=>{
  const {DB,call,save,submit}=setup();await save();const id=(await submit()).data.id,body={action:'publishReplay',entry:id,recording:recording(),title:'わたしの手順',name:'テスト',confirm:true};assert.equal((await call('exhibitions',{...body,confirm:false},other)).status,400);assert.equal((await call('exhibitions',{...body,recording:recording(1)},other)).status,400);

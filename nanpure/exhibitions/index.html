@@ -5,4 +5,4 @@
 <dialog id="submit-dialog"><form id="submit-form"><header class="dialog-head"><h2>企画展に出展する</h2><button type="button" data-close>閉じる</button></header><p>公開済みの自分の展示室から、お題に合う作品を選んでください。一人3作品まで出展できます。</p><label>出展する作品<select id="submission-slot" required></select></label><p id="submission-preview" class="fine"></p><label class="check"><input type="checkbox" id="submission-confirm" required>この作品がお題に合うことと、問題・答え・題名・ひと言・展示室名が公開されることを確認しました。</label><p class="fine">展示室を非公開にすると、出展作品も会場から見えなくなります。</p><button class="primary" id="submit-button">この作品を出展する</button><p id="submit-status" role="status"></p><a href="/nanpure/gallery/">先に展示室を整える</a></form></dialog>
 <dialog id="play-dialog" class="play-dialog"><header class="dialog-head"><h2>展示作品を遊ぶ</h2><button id="close-play">保存して閉じる</button></header><p id="play-status" role="status"></p><iframe id="play-frame" title="ナンプレのプレイ画面"></iframe></dialog>
 <script>document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>b.closest('dialog').close());</script>
-</body></html>
+<script defer src="../gallery/entry.js?v=3"></script></body></html>

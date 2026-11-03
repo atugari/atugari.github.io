@@ -9,7 +9,7 @@ export const reactions=['beautiful','idea','pleasant'];
 export const reactionLabels={beautiful:'かわいい・きれい',idea:'発想が好き',pleasant:'解き心地がいい'};
 export const MAX_REPLAY_BYTES=512*1024,MAX_STEPS=16000;
 export function phase(event,now=Date.now()){return now<Date.parse(event.start)?'upcoming':now<Date.parse(event.end)?'open':'closed';}
-export function cleanText(value,max,required=false){if(typeof value!=='string')throw Error('文章を確認してください。');const s=value.normalize('NFKC').trim();if([...s].length>max||/[\p{Cc}\p{Cf}]/u.test(s.replace(/\n/g,''))||required&&!s)throw Error('文字数と入力内容を確認してください。');return s;}
+export function cleanText(value,max,required=false,normalize=true){if(typeof value!=='string')throw Error('文章を確認してください。');const s=(normalize?value.normalize('NFKC'):value).trim();if([...s].length>max||/[\p{Cc}\p{Cf}]/u.test(s.replace(/\n/g,''))||required&&!s)throw Error('文字数と入力内容を確認してください。');return s;}
 // A replay is a device record, never a certified ranking result. Every transition
 // is checked against its own puzzle; the finished grid must match the solution.
 export function cleanReplay(input){
@@ -24,7 +24,7 @@ export function cleanReplay(input){
  });
  if(!grid.every((v,i)=>v===record.solution[i]))throw Error('完成まで記録されたリプレイを選んでください。');
  if(!Array.isArray(input.annotations)||input.annotations.length>32)throw Error('説明は32件までです。');
- const annotations=input.annotations.map(a=>{if(!Number.isSafeInteger(a.step)||a.step<0||a.step>steps.length)throw Error('説明を付ける手順を確認してください。');return {step:a.step,text:cleanText(a.text,180,true)};});
+ const annotations=input.annotations.map(a=>{if(!Number.isSafeInteger(a.step)||a.step<0||a.step>steps.length)throw Error('説明を付ける手順を確認してください。');return {step:a.step,text:cleanText(a.text,180,true,false)};});
  const out={version:1,record,initial,steps,annotations,partial:!!input.partial,elapsed:Number.isSafeInteger(input.elapsed)&&input.elapsed>=time?input.elapsed:time};
  if(new TextEncoder().encode(JSON.stringify(out)).length>MAX_REPLAY_BYTES)throw Error('リプレイの容量が上限を超えています。');return out;
 }
