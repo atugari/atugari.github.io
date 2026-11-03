@@ -3,7 +3,7 @@ import {localizeHome} from './home-locale.mjs';
 const asset=new URL('./',import.meta.url);let requestStarted=false,viewOpened=false;
 function link(text,path,cls){const a=el('a',text,cls);a.href=path;return a;}
 export function mount(){
- const main=document.querySelector('.designed-home');if(!main)return;
+ const main=document.querySelector('.designed-home');if(!main)return;if(main.hasAttribute('data-grouped-home')){if(!viewOpened&&['pattern','create'].includes(new URLSearchParams(location.search).get('view'))){viewOpened=true;void openTool(new URLSearchParams(location.search).get('view'));}return;}
  if(!document.querySelector('[data-community-home-style]')){const css=el('link');css.rel='stylesheet';css.href=new URL('home.css',asset).href;css.dataset.communityHomeStyle='';document.head.append(css);}
  document.documentElement.dataset.npInteractive='true';main.classList.add('np-community-home');if(main.querySelector('.community-panel')){localizeHome(main);return;}
  main.dataset.homePanel='play';const tabs=el('nav',undefined,'home-task-tabs');tabs.setAttribute('aria-label','ホームで行うこと');for(const [key,label]of [['play','遊ぶ'],['create','問題を作る'],['exhibit','展示・企画展']]){const b=btn(label,()=>{main.dataset.homePanel=key;for(const button of tabs.children)button.setAttribute('aria-pressed',String(button===b));});b.dataset.homeTask=key;b.setAttribute('aria-pressed',String(key==='play'));tabs.append(b);}main.append(tabs);

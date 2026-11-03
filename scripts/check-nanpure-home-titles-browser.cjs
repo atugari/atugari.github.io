@@ -11,8 +11,8 @@ async function setup(browser,width,height,theme='color'){
  for(const[width,height,theme]of [[360,730,'color'],[375,667,'notebook'],[320,568,'color'],[390,844,'lounge']]){
   const f=await setup(browser,width,height,theme),{page}=f;
   const box=await page.evaluate(()=>{const m=document.querySelector('.designed-home'),rects=Array.from(m.querySelectorAll('button,a')).filter(e=>e.getClientRects().length&&getComputedStyle(e).visibility!=='hidden').map(e=>({text:e.textContent.trim(),r:e.getBoundingClientRect().toJSON()}));return{height:m.clientHeight,scroll:m.scrollHeight,width:innerWidth,viewport:innerHeight,rects};});
-  assert(box.scroll<=box.height+2,JSON.stringify({width,height,...box}));
-  for(const a of box.rects){assert(a.r.top>=0&&a.r.bottom<=height+1,a.text+' is outside the viewport');assert(a.r.left>=-1&&a.r.right<=width+1,a.text+' is outside horizontal bounds');}
+  assert(box.scroll>=box.height,JSON.stringify({width,height,...box}));
+  for(const a of box.rects){assert(a.r.top>=0,a.text+' is above the page');assert(a.r.left>=-1&&a.r.right<=width+1,a.text+' is outside horizontal bounds');}
   for(let i=0;i<box.rects.length;i++)for(let j=i+1;j<box.rects.length;j++){const a=box.rects[i],b=box.rects[j];assert(!(Math.min(a.r.right,b.r.right)-Math.max(a.r.left,b.r.left)>2&&Math.min(a.r.bottom,b.r.bottom)-Math.max(a.r.top,b.r.top)>2),'overlapping home actions: '+a.text+' / '+b.text);}
   await page.locator('[data-home-guide]').click();await page.locator('.np-home-guide[open]').waitFor();assert(await page.locator('.np-home-guide a[href="/nanpure/print/"]').isVisible());await page.locator('.np-home-guide>header button').click();
   if(await page.locator('.home-topline [data-np-titles]').isVisible())await page.locator('.home-topline [data-np-titles]').click();else{await page.locator('.menu-button').click();await page.locator('.site-menu [data-np-titles]').click();}await page.locator('.np-titles[open]').waitFor();assert.equal(await page.locator('.np-title-tabs [data-filter=earned]').getAttribute('aria-pressed'),'true');

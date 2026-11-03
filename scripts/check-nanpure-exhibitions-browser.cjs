@@ -22,8 +22,8 @@ const repo=path.resolve(__dirname,'..'),root=path.resolve(process.argv[2]||'_sit
    const file=path.join(root,decodeURIComponent(u.pathname).replace(/^\//,'')+(u.pathname.endsWith('/')?'index.html':''));if(fs.existsSync(file)&&fs.statSync(file).isFile())return route.fulfill({status:200,contentType:types[path.extname(file)]||'application/octet-stream',body:fs.readFileSync(file)});return route.fulfill({status:404,body:'not found'});
   });
   try{
-   await page.goto(origin+'/nanpure/');await page.locator('.np-community-home').waitFor();
-   if(width<761)await page.locator('[data-home-task=exhibit]').click();
+   await page.goto(origin+'/nanpure/');await page.locator('.np-grouped-home').waitFor();
+
    await page.locator('.home-event').click();await page.locator('.exhibition-art.current').waitFor();
    await page.getByRole('link',{name:'この作品を鑑賞する',exact:true}).click();await page.locator('.reaction-buttons button').filter({hasText:'発想が好き'}).click();await page.locator('.reaction-buttons button[aria-pressed=true]').waitFor();assert.equal((await api('exhibitions?entry='+other)).reactions.idea.count,1);
    await page.locator('[data-nav=event]').click();await page.getByRole('button',{name:'作品を出展する',exact:true}).click();await page.locator('#submit-button:enabled').waitFor();await page.locator('#submission-confirm').check();await page.locator('#submit-button').click();await page.locator('.owner-area').waitFor();
