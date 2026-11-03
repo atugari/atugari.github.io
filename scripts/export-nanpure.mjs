@@ -83,6 +83,7 @@ try {
  notebookHTML=notebookHTML.replace(/(<script id="common-source">)[\s\S]*?(<\/script>)/,(_,a,b)=>a+fs.readFileSync(path.join(overrides,'public/notebook/common.js'),'utf8')+b);
  if(!notebookHTML.includes('id="core-mixed-multi"'))notebookHTML=notebookHTML.replace(/(<script id="generator-source">[\s\S]*?<\/script>)/,all=>all+'<script id="core-mixed-multi">'+fs.readFileSync(path.join(overrides,'public/notebook/mixed-multi.js'),'utf8')+'</script>');
  if(!notebookHTML.includes('id="core-mixed-multi"'))throw Error('Mixed multi worker source is missing');
+ if(!notebookHTML.includes('src="generation-assist.js"'))notebookHTML=notebookHTML.replace('</head>','<script defer src="generation-assist.js"></script></head>');
  notebookHTML=notebookHTML.replace('</head>',['multi-editor.css','play-workspace.css','board-comfort.css','board-fullscreen.css','pattern.css'].map(name=>'<link rel="stylesheet" href="'+name+'">').join('')+'</head>').replace('</body>',['play-workspace.js','board-comfort-model.js','board-comfort.js','board-fullscreen.js','pattern-model.js','pattern-share.js','pattern-ui.js'].map(name=>'<script src="'+name+'"></script>').join('')+'</body>');
  fs.writeFileSync(notebookIndex,notebookHTML);
  for(const f of walk(path.join(output,'notebook')).filter(f=>f.endsWith('.html')&&f!==notebookIndex)){
