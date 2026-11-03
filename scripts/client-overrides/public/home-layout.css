@@ -85,3 +85,5 @@
 
 .np-grouped-home.np-home-ready .np-home-saved.main-choice{background:transparent;color:var(--theme-ink,#243e32);box-shadow:none;border:0;border-radius:0;align-items:center;min-height:52px;padding:12px 4px 0}.np-grouped-home .np-home-saved strong{font-size:14px;font-weight:600;color:inherit}.np-grouped-home .np-home-saved small{display:block;font-size:11px;font-weight:400;opacity:.75;margin-top:3px}
 .np-grouped-home.np-home-ready .np-home-saved.main-choice small{color:inherit;opacity:.75}
+
+.np-home-brand-name{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}

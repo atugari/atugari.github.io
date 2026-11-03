@@ -1,0 +1,43 @@
+{
+  "release": "2026.11.03.87",
+  "environment": "Remote Chrome, isolated IndexedDB and localStorage, actual shipped normal 9x9 level-1 generator, one-record durable commits",
+  "before": {
+    "uniqueGeneratedCount": 10000,
+    "generateAndPersist10000Ms": 36348.1,
+    "averagePersistMs": 1.86,
+    "persistP95Ms": 3.6,
+    "persistP99Ms": 6.8,
+    "maxPersistMs": 1467.1,
+    "mainThreadLongTaskMs": 1372,
+    "cause": "NPRecovery's initial automatic snapshot compressed its payload synchronously with NPCompact.stringify"
+  },
+  "after": {
+    "uniqueGeneratedCount": 10000,
+    "duplicatesRejected": 0,
+    "generateAndPersist10000Ms": 33732.6,
+    "averagePersistMs": 1.65,
+    "persistP50Ms": 1.3,
+    "persistP95Ms": 3.4,
+    "persistP99Ms": 7,
+    "maxPersistMs": 85.9,
+    "mainThreadLongTasksDuringGeneration": [],
+    "averageFirst100PersistMs": 2.74,
+    "averageLast100PersistMs": 2.25,
+    "workerSnapshot10000Ms": 5445.9,
+    "snapshotRoundTripCount": 10000,
+    "reopen10000Ms": 173.4,
+    "fullBackup10000Ms": 663.4,
+    "backupBytes": 10650229,
+    "appStartupMs": 452.5,
+    "listDOMBuildMs": 31.4,
+    "inputAndPersistMs": 23.3
+  },
+  "result": "Passed actual generation and storage of 10000 distinct puzzles, unchanged snapshot format roundtrip for all 10000 records, restart, 24-row catalog and durable digit input",
+  "limits": [
+    "The generator sample is normal 9x9 level 1. Large boards, hard levels and other rule types must not be extrapolated from this result.",
+    "No physical low-memory phone, battery or thermal measurement was performed.",
+    "Worker compression still takes around 5.4 seconds for a full 10000-record automatic snapshot. The measured generation phase had no main-thread task of 50ms or longer after the change. Snapshot verification itself was outside that observation window.",
+    "Unsupported or blocked workers retain the previous synchronous codec as a compatibility fallback.",
+    "DOM-build timing excludes paint and image decoding; backup construction excludes download or cloud upload."
+  ]
+}

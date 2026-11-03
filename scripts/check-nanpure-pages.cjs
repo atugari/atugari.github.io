@@ -36,11 +36,11 @@ async function load(file){file=path.resolve(file);if(modules.has(file))return mo
 // React effects and commits need not finish inside a fixed delay under CI load.
 // Wait for the state this check actually needs, with a bounded failure timeout.
 const settle=async(condition,label)=>{const deadline=Date.now()+3000;while(!condition()){assert(Date.now()<deadline,'Timed out waiting for '+label);await new Promise(r=>setTimeout(r,10))}};
-function button(text){const b=[...w.document.querySelectorAll('button')].find(x=>x.textContent.trim()===text);assert(b,'Button missing: '+text);b.click();return b}
+function button(text){const b=[...w.document.querySelectorAll('button')].find(x=>x.textContent.trim()===text||x.querySelector('strong')?.textContent.trim()===text);assert(b,'Button missing: '+text);b.click();return b}
 (async()=>{
  // Every declared script/style URL and CSS asset must exist in the shipped tree.
  for(const file of Object.keys(manifest.files).filter(x=>/\.(html|css)$/.test(x))){const text=fs.readFileSync(path.join(repo,file),'utf8');const refs=[...text.matchAll(/(?:src|href)=["']([^"']+)["']|url\(["']?([^\s)'";]+)["']?\)/g)];for(const m of refs){let url=m[1]||m[2];if(!url||!url.startsWith(manifest.base))continue;url=url.split(/[?#]/)[0];assert(fs.existsSync(path.join(repo,url)),'Missing local asset '+url)}}
- for(const name of ['site-theme.js','ui-text.js'])vm.runInContext(fs.readFileSync(path.join(base,name),'utf8'),context);
+ for(const name of ['site-theme.js','ui-text.js']){Object.defineProperty(w.document,'currentScript',{configurable:true,value:{src:'https://atugari.github.io'+manifest.base+name}});vm.runInContext(fs.readFileSync(path.join(base,name),'utf8'),context);}
  const entry=await load(path.join(base,'shell/main.js'));await entry.evaluate();await settle(()=>w.document.querySelector('.main-choice')&&requests.some(x=>x===manifest.online+'/api/contact?summary=1'),'home render and initial effects');
  assert(w.document.querySelector('h1')?.textContent.includes('ナンプレ帳'));
  assert.equal(w.document.querySelectorAll('iframe.notebook').length,0,'Home must not preload the puzzle notebook');
