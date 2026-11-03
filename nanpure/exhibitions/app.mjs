@@ -29,8 +29,15 @@ function renderEvent(all){
  const archives=el('section',undefined,'archive-list');archives.append(el('h2','企画展の一覧'));for(const e of all){archives.append(link(e.title+' · '+({open:'開催中',closed:'過去の企画展',upcoming:'開催予告'}[e.phase]),'?event='+e.id));}host.append(archives);
 }
 async function submitDialog(){
- $('submit-dialog').showModal();$('submit-status').textContent='展示室の作品を読み込んでいます…';$('submission-slot').replaceChildren();$('submit-button').disabled=true;$('submission-confirm').checked=false;
- try{const [room,mine]=await Promise.all([api('?mine=1',null,ownerKey()),request('?mine=entries')]);ownEntries=mine.entries;if(!room?.published)throw Error('自分の展示室を「URLで公開する」で保存してから出展できます。');for(let i=0;i<room.room.slots.length;i++){const s=room.room.slots[i];if(!s?.record)continue;const option=el('option',s.title);option.value=i;$('submission-slot').append(option);}if(!$('submission-slot').options.length)throw Error('展示室に問題を飾ってから出展してください。');$('submit-button').disabled=false;$('submit-status').textContent='出展する作品の内容は、出展時の状態で会場に残ります。';}catch(e){$('submit-status').textContent=e.message;}
+ $('submit-dialog').showModal();$('submit-status').textContent='展示室の作品を読み込んでいます…';$('submission-ready').hidden=true;$('submission-preview').replaceChildren();$('submission-slot').replaceChildren();$('submission-slot').onchange=null;$('submit-button').disabled=true;$('submission-confirm').checked=false;
+ try{
+  const [room,mine]=await Promise.all([api('?mine=1',null,ownerKey()),request('?mine=entries')]);ownEntries=mine.entries;
+  if(!room?.published)throw Error('先に自分の展示室で「URLで公開する」を選び、保存してください。下のボタンから展示室を整えられます。');
+  for(let i=0;i<room.room.slots.length;i++){const s=room.room.slots[i];if(!s?.record)continue;const option=el('option',s.title);option.value=i;$('submission-slot').append(option);}
+  if(!$('submission-slot').options.length)throw Error('先に展示室の空いている枠に問題を飾り、保存してください。下のボタンから展示室へ進めます。');
+  function preview(){const s=room.room.slots[Number($('submission-slot').value)],copy=el('div',undefined,'submission-copy');copy.append(el('p','出展する作品','eyebrow'),el('h3',s.title),el('p',`${s.record.n}×${s.record.n}`,'fine'));if(s.caption)copy.append(el('p',s.caption,'submission-caption'));$('submission-preview').replaceChildren(frame(s),copy);$('submission-confirm').checked=false;}
+  $('submission-slot').onchange=preview;preview();$('submission-ready').hidden=false;$('submit-button').disabled=false;$('submit-status').textContent='展示室に保存した作品を読み込みました。出展した内容は、その時の状態で会場に残ります。';
+ }catch(e){$('submit-status').textContent=e.message;}
 }
 $('submit-form').onsubmit=async e=>{e.preventDefault();const slot=Number($('submission-slot').value),old=ownEntries.find(e=>e.event===event.id&&e.slot===slot);$('submit-button').disabled=true;try{const data=await request('',{action:'submit',event:event.id,slot,expected:old?.revision||0,confirm:$('submission-confirm').checked});location.href='?entry='+data.id;}catch(e){$('submit-status').textContent=e.message;$('submit-button').disabled=false;}};
 async function detail(id){
@@ -50,7 +57,11 @@ async function share(title,url){try{if(navigator.share)await navigator.share({ti
 async function replayPage(id){const data=await request('?replay='+encodeURIComponent(id)),r=data.replay;host.replaceChildren();host.append(heading('SOLVING REPLAY · 解答を含みます',r.title,r.name+' の解いた道のり'));const reveal=el('section',undefined,'replay-reveal');reveal.append(el('p','この先には問題の答えと、解いた手順が含まれます。'),btn('解答を含むリプレイを見る',()=>{viewer?.stop();viewer=replayView(reveal,r.recording)},'primary'));host.append(reveal);const actions=el('div',undefined,'intro-actions');actions.append(btn('このリプレイを共有する',()=>share(r.title,new URL('?replay='+r.id,location.href).href)));if(r.mine)actions.append(btn('リプレイの公開を取り下げる',async()=>{try{await request('',{action:'unpublishReplay',id:r.id,expected:r.revision});location.href='?view=replays';}catch(e){say(e.message)}}));host.append(actions);say('');}
 async function replayLibrary(){
  host.replaceChildren();host.append(heading('MY SOLVING REPLAYS','解いた道のりを、ひとつの作品に。','完成したプレイを再生し、気づいた手順に説明を書き添えられます。端末には直近30件を保存します。'));const [local,publicRows]=await Promise.all([runs(),request('?mine=replays')]);let filtered=local;if(query.get('entry')){const d=await request('?entry='+query.get('entry'));filtered=local.filter(r=>puzzleKey(r.record)===puzzleKey(d.entry.slot.record));}
- const list=el('section',undefined,'replay-library');list.append(el('h2','この端末のリプレイ'));if(!filtered.length)list.append(el('p','完成まで記録されたリプレイはまだありません。これから遊ぶ問題の入力・消去を記録します。過去のプレイ手順は復元できません。'),link('企画展の作品を遊ぶ','./','secondary'));
+ const list=el('section',undefined,'replay-library');list.append(el('h2','この端末のリプレイ'));if(!filtered.length){
+  list.append(el('p',query.get('entry')?'この作品を解いたリプレイは、まだありません。作品を遊んで完成させると、ここから手順を再生できます。':'最初のリプレイを、残してみませんか。これから遊ぶ問題を完成させると、ここに解いた手順が並びます。','replay-empty-copy'));
+  const steps=el('ol',undefined,'replay-start-steps');for(const [title,text]of [['問題を解く','いつものように遊んで、完成させる。'],['気づきを添える','ここで手順を再生し、ひと言を書き添える。'],['好きなときに公開','確認して公開すると、URLで紹介できる。']]){const item=el('li');item.append(el('strong',title),el('span',text));steps.append(item);}list.append(steps);
+  const actions=el('div',undefined,'replay-start-actions');if(query.get('entry'))actions.append(link('この作品を遊びに行く','?entry='+encodeURIComponent(query.get('entry')),'primary'));else actions.append(link('ナンプレを遊んで記録する','/nanpure/','primary'),link('企画展の作品を探す','./','secondary'));list.append(actions,el('p','入力・消去・やり直した結果を、この端末に記録します。過去の手順は復元できません。自分で公開するまで、リプレイは送信されません。','fine'));
+ }
  for(const r of filtered){const b=btn(`${r.record.n}×${r.record.n} · ${r.steps.length}手順 · ${new Date(r.updated).toLocaleDateString('ja-JP')}`,()=>editReplay(r),'replay-library-item');list.append(b);}const editor=el('section',undefined,'replay-editor');editor.id='replay-editor';host.append(list,editor);
  const published=el('section',undefined,'published-replays');published.append(el('h2','公開したリプレイ'));if(!publicRows.replays.length)published.append(el('p','自分で公開したリプレイだけが、ここに並びます。'));for(const r of publicRows.replays)published.append(link(r.title,'?replay='+r.id));host.append(published);say('');
 }
