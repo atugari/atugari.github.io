@@ -12,7 +12,7 @@ async function setup(browser,width,height,theme='color'){
   const f=await setup(browser,width,height,theme),{page}=f;
   assert.equal(await page.locator('.header h1.brand').textContent(),'ナンプレ帳');
   assert.equal(await page.locator('.designed-home .start-title').count(),0);
-  assert.deepEqual(await page.locator('.designed-home .start-choices strong').allTextContents(),['ナンプレで遊ぶ','問題を作る','日替わり問題に挑戦する']);
+  assert.deepEqual(await page.locator('.designed-home .start-choices strong').allTextContents(),['ナンプレで遊ぶ','ナンプレを作る','日替わりナンプレに挑戦する']);
   const box=await page.evaluate(()=>{const m=document.querySelector('.designed-home'),rects=Array.from(m.querySelectorAll('button,a')).filter(e=>e.getClientRects().length&&getComputedStyle(e).visibility!=='hidden').map(e=>({text:e.textContent.trim(),r:e.getBoundingClientRect().toJSON()}));return{height:m.clientHeight,scroll:m.scrollHeight,width:innerWidth,viewport:innerHeight,rects};});
   assert(box.scroll>=box.height,JSON.stringify({width,height,...box}));
   for(const a of box.rects){assert(a.r.top>=0,a.text+' is above the page');assert(a.r.left>=-1&&a.r.right<=width+1,a.text+' is outside horizontal bounds');}

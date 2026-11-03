@@ -8,8 +8,8 @@ export default function GroupedHome({t,onPractice,onDaily,onPanel,resume,markRea
   <div className="home-topline"><Theme compact onOpen={()=>onPanel('theme')}/></div>
   <div className="start-choices">
    <button type="button" className="choice-card main-choice" onClick={()=>onPractice()}>{art('数')}<span className="choice-copy"><strong>{t('ナンプレで遊ぶ')}</strong></span>{arrow}</button>
-   <button type="button" className="choice-card create-choice" onClick={()=>onPractice('open-create')}>{art('作')}<span className="choice-copy"><strong>{t('問題を作る')}</strong></span>{arrow}</button>
-   <button type="button" className="choice-card daily-choice" onClick={onDaily}>{art('日')}<span className="choice-copy"><strong>{t('日替わり問題に挑戦する')}</strong></span>{arrow}</button>
+   <button type="button" className="choice-card create-choice" onClick={()=>onPractice('open-create')}>{art('作')}<span className="choice-copy"><strong>{t('ナンプレを作る')}</strong></span>{arrow}</button>
+   <button type="button" className="choice-card daily-choice" onClick={onDaily}>{art('日')}<span className="choice-copy"><strong>{t('日替わりナンプレに挑戦する')}</strong></span>{arrow}</button>
   </div>
   <a className="np-collection-entry" data-collection-entry="" href="/nanpure/collection/"><span className="np-collection-copy"><strong>{t('すぐ遊べる問題集')}</strong><small>{t('ナンプレ22ルール・生成を待たずに遊ぶ')}</small></span>{arrow}</a>
   {resume&&<button type="button" className="secondary-action home-resume" onClick={resume}>{t('続きから遊ぶ')}</button>}
