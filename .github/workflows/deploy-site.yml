@@ -164,6 +164,9 @@ jobs:
           node scripts/check-nanpure-keybindings-browser.cjs _site
           node scripts/check-nanpure-appearance-browser.cjs _site
 
+      - name: Check verified Nanpure learning data
+        run: node scripts/check-nanpure-learning.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
+
       - name: Verify appended puzzle uniqueness
         run: node scripts/collection-100k/check-append.cjs
 
