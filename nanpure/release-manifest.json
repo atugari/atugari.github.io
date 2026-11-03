@@ -4316,7 +4316,7 @@
       "nanpure/collection/board-input.js": "92acb148272145a2aa202d44ce7093004a70ee30de8d11adc44e19ab31de56c4",
       "nanpure/collection/player.html": "62b5c6eac40d11a08fd083f3eb6e18042855532f58763bbae4acb2a94c173921",
       "scripts/prepare-pareasobi-move.mjs": "3d7f983715b77fb53ee22e4cb944d39f8abcf9dd0f1ac0a518408aa6426a2961",
-      "scripts/export-nanpure.mjs": "b6826b93d04d19f01331e090590db979bfd48b686e138a900a932304f7784357",
+      "scripts/export-nanpure.mjs": "c99b900a4a83c7f2fbbc33d6dc7ebd1c2fc48a0de0f5d14137e815dee8bc9469",
       "scripts/client-overrides/public/notebook/board-input.js": "92acb148272145a2aa202d44ce7093004a70ee30de8d11adc44e19ab31de56c4",
       "scripts/client-overrides/app/game.tsx": "d4117414785c81c1f07c2c16a2757adaff9692efc2d7d28695231935f83a958c",
       "scripts/client-overrides/app/site-intro.tsx": "f34000e273a92612d7629fd0a413f6004fdc1053844497b9652a384ba2bc87d0",
@@ -4597,13 +4597,14 @@
       "scripts/client-overrides/public/site-layout.css": "ac3795dcb7bebc40a6d267ecd9dee8beab79c121fe5adf6bd53fd17a924a0162",
       "scripts/client-overrides/public/notebook/app.js": "afffc0c7fe803091501ad26b4501f6beb4dba634714db09100c574e087b1c4bb",
       "scripts/client-overrides/public/notebook/compact-play.js": "5565206c90efb9add75ceae511493fbff3bdbca7848edc11b9e9337ad7d9e069",
-      "scripts/refresh-grouped-home-release.mjs": "c5496b38bc56b1c6fb41492702fdc07056e17a0c4a6f7cfba8157aa5a33a32ef",
+      "scripts/refresh-grouped-home-release.mjs": "a12d018346a8c3052349c35d1004d12ae99c168a4769c511cf0e29eeaf249ada",
       "scripts/fixtures/nanpure-10000-storage.html": "e4501ae29b0799f2cd7bdce6b03ff49595d38bc4a0273c78bcf5828e3fdee141",
       "scripts/check-nanpure-lazy-storage-browser.cjs": "2cdc6154f813460dd8c45e5c0eabb356a2999ce6132226716304c1d774720430",
       "scripts/i18n/catalog.cjs": "606ad4b8ca3134abf04f45c380b6c8d2fb2a23c9d2eee86bbf18c82e0c56b589",
       "scripts/i18n/catalog-grouped-home-87.cjs": "f968a1247677ac5f29293aa8f219d18560dfd752f96fb0719bf8299da1bbe159",
       "scripts/client-overrides/lib/backup.ts": "ad346006cea8526531e785265641756c494219b1ff63d5a311f59f9b80ba457c",
-      "scripts/client-overrides/public/notebook/app.css": "e782eefcba77fdc85e61117e20a30eff995b465423a2b174b4aab417867c61d0"
+      "scripts/client-overrides/public/notebook/app.css": "e782eefcba77fdc85e61117e20a30eff995b465423a2b174b4aab417867c61d0",
+      "scripts/export-nanpure.mjs": "c99b900a4a83c7f2fbbc33d6dc7ebd1c2fc48a0de0f5d14137e815dee8bc9469"
     }
   }
 }
