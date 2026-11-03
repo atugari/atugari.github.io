@@ -453,6 +453,10 @@ async function checkResponsiveFreePlay(browser,root,viewport){
   await cells.dispose();
   if(viewport.width===390){
    const key=frame.locator('[data-action="number"][data-number="25"]');await key.scrollIntoViewIfNeeded();
+   // Loading a selected board is asynchronous. Let scrolling and responsive
+   // layout settle before starting a hold: a real scroll intentionally cancels it.
+   await key.evaluate(button=>new Promise(resolve=>{let previous='',stable=0;function sample(){const r=button.getBoundingClientRect(),next=[r.x,r.y,r.width,r.height].join(':');stable=next===previous?stable+1:0;previous=next;if(stable>=4)resolve();else requestAnimationFrame(sample);}requestAnimationFrame(sample);}));
+   await key.evaluate(button=>{window.__keyPreviewTrace=[];for(const type of ['pointerdown','pointerup','pointercancel','pointerout','scroll','resize','blur'])window.addEventListener(type,event=>{if(__keyPreviewTrace.length<40)__keyPreviewTrace.push({type,target:event.target?.tagName,action:event.target?.closest?.('[data-action]')?.dataset.action,number:event.target?.closest?.('[data-number]')?.dataset.number,preview:!!document.querySelector('.np-key-preview'),modal:!!document.querySelector('dialog[open],.modal-wrap')});},{capture:true,passive:true});});
    const rect=await key.boundingBox();assert(rect,'Held number has visible bounds');
    await page.mouse.move(rect.x+rect.width/2,rect.y+rect.height/2);await page.mouse.down();
    try{
@@ -461,7 +465,7 @@ async function checkResponsiveFreePlay(browser,root,viewport){
     assert.equal(preview.text,'25');assert.equal(preview.hidden,'true');assert(preview.width>=64&&preview.height>=51&&preview.gap>=6&&preview.gap<=10,'Held digit extends above its key with a connecting stem: '+JSON.stringify(preview));
     await frame.waitForFunction(()=>document.querySelector('[data-action="number"][data-number="25"]')?.getAttribute('aria-pressed')==='true',{},{timeout:5000});
     assert.equal(await frame.locator('.np-key-preview').textContent(),'25','Preview survives long-press keypad redraw');
-   }finally{await page.mouse.up();}
+   }catch(error){console.error('Key preview diagnostic',await frame.evaluate(()=>({trace:window.__keyPreviewTrace,route:NanpureAppTest.getRoute(),current:NanpureAppTest.getCurrent()?.uid,preview:document.querySelector('.np-key-preview')?.outerHTML})));throw error;}finally{await page.mouse.up();}
    assert.equal(await frame.locator('.np-key-preview').count(),0,'Preview clears on release');
    await expectNotebookText(frame,'#board [data-cell="0"]','1',label+' holding a key does not write into the selected cell');
   }
@@ -580,6 +584,7 @@ async function checkJigsawCreationAndPrint(page,lang,expected){
  await context.route('https://pagead2.googlesyndication.com/**',route=>route.fulfill({status:200,contentType:'application/javascript',body:'/* AdSense is disabled in automated checks. */'}));
  const root=path.resolve(process.argv[2]||'_site');const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp','.mp3':'audio/mpeg','.ogg':'audio/ogg','.wav':'audio/wav'};
  await page.route(/^https:\/\/atugari\.github\.io\/(?:nanpure|puzzles)\//,async route=>{const u=new URL(route.request().url()),file=path.join(root,u.pathname.endsWith('/')?u.pathname+'index.html':u.pathname);if(!file.startsWith(root)||!fs.existsSync(file))return route.fulfill({status:404,body:'Missing asset'});await route.fulfill({status:200,contentType:types[path.extname(file)]||'application/octet-stream',body:fs.readFileSync(file)})});
+ if(process.env.NP_BROWSER_FOCUS==='responsive'){await context.close();for(const viewport of [{width:390,height:844},{width:375,height:667},{width:320,height:568}])await checkResponsiveFreePlay(browser,root,viewport);return;}
  for(const view of['','daily','ranking','calendar','contact','replies','backup','privacy','manage']){
   const apiPath={daily:'/api/daily',ranking:'/api/ranking',calendar:'/api/daily/archive',contact:'/api/contact',replies:'/api/contact',backup:'/api/cloud'}[view];
   const response=apiPath?page.waitForResponse(r=>{const u=new URL(r.url());return u.hostname==='puzzle-api.puzzle-hub-4826.workers.dev'&&u.pathname===apiPath&&!u.searchParams.has('summary')&&r.request().method()==='GET'},{timeout:20000}):null;
