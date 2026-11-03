@@ -482,10 +482,10 @@
       "key": "2026-11-03@08:00",
       "day": "2026-11-03",
       "slot": "08:00",
-      "status": "ready",
-      "post_id": null,
+      "status": "sent",
+      "post_id": "2117391568646926484",
       "due": 1793660400000,
-      "sent_at": null,
+      "sent_at": 1793660464248,
       "error": null,
       "date": "2026-11-03",
       "fingerprints": [
