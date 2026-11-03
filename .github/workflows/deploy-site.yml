@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [main, master]
   workflow_dispatch:
+    inputs:
+      full_check:
+        description: 'Run the complete regression suite'
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -17,7 +22,38 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      notebook: ${{ steps.scope.outputs.notebook }}
+      wado: ${{ steps.scope.outputs.wado }}
+      corpus: ${{ steps.scope.outputs.corpus }}
+      learning: ${{ steps.scope.outputs.learning }}
+      full: ${{ steps.scope.outputs.full }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Select checks from semantic changes
+        id: scope
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || '' }}
+          HEAD_SHA: ${{ github.sha }}
+          FULL_CHECK: ${{ inputs.full_check || false }}
+        shell: bash
+        run: |
+          if [[ "$BASE_SHA" =~ ^[a-f0-9]{40}$ && "$BASE_SHA" != '0000000000000000000000000000000000000000' ]]; then
+            git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null || git fetch --no-tags --depth=1 origin "$BASE_SHA" || true
+          fi
+          node scripts/select-site-checks.cjs
+
   build:
+    needs: changes
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -57,10 +93,26 @@ jobs:
       - name: Bundle Nanpure help and contact
         run: python3 scripts/enhance-nanpure.py _site
 
-      - name: Check fullscreen board and exit controls
+      - name: Install focused check dependencies
+        run: npm install --prefix "$RUNNER_TEMP/nanpure-browser" --no-audit --no-fund playwright@1.62.1 linkedom@0.18.13
+
+      - name: Check change selection and release integrity
+        run: |
+          node --test scripts/check-site-check-selection.cjs
+          node scripts/check-release-integrity.cjs _site
+          node scripts/check-public-release-policy.cjs
+
+      - name: Check generation assistance in a real browser Worker
         shell: bash
         run: |
-          npm install --prefix "$RUNNER_TEMP/nanpure-browser" --no-audit --no-fund playwright@1.62.1 linkedom@0.18.13
+          export PLAYWRIGHT_MODULE="$RUNNER_TEMP/nanpure-browser/node_modules/playwright"
+          export CHROME_BIN="$(command -v google-chrome || command -v chromium)"
+          node scripts/check-generation-assist-browser.cjs _site
+
+      - name: Check fullscreen board and exit controls
+        if: needs.changes.outputs.notebook == 'true'
+        shell: bash
+        run: |
           node scripts/check-nanpure-fullscreen.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
           export PLAYWRIGHT_MODULE="$RUNNER_TEMP/nanpure-browser/node_modules/playwright"
           export CHROME_BIN="$(command -v google-chrome || command -v chromium)"
@@ -68,6 +120,7 @@ jobs:
           NP_BROWSER_FOCUS=responsive node scripts/check-nanpure-browser.cjs _site
 
       - name: Check notebook languages and fixed puzzle coordinates
+        if: needs.changes.outputs.notebook == 'true'
         shell: bash
         run: |
           export PLAYWRIGHT_MODULE="$RUNNER_TEMP/nanpure-browser/node_modules/playwright"
@@ -75,6 +128,7 @@ jobs:
           node scripts/check-nanpure-languages-browser.cjs _site
 
       - name: Check lazy local puzzle storage and recovery
+        if: needs.changes.outputs.notebook == 'true'
         shell: bash
         run: |
           export PLAYWRIGHT_MODULE="$RUNNER_TEMP/nanpure-browser/node_modules/playwright"
@@ -83,6 +137,7 @@ jobs:
           node scripts/check-nanpure-recovery-pack.cjs
 
       - name: Check personal galleries on desktop and mobile
+        if: needs.changes.outputs.notebook == 'true'
         shell: bash
         run: |
           export PLAYWRIGHT_MODULE="$RUNNER_TEMP/nanpure-browser/node_modules/playwright"
@@ -92,6 +147,7 @@ jobs:
           node scripts/check-nanpure-exhibitions-browser.cjs _site
 
       - name: Check automatic ranking and nicknames on desktop and mobile
+        if: needs.changes.outputs.notebook == 'true'
         shell: bash
         run: |
           export PLAYWRIGHT_MODULE="$RUNNER_TEMP/nanpure-browser/node_modules/playwright"
@@ -104,9 +160,11 @@ jobs:
           npm --prefix nanpure-api run build
 
       - name: Check local replay recording and resume
+        if: needs.changes.outputs.notebook == 'true'
         run: node scripts/check-community-recorder.cjs
 
       - name: Check exact 9x9 pattern creation
+        if: needs.changes.outputs.notebook == 'true'
         shell: bash
         run: |
           node scripts/check-nanpure-pattern.cjs
@@ -124,29 +182,18 @@ jobs:
           node scripts/check-nanpure-pattern-jobs-browser.cjs _site
 
       - name: Check Nanpure keyboard and mobile client before publication
+        if: needs.changes.outputs.notebook == 'true'
         shell: bash
         run: |
-          npm install --prefix "$RUNNER_TEMP/nanpure-browser" --no-audit --no-fund playwright@1.62.1 linkedom@0.18.13
-          npm run build --prefix nanpure-api
           node scripts/check-pareasobi-move.cjs
           node scripts/check-pareasobi-navigation.cjs
-          node scripts/check-nanpure-collection-entry.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
-          node --experimental-vm-modules scripts/collection-100k/check-filters.cjs
-          node scripts/check-public-release-policy.cjs
           node scripts/check-nanpure-mixed-multi.cjs
           node scripts/check-nanpure-board-comfort.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
-          node scripts/collection-100k/audit-playable.cjs
           node scripts/check-nanpure-achievements.cjs
           node scripts/check-nanpure-achievements-ui.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
           node scripts/check-reading-tools.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
           node scripts/check-nanpure-i18n-delta.cjs
           node scripts/check-nanpure-search.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
-          python3 scripts/check-nanpure-wado-dictionary.py
-          node scripts/check-nanpure-wado-interaction.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
-          node scripts/check-nanpure-wado-play.cjs
-          node scripts/check-nanpure-wado.cjs
-          node scripts/check-nanpure-wado-web-ui.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
-          node scripts/check-nanpure-wado-batch.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
           node scripts/check-nanpure-magic.cjs
           node scripts/check-nanpure-i18n.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
           node scripts/check-nanpure-input.cjs scripts/client-overrides/public/notebook/app.js "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
@@ -168,7 +215,6 @@ jobs:
           node scripts/check-pareasobi-move-browser.cjs _site
           node scripts/check-nanpure-search-browser.cjs _site
           node scripts/check-nanpure-keyboard-dialogs.cjs
-          node scripts/check-nanpure-wado-browser.cjs _site
           node scripts/check-nanpure-magic-browser.cjs _site
           node scripts/check-nanpure-audio-browser.cjs _site
           node scripts/check-nanpure-browser.cjs _site
@@ -176,11 +222,32 @@ jobs:
           node scripts/check-nanpure-keybindings-browser.cjs _site
           node scripts/check-nanpure-appearance-browser.cjs _site
 
-      - name: Check verified Nanpure learning data
-        run: node scripts/check-nanpure-learning.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
+      - name: Check Wado client and dictionary
+        if: needs.changes.outputs.wado == 'true'
+        shell: bash
+        run: |
+          export PLAYWRIGHT_MODULE="$RUNNER_TEMP/nanpure-browser/node_modules/playwright"
+          export CHROME_BIN="$(command -v google-chrome || command -v chromium)"
+          python3 scripts/check-nanpure-wado-dictionary.py
+          node scripts/check-nanpure-wado-interaction.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
+          node scripts/check-nanpure-wado-play.cjs
+          node scripts/check-nanpure-wado.cjs
+          node scripts/check-nanpure-wado-web-ui.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
+          node scripts/check-nanpure-wado-batch.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
+          node scripts/check-nanpure-wado-browser.cjs _site
 
-      - name: Verify appended puzzle uniqueness
-        run: node scripts/collection-100k/check-append.cjs
+      - name: Check changed puzzle collection
+        if: needs.changes.outputs.corpus == 'true'
+        shell: bash
+        run: |
+          node scripts/check-nanpure-collection-entry.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
+          node --experimental-vm-modules scripts/collection-100k/check-filters.cjs
+          node scripts/collection-100k/audit-playable.cjs
+          node scripts/collection-100k/check-append.cjs
+
+      - name: Check verified Nanpure learning data
+        if: needs.changes.outputs.learning == 'true'
+        run: node scripts/check-nanpure-learning.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
 
       - name: Configure Pages
         if: github.event_name != 'pull_request'
@@ -193,6 +260,8 @@ jobs:
           path: _site
 
   wado-verification:
+    needs: changes
+    if: needs.changes.outputs.wado == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -235,7 +304,8 @@ jobs:
           retention-days: 14
 
   deploy:
-    if: github.event_name != 'pull_request'
+    # An unrelated skipped Wado job must not prevent publication after required checks pass.
+    if: ${{ always() && !cancelled() && github.event_name != 'pull_request' && needs.build.result == 'success' && (needs['wado-verification'].result == 'success' || needs['wado-verification'].result == 'skipped') }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

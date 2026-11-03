@@ -4977,7 +4977,9 @@
       "scripts/client-overrides/public/notebook/app.js": "0ebffbede11ebeba73d01080efb18475fefbe906db1735f0d71cf8fbf2112dc4",
       "scripts/client-overrides/public/notebook/generation-assist.js": "0681a06e6b21e9938935c0487008c44c6bb52154c4e1629178ec462f09fb2b4c",
       "scripts/notebook-shared-styles.mjs": "ebd38243e3f543739ce6326c862b70728003372f4f464653de8e4819d8bc48fe",
-      "scripts/prepare-generation-assist-retry-release.mjs": "481fd9e49808f9dcdcbcf73f397efad037d36a582554eaae7b8f668e1539e4b0"
+      "scripts/prepare-generation-assist-retry-release.mjs": "89f09d2e32ecc869d9cd7f116d067e88c6d70f491d6e1cd9d38c90a126588db8",
+      "scripts/check-generation-assist-browser.cjs": "9dac7fa4ec1bd337a257bd4e1e3aff42e4d4748234587a55c947d8ac638ee439",
+      "scripts/fixtures/generation-assist-retry.html": "7937f6600a30433ec4eeba8ca78d614f5b545693be9436b18ca88f81dcc593fb"
     }
   }
 }

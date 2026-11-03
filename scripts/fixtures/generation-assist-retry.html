@@ -1,0 +1,37 @@
+<!doctype html><html lang="ja"><meta charset="utf-8"><title>生成応援・再接続の検証</title><style>body{font:18px/1.7 system-ui;background:#f5f2e9;color:#23443e;padding:40px;max-width:1000px;margin:auto}button{font:inherit;padding:14px 25px}pre{white-space:pre-wrap;background:white;padding:25px;border-radius:15px}h1{font-size:30px}</style><h1>生成応援・再接続の検証</h1><p>__RELEASE__ / 実際のブラウザWorkerと生成エンジンを使用。通信障害は検証用の応答で再現します。</p><button id="run">再接続を検証する</button><pre id="result">準備完了</pre><script src="generation-engine.js"></script><script src="generation-assist.js"></script><script>
+const originalFetch=window.fetch.bind(window),lines=[],result=document.getElementById('result');
+let scenario=null;
+const show=s=>{lines.push(s);result.textContent=lines.join('\n')};
+const puzzle=NPGenerate({kind:'normal',n:9,level:4});
+const engineUrl=new URL("/generation-engine.js",location.href).href;
+const workerUrl=URL.createObjectURL(new Blob(["importScripts("+JSON.stringify(engineUrl)+");self.onmessage=e=>setTimeout(()=>self.postMessage({p:NPGenerate(e.data)}),5000);"],{type:'application/javascript'}));
+window.fetch=async(url,options={})=>{
+ if(!String(url).startsWith('https://puzzle-api.puzzle-hub-4826.workers.dev/api/generation'))return originalFetch(url,options);
+ const s=scenario,d=options.body?JSON.parse(options.body):null;
+ if(d?.action==='cancel'){s.cancelled.push(d.id);return Response.json({ok:true})}
+ if(d?.action==='create'){
+  s.creates++;
+  if(s.mode==='failure'&&s.creates===2){show('2問目の最初の通信を失敗させました');return Response.json({error:'test failure'},{status:503})}
+  if(['stop','local'].includes(s.mode))return Response.json({available:false});
+  return Response.json({available:true,id:String(s.creates).repeat(64),expires:Date.now()+(s.mode==='expiry'&&s.creates===1?1200:45000)});
+ }
+ return Response.json(s.mode==='expiry'&&s.creates===1?{state:'pending'}:{state:'done',p:puzzle});
+};
+async function until(condition){const end=Date.now()+9000;while(!condition()){if(Date.now()>end)throw Error('Timed out');await new Promise(r=>setTimeout(r,25))}}
+async function runCase(mode){
+ scenario={mode,creates:0,cancelled:[]};const s=scenario,w=NPGenerationAssist.createWorker(workerUrl),events=[];w.onmessage=e=>events.push(e.data);
+ try{
+  w.postMessage({kind:'normal',n:9,level:4});
+  if(mode==='stop'){
+   await until(()=>s.creates===1);w.terminate();await new Promise(r=>setTimeout(r,1800));
+   if(s.creates!==1||events.length)throw Error('Stopped generation restarted');show('PASS 中止後に再依頼しない');return;
+  }
+  await until(()=>events.length===1);
+  if(mode==='local'){if(NPGenerationAssist.getTimings().at(-1).source!=='local'||s.creates<2)throw Error('Local fallback did not finish');show('PASS 応援が停止中でも実際のWorkerが生成を完了');return;}
+  if(mode==='failure'){w.postMessage({kind:'normal',n:9,level:4});await until(()=>events.length===2);if(s.creates!==3)throw Error('Second request did not retry');show('PASS 2問目の通信失敗から自動復帰・応援結果を採用')}
+  else{if(s.creates!==2||s.cancelled[0]!=='1'.repeat(64))throw Error('Expired request was not replaced');show('PASS 期限切れの依頼を取り消して再依頼・応援結果を採用')}
+  if(NPGenerationAssist.getTimings().at(-1).source!=='assisted')throw Error('Expected assisted result');
+ }finally{w.terminate();await new Promise(r=>setTimeout(r,0))}
+}
+document.getElementById('run').onclick=async()=>{document.getElementById('run').disabled=true;lines.length=0;show('検証中…');try{for(const mode of ['failure','expiry','local','stop'])await runCase(mode);show('すべて成功。生成中の再接続と停止時の終了を確認しました。')}catch(e){show('FAIL '+e.message)}};
+</script></html>

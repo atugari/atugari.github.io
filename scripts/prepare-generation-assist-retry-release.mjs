@@ -43,7 +43,7 @@ const audio=path.join(root,'nanpure-audio',version);fs.cpSync(path.join(root,'na
 const ai=JSON.parse(fs.readFileSync(path.join(audio,'index.json')));ai.version=version;fs.writeFileSync(path.join(audio,'index.json'),JSON.stringify(ai,null,2)+'\n');
 const pins={...prior.files},changed=['nanpure/index.html','nanpure/collection/player.html','nanpure/version.json','nanpure/releases.json'];
 for(const file of [...walk(out),...changed.map(f=>path.join(root,f))])pins[path.relative(root,file)]=hash(fs.readFileSync(file));
-const sources=['scripts/prepare-generation-assist-retry-release.mjs','scripts/check-generation-assist.cjs','scripts/client-overrides/public/notebook/generation-assist.js'];
+const sources=['scripts/check-generation-assist-browser.cjs','scripts/fixtures/generation-assist-retry.html','scripts/prepare-generation-assist-retry-release.mjs','scripts/check-generation-assist.cjs','scripts/client-overrides/public/notebook/generation-assist.js'];
 const manifest={...prior,...info,base,generationAssist:{...prior.generationAssist,version:2,sources:{...prior.generationAssist.sources,...Object.fromEntries(sources.map(f=>[f,hash(read(f))]))}},files:pins};
 for(const record of Object.values(manifest))if(record?.sources)for(const file of Object.keys(record.sources))if(fs.existsSync(path.join(root,file)))record.sources[file]=hash(read(file));
 fs.writeFileSync(path.join(root,'nanpure/release-manifest.json'),JSON.stringify(manifest,null,2)+'\n');
