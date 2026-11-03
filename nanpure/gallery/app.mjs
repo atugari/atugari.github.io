@@ -1,7 +1,11 @@
 import {emptyRoom,cleanRoom,cleanSlot,slotFromPuzzle,duration,MAX_BYTES} from './model.mjs';
 import {api,ownerKey,KEY,DRAFT,savedPage,recordSlot,clearRecords} from './data.mjs';
+import {decorate} from './carousel.mjs';
+import {events,puzzleKey} from '../exhibitions/model.mjs';
+import {request as community} from '../exhibitions/service.mjs';
+import {attachRecorder} from '../exhibitions/play-support.mjs';
 const $=id=>document.getElementById(id),roomId=new URLSearchParams(location.search).get('room'),visitor=!!roomId;
-let room=emptyRoom(),published=false,revision=0,savedId='',busy=false,dirty=false,slotIndex=0,saved=[],next=null,pageLoaded=false,tab='saved',records=[],titles=[],opener=null,pendingCandidate=null,loadToken=0;
+let room=emptyRoom(),published=false,revision=0,savedId='',busy=false,dirty=false,slotIndex=0,saved=[],next=null,pageLoaded=false,tab='saved',records=[],titles=[],opener=null,pendingCandidate=null,loadToken=0,badges=[];
 function say(s){$('status').textContent=s}
 function node(tag,text,cls){const el=document.createElement(tag);if(text!==undefined)el.textContent=text;if(cls)el.className=cls;return el}
 function button(text,fn,cls){const b=node('button',text,cls);b.type='button';b.onclick=fn;return b}
@@ -43,10 +47,13 @@ function render(){
    if(s.type==='clear')plaque.append(node('span',duration(s.elapsed)+' · 端末のクリア記録','meta'));
    else if(s.type==='puzzle')plaque.append(node('span',s.origin==='created'?'自作・保存した問題':'お気に入りの問題','meta'));
    if(s.caption)plaque.append(node('p',s.caption));if(s.credit){const a=node('a',s.credit.name+'の展示室');a.href='?room='+s.credit.id;plaque.append(a)}item.append(plaque);
+   for(const badge of badges.filter(b=>b.slot===i&&puzzleKey(b.record)===puzzleKey(s.record||{}))){const event=events.find(e=>e.id===badge.event);if(event){const a=node('a',event.title+' · 出展作品','exhibition-badge');a.href='/nanpure/exhibitions/?entry='+badge.id;plaque.append(a);}}
+   if(s.replayId){const a=node('a','解いた道のりを見る','exhibition-badge');a.href='/nanpure/exhibitions/?replay='+s.replayId;plaque.append(a);}
    if(!visitor){const actions=node('div',undefined,'slot-controls');actions.append(button('飾り方を変える',()=>details(i)),button('入れ替える',()=>pick(i)));if(i>0)actions.append(button('中央に飾る',()=>swap(i,0)));if(i>1)actions.append(button('前へ',()=>swap(i,i-1)));if(i<6&&i>0)actions.append(button('次へ',()=>swap(i,i+1)));item.append(actions);}
   }
   $('wall').append(item);
  });
+ decorate($('wall'));
  if(visitor)$('room-note').textContent='気になる問題は、作品を押して遊べます。';
 }
 function swap(a,b){[room.slots[a],room.slots[b]]=[room.slots[b],room.slots[a]];changed()}
@@ -80,6 +87,8 @@ function details(i){
   const actions=node('div',undefined,'detail-actions');actions.append(button('題名とひと言を変更する',()=>{if(!name.value.trim())return name.reportValidity();s.title=name.value.trim();s.caption=input.value.trim();changed();$('detail').close()}));actions.append(button('この枠から外す',()=>{room.slots[i]=null;changed();$('detail').close()}));body.append(actions);
  }else if(s.record)body.append(button('この問題を自分の展示室に飾る',()=>{const pick={...s,type:'puzzle',origin:'favorite',caption:'',credit:{id:roomId,name:room.name}};sessionStorage.setItem('np-gallery-pick-v1',JSON.stringify(cleanSlot(pick)));location.href='/nanpure/gallery/';}));
  if(s.record)body.append(button('この問題を遊ぶ',()=>play(s.record),'primary'));
+ if(s.replayId){const a=node('a','解答を含むリプレイを見る','file-button');a.href='/nanpure/exhibitions/?replay='+s.replayId;body.append(a);}
+ if(!visitor&&s.record){body.append(button('公開済みのリプレイを飾る',async()=>{try{const rows=(await community('?mine=replays')).replays;if(!rows.length){const p=node('p','先に解答リプレイの画面で、完成した道のりを公開してください。','hint'),a=node('a','自分のリプレイを開く');a.href='/nanpure/exhibitions/?view=replays';body.append(p,a);return;}const choices=node('div',undefined,'pick-list'),digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(puzzleKey(s.record))),fingerprint=Array.from(new Uint8Array(digest),v=>v.toString(16).padStart(2,'0')).join('');for(const r of rows){if(r.fingerprint!==fingerprint)continue;choices.append(button(r.title,()=>{s.replayId=r.id;changed();$('detail').close();say('リプレイを作品に添えました。展示室を保存すると反映されます。')}));}if(!choices.childElementCount)choices.append(node('p','この問題を解いた公開リプレイはありません。'));body.append(choices);}catch(e){say(e.message);}}));if(s.replayId)body.append(button('リプレイの表示を外す',()=>{delete s.replayId;changed();$('detail').close()}));}
  show($('detail'));
 }
 $('edit-room').onclick=()=>{const f=$('room-form');for(const key of ['name','bio','theme','frame'])f.elements[key].value=room[key];f.elements.published.checked=published;show($('editor'))};
@@ -96,9 +105,9 @@ $('import').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{
 $('puzzle-file').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{if(f.size>MAX_BYTES)throw Error('問題ファイルは256KB以内にしてください。');const value=JSON.parse(await f.text());pendingCandidate=value.format==='nanpure-gallery-draft'?value.room?.slots?.find(Boolean):slotFromPuzzle(value.puzzle&&typeof value.puzzle==='object'&&!Array.isArray(value.puzzle)?value.puzzle:value,'created');if(!pendingCandidate)throw Error('問題が見つかりません。');pendingCandidate=cleanSlot(pendingCandidate);const index=room.slots.findIndex(s=>!s);await pick(index<0?0:index)}catch(err){say(err.message)}finally{e.target.value=''}};
 async function play(record){
  const dialog=$('play-dialog');if($('detail').open)$('detail').close();show(dialog);$('play-status').textContent='問題を読み込んでいます…';const frame=$('play-frame');frame.src='/nanpure/collection/player.html';
- try{const start=Date.now();let bridge;while(dialog.open&&Date.now()-start<30000){try{bridge=frame.contentWindow?.NPCollectionBridge}catch{}if(bridge)break;await new Promise(r=>setTimeout(r,150));}if(!dialog.open)return;if(!bridge)throw Error('プレイ画面を読み込めませんでした。通信を確認して開き直してください。');const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify(record))),id=Array.from(new Uint8Array(digest),v=>v.toString(16).padStart(2,'0')).join('');const p={...structuredClone(record),uid:'gallery-'+id,created:Date.now(),grid:record.puzzle.slice(),notes:{},elapsed:0,completed:false};await bridge.open(p,'number');$('play-status').textContent='途中の状態はこの端末に保存します。閉じるときも保存します。';}catch(e){$('play-status').textContent=e.message;}
+ try{const start=Date.now();let bridge;while(dialog.open&&Date.now()-start<30000){try{bridge=frame.contentWindow?.NPCollectionBridge}catch{}if(bridge)break;await new Promise(r=>setTimeout(r,150));}if(!dialog.open)return;if(!bridge)throw Error('プレイ画面を読み込めませんでした。通信を確認して開き直してください。');await attachRecorder(frame.contentWindow);const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify(record))),id=Array.from(new Uint8Array(digest),v=>v.toString(16).padStart(2,'0')).join('');const p={...structuredClone(record),uid:'gallery-'+id,created:Date.now(),grid:record.puzzle.slice(),notes:{},elapsed:0,completed:false};await bridge.open(p,'number');$('play-status').textContent='途中の状態はこの端末に保存します。閉じるときも保存します。';}catch(e){$('play-status').textContent=e.message;}
 }
-$('close-play').onclick=async()=>{try{await $('play-frame').contentWindow?.NPCollectionBridge?.flush();$('play-dialog').close();$('play-frame').src='about:blank';}catch(e){$('play-status').textContent='保存できませんでした。画面を開いたまま再試行してください。'}};
+$('close-play').onclick=async()=>{try{await $('play-frame').contentWindow?.NPCollectionBridge?.flush();await $('play-frame').contentWindow?.NPReplayRecorder?.flush();$('play-dialog').close();$('play-frame').src='about:blank';}catch(e){$('play-status').textContent='保存できませんでした。画面を開いたまま再試行してください。'}};
 $('play-dialog').addEventListener('cancel',e=>{e.preventDefault();$('close-play').click()});
 async function boot(){
  busy=true;render();
@@ -109,6 +118,6 @@ async function boot(){
   try{const incoming=sessionStorage.getItem('np-gallery-pick-v1');if(incoming){pendingCandidate=cleanSlot(JSON.parse(incoming));sessionStorage.removeItem('np-gallery-pick-v1');const index=room.slots.findIndex(s=>!s);setTimeout(()=>pick(index<0?0:index),0);}}catch{}
  }
  }catch(e){say(e.message||'サーバーに接続できませんでした。端末の下書きで編集を続けられます。');if(visitor){$('wall').hidden=true;$('room-note').textContent='公開URLを確認するか、ナンプレ帳から遊んでみてください。';}}
- finally{busy=false;render()}
+ finally{busy=false;render();if(savedId)community('?room='+savedId).then(data=>{badges=data.entries;render()}).catch(()=>{});}
 }
 window.NPGallery={getRoom:()=>structuredClone(room),pick,save};boot();

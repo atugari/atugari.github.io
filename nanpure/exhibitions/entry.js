@@ -1,0 +1,11 @@
+(function(w){'use strict';if(w.NPCommunityEntry)return;w.NPCommunityEntry=true;const script=document.currentScript,base=new URL('./',script.src),installed=new WeakSet();let home,queued=false;
+function recorder(target){try{if(!target.document?.documentElement||target.document.querySelector('[data-replay-recorder]')||target.NPReplayRecorder)return;const s=target.document.createElement('script');s.dataset.replayRecorder='';s.src=new URL('recorder.js',base).href;target.document.head.append(s)}catch{}}
+function mount(){queued=false;
+ if(document.querySelector('.designed-home')){home??=import(new URL('home.mjs',base));home.then(m=>m.mount()).catch(()=>{});}
+ recorder(w);const hooks=w.NPAchievementHooks;if(hooks?.shell&&!installed.has(hooks)){installed.add(hooks);const fn=hooks.shell;hooks.shell=function(data){const out=fn.apply(this,arguments);if(data?.session&&data.grid?.length)w.NPReplayRecorder?.observe({...data.session,grid:data.grid,elapsed:data.session.elapsed?data.session.elapsed/1000:0,completed:false});return out;};}
+ const achievements=w.NPAchievements;if(achievements?.capture&&!installed.has(achievements)){installed.add(achievements);const fn=achievements.capture;achievements.capture=function(type,data){const out=fn.apply(this,arguments);if(type==='clear'&&data?.game==='sudoku'&&data.valid&&!data.auto&&!data.revealed&&data.puzzle)w.NPReplayRecorder?.observe({...data.puzzle,grid:data.grid||data.puzzle.solution,solution:data.puzzle.solution||data.grid,elapsed:data.elapsed/1000,completed:true});return out;};}
+ for(const frame of document.querySelectorAll('iframe'))try{if(!installed.has(frame)){installed.add(frame);frame.addEventListener('load',mount)}if(frame.contentWindow?.NPVideo)recorder(frame.contentWindow);}catch{}
+ const completed=document.querySelector('.completed-screen');if(completed&&!completed.querySelector('[data-replay-link]')){const a=document.createElement('a');a.href='/nanpure/exhibitions/?view=replays';a.textContent='解いた道のりを再生する';a.dataset.replayLink='';a.className='secondary-action';completed.append(a);}
+}
+new MutationObserver(()=>{if(!queued){queued=true;requestAnimationFrame(mount)}}).observe(document.documentElement,{childList:true,subtree:true});w.addEventListener('np-language-change',mount);mount();
+})(window);

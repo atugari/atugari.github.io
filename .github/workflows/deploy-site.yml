@@ -81,6 +81,9 @@ jobs:
           export CHROME_BIN="$(command -v google-chrome || command -v chromium)"
           node scripts/check-nanpure-ranking-browser.cjs _site
 
+      - name: Check local replay recording and resume
+        run: node scripts/check-community-recorder.cjs
+
       - name: Check exact 9x9 pattern creation
         shell: bash
         run: |

@@ -28,6 +28,7 @@ export function cleanSlot(s){
   out.elapsed=s.elapsed;out.at=s.at;out.hints=s.hints===null?null:integer(s.hints,0,1000000)?s.hints:null;out.errors=s.errors===null?null:integer(s.errors,0,1000000)?s.errors:null;out.recordOrigin='device';
  }
  if(s.credit&&/^[a-f0-9]{24}$/.test(s.credit.id||''))out.credit={id:s.credit.id,name:text(s.credit.name,40)};
+ if(/^[a-f0-9]{24}$/.test(s.replayId||''))out.replayId=s.replayId;
  return out;
 }
 export function cleanRoom(r){
