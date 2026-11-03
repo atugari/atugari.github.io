@@ -39,7 +39,7 @@ async function colors(frame){
  }
  const f=await setup(browser,{width:1440,height:900});await f.page.goto(origin+'/nanpure/releases/'+version+'/notebook/index.html');await f.page.waitForFunction(()=>window.NanpureAppTest&&window.NPBoardComfort);
  assert(await f.page.evaluate(()=>['fit','align','measure','readable'].every(name=>typeof window.NPBoardInput?.[name]==='function')),'Generated player supports the complete shared gesture API');
- await f.page.evaluate(p=>{NanpureAppTest.validate(p);const lib=NanpureAppTest.getLibrary();lib.splice(0,lib.length,p);},classic(16));
+ await f.page.evaluate(async p=>{NanpureAppTest.validate(p);const lib=NanpureAppTest.getLibrary();lib.splice(0,lib.length,p);await NPStorage.save(lib,p);},classic(16));
  for(const selector of ['[data-action="open-notebook"]','[data-action="start"][data-flow="play"]','[data-action="pick-play"][data-id="comfort-browser-16"]','[data-action="begin-play"][data-id="comfort-browser-16"]'])await f.page.locator(selector).click();
  await colors(f.page);
  const originalHeight=await f.page.locator('.number-pad>button').first().evaluate(el=>el.getBoundingClientRect().height);

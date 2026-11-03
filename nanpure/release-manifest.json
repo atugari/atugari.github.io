@@ -4121,7 +4121,7 @@
       "scripts/client-overrides/public/notebook/app.js": "031907e6730a6719dc930b80fae958fc9ce7c6b2231680f1327500cfcf3fbe4b",
       "scripts/client-overrides/public/notebook/common.js": "fee5b3b99abb8c0009522d8b6796e8544b59ceab205a961493420825f2eb38d2",
       "scripts/check-nanpure-pattern.cjs": "d31ea8e49c32d2b6cc9ab76db9898dbbc98c2363fb0716ac5e5f8c76481cd6f6",
-      "scripts/check-nanpure-pattern-browser.cjs": "4968661b1951f10c1297a42e00eb3ed035da24810d05fdc0d3c7ef3daeb5bb36",
+      "scripts/check-nanpure-pattern-browser.cjs": "b730edab7f050db0766f78fa268cbae654508e0571c24b9afc2e9fc4efda14c4",
       "scripts/prepare-pattern-release.mjs": "ad1117f37b655d315413ff6c5d6e1ed9deee945ddb4bb2e57ca171ba96508d84"
     }
   },
@@ -4132,7 +4132,7 @@
       "scripts/client-overrides/public/notebook/pattern.css": "7442702538b2444f97ceca820dfc67ec8b5e0ec26f695feee111864532a34cbf",
       "scripts/check-nanpure-pattern.cjs": "d31ea8e49c32d2b6cc9ab76db9898dbbc98c2363fb0716ac5e5f8c76481cd6f6",
       "scripts/check-nanpure-pattern-math.cjs": "5e7067b1e3f2c3bd58dd3909f5c9795746deac75b6caef3a38b7babb9f5cf92f",
-      "scripts/check-nanpure-pattern-browser.cjs": "4968661b1951f10c1297a42e00eb3ed035da24810d05fdc0d3c7ef3daeb5bb36",
+      "scripts/check-nanpure-pattern-browser.cjs": "b730edab7f050db0766f78fa268cbae654508e0571c24b9afc2e9fc4efda14c4",
       "scripts/prepare-pattern-math-release.mjs": "3c716f48f62a7b30cca8d92b9279ea3016d6a5038b540dc38e6e4627b5e13b60"
     }
   },
@@ -4143,7 +4143,7 @@
       "scripts/client-overrides/public/notebook/pattern.css": "7442702538b2444f97ceca820dfc67ec8b5e0ec26f695feee111864532a34cbf",
       "scripts/check-nanpure-pattern.cjs": "d31ea8e49c32d2b6cc9ab76db9898dbbc98c2363fb0716ac5e5f8c76481cd6f6",
       "scripts/check-nanpure-pattern-math.cjs": "5e7067b1e3f2c3bd58dd3909f5c9795746deac75b6caef3a38b7babb9f5cf92f",
-      "scripts/check-nanpure-pattern-browser.cjs": "4968661b1951f10c1297a42e00eb3ed035da24810d05fdc0d3c7ef3daeb5bb36",
+      "scripts/check-nanpure-pattern-browser.cjs": "b730edab7f050db0766f78fa268cbae654508e0571c24b9afc2e9fc4efda14c4",
       "scripts/prepare-pattern-usability-release.mjs": "11bfe00db1bfd559786fd4f3c3e5f890a74dd154cff1a66d01de7c2b6e34f8fa",
       "scripts/client-overrides/public/notebook/app.js": "031907e6730a6719dc930b80fae958fc9ce7c6b2231680f1327500cfcf3fbe4b"
     }
@@ -4155,7 +4155,7 @@
       "scripts/client-overrides/public/notebook/pattern.css": "7442702538b2444f97ceca820dfc67ec8b5e0ec26f695feee111864532a34cbf",
       "scripts/check-nanpure-pattern.cjs": "d31ea8e49c32d2b6cc9ab76db9898dbbc98c2363fb0716ac5e5f8c76481cd6f6",
       "scripts/check-nanpure-pattern-math.cjs": "5e7067b1e3f2c3bd58dd3909f5c9795746deac75b6caef3a38b7babb9f5cf92f",
-      "scripts/check-nanpure-pattern-browser.cjs": "4968661b1951f10c1297a42e00eb3ed035da24810d05fdc0d3c7ef3daeb5bb36",
+      "scripts/check-nanpure-pattern-browser.cjs": "b730edab7f050db0766f78fa268cbae654508e0571c24b9afc2e9fc4efda14c4",
       "scripts/prepare-pattern-page-release.mjs": "1de713099237bf86d7e92db6bf93c1310e04c4c5cc1b42605f44e3f27a471289",
       "scripts/client-overrides/public/notebook/app.js": "031907e6730a6719dc930b80fae958fc9ce7c6b2231680f1327500cfcf3fbe4b"
     }
@@ -4167,7 +4167,7 @@
       "scripts/client-overrides/public/notebook/pattern.css": "7442702538b2444f97ceca820dfc67ec8b5e0ec26f695feee111864532a34cbf",
       "scripts/check-nanpure-pattern.cjs": "d31ea8e49c32d2b6cc9ab76db9898dbbc98c2363fb0716ac5e5f8c76481cd6f6",
       "scripts/check-nanpure-pattern-math.cjs": "5e7067b1e3f2c3bd58dd3909f5c9795746deac75b6caef3a38b7babb9f5cf92f",
-      "scripts/check-nanpure-pattern-browser.cjs": "4968661b1951f10c1297a42e00eb3ed035da24810d05fdc0d3c7ef3daeb5bb36",
+      "scripts/check-nanpure-pattern-browser.cjs": "b730edab7f050db0766f78fa268cbae654508e0571c24b9afc2e9fc4efda14c4",
       "scripts/prepare-pattern-fixed-release.mjs": "dd31a1d3a25a52329f80d0ec7f27faeab508aab752fc5e228b2c11eb00e30aa0",
       "scripts/client-overrides/public/notebook/app.js": "031907e6730a6719dc930b80fae958fc9ce7c6b2231680f1327500cfcf3fbe4b"
     }
@@ -4179,7 +4179,7 @@
       "scripts/client-overrides/public/notebook/pattern.css": "7442702538b2444f97ceca820dfc67ec8b5e0ec26f695feee111864532a34cbf",
       "scripts/check-nanpure-pattern.cjs": "d31ea8e49c32d2b6cc9ab76db9898dbbc98c2363fb0716ac5e5f8c76481cd6f6",
       "scripts/check-nanpure-pattern-math.cjs": "5e7067b1e3f2c3bd58dd3909f5c9795746deac75b6caef3a38b7babb9f5cf92f",
-      "scripts/check-nanpure-pattern-browser.cjs": "4968661b1951f10c1297a42e00eb3ed035da24810d05fdc0d3c7ef3daeb5bb36",
+      "scripts/check-nanpure-pattern-browser.cjs": "b730edab7f050db0766f78fa268cbae654508e0571c24b9afc2e9fc4efda14c4",
       "scripts/prepare-pattern-no-scroll-release.mjs": "7a321acd5d66c8b530de63a26ede16045589dbdcb26e4293fcd2b4ab18858991",
       "scripts/client-overrides/public/notebook/app.js": "031907e6730a6719dc930b80fae958fc9ce7c6b2231680f1327500cfcf3fbe4b"
     }
@@ -4191,7 +4191,7 @@
       "scripts/client-overrides/public/notebook/pattern.css": "7442702538b2444f97ceca820dfc67ec8b5e0ec26f695feee111864532a34cbf",
       "scripts/client-overrides/public/notebook/app.js": "031907e6730a6719dc930b80fae958fc9ce7c6b2231680f1327500cfcf3fbe4b",
       "scripts/i18n/catalog-pattern-share-78.cjs": "0486cba6bc81e749daa1973fce3db2aae4a3d311de540c0c5a0f3f5b58f7b737",
-      "scripts/check-nanpure-pattern-share-browser.cjs": "093da45511bfee8f889e1a3a13da325b78d5bf373acd0fd34539652d84f3d134",
+      "scripts/check-nanpure-pattern-share-browser.cjs": "3d9fb4186910616b16ef4b60473e07187d9d1ecc7f8d273a5c9775ff76feecdc",
       "scripts/prepare-pattern-share-release.mjs": "70b7d14ae1d4bb9b41b94388dd08ab853c259f4234021d4606dbf169ac3666cf"
     }
   },
@@ -4203,7 +4203,7 @@
       "scripts/client-overrides/public/notebook/app.js": "031907e6730a6719dc930b80fae958fc9ce7c6b2231680f1327500cfcf3fbe4b",
       "scripts/i18n/catalog-pattern-mobile-79.cjs": "086c60f52516048a947b819bfe896533cedb3a1613edce72c26de3e0172eb7a8",
       "scripts/check-nanpure-pattern-mobile-browser.cjs": "95b90c7aaaa2f2f2c9bd15b21663e59b35af181f663af218607c5ae1a05d71c1",
-      "scripts/check-nanpure-pattern-browser.cjs": "4968661b1951f10c1297a42e00eb3ed035da24810d05fdc0d3c7ef3daeb5bb36",
+      "scripts/check-nanpure-pattern-browser.cjs": "b730edab7f050db0766f78fa268cbae654508e0571c24b9afc2e9fc4efda14c4",
       "scripts/check-nanpure-collection-entry.cjs": "f591e063934a137382fbc0eb49149a4ff649e40c5c3485c282c5c7634a90cbe1",
       "scripts/prepare-pattern-mobile-release.mjs": "987e73f6267be7daed0e27adf487623f2a573d8de4d22ac3816cc62f6101dcc6"
     }
@@ -4218,7 +4218,7 @@
       "scripts/check-nanpure-pattern-difficulty.cjs": "dfd7c98a7e7bc0e13979f24bd257c419d78bd2b3649bb4b2aba5eb4da4783ac0",
       "scripts/i18n/catalog-pattern-flow-80.cjs": "822fb6ad337dbe8f33f1637c6eb9a1b776984c1d7c64685b59b4dbbac6f9e803",
       "scripts/check-nanpure-pattern-mobile-browser.cjs": "95b90c7aaaa2f2f2c9bd15b21663e59b35af181f663af218607c5ae1a05d71c1",
-      "scripts/check-nanpure-pattern-browser.cjs": "4968661b1951f10c1297a42e00eb3ed035da24810d05fdc0d3c7ef3daeb5bb36",
+      "scripts/check-nanpure-pattern-browser.cjs": "b730edab7f050db0766f78fa268cbae654508e0571c24b9afc2e9fc4efda14c4",
       "scripts/check-nanpure-collection-entry.cjs": "f591e063934a137382fbc0eb49149a4ff649e40c5c3485c282c5c7634a90cbe1",
       "scripts/prepare-pattern-flow-release.mjs": "fc4707fb959b76b7303b130520779c06dbaefe7737d2f7fb8d0d919dd3be0eec"
     }
@@ -4234,9 +4234,9 @@
       "scripts/i18n/catalog-pattern-jobs-81.cjs": "597b2db4d8c81a7cb42e184546ee93074ff963c1f691484043a959356542d07f",
       "scripts/client-overrides/public/notebook/pattern-jobs.js": "47724b4da2fe63cf2191e8c8e598a904a841790ad46d9ea64c7eaf20f34ea255",
       "scripts/check-nanpure-pattern-jobs.cjs": "f2cba8b81dc9ce4eb7c3df001d184cc5dc90c820b09aecf91f8317edebad6547",
-      "scripts/check-nanpure-pattern-jobs-browser.cjs": "9167cba411091c4a89bcfc81d5df4734ac2fe829f39880280d5e6603653353e0",
+      "scripts/check-nanpure-pattern-jobs-browser.cjs": "612f9bf9e83cac69903ee5b89dd739aac842ea8f28d6448462dd0a5420febcb6",
       "scripts/check-nanpure-pattern-mobile-browser.cjs": "95b90c7aaaa2f2f2c9bd15b21663e59b35af181f663af218607c5ae1a05d71c1",
-      "scripts/check-nanpure-pattern-browser.cjs": "4968661b1951f10c1297a42e00eb3ed035da24810d05fdc0d3c7ef3daeb5bb36",
+      "scripts/check-nanpure-pattern-browser.cjs": "b730edab7f050db0766f78fa268cbae654508e0571c24b9afc2e9fc4efda14c4",
       "scripts/check-nanpure-collection-entry.cjs": "f591e063934a137382fbc0eb49149a4ff649e40c5c3485c282c5c7634a90cbe1",
       "scripts/prepare-pattern-jobs-release.mjs": "8e79b9bc1dde79f0973da637a20b1255027acd12c6655775217d0d1824f77891"
     }
@@ -4252,9 +4252,9 @@
       "scripts/i18n/catalog-pattern-wording-82.cjs": "ec7ec4d652c9fb5aab1d2be50edb6c85098278756f248303e853c90f6f6e2178",
       "scripts/client-overrides/public/notebook/pattern-jobs.js": "47724b4da2fe63cf2191e8c8e598a904a841790ad46d9ea64c7eaf20f34ea255",
       "scripts/check-nanpure-pattern-jobs.cjs": "f2cba8b81dc9ce4eb7c3df001d184cc5dc90c820b09aecf91f8317edebad6547",
-      "scripts/check-nanpure-pattern-jobs-browser.cjs": "9167cba411091c4a89bcfc81d5df4734ac2fe829f39880280d5e6603653353e0",
+      "scripts/check-nanpure-pattern-jobs-browser.cjs": "612f9bf9e83cac69903ee5b89dd739aac842ea8f28d6448462dd0a5420febcb6",
       "scripts/check-nanpure-pattern-mobile-browser.cjs": "95b90c7aaaa2f2f2c9bd15b21663e59b35af181f663af218607c5ae1a05d71c1",
-      "scripts/check-nanpure-pattern-browser.cjs": "4968661b1951f10c1297a42e00eb3ed035da24810d05fdc0d3c7ef3daeb5bb36",
+      "scripts/check-nanpure-pattern-browser.cjs": "b730edab7f050db0766f78fa268cbae654508e0571c24b9afc2e9fc4efda14c4",
       "scripts/check-nanpure-collection-entry.cjs": "f591e063934a137382fbc0eb49149a4ff649e40c5c3485c282c5c7634a90cbe1",
       "scripts/prepare-pattern-wording-release.mjs": "d66b9217ae80fcc0f223923da4d872f8b47a2004e01cac5a77dc9860354f00d5"
     }
@@ -4270,9 +4270,9 @@
       "scripts/i18n/catalog-pattern-wording-82.cjs": "ec7ec4d652c9fb5aab1d2be50edb6c85098278756f248303e853c90f6f6e2178",
       "scripts/client-overrides/public/notebook/pattern-jobs.js": "47724b4da2fe63cf2191e8c8e598a904a841790ad46d9ea64c7eaf20f34ea255",
       "scripts/check-nanpure-pattern-jobs.cjs": "f2cba8b81dc9ce4eb7c3df001d184cc5dc90c820b09aecf91f8317edebad6547",
-      "scripts/check-nanpure-pattern-jobs-browser.cjs": "9167cba411091c4a89bcfc81d5df4734ac2fe829f39880280d5e6603653353e0",
+      "scripts/check-nanpure-pattern-jobs-browser.cjs": "612f9bf9e83cac69903ee5b89dd739aac842ea8f28d6448462dd0a5420febcb6",
       "scripts/check-nanpure-pattern-mobile-browser.cjs": "95b90c7aaaa2f2f2c9bd15b21663e59b35af181f663af218607c5ae1a05d71c1",
-      "scripts/check-nanpure-pattern-browser.cjs": "4968661b1951f10c1297a42e00eb3ed035da24810d05fdc0d3c7ef3daeb5bb36",
+      "scripts/check-nanpure-pattern-browser.cjs": "b730edab7f050db0766f78fa268cbae654508e0571c24b9afc2e9fc4efda14c4",
       "scripts/check-nanpure-collection-entry.cjs": "f591e063934a137382fbc0eb49149a4ff649e40c5c3485c282c5c7634a90cbe1",
       "scripts/prepare-pattern-posting-release.mjs": "8762a959d37b781ea8e966360baa6f57abc6b774ae58e33dc33ebed44173d3c1",
       "scripts/client-overrides/public/notebook/pattern-share-model.js": "0b5fd32019b6dfdd2151017c70d060f2616a096f19290557ea5ced39e497d55c",
@@ -4282,7 +4282,7 @@
       "scripts/check-nanpure-pattern-share-actions.cjs": "b6fb8d5fb64ed594f638ac247795cc2575e2ffd9e77bbade85abb049ee34cc29",
       "scripts/check-nanpure-pattern-drawing.cjs": "ea9d572d3e8e98631fcb90fe307859cea7f48f8bb2b728f45818871ed1ec9f4b",
       "scripts/i18n/catalog-pattern-drawing-83.cjs": "76fc26bba916aad8457b5442f661921f259010807d6908c2aa570393b80a3a85",
-      "scripts/check-nanpure-pattern-share-browser.cjs": "093da45511bfee8f889e1a3a13da325b78d5bf373acd0fd34539652d84f3d134",
+      "scripts/check-nanpure-pattern-share-browser.cjs": "3d9fb4186910616b16ef4b60473e07187d9d1ecc7f8d273a5c9775ff76feecdc",
       "scripts/i18n/catalog-pattern-posting-83.cjs": "014ac7212406308b08e5ef0d6dce89a9a38eaa7dc4fef3b9b5662098405ea684"
     }
   },

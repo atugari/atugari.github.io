@@ -338,14 +338,14 @@ async function checkResponsiveFreePlay(browser,root,viewport){
 
   // Valid classic Sudoku solutions with only the first row removed. These give
   // deterministic input and single-position hints without running a generator.
-  const fixtures=await frame.evaluate(()=>{
+  const fixtures=await frame.evaluate(async ()=>{
    const fixtures=[9,25].map(n=>{
     const block=Math.sqrt(n),solution=Array.from({length:n*n},(_,i)=>{const row=Math.floor(i/n),col=i%n;return(row*block+Math.floor(row/block)+col)%n+1;});
     const puzzle=solution.map((value,i)=>i<n?0:value);
     const result={uid:'ci-responsive-classic-'+n,id:'CI'+n,kind:'normal',n,level:1,ratingVersion:2,blockRows:block,blockCols:block,created:1792627200000+n,completed:false,elapsed:0,notes:{},puzzle,solution,grid:puzzle.slice()};
     NanpureAppTest.validate(result);return result;
    });
-   const library=NanpureAppTest.getLibrary();library.splice(0,library.length,...fixtures);
+   const library=NanpureAppTest.getLibrary();library.splice(0,library.length,...fixtures);await NPStorage.save(library,null);
    return fixtures.map(p=>({uid:p.uid,n:p.n,nine:p.puzzle.indexOf(9)}));
   });
   async function openPuzzle(fixture,fromGame=false){
@@ -516,9 +516,9 @@ async function checkJigsawCreationAndPrint(page,lang,expected){
   await checkNotebookInterface(frame,lang,'jigsaw confirmation '+complexity);
   console.log('PASS jigsaw creation:',lang,'complexity',complexity,'count 1');
  }
- // Use a shipped, valid preview puzzle as an in-memory fixture. No generation,
- // import, cloud write, native print dialog or persistent fixture file is needed.
- const printFixture=await frame.evaluate(()=>{
+ // Save a shipped, valid preview puzzle in the isolated browser database.
+ // No generation, cloud write or native print dialog is needed.
+ const printFixture=await frame.evaluate(async ()=>{
   const source=window.SHAPE_PREVIEWS?.jigsaw?.[3];if(!source)throw Error('Missing shipped Jigsaw preview fixture');
   const puzzle=JSON.parse(JSON.stringify(source));
   // Guarantee a real9in the preview, so a numeric translation collision cannot
@@ -526,7 +526,7 @@ async function checkJigsawCreationAndPrint(page,lang,expected){
   puzzle.puzzle[puzzle.solution.indexOf(9)]=9;
   Object.assign(puzzle,{uid:'ci-i18n-jigsaw-complexity-4',created:1792627200000,kind:'jigsaw',n:9,level:1,complexity:4,shapeVersion:2,completed:false,elapsed:0,notes:{},grid:puzzle.puzzle.slice()});
   NanpureAppTest.validate(puzzle);
-  const library=NanpureAppTest.getLibrary();library.splice(0,library.length,puzzle);return{uid:puzzle.uid,puzzle:puzzle.puzzle.slice(),solution:puzzle.solution.slice()};
+  const library=NanpureAppTest.getLibrary();library.splice(0,library.length,puzzle);await NPStorage.save(library,puzzle);return{uid:puzzle.uid,puzzle:puzzle.puzzle.slice(),solution:puzzle.solution.slice()};
  });
  const uid=printFixture.uid;
  // website.css hides the notebook's own header buttons. Use the visible shell

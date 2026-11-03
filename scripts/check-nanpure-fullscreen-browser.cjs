@@ -57,7 +57,7 @@ async function journey(page,frame,{multi=false,native=true}={}){
  await f.page.waitForFunction(()=>[...document.querySelectorAll('iframe')].some(el=>el.contentWindow?.NanpureAppTest&&el.contentWindow?.NPBoardFullscreen));
  const iframe=f.page.locator('iframe[title="ナンプレ帳 問題生成とプレイ"]'),frame=await(await iframe.elementHandle()).contentFrame();
  await frame.locator('[data-action="open-notebook"]').waitFor();
- await frame.evaluate(p=>{NanpureAppTest.validate(p);const lib=NanpureAppTest.getLibrary();lib.splice(0,lib.length,p);},classic(16));
+ await frame.evaluate(async p=>{NanpureAppTest.validate(p);const lib=NanpureAppTest.getLibrary();lib.splice(0,lib.length,p);await NPStorage.save(lib,p);},classic(16));
  for(const selector of ['[data-action="open-notebook"]','[data-action="start"][data-flow="play"]','[data-action="pick-play"][data-id="ci-fullscreen-16"]','[data-action="begin-play"][data-id="ci-fullscreen-16"]'])await frame.locator(selector).click();
  await journey(f.page,frame);assert.deepEqual(f.errors,[]);await f.context.close();console.log('PASS actual website shell: parent header reclaimed, native fullscreen, input and restoration');
 }finally{await browser.close();}})().catch(error=>{console.error(error);process.exitCode=1;});
