@@ -90,6 +90,11 @@ jobs:
           export CHROME_BIN="$(command -v google-chrome || command -v chromium)"
           node scripts/check-nanpure-ranking-browser.cjs _site
 
+      - name: Check generation assist fallback, result races and broker
+        run: |
+          node --test scripts/check-generation-assist.cjs
+          npm --prefix nanpure-api run build
+
       - name: Check local replay recording and resume
         run: node scripts/check-community-recorder.cjs
 
