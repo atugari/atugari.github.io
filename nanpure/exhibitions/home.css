@@ -30,4 +30,7 @@
 @media(max-width:760px) and (max-height:700px){.np-community-home .home-topline,.np-community-home .home-support-button,.np-community-home .home-version{display:none}.start-screen.designed-home.np-community-home{gap:7px;padding:6px 14px 10px}.np-community-home .choice-card{min-height:70px}.np-community-home .start-choices{min-height:149px;gap:9px}.np-community-home .np-collection-entry{min-height:48px}.np-community-home .home-bottom-links{min-height:46px}.community-pare-entry{min-height:36px}.np-community-home .home-resume{min-height:35px;margin:0}}
 
 html[data-np-interactive=true] #search-directory{display:none!important}
-.np-community-home .np-pare-entry{display:none!important}
+.np-community-home .community-pare-entry{display:none}
+.np-community-home .np-pare-entry{grid-column:2;align-self:center;min-height:44px;opacity:1}
+.np-community-home .np-pare-entry strong{font-size:13px}
+.np-community-home .np-pare-entry small{display:none}

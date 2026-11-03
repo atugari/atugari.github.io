@@ -7,7 +7,7 @@
   "files": {
     "nanpure/index.html": "8e96a0bc84b9f16615850548c45d0a0e3f70ada34febdea42700bd48fe30c95f",
     "nanpure.html": "b9585e4659bb2a234bede05222fb0366b49002475202499d60274c17ebef2dc3",
-    "nanpure/version.json": "b42c5017f5f520acb0ebf22417a210f11fce80c54e23226f75f3754523d6348e",
+    "nanpure/version.json": "95701dc41ee130c60fe1212b56c2c8937a82c539a08d4dcaaf8e6f43654d9354",
     "nanpure/releases.json": "559468792889c374b6c788ab580f845dfa34d4d29ceee99145e1f3f45c0cf319",
     "nanpure/guide/index.html": "53ecc04bb0c8c4e22a7a6ebbdbcd2d90ff4e5c798d35832301cde2eeeb73c42d",
     "nanpure/sudoku-types/index.html": "289a15ead5d6bf9375c9cad2a57fab71b28087a89843dcfac55cde4182075db2",
@@ -4132,7 +4132,7 @@
       "scripts/prepare-ranking-auto-release.mjs": "52b82934c0d8da24b6d3a0498163468e1a28f2e5ee14539f039b98e363f948e4"
     }
   },
-  "communitySourceSha256": "b95b8343a385ad3ce8cade3cde311f577a3e718018195aceb22433ceeefb8153",
+  "communitySourceSha256": "2039eabbcf326a6f50db1afa42a73c44e8bd71b272e25d2c447e1156746808cf",
   "community": {
     "version": 1,
     "path": "/nanpure/exhibitions/",
@@ -4141,7 +4141,7 @@
       "nanpure/exhibitions/art.mjs": "da6aac242f7b624e00ea25db900781b99135cd750133bfb0d9faea6502271ef1",
       "nanpure/exhibitions/entry.js": "2f61b0be784d929ddfb0b6a365c2fbfdae00ba8738b583e22fd9f1b5b00f880a",
       "nanpure/exhibitions/home-locale.mjs": "206c3978d25283ce146eed2d86e7604e5b7a103cb5c6c5b3dee4c408a9fee682",
-      "nanpure/exhibitions/home.css": "fb11fe4503a52902531ad40c4d565fe2757d2190c32fb546354767afe5ffca98",
+      "nanpure/exhibitions/home.css": "74a7fee53e523d653909c1680491b49066b2f902f0af29ccb2ecb8609c0048fd",
       "nanpure/exhibitions/home.mjs": "bc62ddbcd895eec556aeb6abe7f8f9c48ba74ea5afb7662d72ebbd7577dc9519",
       "nanpure/exhibitions/index.html": "7d97c92a697a8fe131860d28c06d164fd2987fcf15e2aecc7ca4922566c4ed52",
       "nanpure/exhibitions/journal.mjs": "b3a5fd53512b6599397dd1915410ef9d5a6c548c7c339b85f711f98a1a4ebf9d",
