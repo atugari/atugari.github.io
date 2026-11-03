@@ -68,7 +68,7 @@ try {
   fs.cpSync(path.join(source,'public',name),path.join(output,name),{recursive:true});
  }
  if(fs.existsSync(path.join(overrides,'public')))fs.cpSync(path.join(overrides,'public'),output,{recursive:true});
- fs.appendFileSync(path.join(output,'site-theme.js'),'\n(()=>{const s=document.createElement("script");s.src=new URL("site-layout.js",document.currentScript.src).href;document.head.append(s)})();\n');
+ fs.appendFileSync(path.join(output,'site-theme.js'),'\n(()=>{const base=document.currentScript?.src;if(!base||window.NPSiteLayout)return;const s=document.createElement("script");s.src=new URL("site-layout.js",base).href;document.head.append(s)})();\n');
  fs.rmSync(path.join(output,'notebook/wado-web.js'),{force:true});
  fs.writeFileSync(path.join(output,'keyboard-access.js'),['key-bindings.js','keyboard-access.js'].map(name=>fs.readFileSync(path.join(overrides,'public',name),'utf8')).join('\n'));
  await esbuild.build({entryPoints:[path.join(overrides,'lib/board-appearance.ts')],outfile:path.join(output,'notebook/board-appearance.js'),bundle:true,format:'iife',globalName:'NPBoardAppearance',target:['es2022'],minify:true,logLevel:'warning'});

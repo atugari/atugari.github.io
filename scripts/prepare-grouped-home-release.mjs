@@ -10,7 +10,7 @@ fs.cpSync(path.join(root,oldBase),out,{recursive:true});for(const name of ['home
 for(const name of ['app.js','app.css','compact-play.js','recovery.js','recovery-pack-worker.js'])fs.copyFileSync(path.join(pub,'notebook',name),path.join(out,'notebook',name));patchNotebookApp(path.join(out,'notebook'));
 for(const f of walk(out).filter(f=>/\.(html|js|css)$/.test(f))){let s=fs.readFileSync(f,'utf8'),v=s.replaceAll(oldBase,base).replace(/(["'(])\/(notebook|audio|themes)\//g,(_,q,k)=>q+base+k+'/');if(v!==s)fs.writeFileSync(f,v)}
 buildTranslationAssets(path.join(out,'notebook'),version,{previousDirectory:path.join(root,oldBase,'notebook')});
-const theme=path.join(out,'site-theme.js');fs.appendFileSync(theme,'\n(()=>{const s=document.createElement("script");s.src=new URL("site-layout.js",document.currentScript.src).href;document.head.append(s)})();\n');
+const theme=path.join(out,'site-theme.js');fs.appendFileSync(theme,'\n(()=>{const base=document.currentScript?.src;if(!base||window.NPSiteLayout)return;const s=document.createElement("script");s.src=new URL("site-layout.js",base).href;document.head.append(s)})();\n');
 let component=read('scripts/client-overrides/app/grouped-home.tsx').replace("'use client';",'').replace('export default function GroupedHome','function NPGroupedHome');
 component=transformSync(component,{loader:'tsx',jsx:'transform',jsxFactory:'NPHomeJSX',target:'es2022'}).code;
 const shellFile=path.join(out,'shell/main.js');let shell=fs.readFileSync(shellFile,'utf8'),patches=[],homeFound=0,versionFound=0;
