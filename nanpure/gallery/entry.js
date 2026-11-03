@@ -1,6 +1,7 @@
 // One entry point; all gallery code is loaded only when needed.
 (function(){'use strict';
 const script=document.currentScript,base=new URL('./',script.src),installed=new WeakSet();let module;
+if(!document.querySelector('[data-community-entry]')){const s=document.createElement('script');s.src='/nanpure/exhibitions/entry.js';s.dataset.communityEntry='';document.head.append(s);}
 function capture(a){if(!a||installed.has(a)||typeof a.capture!=='function')return;installed.add(a);const original=a.capture;a.capture=function(type,data){const result=original.apply(this,arguments);if(type==='clear'&&data?.game==='sudoku'&&data.valid===true){module??=import(new URL('data.mjs',base));module.then(m=>m.addClear(data)).catch(()=>{});}return result;};}
 const labels={ja:'自分の展示室',en:'My gallery','zh-Hans':'我的展室','zh-Hant':'我的展間',ko:'내 전시실',es:'Mi galería',fr:'Ma galerie',de:'Meine Galerie',pt:'Minha galeria',it:'La mia galleria',nl:'Mijn galerij',sv:'Mitt galleri',pl:'Moja galeria',cs:'Moje galerie',ru:'Моя галерея',id:'Galeri saya',vi:'Phòng trưng bày',th:'ห้องจัดแสดงของฉัน',hi:'मेरी गैलरी',ar:'معرضي'};
 function mount(){

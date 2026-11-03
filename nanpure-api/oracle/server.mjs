@@ -11,8 +11,8 @@ export function openDatabase(filename){
 }
 export function createServer(DB){return http.createServer(async(req,res)=>{
  try{
-  const url=new URL(req.url,'http://127.0.0.1');if(!['/api/gallery','/api/health'].includes(url.pathname)){res.writeHead(404);res.end();return;}
-  let size=0;const chunks=[];for await(const c of req){size+=c.length;if(size>280000){res.writeHead(413);res.end('{"error":"入力が長すぎます。"}');return;}chunks.push(c);}
+  const url=new URL(req.url,'http://127.0.0.1');if(!['/api/gallery','/api/exhibitions','/api/health'].includes(url.pathname)){res.writeHead(404);res.end();return;}
+  let size=0;const chunks=[];for await(const c of req){size+=c.length;if(size>(url.pathname==='/api/exhibitions'?550000:280000)){res.writeHead(413);res.end('{"error":"入力が長すぎます。"}');return;}chunks.push(c);}
   const headers=new Headers();for(const [k,v]of Object.entries(req.headers))if(v)headers.set(k,Array.isArray(v)?v.join(','):v);headers.set('cf-connecting-ip',req.socket.remoteAddress||'local');
   const request=new Request(url,{method:req.method,headers,...(!['GET','HEAD'].includes(req.method)?{body:Buffer.concat(chunks)}:{})});
   const response=await worker.fetch(request,{DB,SITE_VERSION:'gallery-oci'});res.writeHead(response.status,Object.fromEntries(response.headers));res.end(Buffer.from(await response.arrayBuffer()));

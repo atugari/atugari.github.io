@@ -1,0 +1,10 @@
+let selected=0,ready=false;
+export function decorate(wall){
+ document.body.classList.add('museum-room');const items=[...wall.children].filter(n=>n.classList.contains('exhibit'));if(!items.length)return;
+ wall.setAttribute('aria-roledescription','カルーセル');wall.tabIndex=0;let nav=document.getElementById('gallery-navigation');if(!nav){nav=document.createElement('div');nav.id='gallery-navigation';nav.className='gallery-navigation';wall.after(nav);}nav.replaceChildren();
+ const prev=document.createElement('button'),next=document.createElement('button'),label=document.createElement('span');prev.type=next.type='button';prev.textContent='← 前の展示';next.textContent='次の展示 →';label.setAttribute('aria-live','polite');nav.append(prev,label,next);
+ function show(delta=0){selected=(selected+delta+items.length)%items.length;items.forEach((item,i)=>{const offset=(i-selected+items.length)%items.length;item.dataset.position=offset===0?'center':offset===1?'right':offset===items.length-1?'left':'hidden';item.inert=offset!==0;item.setAttribute('aria-hidden',String(offset!==0));});label.textContent=`${selected+1} / ${items.length}`;}
+ prev.onclick=()=>show(-1);next.onclick=()=>show(1);wall.onkeydown=e=>{if(['ArrowLeft','ArrowRight'].includes(e.key)&&!e.target.closest('button,a,input,textarea')){e.preventDefault();show(e.key==='ArrowLeft'?-1:1)}};
+ if(!ready){ready=true;let wheel=0,touch=null;wall.addEventListener('wheel',e=>{if(e.ctrlKey||Date.now()-wheel<500)return;const d=Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:e.deltaY;if(Math.abs(d)<10)return;e.preventDefault();wheel=Date.now();(d>0?document.getElementById('gallery-navigation').lastChild:document.getElementById('gallery-navigation').firstChild).click();},{passive:false});wall.addEventListener('pointerdown',e=>{if(e.pointerType==='touch')touch=e.clientX});wall.addEventListener('pointerup',e=>{if(touch!==null&&Math.abs(e.clientX-touch)>45)(e.clientX<touch?document.getElementById('gallery-navigation').lastChild:document.getElementById('gallery-navigation').firstChild).click();touch=null});wall.addEventListener('pointercancel',()=>touch=null);}
+ show();
+}

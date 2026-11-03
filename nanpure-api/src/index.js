@@ -5,10 +5,11 @@ import{cloud}from'./cloud.js';
 import{cloudRetired,cloudRetirement,deleteRetiredCloudData}from'./shared/cloud-retirement.js';
 import{achievements}from'./achievements.js';
 import{gallery}from'./gallery.js';
+import{exhibitions}from'./exhibitions.js';
 import{rankingProfile}from'./ranking-profile.js';
 import{importLegacy}from'./import.js';
 import{visit,overview,apiVersion}from'./owner.js';
-const tables=['attempts','daily_stock','daily_assignments','daily_maintenance','inquiries','cloud_saves','rate_limits','contact_images','cloud_uploads','cloud_chunks','visit_sessions','visit_browsers','visit_days','owner_usage_snapshots','achievement_members','achievement_owned','galleries','ranking_profiles'];
+const tables=['attempts','daily_stock','daily_assignments','daily_maintenance','inquiries','cloud_saves','rate_limits','contact_images','cloud_uploads','cloud_chunks','visit_sessions','visit_browsers','visit_days','owner_usage_snapshots','achievement_members','achievement_owned','galleries','ranking_profiles','exhibition_entries','exhibition_reactions','gallery_replays'];
 export default {async scheduled(event,env){if(cloudRetired())await deleteRetiredCloudData(env.DB);},async fetch(request,env){let response;const url=new URL(request.url),origin=request.headers.get('origin');
  try{
   if(origin!==null&&origin!==siteOrigin&&origin!==url.origin)fail(403,'送信元を確認できません。');
@@ -34,6 +35,7 @@ export default {async scheduled(event,env){if(cloudRetired())await deleteRetired
    else if(url.pathname==='/api/contact/image'&&request.method==='GET')response=await contactImage(request,env,url);
    else if(url.pathname==='/api/achievements')response=await achievements(request,env.DB);
    else if(url.pathname==='/api/gallery')response=await gallery(request,env.DB,url);
+   else if(url.pathname==='/api/exhibitions')response=await exhibitions(request,env.DB,url);
    else if(url.pathname==='/api/cloud')response=await cloud(request,env.DB,url);
    else if(url.pathname==='/api/admin')response=await admin(request,env);
    else if(url.pathname==='/api/admin/import'&&request.method==='POST')response=await importLegacy(request,env);
