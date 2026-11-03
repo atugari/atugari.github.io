@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="ナンプレ帳の確認済み500問から、解法で探す、一手練習、解き方の比較、解説動画、コンピューターとの練習ができます。普通の9×9の元の難度を保持しています。">
+  <title>解法で学ぶ｜ナンプレ帳</title>
+  <link rel="canonical" href="https://atugari.github.io/nanpure/learn/">
+  <link rel="stylesheet" href="style.css?v=1">
+  <script defer src="/nanpure/releases/2026.11.03.85/notebook/logical-hints.js"></script>
+  <script defer src="analyzer.js?v=1"></script>
+  <script defer src="render.js?v=1"></script>
+  <script defer src="/nanpure/assets/reading-tools.js?v=20261101-reading1" data-version="2026.11.03.85"></script>
+</head>
+<body>
+<header class="site-header"><a href="/nanpure/" class="brand">‹ ナンプレ帳</a><a href="/nanpure/collection/">すぐ遊べる問題集</a></header>
+<main>
+  <div id="notice" role="status" class="notice" hidden></div>
+  <section id="library">
+    <div class="hero"><p class="eyebrow">ひとつずつ、解ける理由を。</p><h1>解法で学ぶ</h1><p class="lead">解き方を比べる。一手だけ考える。<br>確認済みの手順から、ナンプレのコツを見つけよう。</p><p id="summary" role="status" class="summary">問題の一覧を読み込んでいます。</p></div>
+    <form id="filters" class="filters" aria-label="練習する問題を探す">
+      <label>使った解法<select id="technique"><option value="">すべての解法</option></select></label>
+      <label>元の難度<select id="level"><option value="">すべての難度</option></select></label>
+      <label>手順の確認状況<select id="completion"><option value="all">すべての問題</option><option value="solved">最後まで解けた問題</option><option value="partial">途中までの問題</option></select></label>
+      <label>問題番号<input id="search" type="search" placeholder="例：P-063354" maxlength="30"></label>
+    </form>
+    <div class="list-heading"><p id="count" role="status"></p><button id="quick" class="primary" disabled>この条件で練習する</button></div>
+    <div id="cards" class="cards"></div>
+    <div id="pagination" class="pagination"><button id="page-prev">前の問題を表示する</button><span id="page-number"></span><button id="page-next">次の問題を表示する</button></div>
+    <details class="about"><summary>この解法データについて</summary><p>既存の普通の9×9を、2通りの順序で論理的に解析したデータです。各手順の根拠と、独立した探索による唯一解を確認しています。元の問題の難度は変更していません。</p><p>「使った解法」は、見つかった手順で使った解法です。その問題に必ず必要な解法とは限りません。2通りの手順は、すべての解き方を調べた最短手順ではありません。</p><p>最後まで解けた325問と、対応する解法では途中までだった175問を収録しています。一手練習は確認できた場面から出題し、対戦と完了までの解説動画には最後まで解けた問題を使います。</p><p>手順データは、選んだ問題の分を小分けに読み込みます。練習の正解数は、このブラウザに小さな記録として保存します。</p></details>
+  </section>
+
+  <section id="lesson" hidden>
+    <div class="lesson-heading"><button id="back">‹ 問題の一覧に戻る</button><a id="play-original" href="/nanpure/collection/">元の問題を遊ぶ</a></div>
+    <div class="lesson-title"><div><p id="problem-number" class="eyebrow"></p><h1 id="problem-title">解き方を確かめる</h1></div><p id="problem-info" class="muted"></p></div>
+    <nav id="modes" class="modes" aria-label="学び方を選ぶ"><button data-mode="explain" aria-current="page">問題と解説</button><button data-mode="practice">一手練習</button><button data-mode="video">解説動画</button><button data-mode="rival">コンピューター対戦</button></nav>
+
+    <div data-panel="explain">
+      <div id="routes" class="routes" aria-label="比べる手順を選ぶ"></div>
+      <div class="study-grid"><div><canvas id="board" width="720" height="720" role="img" aria-label="解説の盤面"></canvas><label class="check"><input id="show-notes" type="checkbox" checked>候補の数字を表示する</label></div><section class="panel explanation"><p class="eyebrow">確認済みの手順</p><h2 id="step-title"></h2><p id="step-progress" class="muted"></p><div id="explanation"></div><div class="actions"><button id="step-prev">前の手順を見る</button><button id="step-next" class="primary">次の手順を見る</button></div><p class="muted">青は注目するマス、黄は根拠、赤い線は消せる候補です。</p><p id="route-limit" class="route-limit" hidden></p></section></div>
+    </div>
+
+    <div data-panel="practice" hidden>
+      <div class="study-grid"><canvas id="practice-board" width="720" height="720" role="img" aria-label="一手練習の盤面"></canvas><section class="panel"><p class="eyebrow">この一手を、考えてみよう。</p><label>練習する解法<select id="practice-type"></select></label><h2 id="practice-question"></h2><p id="practice-tech" class="muted"></p><div id="practice-digits" class="digits" aria-label="答えの数字を選ぶ"></div><p id="practice-feedback" role="status"></p><div class="actions"><button id="practice-hint">根拠を見る</button><button id="practice-next" class="primary">次の練習へ進む</button></div><div id="practice-explanation"></div><p id="practice-score" class="muted"></p></section></div>
+    </div>
+
+    <section data-panel="video" class="panel video-panel" hidden><p class="eyebrow">解き方を、動画でも。</p><h2>字幕付きの解説動画を作る</h2><p>選んだ問題を最後まで解く様子を、この端末で動画にします。数字と候補を強調する字幕付きWebM動画です。音声は入りません。</p><label>手順<select id="video-route"></select></label><label>一手の表示時間<select id="video-pace"><option value="1100">短め（約1秒）</option><option value="2000" selected>ふつう（約2秒）</option><option value="3500">ゆっくり（約3.5秒）</option></select></label><div class="actions"><button id="video-create" class="primary">解説動画を作る</button><button id="video-cancel" hidden>動画作成を中止する</button></div><p id="video-status" role="status"></p><progress id="video-progress" value="0" max="1" hidden></progress><video id="video-preview" controls playsinline hidden></video><a id="video-download" class="button" hidden>完成した動画を保存する</a><p class="muted">作成中は、この画面を開いたままにしてください。別の画面に移ると作成を中止します。</p></section>
+
+    <section data-panel="rival" hidden>
+      <div class="rival-heading"><div><h2>同じ問題で、解く練習。</h2><p>相手は確認済みの手順で解くコンピューターです。</p></div><div class="actions"><label>相手が考える速さ<select id="rival-pace"><option value="6000">ゆっくり</option><option value="3000" selected>ふつう</option><option value="1200">はやい</option></select></label><button id="rival-start" class="primary">この問題で対戦を始める</button><button id="rival-stop" disabled>対戦を停止する</button></div></div>
+      <p id="rival-status" role="status"></p>
+      <div class="rival-grid"><section class="panel"><h3>あなた <span id="player-progress"></span></h3><canvas id="player-board" width="720" height="720" tabindex="0" role="application" aria-label="あなたの盤面。マスを選び、数字ボタンまたは数字キーで入力します。矢印キーで移動できます。"></canvas><p id="selected-cell" class="muted" aria-live="polite"></p><div id="player-digits" class="digits" aria-label="入力する数字"></div><div class="actions"><button id="player-undo">入力を一つ戻す</button><button id="player-erase">選んだ数字を消す</button></div></section><section class="panel"><h3>コンピューター <span id="cpu-progress"></span></h3><canvas id="cpu-board" width="720" height="720" role="img" aria-label="コンピューターの盤面"></canvas><p id="cpu-tech" class="muted"></p></section></div>
+    </section>
+  </section>
+</main>
+<footer>ナンプレ帳 · 普通の9×9 / <a href="/nanpure/">ホームへ戻る</a></footer>
+<script type="module" src="app.mjs?v=1"></script>
+</body></html>

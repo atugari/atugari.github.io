@@ -1,0 +1,33 @@
+'use strict';
+const fs=require('node:fs'),path=require('node:path'),zlib=require('node:zlib'),crypto=require('node:crypto'),assert=require('node:assert/strict'),vm=require('node:vm');
+const {runtime,validateData}=require('./import-nanpure-analysis.cjs'),root=path.resolve(__dirname,'..'),dir=path.join(root,'nanpure/learn/data'),hash=b=>crypto.createHash('sha256').update(b).digest('hex');
+(async()=>{
+ const manifest=JSON.parse(fs.readFileSync(path.join(root,'nanpure/release-manifest.json'),'utf8'));
+ const shipped=[];function walk(dir){for(const entry of fs.readdirSync(dir,{withFileTypes:true})){const p=path.join(dir,entry.name);if(entry.isDirectory())walk(p);else if(entry.isFile())shipped.push(path.relative(root,p).split(path.sep).join('/'));}}walk(path.join(root,'nanpure/learn'));
+ for(const file of ['nanpure/collection/entry.js','nanpure/collection/entry.css','nanpure/collection/index.html',...shipped])assert.equal(hash(fs.readFileSync(path.join(root,file))),manifest.files[file],'release manifest: '+file);
+ const index=JSON.parse(fs.readFileSync(path.join(dir,'index.json'))),A=runtime(),all=[];
+ assert.equal(index.format,'nanpure-learning-index-v1');assert.equal(index.engineVersion,A.version);
+ for(const pack of index.packs){const bytes=Buffer.from(fs.readFileSync(path.join(dir,pack.file),'utf8'),'base64');assert.equal(bytes.length,pack.bytes);assert.equal(hash(bytes),pack.sha256);const payload=JSON.parse(zlib.gunzipSync(bytes));assert.equal(payload.format,'nanpure-learning-pack-v1');assert.deepEqual(payload.records.map(r=>r.sourceId),pack.ids);all.push(...payload.records);}
+ const verified=validateData({format:'nanpure-analysis-v1',engineVersion:A.version,records:all},A);assert.deepEqual(verified.report,index.counts);assert.equal(verified.report.records,500);assert.equal(verified.report.solvedPuzzles,325);assert.equal(verified.report.partialPuzzles,175);assert.equal(index.records.length,500);
+ for(const row of index.records){const record=all.find(r=>r.sourceId===row.id);assert.ok(record);assert.equal(row.recordId,record.id);assert.equal(row.level,record.puzzle.level);assert.equal(row.solved,record.routes.some(r=>r.status==='solved'));assert.ok(index.packs.some(p=>p.file===row.pack&&p.ids.includes(row.id)));assert.deepEqual(row.steps,record.routes.map(r=>r.steps.length));const used={};for(const r of record.routes)for(const [type,n]of Object.entries(r.stats.used))used[type]=(used[type]||0)+n;assert.deepEqual(row.used,used);}
+ const model=await import('../nanpure/learn/model.mjs');assert.equal(model.matching(index.records,{completion:'solved'}).length,325);assert.equal(model.matching(index.records,{completion:'partial'}).length,175);assert.equal(model.matching(index.records,{level:16}).length,20);
+ const methodCases=new Set();
+ for(const record of all){assert.equal(!!model.solvedRoute(record),record.routes.some(r=>r.status==='solved'));for(const route of record.routes){for(const scene of model.practiceScenes(route)){assert.ok(scene.answers.length);assert.equal(model.practiceHint(scene.step).cuts.length,0);assert.equal(model.practiceHint(scene.step).digits.length,0);if(methodCases.has(scene.step.type))continue;methodCases.add(scene.step.type);const state=A.replay(record.puzzle,route,scene.at),candidates=A.model(state).candidates[scene.target];assert.ok(scene.answers.every(d=>candidates.includes(d)));assert.ok(!state.grid[scene.target]);}}}
+ assert.equal(methodCases.size,Object.keys(index.counts.techniques).length);
+ for(const type of Object.keys(index.counts.techniques)){const list=model.matching(index.records,{technique:type});assert.ok(list.length);for(const row of list){const record=all.find(r=>r.sourceId===row.id);assert.ok(record.routes[model.pickRoute(record,type)].stats.used[type]);}}
+ const originalSelf=global.self;global.self=globalThis;
+ const {LearningData}=await import('../nanpure/learn/data.mjs');const originalFetch=global.fetch;let downloads=0,corrupt=false;
+ try{
+  global.fetch=async url=>{const file=path.basename(new URL(url).pathname);downloads++;if(file==='index.json')return new Response(fs.readFileSync(path.join(dir,file)),{status:200});let text=fs.readFileSync(path.join(dir,file),'utf8');if(corrupt){const bytes=Buffer.from(text,'base64');bytes[0]^=1;text=bytes.toString('base64');}return new Response(text,{status:200});};
+  const store=new LearningData(new URL('https://unit.example/data/'));await store.load();const first=await store.record(index.records[0].id),before=downloads;assert.equal((await store.record(index.records[1].id)).sourceId,index.records[1].id);assert.equal(downloads,before,'same pack is reused');assert.equal(first.sourceId,index.records[0].id);
+  for(const pack of index.packs)await store.record(pack.ids[0]);assert.ok(store.cache.size<=4,'bounded memory cache');
+  const cold=new LearningData(new URL('https://unit.example/data/'));await cold.load();corrupt=true;await assert.rejects(cold.record(index.records[0].id),/照合/);
+ }finally{global.fetch=originalFetch;if(originalSelf===undefined)delete global.self;else global.self=originalSelf;}
+ const html=fs.readFileSync(path.join(root,'nanpure/learn/index.html'),'utf8');for(const id of ['explain','practice','video','rival'])assert.ok(html.includes('data-panel="'+id+'"'));assert.ok(!html.includes('http://localhost'));assert.ok(!html.includes('workerKey'));
+ if(process.argv[2]){
+  const {parseHTML}=require(process.argv[2]),{document}=parseHTML('<html><head></head><body><main class="designed-home"><div class="start-choices"></div><div class="home-bottom-links"></div></main></body></html>'),observers=[],window={document};
+  vm.runInNewContext(fs.readFileSync(path.join(root,'nanpure/collection/entry.js'),'utf8'),{window,document,MutationObserver:class{constructor(fn){observers.push(fn)}observe(){}}});
+  const count=()=>document.querySelectorAll('[data-learning-entry]').length;assert.equal(count(),1);const link=document.querySelector('[data-learning-entry]');assert.equal(link.getAttribute('href'),'/nanpure/learn/');link.after(link.cloneNode(true));observers[0]();assert.equal(count(),1);document.querySelector('.designed-home').remove();observers[0]();assert.equal(count(),0);
+ }
+ console.log(JSON.stringify({result:'PASS',records:index.counts.records,routes:index.counts.routes,steps:index.counts.steps,solved:index.counts.solvedPuzzles,partial:index.counts.partialPuzzles,practiceTypes:methodCases.size,compressedBytes:index.packs.reduce((n,p)=>n+p.bytes,0),checks:'logical proofs; source identities; original levels; partial routes; filtered practice; hidden answers; pack integrity; lazy loading; bounded cache; corrupt-file rejection; home entry'}));
+})().catch(error=>{console.error(error);process.exitCode=1;});
