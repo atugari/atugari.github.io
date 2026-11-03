@@ -7,7 +7,7 @@
   "files": {
     "nanpure/index.html": "8e96a0bc84b9f16615850548c45d0a0e3f70ada34febdea42700bd48fe30c95f",
     "nanpure.html": "b9585e4659bb2a234bede05222fb0366b49002475202499d60274c17ebef2dc3",
-    "nanpure/version.json": "95701dc41ee130c60fe1212b56c2c8937a82c539a08d4dcaaf8e6f43654d9354",
+    "nanpure/version.json": "a24a715b7b3ff9ddb0214b6b9fed1b5a29eb5a71bd02f429a3a476dd614b6dc0",
     "nanpure/releases.json": "559468792889c374b6c788ab580f845dfa34d4d29ceee99145e1f3f45c0cf319",
     "nanpure/guide/index.html": "53ecc04bb0c8c4e22a7a6ebbdbcd2d90ff4e5c798d35832301cde2eeeb73c42d",
     "nanpure/sudoku-types/index.html": "289a15ead5d6bf9375c9cad2a57fab71b28087a89843dcfac55cde4182075db2",
@@ -4132,25 +4132,25 @@
       "scripts/prepare-ranking-auto-release.mjs": "52b82934c0d8da24b6d3a0498163468e1a28f2e5ee14539f039b98e363f948e4"
     }
   },
-  "communitySourceSha256": "2039eabbcf326a6f50db1afa42a73c44e8bd71b272e25d2c447e1156746808cf",
+  "communitySourceSha256": "9d5dc8771a81b32a259da26fc3f176d2bf6f31b7bf14e33ccfd781355397c637",
   "community": {
     "version": 1,
     "path": "/nanpure/exhibitions/",
     "sources": {
-      "nanpure/exhibitions/app.mjs": "ab08ff7cbff6f8c5da517fa480571d322e02f390688d1ee71850a276a983aae9",
+      "nanpure/exhibitions/app.mjs": "fb4780e39f2068439ad912d8772fe52068fb8bfdfe7de7064ea9360ab727e2a3",
       "nanpure/exhibitions/art.mjs": "da6aac242f7b624e00ea25db900781b99135cd750133bfb0d9faea6502271ef1",
       "nanpure/exhibitions/entry.js": "2f61b0be784d929ddfb0b6a365c2fbfdae00ba8738b583e22fd9f1b5b00f880a",
       "nanpure/exhibitions/home-locale.mjs": "206c3978d25283ce146eed2d86e7604e5b7a103cb5c6c5b3dee4c408a9fee682",
       "nanpure/exhibitions/home.css": "74a7fee53e523d653909c1680491b49066b2f902f0af29ccb2ecb8609c0048fd",
       "nanpure/exhibitions/home.mjs": "bc62ddbcd895eec556aeb6abe7f8f9c48ba74ea5afb7662d72ebbd7577dc9519",
-      "nanpure/exhibitions/index.html": "7d97c92a697a8fe131860d28c06d164fd2987fcf15e2aecc7ca4922566c4ed52",
+      "nanpure/exhibitions/index.html": "b4ec52a8d8ad0b5dc6b856464ee763371ad6fa530a4e849956f1ef96315fb3ef",
       "nanpure/exhibitions/journal.mjs": "b3a5fd53512b6599397dd1915410ef9d5a6c548c7c339b85f711f98a1a4ebf9d",
       "nanpure/exhibitions/model.mjs": "748b08d351fab5a733ef11a1648579af2319bb2fdd5ac5c05bceef402eb0e4b6",
       "nanpure/exhibitions/play-support.mjs": "c34e3b5459afe7516f8b68136f3814165a8512eb20e6a7430f1778cbe9a073b5",
       "nanpure/exhibitions/recorder.js": "30e24cddf101ad16a45e5120de3e0b9949a6f1a4d5157b2bb4ddfacdde1898ef",
       "nanpure/exhibitions/replay-view.mjs": "e59647746afa35177198cc5292bc4a94858d4ce6c1f9e8380a08f319eabb8adf",
       "nanpure/exhibitions/service.mjs": "3d43dba80b860e40569616b8f9a4482c6dc7c7e6cb1e90b9ebc7a3324c1a4cbc",
-      "nanpure/exhibitions/style.css": "16632d4e31cfd95fc39f453fc5cd5c8b4faf8ed0a4abeef0b3cc55ea2edad6df",
+      "nanpure/exhibitions/style.css": "0821a345bdc8db5d7cf87de786159849747fdc6a248f713460e82cbe6cc4f86e",
       "nanpure/gallery/app.mjs": "e6c8f785403456e4c77b320ed164702cac101acb2ba1f31f55d623efcace9bd5",
       "nanpure/gallery/carousel.mjs": "c8f241886c9710e9e08e6d06eb08273d291e94e2f72aa0400e5e63776e66d85c",
       "nanpure/gallery/config.js": "bc65a974b5487a909e733f392414986e40f452de9935a68fb2d64c2cdc35d072",
