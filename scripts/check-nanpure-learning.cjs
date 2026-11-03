@@ -2,6 +2,9 @@
 const fs=require('node:fs'),path=require('node:path'),zlib=require('node:zlib'),crypto=require('node:crypto'),assert=require('node:assert/strict'),vm=require('node:vm');
 const {runtime,validateData}=require('./import-nanpure-analysis.cjs'),root=path.resolve(__dirname,'..'),dir=path.join(root,'nanpure/learn/data'),hash=b=>crypto.createHash('sha256').update(b).digest('hex');
 (async()=>{
+ const manifest=JSON.parse(fs.readFileSync(path.join(root,'nanpure/release-manifest.json'),'utf8'));
+ const shipped=[];function walk(dir){for(const entry of fs.readdirSync(dir,{withFileTypes:true})){const p=path.join(dir,entry.name);if(entry.isDirectory())walk(p);else if(entry.isFile())shipped.push(path.relative(root,p).split(path.sep).join('/'));}}walk(path.join(root,'nanpure/learn'));
+ for(const file of ['nanpure/collection/entry.js','nanpure/collection/entry.css','nanpure/collection/index.html',...shipped])assert.equal(hash(fs.readFileSync(path.join(root,file))),manifest.files[file],'release manifest: '+file);
  const index=JSON.parse(fs.readFileSync(path.join(dir,'index.json'))),A=runtime(),all=[];
  assert.equal(index.format,'nanpure-learning-index-v1');assert.equal(index.engineVersion,A.version);
  for(const pack of index.packs){const bytes=Buffer.from(fs.readFileSync(path.join(dir,pack.file),'utf8'),'base64');assert.equal(bytes.length,pack.bytes);assert.equal(hash(bytes),pack.sha256);const payload=JSON.parse(zlib.gunzipSync(bytes));assert.equal(payload.format,'nanpure-learning-pack-v1');assert.deepEqual(payload.records.map(r=>r.sourceId),pack.ids);all.push(...payload.records);}

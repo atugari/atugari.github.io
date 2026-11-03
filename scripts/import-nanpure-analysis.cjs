@@ -1,6 +1,13 @@
 'use strict';
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),crypto=require('node:crypto'),zlib=require('node:zlib');
 const root=path.resolve(__dirname,'..'),hash=bytes=>crypto.createHash('sha256').update(bytes).digest('hex');
+function refreshManifest(){
+ const file=path.join(root,'nanpure/release-manifest.json');if(!fs.existsSync(file))return;
+ const manifest=JSON.parse(fs.readFileSync(file,'utf8')),paths=['nanpure/collection/entry.js','nanpure/collection/entry.css','nanpure/collection/index.html'];
+ function walk(dir){for(const entry of fs.readdirSync(dir,{withFileTypes:true})){const p=path.join(dir,entry.name);if(entry.isDirectory())walk(p);else if(entry.isFile())paths.push(path.relative(root,p).split(path.sep).join('/'));}}
+ walk(path.join(root,'nanpure/learn'));for(const name of paths)manifest.files[name]=hash(fs.readFileSync(path.join(root,name)));
+ fs.writeFileSync(file,JSON.stringify(manifest,null,2)+'\n');
+}
 function runtime(){
  const context={console,Math,Date,performance};context.window=context;context.self=context;context.globalThis=context;vm.createContext(context);
  for(const file of ['nanpure/releases/2026.11.03.85/notebook/logical-hints.js','nanpure/learn/analyzer.js'])vm.runInContext(fs.readFileSync(path.join(root,file),'utf8'),context,{filename:file});
@@ -45,7 +52,8 @@ function writeDistribution(inputFile){
  }
  fs.writeFileSync(path.join(out,'index.json'),JSON.stringify(index));
  fs.mkdirSync(path.join(root,'docs'),{recursive:true});fs.writeFileSync(path.join(root,'docs/nanpure-learning-import-20261103.json'),JSON.stringify({sourceSha256:index.sourceSha256,engineVersion:A.version,...report,compressedBytes:index.packs.reduce((n,p)=>n+p.bytes,0),packs:index.packs.length},null,2)+'\n');
+ refreshManifest();
  return index;
 }
 if(require.main===module){if(!process.argv[2])throw Error('解析JSONのパスを指定してください。');const index=writeDistribution(path.resolve(process.argv[2]));console.log(JSON.stringify({counts:index.counts,packs:index.packs.length,compressedBytes:index.packs.reduce((n,p)=>n+p.bytes,0)}));}
-module.exports={runtime,validateData,writeDistribution};
+module.exports={runtime,validateData,writeDistribution,refreshManifest};
