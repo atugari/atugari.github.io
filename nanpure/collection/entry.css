@@ -6,3 +6,5 @@
 .np-collection-entry>span:last-child{font-size:24px;flex:none}
 @media print{.np-collection-entry{display:none!important}}
 @media(max-height:650px) and (max-width:600px){.designed-home .np-collection-entry{min-height:40px;padding:7px 12px}.np-collection-copy small{display:none}.np-collection-copy strong{font-size:17px}}
+
+.np-learning-entry{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:8px 11px;border:1px solid var(--theme-line,#b8cbbd);border-radius:10px;color:var(--theme-ink,#20372c);background:var(--theme-surface,#fffdf7);text-decoration:none;font-weight:700}.np-home-ready .home-bottom-links .np-learning-entry{flex:1;min-width:0;padding:5px 4px;font-size:max(13px,var(--ui-min-font,0px));line-height:1.35;text-align:center}.np-learning-entry:focus-visible{outline:3px solid var(--theme-accent,#3d7659);outline-offset:3px}@media print{.np-learning-entry{display:none!important}}
