@@ -1,8 +1,9 @@
 # Exhibitions, solving replays and the home layout
 
-This branch is an unpublished implementation for visual review. Do not merge or
-deploy it until the user has reviewed the home and museum screenshots. No live
-site, live D1 data, event announcement or scheduled task was changed.
+The user reviewed the home and museum screenshots and approved the design on
+November 3, 2026. Release 2026.11.03.85 publishes the event hall, replay tools and
+organized home after the complete Pages checks. Preview fixtures and sample
+records are never included in production. No scheduled task was added.
 
 ## Experience
 

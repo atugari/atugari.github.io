@@ -2,6 +2,8 @@ import test from 'node:test';import assert from 'node:assert/strict';
 import worker from '../src/index.js';import {database} from './db.mjs';
 import {emptyRoom,slotFromPuzzle} from '../../nanpure/gallery/model.mjs';
 import {events,phase,cleanReplay,replayGrid} from '../../nanpure/exhibitions/model.mjs';
+// The fixture catalog stays open independently of the real event date.
+events[0].start='2000-01-01T00:00:00+09:00';events[0].end='2100-01-01T00:00:00+09:00';
 const origin='https://atugari.github.io',key='a'.repeat(64),other='b'.repeat(64),event=events[0].id;
 function puzzle(index=0){const solution=Array.from({length:81},(_,i)=>(Math.floor(i/9)*3+Math.floor(Math.floor(i/9)/3)+i%9)%9+1),puzzle=solution.slice();puzzle[index]=0;return {kind:'normal',n:9,level:1,puzzle,solution,uid:'test-'+index};}
 const room=()=>({...emptyRoom(),slots:Array.from({length:7},(_,i)=>slotFromPuzzle(puzzle(i),'created',{title:'作品'+i}))});

@@ -73,6 +73,7 @@ jobs:
           export CHROME_BIN="$(command -v google-chrome || command -v chromium)"
           node scripts/check-nanpure-gallery-browser.cjs _site
           node scripts/check-nanpure-home-titles-browser.cjs _site
+          node scripts/check-nanpure-exhibitions-browser.cjs _site
 
       - name: Check automatic ranking and nicknames on desktop and mobile
         shell: bash

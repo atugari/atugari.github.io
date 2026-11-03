@@ -1,4 +1,4 @@
-import {emptyRoom,cleanRoom,cleanSlot,slotFromPuzzle,duration,MAX_BYTES} from './model.mjs';
+import {emptyRoom,cleanRoom,cleanSlot,slotFromPuzzle,duration,MAX_BYTES} from './model.mjs?v=2';
 import {api,ownerKey,KEY,DRAFT,savedPage,recordSlot,clearRecords} from './data.mjs';
 import {decorate} from './carousel.mjs';
 import {events,puzzleKey} from '../exhibitions/model.mjs';
@@ -118,6 +118,6 @@ async function boot(){
   try{const incoming=sessionStorage.getItem('np-gallery-pick-v1');if(incoming){pendingCandidate=cleanSlot(JSON.parse(incoming));sessionStorage.removeItem('np-gallery-pick-v1');const index=room.slots.findIndex(s=>!s);setTimeout(()=>pick(index<0?0:index),0);}}catch{}
  }
  }catch(e){say(e.message||'サーバーに接続できませんでした。端末の下書きで編集を続けられます。');if(visitor){$('wall').hidden=true;$('room-note').textContent='公開URLを確認するか、ナンプレ帳から遊んでみてください。';}}
- finally{busy=false;render();if(savedId)community('?room='+savedId).then(data=>{badges=data.entries;render()}).catch(()=>{});}
+ finally{busy=false;render();if(savedId)community('?room='+savedId).then(data=>{if(!Array.isArray(data.entries))return;badges=data.entries;render()}).catch(()=>{});}
 }
 window.NPGallery={getRoom:()=>structuredClone(room),pick,save};boot();
