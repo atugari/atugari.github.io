@@ -4312,7 +4312,7 @@
     "nanpure/releases/2026.11.03.88/language-layout.css": "ce4145ecfbd164315ee03ff4b55eb04f841bcb03b4df0630cd6b6f67f9904a89",
     "nanpure/releases/2026.11.03.88/native-board.css": "82f557ee170155cec32193735a64394fc24af85f153269d77a89bfc9b51c82c8",
     "nanpure/releases/2026.11.03.88/notebook/access-tools.js": "d4258d6fe191fbe133e7211f32f02ffc3ebe24248e8f5b8c0318f893530c71c8",
-    "nanpure/releases/2026.11.03.88/notebook/app.css": "e782eefcba77fdc85e61117e20a30eff995b465423a2b174b4aab417867c61d0",
+    "nanpure/releases/2026.11.03.88/notebook/app.css": "87929e27e3a66da4bdb79039096c849fc9ce21c76b82eb428dc67c6890431bb7",
     "nanpure/releases/2026.11.03.88/notebook/app.js": "7b46a15a85d9119c9f83a4e5f58bfc06a1ff3b752a42a7ee8b19562f9d0f35e5",
     "nanpure/releases/2026.11.03.88/notebook/appearance-controls.js": "1bd72d654c05370dd52368070abaca18c21aa9b2990f456155954e3b9bd4cd74",
     "nanpure/releases/2026.11.03.88/notebook/batch.js": "5756f25c1dd2bf5728d113beaa13ad364d57ca5e8e451a803983afe840ab5e95",
@@ -4767,7 +4767,7 @@
   },
   "groupedHome": {
     "sources": {
-      "scripts/prepare-grouped-home-release.mjs": "401a15d124ecef7c5687e5d945712d5e678b151d1f00014d027cb69b43a2844c",
+      "scripts/prepare-grouped-home-release.mjs": "b54154aa7a632fa8791ac2497e99a983146d155ff064e440b798a342c6b29967",
       "scripts/client-overrides/app/grouped-home.tsx": "88a37836f51cfdb8b358f5382405240891f041206bbe0ebe186e63bf0658d088",
       "scripts/client-overrides/app/game.tsx": "d4117414785c81c1f07c2c16a2757adaff9692efc2d7d28695231935f83a958c",
       "scripts/client-overrides/public/home-layout.js": "75d5375f5a01656dbdfae658b1957833b69b8a36ff0c03fcb790b2b93d150551",
@@ -4776,7 +4776,7 @@
       "scripts/client-overrides/public/site-layout.css": "ac3795dcb7bebc40a6d267ecd9dee8beab79c121fe5adf6bd53fd17a924a0162",
       "scripts/client-overrides/public/notebook/app.js": "0ebffbede11ebeba73d01080efb18475fefbe906db1735f0d71cf8fbf2112dc4",
       "scripts/client-overrides/public/notebook/compact-play.js": "5565206c90efb9add75ceae511493fbff3bdbca7848edc11b9e9337ad7d9e069",
-      "scripts/refresh-grouped-home-release.mjs": "144283e16f7900238ef86bfca45af1534175850579016cb55c32e143a4e15911",
+      "scripts/refresh-grouped-home-release.mjs": "a59dc84626e14e0d2e51f76aa2609b0307a774249f00474969872647b2d17747",
       "scripts/fixtures/nanpure-10000-storage.html": "e4501ae29b0799f2cd7bdce6b03ff49595d38bc4a0273c78bcf5828e3fdee141",
       "scripts/check-nanpure-lazy-storage-browser.cjs": "2cdc6154f813460dd8c45e5c0eabb356a2999ce6132226716304c1d774720430",
       "scripts/i18n/catalog.cjs": "606ad4b8ca3134abf04f45c380b6c8d2fb2a23c9d2eee86bbf18c82e0c56b589",
@@ -4787,16 +4787,18 @@
       "scripts/client-overrides/public/notebook/recovery.js": "b98e1a2310322b0282d16e2a830bb3bce29ed5a7056c6d942dc25f318b9d2fae",
       "scripts/client-overrides/public/notebook/recovery-pack-worker.js": "1d4dbae542eefd707d6816e405119b17203630e4dfe0e670784b3c80e33d9a00",
       "scripts/fixtures/nanpure-real-10000-generation.html": "2ae49d590ac85090e2346c1215dda53e9acea214ab54df793fd80cafa048eb2e",
-      "scripts/check-nanpure-recovery-pack.cjs": "92ef9a2c06140b44f528b0643b358871418b376d3c5eacafded0a5c3c6d75728"
+      "scripts/check-nanpure-recovery-pack.cjs": "92ef9a2c06140b44f528b0643b358871418b376d3c5eacafded0a5c3c6d75728",
+      "scripts/notebook-shared-styles.mjs": "ebd38243e3f543739ce6326c862b70728003372f4f464653de8e4819d8bc48fe"
     }
   },
   "generationAssist": {
     "version": 1,
     "sources": {
-      "scripts/prepare-generation-assist-release.mjs": "2d7d9652ebd27c6b310d7565443457ce496c871d54e557964e02cfc900eb2e5c",
+      "scripts/prepare-generation-assist-release.mjs": "83effed174d7f46e4d4b16ca54e82f139c09ea1be90dec644d82c7f33cb139dd",
       "scripts/check-generation-assist.cjs": "f85b12a3137e98f701421d937369c3a16e77b6a9ff0461a09f53dc65e178b288",
       "scripts/client-overrides/public/notebook/app.js": "0ebffbede11ebeba73d01080efb18475fefbe906db1735f0d71cf8fbf2112dc4",
-      "scripts/client-overrides/public/notebook/generation-assist.js": "d0d20bacb58783432455dd1c8d3664f9b6f42ef219e1a4d90ce66dac49eb6eff"
+      "scripts/client-overrides/public/notebook/generation-assist.js": "d0d20bacb58783432455dd1c8d3664f9b6f42ef219e1a4d90ce66dac49eb6eff",
+      "scripts/notebook-shared-styles.mjs": "ebd38243e3f543739ce6326c862b70728003372f4f464653de8e4819d8bc48fe"
     }
   }
 }

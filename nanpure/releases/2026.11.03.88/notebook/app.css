@@ -201,3 +201,68 @@ body.compact-playing #hundred-nav .play-caption{display:none}
 .multi-board-legend{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}.multi-board-chip{display:flex;align-items:center;gap:8px;min-width:150px;padding:9px 12px;text-align:left;border:2px solid var(--multi-color);border-radius:10px;background:var(--paper,#fff);color:inherit}.multi-board-chip.on{background:var(--multi-tint);box-shadow:0 0 0 2px var(--multi-color)}.multi-board-chip span{display:grid;gap:4px}.multi-board-chip small{font-size:11px}.multi-mini-map{width:48px;height:44px;flex:none}.multi-board-settings{border-top:4px solid var(--multi-color,#26734b)}.multi-board-settings legend{color:var(--multi-color,#26734b)}.multi-offsets{display:grid;grid-template-columns:1fr 1fr;gap:8px}.multi-offsets input{width:100%;box-sizing:border-box;min-height:46px;font:inherit;padding:8px;border:1px solid #8b9b8d;border-radius:8px;background:var(--paper,#fff);color:inherit}.multi-move-buttons{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}.multi-move-buttons button{min-height:44px;padding:8px 12px}.multi-drag-status,.multi-cell-context{padding:10px 12px;background:var(--paper,#f3f7ef);border:1px solid #b8c8b9;border-radius:8px;line-height:1.7}.multi-layout-preview[data-multi-layout-editor]{touch-action:none;cursor:grab;user-select:none}.multi-layout-preview[data-multi-layout-editor]:active{cursor:grabbing}.multi-layout-preview{max-width:620px}.multi-board-chip:focus-visible,.multi-move-buttons button:focus-visible{outline:3px solid #dd941d;outline-offset:3px}
 
 .preview-grid .catalog-thumbnail{display:block;width:100%;height:auto;max-height:180px;object-fit:contain;pointer-events:none}
+
+/* Screen-only choices. Printed puzzles keep their own measured line widths. */
+@media screen{
+.mode-daily .variable-board{border-width:var(--np-region-line,2px)}
+html[data-np-digit-weight]:not([data-np-digit-weight="0"]) .mode-daily .variable-board .cell-value{font-weight:var(--np-digit-weight)}
+html[data-np-digit-weight]:not([data-np-digit-weight="0"]) #board.play-board .cell>span:not(.notes,.hundred-notes,.cage-label,.cage-border){font-weight:var(--np-digit-weight)}
+#board.play-board .grid-regions,#board .np-region-lines{stroke-width:var(--np-region-line,2px);stroke:#000}
+#board.play-board .grid-thin,#board .np-cell-lines{stroke-width:var(--np-cell-line,1px);stroke:#000}
+#board.hundred-board .cell{border-right-width:var(--np-cell-line,1px);border-bottom-width:var(--np-cell-line,1px)}
+#board.hundred-board .cell:nth-child(10n){border-right-width:var(--np-region-line,2px)}
+.np-appearance-legacy{display:none!important}
+.np-appearance-options{margin-block:12px}
+.np-appearance-status:empty{display:none}
+.np-appearance-options>small{display:block;line-height:1.6;font-size:max(12px,var(--ui-min-font,0px))}
+.np-appearance-options label{display:grid;grid-template-columns:minmax(0,1fr) minmax(110px,48%);gap:10px;align-items:center;padding:10px 0;font-size:max(14px,var(--ui-min-font,0px))}
+.np-appearance-options select{min-width:0;width:100%;min-height:44px}
+:is(.settings-preview .preview-cells,.np-access-preview .np-sample-grid){border:var(--np-region-line,2px) solid #000}
+:is(.settings-preview .preview-cells,.np-access-preview .np-sample-grid)>:is(span,b){border:0;border-right:var(--np-cell-line,1px) solid #000;border-bottom:var(--np-cell-line,1px) solid #000;font-weight:var(--np-digit-weight,700)}
+:is(.settings-preview .preview-cells,.np-access-preview .np-sample-grid)>:nth-child(4n){border-right:0}
+:is(.settings-preview .preview-cells,.np-access-preview .np-sample-grid)>:nth-child(4n+2){border-right-width:var(--np-region-line,2px)}
+:is(.settings-preview .preview-cells,.np-access-preview .np-sample-grid)>:nth-child(n+5):nth-child(-n+8){border-bottom-width:var(--np-region-line,2px)}
+:is(.settings-preview .preview-cells,.np-access-preview .np-sample-grid)>:nth-child(n+13){border-bottom:0}
+}
+
+@media screen{
+html[data-np-area-strength="1"] :is(.variable-board .cell.related:not(.selected,.same),.settings-preview .preview-related:not(.preview-selected,.preview-same)){background:color-mix(in srgb,var(--selection-peer) 40%,#fff)}
+html[data-np-selection-design][data-np-area-strength="1"] :is(#board.play-board .peer:not(.selected,.same,.wrong,.vh-unit,.vh-witness,.vh-focus,.vh-cut),.np-access-preview .np-preview-related:not(.np-preview-selected,.np-preview-same)){background:color-mix(in srgb,var(--np-selection-related) 40%,var(--np-selection-base))}
+html[data-np-area-strength="1"] :is(.variable-board,.settings-preview)[data-selection-design="guide"] :is(.cell.related:not(.selected,.same),.preview-related:not(.preview-selected,.preview-same)){background:color-mix(in srgb,var(--selection-guide) 40%,#fff)}
+html[data-np-selection-design="guide"][data-np-area-strength="1"] :is(#board.play-board .peer:not(.guide,.selected,.same,.wrong,.vh-unit,.vh-witness,.vh-focus,.vh-cut),.np-access-preview .np-preview-related:not(.np-preview-guide,.np-preview-selected,.np-preview-same)){background:var(--np-selection-base)}
+html[data-np-selection-design="guide"][data-np-area-strength="1"] :is(#board.play-board .guide:not(.selected,.same,.wrong,.vh-unit,.vh-witness,.vh-focus,.vh-cut),.np-access-preview .np-preview-guide:not(.np-preview-selected,.np-preview-same)){background:color-mix(in srgb,var(--np-selection-guide) 40%,var(--np-selection-base))}
+html[data-np-same-strength="1"] :is(.variable-board .cell.same:not(.selected),.settings-preview .preview-same:not(.preview-selected)){background:color-mix(in srgb,var(--selection-same) 40%,#fff)}
+html[data-np-selection-design][data-np-same-strength="1"] :is(#board.play-board .same:not(.selected,.wrong,.vh-unit,.vh-witness,.vh-focus,.vh-cut),.np-access-preview .np-preview-same:not(.np-preview-selected)){background:color-mix(in srgb,var(--np-selection-same) 40%,var(--np-selection-base))}
+html[data-np-area-strength="3"] :is(.variable-board .cell.related:not(.selected,.same),.settings-preview .preview-related:not(.preview-selected,.preview-same)){background:color-mix(in srgb,var(--selection-peer) 70%,var(--selection-frame))}
+html[data-np-selection-design][data-np-area-strength="3"] :is(#board.play-board .peer:not(.selected,.same,.wrong,.vh-unit,.vh-witness,.vh-focus,.vh-cut),.np-access-preview .np-preview-related:not(.np-preview-selected,.np-preview-same)){background:color-mix(in srgb,var(--np-selection-related) 70%,var(--np-selection-frame))}
+html[data-np-area-strength="3"] :is(.variable-board,.settings-preview)[data-selection-design="guide"] :is(.cell.related:not(.selected,.same),.preview-related:not(.preview-selected,.preview-same)){background:color-mix(in srgb,var(--selection-guide) 70%,var(--selection-frame))}
+html[data-np-selection-design="guide"][data-np-area-strength="3"] :is(#board.play-board .peer:not(.guide,.selected,.same,.wrong,.vh-unit,.vh-witness,.vh-focus,.vh-cut),.np-access-preview .np-preview-related:not(.np-preview-guide,.np-preview-selected,.np-preview-same)){background:var(--np-selection-base)}
+html[data-np-selection-design="guide"][data-np-area-strength="3"] :is(#board.play-board .guide:not(.selected,.same,.wrong,.vh-unit,.vh-witness,.vh-focus,.vh-cut),.np-access-preview .np-preview-guide:not(.np-preview-selected,.np-preview-same)){background:color-mix(in srgb,var(--np-selection-guide) 70%,var(--np-selection-frame))}
+html[data-np-same-strength="3"] :is(.variable-board .cell.same:not(.selected),.settings-preview .preview-same:not(.preview-selected)){background:color-mix(in srgb,var(--selection-same) 70%,var(--selection-frame))}
+html[data-np-selection-design][data-np-same-strength="3"] :is(#board.play-board .same:not(.selected,.wrong,.vh-unit,.vh-witness,.vh-focus,.vh-cut),.np-access-preview .np-preview-same:not(.np-preview-selected)){background:color-mix(in srgb,var(--np-selection-same) 70%,var(--np-selection-frame))}
+#board.hundred-board .cell:nth-child(n+901):nth-child(-n+1000){border-bottom-width:var(--np-region-line,2px)}
+#board.hundred-board .cell:nth-child(n+1901):nth-child(-n+2000){border-bottom-width:var(--np-region-line,2px)}
+#board.hundred-board .cell:nth-child(n+2901):nth-child(-n+3000){border-bottom-width:var(--np-region-line,2px)}
+#board.hundred-board .cell:nth-child(n+3901):nth-child(-n+4000){border-bottom-width:var(--np-region-line,2px)}
+#board.hundred-board .cell:nth-child(n+4901):nth-child(-n+5000){border-bottom-width:var(--np-region-line,2px)}
+#board.hundred-board .cell:nth-child(n+5901):nth-child(-n+6000){border-bottom-width:var(--np-region-line,2px)}
+#board.hundred-board .cell:nth-child(n+6901):nth-child(-n+7000){border-bottom-width:var(--np-region-line,2px)}
+#board.hundred-board .cell:nth-child(n+7901):nth-child(-n+8000){border-bottom-width:var(--np-region-line,2px)}
+#board.hundred-board .cell:nth-child(n+8901):nth-child(-n+9000){border-bottom-width:var(--np-region-line,2px)}
+#board.hundred-board .cell:nth-child(n+9901):nth-child(-n+10000){border-bottom-width:var(--np-region-line,2px)}
+}
+
+/* Text follows the selected language. Puzzle coordinates and number keys keep
+   their original order, so saved grids and arrow-key navigation stay aligned. */
+html[dir="rtl"] :is(.variable-board,#board,.preview-grid,.preview-cells,.np-sample-grid,.number-pad,.keypad,.keybinding-grid,.np-keybindings-grid){direction:ltr;unicode-bidi:isolate}
+html[dir="rtl"] :is(.play-time,.timer,.np-timer,kbd,input[type="number"],input[type="date"],input[type="time"]){direction:ltr;unicode-bidi:isolate}
+html[dir="rtl"] :is(.paper-art,.print-art){direction:ltr}
+html[dir="rtl"] :is(.paper-art,.print-art) text{unicode-bidi:plaintext}
+html[dir="rtl"] :is(.language-picker,#np-language-dialog select){direction:ltr}
+html[dir="rtl"] :is(.ps-section,.np-appearance-options,.rule-brief,.play-caption){text-align:start}
+html[dir="rtl"] :is(.header .back,.back-button)>svg{transform:scaleX(-1)}
+html[dir="rtl"] :is(input[type="email"],input[type="url"],.backup-code){direction:ltr;text-align:start}
+/* Allow long translated labels to wrap without enlarging the mobile page. */
+:is(.site-shell,#app) :is(.main-choice,.secondary-choice,.choice,.setting-row,.ps-section,.np-appearance-options,.settings-page){min-width:0;overflow-wrap:anywhere}
+:is(.site-shell,#app) select{max-width:100%;min-width:0}
+#np-language-dialog select{max-width:100%}

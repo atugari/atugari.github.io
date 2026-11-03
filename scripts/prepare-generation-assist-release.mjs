@@ -1,3 +1,4 @@
+import {appendNotebookSharedStyles} from './notebook-shared-styles.mjs';
 // Reuse verified assets without modifying an already published release.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -19,7 +20,7 @@ if(prior.version!==previous||notes[0]?.version!==version||fs.existsSync(out))thr
 for(const file of walk(path.join(root,oldBase)))if(hash(fs.readFileSync(file))!==prior.files[path.relative(root,file)])throw Error('Published asset changed: '+file);
 fs.cpSync(path.join(root,oldBase),out,{recursive:true});
 for(const name of ['app.js','generation-assist.js'])fs.copyFileSync(path.join(root,'scripts/client-overrides/public/notebook',name),path.join(out,'notebook',name));
-patchNotebookApp(path.join(out,'notebook'));
+patchNotebookApp(path.join(out,'notebook'));appendNotebookSharedStyles(root,path.join(out,'notebook'));
 const notebookIndex=path.join(out,'notebook/index.html');const ni=fs.readFileSync(notebookIndex,'utf8');if(ni.includes('generation-assist.js'))throw Error('Assist already present');fs.writeFileSync(notebookIndex,ni.replace('</head>','<script defer src="generation-assist.js"></script></head>'));
 for(const file of walk(out).filter(f=>/\.(html|js|css)$/.test(f))){
  const text=fs.readFileSync(file,'utf8');
@@ -40,7 +41,7 @@ const audio=path.join(root,'nanpure-audio',version);fs.cpSync(path.join(root,'na
 const pins={...prior.files};
 const changed=['nanpure/index.html','nanpure/collection/player.html','nanpure/version.json','nanpure/releases.json'];
 for(const file of [...walk(out),...changed.map(f=>path.join(root,f))])pins[path.relative(root,file)]=hash(fs.readFileSync(file));
-const sources=['scripts/prepare-generation-assist-release.mjs','scripts/check-generation-assist.cjs',...['app.js','generation-assist.js'].map(f=>'scripts/client-overrides/public/notebook/'+f)];
+const sources=['scripts/notebook-shared-styles.mjs','scripts/prepare-generation-assist-release.mjs','scripts/check-generation-assist.cjs',...['app.js','generation-assist.js'].map(f=>'scripts/client-overrides/public/notebook/'+f)];
 const manifest={...prior,...info,base,generationAssist:{version:1,sources:Object.fromEntries(sources.map(f=>[f,hash(read(f))]))},files:pins};
 for(const record of Object.values(manifest))if(record?.sources)for(const file of Object.keys(record.sources))if(fs.existsSync(path.join(root,file)))record.sources[file]=hash(read(file));
 fs.writeFileSync(path.join(root,'nanpure/release-manifest.json'),JSON.stringify(manifest,null,2)+'\n');console.log('Prepared generation assist',version);

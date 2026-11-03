@@ -67,6 +67,13 @@ jobs:
           node scripts/check-nanpure-fullscreen-browser.cjs _site
           NP_BROWSER_FOCUS=responsive node scripts/check-nanpure-browser.cjs _site
 
+      - name: Check notebook languages and fixed puzzle coordinates
+        shell: bash
+        run: |
+          export PLAYWRIGHT_MODULE="$RUNNER_TEMP/nanpure-browser/node_modules/playwright"
+          export CHROME_BIN="$(command -v google-chrome || command -v chromium)"
+          node scripts/check-nanpure-languages-browser.cjs _site
+
       - name: Check lazy local puzzle storage and recovery
         shell: bash
         run: |
@@ -164,7 +171,6 @@ jobs:
           node scripts/check-nanpure-wado-browser.cjs _site
           node scripts/check-nanpure-magic-browser.cjs _site
           node scripts/check-nanpure-audio-browser.cjs _site
-          node scripts/check-nanpure-languages-browser.cjs _site
           node scripts/check-nanpure-browser.cjs _site
           node scripts/check-nanpure-keyboard-browser.cjs _site
           node scripts/check-nanpure-keybindings-browser.cjs _site
