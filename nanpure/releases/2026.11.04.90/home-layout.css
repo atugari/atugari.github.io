@@ -58,3 +58,5 @@
 .np-stepped-home .np-collection-entry strong{font-size:18px}
 @media(min-width:600px){.np-stepped-home .start-choices{flex-basis:190px;min-height:190px;max-height:240px}.np-stepped-home .choice-card{position:relative}.np-stepped-home .choice-arrow{position:absolute;right:15px;bottom:18px}.np-stepped-home .np-collection-entry .choice-arrow{position:static}}
 @media(max-width:359px){.np-home-more nav{grid-template-columns:1fr}.np-stepped-home .choice-copy strong{font-size:19px}.np-stepped-home .home-bottom-links button{flex-basis:30%}}
+
+.np-home-more:not([open]) > nav { display: none; }
