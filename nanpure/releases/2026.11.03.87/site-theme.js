@@ -6,4 +6,4 @@ function set(next){if(!allowed.includes(next))return false;try{if(parent!==w&&pa
 w.NPSiteTheme={get:()=>theme,set,apply,status:()=>error};let initial=read();try{if(parent!==w&&parent.NPSiteTheme)initial=parent.NPSiteTheme.get()}catch{}apply(initial);w.addEventListener('storage',e=>{if(e.key===key||e.key===null)apply(read())});
 })();
 
-(()=>{const s=document.createElement("script");s.src=new URL("site-layout.js",document.currentScript.src).href;document.head.append(s)})();
+(()=>{const base=document.currentScript?.src;if(!base||window.NPSiteLayout)return;const s=document.createElement("script");s.src=new URL("site-layout.js",base).href;document.head.append(s)})();
