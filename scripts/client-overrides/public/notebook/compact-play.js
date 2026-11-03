@@ -67,7 +67,9 @@
    }
    const viewportHeight=Math.max(120,Math.floor(window.visualViewport?.height||window.innerHeight));
    const appStyle=getComputedStyle(app);
-   const availableW=Math.max(80,app.clientWidth-px(appStyle.paddingLeft)-px(appStyle.paddingRight));
+   const fullW=Math.max(80,app.clientWidth-px(appStyle.paddingLeft)-px(appStyle.paddingRight));
+   const pc=window.NPSiteLayout?.get()==='pc'&&window.innerWidth>=600;
+   const availableW=pc?Math.max(80,fullW-Math.min(260,fullW*.45)-16):fullW;
    // Honor the saved key size in both dimensions, balancing the final row.
    const keyWidth=44*Math.max(1,px(document.documentElement.style.getPropertyValue('--np-key-scale'))||1);
    for(const pad of dock.querySelectorAll('.number-pad')){
@@ -82,7 +84,7 @@
    const ratio=current?.linked?current.linked.width/current.linked.height:1;
    let used=0;
    for(const el of screen.children){
-    if(el===board||el===feedback||el.tagName==='DIALOG')continue;
+    if(el===board||el===feedback||(pc&&el===dock)||el.tagName==='DIALOG')continue;
     const style=getComputedStyle(el);
     if(style.display==='none'||style.position==='fixed'||style.position==='absolute')continue;
     used+=el.getBoundingClientRect().height+px(style.marginTop)+px(style.marginBottom);

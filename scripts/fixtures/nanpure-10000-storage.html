@@ -1,0 +1,93 @@
+<!doctype html><html lang="ja"><meta charset="utf-8"><title>Local storage verification</title>
+<style>body{font:16px system-ui;margin:24px;background:#fafbf8;color:#243b2e}button{padding:12px 22px}li{margin:8px 0}iframe{width:100%;height:760px;border:1px solid #ccd7cc}#game iframe{position:fixed;right:8px;bottom:8px;width:72vw;height:74vh;background:#fff;z-index:2}.fail{color:#ad2020}.pass{color:#166534}</style>
+<h1>保存データの検証</h1><p>検証専用のデータで、移行・再開・印刷・バックアップを確認します。</p>
+<button id="run">検証を開始</button><ol id="results"></ol><pre id="metrics"></pre><div id="game"></div>
+<script id="qa-scope">
+// Keep test data separate from every other preview and all real player data.
+(()=>{const prefix='qa-nanpure-10000-20261103:',open=indexedDB.open.bind(indexedDB),del=indexedDB.deleteDatabase.bind(indexedDB);indexedDB.open=(name,...args)=>open(prefix+name,...args);indexedDB.deleteDatabase=name=>del(prefix+name);const real=window.localStorage,scoped={getItem:k=>real.getItem(prefix+k),setItem:(k,v)=>real.setItem(prefix+k,v),removeItem:k=>real.removeItem(prefix+k),key:i=>Object.keys(real).filter(k=>k.startsWith(prefix))[i]?.slice(prefix.length)||null};Object.defineProperty(scoped,'length',{get:()=>Object.keys(real).filter(k=>k.startsWith(prefix)).length});Object.defineProperty(window,'localStorage',{value:scoped});})();
+</script><script>
+const metrics={};const timed=async(name,fn)=>{const t=performance.now();const value=await fn();metrics[name]=+(performance.now()-t).toFixed(1);document.querySelector('#metrics').textContent=JSON.stringify(metrics,null,2);return value};const results=document.querySelector('#results'),wait=ms=>new Promise(r=>setTimeout(r,ms));
+const check=(value,message)=>{if(!value)throw Error(message);const li=document.createElement('li');li.className='pass';li.textContent='PASS '+message;results.append(li);};
+const same=(a,b,message)=>check(JSON.stringify(a)===JSON.stringify(b),message);
+async function until(fn){for(let i=0;i<500;i++){if(fn())return;await wait(20);}throw Error('Timed out waiting for application');}
+async function script(src){await new Promise((resolve,reject)=>{const s=document.createElement('script');s.src=src;s.onload=resolve;s.onerror=reject;document.head.append(s);});}
+const dbName='nanpure-chou-data';
+const req=q=>new Promise((resolve,reject)=>{q.onsuccess=()=>resolve(q.result);q.onerror=()=>reject(q.error);});
+function txDone(tx){return new Promise((resolve,reject)=>{tx.oncomplete=resolve;tx.onabort=()=>reject(tx.error||Error('transaction aborted'));});}
+function puzzle(index,n=9){const b=Math.sqrt(n),solution=Array.from({length:n*n},(_,i)=>(Math.floor(i/n)*b+Math.floor(Math.floor(i/n)/b)+i%n)%n+1),puzzle=solution.map((v,i)=>i<12?0:v);return{uid:'lazy-'+String(index).padStart(5,'0'),id:'LAZY-'+index,kind:'normal',n,level:1,blockRows:b,blockCols:b,created:17936610000000+index,completed:false,elapsed:27,notes:{'1':[2,3]},puzzle,solution,grid:puzzle.slice(),rating:{level:1,hardest:1},ratingVersion:3,batchToken:'qa-batch',batchJob:index,portableJob:'qa-job',portableBatch:'qa-batch',memo:'saved memo',favorite:index===1};}
+async function seed(){
+ await req(indexedDB.deleteDatabase(dbName));const open=indexedDB.open(dbName,2);open.onupgradeneeded=()=>{for(const [s,keyPath]of [['puzzles','uid'],['meta','key'],['seen','digest']])open.result.createObjectStore(s,{keyPath});};
+ const db=await req(open);for(let start=0;start<10000;start+=50){const tx=db.transaction(['puzzles','meta','seen'],'readwrite'),done=txDone(tx);for(let i=start;i<start+50;i++){const p=puzzle(i,i===9999?100:9);if(i===0){p.grid[0]=p.solution[0];p.notes={'1':[2,3]};}tx.objectStore('puzzles').put(NPCompact.record(p));if(i===0)tx.objectStore('seen').put({digest:NPTransfer.digest(p),exported:true});}tx.objectStore('meta').put({key:'migration-v1',value:'done'});await done;await wait(0);}db.close();
+}
+async function raw(store,key){const db=await req(indexedDB.open(dbName));try{return await req(db.transaction(store).objectStore(store).get(key));}finally{db.close();}}
+async function frame(base){const iframe=document.createElement('iframe');iframe.src=base+'index.html#numbers';document.querySelector('#game').replaceChildren(iframe);await until(()=>iframe.contentWindow?.NanpureAppTest);iframe.scrollIntoView({block:'start'});return iframe;}
+function click(w,selector){const node=w.document.querySelector(selector);if(!node)throw Error('Missing control: '+selector);node.click();}
+async function run(){
+ document.querySelector('#run').disabled=true;window.qa={status:'running',errors:[]};
+ try{
+  const version=(await(await fetch('/nanpure/version.json')).json()).version,base='/nanpure/releases/'+version+'/notebook/';
+  for(const file of ['common.js','lan-identity.js','pako.min.js','compact.js','transfer.js'])await script(base+file);
+  localStorage.setItem('nanpure-language-v1','ja');localStorage.setItem('nanpure-auto-next-v1','false');check(true,'検証専用データを準備（通常9×9が9,999問＋100×100が1問）');await timed('prepare10000Ms',seed);check(true,'10,000問の準備完了');
+  await script(base+'storage.js');let decodes=0;const restore=NPCompact.restore;NPCompact.restore=(...args)=>{decodes++;return restore(...args);};
+  await timed('firstMigrationMs',()=>NPStorage.open());check(decodes===10000,'v2 の10,000問を一度ずつ移行');check(NPStorage.library.length===10000,'一覧は全10,000問を保持');
+  check(NPStorage.library.every(p=>p._npSummary===1&&!p.puzzle&&!p.solution&&!p.grid&&!p.notes),'一覧に問題本体・解答・入力盤面を展開しない');
+  check(NPStorage.wasExported(NPStorage.library.find(p=>p.uid==='lazy-00000')._npDigest),'既存の書き出し確認履歴を保持');
+  const large=NPStorage.library.find(p=>p.n===100);check(large&&!large._npPreview,'100×100の本体を一覧に持ち込まない');
+  NPStorage.close();decodes=0;await timed('reopen10000Ms',()=>NPStorage.open());metrics.summaryBytes=new Blob([JSON.stringify(NPStorage.library)]).size;metrics.heapAfterCatalogMiB=performance.memory?+(performance.memory.usedJSHeapSize/1048576).toFixed(1):null;check(decodes===0,'2回目以降は全問題の展開がゼロ');
+  const summary=NPStorage.library.find(p=>p.uid==='lazy-00000');summary.favorite=true;summary.memo='changed memo';await NPStorage.commit([summary],{});
+  let full=await NPStorage.get(summary.uid);same(full.grid,puzzle(0).grid.map((v,i)=>i===0?full.solution[0]:v),'お気に入り変更で途中経過を保持');same(full.notes,{'1':[2,3]},'お気に入り変更で候補メモを保持');check(full.favorite&&full.memo==='changed memo','一覧からの編集を本体にも保存');
+  decodes=0;await NPStorage.save(NPStorage.library,null);check(decodes===0,'変更のない一覧保存では全問題を展開しない');
+  const before=JSON.stringify(await raw('puzzles',full.uid)),beforeSummary=JSON.stringify(await raw('summaries',full.uid));
+  const put=IDBObjectStore.prototype.put;let failed=false;IDBObjectStore.prototype.put=function(...args){if(this.name==='summaries'&&!failed){failed=true;throw Error('injected quota failure');}return put.apply(this,args);};
+  full.grid[1]=full.solution[1];let rejected=false;try{await NPStorage.save(NPStorage.library,full);}catch{rejected=true;}finally{IDBObjectStore.prototype.put=put;}
+  check(rejected,'保存失敗を呼び出し側へ返す');same(JSON.stringify(await raw('puzzles',full.uid)),before,'失敗時に問題本体をロールバック');same(JSON.stringify(await raw('summaries',full.uid)),beforeSummary,'失敗時に一覧もロールバック');
+  await NPStorage.save(NPStorage.library,full);check((await NPStorage.get(full.uid)).grid[1]===full.solution[1],'失敗後に変更を再保存できる');
+  decodes=0;const selected=await NPStorage.materialize([NPStorage.library.find(p=>p.uid===full.uid),large]);check(decodes===2&&selected[1].solution.length===10000,'選択した2問だけを本体として読み込む');
+  check(NPTransfer.split(selected).count===2,'通常問題と100×100を投稿用ファイルに書き出せる');
+  if(new URLSearchParams(location.search).get('generation')==='1'){
+   const doc=new DOMParser().parseFromString(await(await fetch(base+'index.html')).text(),'text/html');
+   const ids=['core-normal','core-big','core-killer','core-rect','core-giant','core-hundred','core-expert','core-master-logic','core-master','core-cover-logic','core-cover','core-resolution-logic','core-resolution','core-deduction','core-neighbor','core-step','core-cross','core-linked','core-variants','core-expansion','core-multi','common-source','generator-source','core-mixed-multi'];
+   const url=URL.createObjectURL(new Blob(['var global=self;\n'+ids.map(id=>doc.getElementById(id).textContent).join('\n')+'\nself.onmessage=e=>{try{self.postMessage({p:NPGenerate(e.data,()=>{})})}catch(error){self.postMessage({error:String(error)})}}'],{type:'application/javascript'}));
+   const worker=new Worker(url),saves=[],start=performance.now();let worst=0,last=performance.now();const heartbeat=setInterval(()=>{const now=performance.now();worst=Math.max(worst,now-last-20);last=now;},20);
+   try{for(let i=0;i<10;i++){const p=await new Promise((resolve,reject)=>{const timeout=setTimeout(()=>reject(Error('generation timed out')),60000);worker.onmessage=e=>{clearTimeout(timeout);e.data.error?reject(Error(e.data.error)):resolve(e.data.p)};worker.onerror=e=>{clearTimeout(timeout);reject(Error(e.message))};worker.postMessage({kind:'normal',n:9,level:1,count:1,complexity:2});});NP.validate(p);p.uid='bench-generated-'+i;const t=performance.now();await NPStorage.commit([p],{});saves.push(performance.now()-t);}}
+   finally{clearInterval(heartbeat);worker.terminate();URL.revokeObjectURL(url)}
+   metrics.generateAndSave10Into10000Ms=+(performance.now()-start).toFixed(1);metrics.generatedSaveAverageMs=+(saves.reduce((a,b)=>a+b,0)/saves.length).toFixed(1);metrics.generatedSaveMaxMs=+Math.max(...saves).toFixed(1);metrics.generationHeartbeatMaxDelayMs=+worst.toFixed(1);check(NPStorage.library.length===10010,'1万問を保持したまま本物の生成エンジンで10問を追加保存');
+  }
+  await script(base+'recovery.js');decodes=0;const packed=await timed('compressedBackup10000Ms',()=>NPRecovery.capture(true));check(decodes===0&&packed.puzzles.every(p=>p.compactVersion),'自動退避は圧縮済み本体を利用');
+  NPRecovery.validate(packed);const backup=await timed('fullBackup10000Ms',()=>NPRecovery.capture());metrics.backupJsonBytes=new Blob([JSON.stringify(backup)]).size;check(backup.puzzles.length===(new URLSearchParams(location.search).get('generation')==='1'?10010:10000)&&backup.puzzles[0].solution,'手動バックアップは従来の完全な問題形式');NPRecovery.validate(backup);
+  const elapsed=full.elapsed;NPStorage.close();let iframe=await timed('actualAppStartupMs',()=>frame(base)),w=iframe.contentWindow;await until(()=>w.document.querySelector('[data-action="start"][data-flow="play"]'));
+  check(w.NanpureAppTest.getLibrary().every(p=>p._npSummary),'実際の画面も軽い一覧で起動');
+  await timed('show24Of10000Ms',async()=>{const t=performance.now();click(w,'[data-action="start"][data-flow="play"]');metrics.listClickSyncMs=+(performance.now()-t).toFixed(1);});check(w.document.querySelectorAll('[data-action="pick-play"]').length===24,'一覧の表示は1ページ24問');await until(()=>[...w.document.querySelectorAll('.catalog-thumbnail')].every(img=>img.complete&&img.naturalWidth>0));check(w.document.querySelectorAll('.catalog-thumbnail').length===24,'24件の軽いプレビュー画像を正常表示');
+  const uid='lazy-09998';click(w,'[data-action="pick-play"][data-id="'+uid+'"]');await until(()=>w.document.querySelector('[data-action="begin-play"]'));
+  check(w.NanpureAppTest.getLibrary().filter(p=>!p._npSummary).length===1,'選んだ1問だけ本体を展開');
+  click(w,'[data-action="begin-play"]');await until(()=>w.document.querySelector('#board [data-cell]'));await w.NPStorage.flush();
+  const active=w.NanpureAppTest.getCurrent();check(active.uid===uid,'選んだ問題を開始できる');
+  const cell=active.puzzle.findIndex((v,i)=>!v&&!active.grid[i]);await timed('inputAndPersistMs',async()=>{click(w,'#board [data-cell="'+cell+'"]');click(w,'[data-action="number"][data-number="'+active.solution[cell]+'"]');await w.NPStorage.flush();});
+  check((await w.NPStorage.get(uid)).grid[cell]===active.solution[cell],'実際の数字入力を保存');
+  const putActive=w.IDBObjectStore.prototype.put;w.IDBObjectStore.prototype.put=function(...args){if(this.name==='summaries')throw Error('injected quota failure');return putActive.apply(this,args);};
+  const next=active.puzzle.findIndex((v,i)=>!v&&!active.grid[i]);click(w,'#board [data-cell="'+next+'"]');click(w,'[data-action="number"][data-number="'+active.solution[next]+'"]');try{await w.NPStorage.flush();}catch{}
+  check(w.document.body.classList.contains('storage-unsaved')&&w.NanpureAppTest.getCurrent().grid[next]===active.solution[next],'保存失敗時も画面の入力を保持');
+  w.IDBObjectStore.prototype.put=putActive;w.appPause();await w.NPStorage.flush();check((await w.NPStorage.get(uid)).grid[next]===active.solution[next],'画面の未保存入力を再保存');
+  const progress={grid:active.grid.slice(),notes:JSON.parse(JSON.stringify(active.notes))};
+  // Back twice releases the full board, and returning to the preview reloads it.
+  await w.appBack();await w.NPStorage.flush();await w.appBack();await w.NPStorage.flush();await wait(50);
+  check(w.NanpureAppTest.getLibrary().every(p=>p._npSummary),'一覧に戻ると本体のメモリを解放');
+  click(w,'[data-action="pick-play"][data-id="'+uid+'"]');await until(()=>w.document.querySelector('[data-action="begin-play"]'));click(w,'[data-action="begin-play"]');await until(()=>w.document.querySelector('#board [data-cell]'));await w.NPStorage.flush();same(w.NanpureAppTest.getCurrent().grid,progress.grid,'再開で数字入力を引き継ぐ');same(w.NanpureAppTest.getCurrent().notes,progress.notes,'再開で候補メモを引き継ぐ');
+  check(w.NPGenerationMatches(w.NPStorage.summary(puzzle(2)),{kind:'normal',n:9,level:1})===w.NPGenerationMatches(puzzle(2),{kind:'normal',n:9,level:1}),'生成再開の条件照合が一覧でも一致');
+  await w.appBack();await w.NPStorage.flush();await w.appBack();await w.NPStorage.flush();if(w.NPVideo.paused())w.NPVideo.pause(false);
+  click(w,'[data-action="home"]');await w.NPStorage.flush();click(w,'[data-action="start"][data-flow="print"]');await until(()=>w.document.querySelector('[data-action="toggle-print"]'));
+  click(w,'[data-action="toggle-print"][data-id="'+uid+'"]');click(w,'[data-action="toggle-print"][data-id="lazy-09997"]');click(w,'[data-action="print-next"]');await until(()=>w.NanpureAppTest.getRoute().flow==='print'&&w.NanpureAppTest.getRoute().step===2);
+  check(w.NanpureAppTest.getLibrary().filter(p=>!p._npSummary).length===2,'印刷で選択した2問だけを展開');check(w.NanpureAppTest.getPrintPlan().pages.length>0,'選択した問題から印刷プランを作成');
+  await w.NPStorage.flush();w.NPStorage.close();iframe.remove();
+  // A restored backup must rebuild the catalog, even when its old ready marker exists.
+  const small={...packed,puzzles:packed.puzzles.slice(0,3)};window.NPRecoveryCanRestore=()=>true;
+  // Restore navigates after success; verify it in a dedicated iframe and observe its reload.
+  iframe=await frame(base);w=iframe.contentWindow;await w.NPRecovery.restore(small);await until(()=>iframe.contentWindow!==w||!iframe.contentWindow.NPRecovery?.isRestoring());await until(()=>iframe.contentWindow?.NanpureAppTest&&iframe.contentWindow.NanpureAppTest.getLibrary().length===3);w=iframe.contentWindow;
+  check(w.NanpureAppTest.getLibrary().length===3&&w.NanpureAppTest.getLibrary().every(p=>p._npSummary),'圧縮バックアップ復元後に一覧を再構築');
+  const old={...backup,puzzles:backup.puzzles.slice(0,2)};await w.NPRecovery.restore(old);await until(()=>iframe.contentWindow?.NanpureAppTest&&iframe.contentWindow.NanpureAppTest.getLibrary().length===2);w=iframe.contentWindow;check(w.NanpureAppTest.getLibrary().length===2,'以前の非圧縮バックアップも復元できる');
+  await w.NPStorage.flush();w.NPStorage.close();iframe.remove();await NPStorage.open(false);check(NPStorage.library.length===0,'選択問題用の起動では一覧全体を読まない');check((await NPStorage.get(old.puzzles[0].uid)).solution.length>0,'選択問題用の起動でも1問を取得できる');NPStorage.close();
+  document.querySelector('#metrics').textContent=JSON.stringify(metrics,null,2);window.qa={status:'passed',checks:results.children.length,metrics};check(true,'すべての検証が完了');
+ }catch(error){window.qa={status:'failed',errors:[error.stack||String(error)]};const li=document.createElement('li');li.className='fail';li.textContent='FAIL '+(error.stack||error);results.append(li);}
+}
+document.querySelector('#run').onclick=run;
+</script></html>

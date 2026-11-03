@@ -1,0 +1,32 @@
+{
+  "release": "2026.11.03.87",
+  "environment": "Remote Chrome, isolated IndexedDB and localStorage, local static preview",
+  "fixture": "9999 ordinary 9x9 records and one 100x100 record; metadata IDs differ; these 10000 records were seeded, not independently generated",
+  "additionalGeneration": "10 real normal 9x9 level-1 puzzles generated in the shipped worker and saved into the existing 10000-record library",
+  "metrics": {
+    "prepare10000Ms": 3707.5,
+    "firstMigrationMs": 5035.2,
+    "reopen10000Ms": 100.5,
+    "summaryBytes": 7817533,
+    "heapAfterCatalogMiB": 35.3,
+    "generateAndSave10Into10000Ms": 102.4,
+    "generatedSaveAverageMs": 2.6,
+    "generatedSaveMaxMs": 4.9,
+    "generationHeartbeatMaxDelayMs": 0.9,
+    "compressedBackup10000Ms": 158,
+    "fullBackup10000Ms": 482.5,
+    "backupJsonBytes": 8805960,
+    "actualAppStartupMs": 312.9,
+    "listClickSyncMs": 40.4,
+    "listDOMBuildMs": 40.7,
+    "inputAndPersistMs": 13.3
+  },
+  "result": "All storage, migration, rollback, resume, selected print, thumbnail, compressed and legacy restore checks passed",
+  "limits": [
+    "DOM-build timing excludes browser paint and image decoding; two requestAnimationFrame callbacks were unsuitable as a paint clock in this remote browser because of background frame throttling.",
+    "Backup timings cover snapshot construction, not file download, cloud upload, or OS storage latency.",
+    "The heap reading is a contextual Chrome reading after opening the catalog, not a peak-memory guarantee.",
+    "No physical low-memory phone or battery measurement was performed.",
+    "Generation of 10000 distinct hard or large puzzles was not timed. Runtime depends strongly on size, rules and difficulty; the 10 easy-puzzle sample must not be extrapolated to all puzzle types."
+  ]
+}
