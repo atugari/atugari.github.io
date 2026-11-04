@@ -6,12 +6,13 @@
 // NANPURE_VENDING_TEST_GENERATED can point to one newly generated Lv18 JSON puzzle.
 // NANPURE_VENDING_TEST_EXPANDED=1 additionally checks a 16×16 v2 shelf.
 // NANPURE_VENDING_TEST_VARIANTS=1 additionally checks both variant shelves.
+// NANPURE_VENDING_TEST_CATALOGUE=1 checks all 427 options and receipts across 23 rules.
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const {pathToFileURL} = require('node:url');
-const {randomBytes} = require('node:crypto');
+const {createHash, randomBytes} = require('node:crypto');
 const {gunzipSync, inflateSync} = require('node:zlib');
 const {chromium} = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 
@@ -32,6 +33,7 @@ if (localApi) {
 const workerToken = randomBytes(32).toString('hex');
 const expanded = process.env.NANPURE_VENDING_TEST_EXPANDED === '1';
 const variants = process.env.NANPURE_VENDING_TEST_VARIANTS === '1';
+const catalogue = process.env.NANPURE_VENDING_TEST_CATALOGUE === '1';
 const importRepo = relative => import(pathToFileURL(path.join(root, relative)).href);
 const types = {
   '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8',
@@ -63,6 +65,99 @@ function engineFixture(version, condition) {
   ctx.fixtureCondition = {...condition, count: 1};
   return {...vm.runInContext('NPGenerate(fixtureCondition, () => {})', ctx, {timeout: 15000}),
     uid: 'vending-profile-test-' + randomBytes(8).toString('hex')};
+}
+
+function catalogueFixtures() {
+  const {loadReleaseEngine, listProfiles} = require(path.join(root, 'android/nanpure-vending-worker/prepare-engine.cjs'));
+  const engine = loadReleaseEngine();
+  const profiles = listProfiles(engine);
+  const byKind = Map.groupBy(profiles, profile => profile.kind);
+  assert.equal(profiles.length, 427);
+  assert.equal(byKind.size, 23);
+  const preferred = new Map([
+    ['normal', 'normal:100:1:0::::'], ['jigsaw', 'jigsaw:25:1:2::::'], ['killer', 'killer:16:1:2::::'],
+    ['multi', 'multi:9:1:0:samurai:::'], ['cross', 'cross:6:1:0::cross::'], ['neighbor', 'neighbor:6:1:0::ell::']
+  ]);
+  const fixtures = Array.from(byKind, ([kind, rows]) => {
+    const condition = preferred.has(kind) ? rows.find(row => row.key === preferred.get(kind)) : rows[0];
+    assert(condition, `Missing ${kind} fixture profile`);
+    const seed = createHash('sha256').update(condition.key + ':0').digest().readUInt32LE();
+    const ctx = vm.createContext({performance, condition: {...condition, count: 1}, seed});
+    ctx.self = ctx;
+    vm.runInContext(`Math.random = () => {
+      seed = (seed + 0x6D2B79F5) | 0;
+      let value = Math.imul(seed ^ seed >>> 15, seed | 1);
+      value ^= value + Math.imul(value ^ value >>> 7, value | 61);
+      return ((value ^ value >>> 14) >>> 0) / 4294967296;
+    };`, ctx);
+    vm.runInContext(engine, ctx);
+    const puzzle = vm.runInContext(`{
+      const puzzle = NPGenerate(condition, () => {});
+      if (!NPGenerationMatches(puzzle, condition) || !NP.validate(puzzle)) throw Error('Invalid fixture');
+      puzzle;
+    }`, ctx, {timeout: 15000});
+    return {profile: condition.key, puzzle: {...puzzle, uid: 'vending-catalogue-test-' + kind}};
+  });
+  return {keys: Array.from(profiles, profile => profile.key).sort(), fixtures};
+}
+
+async function checkCatalogue(page, rows, {keys, fixtures}) {
+  assert.deepEqual(Array.from(rows, row => row.profile).sort(), keys);
+  const selected = await page.evaluate(async profiles => {
+    const {profilePicker} = await import('/nanpure/vending/profiles.js');
+    const panel = document.createElement('fieldset');
+    panel.innerHTML = '<label><select></select></label>'.repeat(4);
+    const picker = profilePicker(panel, () => {});
+    picker.update(profiles);
+    const selects = [...panel.querySelectorAll('select')];
+    return profiles.map(row => {
+      const values = [row.kind, row.n, row.level, [row.complexity || 0, row.multiShape || row.linkedShape || ''].join(':')];
+      values.forEach((value, i) => {
+        selects[i].value = String(value);
+        selects[i].dispatchEvent(new Event('change'));
+      });
+      return picker.selected?.profile;
+    });
+  }, rows);
+  assert.deepEqual(selected, Array.from(rows, row => row.profile));
+
+  await page.locator('#profile-kind').selectOption('normal');
+  await page.locator('#quantity').fill('10');
+  await page.locator('#profile-size').selectOption('100');
+  assert.equal(await page.locator('#quantity').getAttribute('max'), '1');
+  assert.equal(await page.locator('#quantity').inputValue(), '1');
+  await page.locator('#profile-size').selectOption('49');
+  assert.equal(await page.locator('#quantity').getAttribute('max'), '3');
+  await page.locator('#quantity').fill('4');
+  assert(await page.locator('#reserve').isDisabled());
+  await page.locator('#profile-size').selectOption('9');
+  assert.equal(await page.locator('#quantity').getAttribute('max'), '10');
+  await page.locator('#quantity').fill('1');
+
+  const stored = await page.evaluate(async candidates => {
+    const {savePuzzles} = await import('/nanpure/vending/notebook.js');
+    const {profileFromKey} = await import('/nanpure/vending/profiles.js');
+    const out = [];
+    for (const {profile, puzzle} of candidates) {
+      const condition = profileFromKey(profile);
+      const first = await savePuzzles([puzzle], condition);
+      const replay = await savePuzzles([puzzle], condition);
+      const preview = window.NP.svgBoard(puzzle);
+      out.push({first, replay, preview: preview.startsWith('<svg') && preview.endsWith('</svg>')});
+    }
+    return out;
+  }, fixtures);
+  for (const result of stored) assert.deepEqual(result, {first: {saved: 1, total: 1}, replay: {saved: 0, total: 1}, preview: true});
+
+  const mutable = new Set(['created', 'grid', 'notes', 'elapsed', 'completed']);
+  const saved = new Map((await notebookRows(page)).map(row => [row.uid, row]));
+  for (const {puzzle} of fixtures) {
+    const entry = saved.get(puzzle.uid);
+    assert(entry, `Missing ${puzzle.kind} receipt`);
+    for (const [key, value] of Object.entries(JSON.parse(JSON.stringify(puzzle)))) {
+      if (!mutable.has(key)) assert.deepEqual(entry[key], value, `${puzzle.kind} ${key} changed in the problem book`);
+    }
+  }
 }
 
 async function bodyOf(response) {
@@ -99,6 +194,17 @@ async function waitForCount(page, count) {
   }, count);
 }
 
+async function selectProfile(page, row) {
+  const fields = {
+    kind: row.kind, size: String(row.n), level: String(row.level),
+    shape: [row.complexity || 0, row.multiShape || row.linkedShape || ''].join(':')
+  };
+  for (const [field, value] of Object.entries(fields)) {
+    const select = page.locator('#profile-' + field);
+    if (await select.inputValue() !== value) await select.selectOption(value);
+  }
+}
+
 async function main() {
   const [{default: app}, {database}, {hash}] = await Promise.all([
     importRepo('nanpure-api/src/index.js'),
@@ -106,7 +212,8 @@ async function main() {
     importRepo('nanpure-api/src/http.js')
   ]);
   const DB = localApi ? null : database();
-  const env = {DB, OWNER_KEY_HASH: await hash(testOwner), VENDING_ENABLED: '1'};
+  const env = {DB, OWNER_KEY_HASH: await hash(testOwner), VENDING_ENABLED: '1',
+    ...(catalogue ? {VENDING_CATALOGUE_ENABLED: '1'} : {})};
   function fetchApi(request) {
     if (!localApi) return app.fetch(request, env);
     const source = new URL(request.url);
@@ -327,7 +434,7 @@ async function main() {
         const condition = {kind, n, level: 1, complexity: 2};
         const profile = `${kind}:${n}:1:2::::`;
         const puzzle = engineFixture(version, condition);
-        await customer.locator('#profile-kind').selectOption(kind);
+        await selectProfile(customer, condition);
         await waitForCount(customer, 0);
         await customer.locator('#reserve').click();
         const card = customer.locator('#orders [data-order-id]').filter({hasText: `${n}×${n}`})
@@ -353,6 +460,35 @@ async function main() {
       }
     }
 
+    if (catalogue) {
+      const {profiles} = await succeed(vending + '?profiles=1', null, {visitor});
+      const cases = catalogueFixtures();
+      await checkCatalogue(customer, profiles, cases);
+      for (const [kind, label] of [['normal', '100×100'], ['cross', '5面十字'], ['multi', '5面サムライ'], ['twinKiller', '双子キラー']]) {
+        const {profile, puzzle} = cases.fixtures.find(item => item.puzzle.kind === kind);
+        await selectProfile(customer, profiles.find(item => item.profile === profile));
+        await waitForCount(customer, 0);
+        await customer.locator('#reserve').click();
+        const card = customer.locator('#orders [data-order-id]').filter({hasText: label});
+        await card.waitFor();
+        const id = await card.getAttribute('data-order-id');
+        assert.equal(trace.find(entry => entry.request?.action === 'order' && entry.request.id === id).request.profile, profile);
+        const {job} = await succeed(workerPath, {action: 'poll', version: 2, ready: [profile]}, {token: workerToken});
+        assert.equal(job.profile, profile);
+        await succeed(workerPath, {action: 'result', id: job.id, lease: job.lease, p: puzzle}, {token: workerToken});
+        await customer.reload();
+        await card.locator('[data-action="collect"]').click();
+        await customer.locator('#open-notebook').waitFor();
+        const receipt = trace.find(entry => entry.request?.action === 'collect' && entry.request.id === id).response;
+        const returned = receipt.puzzles[0];
+        assert.equal(returned.id, puzzle.id);
+        assert.equal(returned.uid, puzzle.uid);
+        for (const key of ['puzzle', 'solution', 'linked', 'clues']) {
+          if (puzzle[key] !== undefined) assert.deepEqual(returned[key], JSON.parse(JSON.stringify(puzzle[key])));
+        }
+      }
+    }
+
     await owner.reload();
     await owner.locator('#owner-key').fill(testOwner);
     await owner.locator('#owner-connect').click();
@@ -369,7 +505,8 @@ async function main() {
     await context.close();
     console.log('PASS vending browser: stock, reservation, pairing/revocation, lost-receipt recovery, partial/instant pickup, notebook storage and play' +
       (expanded ? ', v2 16×16 reservation, indexed receipt and device stock' : '') +
-      (variants ? ', 25×25 jigsaw and 16×16 killer receipt and retry' : ''));
+      (variants ? ', 25×25 jigsaw and 16×16 killer receipt and retry' : '') +
+      (catalogue ? ', 427 profile choices, 23 rule receipts and previews, and 4 full catalogue order roundtrips' : ''));
   } finally {
     await browser.close();
     DB?.raw.close();

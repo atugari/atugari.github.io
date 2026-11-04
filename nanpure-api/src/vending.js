@@ -5,6 +5,8 @@ import { verifyVendingProof } from './shared/vending-proof.js';
 import { hasVendingUniqueSolution } from './shared/vending-unique.js';
 import { normalProfileShape, validateNormalProfile } from './shared/vending-normal.js';
 import { variantProfileShape, validateVariantProfile } from './shared/vending-variants.js';
+import { cataloguePuzzleShape, verifyCataloguePuzzle, fingerprintCataloguePuzzle } from './shared/vending-catalogue.js';
+import { hundredProfileShape, validateHundredProfile, fingerprintHundredPuzzle } from './shared/vending-hundred.js';
 
 const rule = { kind: 'normal', n: 9, level: 18 };
 const pilotProfile = 'normal:9:18:0::::';
@@ -20,24 +22,23 @@ const maxOpenPerClient = 5;
 const maxOutstanding = 200;
 const maxOrder = 10;
 const maxResultBytes = 196_608;
-const publicStock = profile => `SELECT COUNT(*) FROM vending_puzzles
-  WHERE profile=${profile} AND order_id IS NULL AND payload IS NOT NULL`;
-const waitingCount = (profile = null) => `SELECT COALESCE(SUM(count-assigned),0) FROM vending_orders
-  WHERE cancelled IS NULL AND assigned<count${profile ? ` AND profile=${profile}` : ''}`;
+const catalogueMaxResultBytes = 512 * 1024;
+const maxOrderFor = n => n === 100 ? 1 : n === 49 ? 3 : maxOrder;
+const catalogueEnabled = env => env.VENDING_CATALOGUE_ENABLED === '1';
+const scope = expanded => expanded ? '' : ' AND expanded=0';
 const outstandingCount = 'SELECT COALESCE(SUM(count-received),0) FROM vending_orders WHERE closed IS NULL';
 const openDeviceJob = 'device_id=? AND done IS NULL AND lease_until>?';
 const orderColumns = 'id,profile,count,created,cancelled,received,assigned-received AS ready';
 const selectOrder = `SELECT ${orderColumns} FROM vending_orders o WHERE id=? AND client=?`;
 const deviceEnabled = 'EXISTS(SELECT 1 FROM vending_devices WHERE id=? AND revoked IS NULL)';
-const profileFields = 'profile,kind,n,level,complexity,multi_shape AS multiShape,linked_shape AS linkedShape';
+const profileFields = 'profile,kind,n,level,complexity,multi_shape AS multiShape,linked_shape AS linkedShape,verification';
 const pilotLiteral = "'normal:9:18:0::::'";
-const profileStock = `SELECT ${profileFields},p.last_job,
+const profileStock = `SELECT ${profileFields},p.last_job,p.expanded,
     CASE WHEN p.profile=${pilotLiteral} THEN s.low_water ELSE p.target END AS lowWater,
     CASE WHEN p.profile=${pilotLiteral} THEN s.target ELSE p.target END AS target,
     CASE WHEN p.profile=${pilotLiteral} THEN s.refilling ELSE 1 END AS refilling,
-    (${publicStock('p.profile')}) AS available,
-    (${waitingCount('p.profile')}) AS waiting
-  FROM vending_profiles p CROSS JOIN vending_settings s WHERE s.id=1`;
+    p.available,p.waiting
+  FROM vending_catalogue p CROSS JOIN vending_settings s WHERE s.id=1`;
 
 export const vendingEnabled = env => env.VENDING_ENABLED === '1';
 
@@ -50,7 +51,8 @@ function serializeOrder(row) {
 }
 
 async function shelf(db) {
-  const row = await db.prepare(`SELECT low_water AS lowWater,target,(${publicStock(pilotLiteral)}) AS available
+  const row = await db.prepare(`SELECT low_water AS lowWater,target,
+    (SELECT available FROM vending_catalogue WHERE profile=${pilotLiteral}) AS available
     FROM vending_settings WHERE id=1`).first();
   return { ...rule, ...row };
 }
@@ -63,10 +65,11 @@ function profileInfo(row) {
   };
 }
 
-async function profiles(db, includeWaiting) {
-  const { results } = await db.prepare(`${profileStock} ORDER BY kind,n,level,p.profile`).all();
+async function profiles(db, includeWaiting, expanded) {
+  const { results } = await db.prepare(`${profileStock}${scope(expanded)} ORDER BY kind,n,level,p.profile`).all();
   return results.map(row => ({
     ...profileInfo(row), lowWater: row.lowWater, target: row.target, available: row.available,
+    verification: row.verification, maxCount: maxOrderFor(row.n),
     ...(includeWaiting ? { waiting: row.waiting } : {})
   }));
 }
@@ -80,19 +83,23 @@ async function getOrder(db, client, id) {
 }
 
 async function encodePuzzle(p) {
-  const stream = new Response(JSON.stringify(p)).body.pipeThrough(new CompressionStream('gzip'));
+  const response = new Response(JSON.stringify(p));
+  if (p.n >= 36 || p.verification?.method === 'registered-refill-generator') return response.arrayBuffer();
+  const stream = response.body.pipeThrough(new CompressionStream('gzip'));
   return new Response(stream).arrayBuffer();
 }
 
 async function decodePuzzle(bytes) {
-  const compressed = new Response(new Uint8Array(bytes)).body;
-  return new Response(compressed.pipeThrough(new DecompressionStream('gzip'))).json();
+  const payload = new Uint8Array(bytes);
+  const response = new Response(payload);
+  if (payload[0] === 123) return response.json();
+  return new Response(response.body.pipeThrough(new DecompressionStream('gzip'))).json();
 }
 
-async function orders(request, db, now) {
+async function orders(request, db, now, expanded) {
   if (request.method === 'GET') {
     const client = await identity(request, 'x-nanpure-key', false);
-    const [stock, list] = await Promise.all([shelf(db), wantsProfiles(request) ? profiles(db, false) : null]);
+    const [stock, list] = await Promise.all([shelf(db), wantsProfiles(request) ? profiles(db, false, expanded) : null]);
     const response = { enabled: true, shelf: stock, ...(list ? { profiles: list } : {}) };
     if (!client) return json(response);
     const { results } = await db.prepare(`SELECT ${orderColumns} FROM vending_orders o
@@ -109,8 +116,7 @@ async function orders(request, db, now) {
       fail(400, '受け取る数を選び直してください。');
     const reserve = Number(data.reserve);
     const profile = data.profile === undefined ? pilotProfile : data.profile;
-    if (typeof profile !== 'string' || profile.length > 90 ||
-        !await db.prepare('SELECT 1 FROM vending_profiles WHERE profile=?').bind(profile).first())
+    if (typeof profile !== 'string' || profile.length > 90)
       fail(400, '補充する問題の条件を選び直してください。');
     const replay = async () => {
       const old = await db.prepare('SELECT client,original_count,reserve,profile FROM vending_orders WHERE id=?').bind(data.id).first();
@@ -121,10 +127,15 @@ async function orders(request, db, now) {
     };
     const prior = await replay();
     if (prior) return prior;
+    const selected = await db.prepare(`SELECT n FROM vending_catalogue WHERE profile=?${scope(expanded)}`).bind(profile).first();
+    if (!selected)
+      fail(400, '補充する問題の条件を選び直してください。');
+    if (data.count > maxOrderFor(selected.n))
+      fail(400, 'この盤面の大きさで一度に受け取れる数を選び直してください。');
     await limit(db, request, 'vending-order', 20, 600_000);
     const inserted = await db.prepare(`INSERT INTO vending_orders (id,client,count,original_count,reserve,created,profile)
       SELECT ?,?,CASE WHEN ?=1 THEN ? ELSE MIN(?,available) END,?,?,?,?
-      FROM (SELECT (${publicStock('?')}) AS available,(${outstandingCount}) AS outstanding)
+      FROM (SELECT (SELECT available FROM vending_catalogue WHERE profile=?) AS available,(${outstandingCount}) AS outstanding)
       WHERE (?=1 OR available>0)
         AND outstanding+(CASE WHEN ?=1 THEN ? ELSE MIN(?,available) END)<=?
         AND (SELECT COUNT(*) FROM vending_orders WHERE client=? AND closed IS NULL)<?
@@ -134,7 +145,7 @@ async function orders(request, db, now) {
     if (!inserted) {
       const raced = await replay();
       if (raced) return raced;
-      if (!reserve && !(await db.prepare(`SELECT (${publicStock('?')}) AS available`).bind(profile).first()).available)
+      if (!reserve && !(await db.prepare('SELECT available FROM vending_catalogue WHERE profile=?').bind(profile).first()).available)
         fail(409, '在庫がなくなりました。予約するか、少し後にお試しください。');
       fail(429, '受け取り待ちが多いため、少し後にお試しください。');
     }
@@ -177,9 +188,9 @@ async function admin(request, env, now) {
         stock_count AS stockCount,stock_bytes AS stockBytes,stock_updated AS stockUpdatedAt,
         EXISTS(SELECT 1 FROM vending_jobs WHERE device_id=vending_devices.id AND done IS NULL AND lease_until>?) AS working
         FROM vending_devices WHERE revoked IS NULL ORDER BY created,id`).bind(now).all(),
-      db.prepare(`SELECT (${waitingCount()}) AS waiting,
+      db.prepare(`SELECT (SELECT COALESCE(SUM(waiting),0) FROM vending_catalogue WHERE waiting>0) AS waiting,
         (SELECT COUNT(*) FROM vending_jobs WHERE done IS NULL AND lease_until>?) AS leased`).bind(now).first(),
-      wantsProfiles(request) ? profiles(db, true) : null
+      wantsProfiles(request) ? profiles(db, true, catalogueEnabled(env)) : null
     ]);
     return json({ shelf: stock, devices: devices.results.map(d => ({ ...d, working: Boolean(d.working) })), ...state,
       ...(list ? { profiles: list } : {}) });
@@ -241,13 +252,13 @@ async function jobResult(db, row, modern) {
     const job = row ? { ...rule, id: row.id, lease: row.lease, expires: row.expires } : null;
     return json({ ok: true, job });
   }
-  const profile = row && await db.prepare(`SELECT ${profileFields} FROM vending_profiles WHERE profile=?`)
+  const profile = row && await db.prepare(`SELECT ${profileFields} FROM vending_catalogue WHERE profile=?`)
     .bind(row.profile).first();
   const job = profile ? { ...profileInfo(profile), id: row.id, lease: row.lease, expires: row.expires } : null;
   return json({ ok: true, version: 2, job });
 }
 
-async function poll(db, device, now, data) {
+async function poll(db, device, now, data, expanded) {
   const modern = data.version === 2;
   const ready = modern && Array.isArray(data.ready) ? data.ready : [];
   if (ready.length > 427 || ready.some(profile => typeof profile !== 'string' || profile.length > 90))
@@ -262,10 +273,11 @@ async function poll(db, device, now, data) {
       .bind(stock.count, stock.bytes, now, device.id, now - stockReportInterval).run();
   }
 
-  const current = await db.prepare(`SELECT id,lease,lease_until AS expires,profile FROM vending_jobs
-    WHERE ${openDeviceJob}`).bind(device.id, now).first();
+  const current = await db.prepare(`SELECT j.id,j.lease,j.lease_until AS expires,j.profile,p.expanded
+    FROM vending_jobs j JOIN vending_catalogue p ON p.profile=j.profile WHERE ${openDeviceJob}`).bind(device.id, now).first();
   if (current) {
-    if (!modern && current.profile !== pilotProfile) return jobResult(db, null, modern);
+    if ((!modern && current.profile !== pilotProfile) || (!expanded && current.expanded))
+      return jobResult(db, null, modern);
     if (current.expires <= now + leaseLifetime / 2) {
       const renewed = await db.prepare(`UPDATE vending_jobs SET lease_until=?
         WHERE id=? AND ${openDeviceJob} AND ${deviceEnabled}
@@ -276,29 +288,42 @@ async function poll(db, device, now, data) {
     return jobResult(db, current, modern);
   }
 
-  // Only the indexed, uncollected shelf and active leases participate in this
-  // calculation. The identity ledger grows independently of the online shelf.
-  const demand = `WITH stock AS (${profileStock} AND (?=1 OR p.profile=${pilotLiteral})),
-    demand AS (SELECT stock.*, (SELECT COUNT(*) FROM vending_jobs j
-      WHERE j.profile=stock.profile AND j.done IS NULL AND j.lease_until>?) AS leased FROM stock)`;
-  const needed = 'waiting+CASE WHEN refilling=1 THEN MAX(0,target-available) ELSE 0 END>leased';
-  const work = await db.prepare(`${demand} SELECT 1 FROM demand WHERE ${needed} LIMIT 1`)
-    .bind(Number(modern), now).first();
-  if (!work) return jobResult(db, null, modern);
-
-  // Recheck demand inside the insert so simultaneous polls cannot over-lease.
-  const acquired = await db.prepare(`${demand} INSERT INTO vending_jobs (id,device_id,lease,lease_until,created,profile)
-    SELECT ?,?,?,?,?,profile FROM demand
-    WHERE ${deviceEnabled} AND NOT EXISTS(SELECT 1 FROM vending_jobs WHERE ${openDeviceJob}) AND ${needed}
-    ORDER BY (waiting>leased) DESC,(available+leased)*1.0/target,last_job,
-      profile IN (SELECT value FROM json_each(?)) DESC,profile
+  // No more than one candidate per active device can be blocked by leases.
+  // Read only the first indexed candidates in each queue, even with 427 shelves.
+  const candidates = modern ? `reserved AS MATERIALIZED (
+      SELECT profile,waiting AS capacity,0 AS priority,retry_after,0 AS fill,last_job FROM vending_catalogue
+      WHERE waiting>0 AND retry_after<=(SELECT now FROM request)${scope(expanded)}
+      ORDER BY retry_after,last_job,profile LIMIT ${maxDevices + 1}
+    ), understock AS MATERIALIZED (
+      SELECT profile,waiting+target-available AS capacity,1 AS priority,retry_after,
+        available*1.0/target AS fill,last_job FROM vending_catalogue
+      WHERE available<target AND profile<>${pilotLiteral} AND retry_after<=(SELECT now FROM request)${scope(expanded)}
+      ORDER BY retry_after,fill,last_job,profile LIMIT ${maxDevices + 1}
+    ), candidates AS (
+      SELECT * FROM reserved UNION ALL SELECT * FROM understock UNION ALL
+      SELECT profile,waiting+s.target-available,1,retry_after,available*1.0/s.target,last_job
+      FROM vending_catalogue p CROSS JOIN vending_settings s
+      WHERE profile=${pilotLiteral} AND s.id=1 AND s.refilling=1 AND available<s.target
+    )` : `candidates AS (
+      SELECT profile,waiting+CASE WHEN s.refilling=1 THEN MAX(0,s.target-available) ELSE 0 END AS capacity,
+        0 AS priority,retry_after,0 AS fill,last_job
+      FROM vending_catalogue p CROSS JOIN vending_settings s WHERE profile=${pilotLiteral} AND s.id=1
+    )`;
+  const acquired = await db.prepare(`WITH request(now) AS (VALUES (?)), ${candidates}
+    INSERT INTO vending_jobs (id,device_id,lease,lease_until,created,profile)
+    SELECT ?,?,?,?,?,profile FROM candidates c
+    WHERE ${deviceEnabled} AND NOT EXISTS(SELECT 1 FROM vending_jobs WHERE ${openDeviceJob})
+      AND capacity>(SELECT COUNT(*) FROM vending_jobs j
+        WHERE j.profile=c.profile AND j.done IS NULL AND j.lease_until>(SELECT now FROM request))
+    ORDER BY priority,retry_after,fill,last_job,profile IN (SELECT value FROM json_each(?)) DESC,profile
     LIMIT 1 RETURNING id,lease,lease_until AS expires,profile`)
-    .bind(Number(modern), now, newKey(), device.id, newKey(), now + leaseLifetime, now, device.id,
+    .bind(now, newKey(), device.id, newKey(), now + leaseLifetime, now, device.id,
       device.id, now, JSON.stringify(ready)).first();
   if (acquired) return jobResult(db, acquired, modern);
 
-  const other = await db.prepare(`SELECT id,lease,lease_until AS expires,profile FROM vending_jobs
-    WHERE ${openDeviceJob} AND ${deviceEnabled}`).bind(device.id, now, device.id).first();
+  const other = await db.prepare(`SELECT j.id,j.lease,j.lease_until AS expires,j.profile
+    FROM vending_jobs j JOIN vending_catalogue p ON p.profile=j.profile
+    WHERE ${openDeviceJob} AND ${deviceEnabled}${scope(expanded)}`).bind(device.id, now, device.id).first();
   return jobResult(db, modern || other?.profile === pilotProfile ? other : null, modern);
 }
 
@@ -331,32 +356,45 @@ function validateCandidate(value, now) {
 const resultConflict = (code, error) => json({ code, error }, 409);
 const expiredLease = () => resultConflict('lease_expired', '補充の割り当てが終了しました。');
 
-async function submit(db, device, data, now) {
-  const selected = await db.prepare(`SELECT j.lease_until,j.digest,p.profile,p.kind,p.n,p.level,p.complexity
-    FROM vending_jobs j JOIN vending_profiles p ON p.profile=j.profile
-    WHERE j.id=? AND j.device_id=? AND j.lease=? AND ${deviceEnabled}`).bind(data.id, device, data.lease, device).first();
+async function submit(db, device, data, now, expanded) {
+  const selected = await db.prepare(`SELECT j.lease_until,j.digest,p.profile,p.kind,p.n,p.level,p.complexity,
+      p.multi_shape AS multiShape,p.linked_shape AS linkedShape,p.verification
+    FROM vending_jobs j JOIN vending_catalogue p ON p.profile=j.profile
+    WHERE j.id=? AND j.device_id=? AND j.lease=? AND ${deviceEnabled}${scope(expanded)}`).bind(data.id, device, data.lease, device).first();
   if (!selected || (!selected.digest && selected.lease_until <= now)) return expiredLease();
   const legacy = selected.profile === pilotProfile;
-  const variant = selected.kind !== 'normal';
-  const raw = legacy ? candidate(data.p, rule.level) : variant ? variantProfileShape(data.p, selected) : data.p;
-  const boxes = legacy ? regions : variant ? raw?.regions : normalProfileShape(raw, selected);
-  if (!boxes) fail(400, '割り当てられた問題の条件や盤面と一致しません。');
-  const fingerprintInput = { kind: selected.kind, n: selected.n, puzzle: raw.puzzle, solution: raw.solution,
-    regions: boxes, ...(variant && raw.cages ? { cages: raw.cages } : {}) };
+  const trusted = selected.verification === 'device';
+  const hundred = selected.profile === 'normal:100:1:0::::';
+  const variant = !trusted && selected.kind !== 'normal';
+  const raw = legacy ? candidate(data.p, rule.level)
+    : trusted ? await cataloguePuzzleShape(data.p, selected)
+    : hundred ? hundredProfileShape(data.p, selected)
+    : variant ? variantProfileShape(data.p, selected)
+    : data.p;
+  const boxes = legacy ? regions : variant ? raw?.regions
+    : trusted || hundred ? null : normalProfileShape(raw, selected);
+  if (!raw || (!trusted && !hundred && !boxes)) fail(400, '割り当てられた問題の条件や盤面と一致しません。');
+  const fingerprint = () => trusted ? fingerprintCataloguePuzzle(raw, selected)
+    : hundred ? fingerprintHundredPuzzle(raw)
+    : fingerprintPuzzle({ kind: selected.kind, n: selected.n, puzzle: raw.puzzle, solution: raw.solution,
+      regions: boxes, ...(variant && raw.cages ? { cages: raw.cages } : {}) });
 
   // A replay after a lost acknowledgement can be checked by identity alone.
   if (selected.digest) {
-    const digest = await fingerprintPuzzle(fingerprintInput);
+    const digest = await fingerprint();
     if (selected.digest === digest && await db.prepare('SELECT uid FROM vending_puzzles WHERE digest=? AND uid=?')
       .bind(digest, raw.uid ?? '').first()) return json({ ok: true });
     return resultConflict('already_finished', 'この補充の結果は確定しています。');
   }
 
-  const p = legacy ? validateCandidate(raw, now) : variant
-    ? validateVariantProfile(raw, selected, now) : validateNormalProfile(raw, selected, boxes, now);
+  const p = legacy ? validateCandidate(raw, now)
+    : trusted ? await verifyCataloguePuzzle(raw, selected, now)
+    : hundred ? validateHundredProfile(raw, selected, now)
+    : variant ? validateVariantProfile(raw, selected, now)
+    : validateNormalProfile(raw, selected, boxes, now);
   if (!p) fail(400, '唯一解または指定難易度を確認できません。');
   const [digest, payload] = await Promise.all([
-    fingerprintPuzzle(fingerprintInput),
+    fingerprint(),
     encodePuzzle(p)
   ]);
   const saved = await db.prepare(`INSERT OR IGNORE INTO vending_puzzles (digest,uid,job_id,payload,created,profile)
@@ -377,18 +415,36 @@ async function submit(db, device, data, now) {
   return resultConflict('shelf_full', '補充する分がそろいました。');
 }
 
-async function worker(request, db, now) {
+async function worker(request, db, now, expanded) {
   if (request.method !== 'POST') fail(405, 'POSTで送信してください。');
-  const data = await input(request, maxResultBytes);
+  const auth = request.headers.get('authorization') || '';
+  const bearer = auth.startsWith('Bearer ') && validKey(auth.slice(7));
+  const data = await input(request, bearer ? (expanded ? catalogueMaxResultBytes : maxResultBytes) : 1000);
   if (data.action === 'register') return register(db, data, now);
   const device = await getDevice(request, db);
-  if (data.action === 'poll') return poll(db, device, now, data);
+  if (data.action === 'poll') return poll(db, device, now, data, expanded);
   if (!validKey(data.id) || !validKey(data.lease)) fail(400, '補充の割り当てを確認してください。');
-  if (data.action === 'result') return submit(db, device.id, data, now);
+  if (data.action === 'result') return submit(db, device.id, data, now, expanded);
   if (data.action === 'release') {
-    await db.prepare(`UPDATE vending_jobs SET lease_until=?
-      WHERE id=? AND device_id=? AND lease=? AND done IS NULL AND lease_until>?`)
-      .bind(now, data.id, device.id, data.lease, now).run();
+    const active = 'id=? AND device_id=? AND lease=? AND done IS NULL AND lease_until>?';
+    const release = db.prepare(`UPDATE vending_jobs SET lease_until=? WHERE ${active}`)
+      .bind(now, data.id, device.id, data.lease, now);
+    if (expanded) {
+      // Older Xperia builds do not report an exhaustion reason. An unfinished
+      // job released after a long round yields to other conditions briefly.
+      const exhausted = data.reason === 'exhausted';
+      await db.batch([
+        db.prepare(`WITH outcome AS (
+            SELECT profile,(?=1 OR created<=?) AS exhausted FROM vending_jobs WHERE ${active}
+          ) UPDATE vending_catalogue SET
+          retry_after=MAX(retry_after,?+CASE WHEN (SELECT exhausted FROM outcome)
+            THEN MIN(1800000,120000*(1 << MIN(failures,4))) ELSE 15000 END),
+          failures=MIN(5,failures+(SELECT exhausted FROM outcome))
+          WHERE expanded=1 AND profile=(SELECT profile FROM outcome)`)
+          .bind(Number(exhausted), now - 60_000, data.id, device.id, data.lease, now, now),
+        release
+      ]);
+    } else await release.run();
     return json({ ok: true });
   }
   fail(400, '操作を確認してください。');
@@ -398,8 +454,9 @@ export async function vending(request, env, pathname) {
   if (!vendingEnabled(env)) fail(503, '問題の受け取り機能は準備中です。');
   const now = Date.now();
   if (pathname === '/api/vending/admin') return admin(request, env, now);
-  if (pathname === '/api/vending/worker') return worker(request, env.DB, now);
-  return orders(request, env.DB, now);
+  const expanded = catalogueEnabled(env);
+  if (pathname === '/api/vending/worker') return worker(request, env.DB, now, expanded);
+  return orders(request, env.DB, now, expanded);
 }
 
 export async function cleanVending(db, now = Date.now()) {
