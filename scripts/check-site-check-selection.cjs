@@ -26,6 +26,11 @@ test('real loader changes are not mistaken for a version-number update',()=>{
   const p=plan(['nanpure/index.html'],{old:{'nanpure/index.html':'<script src="/nanpure/releases/2026.11.03.88/main.js"></script>'},next:{'nanpure/index.html':'<script src="/nanpure/releases/2026.11.04.89/main.js"></script><script src="changed.js"></script>'}});
   assert.equal(p.notebook,true);
 });
+test('the Sudoku search page builder selects the notebook search checks',()=>{
+  const p=plan(['scripts/seo/build-seo.mjs']);
+  assert.equal(p.notebook,true);
+  for(const key of ['wado','corpus','learning','full'])assert.equal(p[key],false);
+});
 test('corpus changes run independent uniqueness checks, while display-only changes avoid unrelated dictionaries',()=>{
   const p=plan(['nanpure/collection/packs/normal.b64']);assert.equal(p.corpus,true);assert.equal(p.wado,false);
   const ui=plan(['scripts/client-overrides/public/notebook/board-comfort.js']);assert.equal(ui.notebook,true);assert.equal(ui.corpus,false);assert.equal(ui.wado,false);

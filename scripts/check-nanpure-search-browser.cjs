@@ -26,7 +26,7 @@ async function setup(browser,javaScriptEnabled=true){
       const url=origin+'/nanpure/'+(code==='ja'?'':code.toLowerCase()+'/');
       await page.goto(url);await page.locator('h1').waitFor();
       assert.equal(await page.locator('html').getAttribute('lang'),code);
-      assert.equal(await page.locator('.language-directory a').count(),20);
+      assert.equal(await page.locator('.language-directory a').count(),code==='ja'?0:20);
       assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,code+' mobile overflow');
     }
     await page.setViewportSize({width:320,height:812});await page.goto(origin+'/nanpure/ar/');
@@ -46,13 +46,18 @@ async function setup(browser,javaScriptEnabled=true){
       assert.equal(await game.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,code+' playable home fits');
     }
     assert.deepEqual(errors,[],'Game startup errors');
-    await game.goto(origin+'/nanpure/?lang=ja');await game.locator('.main-choice').waitFor();
-    assert.equal(await game.locator('#search-directory').isVisible(),true);
+    await game.goto(origin+'/nanpure/?lang=ja');await game.waitForFunction(()=>window.NPAchievementShellAttached);
+    const support=game.locator('.home-support-button');
+    assert.equal(await support.textContent(),'月100円で製作者を応援しよう♫');
+    assert.equal(await game.locator('#search-directory,.language-directory').count(),0);
+    assert(await support.evaluate(link=>[...document.querySelectorAll('body a,body button,body h1,body h2,body p')].every(node=>
+      !(link.compareDocumentPosition(node)&Node.DOCUMENT_POSITION_FOLLOWING)||!node.getClientRects().length
+    )),'The support link is the last visible home content');
     await game.locator('.main-choice').click();await game.locator('.site-shell.mode-practice').waitFor();
     assert.equal(await game.locator('#search-directory').isVisible(),false,'Directory must not intrude on gameplay');
     await game.goto(origin+'/nanpure/?lang=en&view=privacy');await game.locator('.legal').waitFor();
     assert.equal(await game.locator('#search-directory').isVisible(),false,'Directory must not appear below the privacy page');
     await context.close();
-    console.log('PASS browser search: 20 mobile pages without JS, Arabic RTL at 320px, 19 translated game handoffs and home-only directory');
+    console.log('PASS browser search: 20 mobile pages without JS, Arabic RTL at 320px, 19 translated game handoffs and no content below the home support link');
   }finally{await browser.close();}
 })().catch(error=>{console.error(error);process.exitCode=1;});

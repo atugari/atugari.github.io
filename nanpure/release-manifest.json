@@ -5,7 +5,7 @@
   "base": "/nanpure/releases/2026.11.04.96/",
   "online": "https://puzzle-api.puzzle-hub-4826.workers.dev",
   "files": {
-    "nanpure/index.html": "d6aa14684d1668c3aaf798f45f3dbc22f2667745311ac57ba4873e20888ef04a",
+    "nanpure/index.html": "a489cb92129cdb7013d953db7a1ffc08803b8696ef6976838250a19c92822dd3",
     "nanpure.html": "b9585e4659bb2a234bede05222fb0366b49002475202499d60274c17ebef2dc3",
     "nanpure/version.json": "ddae66afdb22e29b57f9fa3217df57f0f3ff1a927b9e9e8c17f97ff4b6a6ebb9",
     "nanpure/releases.json": "f45d2f38f1e8a01144723dead4fab1572077306e0a482565f977c946d2191e7c",
@@ -5924,7 +5924,7 @@
       "nanpure/collection/style.css": "1edbae2eac24260cb3487f9726ff7f1f1abc665dce05ffac27e69a033207bd07",
       "nanpure/collection/catalog-model.mjs": "f20bc440da026a79cafab808dcb515b0926086d0e3dc66eb5b68060f484d7f00",
       "nanpure/collection/pack-reader.mjs": "7e4a2902ac7e25b280478ab68158ad6ef28e94de11e1b6e41b4885d699a5db3f",
-      "scripts/seo/build-seo.mjs": "9a7eea4d010b7b073bf995b4dab6c71bf39770875344e180323015f1da064419",
+      "scripts/seo/build-seo.mjs": "04c0bf5c2224f5ae62ea0902aee84bb55d7a2580caf34996f5018175145560a4",
       "nanpure/collection/workspace.css": "8e818961ad1275ea10b6b29f592513051f1bd9a70d6e7a9b9a33c4288dc5e9bb",
       "nanpure/collection/workspace.js": "4ee5f124556941c5bcd61cc87b4de944a7bc316df2bdf0e1caf47c6c607b38a0",
       "nanpure/collection/board-input.js": "92acb148272145a2aa202d44ce7093004a70ee30de8d11adc44e19ab31de56c4",

@@ -71,8 +71,6 @@ function decorateHome(repo,base,write) {
   const file=path.join(repo,'nanpure/index.html');
   if(!fs.existsSync(file))throw Error('Build the playable Japanese home first');
   const content=readSiteContent(repo),locales=localesFor(repo);
-  const collection=JSON.parse(fs.readFileSync(path.join(repo,'nanpure/collection/catalog.json'),'utf8')).configs.filter(c=>c.kind!=='cross');
-  const collectionRules=new Set(collection.map(c=>c.kind)).size,collectionCount=collection.reduce((n,c)=>n+c.count,0).toLocaleString('en-US');
   let html=fs.readFileSync(file,'utf8');
   const metadata=/<title>[\s\S]*?<script type="application\/ld\+json">[\s\S]*?<\/script>/;
   if(!metadata.test(html))throw Error('Cannot locate the current home search metadata');
@@ -82,8 +80,7 @@ function decorateHome(repo,base,write) {
   html=html.replace(/<link rel="stylesheet" href="\/nanpure\/collection\/entry\.css[^"]*">\s*/g,'').replace(/<script (?:defer )?src="\/nanpure\/collection\/entry\.js[^"]*"><\/script>\s*/g,'');
   html=html.replace('</head>',"<link rel=\"stylesheet\" href=\"/nanpure/collection/entry.css?v=20261030\">\n<script src=\"/nanpure/collection/entry.js?v=20261104-home-cards\"></script>\n"+'</head>');
   html=html.replace(/<a\b[^>]*data-collection-entry[^>]*>[\s\S]*?<\/a>/g,'');
-  const directory=`<!-- search-directory:start --><aside class="search-home" id="search-directory" lang="ja" translate="no" data-i18n-skip="true"><section class="search-japanese" aria-labelledby="search-about-title"><h2 id="search-about-title">毎日遊べる無料ナンプレ・数独</h2><p>ナンプレ帳は登録不要の無料ナンプレです。スマホ・タブレット・パソコンのブラウザで、問題づくりからプレイ、保存、印刷まで利用できます。英語名はSudoku Notebookです。</p><p><a href="/nanpure/daily-sudoku/">毎日3問の日替わりナンプレ</a>は、日本時間の午前0時に更新。自分のペースで解いたり、ランキングに挑戦したりできます。</p><p>完成済みの<a href="/nanpure/collection/">${collectionRules}ルール・${collectionCount}問の問題集</a>も収録。問題を生成する時間を待たずに、好きなルール・大きさ・難易度で選べます。</p><h3>初めてでも遊べますか？</h3><p><a href="/nanpure/guide/">ナンプレの基本ルールと遊び方</a>を読み、<a href="/nanpure/?view=tutorial">操作を練習</a>してから始められます。通常の9×9は、各行・各列・3×3の枠に1〜9を重複なく入れます。</p><h3>紙に印刷できますか？</h3><p>A4・A3への印刷、答えを別ページに付ける配置、大きな盤面の分割印刷に対応します。PDFはブラウザの印刷画面で保存できます。<a href="/nanpure/print/">印刷とPDF保存の手順</a>を確認できます。</p><h3>途中から続けるには？</h3><p>自由に遊ぶ問題と途中経過は、使っているブラウザに保存されます。別の端末への引き継ぎやバックアップには、保存メニューの引き継ぎファイルを使えます。ブラウザのデータを削除すると端末内の記録が消えることがあります。</p></section>${languageNavigation(repo)}</aside><!-- search-directory:end -->`;
-  html=html.replace(/<!-- search-directory:start -->[\s\S]*?<!-- search-directory:end -->/g,'').replace('</body>',directory+'</body>');
+  html=html.replace(/<!-- search-directory:start -->[\s\S]*?<!-- search-directory:end -->/g,'');
   write('nanpure/index.html',html);
 }
 

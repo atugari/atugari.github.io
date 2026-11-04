@@ -62,6 +62,7 @@ function planChecks({paths,readAt,sameBlob=()=>false,base='base',head='head',for
     if(/^nanpure\/learn\/|^scripts\/check-nanpure-learning/.test(p)){selected.learning=true;continue;}
     if(/^docs\/.*\.(?:md|txt)$/.test(p)||/(?:^|\/)(?:README|LICENSE|COPYING)(?:\.[^/]+)?$/i.test(p))continue;
     if(/^scripts\/i18n\/|(?:site-theme|ui-text|reading-tools|language-layout)/.test(p)){selected.notebook=true;selected.wado=true;selected.learning=true;continue;}
+    if(p==='scripts/seo/build-seo.mjs'){selected.notebook=true;continue;}
     if(/^scripts\/client-overrides\/(?:app|public)\/|^scripts\/check-(?:nanpure|pareasobi|community|reading)|^nanpure\/(?:index\.html|gallery\/|exhibitions\/)|^puzzles\//.test(p)){selected.notebook=true;continue;}
     if(/^kuroshiro\//.test(p)||p==='plaza.html')continue; // Kuroshiro is built on every publication.
     all();

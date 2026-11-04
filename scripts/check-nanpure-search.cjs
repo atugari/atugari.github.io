@@ -41,11 +41,10 @@ for(const [code,url] of urls){
   const page=graphs.find(node=>node['@type']==='WebPage');
   assert.equal(page.inLanguage,code);assert.equal(page.url,url);
   assert.deepEqual(graphs.find(node=>node['@type']==='WebApplication').inLanguage,codes);
-  assert.equal(document.querySelectorAll('.language-directory a[hreflang]').length,20);
   if(code==='ja'){
-    assert(document.querySelector('.search-japanese').textContent.includes('日替わり'));
-    assert.equal(document.querySelectorAll('#search-directory').length,1,'Repeated rebuild duplicated home directory');
+    assert.equal(document.querySelectorAll('#search-directory,.language-directory').length,0,'The Japanese game home ends at the support button');
   }else{
+    assert.equal(document.querySelectorAll('.language-directory a[hreflang]').length,20);
     assert(document.querySelector('article').textContent.length>600,url+' useful translated content without JS');
     assert.equal(document.querySelectorAll('article section').length,5);
     assert.equal(document.querySelector('html').getAttribute('dir'),code==='ar'?'rtl':'ltr');
