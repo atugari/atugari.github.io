@@ -115,8 +115,8 @@ assert.throws(()=>ctx.NanpureMulti.generateMixed('custom',[4,4],5,'invalid',null
 assert.equal(ctx.NP.maxLevel('multi',4),2);
 const old={kind:'multi',n:9,multiVersion:1,linked:ctx.NanpureMulti.layout('pair')};old.solution=ctx.NanpureMulti.completed(old.linked,ctx.NanpureVariants.rngFor('OLD'));old.puzzle=old.solution.slice();assert(ctx.NP.validate(old));assert(ctx.NanpureMulti.solve(old).solved);
 const maxBoards=ctx.NanpureMulti.maxBoards;
-assert.equal(maxBoards,20);
-const twenty=Array(maxBoards).fill(9),chain=twenty.slice(1).map((_,i)=>({parent:i,corner:'se'}));
+assert.equal(maxBoards,300);
+const twenty=Array(20).fill(9),chain=twenty.slice(1).map((_,i)=>({parent:i,corner:'se'}));
 const availableRules=Array.from(ctx.NanpureMulti.rulesForSize(9));
 assert.deepEqual(availableRules,['normal','diagonal','hyper','antiknight','antiking','disjoint']);
 const rotatingRules=twenty.map((_,i)=>availableRules[i%availableRules.length]);
@@ -132,7 +132,26 @@ assert(!ctx.NPGenerationMatches(twentyRules,{...cfg20,multiRules:twenty.map(()=>
 assert.notEqual(ctx.NPBatch.configKey(cfg20),ctx.NPBatch.configKey({...cfg20,multiRules:undefined}));
 assert(!ctx.NPBatch.valid({...cfg20,multiSizes:[...twenty,9]}));
 assert(!ctx.NPBatch.valid({...cfg20,multiRules:[...rotatingRules.slice(0,-1),'killer']}));
-assert.throws(()=>ctx.NanpureMulti.mixedLayout('custom',[...twenty,9]));
+assert.throws(()=>ctx.NanpureMulti.mixedLayout('custom',Array(maxBoards+1).fill(9)));
+// Maximum supported puzzle exercises generation, compact save, rule identity and bounded drawing.
+const largeSizes=Array(maxBoards).fill(9),largeRules=largeSizes.map((_,i)=>availableRules[i%availableRules.length]);
+const large=ctx.NanpureMulti.generateMixed('custom',largeSizes,1,'THREE-HUNDRED',null,60000,undefined,largeRules);
+assert.equal(large.linked.boards.length,maxBoards);
+assert.equal(ctx.NP.validate(large),true);
+assert.equal(large.verification.sharedWitnesses.length,maxBoards-1);
+for(const witness of large.verification.sharedWitnesses)verifyWitness(large,witness);
+const largeExact=ctx.NanpureMulti.exact(large,15000);
+assert(!largeExact.timeout);assert.equal(largeExact.count,1);
+assert.deepEqual(Array.from(largeExact.solution),Array.from(large.solution));
+const largeSaved=ctx.NPCompact.parse(ctx.NPCompact.stringify({format:'nanpure-chou-v3',puzzles:[large]})).puzzles[0];
+assert.equal(JSON.stringify(largeSaved),JSON.stringify(large));
+const largeArt=ctx.NanpureMulti.art(large,large.puzzle,{},-1,[],299);
+assert(largeArt.includes('data-multi-label="299"'));assert(largeArt.includes('KN '));
+assert((largeArt.match(/data-linked-cell=/g)||[]).length<1000,'play draws a bounded neighborhood');
+assert.equal((ctx.NanpureMulti.art(large,large.puzzle).match(/data-multi-outline=/g)||[]).length,300);
+assert.equal(ctx.NanpureMulti.boardCode(26),'AA');assert.equal(ctx.NanpureMulti.boardCode(299),'KN');
+assert(ctx.NPBatch.valid({kind:'multi',n:9,level:1,multiShape:'custom',multiSizes:largeSizes,multiRules:largeRules,count:1}));
+generated++;
 const implicit={kind:'multi',n:9,level:1,multiShape:'pair',count:1};
 const implicitPuzzle=ctx.NPGenerate(implicit);verify(implicitPuzzle);generated++;
 assert.equal(implicitPuzzle.implicitMultiPreset,true);
@@ -179,4 +198,4 @@ assert(flowerForm.includes('value="18" data-multi-offset="3"'),'D retains the re
 const print=fs.readFileSync(path.join(base,'print.html'),'utf8');assert(print.includes('<script src="common.js"></script><script src="mixed-multi.js"></script>'));
 assert(fs.readFileSync(path.join(base,'app.js'),'utf8').includes('"generator-source","core-mixed-multi"].map'));
 assert(fs.readFileSync(path.join(base,'portable.js'),'utf8').includes('"generator-source","core-mixed-multi"].map'));
-console.log('PASS mixed multi:',generated,'generated puzzles; 15 sizes, five levels, three presets, 2–20 free boards, six board rules, exact uniqueness, no-guess solving, shared dependency, candidates, backup/restore, queue identity, arbitrary/triple overlaps, color maps, membership, drag, finder, five print modes and v1 compatibility.');
+console.log('PASS mixed multi:',generated,'generated puzzles; 15 sizes, five levels, three presets, 2–300 free boards, six board rules, exact uniqueness, no-guess solving, shared dependency, candidates, backup/restore, queue identity, arbitrary/triple overlaps, color maps, membership, drag, finder, five print modes and v1 compatibility.');

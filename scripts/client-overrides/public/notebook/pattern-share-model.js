@@ -14,8 +14,8 @@
   return value.slice();
  }
  function layoutOf(spec,version=2){
-  const legacy=version===1,extent=legacy?256:500;
-  if(!Array.isArray(spec)||spec.length<2||spec.length>(legacy?8:20))throw Error('Invalid boards');
+  const legacy=version===1,extent=legacy?256:7500;
+  if(!Array.isArray(spec)||spec.length<2||spec.length>(legacy?8:300))throw Error('Invalid boards');
   const positions=new Map();let width=0,height=0;
   const boards=spec.map(b=>{
    if(!Array.isArray(b)||(b.length!==5&&(legacy||b.length!==6))||b.slice(0,5).some(v=>!Number.isInteger(v)))throw Error('Invalid board');
@@ -25,7 +25,7 @@
    for(let r=0;r<n;r++)for(let c=0;c<n;c++)positions.set((x+c)+','+(y+r),{x:x+c,y:y+r});
    return {x,y,n,blockRows,blockCols,...(rule?{rule}:{})};
   });
-  if(positions.size>(legacy?5000:12500))throw Error('Too many cells');
+  if(positions.size>(legacy?5000:187500))throw Error('Too many cells');
   const cells=[...positions.values()].sort((a,b)=>a.y-b.y||a.x-b.x),indices=new Map(cells.map((c,i)=>[c.x+','+c.y,i]));
   for(const b of boards)b.map=Array.from({length:b.n*b.n},(_,i)=>indices.get((b.x+i%b.n)+','+(b.y+Math.floor(i/b.n))));
   return {width,height,cells,boards};
@@ -46,6 +46,7 @@
  }
  function encode(clues,layout=null){
   if(!layout)return '#p='+cluesOf(clues,81,9).join('');
+  if(Array.isArray(clues)&&4*Math.ceil(clues.length/3)+3>maxFragment)throw Object.assign(Error('The share link is too long.'),{code:'NP_SHARE_TOO_LONG'});
   const clean=validateMulti(clues,layout),{width,height,cells,boards}=clean.layout;
   const legacy=boards.length<=8&&width<=256&&height<=256&&cells.length<=5000&&boards.every(b=>!b.rule);
   const data={v:legacy?1:2,b:boards.map(boardSpec),d:clean.clues.map(n=>digits[n]).join('')};
