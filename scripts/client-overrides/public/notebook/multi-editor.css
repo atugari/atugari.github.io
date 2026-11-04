@@ -6,3 +6,11 @@
 .multi-editor-settings select{width:100%;min-height:44px;font:inherit;padding:7px;border:1px solid #9daf9e;border-radius:8px;background:var(--paper,#fff);color:inherit}
 
 .multi-board-legend-many{max-height:min(30vh,16rem);overflow-y:auto;overscroll-behavior:contain;padding:4px}
+
+.multi-board-navigation{flex:1 0 100%;display:grid;gap:6px;min-width:0}
+.multi-board-navigation>label{display:grid;gap:4px;min-width:0}
+.multi-board-navigation select,.multi-editor-settings input[type=number]{box-sizing:border-box;max-width:100%;width:100%;min-height:44px;font:inherit;padding:7px;border:1px solid #9daf9e;border-radius:8px;background:var(--paper,#fff);color:inherit}
+.multi-board-navigation>div{display:flex;gap:6px}
+.multi-board-navigation button{flex:1;min-height:36px}
+.multi-overview-board{z-index:1;min-width:0!important;min-height:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;color:#234638!important;font-weight:700;cursor:pointer}
+.multi-overview-board:focus-visible{outline:4px solid #176b48;outline-offset:-4px}

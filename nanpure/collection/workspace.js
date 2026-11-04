@@ -109,7 +109,7 @@
  }
  function focusMultiBoard(legend, mounted, scroll){
   const chip=legend.querySelector('.multi-board-chip.on');
-  if(!chip)return;
+  if(!chip){w.NPBoardInput?.fit(mounted);return;}
   const outline=mounted.querySelector('[data-multi-outline="'+Number(chip.dataset.focus)+'"]');
   if(!outline)return;
   const input=w.NPBoardInput;
