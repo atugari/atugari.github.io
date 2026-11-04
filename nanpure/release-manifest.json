@@ -6263,7 +6263,7 @@
       "scripts/i18n/catalog-home-94.json": "0d5baff390ba1fd4acc6021b182ff4fed05ab34e43950d1870a85b2623bfa6e4",
       "scripts/prepare-home-93-release.mjs": "4634a32729df1cc0019eaac1bb27ce773dc51dac59b2e08c7b7d697e8d151347",
       "scripts/i18n/catalog-home-93.json": "35edc497ea683e9d3fcf81f0a7193f5c36fa87588cb9fd2331f9ce5c5ad3729b",
-      "scripts/check-nanpure-home-titles-browser.cjs": "8c26ee11140ab798cdc6f8746d7a65fc0084a2748074bfafe6c04e9cb0f03089",
+      "scripts/check-nanpure-home-titles-browser.cjs": "01e7522a384e545bf1aa3631d47c7ceb93caad79203c8a087dcf9106cefa702c",
       "scripts/client-overrides/app/game.tsx": "93c35b35558dee347584f4e9bbde58f82769765a00ec63ba0b6ce6663cf895ef",
       "scripts/check-nanpure-languages-browser.cjs": "f1c1cfcf8290fe304ab186c0a823590b3b9105cccb1425a135ec8c01585cad19",
       "scripts/check-nanpure-pattern-browser.cjs": "8aaeed0bbda0e53fe55c0edb802d08835c3f7897e056d421de7c6b6633d3551a",
