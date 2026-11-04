@@ -14,6 +14,7 @@ try {
   worker.importScripts = name => vm.runInContext(fs.readFileSync(path.join(temp, name), 'utf8'), worker);
   const asset = name => fs.readFileSync(path.join(__dirname, 'src/main/assets', name), 'utf8');
   vm.runInContext(asset('round.js'), worker);
+  assert.equal(vm.runInContext('Nanpure.fastUniqueVersion', worker), 1);
   const profiles = JSON.parse(fs.readFileSync(path.join(temp, 'profiles.json'), 'utf8'));
   assert.equal(profiles.length, 427);
   assert.equal(new Set(profiles.map(profile => profile.key)).size, 427);

@@ -4,18 +4,22 @@ const vm = require('node:vm');
 
 const release = '2026.11.04.95';
 const notebook = path.resolve(__dirname, '../../nanpure/releases', release, 'notebook');
+const uniqueSolver = path.join(__dirname, 'engine-overrides/unique-solver.js');
 const ids = ['core-normal', 'core-big', 'core-killer', 'core-rect', 'core-giant',
   'core-hundred', 'core-expert', 'core-master-logic', 'core-master', 'core-cover-logic',
   'core-cover', 'core-resolution-logic', 'core-resolution', 'core-deduction', 'core-neighbor',
   'core-step', 'core-cross', 'core-linked', 'core-variants', 'core-expansion', 'core-multi',
   'common-source', 'generator-source', 'core-mixed-multi'];
-function loadReleaseEngine() {
+function loadReleaseEngine({optimized = true} = {}) {
   const html = fs.readFileSync(path.join(notebook, 'index.html'), 'utf8');
   const scripts = ids.map(id => {
     const match = html.match(new RegExp('<script id="' + id + '">([\\s\\S]*?)</script>'));
     if (!match) throw new Error('Missing worker source: ' + id);
     return match[1];
   });
+  // Apply the verified 9x9 solver before loading the higher-difficulty generators.
+  // Keep the original release and its 427 conditions pinned for compatibility.
+  if (optimized) scripts.splice(1, 0, fs.readFileSync(uniqueSolver, 'utf8'));
   return 'var global = self;\n' + scripts.join('\n') + '\n' +
     fs.readFileSync(path.join(notebook, 'batch.js'), 'utf8') + '\n';
 }
