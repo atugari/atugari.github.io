@@ -58,8 +58,49 @@ function openReceiptDatabase() {
   return new Promise((resolve, reject) => {
     const query = indexedDB.open('nanpure-chou-data');
     query.onerror = () => reject(query.error);
-    query.onsuccess = () => resolve(query.result);
+    query.onsuccess = () => {
+      const db = query.result;
+      db.onversionchange = () => db.close();
+      resolve(db);
+    };
   });
+}
+
+async function withReceiptDatabase(operation) {
+  await loadNotebook();
+  const {NPStorage: storage, NPTransfer: transfer, NPCompact: compact} = window;
+  if (!storage || !transfer || !compact || !window.NP) throw new Error('問題帳の保存機能が起動しませんでした。');
+  try {
+    await storage.open(false);
+    if (storage.meta.getItem('summary-index-v1') !== 'ready') {
+      // Existing databases without an index use the notebook's one-time migration.
+      storage.close();
+      await storage.open();
+    }
+  } finally {
+    storage.close();
+  }
+  const db = await openReceiptDatabase();
+  try {
+    return await operation(db, storage, compact);
+  } finally {
+    db.close();
+  }
+}
+
+// Only look up the offered keys. This works even for a large notebook without
+// reading or sharing its history, including archived and previously seen boards.
+export function checkNotebookOffers(operation) {
+  return withReceiptDatabase(db => operation(async offers => {
+    if (!offers.length) return undefined;
+    const seen = db.transaction('seen').objectStore('seen');
+    const found = await Promise.all(offers.map(({notebookDigest}) => new Promise((resolve, reject) => {
+      const query = seen.getKey(notebookDigest);
+      query.onsuccess = () => resolve(query.result !== undefined);
+      query.onerror = () => reject(query.error);
+    })));
+    return offers.find((_, index) => !found[index]);
+  }));
 }
 
 // Each receipt is at most ten rows. Read only its UID and digest keys, in the
@@ -105,32 +146,19 @@ function insertReceipt(db, rows) {
   });
 }
 
-export async function savePuzzles(puzzles, profile = legacyProfile) {
+export async function savePuzzles(puzzles, profile = legacyProfile, expectedDigest) {
   if (!Array.isArray(puzzles)) throw new Error('受け取り結果を確認できませんでした。');
   if (puzzles.length > 10) throw new Error('受け取れる問題数を確認できませんでした。');
   if (!puzzles.length) return {saved: 0, total: 0};
-  await loadNotebook();
-  const {NPStorage: storage, NPTransfer: transfer, NPCompact: compact} = window;
-  if (!storage || !transfer || !compact || !window.NP) throw new Error('問題帳の保存機能が起動しませんでした。');
-  try {
-    await storage.open(false);
-    if (storage.meta.getItem('summary-index-v1') !== 'ready') {
-      // Existing databases without an index use the notebook's one-time migration.
-      storage.close();
-      await storage.open();
-    }
+  return withReceiptDatabase(async (db, storage, compact) => {
     const rows = puzzles.map(candidate => {
       const row = asNotebookPuzzle(candidate, profile);
       return {summary: storage.summary(row), record: compact.record(row)};
     });
-    const db = await openReceiptDatabase();
-    try {
-      const saved = await insertReceipt(db, rows);
-      return {saved, total: puzzles.length};
-    } finally {
-      db.close();
+    if (expectedDigest && (rows.length !== 1 || rows[0].summary._npDigest !== expectedDigest)) {
+      throw new Error('確認した在庫と受け取った問題が一致しませんでした。');
     }
-  } finally {
-    storage.close();
-  }
+    const saved = await insertReceipt(db, rows);
+    return {saved, total: puzzles.length};
+  });
 }

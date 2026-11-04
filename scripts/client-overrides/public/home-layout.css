@@ -111,21 +111,83 @@
 .np-stepped-home .choice-copy {
   overflow-wrap: anywhere;
 }
-.np-stepped-home .choice-card:is(.learn-choice,.works-choice) {
-  background: var(--np-card-bg);
-  border-color: var(--np-card-line);
-  color: var(--np-card-ink);
+/* Each home action has a paired surface and ink color. */
+.np-stepped-home {
+  --home-play-bg: #245b45;
+  --home-play-ink: #fff;
+  --home-vending-bg: #dcebd2;
+  --home-create-bg: #f5e1d8;
+  --home-daily-bg: #faebbe;
+  --home-daily-ink: #452c00;
+  --home-learn-bg: #dfedfa;
+  --home-works-bg: #ece1f5;
+  --home-design-bg: #e2edeb;
+  --home-titles-bg: #f0e7d9;
+  --home-action-ink: #172d21;
+  --home-action-line: #64766c;
 }
-.np-stepped-home .learn-choice {
-  --np-card-bg: #e0f0fc;
-  --np-card-line: #3978a5;
-  --np-card-ink: #173f63;
+html[data-site-theme="color"] .np-stepped-home {
+  --home-play-bg: #204eac;
+  --home-action-ink: #213450;
+  --home-action-line: #677b95;
 }
+html[data-site-theme="contrast-light"] .np-stepped-home {
+  --home-play-bg: var(--contrast-primary);
+  --home-play-ink: var(--contrast-on-primary);
+  --home-daily-bg: var(--contrast-warm);
+  --home-daily-ink: var(--contrast-on-warm);
+  --home-action-ink: var(--theme-ink);
+  --home-action-line: var(--theme-line);
+}
+html:is([data-site-theme="lounge"], [data-site-theme="contrast-dark"]) .np-stepped-home {
+  --home-play-bg: #214e4b;
+  --home-vending-bg: #35472e;
+  --home-create-bg: #493644;
+  --home-daily-bg: #f1d9a0;
+  --home-learn-bg: #294869;
+  --home-works-bg: #423654;
+  --home-design-bg: #254755;
+  --home-titles-bg: #504139;
+  --home-action-ink: var(--theme-ink);
+  --home-action-line: var(--theme-line);
+}
+html[data-site-theme="contrast-dark"] .np-stepped-home {
+  --home-play-bg: var(--contrast-primary);
+  --home-play-ink: var(--contrast-on-primary);
+  --home-daily-bg: var(--contrast-warm);
+  --home-daily-ink: var(--contrast-on-warm);
+}
+.np-stepped-home .main-choice {
+  --home-control-bg: var(--home-play-bg);
+  --home-control-ink: var(--home-play-ink);
+}
+.np-stepped-home .vending-choice { --home-control-bg: var(--home-vending-bg); }
+.np-stepped-home .create-choice { --home-control-bg: var(--home-create-bg); }
+.np-stepped-home .daily-choice {
+  --home-control-bg: var(--home-daily-bg);
+  --home-control-ink: var(--home-daily-ink);
+}
+.np-stepped-home .learn-choice { --home-control-bg: var(--home-learn-bg); }
 .np-stepped-home .works-choice {
-  --np-card-bg: #f0e5f9;
-  --np-card-line: #8b58a6;
-  --np-card-ink: #4d2765;
+  --home-control-bg: var(--home-works-bg);
   list-style: none;
+}
+.np-stepped-home .theme-entry { --home-control-bg: var(--home-design-bg); }
+.np-stepped-home .np-titles-entry { --home-control-bg: var(--home-titles-bg); }
+.start-screen.designed-home.np-stepped-home :is(.start-choices .choice-card, .home-topline .theme-entry, .home-topline .np-titles-entry) {
+  background: var(--home-control-bg, var(--theme-surface));
+  color: var(--home-control-ink, var(--home-action-ink));
+  border-color: var(--home-action-line);
+}
+.start-screen.designed-home.np-stepped-home .choice-card :is(.choice-copy strong, .choice-arrow) {
+  color: inherit;
+}
+.start-screen.designed-home.np-stepped-home .theme-entry.compact > span:first-of-type {
+  display: flex;
+  min-width: 0;
+  color: inherit;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 .np-stepped-home .works-choice::-webkit-details-marker {
   display: none;

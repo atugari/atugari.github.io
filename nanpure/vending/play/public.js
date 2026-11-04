@@ -1,4 +1,4 @@
-import {loadNotebook, savePuzzles} from './notebook.js';
+import {checkNotebookOffers, loadNotebook, savePuzzles} from './notebook.js?v=dedup-1';
 import {profileDetail, profileFromKey, profilePicker, profileTitle, validProfileKey} from './profiles.js';
 
 const endpoint = 'https://nanpure-vending-pilot.puzzle-hub-4826.workers.dev/api/vending/public';
@@ -6,6 +6,7 @@ const browserKeyName = 'nanpure-public-vending-browser-v1';
 const pendingName = 'nanpure-public-vending-pending-v1';
 const returnName = 'nanpure-return-v2';
 const receiptRetryMs = 7 * 24 * 60 * 60 * 1000 - 60_000;
+const maxOfferPages = 64;
 const byId = id => document.getElementById(id);
 const randomKey = () => Array.from(crypto.getRandomValues(new Uint8Array(32)),
   byte => byte.toString(16).padStart(2, '0')).join('');
@@ -28,18 +29,21 @@ function readPending() {
     const attempt = JSON.parse(sessionStorage.getItem(pendingName));
     if (isKey(attempt?.id) && isKey(attempt.key) && validProfileKey(attempt.profile) &&
         profileFromKey(attempt.profile).profile === attempt.profile && Number.isFinite(attempt.startedAt) &&
-        Date.now() - attempt.startedAt < receiptRetryMs) return attempt;
+        Date.now() - attempt.startedAt < receiptRetryMs &&
+        ((attempt.stockDigest === undefined && attempt.notebookDigest === undefined) ||
+          (isKey(attempt.stockDigest) && isKey(attempt.notebookDigest)))) return attempt;
   } catch {}
   return null;
 }
 
-function startAttempt(profile) {
+function startAttempt(profile, offer) {
   let key = localStorage.getItem(browserKeyName);
   if (!isKey(key)) {
     key = randomKey();
     localStorage.setItem(browserKeyName, key);
   }
-  const attempt = {id: randomKey(), key, profile, startedAt: Date.now()};
+  const attempt = {id: randomKey(), key, profile, stockDigest: offer.stockDigest,
+    notebookDigest: offer.notebookDigest, startedAt: Date.now()};
   sessionStorage.setItem(pendingName, JSON.stringify(attempt));
   return attempt;
 }
@@ -73,26 +77,93 @@ function setBusy(value) {
   render();
 }
 
-async function request(attempt) {
+async function request({attempt, action = 'take', profile, after} = {}) {
   const headers = {Accept: 'application/json'};
+  const url = new URL(endpoint);
+  let body;
   if (attempt) {
     headers['Content-Type'] = 'application/json';
     headers['X-Nanpure-Key'] = attempt.key;
+    body = JSON.stringify({action, id: attempt.id, profile: attempt.profile,
+      ...(action === 'take' ? {stockDigest: attempt.stockDigest} : {})});
+  } else if (profile) {
+    url.searchParams.set('profile', profile);
+    if (after) url.searchParams.set('after', after);
   }
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 15000);
   try {
-    const response = await fetch(endpoint, {
-      method: attempt ? 'POST' : 'GET', headers,
-      body: attempt ? JSON.stringify({action: 'take', id: attempt.id, profile: attempt.profile}) : undefined,
+    const response = await fetch(url, {
+      method: attempt ? 'POST' : 'GET', headers, body,
       credentials: 'omit', cache: 'no-store', redirect: 'error', signal: controller.signal
     });
-    const body = await response.json();
-    if (response.ok) return body;
-    throw Object.assign(new Error(typeof body.error === 'string' ? body.error : '自販機に接続できませんでした。'),
+    const data = await response.json();
+    if (response.ok) return data;
+    throw Object.assign(new Error(typeof data.error === 'string' ? data.error : '自販機に接続できませんでした。'),
       {status: response.status});
   } finally {
     clearTimeout(timer);
+  }
+}
+
+function selectOffer(profile) {
+  return checkNotebookOffers(async firstUnseen => {
+    const cursors = new Set();
+    let after;
+    let hasStock = false;
+    for (let page = 0; page < maxOfferPages; page++) {
+      const {offers, nextCursor} = await request({profile, after});
+      if (!Array.isArray(offers) || offers.length > 8 ||
+          offers.some(offer => !isKey(offer?.stockDigest) || !isKey(offer.notebookDigest))) {
+        throw new Error('在庫の問題を確認できませんでした。');
+      }
+      hasStock ||= offers.length > 0;
+      const offer = await firstUnseen(offers);
+      if (offer || nextCursor === null) return {offer, hasStock};
+      if (typeof nextCursor !== 'string' || !nextCursor.length || nextCursor.length > 90 ||
+          !offers.length || cursors.has(nextCursor)) break;
+      cursors.add(nextCursor);
+      after = nextCursor;
+    }
+    throw new Error('在庫を最後まで確認できませんでした。もう一度お試しください。');
+  });
+}
+
+async function claimForProfile(profile, previous) {
+  // A stale offer can be reassigned by another visitor. Try one fresh lookup.
+  for (let round = 0; round < 2; round++) {
+    if (!pending) {
+      showNotice('問題帳にない盤面を確認しています…');
+      const {offer, hasStock} = await selectOffer(profile);
+      if (!offer) {
+        if (!hasStock) await updateStock().catch(() => {});
+        showNotice(hasStock ? 'この条件の在庫は、すべて問題帳で見たことのある盤面です。別の条件を選べます。' :
+          'この条件の在庫がなくなりました。別の条件を選ぶか、時間をおいて更新してください。');
+        return null;
+      }
+      pending = startAttempt(profile, offer);
+      render();
+    }
+    const attempt = pending;
+    // If a board was saved locally while the request was uncertain, only
+    // recover an existing receipt. Never allocate it anew on a retry.
+    const replayOnly = !attempt.stockDigest || (attempt === previous &&
+      !await checkNotebookOffers(firstUnseen => firstUnseen([attempt])));
+    showNotice('問題を受け取っています…');
+    try {
+      return await request({attempt, action: replayOnly ? 'replay' : 'take'});
+    } catch (error) {
+      if (replayOnly && error.status === 404) {
+        clearPending();
+        render();
+        if (attempt.stockDigest && round === 0) continue;
+        showNotice('前の受け取りは見つかりませんでした。遊びたい条件を選び直してください。');
+        return null;
+      }
+      if (error.status !== 409 || replayOnly || round !== 0) throw error;
+      clearPending();
+      render();
+    }
   }
 }
 
@@ -210,6 +281,7 @@ async function openGame(receipt) {
   sessionStorage.setItem(returnName, returnValue);
   const frame = document.createElement('iframe');
   frame.title = 'ナンプレ帳のプレイ画面';
+  frame.dataset.npTheme = '';
   frame.tabIndex = -1;
   frame.src = receipt.directory + 'index.html#return';
   const ready = waitForBoard(frame, receipt.uid);
@@ -251,12 +323,11 @@ async function take() {
   showNotice('受け取る準備をしています…');
   try {
     const directory = await loadNotebook();
-    pending ??= startAttempt(selected.profile);
-    render();
-    showNotice('問題を受け取っています…');
-    const {puzzle} = await request(pending);
+    const receipt = await claimForProfile(pending?.profile ?? selected.profile, pending);
+    if (!receipt) return;
+    const {puzzle} = receipt;
     const profile = profileFromKey(pending.profile);
-    await savePuzzles([puzzle], profile);
+    await savePuzzles([puzzle], profile, pending.notebookDigest);
     const saved = await savedUidExists(puzzle.uid);
     clearPending();
     if (!saved) {

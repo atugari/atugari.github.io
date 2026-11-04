@@ -1,0 +1,62 @@
+/* Theme the community pages' controls and surfaces without recoloring exhibits. */
+@media screen {
+  html[data-site-theme]:has(body.np-community-theme) {
+    background: var(--np-page-paper);
+    color: var(--np-page-ink);
+  }
+  html[data-site-theme] body.np-community-theme {
+    --cream: var(--np-page-paper);
+    --paper: var(--np-page-surface);
+    --card: var(--np-page-surface);
+    --ink: var(--np-page-ink);
+    --muted: var(--np-page-muted);
+    --line: var(--np-page-line);
+    --accent: var(--np-page-accent);
+    background: var(--cream);
+    color: var(--ink);
+  }
+  html[data-site-theme] .np-gallery-theme:not([data-theme=sage], [data-theme=night]) {
+    --wall: var(--np-page-soft);
+  }
+  html[data-site-theme] .np-community-theme :is(button, .file-button, .secondary, input:not([type=checkbox]), textarea, select) {
+    background: var(--card);
+    border-color: var(--line);
+    color: var(--ink);
+  }
+  html[data-site-theme] .np-community-theme :is(.primary, .tabs button[aria-pressed=true]) {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--np-page-on-accent);
+  }
+  html[data-site-theme] .np-community-theme :is(dialog, .plaque, .replay-list a, .replay-reveal, .replay-library, .replay-editor, .published-replays) {
+    background: var(--card);
+    border-color: var(--line);
+    color: var(--ink);
+  }
+  html[data-site-theme] .np-community-theme :is(.hint, .meta, .eyebrow, .event-period, .carousel-hint, .back-link, .exhibition-navigation span, .archive-list>a, .published-replays>a) {
+    color: var(--muted);
+  }
+  html[data-site-theme] .np-community-theme :is(.replay-note, .reaction-buttons button[aria-pressed=true]) {
+    background: var(--np-page-soft);
+    border-color: var(--line);
+    color: var(--ink);
+  }
+  html[data-site-theme] .np-community-theme :is(.topbar, .museum-header, .exhibition-navigation button) {
+    border-color: var(--line);
+  }
+  html[data-site-theme] .np-community-theme :is(.notes #unpublish) { color: var(--np-page-danger); }
+  html[data-site-theme] .np-community-theme :is(a, button, input, textarea, select):focus-visible {
+    outline-color: var(--np-page-focus);
+  }
+  html[data-site-theme] .np-gallery-theme.museum-room .empty .frame {
+    background: var(--card);
+    border-color: var(--line);
+    color: var(--ink);
+  }
+  html[data-site-theme] .np-exhibitions-theme .exhibition-wall {
+    background: radial-gradient(ellipse at 50% 10%, var(--card), var(--np-page-soft));
+  }
+  html[data-site-theme] .np-exhibitions-theme .exhibition-wall::after {
+    background: linear-gradient(var(--np-page-soft), var(--cream));
+  }
+}

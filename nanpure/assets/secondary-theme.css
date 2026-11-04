@@ -1,38 +1,71 @@
-/* The same three designs and saved preference as the main notebook. */
+/* Apply the notebook's five saved designs to the library and learning pages. */
 html[data-site-theme] {
- --paper:#f3eddf;--surface:#fffdf7;--ink:#213c32;--muted:#59695c;
- --green:#245b45;--line:#c7c9b4;--soft:#e8eddf;--on-accent:#fffdf7;
- --board-paper:#fffdf8;--board-ink:#263d32;--board-entry:#155fa5;
- --board-line:#aab4ab;--board-frame:#294536;--board-note:#62706a;
+  --paper: var(--np-page-paper);
+  --surface: var(--np-page-surface);
+  --ink: var(--np-page-ink);
+  --muted: var(--np-page-muted);
+  --green: var(--np-page-accent);
+  --line: var(--np-page-line);
+  --soft: var(--np-page-soft);
+  --on-accent: var(--np-page-on-accent);
+  --board-paper: var(--np-page-surface);
+  --board-ink: var(--np-page-ink);
+  --board-entry: var(--np-page-accent);
+  --board-line: var(--np-page-line);
+  --board-frame: var(--np-page-ink);
+  --board-note: var(--np-page-muted);
 }
-html[data-site-theme=color] {
- --paper:#f8f8f5;--surface:#fff;--ink:#213450;--muted:#526179;
- --green:#275bbd;--line:#c8d4e7;--soft:#e9f0ff;
- --board-ink:#243955;--board-frame:#294975;--board-line:#b2bfd2;
+
+@media screen {
+  html[data-site-theme] { background-color: var(--paper); }
+  html[data-site-theme] body { background-color: var(--paper); color: var(--ink); }
+  html[data-site-theme=notebook] body { background-image: url('/nanpure/releases/2026.11.03.85/themes/paper.svg'); }
+  html[data-site-theme=lounge] body {
+    background-image: url('/nanpure/releases/2026.11.03.85/themes/lounge.webp');
+    background-position: center bottom;
+    background-size: cover;
+    background-attachment: fixed;
+  }
+  html[data-site-theme] :is(button, .button, select, input[type=search]) {
+    border-color: var(--line);
+    background-color: var(--surface);
+    color: var(--ink);
+  }
+  html[data-site-theme] :is(button, .button):hover { background-color: var(--soft); }
+  html[data-site-theme] :is(button, .button).primary {
+    background: var(--green);
+    border-color: var(--green);
+    color: var(--on-accent);
+  }
+  html[data-site-theme] :is(.panel, .filters, .card, .choose-prompt) {
+    background: var(--surface);
+    border-color: var(--line);
+  }
+  html[data-site-theme] .card:is([data-state=done], [data-state=playing]) {
+    border-color: var(--green);
+    background: var(--soft);
+  }
+  html[data-site-theme=color] :is(.panel, .card) { border-radius: 18px; box-shadow: 0 4px 0 var(--soft); }
+  html[data-site-theme=notebook] :is(.hero h1, .lesson-title h1) { font-family: Georgia, 'Yu Mincho', serif; }
+  html[data-site-theme=lounge] :is(main#library, .video-panel) {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 22px;
+  }
+  html[data-site-theme] :is(.notice, .route-limit, .badge.partial) {
+    background: var(--np-page-warm);
+    border-color: var(--line);
+    color: var(--np-page-on-warm);
+  }
+  html[data-site-theme] .modes button[aria-current=page] { background: var(--green); color: var(--on-accent); }
+  html[data-site-theme] .routes button[aria-pressed=true] { background: var(--soft); border-color: var(--green); }
+  html[data-site-theme] :is(.muted, small, .filter-guide, .last-played) { color: var(--muted); }
+  html[data-site-theme] :is(a, .badge:not(.partial)) { color: var(--green); }
+  html[data-site-theme] #player { background: var(--paper); color: var(--ink); }
+  html[data-site-theme] #notice:not(.notice) { color: var(--green); }
+  html[data-site-theme] #practice-feedback[data-result=correct] { color: var(--green); }
+  html[data-site-theme] #practice-feedback[data-result=wrong] { color: var(--np-page-danger); }
+  html[data-site-theme] :is(a, button, select, input):focus-visible { outline-color: var(--np-page-focus); }
 }
-html[data-site-theme=lounge] {
- --paper:#0b1c2c;--surface:#132a3d;--ink:#f5edd7;--muted:#bccacb;
- --green:#e8c785;--line:#6f735d;--soft:#1b3645;--on-accent:#17302f;
- --board-paper:#fff8e7;--board-ink:#2b4036;--board-entry:#155b89;
- --board-line:#b5b39d;--board-frame:#4d604c;--board-note:#667367;
-}
-html[data-site-theme] body{background-color:var(--paper);color:var(--ink)}
-html[data-site-theme=notebook] body{background-image:url('/nanpure/releases/2026.11.03.85/themes/paper.svg')}
-html[data-site-theme=lounge] body{background-image:url('/nanpure/releases/2026.11.03.85/themes/lounge.webp');background-position:center bottom;background-size:cover;background-attachment:fixed}
-html[data-site-theme] :is(button,.button,select,input[type=search]){border-color:var(--line);background-color:var(--surface);color:var(--ink)}
-html[data-site-theme] :is(button,.button):hover{background-color:var(--soft)}
-html[data-site-theme] :is(button,.button).primary{background:var(--green);border-color:var(--green);color:var(--on-accent)}
-html[data-site-theme] :is(.panel,.filters,.card){background:var(--surface);border-color:var(--line)}
-html[data-site-theme=color] :is(.panel,.card){border-radius:18px;box-shadow:0 4px 0 #dbe4f0}
-html[data-site-theme=notebook] :is(.hero h1,.lesson-title h1){font-family:Georgia,'Yu Mincho',serif}
-html[data-site-theme=lounge] :is(main#library,.video-panel){background:#0b2032eb;border:1px solid #a99260;border-radius:14px;padding:22px}
-html[data-site-theme=lounge] :is(.notice,.route-limit,.badge.partial){background:#eee2bf;color:#344b40}
-html[data-site-theme] .modes button[aria-current=page]{background:var(--green);color:var(--on-accent)}
-html[data-site-theme] .routes button[aria-pressed=true]{background:var(--soft);border-color:var(--green)}
-@media print{html[data-site-theme] body{background:white!important;color:black!important}}
-html[data-site-theme] :is(.muted,small){color:var(--muted)}
-html[data-site-theme] :is(a,.badge){color:var(--green)}
-html[data-site-theme] #player{background:var(--paper);color:var(--ink)}
-html[data-site-theme] #notice:not(.notice){color:var(--green)}
-html[data-site-theme=lounge] #practice-feedback[data-result=correct]{color:#a9dec0}
-html[data-site-theme=lounge] #practice-feedback[data-result=wrong]{color:#ffb8a0}
+@media print { html[data-site-theme] body { background: white !important; color: black !important; } }

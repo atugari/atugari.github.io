@@ -1,0 +1,23 @@
+/* Sound single-digit chains: exact-one units only; bounded proof search. */
+(function(w){'use strict';const api=w.NPLogicalHints;if(!api||api.chains)return;const base=api.detect,explain=api.explain;
+function chains(model,options={}){if(!model||model.invalid)return null;const {n,grid,units,peers,candidates}=model,deadline=Date.now()+(options.budgetMs||180),only=options.only;
+ const hint=(type,d,focus,cuts,links,reason)=>({type,digits:[d],focus,unit:[...new Set(links.flatMap(x=>x.slice(0,2)))],witness:[],cuts,candidates,detail:{links,reason}});
+ for(let d=1;d<=n;d++){if(Date.now()>deadline)return null;const cells=grid.map((v,i)=>!v&&candidates[i].includes(d)?i:-1).filter(i=>i>=0),strong=new Map(cells.map(i=>[i,new Set()]));
+  for(const unit of units){if(unit.ids.length!==n||unit.ids.some(i=>grid[i]===d))continue;const pair=unit.ids.filter(i=>candidates[i].includes(d));if(pair.length===2){strong.get(pair[0])?.add(pair[1]);strong.get(pair[1])?.add(pair[0])}}
+  const parity=new Map();let odd=false;for(const root of cells){if(parity.has(root))continue;parity.set(root,0);const q=[root];for(let at=0;at<q.length;at++)for(const b of strong.get(q[at])){if(!parity.has(b)){parity.set(b,1-parity.get(q[at]));q.push(b)}else if(parity.get(b)===parity.get(q[at]))odd=true}}if(odd)continue;
+  if(!only||only==='coloring'){const seen=new Set();for(const start of cells){if(Date.now()>deadline)return null;if(seen.has(start)||!strong.get(start).size)continue;const colors=new Map([[start,0]]),queue=[start],links=[];let invalid=false;seen.add(start);for(let q=0;q<queue.length;q++){const a=queue[q];for(const b of strong.get(a)){if(!colors.has(b)){colors.set(b,1-colors.get(a));queue.push(b);seen.add(b);links.push([a,b,'strong'])}else if(colors.get(b)===colors.get(a))invalid=true}}if(invalid)continue;
+   const bad=new Set();for(const a of queue)for(const b of queue)if(a<b&&colors.get(a)===colors.get(b)&&peers[a].has(b))bad.add(colors.get(a));if(bad.size===2)continue;
+   if(bad.size===1){const cuts=queue.filter(i=>bad.has(colors.get(i))).map(i=>({i,d}));if(cuts.length)return hint('coloring',d,queue,cuts,links,'wrap')}
+   const cuts=cells.filter(i=>!colors.has(i)&&[0,1].every(color=>queue.some(j=>colors.get(j)===color&&peers[i].has(j)))).map(i=>({i,d}));if(cuts.length)return hint('coloring',d,queue,cuts,links,'trap');
+  }}
+  if(!only||only==='xcycle'){for(const root of cells){for(const truth of [1,0]){if(Date.now()>deadline)return null;const start=root*2+truth,target=root*2+(1-truth),queue=[start],prev=new Map([[start,null]]),depth=new Map([[start,0]]);let found=false;
+    for(let q=0;q<queue.length&&!found;q++){if(q%32===0&&Date.now()>deadline)return null;const at=queue[q],a=Math.floor(at/2),on=at%2;if(depth.get(at)>=13)continue;const neighbors=on?[...peers[a]].filter(i=>candidates[i].includes(d)):[...strong.get(a)];for(const b of neighbors){const next=b*2+(on?0:1);if(prev.has(next))continue;prev.set(next,at);depth.set(next,depth.get(at)+1);queue.push(next);if(next===target){found=true;break}}}
+    if(found){const path=[target];while(path[path.length-1]!==start)path.push(prev.get(path[path.length-1]));path.reverse();const links=path.slice(1).map((v,i)=>[Math.floor(path[i]/2),Math.floor(v/2),path[i]%2?'weak':'strong']);const focus=[root,...new Set(path.map(v=>Math.floor(v/2)).filter(i=>i!==root))];return hint('xcycle',d,focus,truth?[{i:root,d}]:[],links,truth?'exclude':'place')}
+   }}
+  }
+ }
+ return null}
+api.detect=function(model,options={}){const start=Date.now(),budget=options.budgetMs||400;const regular=base(model,{...options,budgetMs:Math.max(1,Math.floor(budget*.65))});if(regular)return regular;const remaining=budget-(Date.now()-start);return remaining>0?chains(model,{...options,budgetMs:remaining}):null};api.analyze=(p,selected=-1,options={})=>api.detect(api.model(p),{...options,selected});
+Object.assign(api.labels,{coloring:'Simple Coloring（2色の候補）',xcycle:'XCycle（候補の輪）'});
+api.explain=function(h,p){if(!['coloring','xcycle'].includes(h.type))return explain(h,p);const coord=i=>api.coords(i,p),d=h.digits[0],links=h.detail.links;let reason;if(h.type==='coloring')reason=h.detail.reason==='wrap'?'同じ色の候補が同じ行・列・枠に重なるため、その色はすべて不可能です。':'2色のどちらか一方が正しくなります。両方の色から見えるマスには、その数字を入れられません。';else reason=h.detail.reason==='exclude'?'この候補を入れると、つながりをたどった先で同じ候補が入らないことになり、矛盾します。':'この候補が入らないとすると、つながりをたどった先で入ることになり、矛盾します。したがって、この候補は確定します。';return ['数字「'+d+'」の候補のつながりに注目します。',links.map(([a,b,type])=>coord(a)+' ↔ '+coord(b)+'（'+(type==='strong'?'どちらか一方に入る':'両方には入らない')+'）').join('、'),reason,h.cuts.length?h.cuts.map(c=>coord(c.i)+'の'+c.d).join('、')+'を候補から除外できます。':coord(h.focus[0])+'に'+d+'が入ります。']};api.chains=chains;
+})(window);

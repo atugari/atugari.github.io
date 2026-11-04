@@ -12,3 +12,32 @@
   .public-hero { min-height: 0; }
   .public-game iframe { height: max(23rem, calc(100dvh - 3.7rem)); }
 }
+
+/* Keep the public shelf on the same palette as the notebook. */
+:root[data-site-theme] {
+  --page: var(--np-page-paper);
+  --surface: var(--np-page-surface);
+  --ink: var(--np-page-ink);
+  --quiet: var(--np-page-muted);
+  --line: var(--np-page-line);
+  --green: var(--np-page-accent);
+  --green-dark: var(--np-page-accent);
+  --mint: var(--np-page-soft);
+  --focus: var(--np-page-focus);
+}
+:root[data-site-theme] .public-hero {
+  color: var(--ink);
+  background: linear-gradient(105deg, var(--mint), var(--surface));
+  border-color: var(--line);
+}
+:root[data-site-theme] :is(.public-hero .hero-copy > p:last-child, .stock > div > span) { color: var(--quiet); }
+:root[data-site-theme] :is(.board-face, .board-light, .board-heavy) { stroke: var(--line); }
+:root[data-site-theme] .board-face { fill: var(--surface); }
+:root[data-site-theme] .board-accent { fill: var(--mint); }
+:root[data-site-theme] .board-digits { fill: var(--ink); }
+:root[data-site-theme] :is(.stock, .profile-picker select) { border-color: var(--line); }
+:root[data-site-theme] :is(.profile-picker select, .public-actions > .secondary, .skip-link) { background: var(--surface); }
+:root[data-site-theme] .public-actions > .secondary:hover:not(:disabled) { background: var(--mint); }
+:root[data-site-theme] .public-actions > .primary { color: var(--np-page-on-accent); background: var(--green); }
+:root[data-site-theme] .public-actions > .primary:hover:not(:disabled) { text-decoration: underline; }
+:root[data-site-theme] .notice.error { color: var(--np-page-danger); }

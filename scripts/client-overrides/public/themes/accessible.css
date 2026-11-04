@@ -85,3 +85,61 @@ html:is([data-site-theme="contrast-light"],[data-site-theme="contrast-dark"]) :f
     color: #000;
   }
 }
+
+/* Shared colors for standalone Nanpure pages and tools. */
+html[data-site-theme] {
+  --np-page-paper: #f4efe3;
+  --np-page-surface: #fffdf8;
+  --np-page-ink: #22342a;
+  --np-page-muted: #4c5e51;
+  --np-page-line: #728675;
+  --np-page-accent: #2e634e;
+  --np-page-on-accent: #fff;
+  --np-page-soft: #e7efe4;
+  --np-page-focus: #835019;
+  --np-page-warm: #f5e8cc;
+  --np-page-on-warm: #593b1b;
+  --np-page-danger: #952d27;
+}
+html[data-site-theme="color"] {
+  --np-page-paper: #fffdf8;
+  --np-page-surface: #fff;
+  --np-page-ink: #243654;
+  --np-page-muted: #475c78;
+  --np-page-line: #6a7f9f;
+  --np-page-accent: #305b93;
+  --np-page-soft: #e7effb;
+  --np-page-focus: #6d3e83;
+  --np-page-warm: #ffecd1;
+  --np-page-on-warm: #61381d;
+  --np-page-danger: #992c38;
+}
+html[data-site-theme="lounge"] {
+  --np-page-paper: #0c1c31;
+  --np-page-surface: #172c46;
+  --np-page-ink: #eff5ff;
+  --np-page-muted: #c4d4ea;
+  --np-page-line: #829bb8;
+  --np-page-accent: #a9d7f9;
+  --np-page-on-accent: #172c46;
+  --np-page-soft: #243f5d;
+  --np-page-focus: #ffdb9a;
+  --np-page-warm: #443452;
+  --np-page-on-warm: #ffe9ff;
+  --np-page-danger: #ffb6bd;
+}
+html:is([data-site-theme="contrast-light"],[data-site-theme="contrast-dark"]) {
+  --np-page-paper: var(--theme-paper);
+  --np-page-surface: var(--theme-surface);
+  --np-page-ink: var(--theme-ink);
+  --np-page-muted: var(--theme-muted);
+  --np-page-line: var(--theme-line);
+  --np-page-accent: var(--contrast-primary);
+  --np-page-on-accent: var(--contrast-on-primary);
+  --np-page-soft: var(--theme-soft);
+  --np-page-focus: var(--contrast-focus);
+  --np-page-warm: var(--contrast-warm);
+  --np-page-on-warm: var(--contrast-on-warm);
+  --np-page-danger: #922320;
+}
+html[data-site-theme="contrast-dark"] { --np-page-danger: #ffc3c0; }
