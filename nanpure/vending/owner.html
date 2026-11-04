@@ -57,14 +57,15 @@
             <button id="make-pair" class="primary" type="submit">登録コードを作る</button>
           </form>
           <div id="pairing" class="pairing" hidden>
-            <p>補充アプリを入れたスマホでQRコードを読み取るか、登録コードを入力します。</p>
+            <p>この画面を補充用のスマホで開いているなら、下のボタンを押します。別のスマホを登録する場合は、そのスマホでQRコードを読み取ります。</p>
+            <a id="open-pair" class="inline-link">このスマホの補充アプリで登録する ↗</a>
             <canvas id="pair-qr" role="img" aria-label="スマホ登録用のQRコード"></canvas>
-            <label class="field-label" for="pair-code">登録コード</label>
-            <input id="pair-code" readonly spellcheck="false">
-            <div class="actions">
+            <details>
+              <summary>手入力用の登録コードを見る</summary>
+              <label class="field-label" for="pair-code">登録コード</label>
+              <input id="pair-code" readonly spellcheck="false">
               <button id="copy-pair" class="secondary" type="button">コードをコピー</button>
-              <a id="open-pair" class="inline-link">この端末の補充アプリを開く ↗</a>
-            </div>
+            </details>
             <p id="pair-expiry" class="hint"></p>
           </div>
         </section>

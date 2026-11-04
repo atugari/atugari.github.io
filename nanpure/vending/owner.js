@@ -137,12 +137,13 @@ byId('pair-form').addEventListener('submit', event => {
     const key = ownerKey;
     const {code, expires} = await request({ownerKey: key, data: {action: 'pair', name}});
     if (key !== ownerKey) return;
-    if (typeof code !== 'string' || code.length < 1 || code.length > 128 || !Number.isFinite(expires)) {
+    if (typeof code !== 'string' || !/^[a-f0-9]{64}$/.test(code) || !Number.isFinite(expires)) {
       throw new Error('登録コードを確認できませんでした。');
     }
-    const link = 'nanpure-refill://pair?code=' + encodeURIComponent(code);
-    drawPairQR(byId('pair-qr'), link);
-    byId('open-pair').href = link;
+    const qrPage = new URL('./pair.html', location.href);
+    qrPage.hash = 'code=' + code;
+    drawPairQR(byId('pair-qr'), qrPage.href);
+    byId('open-pair').href = 'nanpure-refill://pair?code=' + code;
     codeInput.value = code;
     byId('pair-expiry').textContent = '1台に使えます。有効期限は ' + when(expires) + '（日本時間）です。';
     byId('pairing').hidden = false;

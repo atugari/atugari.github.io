@@ -72,6 +72,9 @@ async function route(request, env) {
   if (!validKey(env.OWNER_KEY_HASH)) return new Response('試験棚は準備中です。', {status: 503});
 
   if (pathname === ownerPath || pathname === mobilePath) return api.fetch(request, env);
+  if (pathname === shelf + 'pair.html' && ['GET', 'HEAD'].includes(request.method)) {
+    return env.ASSETS.fetch(request);
+  }
   if (pathname === loginPath && request.method === 'POST' && origin === url.origin) {
     let values;
     try {
