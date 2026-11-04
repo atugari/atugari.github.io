@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import test from 'node:test';
+import {runInNewContext} from 'node:vm';
 import {gunzipSync} from 'node:zlib';
 import pilot from '../pilot/worker.js';
 import {publicPath} from '../pilot/public-vending.js';
@@ -45,8 +46,10 @@ async function setup(t) {
     },
     ...(data ? {body: JSON.stringify(data)} : {})
   }), env);
-  const claim = (id, {browser = key(1), profile = classic, ip = '192.0.2.1', ...options} = {}) =>
-    request(publicPath, {data: {action: 'take', id: key(id), profile}, browser, ip, ...options});
+  const claim = (id, {browser = key(1), profile = classic, ip = '192.0.2.1', stockDigest,
+    action = 'take', ...options} = {}) =>
+    request(publicPath, {data: {action, id: key(id), profile, ...(stockDigest !== undefined && {stockDigest})},
+      browser, ip, ...options});
   return {env, DB, makeJob, seed, request, claim};
 }
 
@@ -161,4 +164,68 @@ test('new claims share atomic browser, source-IP and global quotas while matchin
   assert.equal((await take(1)).status, 200);
   assert.equal(DB.raw.prepare('SELECT COUNT(*) AS n FROM vending_orders WHERE received=1 AND closed IS NOT NULL').get().n, 30);
   assert.equal(DB.raw.prepare('SELECT available FROM vending_catalogue WHERE profile=?').get(alternate).available, 4);
+});
+
+test('stock offers expose only exact notebook fingerprints, with bounded profile pagination', async t => {
+  const {DB, env, seed, request} = await setup(t);
+  const shippedNotebook = new URL('../../nanpure/releases/2026.11.04.95/notebook/', import.meta.url);
+  const browser = {TextEncoder, document: {addEventListener() {}}};
+  browser.window = browser;
+  for (const source of ['lan-identity.js', 'transfer.js']) {
+    runInNewContext(readFileSync(new URL(source, shippedNotebook), 'utf8'), browser);
+  }
+  const notebookDigest = browser.NPTransfer.digest(verifiedPuzzle);
+  for (let i = 1; i <= 10; i++) seed(i);
+  seed(11, expanded);
+  // Both stock digests and notebook digests are returned, but no board data.
+  const path = publicPath + '?profile=' + encodeURIComponent(classic);
+  const response = await request(path);
+  assert.equal(response.status, 200);
+  const first = await response.json();
+  assert.deepEqual(first.offers, Array.from({length: 8}, (_, i) => ({
+    stockDigest: key(20_001 + i), notebookDigest
+  })));
+  assert.match(first.nextCursor, /^8:[a-f0-9]{64}$/);
+  const second = await (await request(path + '&after=' + encodeURIComponent(first.nextCursor))).json();
+  assert.deepEqual(second, {offers: [9, 10].map(i => ({stockDigest: key(20_000 + i), notebookDigest})), nextCursor: null});
+  assert.equal((await request(path + '&after=invalid')).status, 400);
+  assert.equal((await request(publicPath + '?after=invalid')).status, 400);
+  assert.equal((await request(path, {origin: 'https://untrusted.test'})).status, 403);
+  env.VENDING_CATALOGUE_ENABLED = '0';
+  assert.deepEqual(await (await request(publicPath + '?profile=' + encodeURIComponent(expanded))).json(),
+    {offers: [], nextCursor: null});
+  assert.equal(DB.raw.prepare('SELECT COUNT(*) AS n FROM vending_orders').get().n, 0);
+});
+
+test('a targeted claim can skip the oldest board, fails stale selections without using stock, and replays exactly', async t => {
+  const {DB, seed, claim, request} = await setup(t);
+  seed(1);
+  const selected = seed(2);
+  seed(3, alternate);
+  const first = key(20_001), second = key(20_002), otherProfile = key(20_003);
+  assert.equal((await claim(1, {action: 'replay'})).status, 404);
+  assert.equal((await claim(1, {stockDigest: otherProfile})).status, 409);
+  assert.equal((await claim(1, {stockDigest: 'invalid'})).status, 400);
+  assert.equal(DB.raw.prepare('SELECT COUNT(*) AS n FROM vending_orders').get().n, 0);
+  const [left, right] = await Promise.all([
+    claim(1, {stockDigest: second}),
+    claim(2, {stockDigest: second, browser: key(2), ip: '192.0.2.2'})
+  ]);
+  assert.deepEqual([left.status, right.status].sort(), [200, 409]);
+  const winner = left.status === 200 ? 1 : 2;
+  const browser = key(winner);
+  const reply = await (left.status === 200 ? left : right).json();
+  assert.equal(reply.puzzle.uid, selected.uid);
+  assert.deepEqual(await (await claim(winner, {browser, stockDigest: second})).json(), reply);
+  assert.deepEqual(await (await claim(winner, {browser, action: 'replay'})).json(), reply);
+  assert.equal((await claim(winner, {browser, stockDigest: first})).status, 409);
+  assert.equal((await claim(winner, {browser, action: 'replay', profile: alternate})).status, 409);
+  assert.equal((await claim(3, {stockDigest: second})).status, 409);
+  assert.equal((await claim(3, {action: 'replay'})).status, 404);
+  const stock = await (await request(publicPath + '?profile=' + encodeURIComponent(classic))).json();
+  assert.deepEqual(stock.offers.map(offer => offer.stockDigest), [first]);
+  assert.equal(DB.raw.prepare('SELECT COUNT(*) AS n FROM vending_orders').get().n, 1);
+  assert.deepEqual({...DB.raw.prepare('SELECT available,waiting FROM vending_catalogue WHERE profile=?').get(classic)},
+    {available: 1, waiting: 0});
+  assert.equal(DB.raw.prepare('SELECT SUM(count) AS n FROM rate_limits WHERE key LIKE ?').get('vending-public:global:%').n, 1);
 });
