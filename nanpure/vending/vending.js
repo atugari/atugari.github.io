@@ -1,5 +1,6 @@
 import {byId, request, showNotice, token} from './api.js';
 import {savePuzzles} from './notebook.js';
+import {legacyProfile, profileDetail, profileFromKey, profilePicker, profilesFrom, profileTitle, validProfileKey} from './profiles.js';
 
 const clientStorage = 'nanpure-vending-client-v1';
 const draftStorage = 'nanpure-vending-pending-v1';
@@ -12,7 +13,8 @@ const notice = byId('notice');
 const ordersList = byId('orders');
 const refreshButton = byId('refresh');
 const orderDate = new Intl.DateTimeFormat('ja-JP', {timeZone: 'Asia/Tokyo', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'});
-let shelf;
+const picker = profilePicker(byId('profile-picker'), renderShelf);
+let profileOrders = false;
 let orders = [];
 let busy = false;
 
@@ -33,7 +35,8 @@ function clientKey(create = false) {
 function pending() {
   const order = readObject(draftStorage, null);
   return order && /^[a-f0-9]{64}$/.test(order.id) && Number.isInteger(order.count) &&
-    order.count >= 1 && order.count <= 10 && typeof order.reserve === 'boolean' ? order : null;
+    order.count >= 1 && order.count <= 10 && typeof order.reserve === 'boolean' &&
+    (order.profile === undefined || validProfileKey(order.profile)) ? order : null;
 }
 
 function count() {
@@ -44,11 +47,16 @@ function count() {
 function updateButtons() {
   const draft = pending();
   const want = count();
-  const stock = shelf?.available;
+  const stock = picker.selected?.available;
   const now = Math.min(stock ?? 0, want);
   byId('request-form').hidden = Boolean(draft);
   byId('pending-request').hidden = !draft;
+  if (draft) {
+    const profile = profileFromKey(draft.profile);
+    byId('pending-detail').textContent = profileTitle(profile) + ' ・ ' + profileDetail(profile) + ' ・ ' + draft.count + '問';
+  }
   byId('retry-order').disabled = busy;
+  picker.setBusy(busy);
   quantity.disabled = busy;
   take.disabled = busy || !now;
   take.hidden = stock === 0;
@@ -62,8 +70,15 @@ function updateButtons() {
   for (const button of ordersList.querySelectorAll('button')) button.disabled = busy;
 }
 
+function renderShelf() {
+  const shelf = picker.selected ?? legacyProfile;
+  byId('shelf-rule').textContent = profileTitle(shelf);
+  byId('shelf-detail').textContent = profileDetail(shelf);
+  available.textContent = shelf.available?.toLocaleString('ja-JP') ?? '—';
+  updateButtons();
+}
+
 function render() {
-  available.textContent = shelf?.available ?? '—';
   ordersList.replaceChildren();
   byId('orders-empty').hidden = orders.length > 0;
   const saved = readObject(savedStorage, {});
@@ -76,6 +91,9 @@ function render() {
     title.textContent = order.cancelled ? '残りの申し込みを取り消しました' :
       order.ready > 0 ? order.ready + '問を受け取れます' :
       order.waiting > 0 ? '補充を待っています' : '受け取り済み';
+    const profile = profileFromKey(order.profile);
+    const conditions = document.createElement('span');
+    conditions.textContent = profileTitle(profile) + ' ・ ' + profileDetail(profile);
     const status = document.createElement('span');
     status.textContent = order.count + '問のうち ' + order.received + '問受け取り済み' +
       (order.waiting > 0 ? ' ・ ' + order.waiting + '問待ち' : '');
@@ -84,7 +102,7 @@ function render() {
     } else if (Number.isFinite(order.created)) {
       status.textContent += ' ・ ' + orderDate.format(order.created);
     }
-    detail.append(title, status);
+    detail.append(title, conditions, status);
     item.append(detail);
     const actions = document.createElement('div');
     actions.className = 'actions record-actions';
@@ -95,7 +113,7 @@ function render() {
       button.className = 'secondary';
       button.dataset.action = 'collect';
       button.textContent = order.ready > 0 ? '受け取る' : '問題帳への保存を再試行';
-      button.addEventListener('click', () => run(async () => { await collect(order.id); }));
+      button.addEventListener('click', () => run(async () => { await collect(order.id, profile.profile); }));
       actions.append(button);
     }
     if (!order.cancelled && order.ready + order.waiting > 0) {
@@ -116,23 +134,26 @@ function render() {
     if (actions.childElementCount) item.append(actions);
     ordersList.append(item);
   }
-  updateButtons();
+  renderShelf();
 }
 
 async function refresh() {
-  const result = await request({clientKey: clientKey()}).catch(error => {
+  const result = await request({clientKey: clientKey(), profiles: true}).catch(error => {
     if (error.status === 503) {
-      shelf = undefined;
+      picker.update([]);
+      profileOrders = false;
       render();
     }
     throw error;
   });
   if (!result.enabled || !Number.isInteger(result.shelf?.available)) {
-    shelf = undefined;
+    picker.update([]);
+    profileOrders = false;
     render();
     throw new Error('試験棚は準備中です。');
   }
-  shelf = result.shelf;
+  profileOrders = Array.isArray(result.profiles) && result.profiles.some(row => validProfileKey(row?.profile));
+  picker.update(profilesFrom(result));
   orders = Array.isArray(result.orders) ? result.orders : [];
   // Keep the same identifier on retry if the previous response was lost.
   const draft = pending();
@@ -140,10 +161,13 @@ async function refresh() {
   render();
 }
 
-async function collect(id) {
+async function collect(id, profileKey) {
   showNotice(notice, '受け取った問題を、この端末の問題帳に保存しています…');
   const result = await request({clientKey: clientKey(), data: {action: 'collect', id}});
-  const {saved, total} = await savePuzzles(result.puzzles);
+  if ((result.order?.profile ?? legacyProfile.profile) !== profileKey) {
+    throw new Error('申し込んだ問題の条件と受け取り結果が一致しませんでした。');
+  }
+  const {saved, total} = await savePuzzles(result.puzzles, profileFromKey(profileKey));
   const stored = readObject(savedStorage, {});
   delete stored[id];
   stored[id] = total;
@@ -157,6 +181,9 @@ async function collect(id) {
 }
 
 async function submitOrder(draft) {
+  if (draft.profile && draft.profile !== legacyProfile.profile && !profileOrders) {
+    throw new Error('この条件の申し込みを現在確認できません。時間をおいてもう一度お試しください。');
+  }
   const key = clientKey(true);
   localStorage.setItem(draftStorage, JSON.stringify(draft));
   updateButtons();
@@ -168,9 +195,11 @@ async function submitOrder(draft) {
     throw error;
   }
   if (result.order?.id !== draft.id) throw new Error('申し込み結果を確認できませんでした。');
+  const profile = draft.profile ?? legacyProfile.profile;
+  if ((result.order.profile ?? legacyProfile.profile) !== profile) throw new Error('申し込んだ問題の条件を確認できませんでした。');
   localStorage.removeItem(draftStorage);
   if (result.order.ready > 0) {
-    await collect(draft.id);
+    await collect(draft.id, profile);
   } else {
     const waiting = result.order.waiting;
     showNotice(notice, waiting > 0 ? waiting + '問の予約を受け付けました。' : '申し込み状況を確認しました。', 'success');
@@ -199,11 +228,14 @@ async function run(action, refreshAfter = true) {
 function begin(wantsReservation) {
   const requested = count();
   if (!quantity.reportValidity() || !requested) return;
+  const selected = picker.selected;
+  if (!selected) return;
   return run(async () => {
     const draft = pending();
     if (draft) return submitOrder(draft);
     showNotice(notice, '申し込みを確認しています…');
-    return submitOrder({id: token(), count: requested, reserve: wantsReservation});
+    const draftProfile = profileOrders ? {profile: selected.profile} : {};
+    return submitOrder({id: token(), count: requested, reserve: wantsReservation, ...draftProfile});
   });
 }
 
@@ -220,5 +252,5 @@ refreshButton.addEventListener('click', () => run(async () => {
 }, false));
 
 refresh().then(() => {
-  showNotice(notice, shelf.available > 0 ? '' : '現在、補充を待っています。予約できます。');
+  showNotice(notice, picker.selected?.available > 0 ? '' : '在庫のない条件も予約できます。');
 }).catch(error => showNotice(notice, error.message || '在庫を確認できませんでした。', 'error'));

@@ -1,10 +1,14 @@
 import {byId, request, showNotice} from './api.js';
 import {drawPairQR} from './qr.js';
+import {profileDetail, profilePicker, profilesFrom, profileTitle} from './profiles.js';
 
 const notice = byId('owner-notice');
 const keyInput = byId('owner-key');
 const codeInput = byId('pair-code');
 const list = byId('devices');
+const picker = profilePicker(byId('owner-profile-picker'), displayProfile);
+const numberFormat = new Intl.NumberFormat('ja-JP');
+const mbFormat = new Intl.NumberFormat('ja-JP', {maximumFractionDigits: 1});
 const timeFormat = new Intl.DateTimeFormat('ja-JP', {
   timeZone: 'Asia/Tokyo', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'
 });
@@ -17,10 +21,21 @@ function when(value) {
   return Number.isFinite(value) && value > 0 ? timeFormat.format(value) : '未確認';
 }
 
+function displayProfile() {
+  const row = picker.selected;
+  if (!row) return;
+  byId('owner-profile-detail').textContent = profileTitle(row) + ' ・ ' + profileDetail(row) + ' ｜ 在庫 ' +
+    numberFormat.format(row.available) + '問' + (Number.isInteger(row.waiting) ? ' ・ 予約待ち ' + numberFormat.format(row.waiting) + '問' : '');
+}
+
 function display(result) {
-  byId('owner-available').textContent = result.shelf.available;
-  byId('owner-waiting').textContent = result.waiting;
-  byId('owner-leased').textContent = result.leased;
+  const rows = profilesFrom(result);
+  picker.update(rows);
+  byId('owner-profile-stock').hidden = rows.length < 2;
+  displayProfile();
+  byId('owner-available').textContent = numberFormat.format(rows.reduce((sum, row) => sum + row.available, 0));
+  byId('owner-waiting').textContent = numberFormat.format(result.waiting);
+  byId('owner-leased').textContent = numberFormat.format(result.leased);
   list.replaceChildren();
   byId('devices-empty').hidden = result.devices.length > 0;
   for (const device of result.devices) {
@@ -33,6 +48,13 @@ function display(result) {
     const status = document.createElement('span');
     status.textContent = (device.working ? '補充中 ・ ' : '') + '最終接続 ' + when(device.lastSeen);
     detail.append(name, status);
+    if (Number.isInteger(device.stockCount) && device.stockCount >= 0) {
+      const stock = document.createElement('span');
+      stock.textContent = '端末の在庫 ' + numberFormat.format(device.stockCount) + '問' +
+        (Number.isInteger(device.stockBytes) && device.stockBytes >= 0 ? ' ・ ' + mbFormat.format(device.stockBytes / 1_000_000) + 'MB' : '') +
+        (Number.isFinite(device.stockUpdatedAt) ? ' ・ ' + when(device.stockUpdatedAt) + ' 時点' : '');
+      detail.append(stock);
+    }
     const remove = document.createElement('button');
     remove.type = 'button';
     remove.className = 'text-button';
@@ -54,7 +76,7 @@ function display(result) {
 
 async function refresh() {
   const key = ownerKey;
-  const result = await request({ownerKey: key});
+  const result = await request({ownerKey: key, profiles: true});
   if (key === ownerKey) display(result);
 }
 
@@ -83,6 +105,7 @@ function disconnect(quiet = false) {
 
 function updateBusy() {
   for (const button of document.querySelectorAll('button')) button.disabled = busy;
+  picker.setBusy(busy);
 }
 
 async function execute(action) {
@@ -107,7 +130,7 @@ byId('owner-form').addEventListener('submit', event => {
   const attempt = ++authAttempt;
   void execute(async () => {
     showNotice(notice, '管理者の接続を確認しています…');
-    const result = await request({ownerKey: key});
+    const result = await request({ownerKey: key, profiles: true});
     if (attempt !== authAttempt) return;
     display(result);
     ownerKey = key;

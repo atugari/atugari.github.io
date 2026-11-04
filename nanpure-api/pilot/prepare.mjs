@@ -1,4 +1,4 @@
-import {cpSync, mkdirSync, readFileSync, rmSync, writeFileSync} from 'node:fs';
+import {cpSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync} from 'node:fs';
 import {join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
@@ -45,7 +45,10 @@ const rateLimits = application.split('\n').filter(line => /^CREATE (?:TABLE|INDE
 if (rateLimits.length !== 2) throw new Error('The vending rate limit schema changed.');
 writeFileSync(join(migrations, '0001_rate_limits.sql'), rateLimits.join('\n') + '\n');
 cpSync(join(pilot, 'session.sql'), join(migrations, '0002_pilot_sessions.sql'));
-cpSync(join(api, 'migrations', '0010_vending.sql'), join(migrations, '0010_vending.sql'));
+const apiMigrations = join(api, 'migrations');
+for (const name of readdirSync(apiMigrations).filter(name => /^\d+_vending(?:_\w+)?\.sql$/.test(name))) {
+  cpSync(join(apiMigrations, name), join(migrations, name));
+}
 
 writeFileSync(configFile, JSON.stringify({
   name: 'nanpure-vending-pilot',
