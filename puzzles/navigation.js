@@ -7,8 +7,10 @@ const collectionLabels={"ja":"すぐ遊べるナンプレ集","en":"Ready-to-pla
 const seen=new WeakSet();
 function install(w){
  try{
-  if(seen.has(w.document))return;seen.add(w.document);
   const d=w.document;
+  // A frame can expose its new document before the parser creates its head.
+  if(!d.head||!d.documentElement||seen.has(d))return;
+  seen.add(d);
   // Engines can finish loading after this adapter. Apply the scope on render,
   // not just at installation; existing library records and queued jobs stay intact.
   function scopeNewGeneration(){

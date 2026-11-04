@@ -64,7 +64,7 @@ parse(shell,{ecmaVersion:'latest',sourceType:'module'});fs.writeFileSync(shellFi
 
 const homeFile=path.join(root,'nanpure/index.html');
 const home=replaceOnce(fs.readFileSync(homeFile,'utf8'),'<button class="menu-button" aria-label="メニュー">☰</button>','<button type="button" class="menu-button home-settings-button" aria-label="設定">設定</button>');
-fs.writeFileSync(homeFile,home);
+fs.writeFileSync(homeFile,replaceOnce(home,'/nanpure/collection/entry.js?v=20261104-home-cleanup','/nanpure/collection/entry.js?v=20261104-home-settings'));
 const changed=[];
 for(const f of walk(path.join(root,'nanpure')).filter(f=>f.endsWith('.html')&&!f.includes('/releases/'))){const s=fs.readFileSync(f,'utf8'),v=s.replaceAll(oldBase,base);if(v!==s){fs.writeFileSync(f,v);changed.push(path.relative(root,f));}}
 
