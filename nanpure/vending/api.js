@@ -12,7 +12,7 @@ export function token() {
   return Array.from(crypto.getRandomValues(new Uint8Array(32)), byte => byte.toString(16).padStart(2, '0')).join('');
 }
 
-export async function request({ownerKey, clientKey, data} = {}) {
+export async function request({ownerKey, clientKey, data, profiles = false} = {}) {
   const headers = {Accept: 'application/json'};
   if (ownerKey) headers.Authorization = 'Bearer ' + ownerKey;
   if (clientKey) headers['X-Nanpure-Key'] = clientKey;
@@ -20,7 +20,7 @@ export async function request({ownerKey, clientKey, data} = {}) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 15000);
   try {
-    const response = await fetch(base + (ownerKey ? '/admin' : ''), {
+    const response = await fetch(base + (ownerKey ? '/admin' : '') + (profiles && !data ? '?profiles=1' : ''), {
       method: data ? 'POST' : 'GET',
       body: data ? JSON.stringify(data) : undefined,
       headers,

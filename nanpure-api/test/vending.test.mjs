@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { gunzipSync } from 'node:zlib';
+import { createContext, runInContext } from 'node:vm';
 import worker from '../src/index.js';
 import { database } from './db.mjs';
 import { hash } from '../src/http.js';
@@ -158,4 +159,91 @@ test('the global cap includes allocated puzzles and expired holds return stock',
   assert.equal(restored.puzzles[0].uid, puzzle.uid);
   assert.equal(restored.puzzles[0].verification.maxProofClauses, puzzle.verification.maxProofClauses);
   assert.equal((await makeOrder(one, key(121), 1)).status, 200, 'expiry frees order slots');
+});
+
+function notebookGenerator() {
+  const html = readFileSync(new URL('../../nanpure/releases/2026.11.04.95/notebook/index.html', import.meta.url), 'utf8');
+  const math = Object.create(Math);
+  let seed = 0x5b6aa6c3;
+  math.random = () => {
+    seed ^= seed << 13;
+    seed ^= seed >>> 17;
+    seed ^= seed << 5;
+    return (seed >>> 0) / 0x100000000;
+  };
+  const context = createContext({ Math: math, performance, crypto, TextEncoder, TextDecoder });
+  context.window = context.self = context;
+  for (const [, name, source] of html.matchAll(/<script id="([^"]+)">([\s\S]*?)<\/script>/g))
+    if (name.startsWith('core-') || name === 'common-source' || name === 'generator-source')
+      runInContext(source, context);
+  return (n, level) => context.NPGenerate({ kind: 'normal', n, level, count: 1 }, () => {});
+}
+
+test('profile leases verify exact release difficulty, keep legacy isolated and replay safely', async t => {
+  const { DB, call, pair, mobile, poll, result, collect } = await setup(t);
+  const generate = notebookGenerator();
+  await pair(one, 'Legacy'); await pair(two, 'Profile-aware');
+  assert.equal((await call(trial)).data.profiles, undefined);
+  const list = (await call(trial + '?profiles=1')).data.profiles;
+  const pilot = 'normal:9:18:0::::';
+  assert.deepEqual(list.map(p => [p.n, p.level]), [[9, 1], [9, 2], [9, 3], [9, 18], [16, 1], [25, 1]]);
+  const reserve = (id, profile) => call(trial, { action: 'order', id, count: 1, reserve: true, profile }, { client: one });
+  assert.equal((await reserve(key(200), 'normal:100:10:0::::')).status, 400);
+  for (const [index, profile] of list.filter(p => p.profile !== pilot).entries()) {
+    const id = key(index + 201);
+    assert.equal((await reserve(id, profile.profile)).data.order.profile, profile.profile);
+    assert.equal((await reserve(id, pilot)).status, 409);
+    const legacyJob = await poll(one);
+    assert.equal(legacyJob.level, 18);
+    assert.equal(legacyJob.profile, undefined);
+    const pollRequest = { action: 'poll', version: 2, ready: [profile.profile], stock: { count: 11, bytes: 12435 } };
+    const [first, second] = await Promise.all([mobile(two, pollRequest), mobile(two, pollRequest)]);
+    const { job, version } = first.data;
+    assert.equal(version, 2);
+    assert.equal(second.data.job.id, job.id);
+    assert.equal(job.profile, profile.profile);
+    const p = generate(job.n, job.level);
+    assert.equal((await result(two, job, { ...p, rating: { ...p.rating, level: 18 } })).status, 400);
+    assert.equal((await result(two, job, { ...p, puzzle: Array(p.puzzle.length).fill(0) })).status, 400);
+    assert.equal((await result(two, job, { ...p, puzzle: p.solution })).status, 400);
+    assert.deepEqual(await result(two, job, p), { status: 200, data: { ok: true } });
+    assert.deepEqual(await result(two, job, p), { status: 200, data: { ok: true } });
+    const receipt = (await collect(one, id)).data;
+    assert.equal(receipt.order.profile, profile.profile);
+    assert.equal(receipt.puzzles[0].uid, p.uid);
+    assert.equal(receipt.puzzles[0].rating.level, p.level);
+    assert.equal(receipt.puzzles[0].verification.unique, true);
+  }
+  const { data: overview } = await call(admin + '?profiles=1', null, { auth: owner });
+  assert.equal(overview.profiles.length, list.length);
+  assert.equal(overview.devices.find(d => d.name === 'Profile-aware').stockCount, 11);
+  assert.equal(overview.devices.find(d => d.name === 'Profile-aware').stockBytes, 12435);
+  const job = (await mobile(two, { action: 'poll', version: 2, stock: { count: 21, bytes: 22222 } })).data.job;
+  assert(job);
+  assert.equal(DB.raw.prepare('SELECT stock_count FROM vending_devices WHERE name=?').get('Profile-aware').stock_count, 11);
+});
+
+test('empty profiles get turns and missing profiles do not mix reservations on release or cancellation', async t => {
+  const { DB, call, pair, mobile, result, collect } = await setup(t);
+  const generate = notebookGenerator();
+  await pair(one, 'Phone');
+  DB.raw.exec('UPDATE vending_profiles SET target=1; UPDATE vending_settings SET low_water=1,target=1');
+  const visited = new Set();
+  for (let i = 0; i < 6; i++) {
+    const { data: { job } } = await mobile(one, { action: 'poll', version: 2 });
+    assert(!visited.has(job.profile));
+    visited.add(job.profile);
+    const p = job.level === 18 ? validPuzzles[0] : generate(job.n, job.level);
+    assert.equal((await result(one, job, p)).status, 200);
+  }
+  assert.equal((await mobile(one, { action: 'poll', version: 2 })).data.job, null);
+  const a = key(230), b = key(231), c = key(232);
+  const profile = 'normal:16:1:0::::', other = 'normal:25:1:0::::';
+  const reserve = (id, which) => call(trial, { action: 'order', id, count: 1, reserve: true, profile: which }, { client: one });
+  assert.equal((await reserve(a, profile)).data.order.ready, 1);
+  assert.equal((await reserve(b, other)).data.order.ready, 1);
+  assert.equal((await reserve(c, profile)).data.order.ready, 0);
+  assert.equal((await call(trial, { action: 'cancel', id: a }, { client: one })).data.order.ready, 0);
+  assert.equal((await collect(one, c)).data.puzzles[0].n, 16);
+  assert.equal((await collect(one, b)).data.puzzles[0].n, 25);
 });

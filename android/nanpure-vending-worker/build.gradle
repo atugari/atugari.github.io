@@ -16,8 +16,8 @@ android {
         applicationId 'jp.nanpure.refill'
         minSdk 26
         targetSdk 35
-        versionCode 3
-        versionName '0.1.2'
+        versionCode 4
+        versionName '0.2.0'
         buildConfigField 'String', 'ENDPOINT', '"' + workerEndpoint + '"'
     }
 
@@ -30,9 +30,10 @@ android {
 }
 
 tasks.register('prepareEngine', Exec) {
-    def engine = file('../../nanpure/releases/2026.11.04.95/notebook/index.html')
-    inputs.files(engine, file('prepare-engine.cjs'))
-    outputs.file(layout.buildDirectory.file('engine-assets/engine.js'))
-    commandLine 'node', file('prepare-engine.cjs'), outputs.files.singleFile
+    def notebook = file('../../nanpure/releases/2026.11.04.95/notebook')
+    def engine = layout.buildDirectory.file('engine-assets/engine.js')
+    inputs.files(new File(notebook, 'index.html'), new File(notebook, 'batch.js'), file('prepare-engine.cjs'))
+    outputs.files(engine, layout.buildDirectory.file('engine-assets/profiles.json'))
+    commandLine 'node', file('prepare-engine.cjs'), engine.get().asFile
 }
 tasks.named('preBuild').configure { dependsOn('prepareEngine') }

@@ -38,7 +38,7 @@
     <div id="owner-content" hidden>
       <section class="panel owner-summary" aria-labelledby="stock-title">
         <div class="panel-heading">
-          <h2 id="stock-title">通常9×9・難易度18の棚</h2>
+          <h2 id="stock-title">サイトの在庫</h2>
           <button id="owner-refresh" class="text-button" type="button">更新する</button>
         </div>
         <dl class="owner-stock">
@@ -46,6 +46,18 @@
           <div><dt>予約の不足分</dt><dd id="owner-waiting">—</dd></div>
           <div><dt>補充中</dt><dd id="owner-leased">—</dd></div>
         </dl>
+        <div id="owner-profile-stock" hidden>
+          <fieldset id="owner-profile-picker" class="profile-picker">
+            <legend>条件別のサイト在庫</legend>
+            <div class="profile-fields">
+              <label>ルール<select></select></label>
+              <label>盤面の大きさ<select></select></label>
+              <label>難易度<select></select></label>
+              <label>形・複雑さ<select></select></label>
+            </div>
+          </fieldset>
+          <p id="owner-profile-detail" class="hint" aria-live="polite"></p>
+        </div>
       </section>
 
       <div class="columns">

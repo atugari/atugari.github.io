@@ -25,13 +25,38 @@ final class RefillStore {
     int sent() { return values.getInt("sent", 0); }
     long updated() { return values.getLong("updated", 0); }
     String status() { return values.getString("status", "未登録"); }
+    int vaultTarget() { return values.getInt("vaultTarget", 0); }
+    int vaultCursor() { return values.getInt("vaultCursor", 0); }
+    long vaultCount() { return values.getLong("vaultCount", -1); }
+    long vaultBytes() { return values.getLong("vaultBytes", 0); }
+    int vaultProfiles() { return values.getInt("vaultProfiles", 0); }
 
     void enabled(boolean enabled) { values.edit().putBoolean("enabled", enabled).apply(); }
     void meteredAllowed(boolean allowed) { values.edit().putBoolean("metered", allowed).apply(); }
     void markNotificationsAsked() { values.edit().putBoolean("notificationsAsked", true).apply(); }
+    void vaultTarget(int target) { values.edit().putInt("vaultTarget", target).apply(); }
+
+    void vaultCursor(String token, int cursor) {
+        synchronized (REGISTRATION) {
+            if (token.equals(token())) values.edit().putInt("vaultCursor", cursor).apply();
+        }
+    }
+
+    void vaultSummary(String token, long count, long bytes, int profiles, long sent) {
+        synchronized (REGISTRATION) {
+            if (!token.equals(token())) return;
+            int sentCount = (int) Math.min(Integer.MAX_VALUE, sent);
+            if (count != vaultCount() || bytes != vaultBytes() || profiles != vaultProfiles() || sentCount != sent()) {
+                values.edit().putLong("vaultCount", count).putLong("vaultBytes", bytes)
+                        .putInt("vaultProfiles", profiles).putInt("sent", sentCount).apply();
+            }
+        }
+    }
 
     void status(String status) {
-        values.edit().putString("status", status).putLong("updated", System.currentTimeMillis()).apply();
+        if (!status.equals(status())) {
+            values.edit().putString("status", status).putLong("updated", System.currentTimeMillis()).apply();
+        }
     }
 
     String pairingToken(String code, String endpoint) throws IOException {

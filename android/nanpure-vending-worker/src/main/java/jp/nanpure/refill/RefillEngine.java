@@ -30,8 +30,24 @@ final class RefillEngine {
     private static final String START = "https://" + HOST + "/index.html";
     private static final Handler MAIN = new Handler(Looper.getMainLooper());
     private final Context context;
-    private final CompletableFuture<JSONObject> result = new CompletableFuture<>();
+    private volatile Round active;
+    private volatile boolean closed;
+    private int nextId;
     private WebView view;
+    private boolean ready;
+
+    private static final class Round {
+        final int id, budgetMs;
+        final String profile;
+        final CompletableFuture<JSONObject> result = new CompletableFuture<>();
+        boolean started;
+
+        Round(int id, String profile, int budgetMs) {
+            this.id = id;
+            this.profile = profile;
+            this.budgetMs = budgetMs;
+        }
+    }
 
     RefillEngine(Context context) {
         this.context = context;
@@ -39,16 +55,25 @@ final class RefillEngine {
 
     JSONObject generate(int budgetMs, BooleanSupplier canContinue)
             throws InterruptedException, IOException, TimeoutException {
-        MAIN.post(() -> load(budgetMs));
+        return generate(RefillProfiles.PILOT_KEY, budgetMs, canContinue);
+    }
+
+    JSONObject generate(String profile, int budgetMs, BooleanSupplier canContinue)
+            throws InterruptedException, IOException, TimeoutException {
+        if (budgetMs < 500 || budgetMs > 120000 || RefillProfiles.find(context, profile) == null) {
+            throw new IOException("Unknown refill profile or invalid search budget");
+        }
+        Round round = begin(profile, budgetMs);
+        MAIN.post(() -> load(round));
         long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(budgetMs + 25000L);
         try {
             while (true) {
-                if (result.isDone()) return result.get();
+                if (round.result.isDone()) return round.result.get();
                 if (!canContinue.getAsBoolean()) throw new InterruptedException("Refill conditions changed");
                 long remaining = deadline - System.nanoTime();
                 if (remaining <= 0) throw new TimeoutException();
                 try {
-                    return result.get(Math.min(TimeUnit.SECONDS.toNanos(1), remaining), TimeUnit.NANOSECONDS);
+                    return round.result.get(Math.min(TimeUnit.SECONDS.toNanos(1), remaining), TimeUnit.NANOSECONDS);
                 } catch (TimeoutException ignored) {
                     // Recheck charging, network and thermal conditions while the worker searches.
                 }
@@ -56,21 +81,43 @@ final class RefillEngine {
         } catch (CancellationException error) {
             throw new InterruptedException("Refill search cancelled");
         } catch (ExecutionException error) {
-            throw new IOException("Refill engine could not start", error.getCause());
-        } finally {
             cancel();
+            throw new IOException("Refill engine could not start", error.getCause());
+        } catch (InterruptedException | TimeoutException | RuntimeException error) {
+            cancel();
+            throw error;
+        } finally {
+            end(round);
         }
     }
 
-    void cancel() {
-        result.cancel(false);
+    private synchronized Round begin(String profile, int budgetMs) throws IOException {
+        if (closed || active != null) throw new IOException("Refill engine is unavailable");
+        Round round = new Round(++nextId, profile, budgetMs);
+        active = round;
+        return round;
+    }
+
+    private synchronized void end(Round round) {
+        if (active == round) active = null;
+    }
+
+    synchronized void cancel() {
+        if (closed) return;
+        closed = true;
+        if (active != null) active.result.cancel(false);
+        active = null;
         MAIN.post(this::destroy);
     }
 
     @SuppressLint("SetJavaScriptEnabled")
-    private void load(int budgetMs) {
-        if (result.isDone()) return;
+    private void load(Round round) {
+        if (closed || active != round) return;
         try {
+            if (view != null) {
+                start(round);
+                return;
+            }
             view = new WebView(context);
             view.getSettings().setJavaScriptEnabled(true);
             view.getSettings().setAllowFileAccess(false);
@@ -98,22 +145,40 @@ final class RefillEngine {
                 }
 
                 @Override public void onPageFinished(WebView webView, String url) {
-                    if (START.equals(url) && !result.isDone()) {
-                        webView.evaluateJavascript("runRefillRound(" + budgetMs + ")", null);
+                    if (START.equals(url) && webView == view) {
+                        ready = true;
+                        Round current = active;
+                        if (current != null) start(current);
                     }
                 }
 
                 @Override public boolean onRenderProcessGone(WebView webView, RenderProcessGoneDetail detail) {
-                    result.completeExceptionally(new IOException("WebView renderer stopped"));
-                    destroy();
+                    fail(new IOException("WebView renderer stopped"));
                     return true;
                 }
             });
             view.loadUrl(START);
         } catch (RuntimeException error) {
-            result.completeExceptionally(error);
-            destroy();
+            fail(error);
         }
+    }
+
+    private void start(Round round) {
+        if (closed || active != round || !ready || round.started) return;
+        round.started = true;
+        try {
+            view.evaluateJavascript("runRefillRound(" + round.id + "," +
+                    JSONObject.quote(round.profile) + "," + round.budgetMs + ")", null);
+        } catch (RuntimeException error) {
+            fail(error);
+        }
+    }
+
+    private void fail(Exception error) {
+        Round round = active;
+        if (round != null) round.result.completeExceptionally(error);
+        cancel();
+        destroy();
     }
 
     private static WebResourceResponse blocked() {
@@ -123,6 +188,7 @@ final class RefillEngine {
 
     private void destroy() {
         if (view == null) return;
+        ready = false;
         view.removeJavascriptInterface("RefillBridge");
         view.stopLoading();
         view.destroy();
@@ -130,15 +196,21 @@ final class RefillEngine {
     }
 
     public final class ResultBridge {
-        @JavascriptInterface public void finish(String json) {
+        @JavascriptInterface public void finish(int id, String json) {
+            Round round = active;
+            if (round == null || round.id != id || closed) return;
             if (json == null || json.length() > 300000) {
-                result.completeExceptionally(new IOException("Invalid engine response size"));
+                round.result.completeExceptionally(new IOException("Invalid engine response size"));
                 return;
             }
             try {
-                result.complete(new JSONObject(json));
+                JSONObject value = new JSONObject(json);
+                if (value.has("puzzle") && !round.profile.equals(value.optString("profile"))) {
+                    throw new JSONException("Unexpected refill profile");
+                }
+                round.result.complete(value);
             } catch (JSONException error) {
-                result.completeExceptionally(error);
+                round.result.completeExceptionally(error);
             }
         }
     }

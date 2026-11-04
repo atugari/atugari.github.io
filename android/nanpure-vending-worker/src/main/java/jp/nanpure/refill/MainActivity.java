@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.InputType;
+import android.text.format.Formatter;
 import android.view.View;
 import android.view.WindowInsets;
 import android.widget.Button;
@@ -36,6 +37,8 @@ public final class MainActivity extends Activity {
     private static final int BACKDROP = 0xfff6f2f9;
     private static final int PAPER = Color.WHITE;
     private static final int NOTIFICATIONS = 5183;
+    private static final int MAX_VAULT_TARGET = 100_000;
+    private static final DateTimeFormatter UPDATE_TIME = DateTimeFormatter.ofPattern("M/d HH:mm");
 
     private final Handler main = new Handler(Looper.getMainLooper());
     private RefillStore store;
@@ -46,11 +49,13 @@ public final class MainActivity extends Activity {
     private TextView notice;
     private TextView status;
     private TextView completed;
+    private TextView vaultSummary;
     private TextView pairingHint;
     private Switch automatic;
     private Switch metered;
     private Button register;
     private Button check;
+    private Button vaultTarget;
     private boolean updating;
     private boolean busy;
     private boolean requestingNotifications;
@@ -82,8 +87,7 @@ public final class MainActivity extends Activity {
         content.addView(eyebrow);
         TextView title = text("ナンプレ補充係", 31, INK, true);
         add(content, title, 4);
-        add(content, text("通常9×9・難易度18「至高」", 16, MUTED, false), 4);
-        add(content, text("このスマホで問題を作り、サイトの在庫へ送ります。", 15, MUTED, false), 12);
+        add(content, text("このスマホで問題を作り、依頼に合わせてサイトへ送ります。", 15, MUTED, false), 12);
 
         LinearLayout summary = card();
         add(content, summary, 20);
@@ -92,6 +96,8 @@ public final class MainActivity extends Activity {
         add(summary, status, 6);
         completed = text("", 14, MUTED, false);
         add(summary, completed, 8);
+        vaultSummary = text("", 14, MUTED, false);
+        add(summary, vaultSummary, 6);
 
         pairingPanel = card();
         add(content, pairingPanel, 14);
@@ -122,7 +128,7 @@ public final class MainActivity extends Activity {
         automatic.setOnCheckedChangeListener((view, checked) -> {
             if (updating) return;
             store.enabled(checked);
-            if (!RefillService.isRunning()) store.status(checked ? "充電と回線の条件待ち" : "自動補充を停止中");
+            if (!RefillService.isRunning()) store.status(checked ? "電源接続待ち" : "自動補充を停止中");
             RefillJob.schedule(this, true);
             if (checked) RefillJob.request(this, 0);
         });
@@ -135,6 +141,9 @@ public final class MainActivity extends Activity {
             RefillJob.schedule(this, true);
             RefillJob.request(this, 0);
         });
+        vaultTarget = button("端末在庫の目標を設定する", false);
+        add(settingsPanel, vaultTarget, 10);
+        vaultTarget.setOnClickListener(view -> chooseVaultTarget());
         check = button("連続補充を今すぐ始める", true);
         add(settingsPanel, check, 12);
         check.setOnClickListener(view -> {
@@ -153,7 +162,7 @@ public final class MainActivity extends Activity {
         add(settingsPanel, unpair, 6);
         unpair.setOnClickListener(view -> new AlertDialog.Builder(this)
                 .setTitle("このスマホの登録を解除")
-                .setMessage("端末内の送信待ちも消えます。サイト側の端末権限は管理画面から停止できます。")
+                .setMessage("この接続先用の完成品は端末内に残ります。サイト側の端末権限は管理画面から停止できます。")
                 .setNegativeButton("戻る", null)
                 .setPositiveButton("登録を解除する", (dialog, which) -> {
                     try {
@@ -170,8 +179,8 @@ public final class MainActivity extends Activity {
         notice = text("", 14, MUTED, false);
         notice.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
         add(content, notice, 12);
-        add(content, text("連続補充はこの画面または通知から停止できます。自動補充の開始時刻はAndroidが決めます。"
-                + "通信が切れた場合は、完成済みの問題を端末に残して再送します。", 13, MUTED, false), 6);
+        add(content, text("端末在庫を有効にすると、回線がない間も電源につないで問題を作れます。"
+                + "自動補充の開始時刻はAndroidが決めます。", 13, MUTED, false), 6);
         applyLink(getIntent());
         refresh();
     }
@@ -220,6 +229,42 @@ public final class MainActivity extends Activity {
         } catch (RuntimeException error) {
             notice.setText("連続補充を始められませんでした。この画面でもう一度お試しください。");
         }
+    }
+
+    private void chooseVaultTarget() {
+        EditText input = field("条件ごとの目標問数");
+        input.setInputType(InputType.TYPE_CLASS_NUMBER);
+        input.setText(Integer.toString(store.vaultTarget() > 0 ? store.vaultTarget() : 10));
+        input.selectAll();
+        LinearLayout body = column();
+        body.setPadding(dp(22), 0, dp(22), 0);
+        add(body, text("ルール・サイズ・難易度ごとに、在庫が少ない条件から作ります。"
+                + "0にすると端末在庫用の生成を停止します。"
+                + "端末在庫は最大32 GBで、端末の空きが8 GBを下回る手前で保存を停止します。",
+                14, MUTED, false), 6);
+        add(body, input, 10);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("端末在庫の目標問数")
+                .setView(body)
+                .setNegativeButton("戻る", null)
+                .setPositiveButton("設定する", null)
+                .create();
+        dialog.setOnShowListener(ignored -> dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(view -> {
+            int target;
+            try {
+                target = Integer.parseInt(input.getText().toString());
+                if (target < 0 || target > MAX_VAULT_TARGET) throw new NumberFormatException();
+            } catch (NumberFormatException error) {
+                input.setError("0〜100,000問で入力してください。");
+                return;
+            }
+            store.vaultTarget(target);
+            RefillJob.schedule(this, true);
+            RefillJob.request(this, 0);
+            refresh();
+            dialog.dismiss();
+        }));
+        dialog.show();
     }
 
     private void pair() {
@@ -288,18 +333,29 @@ public final class MainActivity extends Activity {
         settingsPanel.setVisibility(paired ? View.VISIBLE : View.GONE);
         register.setEnabled(!busy);
         check.setEnabled(paired && !requestingNotifications);
-        check.setText(RefillService.isRunning() ? "連続補充を停止する" : "連続補充を今すぐ始める");
+        setText(check, RefillService.isRunning() ? "連続補充を停止する" : "連続補充を今すぐ始める");
         updating = true;
         automatic.setChecked(store.enabled());
         metered.setChecked(store.meteredAllowed());
         updating = false;
-        status.setText(store.status());
+        setText(status, store.status());
         String info = "補充した問題  " + store.sent() + "問";
         if (store.updated() > 0) {
-            DateTimeFormatter format = DateTimeFormatter.ofPattern("M/d HH:mm").withZone(ZoneId.systemDefault());
-            info += "  ·  最終更新 " + format.format(Instant.ofEpochMilli(store.updated()));
+            info += "  ·  最終更新 " + UPDATE_TIME.withZone(ZoneId.systemDefault())
+                    .format(Instant.ofEpochMilli(store.updated()));
         }
-        completed.setText(info);
+        setText(completed, info);
+        long count = store.vaultCount();
+        vaultSummary.setVisibility(paired ? View.VISIBLE : View.GONE);
+        setText(vaultSummary, count < 0 ? "端末在庫は補充を開始すると表示します" :
+                "端末在庫  " + count + "問（" + store.vaultProfiles() + "条件）  ·  問題データ "
+                        + Formatter.formatShortFileSize(this, store.vaultBytes()));
+        int target = store.vaultTarget();
+        setText(vaultTarget, target == 0 ? "端末在庫を作る（オフ）" : "端末在庫の目標を変更する（各" + target + "問）");
+    }
+
+    private static void setText(TextView view, String text) {
+        if (!text.contentEquals(view.getText())) view.setText(text);
     }
 
     @SuppressWarnings("deprecation")

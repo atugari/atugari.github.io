@@ -11,16 +11,18 @@ import android.net.Network;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
 
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.util.concurrent.TimeoutException;
 
 public final class RefillJob extends JobService {
     private static final int PERIODIC = 5180;
     private static final int CHECK = 5181;
     private static final long QUARTER_HOUR = 15 * 60 * 1000;
+    private static final long BURST_MS = 120_000;
+    private static final int BURST_ROUNDS = 64;
     private final Handler main = new Handler(Looper.getMainLooper());
     private Run active;
 
@@ -54,10 +56,13 @@ public final class RefillJob extends JobService {
     }
 
     private static JobInfo.Builder base(Context context, int id, RefillStore store) {
-        return new JobInfo.Builder(id, new ComponentName(context, RefillJob.class))
-                .setRequiredNetworkType(store.meteredAllowed()
-                        ? JobInfo.NETWORK_TYPE_ANY : JobInfo.NETWORK_TYPE_UNMETERED)
+        JobInfo.Builder builder = new JobInfo.Builder(id, new ComponentName(context, RefillJob.class))
                 .setRequiresCharging(true);
+        if (store.vaultTarget() == 0) {
+            builder.setRequiredNetworkType(store.meteredAllowed()
+                    ? JobInfo.NETWORK_TYPE_ANY : JobInfo.NETWORK_TYPE_UNMETERED);
+        }
+        return builder;
     }
 
     @Override public boolean onStartJob(JobParameters parameters) {
@@ -104,9 +109,15 @@ public final class RefillJob extends JobService {
             long followUp = 0;
             try {
                 ConnectivityManager manager = getSystemService(ConnectivityManager.class);
-                Network network = Build.VERSION.SDK_INT >= 28 ? parameters.getNetwork() : manager.getActiveNetwork();
-                if (network == null) network = manager.getActiveNetwork();
-                followUp = runner.execute(network);
+                long started = SystemClock.elapsedRealtime();
+                int rounds = 0;
+                do {
+                    Network network = Build.VERSION.SDK_INT >= 28 ? parameters.getNetwork() : null;
+                    if (network == null) network = manager.getActiveNetwork();
+                    followUp = runner.execute(network);
+                } while (!stopped && followUp == RefillRunner.NEXT_ROUND && ++rounds < BURST_ROUNDS &&
+                        SystemClock.elapsedRealtime() - started < BURST_MS);
+                if (followUp == RefillRunner.NEXT_ROUND) followUp = 15_000;
             } catch (RefillApi.HttpFailure error) {
                 if (report()) {
                     if (error.status == 403) {
@@ -118,9 +129,10 @@ public final class RefillJob extends JobService {
                 }
             } catch (InterruptedException error) {
                 Thread.currentThread().interrupt();
-            } catch (IOException | JSONException | TimeoutException | RuntimeException error) {
+            } catch (IOException | JSONException | RuntimeException error) {
                 if (report()) store.status("補充を中断しました・次の確認で再試行");
             } finally {
+                runner.stop();
                 long next = followUp;
                 main.post(() -> {
                     if (active != this) return;

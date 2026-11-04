@@ -19,7 +19,6 @@ import android.os.SystemClock;
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.util.concurrent.TimeoutException;
 
 public final class RefillService extends Service {
     private static final String STOP = "jp.nanpure.refill.STOP_CONTINUOUS";
@@ -96,7 +95,7 @@ public final class RefillService extends Service {
                     }
                     status("サーバーの応答待ち・連続補充で再試行します");
                     next = RETRY_MS;
-                } catch (IOException | JSONException | TimeoutException | RuntimeException error) {
+                } catch (IOException | JSONException | RuntimeException error) {
                     status("補充を中断しました・連続補充で再試行します");
                     next = RETRY_MS;
                 }
@@ -105,6 +104,7 @@ public final class RefillService extends Service {
         } catch (InterruptedException error) {
             Thread.currentThread().interrupt();
         } finally {
+            current.stop();
             main.post(() -> finish(current));
         }
     }

@@ -4,9 +4,11 @@
 // To use an isolated Wrangler dev server, set NANPURE_VENDING_TEST_LOCAL_URL
 // and NANPURE_VENDING_TEST_OWNER_KEY to its loopback URL and test owner key.
 // NANPURE_VENDING_TEST_GENERATED can point to one newly generated Lv18 JSON puzzle.
+// NANPURE_VENDING_TEST_EXPANDED=1 additionally checks a 16×16 v2 shelf.
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
+const vm = require('node:vm');
 const {pathToFileURL} = require('node:url');
 const {randomBytes} = require('node:crypto');
 const {gunzipSync, inflateSync} = require('node:zlib');
@@ -27,6 +29,7 @@ if (localApi) {
   assert(/^[a-f0-9]{64}$/.test(process.env.NANPURE_VENDING_TEST_OWNER_KEY || ''), 'Supply a local test owner key');
 }
 const workerToken = randomBytes(32).toString('hex');
+const expanded = process.env.NANPURE_VENDING_TEST_EXPANDED === '1';
 const importRepo = relative => import(pathToFileURL(path.join(root, relative)).href);
 const types = {
   '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8',
@@ -45,6 +48,18 @@ function stockFixtures() {
   assert.equal(puzzles.length, 3);
   assert(puzzles.every(p => p.kind === 'normal' && p.n === 9 && p.level === 18 && p.logicProof?.length));
   return puzzles;
+}
+
+function largeFixture(version) {
+  const engine = fs.readFileSync(path.join(root, 'nanpure/releases', version, 'notebook/index.html'), 'utf8');
+  const ctx = vm.createContext({console, atob, btoa, crypto: globalThis.crypto, performance, setTimeout, clearTimeout});
+  ctx.window = ctx;
+  ctx.self = ctx;
+  for (const [, id, code] of engine.matchAll(/<script[^>]*id="([^"]+)"[^>]*>([\s\S]*?)<\/script>/g)) {
+    if (id.startsWith('core-') || id === 'common-source' || id === 'generator-source') vm.runInContext(code, ctx);
+  }
+  return {...ctx.NPGenerate({kind: 'normal', n: 16, level: 1, count: 1}, () => {}),
+    uid: 'vending-profile-test-' + randomBytes(8).toString('hex')};
 }
 
 async function bodyOf(response) {
@@ -266,6 +281,44 @@ async function main() {
     await notebook.locator('[data-action="begin-play"]').click();
     await notebook.locator('#board [data-cell]').first().waitFor();
 
+    if (expanded) {
+      const profile = 'normal:16:1:0::::';
+      const large = largeFixture(version);
+      await customer.locator('#profile-size').selectOption('16');
+      await waitForCount(customer, 0);
+      await customer.locator('#reserve').click();
+      const largeCard = customer.locator('#orders [data-order-id]').filter({hasText: '16×16'});
+      await largeCard.waitFor();
+      const largeId = await largeCard.getAttribute('data-order-id');
+      const placedLarge = trace.find(entry => entry.request?.action === 'order' && entry.request.id === largeId);
+      assert.equal(placedLarge.request.profile, profile);
+      const {job} = await succeed(workerPath, {
+        action: 'poll', version: 2, ready: [profile], stock: {count: 42, bytes: 120_000}
+      }, {token: workerToken});
+      assert.equal(job.profile, profile);
+      await succeed(workerPath, {action: 'result', id: job.id, lease: job.lease, p: large}, {token: workerToken});
+      await customer.reload();
+      await customer.evaluate(() => {
+        const original = IDBObjectStore.prototype.getAll;
+        window.restoreReceiptRead = () => { IDBObjectStore.prototype.getAll = original; };
+        IDBObjectStore.prototype.getAll = function (...args) {
+          if (['puzzles', 'seen', 'summaries'].includes(this.name)) throw Error('Receipt loaded the full problem book');
+          return original.apply(this, args);
+        };
+      });
+      await largeCard.locator('[data-action="collect"]').click();
+      await customer.locator('#open-notebook').waitFor();
+      await customer.evaluate(() => window.restoreReceiptRead());
+      const largeSaved = (await notebookRows(customer)).find(row => row.uid === large.uid);
+      assert.equal(largeSaved.n, 16);
+      assert.equal(largeSaved.level, 1);
+      assert.deepEqual(largeSaved.puzzle, Array.from(large.puzzle));
+      assert.deepEqual(largeSaved.solution, Array.from(large.solution));
+      assert.equal(largeSaved.verification.unique, true);
+      await owner.locator('#owner-refresh').click();
+      await owner.getByText(/端末の在庫 42問/).waitFor();
+    }
+
     await owner.reload();
     await owner.locator('#owner-key').fill(testOwner);
     await owner.locator('#owner-connect').click();
@@ -280,7 +333,8 @@ async function main() {
     assert(revoked.status >= 400, 'A revoked device cannot claim more work');
     assert.deepEqual(errors, []);
     await context.close();
-    console.log('PASS vending browser: stock, reservation, pairing/revocation, lost-receipt recovery, partial/instant pickup, notebook storage and play');
+    console.log('PASS vending browser: stock, reservation, pairing/revocation, lost-receipt recovery, partial/instant pickup, notebook storage and play' +
+      (expanded ? ', v2 16×16 reservation, indexed receipt and device stock' : ''));
   } finally {
     await browser.close();
     DB?.raw.close();
