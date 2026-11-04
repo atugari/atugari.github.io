@@ -34,7 +34,12 @@ window.runRefillRound = function (id, profile, budgetMs) {
       };
       worker = current;
     }
-    worker.postMessage({id, profile, budgetMs});
+    // Leave room for a progress callback to report expiry before the hard
+    // watchdog. A cooperative expiry keeps the worker's partial search cache.
+    const headroomCapMs = profile.startsWith('normal:100:') ? 5000 : 2000;
+    const headroomMs = Math.min(headroomCapMs, Math.floor(budgetMs / 10));
+    const searchBudgetMs = Math.max(500, budgetMs - headroomMs);
+    worker.postMessage({id, profile, budgetMs: searchBudgetMs});
   } catch (error) {
     complete({error: 'engine'}, true);
   }
