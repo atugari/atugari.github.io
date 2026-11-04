@@ -56,7 +56,7 @@ function buildInternationalPages(repo,base,write) {
     write(`nanpure/${locale.slug}/index.html`,`<!doctype html>
 <html lang="${locale.code}" dir="${locale.code==='ar'?'rtl':'ltr'}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#f4efe3">
 ${searchHead({title:locale.title,description:locale.description,url,icon:base+'favicon.svg',graph,ogLocale:locale.ogLocale,alternates:locales})}
-<script src="${base}site-theme.js"></script><link rel="stylesheet" href="/nanpure/assets/guide.css?v=theme-97"><link rel="stylesheet" href="/nanpure/assets/international.css?v=theme-97"></head>
+<link rel="stylesheet" href="/nanpure/assets/guide.css?v=theme-97"><link rel="stylesheet" href="/nanpure/assets/international.css?v=theme-97"></head>
 <body><a class="skip-link" href="#content">${escapeHTML(skip)}</a>
 <header class="guide-header international-header"><a class="brand" href="${game}" dir="ltr">Sudoku Notebook</a><a class="header-play" href="${game}">${escapeHTML(play)}</a></header>
 <main id="content" class="guide-main"><article><header class="article-header"><p class="eyebrow" translate="no" dir="ltr">SUDOKU NOTEBOOK · NANPURE CHO</p><h1>${escapeHTML(locale.heading)}</h1><p class="lead">${escapeHTML(locale.lead)}</p><div class="play-links international-actions"><a class="primary" href="${game}">${escapeHTML(play)}</a><a href="${game}&amp;view=daily">${escapeHTML(daily)}</a><a href="${game}&amp;view=tutorial">${escapeHTML(learn)}</a></div></header>
@@ -75,7 +75,7 @@ function decorateHome(repo,base,write) {
   const metadata=/<title>[\s\S]*?<script type="application\/ld\+json">[\s\S]*?<\/script>/;
   if(!metadata.test(html))throw Error('Cannot locate the current home search metadata');
   html=html.replace(metadata,searchHead({title:content.title,description:content.description,icon:base+'favicon.svg',graph:[applicationData(content),{'@type':'WebPage','@id':siteURL,url:siteURL,name:content.title,inLanguage:'ja',about:{'@id':siteURL+'#app'}}],alternates:locales}));
-  html=html.replace(/<link rel="stylesheet" href="\/nanpure\/assets\/international\.css">\s*/g,'').replace('</head>','<link rel="stylesheet" href="/nanpure/assets/international.css?v=theme-97">\n</head>');
+  html=html.replace(/<link rel="stylesheet" href="\/nanpure\/assets\/international\.css(?:\?[^\"]*)?">\s*/g,'').replace('</head>','<link rel="stylesheet" href="/nanpure/assets/international.css?v=theme-97">\n</head>');
   // Load the navigation adapter for the collection entry inside the play menu.
   html=html.replace(/<link rel="stylesheet" href="\/nanpure\/collection\/entry\.css[^"]*">\s*/g,'').replace(/<script (?:defer )?src="\/nanpure\/collection\/entry\.js[^"]*"><\/script>\s*/g,'');
   html=html.replace('</head>',"<link rel=\"stylesheet\" href=\"/nanpure/collection/entry.css?v=20261030\">\n<script src=\"/nanpure/collection/entry.js?v=20261104-home-cards\"></script>\n"+'</head>');
