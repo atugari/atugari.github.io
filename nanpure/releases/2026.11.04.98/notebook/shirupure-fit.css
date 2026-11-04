@@ -1,0 +1,65 @@
+/* The embedded viewport, not the whole browser window, determines play space. */
+html:has(body[data-screen=game]),html:has(body[data-screen=tutorial]){height:100%;overflow:hidden}
+body:is([data-screen=game],[data-screen=tutorial]){height:var(--shiru-viewport,100dvh);min-height:0;overflow:hidden;display:flex;flex-direction:column}
+html[data-theme] body:is([data-screen=game],[data-screen=tutorial]) .site-header{width:100%;max-width:1100px;height:52px;min-height:52px;padding:2px 16px;flex:none}
+body:is([data-screen=game],[data-screen=tutorial]) .site-header .wordmark{font-size:18px;letter-spacing:.05em}
+body:is([data-screen=game],[data-screen=tutorial]) .site-header .menu-button{min-height:44px;padding:0 14px}
+body:is([data-screen=game],[data-screen=tutorial]) main{width:100%;max-width:1100px;height:auto;min-height:0;flex:1;margin:0 auto;padding:5px 12px max(8px,env(safe-area-inset-bottom))}
+body:is([data-screen=game],[data-screen=tutorial]) :is(.site-footer,.np-language-bar){display:none}
+html[data-theme] body:is([data-screen=game],[data-screen=tutorial]) .game{height:100%;min-height:0;width:100%;max-width:860px;padding:10px 16px;display:flex;flex-direction:column;gap:0}
+body:is([data-screen=game],[data-screen=tutorial]) .game>*{flex:none}
+body:is([data-screen=game],[data-screen=tutorial]) .game .stage-top{margin:0 0 5px;min-height:32px}
+body:is([data-screen=game],[data-screen=tutorial]) .stage-info strong{font-size:25px}
+body:is([data-screen=game],[data-screen=tutorial]) .game .progress{margin:0;height:4px}
+body:is([data-screen=game],[data-screen=tutorial]) .game .rule-brief{margin:6px 0;font-size:13px;line-height:1.5;letter-spacing:0}
+body:is([data-screen=game],[data-screen=tutorial]) .game .board-wrap{flex:1;min-height:0;max-width:none;width:100%;margin:0;padding:5px;display:grid;place-items:center;container-type:size}
+body:is([data-screen=game],[data-screen=tutorial]) .game .board{width:min(calc(100cqw - 10px),calc((100cqh - 10px) * var(--board-ratio,1.5)));max-width:none;flex:none}
+body:is([data-screen=game],[data-screen=tutorial]) .game .board .cell{font-size:var(--shiru-mark,clamp(10px,calc(100cqw / var(--columns,6) * .6),36px))}
+body:is([data-screen=game],[data-screen=tutorial]) .game .edge.v{width:var(--shiru-edge,28px)}
+body:is([data-screen=game],[data-screen=tutorial]) .game .edge.h{height:var(--shiru-edge,28px)}
+body:is([data-screen=game],[data-screen=tutorial]) .game .modes{margin:6px 0 0;padding:3px;gap:3px}
+body:is([data-screen=game],[data-screen=tutorial]) .modes button{min-height:44px;font-size:14px}
+body:is([data-screen=game],[data-screen=tutorial]) .tool-note{display:none}
+body:is([data-screen=game],[data-screen=tutorial]) .game .palette{margin:4px 0 0;padding:0;gap:8px}
+body:is([data-screen=game],[data-screen=tutorial]) .game .palette button{width:44px;height:44px}
+body:is([data-screen=game],[data-screen=tutorial]) .game .bottom-actions{margin:6px 0 0;gap:8px}
+body:is([data-screen=game],[data-screen=tutorial]) .game .bottom-actions button{min-height:44px;padding:8px 12px}
+body:is([data-screen=game],[data-screen=tutorial]) .game .status{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);margin:0}
+body:is([data-screen=game],[data-screen=tutorial]) .game .next-inline{min-height:44px;margin:6px 0 0;padding:9px 12px}
+body:is([data-screen=game],[data-screen=tutorial]) #next-holder:empty{display:none}
+body[data-screen=tutorial] .game .lesson-top{margin:0 0 5px;font-size:13px;line-height:22px}
+body[data-screen=tutorial] .game :is(.lesson-coach,.lesson-success){margin:0 0 5px;padding:10px 12px}
+body[data-screen=tutorial] .game :is(.lesson-coach,.lesson-success) h2{font-size:16px;line-height:1.4;margin:0 0 5px}
+body[data-screen=tutorial] .game :is(.lesson-coach,.lesson-success) p{font-size:13px;line-height:1.6;margin:5px 0}
+body[data-screen=tutorial] .game .lesson-coach .eyebrow{display:none}
+body[data-screen=tutorial] .game .lesson-coach .lesson-detail{display:none}
+body[data-screen=tutorial] .game .lesson-coach strong{border:0;padding:0;font-size:13px;line-height:1.6}
+body[data-screen=tutorial] .game .lesson-explain{display:block;min-height:44px;padding:0;font-size:13px}
+body[data-screen=tutorial] .game .rule-brief{display:none}
+body[data-screen=tutorial] .game .guided-mode{margin:4px 0 0;padding:3px;font-size:13px;min-height:0;line-height:1.6}
+body[data-screen=tutorial] .game .lesson-message{margin:4px 0 0;font-size:12px;line-height:1.5}
+body[data-screen=tutorial] .game .lesson-message:empty{display:none}
+html[data-theme] body[data-screen=game] .game.board-focus{position:fixed;inset:0;width:100%;max-width:none;height:var(--shiru-viewport,100dvh);border-radius:0;z-index:30;padding:10px}
+@media(min-width:760px){
+ html[data-theme] body[data-screen=tutorial] .game{max-width:1060px;display:grid;grid-template-columns:minmax(240px,.85fr) minmax(0,1.15fr);grid-template-rows:24px minmax(0,1fr) auto auto auto auto auto;column-gap:20px;row-gap:5px;padding:14px 20px}
+ body[data-screen=tutorial] .lesson-top{grid-column:1/-1;grid-row:1}
+ body[data-screen=tutorial] .game :is(.lesson-coach,.lesson-success){grid-column:1;grid-row:2;align-self:center;margin:0}
+ body[data-screen=tutorial] .game .lesson-coach .lesson-detail{display:block}
+ body[data-screen=tutorial] .game .lesson-coach .eyebrow{display:block;font-size:11px}
+ body[data-screen=tutorial] .game .lesson-coach strong{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
+ body[data-screen=tutorial] .game .lesson-explain{display:none}
+ body[data-screen=tutorial] .game .board-wrap{grid-column:2;grid-row:2/8;height:100%;width:100%}
+ body[data-screen=tutorial] .game :is(.guided-mode,.modes){grid-column:1;grid-row:3;margin:0}
+ body[data-screen=tutorial] .game .palette{grid-column:1;grid-row:4}
+ body[data-screen=tutorial] .game .lesson-message{grid-column:1;grid-row:5}
+ body[data-screen=tutorial] .game :is(.next-inline,.bottom-actions){grid-column:1;grid-row:6;margin:0}
+}
+@media(max-height:520px) and (min-width:760px){
+ body[data-screen=tutorial] .game .lesson-coach .lesson-detail{display:none}
+ body[data-screen=tutorial] .game .lesson-explain{display:block}
+ body[data-screen=tutorial] .game .lesson-coach .eyebrow{display:none}
+}
+@media(max-width:759px){
+ html[data-theme] body:is([data-screen=game],[data-screen=tutorial]) .game{padding:8px 10px;box-shadow:none}
+ body:is([data-screen=game],[data-screen=tutorial]) main{padding:3px 8px max(6px,env(safe-area-inset-bottom))}
+}

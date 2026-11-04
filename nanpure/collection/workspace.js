@@ -107,6 +107,19 @@
   prefs.y=maxY?Math.max(0,Math.min(1,(y-4)/maxY)):0;
   clampPanel();
  }
+ function focusMultiBoard(legend, mounted, scroll){
+  const chip=legend.querySelector('.multi-board-chip.on');
+  if(!chip)return;
+  const outline=mounted.querySelector('[data-multi-outline="'+Number(chip.dataset.focus)+'"]');
+  if(!outline)return;
+  const input=w.NPBoardInput;
+  if(input?.measure(mounted)?.cellSize<28)input.readable(mounted);
+  const target=outline.getBoundingClientRect(), view=scroll.getBoundingClientRect();
+  scroll.scrollLeft+=(target.left+target.right-view.left-view.right)/2;
+  scroll.scrollTop+=(target.top+target.bottom-view.top-view.bottom)/2;
+  const button=chip.getBoundingClientRect(), strip=legend.getBoundingClientRect();
+  if(button.left<strip.left||button.right>strip.right)legend.scrollLeft+=(button.left+button.right-strip.left-strip.right)/2;
+ }
  function mount(){
   scheduled=false;
   const current=document.getElementById('board'),nextViewport=current?.closest('#board-scroll'),nextScreen=current?.closest('.screen');
@@ -150,7 +163,17 @@
    if(e.key==='Home'){prefs.x=1;prefs.y=.85;clampPanel();}else{const rect=panel.getBoundingClientRect();movePanel(rect.left+delta[0],rect.top+delta[1]);}save();
   });
   boardObserver?.disconnect();if(w.ResizeObserver){boardObserver=new ResizeObserver(()=>{sizeDigits();scheduleReadability();});boardObserver.observe(board);boardObserver.observe(viewport);}
-  apply(true);if(prefs.position==='auto'){const mounted=board;requestAnimationFrame(()=>{if(board===mounted&&mounted.isConnected){w.NPBoardInput?.fit(mounted);refresh();}});}
+  apply(true);
+  const manyBoards=screen.querySelector(':scope>.multi-board-legend-many');
+  if(manyBoards||prefs.position==='auto'){
+   const mounted=board;
+   requestAnimationFrame(()=>{
+    if(board!==mounted||!mounted.isConnected)return;
+    if(manyBoards)focusMultiBoard(manyBoards,mounted,viewport);
+    else w.NPBoardInput?.fit(mounted);
+    refresh();
+   });
+  }
  }
  function schedule(){if(!scheduled){scheduled=true;requestAnimationFrame(mount);}}
  new MutationObserver(records=>{if(records.some(r=>r.addedNodes.length||r.removedNodes.length))schedule();}).observe(document.getElementById('app'),{childList:true,subtree:true});

@@ -9,6 +9,19 @@ for(const id of ['core-normal','core-rect','core-variants','core-multi','common-
  const source=html.match(new RegExp('<script id="'+id+'">([\\s\\S]*?)</script>'))?.[1];assert(source,`worker source ${id}`);vm.runInContext(source,ctx,{filename:id});
 }
 for(const name of ['batch.js','logical-hints.js','memo-help.js','pako.min.js','compact.js','print-layout.js'])vm.runInContext(fs.readFileSync(path.join(base,name),'utf8'),ctx,{filename:name});
+function verifyWitness(p, witness) {
+ const {board,cell,digits}=witness,b=p.linked.boards[board],at=b.map.indexOf(cell);
+ assert(at>=0&&p.linked.boards.filter(item=>item.map.includes(cell)).length>1);
+ assert.equal(p.puzzle[cell],0);
+ assert.equal(digits[0],p.solution[cell]);
+ assert.notEqual(digits[0],digits[1]);
+ const local={...b,x:0,y:0,map:Array.from({length:b.n*b.n},(_,i)=>i)};
+ const linked={boards:[local],cells:local.map.map(i=>({x:i%b.n,y:Math.floor(i/b.n)}))};
+ const givens=b.map.map(i=>p.puzzle[i]);givens[at]=digits[1];
+ const result=ctx.NanpureMulti.exact({puzzle:givens,linked},1000);
+ assert(!result.timeout&&result.count>0,'isolated board has a completion changing this shared blank');
+ assert.equal(result.solution[at],digits[1]);
+}
 function verify(p){
  assert.equal(ctx.NP.validate(p),true);
  // Check each physical board directly, without using the engine's unit builder.
@@ -22,6 +35,7 @@ function verify(p){
  const exact=ctx.NanpureMulti.exact(p,3000);assert.equal(exact.timeout,false);assert.equal(exact.count,1);assert.deepEqual(Array.from(exact.solution),Array.from(p.solution));
  const logic=ctx.NanpureMulti.solve(p,p.rating.hardest);assert.equal(logic.solved,true);assert.deepEqual(Array.from(logic.grid),Array.from(p.solution));
  assert(ctx.NanpureMulti.needsShared(p));assert(p.puzzle.some(v=>v===0));
+ assert(p.verification.sharedWitnesses.length>0);verifyWitness(p,p.verification.sharedWitnesses[0]);
  p.grid=p.puzzle.slice();p.notes={};p.uid='mixed-test-'+p.id;p.elapsed=0;p.completed=false;
  const model=ctx.NPLogicalHints.model(p);assert.equal(model.invalid,false);assert(model.units.every(u=>p.linked.boards.some(b=>u.ids.length===b.n)));
  const memo=ctx.NPMemo.candidates(p);
@@ -100,6 +114,31 @@ assert.throws(()=>ctx.NanpureMulti.mixedLayout('custom',[4,9],[{parent:1,corner:
 assert.throws(()=>ctx.NanpureMulti.generateMixed('custom',[4,4],5,'invalid',null,20));
 assert.equal(ctx.NP.maxLevel('multi',4),2);
 const old={kind:'multi',n:9,multiVersion:1,linked:ctx.NanpureMulti.layout('pair')};old.solution=ctx.NanpureMulti.completed(old.linked,ctx.NanpureVariants.rngFor('OLD'));old.puzzle=old.solution.slice();assert(ctx.NP.validate(old));assert(ctx.NanpureMulti.solve(old).solved);
+const maxBoards=ctx.NanpureMulti.maxBoards;
+assert.equal(maxBoards,20);
+const twenty=Array(maxBoards).fill(9),chain=twenty.slice(1).map((_,i)=>({parent:i,corner:'se'}));
+const availableRules=Array.from(ctx.NanpureMulti.rulesForSize(9));
+assert.deepEqual(availableRules,['normal','diagonal','hyper','antiknight','antiking','disjoint']);
+const rotatingRules=twenty.map((_,i)=>availableRules[i%availableRules.length]);
+const twentyRules=ctx.NanpureMulti.generateMixed('custom',twenty,1,'TWENTY-MIXED',null,15000,chain,rotatingRules);
+verify(twentyRules);generated++;
+assert.equal(twentyRules.linked.boards.length,20);
+assert.deepEqual(Array.from(twentyRules.linked.boards,b=>b.rule||'normal'),rotatingRules);
+assert.equal(twentyRules.verification.sharedWitnesses.length,19);
+for(const witness of twentyRules.verification.sharedWitnesses)verifyWitness(twentyRules,witness);
+const cfg20={kind:'multi',n:9,level:1,multiShape:'custom',multiSizes:twenty,multiLinks:chain,multiRules:rotatingRules,count:1};
+assert(ctx.NPBatch.valid(cfg20));assert(ctx.NPGenerationMatches(twentyRules,cfg20));
+assert(!ctx.NPGenerationMatches(twentyRules,{...cfg20,multiRules:twenty.map(()=> 'normal')}));
+assert.notEqual(ctx.NPBatch.configKey(cfg20),ctx.NPBatch.configKey({...cfg20,multiRules:undefined}));
+assert(!ctx.NPBatch.valid({...cfg20,multiSizes:[...twenty,9]}));
+assert(!ctx.NPBatch.valid({...cfg20,multiRules:[...rotatingRules.slice(0,-1),'killer']}));
+assert.throws(()=>ctx.NanpureMulti.mixedLayout('custom',[...twenty,9]));
+const implicit={kind:'multi',n:9,level:1,multiShape:'pair',count:1};
+const implicitPuzzle=ctx.NPGenerate(implicit);verify(implicitPuzzle);generated++;
+assert.equal(implicitPuzzle.implicitMultiPreset,true);
+assert(ctx.NPGenerationMatches(implicitPuzzle,implicit));
+assert.equal(ctx.NPBatch.stockKey(implicitPuzzle),ctx.NPBatch.stockKey(implicit));
+
 // Run the shipped finder renderer and predicate against a mixed save whose
 // largest size differs from its smaller board; the smaller size must be selectable.
 const app=fs.readFileSync(path.join(base,'app.js'),'utf8');
@@ -121,7 +160,7 @@ const editorStart=app.indexOf('let mixedEditing='),editorEnd=app.indexOf('functi
 let redraws=0;const attributes={},status={textContent:''};
 const svg={getScreenCTM:()=>({a:.8,d:.8,e:10,f:20}),querySelector:()=>({setAttribute:(k,v)=>attributes[k]=v})};
 const editor={querySelector:()=>svg,setPointerCapture(){}};
-const editorCtx=vm.createContext({E:{multiShape:'custom',multiSizes:[9,9],multiLinks:[{parent:0,dx:6,dy:6}]},NanpureMulti:ctx.NanpureMulti,NP:ctx.NP,document:{addEventListener:(type,fn)=>handlers[type]=fn,querySelector:()=>status},fn:()=>redraws++,$e:()=>'',u:ctx.NP.esc,Ue:()=>'',h:-1});
+const editorCtx=vm.createContext({E:{multiShape:'custom',multiSizes:[9,9],multiLinks:[{parent:0,dx:6,dy:6}]},NanpureMulti:ctx.NanpureMulti,NP:ctx.NP,r:ctx.NP.KIND,document:{addEventListener:(type,fn)=>handlers[type]=fn,querySelector:()=>status},fn:()=>redraws++,$e:()=>'',u:ctx.NP.esc,Ue:()=>'',h:-1});
 vm.runInContext(app.slice(editorStart,editorEnd),editorCtx);
 assert(editorCtx.mixedSettings().includes('data-multi-offset="1"'));
 const pointer={target:{closest:()=>editor},pointerId:7,button:0,clientX:330,clientY:340,preventDefault(){}};
@@ -140,4 +179,4 @@ assert(flowerForm.includes('value="18" data-multi-offset="3"'),'D retains the re
 const print=fs.readFileSync(path.join(base,'print.html'),'utf8');assert(print.includes('<script src="common.js"></script><script src="mixed-multi.js"></script>'));
 assert(fs.readFileSync(path.join(base,'app.js'),'utf8').includes('"generator-source","core-mixed-multi"].map'));
 assert(fs.readFileSync(path.join(base,'portable.js'),'utf8').includes('"generator-source","core-mixed-multi"].map'));
-console.log('PASS mixed multi:',generated,'generated puzzles; 15 sizes, five levels, three presets, 2–8 free boards, exact uniqueness, no-guess solving, shared dependency, candidates, backup/restore, queue identity, arbitrary/triple overlaps, color maps, membership, drag, finder, five print modes and v1 compatibility.');
+console.log('PASS mixed multi:',generated,'generated puzzles; 15 sizes, five levels, three presets, 2–20 free boards, six board rules, exact uniqueness, no-guess solving, shared dependency, candidates, backup/restore, queue identity, arbitrary/triple overlaps, color maps, membership, drag, finder, five print modes and v1 compatibility.');
