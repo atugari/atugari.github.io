@@ -125,3 +125,30 @@ body.np-collection-workspace>#np-language-bar{display:none!important}
 .np-workspace-screen>.play-feedback:has(#play-status:not([hidden])){display:block!important;position:fixed!important;inset:auto 8px 8px;z-index:900;box-sizing:border-box;max-height:20dvh;overflow:auto;margin:0!important;padding:6px 10px;border:1px solid #b56b00;border-radius:8px;background:#fff0ce;color:#633d00;pointer-events:none}
 .np-workspace-screen .play-feedback #play-status{margin:0!important}
 body.np-collection-workspace>.storage-warning{top:50px;bottom:auto;left:8px;right:8px;max-height:25dvh;overflow:auto;box-sizing:border-box}
+
+/* The 20-board navigator and the selected cell status each need a workspace row. */
+@media screen {
+ .np-workspace-screen:has(>.multi-board-legend-many)[data-number-position=bottom]{
+  grid-template-rows:auto auto minmax(80px,1fr) auto auto auto auto auto auto;
+  grid-template-areas:"head" "layout" "board" "linked" "membership" "hints" "actions" "numbers" "feedback";
+ }
+ .np-workspace-screen:has(>.multi-board-legend-many)[data-number-position=top]{
+  grid-template-rows:auto auto auto minmax(80px,1fr) auto auto auto auto auto;
+  grid-template-areas:"head" "layout" "numbers" "board" "linked" "membership" "hints" "actions" "feedback";
+ }
+ .np-workspace-screen:has(>.multi-board-legend-many)[data-number-position=float]{
+  grid-template-rows:auto auto minmax(80px,1fr) auto auto auto auto auto;
+  grid-template-areas:"head" "layout" "board" "linked" "membership" "hints" "actions" "feedback";
+ }
+ .np-workspace-screen>.multi-board-legend-many{min-width:0}
+}
+@media screen and (max-width:899px) {
+ .np-workspace-screen:has(>.multi-board-legend-many)[data-number-position=right]{
+  grid-template-rows:auto auto minmax(80px,1fr) auto auto auto auto auto;
+  grid-template-areas:"head head" "layout layout" "board numbers" "linked linked" "membership membership" "hints hints" "actions actions" "feedback feedback";
+ }
+ .np-workspace-screen:has(>.multi-board-legend-many)[data-number-position=left]{
+  grid-template-rows:auto auto minmax(80px,1fr) auto auto auto auto auto;
+  grid-template-areas:"head head" "layout layout" "numbers board" "linked linked" "membership membership" "hints hints" "actions actions" "feedback feedback";
+ }
+}

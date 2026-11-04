@@ -1,0 +1,16 @@
+Audio credits / 音素材
+
+BGM: Cozy Puzzle In-Game 1, 2, 3 and Magic Puzzle In-Game 1 — MintoDog
+https://opengameart.org/content/cozy-puzzle-in-game-1
+https://opengameart.org/content/cozy-puzzle-in-game-2
+https://opengameart.org/content/cozy-puzzle-in-game-3
+
+https://opengameart.org/content/magic-puzzle-in-game-1
+
+SFX: Interface Sounds — Kenney
+https://kenney.nl/assets/interface-sounds
+
+All selected audio is published under CC0 1.0 Universal.
+https://creativecommons.org/publicdomain/zero/1.0/
+
+Music was re-encoded to 96 kbps MP3, and sound effects converted from Ogg to MP3, to reduce website downloads and support browsers.

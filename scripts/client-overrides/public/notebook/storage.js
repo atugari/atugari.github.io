@@ -36,7 +36,7 @@
     if (row.video) result.video = copy(Object.fromEntries(Object.entries(row.video).filter(([key]) => !['credited','groups'].includes(key))));
     if (row.multiSizes) result.multiSizes = [...row.multiSizes];
     if (row.linked) result.linked = {shape: row.linked.shape, width: row.linked.width,
-      height: row.linked.height, links: row.linked.links ? copy(row.linked.links) : undefined, boards: row.linked.boards.map(({n,x,y}) => ({n,x,y}))};
+      height: row.linked.height, links: row.linked.links ? copy(row.linked.links) : undefined, boards: row.linked.boards.map(({n,x,y,rule}) => ({n,x,y,...(rule ? {rule} : {})}))};
     // A small thumbnail contains no answer, notes, proof, or in-progress grid.
     if (row.n <= 25 && row.puzzle.length <= 625) {
       const preview = {};

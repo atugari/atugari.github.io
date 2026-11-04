@@ -4,3 +4,5 @@
 @media(max-width:800px){#multi-sizes-form{grid-template-columns:minmax(0,1fr);grid-template-areas:"canvas" "settings" "footer";gap:12px}.multi-editor-settings{max-height:none}#multi-sizes-form .multi-layout-preview{height:clamp(280px,52vh,560px)}}
 
 .multi-editor-settings select{width:100%;min-height:44px;font:inherit;padding:7px;border:1px solid #9daf9e;border-radius:8px;background:var(--paper,#fff);color:inherit}
+
+.multi-board-legend-many{max-height:min(30vh,16rem);overflow-y:auto;overscroll-behavior:contain;padding:4px}
