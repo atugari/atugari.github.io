@@ -1,150 +1,102 @@
-name: Deploy Nanpure API to Cloudflare
+name: Deploy isolated Nanpure vending trial
 
 on:
   push:
-    branches: [main]
-    paths:
-      - 'nanpure-api/**'
-      - 'nanpure/gallery/model.mjs'
-      - 'nanpure-version.json'
-      - '.github/workflows/deploy-nanpure-api.yml'
+    branches: [nanpure-vending-live-test]
   workflow_dispatch:
-  schedule:
-    - cron: "27 6,18 * * *"
 
 permissions:
   contents: read
 
 concurrency:
-  group: cloudflare-puzzle-api
+  group: nanpure-vending-live-test
   cancel-in-progress: false
 
 jobs:
-  deploy:
-    if: github.repository == 'atugari/atugari.github.io' && github.ref == 'refs/heads/main'
+  trial:
+    if: github.repository == 'atugari/atugari.github.io' && github.ref == 'refs/heads/nanpure-vending-live-test'
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: nanpure-api
+    env:
+      CLOUDFLARE_ACCOUNT_ID: '3fb1db1d33caddf96fec77fac7d571e6'
+      WRANGLER_SEND_METRICS: 'false'
+      NANPURE_PILOT_OWNER_HASH: 'f511b84e0ebed5400786a1d983727243d19b76a95ec06355af4846d6a6629cd4'
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
         with:
           persist-credentials: false
-
-      - name: Set up Node
-        uses: actions/setup-node@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: 22
-
-      - name: Check syntax and test API
-        working-directory: nanpure-api
-        run: npm run build
-
-      - name: Install the pinned deployment tools
-        working-directory: nanpure-api
-        run: npm ci --no-audit --no-fund
-
-      - name: Match the API metadata to the published client version
+      - name: Verify pilot code
         run: |
-          node --input-type=module <<'NODE'
-          import {readFileSync,writeFileSync} from 'node:fs';
-          const version=JSON.parse(readFileSync('nanpure-version.json','utf8')).version;
-          if(!/^\d{4}\.\d{2}\.\d{2}\.\d+$/.test(version))throw Error('Invalid site version');
-          const path='nanpure-api/wrangler.jsonc',config=JSON.parse(readFileSync(path,'utf8'));
-          config.vars.SITE_VERSION=version;
-          writeFileSync(path,JSON.stringify(config,null,2)+'\n');
-          NODE
-
-      - name: Check deployment credential
-        id: credential
+          npm ci --no-audit --no-fund
+          npm run build
+      - name: Prepare and deploy the isolated trial
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        shell: bash
         run: |
-          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
-            echo 'ready=false' >> "$GITHUB_OUTPUT"
-            echo 'Tests passed. Deployment is waiting for the CLOUDFLARE_API_TOKEN repository secret.' >> "$GITHUB_STEP_SUMMARY"
-          else
-            echo 'ready=true' >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Apply D1 migrations and deploy puzzle-api
-        if: steps.credential.outputs.ready == 'true'
-        uses: cloudflare/wrangler-action@v4
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          # An account ID identifies the destination; it is not a credential.
-          accountId: '3fb1db1d33caddf96fec77fac7d571e6'
-          workingDirectory: nanpure-api
-          wranglerVersion: '4.92.0'
-          packageManager: npm
-          command: |
-            d1 migrations apply puzzle-db --remote
-            deploy
-
-      - name: Verify Worker and D1 connection
-        if: steps.credential.outputs.ready == 'true'
-        run: |
-          node --input-type=module <<'NODE'
-          import { appendFileSync, readFileSync } from 'node:fs';
-          const url = 'https://puzzle-api.puzzle-hub-4826.workers.dev/api/health';
-          const expectedApi = JSON.parse(readFileSync('nanpure-api/package.json', 'utf8')).version;
-          const expectedSite = JSON.parse(readFileSync('nanpure-version.json', 'utf8')).version;
-          for (let attempt = 0; attempt < 10; attempt++) {
-            try {
-              const response = await fetch(url, { signal: AbortSignal.timeout(10000) });
-              const result = await response.json();
-              if (response.ok && result.ok === true && result.service === 'puzzle-api' && result.database === 'connected' && result.schema === 'installed' && result.version === expectedApi && result.siteVersion === expectedSite) {
-                for (const path of ['/api/owner/overview', '/api/admin']) {
-                  const privateResponse = await fetch(new URL(path, url), { signal: AbortSignal.timeout(10000) });
-                  if (privateResponse.status !== 403) throw new Error('Private endpoint authorization check failed.');
-                }
-                for (const method of ['GET','POST']) {
-                  const retired = await fetch(new URL('/api/wado/web-search', url), {method, headers:{Origin:'https://atugari.github.io','Content-Type':'application/json'}, ...(method==='POST'?{body:'{}'}:{})});
-                  if (retired.status !== 410) throw new Error('Retired search endpoint must return 410.');
-                }
-                const {cloudRetiresAt}=await import('./nanpure-api/src/shared/cloud-retirement.js');
-                const headers={Origin:'https://atugari.github.io','X-Cloud-Key':crypto.randomUUID().replaceAll('-','').repeat(2),'Content-Type':'application/json'};
-                const cloud=new URL('/api/cloud',url);
-                const state=await fetch(cloud,{headers}),info=await state.json();
-                if(Date.now()>=cloudRetiresAt){
-                  if(state.status!==410)throw Error('Cloud service retirement was not enforced');
-                }else{
-                  if(!state.ok||info.save!==null||info.limits?.maxBytes!==5*1024*1024||info.limits?.dailySaves!==3||info.limits?.retirement?.at!==cloudRetiresAt||info.quota?.remaining!==3||info.quota?.reserved!==0)throw Error('Cloud policy verification failed');
-                  const denied=await fetch(cloud,{method:'POST',headers,body:JSON.stringify({action:'begin',expected:null,bytes:5*1024*1024+1,chunks:41,puzzles:0,digest:'0'.repeat(64)})});
-                  if(denied.status!==413)throw Error('Cloud size limit was not enforced');
-                }
-                appendFileSync(process.env.GITHUB_STEP_SUMMARY,
-                  `Worker deployed and D1 connected.\n\nHealth check: ${url}\n\nSchema: ${result.schema}; API: ${result.version}; site: ${result.siteVersion}. Owner endpoints reject unauthenticated requests.\n`);
-                process.exit(0);
-              }
-            } catch {
-              // Retry during deployment propagation; do not print response bodies.
-            }
-            if (attempt < 9) await new Promise(resolve => setTimeout(resolve, 3000));
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN:-}" || { echo 'Cloudflare deployment credential is unavailable.' >&2; exit 1; }
+          db_name=nanpure-vending-pilot-db
+          lookup() {
+            npx --no-install wrangler d1 list --json | node --input-type=module -e '
+              import {readFileSync} from "node:fs";
+              const matches = JSON.parse(readFileSync(0, "utf8")).filter(item => item.name === process.argv[1]);
+              if (matches.length > 1) throw Error("Duplicate trial database name");
+              if (matches.length) process.stdout.write(matches[0].uuid || "");
+            ' "$db_name"
           }
-          throw new Error('Deployment finished, but Worker/D1/schema health verification failed.');
-          NODE
-
-      - name: Prepare 21 days of private daily puzzles
-        if: steps.credential.outputs.ready == 'true'
-        working-directory: nanpure-api
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: node scripts/refill.mjs
-
-      - name: Refresh private owner usage snapshot
-        if: steps.credential.outputs.ready == 'true'
-        working-directory: nanpure-api
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ANALYTICS_TOKEN: ${{ secrets.CLOUDFLARE_ANALYTICS_TOKEN }}
-        run: node scripts/owner-usage.mjs
-
-      - name: Verify daily menus contain three puzzles and no solutions
-        if: steps.credential.outputs.ready == 'true'
+          trial_id="$(lookup)"
+          if [ -z "$trial_id" ]; then
+            npx --no-install wrangler d1 create "$db_name" --location apac --no-update-config
+            trial_id="$(lookup)"
+          fi
+          if ! [[ "$trial_id" =~ ^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$ ]]; then
+            echo 'Trial database ID could not be verified.' >&2
+            exit 1
+          fi
+          production_id="$(node -e 'process.stdout.write(JSON.parse(require("node:fs").readFileSync("wrangler.jsonc","utf8")).d1_databases[0].database_id)')"
+          test "$trial_id" != "$production_id"
+          export NANPURE_PILOT_DB_ID="$trial_id"
+          node pilot/prepare.mjs
+          node --input-type=module - <<'JS'
+          import {readFileSync} from 'node:fs';
+          const c = JSON.parse(readFileSync('pilot/wrangler.generated.json', 'utf8'));
+          if (c.name !== 'nanpure-vending-pilot' || c.d1_databases.length !== 1 ||
+              c.d1_databases[0].database_name !== 'nanpure-vending-pilot-db' ||
+              c.d1_databases[0].database_id !== process.env.NANPURE_PILOT_DB_ID ||
+              c.routes?.length || c.route) throw Error('Unverified pilot deployment destination');
+          JS
+          npx --no-install wrangler d1 migrations apply DB --remote --config pilot/wrangler.generated.json
+          npx --no-install wrangler deploy --config pilot/wrangler.generated.json | tee "$RUNNER_TEMP/vending-trial-deploy.log"
+      - name: Check public entry and unauthenticated phone access
         run: |
-          node --input-type=module <<'NODE'
-          const r=await fetch('https://puzzle-api.puzzle-hub-4826.workers.dev/api/daily');
-          const d=await r.json();
-          if(!r.ok||d.challenges?.length!==3||JSON.stringify(d).includes('solution'))throw Error('Daily menu verification failed');
-          console.log('Three daily puzzles are ready.');
-          NODE
+          node --input-type=module - <<'JS'
+          import {readFileSync,appendFileSync} from 'node:fs';
+          const log = readFileSync(process.env.RUNNER_TEMP + '/vending-trial-deploy.log', 'utf8');
+          const origin = log.match(/https:\/\/nanpure-vending-pilot\.[a-z0-9-]+\.workers\.dev\b/)?.[0];
+          if (!origin) throw Error('Verified trial HTTPS URL was not present in deploy output');
+          let checked = false;
+          for (let i = 0; i < 6; i++) {
+            try {
+              const page = await fetch(origin + '/nanpure/vending/', {signal:AbortSignal.timeout(10000)});
+              const worker = await fetch(origin + '/api/vending/worker', {
+                method:'POST',headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({action:'poll'}),signal:AbortSignal.timeout(10000)
+              });
+              if (page.ok && /試験|管理者/.test(await page.text()) && worker.status === 403) {
+                checked = true;
+                break;
+              }
+            } catch {}
+            await new Promise(resolve => setTimeout(resolve, 3000));
+          }
+          if (!checked) throw Error('Trial entry and unauthenticated phone denial could not be verified');
+          appendFileSync(process.env.GITHUB_STEP_SUMMARY, '## Isolated trial\n\n' + origin + '/nanpure/vending/\n');
+          console.log('Verified isolated trial: ' + origin + '/nanpure/vending/');
+          JS
