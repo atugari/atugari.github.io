@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#f3f6ed">
+  <title>補充担当者の設定 | ナンプレ帳</title>
+  <link rel="stylesheet" href="./vending.css">
+  <script type="module" src="./owner.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">本文へ移動</a>
+  <header class="topbar">
+    <a class="brand" href="/nanpure/"><span class="brand-icon" aria-hidden="true"></span>ナンプレ帳</a>
+    <a class="back-link" href="./">問題の自販機に戻る <span aria-hidden="true">↗</span></a>
+  </header>
+  <main id="main" class="owner">
+    <section class="hero owner-hero" aria-labelledby="title">
+      <div class="hero-copy">
+        <p class="eyebrow">パレード用</p>
+        <h1 id="title">補充担当者の設定</h1>
+        <p>スマホに補充の仕事を渡すため、端末を1台ずつ登録します。</p>
+      </div>
+    </section>
+
+    <section id="connect-panel" class="panel owner-login" aria-labelledby="connect-title">
+      <h2 id="connect-title">管理者キーで接続</h2>
+      <form id="owner-form">
+        <label class="field-label" for="owner-key">ナンプレ帳の管理者キー</label>
+        <input id="owner-key" type="password" required autocomplete="off" autocapitalize="none" spellcheck="false">
+        <button id="owner-connect" class="primary" type="submit">接続する</button>
+      </form>
+      <p class="hint">この画面を閉じると接続が解除されます。</p>
+    </section>
+    <p id="owner-notice" class="notice" role="status" aria-live="polite"></p>
+    <div id="owner-content" hidden>
+      <section class="panel owner-summary" aria-labelledby="stock-title">
+        <div class="panel-heading">
+          <h2 id="stock-title">通常9×9・難易度18の棚</h2>
+          <button id="owner-refresh" class="text-button" type="button">更新する</button>
+        </div>
+        <dl class="owner-stock">
+          <div><dt>すぐ受け取れる</dt><dd id="owner-available">—</dd></div>
+          <div><dt>予約の不足分</dt><dd id="owner-waiting">—</dd></div>
+          <div><dt>補充中</dt><dd id="owner-leased">—</dd></div>
+        </dl>
+      </section>
+
+      <div class="columns">
+        <section class="panel" aria-labelledby="pair-title">
+          <h2 id="pair-title">スマホを登録する</h2>
+          <form id="pair-form">
+            <label class="field-label" for="device-name">端末名</label>
+            <input id="device-name" required maxlength="40" autocomplete="off" placeholder="例：Xperia 01">
+            <button id="make-pair" class="primary" type="submit">登録コードを作る</button>
+          </form>
+          <div id="pairing" class="pairing" hidden>
+            <p>補充アプリを入れたスマホでQRコードを読み取るか、登録コードを入力します。</p>
+            <canvas id="pair-qr" role="img" aria-label="スマホ登録用のQRコード"></canvas>
+            <label class="field-label" for="pair-code">登録コード</label>
+            <input id="pair-code" readonly spellcheck="false">
+            <div class="actions">
+              <button id="copy-pair" class="secondary" type="button">コードをコピー</button>
+              <a id="open-pair" class="inline-link">この端末の補充アプリを開く ↗</a>
+            </div>
+            <p id="pair-expiry" class="hint"></p>
+          </div>
+        </section>
+
+        <section class="panel" aria-labelledby="devices-title">
+          <h2 id="devices-title">登録済みの端末</h2>
+          <p id="devices-empty" class="empty-state">登録済みの端末はありません。</p>
+          <ul id="devices" class="records"></ul>
+        </section>
+      </div>
+      <div class="signout"><button id="owner-disconnect" class="text-button" type="button">管理者の接続を解除</button></div>
+    </div>
+  </main>
+  <footer class="page-footer"><a href="/nanpure/">ナンプレ帳</a><a href="./">問題の自販機</a></footer>
+</body>
+</html>

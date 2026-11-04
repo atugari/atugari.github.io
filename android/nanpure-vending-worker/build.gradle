@@ -1,0 +1,38 @@
+plugins {
+    id 'com.android.application' version '8.6.1'
+}
+
+def workerEndpoint = providers.environmentVariable('NANPURE_REFILL_ENDPOINT')
+    .orElse('https://puzzle-api.puzzle-hub-4826.workers.dev/api/vending/worker').get()
+if (!(workerEndpoint ==~ /https:\/\/[A-Za-z0-9.-]+(:[0-9]+)?\/api\/vending\/worker|http:\/\/(10\.0\.2\.2|127\.0\.0\.1|localhost):[0-9]+\/api\/vending\/worker/)) {
+    throw new GradleException('Invalid refill endpoint.')
+}
+
+android {
+    namespace 'jp.nanpure.refill'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'jp.nanpure.refill'
+        minSdk 26
+        targetSdk 35
+        versionCode 1
+        versionName '0.1.0'
+        buildConfigField 'String', 'ENDPOINT', '"' + workerEndpoint + '"'
+    }
+
+    buildFeatures { buildConfig = true }
+    sourceSets { main.assets.srcDir(layout.buildDirectory.dir('engine-assets')) }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+tasks.register('prepareEngine', Exec) {
+    def engine = file('../../nanpure/releases/2026.11.04.95/notebook/index.html')
+    inputs.files(engine, file('prepare-engine.cjs'))
+    outputs.file(layout.buildDirectory.file('engine-assets/engine.js'))
+    commandLine 'node', file('prepare-engine.cjs'), outputs.files.singleFile
+}
+tasks.named('preBuild').configure { dependsOn('prepareEngine') }

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noindex, follow">
+  <meta name="theme-color" content="#f3f6ed">
+  <title>問題の自販機 | ナンプレ帳</title>
+  <link rel="stylesheet" href="./vending.css">
+  <script type="module" src="./vending.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">本文へ移動</a>
+  <header class="topbar">
+    <a class="brand" href="/nanpure/"><span class="brand-icon" aria-hidden="true"></span>ナンプレ帳</a>
+    <a class="back-link" href="/nanpure/">ホームに戻る <span aria-hidden="true">↗</span></a>
+  </header>
+  <main id="main">
+    <section class="hero" aria-labelledby="title">
+      <div class="hero-copy">
+        <p class="eyebrow">未配布の問題を受け取る</p>
+        <h1 id="title">問題の自販機</h1>
+        <p>完成した問題を受け取り、足りない分は予約できます。<br class="desktop-only"> 受け取った問題は、この端末の問題帳に入ります。</p>
+      </div>
+      <svg class="hero-board" aria-hidden="true" viewBox="0 0 180 180">
+        <rect x="1" y="1" width="178" height="178" rx="8" class="board-face"/>
+        <path class="board-accent" d="M60 60h60v60H60z"/>
+        <path class="board-light" d="M20 1v178m20-178v178m40-178v178m20-178v178m40-178v178m20-178v178M1 20h178M1 40h178M1 80h178M1 100h178M1 140h178M1 160h178"/>
+        <path class="board-heavy" d="M60 1v178m60-178v178M1 60h178M1 120h178"/>
+        <g class="board-digits">
+          <text x="30" y="10">4</text><text x="110" y="10">3</text><text x="150" y="30">6</text>
+          <text x="10" y="50">2</text><text x="90" y="50">8</text><text x="50" y="70">7</text>
+          <text x="110" y="90">1</text><text x="170" y="90">4</text><text x="70" y="110">6</text>
+          <text x="10" y="130">5</text><text x="130" y="150">2</text><text x="50" y="170">9</text>
+        </g>
+      </svg>
+    </section>
+
+    <div class="columns">
+      <section class="panel" aria-labelledby="shelf-title">
+        <div class="panel-heading">
+          <h2 id="shelf-title">問題を受け取る</h2>
+          <span class="badge">試験棚</span>
+        </div>
+        <div class="stock">
+          <div><strong>ふつうのナンプレ</strong><span>9×9 ・ 難易度18「至高」</span></div>
+          <div class="stock-amount"><span>今すぐ受け取れる</span><div><strong id="available">—</strong> 問</div></div>
+        </div>
+        <div id="request-form">
+          <div class="quantity">
+            <label for="quantity">ほしい問題数</label>
+            <input id="quantity" type="number" inputmode="numeric" min="1" max="10" step="1" value="1" required>
+            <span>問 <small>（1〜10問）</small></span>
+          </div>
+          <div class="actions">
+            <button id="take-now" class="primary" type="button" disabled>受け取る</button>
+            <button id="reserve" class="secondary" type="button" disabled>予約する</button>
+          </div>
+        </div>
+        <div id="pending-request" class="retry" hidden>
+          <p>前の申し込み結果を確認できませんでした。同じ申し込みを再確認できます。</p>
+          <button type="button" id="retry-order" class="secondary">前の申し込みを再確認</button>
+        </div>
+        <p id="notice" class="notice" role="status" aria-live="polite">在庫を確認しています…</p>
+        <a id="open-notebook" class="inline-link" href="/nanpure/" hidden>ナンプレ帳を開く <span aria-hidden="true">↗</span></a>
+      </section>
+
+      <section class="panel" aria-labelledby="orders-title">
+        <div class="panel-heading">
+          <h2 id="orders-title">予約・受け取り状況</h2>
+          <button id="refresh" class="text-button" type="button">更新する</button>
+        </div>
+        <p class="hint">完成した分から受け取れます。このブラウザから申し込んだ分が表示されます。</p>
+        <p id="orders-empty" class="empty-state">申し込みはまだありません。</p>
+        <ul id="orders" class="records"></ul>
+      </section>
+    </div>
+  </main>
+  <footer class="page-footer"><a href="/nanpure/">ナンプレ帳</a><a href="./owner.html">補充担当者の設定</a></footer>
+</body>
+</html>
