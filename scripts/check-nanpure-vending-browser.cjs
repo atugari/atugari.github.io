@@ -5,6 +5,7 @@
 // and NANPURE_VENDING_TEST_OWNER_KEY to its loopback URL and test owner key.
 // NANPURE_VENDING_TEST_GENERATED can point to one newly generated Lv18 JSON puzzle.
 // NANPURE_VENDING_TEST_EXPANDED=1 additionally checks a 16×16 v2 shelf.
+// NANPURE_VENDING_TEST_VARIANTS=1 additionally checks both variant shelves.
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -30,6 +31,7 @@ if (localApi) {
 }
 const workerToken = randomBytes(32).toString('hex');
 const expanded = process.env.NANPURE_VENDING_TEST_EXPANDED === '1';
+const variants = process.env.NANPURE_VENDING_TEST_VARIANTS === '1';
 const importRepo = relative => import(pathToFileURL(path.join(root, relative)).href);
 const types = {
   '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8',
@@ -50,7 +52,7 @@ function stockFixtures() {
   return puzzles;
 }
 
-function largeFixture(version) {
+function engineFixture(version, condition) {
   const engine = fs.readFileSync(path.join(root, 'nanpure/releases', version, 'notebook/index.html'), 'utf8');
   const ctx = vm.createContext({console, atob, btoa, crypto: globalThis.crypto, performance, setTimeout, clearTimeout});
   ctx.window = ctx;
@@ -58,7 +60,8 @@ function largeFixture(version) {
   for (const [, id, code] of engine.matchAll(/<script[^>]*id="([^"]+)"[^>]*>([\s\S]*?)<\/script>/g)) {
     if (id.startsWith('core-') || id === 'common-source' || id === 'generator-source') vm.runInContext(code, ctx);
   }
-  return {...ctx.NPGenerate({kind: 'normal', n: 16, level: 1, count: 1}, () => {}),
+  ctx.fixtureCondition = {...condition, count: 1};
+  return {...vm.runInContext('NPGenerate(fixtureCondition, () => {})', ctx, {timeout: 15000}),
     uid: 'vending-profile-test-' + randomBytes(8).toString('hex')};
 }
 
@@ -283,7 +286,7 @@ async function main() {
 
     if (expanded) {
       const profile = 'normal:16:1:0::::';
-      const large = largeFixture(version);
+      const large = engineFixture(version, {kind: 'normal', n: 16, level: 1});
       await customer.locator('#profile-size').selectOption('16');
       await waitForCount(customer, 0);
       await customer.locator('#reserve').click();
@@ -319,6 +322,37 @@ async function main() {
       await owner.getByText(/端末の在庫 42問/).waitFor();
     }
 
+    if (variants) {
+      for (const [kind, n, rules] of [['jigsaw', 25, 'regions'], ['killer', 16, 'cages']]) {
+        const condition = {kind, n, level: 1, complexity: 2};
+        const profile = `${kind}:${n}:1:2::::`;
+        const puzzle = engineFixture(version, condition);
+        await customer.locator('#profile-kind').selectOption(kind);
+        await waitForCount(customer, 0);
+        await customer.locator('#reserve').click();
+        const card = customer.locator('#orders [data-order-id]').filter({hasText: `${n}×${n}`})
+          .filter({hasText: kind === 'jigsaw' ? 'ジグソー' : 'キラー'});
+        await card.waitFor();
+        const id = await card.getAttribute('data-order-id');
+        assert.equal(trace.find(entry => entry.request?.action === 'order' && entry.request.id === id).request.profile, profile);
+        const {job} = await succeed(workerPath, {action: 'poll', version: 2, ready: [profile]}, {token: workerToken});
+        assert.equal(job.profile, profile);
+        const request = {action: 'result', id: job.id, lease: job.lease, p: puzzle};
+        await succeed(workerPath, request, {token: workerToken});
+        await succeed(workerPath, request, {token: workerToken});
+        await customer.reload();
+        await card.locator('[data-action="collect"]').click();
+        await customer.locator('#open-notebook').waitFor();
+        const saved = (await notebookRows(customer)).find(row => row.uid === puzzle.uid);
+        assert.deepEqual([saved.kind, saved.n, saved.level, saved.complexity], [kind, n, 1, 2]);
+        assert.equal(saved.id, puzzle.id);
+        assert.deepEqual(saved.puzzle, Array.from(puzzle.puzzle));
+        assert.deepEqual(saved.solution, Array.from(puzzle.solution));
+        assert.equal(saved[rules].length, puzzle[rules].length);
+        assert.equal(saved.verification.unique, true);
+      }
+    }
+
     await owner.reload();
     await owner.locator('#owner-key').fill(testOwner);
     await owner.locator('#owner-connect').click();
@@ -334,7 +368,8 @@ async function main() {
     assert.deepEqual(errors, []);
     await context.close();
     console.log('PASS vending browser: stock, reservation, pairing/revocation, lost-receipt recovery, partial/instant pickup, notebook storage and play' +
-      (expanded ? ', v2 16×16 reservation, indexed receipt and device stock' : ''));
+      (expanded ? ', v2 16×16 reservation, indexed receipt and device stock' : '') +
+      (variants ? ', 25×25 jigsaw and 16×16 killer receipt and retry' : ''));
   } finally {
     await browser.close();
     DB?.raw.close();

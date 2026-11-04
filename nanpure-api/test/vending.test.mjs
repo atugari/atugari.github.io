@@ -7,6 +7,7 @@ import worker from '../src/index.js';
 import { database } from './db.mjs';
 import { hash } from '../src/http.js';
 import { cleanVending } from '../src/vending.js';
+import { fingerprintPuzzle } from '../src/shared/stock-puzzle.js';
 
 const validPuzzles = JSON.parse(gunzipSync(Buffer.from(readFileSync(
   new URL('../../nanpure/collection/data/C149/0000.gz.b64', import.meta.url), 'utf8'
@@ -176,7 +177,8 @@ function notebookGenerator() {
   for (const [, name, source] of html.matchAll(/<script id="([^"]+)">([\s\S]*?)<\/script>/g))
     if (name.startsWith('core-') || name === 'common-source' || name === 'generator-source')
       runInContext(source, context);
-  return (n, level) => context.NPGenerate({ kind: 'normal', n, level, count: 1 }, () => {});
+  return ({ kind = 'normal', n, level, complexity }) =>
+    context.NPGenerate({ kind, n, level, count: 1, ...(complexity == null ? {} : { complexity }) }, () => {});
 }
 
 test('profile leases verify exact release difficulty, keep legacy isolated and replay safely', async t => {
@@ -184,7 +186,7 @@ test('profile leases verify exact release difficulty, keep legacy isolated and r
   const generate = notebookGenerator();
   await pair(one, 'Legacy'); await pair(two, 'Profile-aware');
   assert.equal((await call(trial)).data.profiles, undefined);
-  const list = (await call(trial + '?profiles=1')).data.profiles;
+  const list = (await call(trial + '?profiles=1')).data.profiles.filter(p => p.kind === 'normal');
   const pilot = 'normal:9:18:0::::';
   assert.deepEqual(list.map(p => [p.n, p.level]), [[9, 1], [9, 2], [9, 3], [9, 18], [16, 1], [25, 1]]);
   const reserve = (id, profile) => call(trial, { action: 'order', id, count: 1, reserve: true, profile }, { client: one });
@@ -202,7 +204,7 @@ test('profile leases verify exact release difficulty, keep legacy isolated and r
     assert.equal(version, 2);
     assert.equal(second.data.job.id, job.id);
     assert.equal(job.profile, profile.profile);
-    const p = generate(job.n, job.level);
+    const p = generate(job);
     assert.equal((await result(two, job, { ...p, rating: { ...p.rating, level: 18 } })).status, 400);
     assert.equal((await result(two, job, { ...p, puzzle: Array(p.puzzle.length).fill(0) })).status, 400);
     assert.equal((await result(two, job, { ...p, puzzle: p.solution })).status, 400);
@@ -215,7 +217,7 @@ test('profile leases verify exact release difficulty, keep legacy isolated and r
     assert.equal(receipt.puzzles[0].verification.unique, true);
   }
   const { data: overview } = await call(admin + '?profiles=1', null, { auth: owner });
-  assert.equal(overview.profiles.length, list.length);
+  assert.equal(overview.profiles.filter(p => p.kind === 'normal').length, list.length);
   assert.equal(overview.devices.find(d => d.name === 'Profile-aware').stockCount, 11);
   assert.equal(overview.devices.find(d => d.name === 'Profile-aware').stockBytes, 12435);
   const job = (await mobile(two, { action: 'poll', version: 2, stock: { count: 21, bytes: 22222 } })).data.job;
@@ -229,11 +231,12 @@ test('empty profiles get turns and missing profiles do not mix reservations on r
   await pair(one, 'Phone');
   DB.raw.exec('UPDATE vending_profiles SET target=1; UPDATE vending_settings SET low_water=1,target=1');
   const visited = new Set();
-  for (let i = 0; i < 6; i++) {
+  const profiles = (await call(trial + '?profiles=1')).data.profiles;
+  for (const _ of profiles) {
     const { data: { job } } = await mobile(one, { action: 'poll', version: 2 });
     assert(!visited.has(job.profile));
     visited.add(job.profile);
-    const p = job.level === 18 ? validPuzzles[0] : generate(job.n, job.level);
+    const p = job.level === 18 ? validPuzzles[0] : generate(job);
     assert.equal((await result(one, job, p)).status, 200);
   }
   assert.equal((await mobile(one, { action: 'poll', version: 2 })).data.job, null);
@@ -246,4 +249,66 @@ test('empty profiles get turns and missing profiles do not mix reservations on r
   assert.equal((await call(trial, { action: 'cancel', id: a }, { client: one })).data.order.ready, 0);
   assert.equal((await collect(one, c)).data.puzzles[0].n, 16);
   assert.equal((await collect(one, b)).data.puzzles[0].n, 25);
+});
+
+test('variant shelves deliver verified constraints and reject equivalent stock', async t => {
+  const { DB, call, pair, mobile, poll, result, collect } = await setup(t);
+  const generate = notebookGenerator();
+  await pair(one, 'Variant-capable phone');
+  await pair(two, 'Legacy phone');
+  assert.equal((await poll(two)).level, 18);
+
+  const variants = (await call(trial + '?profiles=1')).data.profiles.filter(p => p.kind !== 'normal');
+  assert.deepEqual(variants.map(({ profile, kind, n, level, complexity }) => [profile, kind, n, level, complexity]), [
+    ['jigsaw:25:1:2::::', 'jigsaw', 25, 1, 2], ['killer:16:1:2::::', 'killer', 16, 1, 2]
+  ]);
+  for (const [i, profile] of variants.entries()) {
+    const id = key(300 + i * 2);
+    const order = (id, reserve) => call(trial, { action: 'order', id, count: 1, reserve, profile: profile.profile }, { client: one });
+    const lease = async () => {
+      const { data: { job } } = await mobile(one, { action: 'poll', version: 2 });
+      assert.equal(job.profile, profile.profile);
+      assert.equal(job.complexity, 2);
+      return job;
+    };
+
+    assert.equal((await order(id, true)).data.order.waiting, 1);
+    const job = await lease(), p = generate(job);
+    const jigsaw = job.kind === 'jigsaw';
+    const malformed = jigsaw ? { regions: Array(p.puzzle.length).fill(0) }
+      : { cages: [{ ...p.cages[0], sum: p.cages[0].sum + 1 }, ...p.cages.slice(1)] };
+    for (const change of [malformed, { complexity: 3 }, { rating: { ...p.rating, level: 2 } }, { puzzle: p.solution }])
+      assert.equal((await result(one, job, { ...p, ...change })).status, 400);
+    assert.equal((await result(one, job, { ...p, padding: 'x'.repeat(200_000) })).status, 413);
+    assert.deepEqual(await result(one, job, p), { status: 200, data: { ok: true } });
+
+    // Equivalent labels and cage/cell order must produce the same durable fingerprint.
+    const equivalent = jigsaw ? { ...p, regions: p.regions.map(region => (region + 1) % p.n) }
+      : { ...p, cages: p.cages.toReversed().map(cage => ({ ...cage, cells: cage.cells.toReversed() })) };
+    assert.deepEqual(await result(one, job, equivalent), { status: 200, data: { ok: true } });
+    const { order: receipt, puzzles: [received] } = (await collect(one, id)).data;
+    assert.equal(receipt.profile, profile.profile);
+    assert.equal(received.uid, p.uid);
+    assert.equal(received.id, p.id);
+    assert.equal(received.complexity, 2);
+    assert.equal(received.rating.level, 1);
+    assert.equal(received.verification.unique, true);
+    assert.deepEqual(received.grid, [...p.puzzle]);
+    assert.equal(received.regions.length, p.n * p.n);
+    if (!jigsaw) assert.equal(received.cages.length, p.cages.length);
+    const digest = DB.raw.prepare('SELECT digest FROM vending_puzzles WHERE uid=?').get(p.uid).digest;
+    const original = { ...p, regions: jigsaw ? p.regions : received.regions };
+    assert.equal(digest, await fingerprintPuzzle(original));
+    assert.equal(digest, await fingerprintPuzzle(received));
+
+    const next = key(301 + i * 2);
+    assert.equal((await order(next, false)).status, 409);
+    assert.equal((await order(next, true)).status, 200);
+    const duplicate = await result(one, await lease(), { ...equivalent, uid: 'variant_equivalent_' + i });
+    assert.equal(duplicate.status, 409);
+    assert.equal(duplicate.data.code, 'duplicate');
+    await call(trial, { action: 'cancel', id: next }, { client: one });
+    const open = await lease();
+    assert.equal((await mobile(one, { action: 'release', id: open.id, lease: open.lease })).status, 200);
+  }
 });
