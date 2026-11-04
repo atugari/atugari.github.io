@@ -23,11 +23,11 @@ function install(w){
   const style=d.createElement('style');style.textContent='[data-np-moved]{display:none!important}.np-pare-entry{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;min-height:48px;border:1px solid #bdcbbb;border-radius:14px;background:var(--paper,#fffefa);color:var(--ink,#285849);text-decoration:none;font:inherit}.np-pare-entry small{display:block;font-size:12px;margin-top:3px}.np-pare-entry:focus-visible{outline:3px solid #cf941d}';d.head.append(style);
   function update(){
    scopeNewGeneration();
-   d.querySelectorAll('a[data-pare-entry]').forEach(a=>{if(!a.closest('.designed-home,.homechoices'))a.remove()});
+   d.querySelectorAll('a[data-pare-entry]').forEach(a=>{if(!a.closest('.designed-home'))a.remove()});
    d.querySelectorAll('.shiru-entry,[data-action="open-shirupure"],[data-action="open-crossword"],[data-action="open-tenbin"],[data-action="open-prototype"],[data-action="wado-generator"],[data-action="magic-generator"],[data-kind="cross"],[data-future],.homechoices>button[disabled]').forEach(b=>{if(!b.hasAttribute('data-np-moved'))b.setAttribute('data-np-moved','')});
    d.querySelectorAll('[data-web-field="kind"][value="cross"]').forEach(input=>{input.disabled=true;if(input.closest('label'))input.closest('label').setAttribute('data-np-moved','')});
    d.querySelectorAll('.homechoices>a[href*="wado-play.html"]').forEach(b=>{if(!b.hasAttribute('data-np-moved'))b.setAttribute('data-np-moved','')});
-   for(const host of d.querySelectorAll('.designed-home,.homechoices')){
+   for(const host of d.querySelectorAll('.designed-home')){
     let a=host.querySelector('[data-pare-entry]');
     if(!a){a=d.createElement('a');a.href='/puzzles/';a.className='np-pare-entry';a.dataset.pareEntry='';a.setAttribute('data-i18n-skip','');
      a.innerHTML='<span><strong></strong><small></small></span><span aria-hidden="true">›</span>';
