@@ -4,6 +4,7 @@ import { fingerprintPuzzle } from './shared/stock-puzzle.js';
 import { verifyVendingProof } from './shared/vending-proof.js';
 import { hasVendingUniqueSolution } from './shared/vending-unique.js';
 import { normalProfileShape, validateNormalProfile } from './shared/vending-normal.js';
+import { variantProfileShape, validateVariantProfile } from './shared/vending-variants.js';
 
 const rule = { kind: 'normal', n: 9, level: 18 };
 const pilotProfile = 'normal:9:18:0::::';
@@ -331,28 +332,31 @@ const resultConflict = (code, error) => json({ code, error }, 409);
 const expiredLease = () => resultConflict('lease_expired', '補充の割り当てが終了しました。');
 
 async function submit(db, device, data, now) {
-  const selected = await db.prepare(`SELECT j.lease_until,j.digest,p.profile,p.kind,p.n,p.level
+  const selected = await db.prepare(`SELECT j.lease_until,j.digest,p.profile,p.kind,p.n,p.level,p.complexity
     FROM vending_jobs j JOIN vending_profiles p ON p.profile=j.profile
     WHERE j.id=? AND j.device_id=? AND j.lease=? AND ${deviceEnabled}`).bind(data.id, device, data.lease, device).first();
   if (!selected || (!selected.digest && selected.lease_until <= now)) return expiredLease();
   const legacy = selected.profile === pilotProfile;
-  const raw = legacy ? candidate(data.p, rule.level) : data.p;
-  const boxes = legacy ? regions : normalProfileShape(raw, selected);
+  const variant = selected.kind !== 'normal';
+  const raw = legacy ? candidate(data.p, rule.level) : variant ? variantProfileShape(data.p, selected) : data.p;
+  const boxes = legacy ? regions : variant ? raw?.regions : normalProfileShape(raw, selected);
   if (!boxes) fail(400, '割り当てられた問題の条件や盤面と一致しません。');
+  const fingerprintInput = { kind: selected.kind, n: selected.n, puzzle: raw.puzzle, solution: raw.solution,
+    regions: boxes, ...(variant && raw.cages ? { cages: raw.cages } : {}) };
 
   // A replay after a lost acknowledgement can be checked by identity alone.
   if (selected.digest) {
-    const digest = await fingerprintPuzzle({ kind: selected.kind, n: selected.n,
-      puzzle: raw.puzzle, solution: raw.solution, regions: boxes });
+    const digest = await fingerprintPuzzle(fingerprintInput);
     if (selected.digest === digest && await db.prepare('SELECT uid FROM vending_puzzles WHERE digest=? AND uid=?')
       .bind(digest, raw.uid ?? '').first()) return json({ ok: true });
     return resultConflict('already_finished', 'この補充の結果は確定しています。');
   }
 
-  const p = legacy ? validateCandidate(raw, now) : validateNormalProfile(raw, selected, boxes, now);
+  const p = legacy ? validateCandidate(raw, now) : variant
+    ? validateVariantProfile(raw, selected, now) : validateNormalProfile(raw, selected, boxes, now);
   if (!p) fail(400, '唯一解または指定難易度を確認できません。');
   const [digest, payload] = await Promise.all([
-    fingerprintPuzzle({ kind: p.kind, n: p.n, puzzle: p.puzzle, solution: p.solution, regions: boxes }),
+    fingerprintPuzzle(fingerprintInput),
     encodePuzzle(p)
   ]);
   const saved = await db.prepare(`INSERT OR IGNORE INTO vending_puzzles (digest,uid,job_id,payload,created,profile)
