@@ -4,3 +4,4 @@ node_modules/
 .env*
 dist/
 src/shared/vending-proof-engine.generated.js
+src/shared/vending-catalogue-engine.generated.js

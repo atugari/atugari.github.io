@@ -41,7 +41,7 @@ function pending() {
 
 function count() {
   const value = quantity.valueAsNumber;
-  return Number.isInteger(value) && value >= 1 && value <= 10 ? value : 0;
+  return Number.isInteger(value) && value >= 1 && value <= Number(quantity.max) ? value : 0;
 }
 
 function updateButtons() {
@@ -72,6 +72,12 @@ function updateButtons() {
 
 function renderShelf() {
   const shelf = picker.selected ?? legacyProfile;
+  const limit = Number.isInteger(shelf.maxCount) && shelf.maxCount >= 1 && shelf.maxCount <= 10 ? shelf.maxCount : 10;
+  if (Number(quantity.max) !== limit) {
+    quantity.max = String(limit);
+    if (quantity.valueAsNumber > limit) quantity.valueAsNumber = limit;
+  }
+  byId('quantity-range').textContent = limit === 1 ? '（1問まで）' : '（1〜' + limit + '問）';
   byId('shelf-rule').textContent = profileTitle(shelf);
   byId('shelf-detail').textContent = profileDetail(shelf);
   available.textContent = shelf.available?.toLocaleString('ja-JP') ?? '—';

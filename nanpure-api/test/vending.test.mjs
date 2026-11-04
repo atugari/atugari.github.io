@@ -8,6 +8,7 @@ import { database } from './db.mjs';
 import { hash } from '../src/http.js';
 import { cleanVending } from '../src/vending.js';
 import { fingerprintPuzzle } from '../src/shared/stock-puzzle.js';
+import { listProfiles } from '../../android/nanpure-vending-worker/prepare-engine.cjs';
 
 const validPuzzles = JSON.parse(gunzipSync(Buffer.from(readFileSync(
   new URL('../../nanpure/collection/data/C149/0000.gz.b64', import.meta.url), 'utf8'
@@ -311,4 +312,117 @@ test('variant shelves deliver verified constraints and reject equivalent stock',
     const open = await lease();
     assert.equal((await mobile(one, { action: 'release', id: open.id, lease: open.lease })).status, 200);
   }
+});
+
+test('the gated catalogue exactly matches all 427 APK conditions and serves registered-device stock', async t => {
+  const { DB, env, call, mobile, pair, poll, result, collect } = await setup(t);
+  const list = async () => (await call(trial + '?profiles=1')).data.profiles;
+  assert.equal((await list()).length, 8);
+  assert((await list()).every(p => p.verification === 'server'));
+  assert.equal(DB.raw.prepare('SELECT COUNT(*) AS n FROM vending_profiles').get().n, 8,
+    'the old Worker table does not advertise the new conditions');
+
+  const profile = 'diagonal:9:1:0::::';
+  const reserve = (id, which, count = 1) => call(trial,
+    { action: 'order', id, count, reserve: true, profile: which }, { client: one });
+  assert.equal((await reserve(key(400), profile)).status, 400);
+  env.VENDING_CATALOGUE_ENABLED = '1';
+  const expanded = await list();
+  const appProfiles = listProfiles();
+  const fromApi = new Map(expanded.map(p => [p.profile, p]));
+  assert.equal(fromApi.size, 427);
+  assert.equal(expanded.filter(p => p.verification === 'server').length, 9);
+  for (const p of appProfiles) {
+    const { kind, n, level, complexity, multiShape, linkedShape } = fromApi.get(p.key);
+    assert.deepEqual([kind, n, level, complexity, multiShape, linkedShape],
+      [p.kind, p.n, p.level, p.complexity, p.multiShape, p.linkedShape], p.key);
+  }
+  assert.equal(fromApi.get('normal:100:1:0::::').maxCount, 1);
+  assert.equal(fromApi.get('normal:49:1:0::::').maxCount, 3);
+  assert.equal((await reserve(key(401), 'normal:100:1:0::::', 2)).status, 400);
+  assert.equal((await reserve(key(402), 'normal:49:1:0::::', 4)).status, 400);
+  const id = key(403);
+  assert.equal((await reserve(id, profile)).data.order.waiting, 1);
+  await pair(one, 'App 0.2.0');
+  await pair(two, 'Legacy');
+  assert.equal((await poll(two)).level, 18);
+  const { data: { job } } = await mobile(one, { action: 'poll', version: 2, ready: appProfiles.map(p => p.key) });
+  assert.equal(job.profile, profile);
+  const p = notebookGenerator()(job);
+  assert.equal((await result(one, job, { ...p, kind: 'normal' })).status, 400);
+  assert.deepEqual(await result(one, job, p), { status: 200, data: { ok: true } });
+  assert.deepEqual(await result(one, job, p), { status: 200, data: { ok: true } });
+  assert.equal(DB.raw.prepare('SELECT payload FROM vending_puzzles WHERE uid=?').get(p.uid).payload[0], '{'.charCodeAt(0));
+  // Disabling the rollout freezes new orders while preserving existing receipts.
+  env.VENDING_CATALOGUE_ENABLED = '0';
+  assert.equal((await list()).length, 8);
+  assert.equal((await reserve(id, profile)).status, 200);
+  const { puzzles: [received] } = (await collect(one, id)).data;
+  assert.equal(received.uid, p.uid);
+  assert.equal(received.verification.method, 'registered-refill-generator');
+  assert.equal(received.verification.uniquenessCheckedBy, 'registered-device');
+  assert.equal(received.verification.difficultyCheckedBy, 'registered-device');
+  assert.equal((await reserve(key(404), profile)).status, 400);
+});
+
+test('catalogue reserves first, backs off long unfinished releases, and keeps counts accurate', async t => {
+  const { DB, env, call, mobile, pair, result } = await setup(t);
+  env.VENDING_CATALOGUE_ENABLED = '1';
+  await pair(one, 'App 0.2.0');
+  const profile = 'normal:100:1:0::::';
+  const orderId = key(410);
+  const order = (id, which) => call(trial, { action: 'order', id, count: 1, reserve: true, profile: which }, { client: one });
+  const pollModern = async () => (await mobile(one, { action: 'poll', version: 2 })).data.job;
+  const release = job => mobile(one, { action: 'release', id: job.id, lease: job.lease });
+  const cancel = id => call(trial, { action: 'cancel', id }, { client: one });
+  const checkCounters = () => assert.equal(DB.raw.prepare(`SELECT COUNT(*) AS n FROM vending_catalogue c
+    WHERE available<>(SELECT COUNT(*) FROM vending_puzzles p
+      WHERE p.profile=c.profile AND p.order_id IS NULL AND p.payload IS NOT NULL)
+    OR waiting<>(SELECT COALESCE(SUM(o.count-o.assigned),0) FROM vending_orders o
+      WHERE o.profile=c.profile AND o.cancelled IS NULL AND o.assigned<o.count)`).get().n, 0);
+  await order(orderId, profile);
+  checkCounters();
+  let job = await pollModern();
+  assert.equal(job.profile, profile);
+  await release(job);
+  const quick = DB.raw.prepare('SELECT retry_after,failures FROM vending_catalogue WHERE profile=?').get(profile);
+  assert(quick.retry_after > Date.now());
+  assert.equal(quick.failures, 0);
+  DB.raw.prepare('UPDATE vending_catalogue SET retry_after=0 WHERE profile=?').run(profile);
+  job = await pollModern();
+  assert.equal(job.profile, profile);
+  DB.raw.prepare('UPDATE vending_jobs SET created=? WHERE id=?').run(Date.now() - 61_000, job.id);
+  await release(job);
+  assert(DB.raw.prepare('SELECT retry_after FROM vending_catalogue WHERE profile=?').get(profile).retry_after > Date.now());
+  const other = await pollModern();
+  assert.notEqual(other.profile, profile);
+  await release(other);
+  DB.raw.prepare('UPDATE vending_catalogue SET retry_after=0 WHERE profile=?').run(profile);
+  job = await pollModern();
+  assert.equal(job.profile, profile);
+  const p = notebookGenerator()(job);
+  assert.deepEqual(await result(one, job, p), { status: 200, data: { ok: true } });
+  assert.equal(DB.raw.prepare('SELECT failures FROM vending_catalogue WHERE profile=?').get(profile).failures, 0);
+  const stored = DB.raw.prepare('SELECT payload FROM vending_puzzles WHERE uid=?');
+  assert.equal(stored.get(p.uid).payload[0], '{'.charCodeAt(0));
+  checkCounters();
+  await cancel(orderId);
+  checkCounters();
+  assert.equal(DB.raw.prepare('SELECT available FROM vending_catalogue WHERE profile=?').get(profile).available, 1);
+  const next = key(411);
+  assert.equal((await order(next, profile)).data.order.ready, 1);
+  checkCounters();
+  const { data: receipt } = await call(trial, { action: 'collect', id: next }, { client: one });
+  assert.equal(receipt.puzzles[0].uid, p.uid);
+  assert.equal(receipt.puzzles[0].verification.unique, true);
+  assert.equal(receipt.puzzles[0].n, 100);
+  checkCounters();
+  const old = validPuzzles[0], oldOrder = key(412), oldProfile = 'normal:9:18:0::::';
+  await order(oldOrder, oldProfile);
+  const legacyJob = (await mobile(one, { action: 'poll' })).data.job;
+  assert.deepEqual(await result(one, legacyJob, old), { status: 200, data: { ok: true } });
+  assert.deepEqual([...stored.get(old.uid).payload.subarray(0, 2)], [0x1f, 0x8b]);
+  const { data: legacyReceipt } = await call(trial, { action: 'collect', id: oldOrder }, { client: one });
+  assert.equal(legacyReceipt.puzzles[0].uid, old.uid);
+  checkCounters();
 });

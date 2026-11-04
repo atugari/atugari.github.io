@@ -33,12 +33,13 @@ async function loadNotebook() {
 
 function asNotebookPuzzle(puzzle, profile) {
   if (!puzzle || puzzle.kind !== profile.kind || puzzle.n !== profile.n || puzzle.level !== profile.level ||
+      puzzle.rating?.level !== profile.level ||
       (puzzle.complexity || 0) !== (profile.complexity || 0) ||
-      (puzzle.linked?.shape || puzzle.multiShape || '') !== (profile.multiShape || profile.linkedShape || '')) {
+      (puzzle.linked?.shape || '') !== (profile.multiShape || profile.linkedShape || '')) {
     throw new Error('申し込んだ問題のルールや難易度を確認できませんでした。');
   }
-  if (profile.profile === legacyProfile.profile && (puzzle.rating?.level !== 18 ||
-      !puzzle.rating.unique || !puzzle.rating.noGuess || !Array.isArray(puzzle.logicProof) || !puzzle.logicProof.length)) {
+  if (profile.profile === legacyProfile.profile && (!puzzle.rating.unique || !puzzle.rating.noGuess ||
+      !Array.isArray(puzzle.logicProof) || !puzzle.logicProof.length)) {
     throw new Error('至高の問題の解法の記録を確認できませんでした。');
   }
   const {id, uid, puzzle: givens} = puzzle;
@@ -48,7 +49,7 @@ function asNotebookPuzzle(puzzle, profile) {
   }
   const entry = Object.fromEntries(Object.entries(puzzle).filter(([key]) => !key.startsWith('_np')));
   Object.assign(entry, {created: Date.now(), elapsed: 0, completed: false, grid: givens?.slice(), notes: {}});
-  window.NP.validate(entry);
+  if (!window.NP.validate(entry)) throw new Error('問題と答えのルールを確認できませんでした。');
   return entry;
 }
 
