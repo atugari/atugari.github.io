@@ -1,0 +1,2481 @@
+{
+  "schema": 1,
+  "release": "2026.11.05.100",
+  "baselineRelease": "2026.11.05.99",
+  "environment": {
+    "platform": "Linux x86_64",
+    "node": "v24.22.1",
+    "realPhone": false
+  },
+  "multi": {
+    "summaries": [
+      {
+        "scenario": "20x9",
+        "baseline": {
+          "n": 3,
+          "medianMs": 114.67658800000001,
+          "rangeMs": [
+            91.35515699999996,
+            183.718276
+          ],
+          "medianPeakRSSMiB": 60.7578125,
+          "medianHeapDeltaMiB": 5.4765167236328125
+        },
+        "candidate": {
+          "n": 3,
+          "medianMs": 111.72064100000003,
+          "rangeMs": [
+            86.74662799999999,
+            120.66212100000001
+          ],
+          "medianPeakRSSMiB": 60.06640625,
+          "medianHeapDeltaMiB": 4.695762634277344
+        },
+        "reductionPercent": 2.5776377302052067
+      },
+      {
+        "scenario": "300x9",
+        "baseline": {
+          "n": 3,
+          "medianMs": 993.631492,
+          "rangeMs": [
+            794.527554,
+            1131.7764769999999
+          ],
+          "medianPeakRSSMiB": 151.2890625,
+          "medianHeapDeltaMiB": 34.17109680175781
+        },
+        "candidate": {
+          "n": 3,
+          "medianMs": 654.285016,
+          "rangeMs": [
+            600.5818300000001,
+            704.303858
+          ],
+          "medianPeakRSSMiB": 146.99609375,
+          "medianHeapDeltaMiB": 34.711265563964844
+        },
+        "reductionPercent": 34.152145813832554
+      },
+      {
+        "scenario": "300x25",
+        "baseline": {
+          "n": 3,
+          "medianMs": 8491.368162,
+          "rangeMs": [
+            8219.523942,
+            9164.483974
+          ],
+          "medianPeakRSSMiB": 521.140625,
+          "medianHeapDeltaMiB": 227.37676239013672
+        },
+        "candidate": {
+          "n": 3,
+          "medianMs": 6905.544723,
+          "rangeMs": [
+            5545.062909,
+            7338.896264999999
+          ],
+          "medianPeakRSSMiB": 462.28125,
+          "medianHeapDeltaMiB": 196.50286102294922
+        },
+        "reductionPercent": 18.675711719776455
+      },
+      {
+        "scenario": "high",
+        "baseline": {
+          "n": 6,
+          "medianMs": 2514.5783144999996,
+          "rangeMs": [
+            1803.089547,
+            2894.967592
+          ],
+          "medianPeakRSSMiB": 175.623046875,
+          "medianHeapDeltaMiB": 42.627891540527344
+        },
+        "candidate": {
+          "n": 6,
+          "medianMs": 2474.7166455,
+          "rangeMs": [
+            1780.4201209999999,
+            3383.456072
+          ],
+          "medianPeakRSSMiB": 169.08203125,
+          "medianHeapDeltaMiB": 37.1629638671875
+        },
+        "reductionPercent": 1.5852228093331644
+      },
+      {
+        "scenario": "mixed",
+        "baseline": {
+          "n": 6,
+          "medianMs": 644.44387,
+          "rangeMs": [
+            435.52148600000004,
+            1082.7855
+          ],
+          "medianPeakRSSMiB": 108.056640625,
+          "medianHeapDeltaMiB": 31.355777740478516
+        },
+        "candidate": {
+          "n": 6,
+          "medianMs": 545.7294019999999,
+          "rangeMs": [
+            429.45185200000003,
+            1186.46067
+          ],
+          "medianPeakRSSMiB": 106.33203125,
+          "medianHeapDeltaMiB": 27.00550079345703
+        },
+        "reductionPercent": 15.317775929810617
+      },
+      {
+        "scenario": "rules",
+        "baseline": {
+          "n": 3,
+          "medianMs": 955.9035359999999,
+          "rangeMs": [
+            808.2506549999999,
+            1515.2855009999998
+          ],
+          "medianPeakRSSMiB": 153.96484375,
+          "medianHeapDeltaMiB": 37.43473815917969
+        },
+        "candidate": {
+          "n": 3,
+          "medianMs": 883.204347,
+          "rangeMs": [
+            692.6680620000001,
+            978.466078
+          ],
+          "medianPeakRSSMiB": 152.03125,
+          "medianHeapDeltaMiB": 33.41265869140625
+        },
+        "reductionPercent": 7.6052850797279525
+      },
+      {
+        "scenario": "dense",
+        "baseline": {
+          "n": 3,
+          "medianMs": 634.986171,
+          "rangeMs": [
+            496.56860100000006,
+            804.3711139999999
+          ],
+          "medianPeakRSSMiB": 101.765625,
+          "medianHeapDeltaMiB": 25.809616088867188
+        },
+        "candidate": {
+          "n": 3,
+          "medianMs": 558.208185,
+          "rangeMs": [
+            537.050343,
+            743.526098
+          ],
+          "medianPeakRSSMiB": 99.05859375,
+          "medianHeapDeltaMiB": 19.7449951171875
+        },
+        "reductionPercent": 12.091284740750686
+      }
+    ],
+    "runs": [
+      {
+        "scenario": "20x9",
+        "seed": "S1",
+        "ok": true,
+        "ms": 183.718276,
+        "heapDeltaMB": 5.4765167236328125,
+        "heapUsedMB": 14.344802856445312,
+        "peakRSSKB": 62216,
+        "cells": 1601,
+        "clues": 1041,
+        "hardest": 1,
+        "witnesses": 19,
+        "fingerprint": "0903b868b7541e313473e260fe56a2c03d919191e4903f4a99c3fd393d399b40",
+        "version": "baseline"
+      },
+      {
+        "scenario": "20x9",
+        "seed": "S1",
+        "ok": true,
+        "ms": 120.66212100000001,
+        "heapDeltaMB": 3.3559951782226562,
+        "heapUsedMB": 12.226318359375,
+        "peakRSSKB": 61508,
+        "cells": 1601,
+        "clues": 1041,
+        "hardest": 1,
+        "witnesses": 19,
+        "fingerprint": "0903b868b7541e313473e260fe56a2c03d919191e4903f4a99c3fd393d399b40",
+        "version": "candidate"
+      },
+      {
+        "scenario": "20x9",
+        "seed": "S2",
+        "ok": true,
+        "ms": 114.67658800000001,
+        "heapDeltaMB": 5.5797576904296875,
+        "heapUsedMB": 14.447425842285156,
+        "peakRSSKB": 63900,
+        "cells": 1601,
+        "clues": 1041,
+        "hardest": 1,
+        "witnesses": 19,
+        "fingerprint": "96d923fed6f0ea3d95ec6abb0cacd14f5ed3d1eadd707f80dacbf938fc41cead",
+        "version": "baseline"
+      },
+      {
+        "scenario": "20x9",
+        "seed": "S2",
+        "ok": true,
+        "ms": 111.72064100000003,
+        "heapDeltaMB": 5.442802429199219,
+        "heapUsedMB": 14.311012268066406,
+        "peakRSSKB": 61736,
+        "cells": 1601,
+        "clues": 1041,
+        "hardest": 1,
+        "witnesses": 19,
+        "fingerprint": "96d923fed6f0ea3d95ec6abb0cacd14f5ed3d1eadd707f80dacbf938fc41cead",
+        "version": "candidate"
+      },
+      {
+        "scenario": "20x9",
+        "seed": "S3",
+        "ok": true,
+        "ms": 91.35515699999996,
+        "heapDeltaMB": 2.3950271606445312,
+        "heapUsedMB": 11.262718200683594,
+        "peakRSSKB": 60592,
+        "cells": 1601,
+        "clues": 1041,
+        "hardest": 1,
+        "witnesses": 19,
+        "fingerprint": "f251210d5788155f4da148c36225aad48fc36608293bc6702c88d1f79181a2fd",
+        "version": "baseline"
+      },
+      {
+        "scenario": "20x9",
+        "seed": "S3",
+        "ok": true,
+        "ms": 86.74662799999999,
+        "heapDeltaMB": 4.695762634277344,
+        "heapUsedMB": 13.566177368164062,
+        "peakRSSKB": 59320,
+        "cells": 1601,
+        "clues": 1041,
+        "hardest": 1,
+        "witnesses": 19,
+        "fingerprint": "f251210d5788155f4da148c36225aad48fc36608293bc6702c88d1f79181a2fd",
+        "version": "candidate"
+      },
+      {
+        "scenario": "300x9",
+        "seed": "S1",
+        "ok": true,
+        "ms": 1131.7764769999999,
+        "heapDeltaMB": 34.17109680175781,
+        "heapUsedMB": 43.05376434326172,
+        "peakRSSKB": 151500,
+        "cells": 24001,
+        "clues": 15601,
+        "hardest": 1,
+        "witnesses": 299,
+        "fingerprint": "e98988de4bb811fe14e5f674687ff87842ce58cb84b56dc5a508b358e3a74c46",
+        "version": "baseline"
+      },
+      {
+        "scenario": "300x9",
+        "seed": "S1",
+        "ok": true,
+        "ms": 704.303858,
+        "heapDeltaMB": 51.15406036376953,
+        "heapUsedMB": 60.03887176513672,
+        "peakRSSKB": 152880,
+        "cells": 24001,
+        "clues": 15601,
+        "hardest": 1,
+        "witnesses": 299,
+        "fingerprint": "e98988de4bb811fe14e5f674687ff87842ce58cb84b56dc5a508b358e3a74c46",
+        "version": "candidate"
+      },
+      {
+        "scenario": "300x9",
+        "seed": "S2",
+        "ok": true,
+        "ms": 993.631492,
+        "heapDeltaMB": 28.54510498046875,
+        "heapUsedMB": 37.42827606201172,
+        "peakRSSKB": 155396,
+        "cells": 24001,
+        "clues": 15601,
+        "hardest": 1,
+        "witnesses": 299,
+        "fingerprint": "c5e83465e8f58cef8adcf3feaefaeddb638481570fda18ebf422da8326353c70",
+        "version": "baseline"
+      },
+      {
+        "scenario": "300x9",
+        "seed": "S2",
+        "ok": true,
+        "ms": 600.5818300000001,
+        "heapDeltaMB": 26.8314208984375,
+        "heapUsedMB": 35.71617126464844,
+        "peakRSSKB": 150252,
+        "cells": 24001,
+        "clues": 15601,
+        "hardest": 1,
+        "witnesses": 299,
+        "fingerprint": "c5e83465e8f58cef8adcf3feaefaeddb638481570fda18ebf422da8326353c70",
+        "version": "candidate"
+      },
+      {
+        "scenario": "300x9",
+        "seed": "S3",
+        "ok": true,
+        "ms": 794.527554,
+        "heapDeltaMB": 40.416770935058594,
+        "heapUsedMB": 49.29778289794922,
+        "peakRSSKB": 154920,
+        "cells": 24001,
+        "clues": 15601,
+        "hardest": 1,
+        "witnesses": 299,
+        "fingerprint": "c4338041506a759b1408bdd8df2892ae185ccf3473e9596f96149283a1f5ab82",
+        "version": "baseline"
+      },
+      {
+        "scenario": "300x9",
+        "seed": "S3",
+        "ok": true,
+        "ms": 654.285016,
+        "heapDeltaMB": 34.711265563964844,
+        "heapUsedMB": 43.59600067138672,
+        "peakRSSKB": 150524,
+        "cells": 24001,
+        "clues": 15601,
+        "hardest": 1,
+        "witnesses": 299,
+        "fingerprint": "c4338041506a759b1408bdd8df2892ae185ccf3473e9596f96149283a1f5ab82",
+        "version": "candidate"
+      },
+      {
+        "scenario": "300x25",
+        "seed": "S1",
+        "ok": true,
+        "ms": 8491.368162,
+        "heapDeltaMB": 222.1401824951172,
+        "heapUsedMB": 231.02281188964844,
+        "peakRSSKB": 535920,
+        "cells": 187201,
+        "clues": 121681,
+        "hardest": 1,
+        "witnesses": 299,
+        "fingerprint": "d41ac1aff26c1d71a419527f1229bd463148524898530b89b6cc57303ec25b69",
+        "version": "baseline"
+      },
+      {
+        "scenario": "300x25",
+        "seed": "S1",
+        "ok": true,
+        "ms": 5545.062909,
+        "heapDeltaMB": 196.50286102294922,
+        "heapUsedMB": 205.3865966796875,
+        "peakRSSKB": 477008,
+        "cells": 187201,
+        "clues": 121681,
+        "hardest": 1,
+        "witnesses": 299,
+        "fingerprint": "d41ac1aff26c1d71a419527f1229bd463148524898530b89b6cc57303ec25b69",
+        "version": "candidate"
+      },
+      {
+        "scenario": "300x25",
+        "seed": "S2",
+        "ok": true,
+        "ms": 8219.523942,
+        "heapDeltaMB": 227.37676239013672,
+        "heapUsedMB": 236.25933074951172,
+        "peakRSSKB": 533648,
+        "cells": 187201,
+        "clues": 121681,
+        "hardest": 1,
+        "witnesses": 299,
+        "fingerprint": "43ed1abb7481c55bf89c3568ef88c1fe574a4fc3b575edd4841cecba115e5417",
+        "version": "baseline"
+      },
+      {
+        "scenario": "300x25",
+        "seed": "S2",
+        "ok": true,
+        "ms": 7338.896264999999,
+        "heapDeltaMB": 194.57660675048828,
+        "heapUsedMB": 203.46149444580078,
+        "peakRSSKB": 473376,
+        "cells": 187201,
+        "clues": 121681,
+        "hardest": 1,
+        "witnesses": 299,
+        "fingerprint": "43ed1abb7481c55bf89c3568ef88c1fe574a4fc3b575edd4841cecba115e5417",
+        "version": "candidate"
+      },
+      {
+        "scenario": "300x25",
+        "seed": "S3",
+        "ok": true,
+        "ms": 9164.483974,
+        "heapDeltaMB": 293.4054946899414,
+        "heapUsedMB": 302.28723907470703,
+        "peakRSSKB": 526064,
+        "cells": 187201,
+        "clues": 121681,
+        "hardest": 1,
+        "witnesses": 299,
+        "fingerprint": "92a19f71e56cdab9022b1832046dccb294a0ebe4e1eb89fae2e93cf6175e4ef3",
+        "version": "baseline"
+      },
+      {
+        "scenario": "300x25",
+        "seed": "S3",
+        "ok": true,
+        "ms": 6905.544723,
+        "heapDeltaMB": 227.21417999267578,
+        "heapUsedMB": 236.0989227294922,
+        "peakRSSKB": 460092,
+        "cells": 187201,
+        "clues": 121681,
+        "hardest": 1,
+        "witnesses": 299,
+        "fingerprint": "92a19f71e56cdab9022b1832046dccb294a0ebe4e1eb89fae2e93cf6175e4ef3",
+        "version": "candidate"
+      },
+      {
+        "scenario": "high",
+        "seed": "S1",
+        "ok": true,
+        "ms": 2530.5131239999996,
+        "heapDeltaMB": 43.5965576171875,
+        "heapUsedMB": 52.870933532714844,
+        "peakRSSKB": 179584,
+        "cells": 24001,
+        "clues": 15577,
+        "hardest": 4,
+        "witnesses": 299,
+        "fingerprint": "b7bb2a6fd3525dfab3d95b34adb2059446f5e36295eab54bd86108b1d93ccaf8",
+        "version": "baseline"
+      },
+      {
+        "scenario": "high",
+        "seed": "S1",
+        "ok": true,
+        "ms": 3075.44101,
+        "heapDeltaMB": 33.78881072998047,
+        "heapUsedMB": 42.66448211669922,
+        "peakRSSKB": 170804,
+        "cells": 24001,
+        "clues": 15577,
+        "hardest": 4,
+        "witnesses": 299,
+        "fingerprint": "b7bb2a6fd3525dfab3d95b34adb2059446f5e36295eab54bd86108b1d93ccaf8",
+        "version": "candidate"
+      },
+      {
+        "scenario": "high",
+        "seed": "S2",
+        "ok": true,
+        "ms": 2894.967592,
+        "heapDeltaMB": 36.75886535644531,
+        "heapUsedMB": 45.63978576660156,
+        "peakRSSKB": 180944,
+        "cells": 24001,
+        "clues": 15571,
+        "hardest": 4,
+        "witnesses": 299,
+        "fingerprint": "5216f121d0180b9f695abc9a7864bfa3ac7cd4fb125d5adc6049464bb5db5b80",
+        "version": "baseline"
+      },
+      {
+        "scenario": "high",
+        "seed": "S2",
+        "ok": true,
+        "ms": 3383.456072,
+        "heapDeltaMB": 35.828330993652344,
+        "heapUsedMB": 45.19672393798828,
+        "peakRSSKB": 185344,
+        "cells": 24001,
+        "clues": 15571,
+        "hardest": 4,
+        "witnesses": 299,
+        "fingerprint": "5216f121d0180b9f695abc9a7864bfa3ac7cd4fb125d5adc6049464bb5db5b80",
+        "version": "candidate"
+      },
+      {
+        "scenario": "high",
+        "seed": "S3",
+        "ok": true,
+        "ms": 2530.641095,
+        "heapDeltaMB": 35.86266326904297,
+        "heapUsedMB": 44.73545837402344,
+        "peakRSSKB": 175832,
+        "cells": 24001,
+        "clues": 15573,
+        "hardest": 4,
+        "witnesses": 299,
+        "fingerprint": "df0d530b1dbcc580678962d2d01cdc9b35e1d81aa90c6c9425730fd43bb8b06b",
+        "version": "baseline"
+      },
+      {
+        "scenario": "high",
+        "seed": "S3",
+        "ok": true,
+        "ms": 2369.4977480000002,
+        "heapDeltaMB": 38.497596740722656,
+        "heapUsedMB": 47.38287353515625,
+        "peakRSSKB": 164864,
+        "cells": 24001,
+        "clues": 15573,
+        "hardest": 4,
+        "witnesses": 299,
+        "fingerprint": "df0d530b1dbcc580678962d2d01cdc9b35e1d81aa90c6c9425730fd43bb8b06b",
+        "version": "candidate"
+      },
+      {
+        "scenario": "mixed",
+        "seed": "S1",
+        "ok": true,
+        "ms": 674.963968,
+        "heapDeltaMB": 33.975433349609375,
+        "heapUsedMB": 42.846954345703125,
+        "peakRSSKB": 110416,
+        "cells": 17251,
+        "clues": 11213,
+        "hardest": 1,
+        "witnesses": 299,
+        "fingerprint": "6c906cb105460606b0cd71ab46d00bacda74820fa34521393634c55b033a577a",
+        "version": "baseline"
+      },
+      {
+        "scenario": "mixed",
+        "seed": "S1",
+        "ok": true,
+        "ms": 692.3162229999999,
+        "heapDeltaMB": 28.058006286621094,
+        "heapUsedMB": 36.941795349121094,
+        "peakRSSKB": 109548,
+        "cells": 17251,
+        "clues": 11213,
+        "hardest": 1,
+        "witnesses": 299,
+        "fingerprint": "6c906cb105460606b0cd71ab46d00bacda74820fa34521393634c55b033a577a",
+        "version": "candidate"
+      },
+      {
+        "scenario": "mixed",
+        "seed": "S2",
+        "ok": true,
+        "ms": 615.7659269999999,
+        "heapDeltaMB": 34.22251892089844,
+        "heapUsedMB": 43.105918884277344,
+        "peakRSSKB": 111244,
+        "cells": 17251,
+        "clues": 11213,
+        "hardest": 1,
+        "witnesses": 299,
+        "fingerprint": "e5d496dd4330ba7e40cd5fc5a01d9fe107e2787f38dbd655ea950e899ccafd0d",
+        "version": "baseline"
+      },
+      {
+        "scenario": "mixed",
+        "seed": "S2",
+        "ok": true,
+        "ms": 1186.46067,
+        "heapDeltaMB": 22.365737915039062,
+        "heapUsedMB": 31.251670837402344,
+        "peakRSSKB": 107460,
+        "cells": 17251,
+        "clues": 11213,
+        "hardest": 1,
+        "witnesses": 299,
+        "fingerprint": "e5d496dd4330ba7e40cd5fc5a01d9fe107e2787f38dbd655ea950e899ccafd0d",
+        "version": "candidate"
+      },
+      {
+        "scenario": "mixed",
+        "seed": "S3",
+        "ok": true,
+        "ms": 1082.7855,
+        "heapDeltaMB": 28.01667022705078,
+        "heapUsedMB": 36.90013885498047,
+        "peakRSSKB": 112140,
+        "cells": 17251,
+        "clues": 11213,
+        "hardest": 1,
+        "witnesses": 299,
+        "fingerprint": "411c41489211fd39a72b9f7839fd2b794ee64e36ebf89265bc5e0b2addc039ed",
+        "version": "baseline"
+      },
+      {
+        "scenario": "mixed",
+        "seed": "S3",
+        "ok": true,
+        "ms": 581.731768,
+        "heapDeltaMB": 21.34136199951172,
+        "heapUsedMB": 30.849769592285156,
+        "peakRSSKB": 109264,
+        "cells": 17251,
+        "clues": 11213,
+        "hardest": 1,
+        "witnesses": 299,
+        "fingerprint": "411c41489211fd39a72b9f7839fd2b794ee64e36ebf89265bc5e0b2addc039ed",
+        "version": "candidate"
+      },
+      {
+        "scenario": "rules",
+        "seed": "S1",
+        "ok": true,
+        "ms": 1515.2855009999998,
+        "heapDeltaMB": 29.02935028076172,
+        "heapUsedMB": 37.91510772705078,
+        "peakRSSKB": 158132,
+        "cells": 24001,
+        "clues": 15601,
+        "hardest": 1,
+        "witnesses": 299,
+        "fingerprint": "34dbd171df3b50620a3218a5df5897057496db0e748951913467d5f83b635b30",
+        "version": "baseline"
+      },
+      {
+        "scenario": "rules",
+        "seed": "S1",
+        "ok": true,
+        "ms": 692.6680620000001,
+        "heapDeltaMB": 33.41265869140625,
+        "heapUsedMB": 42.301063537597656,
+        "peakRSSKB": 156468,
+        "cells": 24001,
+        "clues": 15601,
+        "hardest": 1,
+        "witnesses": 299,
+        "fingerprint": "34dbd171df3b50620a3218a5df5897057496db0e748951913467d5f83b635b30",
+        "version": "candidate"
+      },
+      {
+        "scenario": "rules",
+        "seed": "S2",
+        "ok": true,
+        "ms": 808.2506549999999,
+        "heapDeltaMB": 37.43473815917969,
+        "heapUsedMB": 46.31892395019531,
+        "peakRSSKB": 157352,
+        "cells": 24001,
+        "clues": 15601,
+        "hardest": 1,
+        "witnesses": 299,
+        "fingerprint": "b4881cd878bfddadf3b98b782f4aab38475076a6c74ac30a7bab67e2460b8886",
+        "version": "baseline"
+      },
+      {
+        "scenario": "rules",
+        "seed": "S2",
+        "ok": true,
+        "ms": 978.466078,
+        "heapDeltaMB": 39.771697998046875,
+        "heapUsedMB": 48.66011047363281,
+        "peakRSSKB": 155136,
+        "cells": 24001,
+        "clues": 15601,
+        "hardest": 1,
+        "witnesses": 299,
+        "fingerprint": "b4881cd878bfddadf3b98b782f4aab38475076a6c74ac30a7bab67e2460b8886",
+        "version": "candidate"
+      },
+      {
+        "scenario": "rules",
+        "seed": "S3",
+        "ok": true,
+        "ms": 955.9035359999999,
+        "heapDeltaMB": 47.59130859375,
+        "heapUsedMB": 56.47760772705078,
+        "peakRSSKB": 157660,
+        "cells": 24001,
+        "clues": 15601,
+        "hardest": 1,
+        "witnesses": 299,
+        "fingerprint": "2410f118037015425bf9191c19480c8c73f6bb01a03b143721601735d87c4c6d",
+        "version": "baseline"
+      },
+      {
+        "scenario": "rules",
+        "seed": "S3",
+        "ok": true,
+        "ms": 883.204347,
+        "heapDeltaMB": 29.13671112060547,
+        "heapUsedMB": 38.024513244628906,
+        "peakRSSKB": 155680,
+        "cells": 24001,
+        "clues": 15601,
+        "hardest": 1,
+        "witnesses": 299,
+        "fingerprint": "2410f118037015425bf9191c19480c8c73f6bb01a03b143721601735d87c4c6d",
+        "version": "candidate"
+      },
+      {
+        "scenario": "dense",
+        "seed": "S1",
+        "ok": true,
+        "ms": 634.986171,
+        "heapDeltaMB": 16.12708282470703,
+        "heapUsedMB": 25.012245178222656,
+        "peakRSSKB": 104208,
+        "cells": 11439,
+        "clues": 7435,
+        "hardest": 1,
+        "witnesses": 256,
+        "fingerprint": "c4911d103284065ed1155c730990665e9f333c9734f9dbc1850646ad73da6d1e",
+        "version": "baseline"
+      },
+      {
+        "scenario": "dense",
+        "seed": "S1",
+        "ok": true,
+        "ms": 537.050343,
+        "heapDeltaMB": 19.7449951171875,
+        "heapUsedMB": 28.632110595703125,
+        "peakRSSKB": 101076,
+        "cells": 11439,
+        "clues": 7435,
+        "hardest": 1,
+        "witnesses": 256,
+        "fingerprint": "c4911d103284065ed1155c730990665e9f333c9734f9dbc1850646ad73da6d1e",
+        "version": "candidate"
+      },
+      {
+        "scenario": "dense",
+        "seed": "S2",
+        "ok": true,
+        "ms": 496.56860100000006,
+        "heapDeltaMB": 25.809616088867188,
+        "heapUsedMB": 34.694976806640625,
+        "peakRSSKB": 103936,
+        "cells": 11439,
+        "clues": 7435,
+        "hardest": 1,
+        "witnesses": 252,
+        "fingerprint": "fcb29085b013d22267055318c2166b90ad7d607a3637f119a9a014cc6aaf21b3",
+        "version": "baseline"
+      },
+      {
+        "scenario": "dense",
+        "seed": "S2",
+        "ok": true,
+        "ms": 743.526098,
+        "heapDeltaMB": 18.28978729248047,
+        "heapUsedMB": 27.176902770996094,
+        "peakRSSKB": 101436,
+        "cells": 11439,
+        "clues": 7435,
+        "hardest": 1,
+        "witnesses": 252,
+        "fingerprint": "fcb29085b013d22267055318c2166b90ad7d607a3637f119a9a014cc6aaf21b3",
+        "version": "candidate"
+      },
+      {
+        "scenario": "dense",
+        "seed": "S3",
+        "ok": true,
+        "ms": 804.3711139999999,
+        "heapDeltaMB": 26.008865356445312,
+        "heapUsedMB": 34.89429473876953,
+        "peakRSSKB": 105764,
+        "cells": 11439,
+        "clues": 7435,
+        "hardest": 1,
+        "witnesses": 255,
+        "fingerprint": "4c474a85950e67643a861f888b5ed3a070045087398e9897c0dc9fd1391b68b9",
+        "version": "baseline"
+      },
+      {
+        "scenario": "dense",
+        "seed": "S3",
+        "ok": true,
+        "ms": 558.208185,
+        "heapDeltaMB": 24.235076904296875,
+        "heapUsedMB": 33.111900329589844,
+        "peakRSSKB": 101892,
+        "cells": 11439,
+        "clues": 7435,
+        "hardest": 1,
+        "witnesses": 255,
+        "fingerprint": "4c474a85950e67643a861f888b5ed3a070045087398e9897c0dc9fd1391b68b9",
+        "version": "candidate"
+      },
+      {
+        "scenario": "high",
+        "seed": "S1",
+        "ok": true,
+        "ms": 2498.643505,
+        "cpuMs": 3922.394,
+        "heapDeltaMB": 42.243385314941406,
+        "heapUsedMB": 51.12629699707031,
+        "peakRSSKB": 180864,
+        "cells": 24001,
+        "clues": 15577,
+        "hardest": 4,
+        "witnesses": 299,
+        "fingerprint": "b7bb2a6fd3525dfab3d95b34adb2059446f5e36295eab54bd86108b1d93ccaf8",
+        "version": "baseline"
+      },
+      {
+        "scenario": "high",
+        "seed": "S1",
+        "ok": true,
+        "ms": 1991.252487,
+        "cpuMs": 2928.368,
+        "heapDeltaMB": 56.73515319824219,
+        "heapUsedMB": 65.62071990966797,
+        "peakRSSKB": 170700,
+        "cells": 24001,
+        "clues": 15577,
+        "hardest": 4,
+        "witnesses": 299,
+        "fingerprint": "b7bb2a6fd3525dfab3d95b34adb2059446f5e36295eab54bd86108b1d93ccaf8",
+        "version": "candidate"
+      },
+      {
+        "scenario": "high",
+        "seed": "S2",
+        "ok": true,
+        "ms": 2579.935543,
+        "cpuMs": 3637.482,
+        "heapDeltaMB": 30.48566436767578,
+        "heapUsedMB": 39.35919189453125,
+        "peakRSSKB": 175528,
+        "cells": 24001,
+        "clues": 15571,
+        "hardest": 4,
+        "witnesses": 299,
+        "fingerprint": "5216f121d0180b9f695abc9a7864bfa3ac7cd4fb125d5adc6049464bb5db5b80",
+        "version": "candidate"
+      },
+      {
+        "scenario": "high",
+        "seed": "S2",
+        "ok": true,
+        "ms": 2455.908946,
+        "cpuMs": 3525.899,
+        "heapDeltaMB": 48.03190612792969,
+        "heapUsedMB": 56.914695739746094,
+        "peakRSSKB": 173932,
+        "cells": 24001,
+        "clues": 15571,
+        "hardest": 4,
+        "witnesses": 299,
+        "fingerprint": "5216f121d0180b9f695abc9a7864bfa3ac7cd4fb125d5adc6049464bb5db5b80",
+        "version": "baseline"
+      },
+      {
+        "scenario": "high",
+        "seed": "S3",
+        "ok": true,
+        "ms": 1803.089547,
+        "cpuMs": 2854.887,
+        "heapDeltaMB": 43.01239776611328,
+        "heapUsedMB": 51.89544677734375,
+        "peakRSSKB": 180092,
+        "cells": 24001,
+        "clues": 15573,
+        "hardest": 4,
+        "witnesses": 299,
+        "fingerprint": "df0d530b1dbcc580678962d2d01cdc9b35e1d81aa90c6c9425730fd43bb8b06b",
+        "version": "baseline"
+      },
+      {
+        "scenario": "high",
+        "seed": "S3",
+        "ok": true,
+        "ms": 1780.4201209999999,
+        "cpuMs": 2859.237,
+        "heapDeltaMB": 42.89244842529297,
+        "heapUsedMB": 51.77745819091797,
+        "peakRSSKB": 175476,
+        "cells": 24001,
+        "clues": 15573,
+        "hardest": 4,
+        "witnesses": 299,
+        "fingerprint": "df0d530b1dbcc580678962d2d01cdc9b35e1d81aa90c6c9425730fd43bb8b06b",
+        "version": "candidate"
+      },
+      {
+        "scenario": "mixed",
+        "seed": "S1",
+        "ok": true,
+        "ms": 435.52148600000004,
+        "cpuMs": 751.122,
+        "heapDeltaMB": 32.029701232910156,
+        "heapUsedMB": 40.91419982910156,
+        "peakRSSKB": 110148,
+        "cells": 17251,
+        "clues": 11213,
+        "hardest": 1,
+        "witnesses": 299,
+        "fingerprint": "6c906cb105460606b0cd71ab46d00bacda74820fa34521393634c55b033a577a",
+        "version": "baseline"
+      },
+      {
+        "scenario": "mixed",
+        "seed": "S1",
+        "ok": true,
+        "ms": 429.45185200000003,
+        "cpuMs": 737.507,
+        "heapDeltaMB": 29.461669921875,
+        "heapUsedMB": 38.69580078125,
+        "peakRSSKB": 108504,
+        "cells": 17251,
+        "clues": 11213,
+        "hardest": 1,
+        "witnesses": 299,
+        "fingerprint": "6c906cb105460606b0cd71ab46d00bacda74820fa34521393634c55b033a577a",
+        "version": "candidate"
+      },
+      {
+        "scenario": "mixed",
+        "seed": "S2",
+        "ok": true,
+        "ms": 437.728925,
+        "cpuMs": 758.092,
+        "heapDeltaMB": 28.237281799316406,
+        "heapUsedMB": 37.12361145019531,
+        "peakRSSKB": 109400,
+        "cells": 17251,
+        "clues": 11213,
+        "hardest": 1,
+        "witnesses": 299,
+        "fingerprint": "e5d496dd4330ba7e40cd5fc5a01d9fe107e2787f38dbd655ea950e899ccafd0d",
+        "version": "candidate"
+      },
+      {
+        "scenario": "mixed",
+        "seed": "S2",
+        "ok": true,
+        "ms": 673.121813,
+        "cpuMs": 1050.367,
+        "heapDeltaMB": 30.46723175048828,
+        "heapUsedMB": 39.35143280029297,
+        "peakRSSKB": 110716,
+        "cells": 17251,
+        "clues": 11213,
+        "hardest": 1,
+        "witnesses": 299,
+        "fingerprint": "e5d496dd4330ba7e40cd5fc5a01d9fe107e2787f38dbd655ea950e899ccafd0d",
+        "version": "baseline"
+      },
+      {
+        "scenario": "mixed",
+        "seed": "S3",
+        "ok": true,
+        "ms": 509.39236300000005,
+        "cpuMs": 845.73,
+        "heapDeltaMB": 30.681854248046875,
+        "heapUsedMB": 39.56391906738281,
+        "peakRSSKB": 110584,
+        "cells": 17251,
+        "clues": 11213,
+        "hardest": 1,
+        "witnesses": 299,
+        "fingerprint": "411c41489211fd39a72b9f7839fd2b794ee64e36ebf89265bc5e0b2addc039ed",
+        "version": "baseline"
+      },
+      {
+        "scenario": "mixed",
+        "seed": "S3",
+        "ok": true,
+        "ms": 509.727036,
+        "cpuMs": 812.745,
+        "heapDeltaMB": 25.95299530029297,
+        "heapUsedMB": 34.838172912597656,
+        "peakRSSKB": 106456,
+        "cells": 17251,
+        "clues": 11213,
+        "hardest": 1,
+        "witnesses": 299,
+        "fingerprint": "411c41489211fd39a72b9f7839fd2b794ee64e36ebf89265bc5e0b2addc039ed",
+        "version": "candidate"
+      }
+    ],
+    "puzzlePairsIdentical": 27,
+    "benchmarkSourceSHA256": "f71c4140969a4ec7142d2bd2d6afc82a9bbe1c56775445bc0180de583d5fb7b8",
+    "finalSourceSHA256": "96274c3f5033223cead50b2d095d0bc00759cea4a1c7e6624c0f68966938ac10",
+    "postBenchmarkChange": "Early rejection for infeasible level1/2 tree clue count; successful candidate generation paths unchanged.",
+    "scenarioConfigs": {
+      "20x9": {
+        "idTemplate": "FAST-20x9-{S1,S2,S3}",
+        "shape": "custom",
+        "boardCount": 20,
+        "sizePattern": [
+          9
+        ],
+        "level": 1,
+        "links": {
+          "kind": "chain",
+          "parent": "previous board",
+          "corner": "se"
+        },
+        "rules": [
+          "normal"
+        ]
+      },
+      "300x9": {
+        "idTemplate": "FAST-300x9-{S1,S2,S3}",
+        "shape": "custom",
+        "boardCount": 300,
+        "sizePattern": [
+          9
+        ],
+        "level": 1,
+        "links": {
+          "kind": "chain",
+          "parent": "previous board",
+          "corner": "se"
+        },
+        "rules": [
+          "normal"
+        ]
+      },
+      "300x25": {
+        "idTemplate": "FAST-300x25-{S1,S2,S3}",
+        "shape": "custom",
+        "boardCount": 300,
+        "sizePattern": [
+          25
+        ],
+        "level": 1,
+        "links": {
+          "kind": "chain",
+          "parent": "previous board",
+          "corner": "se"
+        },
+        "rules": [
+          "normal"
+        ]
+      },
+      "high": {
+        "idTemplate": "FAST-high-{S1,S2,S3}",
+        "shape": "custom",
+        "boardCount": 300,
+        "sizePattern": [
+          9
+        ],
+        "level": 5,
+        "links": {
+          "kind": "chain",
+          "parent": "previous board",
+          "corner": "se"
+        },
+        "rules": [
+          "normal"
+        ]
+      },
+      "mixed": {
+        "idTemplate": "FAST-mixed-{S1,S2,S3}",
+        "shape": "custom",
+        "boardCount": 300,
+        "sizePattern": [
+          6,
+          9
+        ],
+        "level": 1,
+        "links": {
+          "kind": "chain",
+          "parent": "previous board",
+          "corner": "se"
+        },
+        "rules": [
+          "normal"
+        ]
+      },
+      "rules": {
+        "idTemplate": "FAST-rules-{S1,S2,S3}",
+        "shape": "custom",
+        "boardCount": 300,
+        "sizePattern": [
+          9
+        ],
+        "level": 1,
+        "links": {
+          "kind": "chain",
+          "parent": "previous board",
+          "corner": "se"
+        },
+        "rules": [
+          "normal",
+          "diagonal",
+          "hyper",
+          "antiknight",
+          "antiking",
+          "disjoint"
+        ]
+      },
+      "dense": {
+        "idTemplate": "FAST-dense-{S1,S2,S3}",
+        "shape": "custom",
+        "boardCount": 300,
+        "sizePattern": [
+          9
+        ],
+        "level": 1,
+        "links": {
+          "kind": "grid",
+          "columns": 20,
+          "rows": 15,
+          "dx": 6,
+          "dy": 6,
+          "parent": 0
+        },
+        "rules": [
+          "normal"
+        ]
+      }
+    }
+  },
+  "single18Prefix": {
+    "scope": "First20starts for seed aBc12, not full puzzle generation",
+    "summary": {
+      "baseline": {
+        "n": 3,
+        "medianMs": 11506.378468,
+        "medianUniqueMs": 7703.206646999955,
+        "medianPeakRSSMiB": 190.23046875
+      },
+      "candidate": {
+        "n": 3,
+        "medianMs": 4449.400369999999,
+        "medianUniqueMs": 347.6307329999961,
+        "medianPeakRSSMiB": 183.2265625
+      }
+    },
+    "runs": {
+      "baseline": [
+        {
+          "mode": "baseline",
+          "seed": "aBc12",
+          "rounds": 20,
+          "status": "prefix",
+          "ms": 9683.263308,
+          "probes": 2820,
+          "solves": 1212,
+          "uniqueMs": 6753.046163999972,
+          "solveMs": 2762.7471660000147,
+          "probeHash": "061b07623479c8c995400995ebc5c1c71037fdff97c457ac85562dc566054775",
+          "solveHash": "1898dcd0c3e416240eb2c3c70b1c73010cc2a3b9dd5894b0edbbbd6ebb9886ac",
+          "heapMB": 36.998626708984375,
+          "peakRSSKB": 194796
+        },
+        {
+          "mode": "baseline",
+          "seed": "aBc12",
+          "rounds": 20,
+          "status": "prefix",
+          "ms": 11686.159114,
+          "probes": 2820,
+          "solves": 1212,
+          "uniqueMs": 8056.868470000039,
+          "solveMs": 3423.128814,
+          "probeHash": "061b07623479c8c995400995ebc5c1c71037fdff97c457ac85562dc566054775",
+          "solveHash": "1898dcd0c3e416240eb2c3c70b1c73010cc2a3b9dd5894b0edbbbd6ebb9886ac",
+          "heapMB": 47.580848693847656,
+          "peakRSSKB": 196552
+        },
+        {
+          "mode": "baseline",
+          "seed": "aBc12",
+          "rounds": 20,
+          "status": "prefix",
+          "ms": 11506.378468,
+          "probes": 2820,
+          "solves": 1212,
+          "uniqueMs": 7703.206646999955,
+          "solveMs": 3600.1645739999944,
+          "probeHash": "061b07623479c8c995400995ebc5c1c71037fdff97c457ac85562dc566054775",
+          "solveHash": "1898dcd0c3e416240eb2c3c70b1c73010cc2a3b9dd5894b0edbbbd6ebb9886ac",
+          "heapMB": 23.533309936523438,
+          "peakRSSKB": 177636
+        }
+      ],
+      "candidate": [
+        {
+          "mode": "candidate",
+          "seed": "aBc12",
+          "rounds": 20,
+          "status": "prefix",
+          "ms": 4449.400369999999,
+          "probes": 2820,
+          "solves": 1212,
+          "uniqueMs": 538.4061200000051,
+          "solveMs": 3790.5352569999995,
+          "probeHash": "061b07623479c8c995400995ebc5c1c71037fdff97c457ac85562dc566054775",
+          "solveHash": "1898dcd0c3e416240eb2c3c70b1c73010cc2a3b9dd5894b0edbbbd6ebb9886ac",
+          "heapMB": 38.763694763183594,
+          "peakRSSKB": 189340
+        },
+        {
+          "mode": "candidate",
+          "seed": "aBc12",
+          "rounds": 20,
+          "status": "prefix",
+          "ms": 4820.6046989999995,
+          "probes": 2820,
+          "solves": 1212,
+          "uniqueMs": 347.6307329999961,
+          "solveMs": 4373.030455999999,
+          "probeHash": "061b07623479c8c995400995ebc5c1c71037fdff97c457ac85562dc566054775",
+          "solveHash": "1898dcd0c3e416240eb2c3c70b1c73010cc2a3b9dd5894b0edbbbd6ebb9886ac",
+          "heapMB": 31.980209350585938,
+          "peakRSSKB": 175364
+        },
+        {
+          "mode": "candidate",
+          "seed": "aBc12",
+          "rounds": 20,
+          "status": "prefix",
+          "ms": 3200.765409,
+          "probes": 2820,
+          "solves": 1212,
+          "uniqueMs": 272.3791469999943,
+          "solveMs": 2837.922472000004,
+          "probeHash": "061b07623479c8c995400995ebc5c1c71037fdff97c457ac85562dc566054775",
+          "solveHash": "1898dcd0c3e416240eb2c3c70b1c73010cc2a3b9dd5894b0edbbbd6ebb9886ac",
+          "heapMB": 68.58088684082031,
+          "peakRSSKB": 187624
+        }
+      ]
+    },
+    "probeHash": "061b07623479c8c995400995ebc5c1c71037fdff97c457ac85562dc566054775",
+    "solveHash": "1898dcd0c3e416240eb2c3c70b1c73010cc2a3b9dd5894b0edbbbd6ebb9886ac"
+  },
+  "mainThreadRecordProfile": [
+    {
+      "longtasks": [],
+      "bytes": 776064,
+      "cells": 24001,
+      "heapBefore": 27405275,
+      "heapAfter": 30056972,
+      "duplicated": false,
+      "digestSame": true,
+      "reuseEqual": true,
+      "endToEndMs": 289.29999999701977,
+      "validationAndDedupMs": 94.09999999403954,
+      "storageMs": 163.5,
+      "legacyRebuildMs": 31.700000002980232,
+      "reuseMs": 0.10000000149011612,
+      "name": "multi300-9",
+      "stages": {
+        "validate": {
+          "calls": 1,
+          "syncMs": 43.20000000298023,
+          "totalMs": 43.20000000298023
+        },
+        "digest": {
+          "calls": 3,
+          "syncMs": 127.09999999403954,
+          "totalMs": 127.09999999403954
+        },
+        "identity": {
+          "calls": 3,
+          "syncMs": 27.899999998509884,
+          "totalMs": 27.899999998509884
+        },
+        "storage.save": {
+          "calls": 1,
+          "syncMs": 159.5,
+          "totalMs": 163.5
+        },
+        "compact.record": {
+          "calls": 1,
+          "syncMs": 113.89999999850988,
+          "totalMs": 113.89999999850988
+        },
+        "storage.summary": {
+          "calls": 1,
+          "syncMs": 31.700000002980232,
+          "totalMs": 31.700000002980232
+        }
+      }
+    },
+    {
+      "longtasks": [
+        316
+      ],
+      "bytes": 6327378,
+      "cells": 187201,
+      "heapBefore": 87949946,
+      "heapAfter": 184634507,
+      "duplicated": false,
+      "digestSame": true,
+      "reuseEqual": true,
+      "endToEndMs": 2297.6999999955297,
+      "validationAndDedupMs": 680.6000000014901,
+      "storageMs": 1300.6999999955297,
+      "legacyRebuildMs": 316.3999999985099,
+      "reuseMs": 0,
+      "name": "multi300-25",
+      "stages": {
+        "validate": {
+          "calls": 1,
+          "syncMs": 269.69999999552965,
+          "totalMs": 269.69999999552965
+        },
+        "digest": {
+          "calls": 3,
+          "syncMs": 1177.5,
+          "totalMs": 1177.5
+        },
+        "identity": {
+          "calls": 3,
+          "syncMs": 280.3999999985099,
+          "totalMs": 280.3999999985099
+        },
+        "storage.save": {
+          "calls": 1,
+          "syncMs": 1265.6999999955297,
+          "totalMs": 1300.6999999955297
+        },
+        "compact.record": {
+          "calls": 1,
+          "syncMs": 812.7000000029802,
+          "totalMs": 812.7000000029802
+        },
+        "storage.summary": {
+          "calls": 1,
+          "syncMs": 316.3999999985099,
+          "totalMs": 316.3999999985099
+        }
+      }
+    }
+  ],
+  "normal9BaselineBrowser": {
+    "name": "normal9-l1-100-exclusive",
+    "saved": 100,
+    "result": {
+      "puzzleCells": 81,
+      "boards": 1,
+      "jsonBytes": 1058
+    },
+    "errors": [],
+    "elapsedMs": 1094.89990234375,
+    "longTaskCount": 0,
+    "maxHeartbeatGapMs": 48.300048828125,
+    "workerGenerationMs": 254.198974609375
+  },
+  "single18Functional": {
+    "seed": "A19zB",
+    "completed": true,
+    "generationStart": 392,
+    "elapsedMsApprox": 36290,
+    "timingComparable": false,
+    "reason": "Concurrent functional validation, not a controlled before/after benchmark",
+    "matchesPublishedRecordAllEngineFields": true,
+    "clues": 24,
+    "proofSteps": 93,
+    "resolutionSteps": 3,
+    "maxProofClauses": 117,
+    "baseline": {
+      "completed": false,
+      "searchStart": 134,
+      "elapsedMs": 120297.89754600001,
+      "budgetMs": 120000,
+      "errorCode": "NP_SEARCH_EXHAUSTED",
+      "timingComparable": false
+    }
+  },
+  "publishedLevel18RegressionCount": 5,
+  "backup": {
+    "fixtureCells": 187201,
+    "puzzles": 1,
+    "packedCaptureMs": 53.69999999552965,
+    "packedSnapshotJsonBytes": 4426625,
+    "fullBackupMs": 1444.0999999940395,
+    "warning": "",
+    "workers": [
+      {
+        "url": "http://127.0.0.1:44851/nanpure/releases/2026.11.05.100/notebook/recovery-pack-worker.js",
+        "created": 17215.5,
+        "sendStart": 17215.5,
+        "sendEnd": 17232.79999999702,
+        "received": 18578.60000000149,
+        "payloadBytes": 848016,
+        "terminated": 18578.79999999702
+      }
+    ],
+    "backupBytes": 848016,
+    "backupCounts": {
+      "sudoku": 1,
+      "crossword": 0,
+      "tenbin": 0,
+      "shiru": 0,
+      "people": 0,
+      "profiles": 0,
+      "history": 0
+    },
+    "fresh": true,
+    "roundTripSame": true,
+    "heapAfter": 172483501,
+    "status": "passed separate functional/profile test",
+    "timingIncludesGeneration": false,
+    "workerCreationToResultMs": 1363.1,
+    "workerPostMessageCloneMs": 17.3,
+    "longTasksMeasured": false,
+    "heartbeatMeasured": false,
+    "algorithmChanged": false,
+    "workerTimeIsPureCompression": false
+  },
+  "candidateBrowser": {
+    "status": "passed functional validation",
+    "profileConcurrent": true,
+    "performanceComparison": false,
+    "worker": "real Chromium Worker",
+    "boards": 300,
+    "size": 9,
+    "rules": 6,
+    "level": 1,
+    "uniqueCount": 1,
+    "sharedWitnesses": 299,
+    "touchInputBoards": [
+      "A",
+      "KN"
+    ],
+    "reloadPreserves": [
+      "id",
+      "rules",
+      "inputs"
+    ],
+    "httpErrors": 0,
+    "javascriptErrors": 0,
+    "level18Cancel": {
+      "workerTerminated": true,
+      "unfinishedSaved": 0
+    }
+  },
+  "singleHighFunctional": {
+    "level15": {
+      "id": "A3FOP",
+      "baselineAndCandidateCompleted": true,
+      "searchStart": 5,
+      "allEngineFieldsIdentical": true
+    },
+    "levels16And17": {
+      "ids": [
+        "A2asR",
+        "AJWkl"
+      ],
+      "budgetMsEach": 20000,
+      "completed": false,
+      "timingComparison": false
+    },
+    "counterRegressionStockCases15to17": 64
+  },
+  "cleanBrowserProfiles": {
+    "runs": [
+      {
+        "name": "normal9-l1-100-baseline-clean",
+        "saved": 100,
+        "result": {
+          "puzzleCells": 81,
+          "boards": 1,
+          "boardSizes": null,
+          "jsonBytes": 1058,
+          "summarySame": true
+        },
+        "errors": [],
+        "stages": {
+          "storage.flush": {
+            "calls": 1,
+            "syncMs": 0.0,
+            "totalMs": 7.60009765625
+          },
+          "compact.meta": {
+            "calls": 203,
+            "syncMs": 3.7998046875,
+            "totalMs": 3.7998046875
+          },
+          "validate": {
+            "calls": 100,
+            "syncMs": 9.20166015625,
+            "totalMs": 9.20166015625
+          },
+          "matches": {
+            "calls": 100,
+            "syncMs": 0.599853515625,
+            "totalMs": 0.599853515625
+          },
+          "digest": {
+            "calls": 300,
+            "syncMs": 27.70068359375,
+            "totalMs": 27.70068359375
+          },
+          "identity": {
+            "calls": 300,
+            "syncMs": 5.49951171875,
+            "totalMs": 5.49951171875
+          },
+          "storage.save": {
+            "calls": 100,
+            "syncMs": 67.600341796875,
+            "totalMs": 405.199951171875
+          },
+          "compact.record": {
+            "calls": 100,
+            "syncMs": 55.300048828125,
+            "totalMs": 55.300048828125
+          }
+        },
+        "longTasksMs": [],
+        "maxHeartbeatGapMs": 35.599853515625,
+        "sampledMainPagePeakHeapBytes": 22588105,
+        "workerGenerationMs": 293.801025390625,
+        "uiObservationMs": 1623.0
+      },
+      {
+        "name": "normal9-l1-100-candidate-clean",
+        "saved": 100,
+        "result": {
+          "puzzleCells": 81,
+          "boards": 1,
+          "boardSizes": null,
+          "jsonBytes": 1059,
+          "summarySame": true
+        },
+        "errors": [],
+        "stages": {
+          "storage.flush": {
+            "calls": 1,
+            "syncMs": 0.0,
+            "totalMs": 7.39990234375
+          },
+          "compact.meta": {
+            "calls": 103,
+            "syncMs": 7.10009765625,
+            "totalMs": 7.10009765625
+          },
+          "validate": {
+            "calls": 100,
+            "syncMs": 12.399658203125,
+            "totalMs": 12.399658203125
+          },
+          "matches": {
+            "calls": 100,
+            "syncMs": 0.400146484375,
+            "totalMs": 0.400146484375
+          },
+          "digest": {
+            "calls": 200,
+            "syncMs": 19.29931640625,
+            "totalMs": 19.29931640625
+          },
+          "identity": {
+            "calls": 200,
+            "syncMs": 4.600341796875,
+            "totalMs": 4.600341796875
+          },
+          "storage.save": {
+            "calls": 100,
+            "syncMs": 62.798583984375,
+            "totalMs": 437.100341796875
+          },
+          "compact.record": {
+            "calls": 100,
+            "syncMs": 46.399658203125,
+            "totalMs": 46.399658203125
+          }
+        },
+        "longTasksMs": [],
+        "maxHeartbeatGapMs": 47.89990234375,
+        "sampledMainPagePeakHeapBytes": 22816081,
+        "workerGenerationMs": 270.198974609375,
+        "uiObservationMs": 1668.199951171875
+      },
+      {
+        "name": "multi300-mixed-l1-baseline-clean",
+        "saved": 1,
+        "result": {
+          "puzzleCells": 24001,
+          "boards": 300,
+          "boardSizes": {
+            "9": 300
+          },
+          "jsonBytes": 776207,
+          "summarySame": true
+        },
+        "errors": [],
+        "stages": {
+          "storage.flush": {
+            "calls": 1,
+            "syncMs": 0.0,
+            "totalMs": 8.900146484375
+          },
+          "compact.meta": {
+            "calls": 5,
+            "syncMs": 5.899658203125,
+            "totalMs": 5.899658203125
+          },
+          "validate": {
+            "calls": 1,
+            "syncMs": 74.7998046875,
+            "totalMs": 74.7998046875
+          },
+          "matches": {
+            "calls": 1,
+            "syncMs": 0.300048828125,
+            "totalMs": 0.300048828125
+          },
+          "digest": {
+            "calls": 3,
+            "syncMs": 233.0,
+            "totalMs": 233.0
+          },
+          "identity": {
+            "calls": 3,
+            "syncMs": 53.5,
+            "totalMs": 53.5
+          },
+          "storage.save": {
+            "calls": 1,
+            "syncMs": 196.199951171875,
+            "totalMs": 223.39990234375
+          },
+          "compact.record": {
+            "calls": 1,
+            "syncMs": 111.699951171875,
+            "totalMs": 111.699951171875
+          }
+        },
+        "longTasksMs": [
+          {
+            "start": 1793810700289.7,
+            "duration": 346
+          },
+          {
+            "start": 1793810700660.5999,
+            "duration": 118
+          }
+        ],
+        "maxHeartbeatGapMs": 355.900146484375,
+        "sampledMainPagePeakHeapBytes": 55105110,
+        "workerGenerationMs": 666.300048828125,
+        "uiObservationMs": 2049.10009765625
+      },
+      {
+        "name": "multi300-mixed-l1-candidate-clean",
+        "saved": 1,
+        "result": {
+          "puzzleCells": 24001,
+          "boards": 300,
+          "boardSizes": {
+            "9": 300
+          },
+          "jsonBytes": 776207,
+          "summarySame": true
+        },
+        "errors": [],
+        "stages": {
+          "storage.flush": {
+            "calls": 1,
+            "syncMs": 0.0,
+            "totalMs": 14.60009765625
+          },
+          "compact.meta": {
+            "calls": 5,
+            "syncMs": 12.7998046875,
+            "totalMs": 12.7998046875
+          },
+          "validate": {
+            "calls": 1,
+            "syncMs": 39.7001953125,
+            "totalMs": 39.7001953125
+          },
+          "matches": {
+            "calls": 1,
+            "syncMs": 0.5,
+            "totalMs": 0.5
+          },
+          "digest": {
+            "calls": 2,
+            "syncMs": 262.999755859375,
+            "totalMs": 262.999755859375
+          },
+          "identity": {
+            "calls": 2,
+            "syncMs": 68.300048828125,
+            "totalMs": 68.300048828125
+          },
+          "storage.save": {
+            "calls": 1,
+            "syncMs": 275.0,
+            "totalMs": 297.599853515625
+          },
+          "compact.record": {
+            "calls": 1,
+            "syncMs": 142.099853515625,
+            "totalMs": 142.099853515625
+          }
+        },
+        "longTasksMs": [
+          {
+            "start": 1793810726781.9,
+            "duration": 460
+          }
+        ],
+        "maxHeartbeatGapMs": 464.599853515625,
+        "sampledMainPagePeakHeapBytes": 52634359,
+        "workerGenerationMs": 488.900146484375,
+        "uiObservationMs": 1950.400146484375
+      },
+      {
+        "name": "multi300-25-l1-candidate-clean",
+        "saved": 1,
+        "result": {
+          "puzzleCells": 187201,
+          "boards": 300,
+          "boardSizes": {
+            "25": 300
+          },
+          "jsonBytes": 6326312,
+          "summarySame": true
+        },
+        "errors": [],
+        "stages": {
+          "storage.flush": {
+            "calls": 3,
+            "syncMs": 0.0,
+            "totalMs": 16.39990234375
+          },
+          "compact.meta": {
+            "calls": 7,
+            "syncMs": 7.800537109375,
+            "totalMs": 7.800537109375
+          },
+          "validate": {
+            "calls": 1,
+            "syncMs": 299.89990234375,
+            "totalMs": 299.89990234375
+          },
+          "matches": {
+            "calls": 1,
+            "syncMs": 0.2001953125,
+            "totalMs": 0.2001953125
+          },
+          "digest": {
+            "calls": 2,
+            "syncMs": 895.30029296875,
+            "totalMs": 895.30029296875
+          },
+          "identity": {
+            "calls": 2,
+            "syncMs": 302.800048828125,
+            "totalMs": 302.800048828125
+          },
+          "storage.save": {
+            "calls": 1,
+            "syncMs": 1145.800048828125,
+            "totalMs": 1165.900146484375
+          },
+          "compact.record": {
+            "calls": 1,
+            "syncMs": 755.199951171875,
+            "totalMs": 755.199951171875
+          }
+        },
+        "longTasksMs": [
+          {
+            "start": 1793810738934.4,
+            "duration": 2043
+          },
+          {
+            "start": 1793810741013.2,
+            "duration": 155
+          }
+        ],
+        "maxHeartbeatGapMs": 2055,
+        "sampledMainPagePeakHeapBytes": 113458682,
+        "workerGenerationMs": 3329.400146484375,
+        "uiObservationMs": 6414.0
+      },
+      {
+        "name": "normal9-l18-cancel-candidate-clean",
+        "saved": 0,
+        "errors": [],
+        "cancelMs": 162.099853515625,
+        "stages": {
+          "storage.flush": {
+            "calls": 1,
+            "syncMs": 0.0,
+            "totalMs": 10.800048828125
+          },
+          "compact.meta": {
+            "calls": 2,
+            "syncMs": 1.0,
+            "totalMs": 1.0
+          }
+        },
+        "longTasksMs": [],
+        "maxHeartbeatGapMs": 65.5,
+        "sampledMainPagePeakHeapBytes": 15315509,
+        "workerGenerationMs": 0
+      }
+    ],
+    "repeatsPerCase": 1,
+    "uiTimeDefinition": "From immediately before automated Generate click (including large-case confirmation) until completion control visible; includes automation/UI waiting. Not pure generation+save time.",
+    "heapDefinition": "Periodically sampled main-page JavaScript heap; excludes Worker/native Chromium memory; not full process maximum.",
+    "stableTotalSpeedupEstablished": false
+  },
+  "reportStatus": "Final generator evidence plus final generated-storage continuation; production publication tracked separately.",
+  "storageContinuation": {
+    "baseline": "initial candidate 100 before the generated-storage Worker",
+    "candidate": "final 2026.11.05.100",
+    "recordFixtureCells": 187201,
+    "summary": {
+      "baseline": {
+        "runs": 3,
+        "totalMedianMs": 1915.8999999985099,
+        "maxLongtaskMedianMs": 1909,
+        "maxHeartbeatMedianMs": 1913.1999999955297,
+        "recordBytes": 1227499,
+        "digest": "57789c4af2dc18f105faea20fc8c0eb0b2f8b474af31ac28ac231c2a7682b1b3"
+      },
+      "candidate": {
+        "runs": 3,
+        "totalMedianMs": 1955.6999999955297,
+        "maxLongtaskMedianMs": 572,
+        "maxHeartbeatMedianMs": 581.2999999970198,
+        "recordBytes": 1227499,
+        "digest": "57789c4af2dc18f105faea20fc8c0eb0b2f8b474af31ac28ac231c2a7682b1b3"
+      }
+    },
+    "runs": [
+      {
+        "mode": "baseline",
+        "ms": 1763.2999999970198,
+        "start": 15487.20000000298,
+        "end": 17250.5,
+        "heapBefore": 85494119,
+        "heapAfter": 156004619,
+        "maxLongtaskMs": 1755,
+        "maxHeartbeatMs": 1760.6000000014901,
+        "longtasks": [
+          {
+            "start": 15487.10000000149,
+            "duration": 1755
+          }
+        ],
+        "calls": [
+          {
+            "name": "validate",
+            "start": 15487.60000000149,
+            "syncEnd": 15703.70000000298,
+            "end": 15703.70000000298
+          },
+          {
+            "name": "digest",
+            "start": 15703.80000000447,
+            "syncEnd": 16062.20000000298,
+            "end": 16062.20000000298
+          },
+          {
+            "name": "identity",
+            "start": 15703.80000000447,
+            "syncEnd": 15783.20000000298,
+            "end": 15783.20000000298
+          },
+          {
+            "name": "save",
+            "start": 16063.10000000149,
+            "syncEnd": 17234.70000000298,
+            "end": 17250.5
+          },
+          {
+            "name": "record",
+            "start": 16063.80000000447,
+            "syncEnd": 16883.40000000596,
+            "end": 16883.40000000596
+          },
+          {
+            "name": "digest",
+            "start": 16884.60000000149,
+            "syncEnd": 17234.20000000298,
+            "end": 17234.20000000298
+          },
+          {
+            "name": "identity",
+            "start": 16884.60000000149,
+            "syncEnd": 16966.90000000596,
+            "end": 16966.90000000596
+          }
+        ],
+        "workers": [],
+        "digest": "57789c4af2dc18f105faea20fc8c0eb0b2f8b474af31ac28ac231c2a7682b1b3",
+        "digestEqual": true,
+        "summaryEqual": true,
+        "restoredEqual": true,
+        "recordHash": "c350c0fd4f6d1548185c4c1edf67beabf2bbec9a4cfc0827c721f805a7f0b028",
+        "recordBytes": 1227499,
+        "cells": 187201,
+        "progress": "{\"token\":\"measure\",\"cursor\":1}",
+        "run": 0
+      },
+      {
+        "mode": "candidate",
+        "ms": 2558.10000000149,
+        "start": 15219,
+        "end": 17777.10000000149,
+        "heapBefore": 81415947,
+        "heapAfter": 116343729,
+        "maxLongtaskMs": 602,
+        "maxHeartbeatMs": 609,
+        "longtasks": [
+          {
+            "start": 15218.90000000596,
+            "duration": 602
+          }
+        ],
+        "calls": [
+          {
+            "name": "validate",
+            "start": 15219.90000000596,
+            "syncEnd": 15722.70000000298,
+            "end": 15722.70000000298
+          },
+          {
+            "name": "saveGenerated",
+            "start": 15722.90000000596,
+            "syncEnd": 15821.5,
+            "end": 17777.10000000149
+          }
+        ],
+        "workers": [
+          "http://127.0.0.1:34221/nanpure/releases/2026.11.05.100/notebook/storage-prepare-worker.js"
+        ],
+        "digest": "57789c4af2dc18f105faea20fc8c0eb0b2f8b474af31ac28ac231c2a7682b1b3",
+        "digestEqual": true,
+        "summaryEqual": true,
+        "restoredEqual": true,
+        "recordHash": "c350c0fd4f6d1548185c4c1edf67beabf2bbec9a4cfc0827c721f805a7f0b028",
+        "recordBytes": 1227499,
+        "cells": 187201,
+        "progress": "{\"token\":\"measure\",\"cursor\":1}",
+        "run": 1
+      },
+      {
+        "mode": "candidate",
+        "ms": 1955.6999999955297,
+        "start": 16413.30000000447,
+        "end": 18369,
+        "heapBefore": 87704795,
+        "heapAfter": 108920549,
+        "maxLongtaskMs": 572,
+        "maxHeartbeatMs": 581.2999999970198,
+        "longtasks": [
+          {
+            "start": 16412.80000000447,
+            "duration": 572
+          }
+        ],
+        "calls": [
+          {
+            "name": "validate",
+            "start": 16468.5,
+            "syncEnd": 16877,
+            "end": 16877
+          },
+          {
+            "name": "saveGenerated",
+            "start": 16877.20000000298,
+            "syncEnd": 16985.10000000149,
+            "end": 18369
+          }
+        ],
+        "workers": [
+          "http://127.0.0.1:34221/nanpure/releases/2026.11.05.100/notebook/storage-prepare-worker.js"
+        ],
+        "digest": "57789c4af2dc18f105faea20fc8c0eb0b2f8b474af31ac28ac231c2a7682b1b3",
+        "digestEqual": true,
+        "summaryEqual": true,
+        "restoredEqual": true,
+        "recordHash": "c350c0fd4f6d1548185c4c1edf67beabf2bbec9a4cfc0827c721f805a7f0b028",
+        "recordBytes": 1227499,
+        "cells": 187201,
+        "progress": "{\"token\":\"measure\",\"cursor\":1}",
+        "run": 2
+      },
+      {
+        "mode": "baseline",
+        "ms": 1915.8999999985099,
+        "start": 14445.10000000149,
+        "end": 16361,
+        "heapBefore": 82322155,
+        "heapAfter": 169318271,
+        "maxLongtaskMs": 1909,
+        "maxHeartbeatMs": 1913.1999999955297,
+        "longtasks": [
+          {
+            "start": 14445.10000000149,
+            "duration": 1909
+          }
+        ],
+        "calls": [
+          {
+            "name": "validate",
+            "start": 14446.39999999851,
+            "syncEnd": 14703.29999999702,
+            "end": 14703.29999999702
+          },
+          {
+            "name": "digest",
+            "start": 14703.29999999702,
+            "syncEnd": 15106.70000000298,
+            "end": 15106.70000000298
+          },
+          {
+            "name": "identity",
+            "start": 14704,
+            "syncEnd": 14844.79999999702,
+            "end": 14844.79999999702
+          },
+          {
+            "name": "save",
+            "start": 15106.79999999702,
+            "syncEnd": 16345,
+            "end": 16361
+          },
+          {
+            "name": "record",
+            "start": 15107,
+            "syncEnd": 15946.39999999851,
+            "end": 15946.39999999851
+          },
+          {
+            "name": "digest",
+            "start": 15951.89999999851,
+            "syncEnd": 16344.5,
+            "end": 16344.5
+          },
+          {
+            "name": "identity",
+            "start": 15951.89999999851,
+            "syncEnd": 16069.10000000149,
+            "end": 16069.10000000149
+          }
+        ],
+        "workers": [],
+        "digest": "57789c4af2dc18f105faea20fc8c0eb0b2f8b474af31ac28ac231c2a7682b1b3",
+        "digestEqual": true,
+        "summaryEqual": true,
+        "restoredEqual": true,
+        "recordHash": "c350c0fd4f6d1548185c4c1edf67beabf2bbec9a4cfc0827c721f805a7f0b028",
+        "recordBytes": 1227499,
+        "cells": 187201,
+        "progress": "{\"token\":\"measure\",\"cursor\":1}",
+        "run": 3
+      },
+      {
+        "mode": "baseline",
+        "ms": 2100.5,
+        "start": 15594,
+        "end": 17694.5,
+        "heapBefore": 83146979,
+        "heapAfter": 167573151,
+        "maxLongtaskMs": 2092,
+        "maxHeartbeatMs": 2096,
+        "longtasks": [
+          {
+            "start": 15593.89999999851,
+            "duration": 2092
+          }
+        ],
+        "calls": [
+          {
+            "name": "validate",
+            "start": 15595.20000000298,
+            "syncEnd": 15881.60000000149,
+            "end": 15881.60000000149
+          },
+          {
+            "name": "digest",
+            "start": 15881.70000000298,
+            "syncEnd": 16363,
+            "end": 16363
+          },
+          {
+            "name": "identity",
+            "start": 15881.70000000298,
+            "syncEnd": 16059.10000000149,
+            "end": 16059.10000000149
+          },
+          {
+            "name": "save",
+            "start": 16363,
+            "syncEnd": 17680.5,
+            "end": 17694.39999999851
+          },
+          {
+            "name": "record",
+            "start": 16363.20000000298,
+            "syncEnd": 17259.39999999851,
+            "end": 17259.39999999851
+          },
+          {
+            "name": "digest",
+            "start": 17265.39999999851,
+            "syncEnd": 17680.10000000149,
+            "end": 17680.10000000149
+          },
+          {
+            "name": "identity",
+            "start": 17265.60000000149,
+            "syncEnd": 17411.10000000149,
+            "end": 17411.10000000149
+          }
+        ],
+        "workers": [],
+        "digest": "57789c4af2dc18f105faea20fc8c0eb0b2f8b474af31ac28ac231c2a7682b1b3",
+        "digestEqual": true,
+        "summaryEqual": true,
+        "restoredEqual": true,
+        "recordHash": "c350c0fd4f6d1548185c4c1edf67beabf2bbec9a4cfc0827c721f805a7f0b028",
+        "recordBytes": 1227499,
+        "cells": 187201,
+        "progress": "{\"token\":\"measure\",\"cursor\":1}",
+        "run": 4
+      },
+      {
+        "mode": "candidate",
+        "ms": 1483.6000000014901,
+        "start": 14831,
+        "end": 16314.60000000149,
+        "heapBefore": 83118652,
+        "heapAfter": 118053390,
+        "maxLongtaskMs": 258,
+        "maxHeartbeatMs": 261,
+        "longtasks": [
+          {
+            "start": 14831,
+            "duration": 258
+          }
+        ],
+        "calls": [
+          {
+            "name": "validate",
+            "start": 14831.29999999702,
+            "syncEnd": 15054.89999999851,
+            "end": 15054.89999999851
+          },
+          {
+            "name": "saveGenerated",
+            "start": 15055,
+            "syncEnd": 15088.79999999702,
+            "end": 16314.60000000149
+          }
+        ],
+        "workers": [
+          "http://127.0.0.1:34221/nanpure/releases/2026.11.05.100/notebook/storage-prepare-worker.js"
+        ],
+        "digest": "57789c4af2dc18f105faea20fc8c0eb0b2f8b474af31ac28ac231c2a7682b1b3",
+        "digestEqual": true,
+        "summaryEqual": true,
+        "restoredEqual": true,
+        "recordHash": "c350c0fd4f6d1548185c4c1edf67beabf2bbec9a4cfc0827c721f805a7f0b028",
+        "recordBytes": 1227499,
+        "cells": 187201,
+        "progress": "{\"token\":\"measure\",\"cursor\":1}",
+        "run": 5
+      }
+    ],
+    "stableTotalTimeSpeedupEstablished": false,
+    "mainLongTaskMedianReductionPercent": 70.0,
+    "finalUiRuns": [
+      {
+        "name": "baseline-normal100",
+        "wallMs": 3193.7001953125,
+        "generationMs": 507.90087890625,
+        "saved": 100,
+        "result": {
+          "puzzleCells": 81,
+          "boards": 1,
+          "boardSizes": null,
+          "jsonBytes": 1058,
+          "summarySame": true
+        },
+        "stages": {
+          "storage.flush": {
+            "calls": 3,
+            "syncMs": 0.0,
+            "totalMs": 28.0
+          },
+          "compact.meta": {
+            "calls": 204,
+            "syncMs": 3.200439453125,
+            "totalMs": 3.200439453125
+          },
+          "validate": {
+            "calls": 100,
+            "syncMs": 14.400146484375,
+            "totalMs": 14.400146484375
+          },
+          "matches": {
+            "calls": 100,
+            "syncMs": 0.699951171875,
+            "totalMs": 0.699951171875
+          },
+          "digest": {
+            "calls": 300,
+            "syncMs": 26.20068359375,
+            "totalMs": 26.20068359375
+          },
+          "identity": {
+            "calls": 300,
+            "syncMs": 5.90234375,
+            "totalMs": 5.90234375
+          },
+          "storage.save": {
+            "calls": 100,
+            "syncMs": 54.7001953125,
+            "totalMs": 796.700439453125
+          },
+          "compact.record": {
+            "calls": 100,
+            "syncMs": 43.399658203125,
+            "totalMs": 43.399658203125
+          }
+        },
+        "longtasks": [
+          {
+            "start": 1793812389514.2002,
+            "duration": 755
+          },
+          {
+            "start": 1793812390301.8,
+            "duration": 83
+          }
+        ],
+        "maxHeartbeatMs": 880.89990234375,
+        "errors": []
+      },
+      {
+        "name": "final-normal100",
+        "wallMs": 1638.39990234375,
+        "generationMs": 292.599365234375,
+        "saved": 100,
+        "result": {
+          "puzzleCells": 81,
+          "boards": 1,
+          "boardSizes": null,
+          "jsonBytes": 1058,
+          "summarySame": true
+        },
+        "stages": {
+          "storage.flush": {
+            "calls": 1,
+            "syncMs": 0.10009765625,
+            "totalMs": 11.800048828125
+          },
+          "compact.meta": {
+            "calls": 103,
+            "syncMs": 4.199951171875,
+            "totalMs": 4.199951171875
+          },
+          "validate": {
+            "calls": 100,
+            "syncMs": 7.89794921875,
+            "totalMs": 7.89794921875
+          },
+          "matches": {
+            "calls": 100,
+            "syncMs": 0.80029296875,
+            "totalMs": 0.80029296875
+          },
+          "storage.saveGenerated": {
+            "calls": 100,
+            "syncMs": 56.20068359375,
+            "totalMs": 317.59912109375
+          },
+          "compact.record": {
+            "calls": 100,
+            "syncMs": 39.00048828125,
+            "totalMs": 39.00048828125
+          },
+          "digest": {
+            "calls": 100,
+            "syncMs": 9.499755859375,
+            "totalMs": 9.499755859375
+          },
+          "identity": {
+            "calls": 100,
+            "syncMs": 1.699951171875,
+            "totalMs": 1.699951171875
+          }
+        },
+        "longtasks": [],
+        "maxHeartbeatMs": 43.300048828125,
+        "errors": []
+      },
+      {
+        "name": "final-multi300x25",
+        "wallMs": 6530.5,
+        "generationMs": 3900.300048828125,
+        "saved": 1,
+        "result": {
+          "puzzleCells": 187201,
+          "boards": 300,
+          "boardSizes": {
+            "25": 300
+          },
+          "jsonBytes": 6326312,
+          "summarySame": true
+        },
+        "stages": {
+          "storage.flush": {
+            "calls": 3,
+            "syncMs": 0.0,
+            "totalMs": 15.300048828125
+          },
+          "compact.meta": {
+            "calls": 7,
+            "syncMs": 8.099853515625,
+            "totalMs": 8.099853515625
+          },
+          "validate": {
+            "calls": 1,
+            "syncMs": 312.10009765625,
+            "totalMs": 312.10009765625
+          },
+          "matches": {
+            "calls": 1,
+            "syncMs": 0.2998046875,
+            "totalMs": 0.2998046875
+          },
+          "storage.saveGenerated": {
+            "calls": 1,
+            "syncMs": 60.099853515625,
+            "totalMs": 1289.599853515625
+          }
+        },
+        "longtasks": [
+          {
+            "start": 1793812405680.7,
+            "duration": 87
+          },
+          {
+            "start": 1793812409864.2,
+            "duration": 478
+          },
+          {
+            "start": 1793812411587.5999,
+            "duration": 95
+          }
+        ],
+        "maxHeartbeatMs": 491.60009765625,
+        "errors": []
+      },
+      {
+        "name": "baseline-multi300x25",
+        "wallMs": 7281.2001953125,
+        "generationMs": 3633.699951171875,
+        "saved": 1,
+        "result": {
+          "puzzleCells": 187201,
+          "boards": 300,
+          "boardSizes": {
+            "25": 300
+          },
+          "jsonBytes": 6326312,
+          "summarySame": true
+        },
+        "stages": {
+          "storage.flush": {
+            "calls": 3,
+            "syncMs": 0.0,
+            "totalMs": 203.2998046875
+          },
+          "compact.meta": {
+            "calls": 7,
+            "syncMs": 13.60009765625,
+            "totalMs": 13.60009765625
+          },
+          "validate": {
+            "calls": 1,
+            "syncMs": 300.300048828125,
+            "totalMs": 300.300048828125
+          },
+          "matches": {
+            "calls": 1,
+            "syncMs": 0.39990234375,
+            "totalMs": 0.39990234375
+          },
+          "digest": {
+            "calls": 3,
+            "syncMs": 1374.300048828125,
+            "totalMs": 1374.300048828125
+          },
+          "identity": {
+            "calls": 3,
+            "syncMs": 390.900146484375,
+            "totalMs": 390.900146484375
+          },
+          "storage.save": {
+            "calls": 1,
+            "syncMs": 1297.400146484375,
+            "totalMs": 1317.400146484375
+          },
+          "compact.record": {
+            "calls": 1,
+            "syncMs": 853.2998046875,
+            "totalMs": 853.2998046875
+          }
+        },
+        "longtasks": [
+          {
+            "start": 1793812418695,
+            "duration": 94
+          },
+          {
+            "start": 1793812421036.5999,
+            "duration": 2288
+          },
+          {
+            "start": 1793812423338,
+            "duration": 458
+          },
+          {
+            "start": 1793812423803.7,
+            "duration": 162
+          },
+          {
+            "start": 1793812424000.7,
+            "duration": 76
+          }
+        ],
+        "maxHeartbeatMs": 2295.800048828125,
+        "errors": []
+      }
+    ],
+    "finalUiSpeedupInference": false,
+    "finalUiLimit": "One run each; baseline normal100 included a 755ms outlier. Generation and full UI durations are not interchangeable.",
+    "sourceSha256": {
+      "storage.js": "25bfa8575c0e63fc202450b22ead955307e39e0da58c0e699a68b43fa9148c8e",
+      "transfer.js": "d2e611ac0eebf5aede453e76879c3447d18dc5fc2858a08c85268d3543a491c1",
+      "app.js": "cb30237e9496706f271983b614c7afe97d17f50dd72e3d5ee5f4e3362becd56a",
+      "storage-prepare-worker.js": "9665570e6108d203bcf99c95101ad4ca8a2bd721954e3d8207813748c677d210"
+    },
+    "tests": [
+      "byte-identical compact records",
+      "canonical digest equality",
+      "immutable snapshots",
+      "concurrent duplicates",
+      "transaction rollback across puzzles/summaries/history/progress",
+      "retry after failed save retaining existing dirty edits",
+      "Worker fallback",
+      "reload",
+      "300-board six-rule exact solve and overlap witnesses",
+      "touch input and reload",
+      "cancel level18 without saving unfinished puzzle"
+    ]
+  }
+}

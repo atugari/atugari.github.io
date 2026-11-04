@@ -3,7 +3,9 @@
   const DB = 'nanpure-chou-data', VERSION = 3, INDEX = 'summaries';
   const READY = 'summary-index-v1', LEGACY = 'nanpure-chou-library-v2';
   const PROGRESS = 'nanpure-generation-progress-v2';
-    const editable = ['favorite','memo','printedAt','lastOpened'];
+  const editable = ['favorite','memo','printedAt','lastOpened'];
+  const prepareWorkerURL = typeof document !== 'undefined' && document.currentScript?.src
+    ? new URL('storage-prepare-worker.js', document.currentScript.src).href : null;
   let db, queue = Promise.resolve(), last = queue, meta = new Map(), ids = new Set();
   let seen = new Set(), exported = new Set(), signatures = new Map();
   const api = {library: [], onError: null, onProgress: null, lazy: true};
@@ -23,7 +25,7 @@
     if (summaryRow(row)) throw Error('一覧だけでは問題本体を保存できません。');
     return g.NPCompact.record(row);
   }
-  function summarize(row) {
+  function summarize(row, digest) {
     if (summaryRow(row)) return row;
     const result = {_npSummary: 1};
     for (const [key, value] of Object.entries(row)) {
@@ -31,7 +33,7 @@
     }
     if (row.rating) result.rating = Object.fromEntries(Object.entries(row.rating).filter(([,v]) => ['string','number','boolean'].includes(typeof v)));
     result._npLabel = g.NP.label(row);
-    result._npDigest = g.NPTransfer.digest(row);
+    result._npDigest = digest === undefined ? g.NPTransfer.digest(row) : digest;
     result._npIdentity = result._npDigest;
     if (row.video) result.video = copy(Object.fromEntries(Object.entries(row.video).filter(([key]) => !['credited','groups'].includes(key))));
     if (row.multiSizes) result.multiSizes = [...row.multiSizes];
@@ -229,6 +231,21 @@
     const settings = progress ? {[PROGRESS]: JSON.stringify(progress)} : {};
     return enqueue(() => commitRows(rows, settings, retained));
   };
+  // Generation owns this snapshot until it is committed. Check its digest only
+  // once, in the same queue as the write, so a duplicate never advances the job.
+  // Prepared records stay private; callers cannot supply a cached digest/record.
+  api.saveGenerated = function (row, progress) {
+    if (summaryRow(row)) throw Error('一覧だけでは問題本体を保存できません。');
+    const snapshot = prepareGenerated(row);
+    snapshot.catch(() => {});
+    const settings = progress ? {[PROGRESS]: JSON.stringify(progress)} : {};
+    return enqueue(async () => {
+      const prepared = await snapshot;
+      if (seen.has(prepared.summary._npDigest)) return null;
+      await commitRows([prepared], settings);
+      return prepared.summary;
+    });
+  };
   api.commit = function (rows, settings) {
     const snapshot = rows.map(prepare), values = {...settings};
     return enqueue(() => commitRows(snapshot, values));
@@ -237,6 +254,49 @@
     if (summaryRow(row)) return copy(row);
     // Capture the edit immediately, without retaining full board copies in the write queue.
     return {_npPrepared: true, record: pack(row), summary: summarize(row)};
+  }
+  function prepareGenerated(row) {
+    // Avoid starting a worker for ordinary small puzzles. Their compression and
+    // fingerprint are cheap, and the one prepared result still serves both uses.
+    if (row.puzzle.length <= 4096) return Promise.resolve(prepare(row));
+    // Capture immediately, like save(). Later edits must not change an enqueued
+    // save, including when a worker fails and the synchronous codec is used.
+    const text = JSON.stringify(row), summary = summarize(row, '');
+    return new Promise((resolve, reject) => {
+      let worker, timer, finished = false;
+      const cleanup = () => { clearTimeout(timer); worker?.terminate(); };
+      const result = (record, digest) => {
+        summary._npDigest = summary._npIdentity = digest;
+        resolve({_npPrepared: true, record, summary});
+      };
+      const fallback = () => {
+        if (finished) return;
+        finished = true; cleanup();
+        Promise.resolve().then(async () => {
+          const captured = JSON.parse(text);
+          const digest = g.NPTransfer.digestAsync ? await g.NPTransfer.digestAsync(captured) : g.NPTransfer.digest(captured);
+          // This is exactly the existing record codec, applied to the captured
+          // JSON instead of serializing a possibly edited original a second time.
+          result({uid: captured.uid, compactVersion: 1, data: g.NPCompact.zip(text)}, digest);
+        }).catch(reject);
+      };
+      if (!prepareWorkerURL || typeof g.Worker !== 'function') { fallback(); return; }
+      try {
+        worker = new g.Worker(prepareWorkerURL);
+        worker.onmessage = event => {
+          if (finished) return;
+          const value = event.data;
+          if (!value || value.record?.uid !== summary.uid || value.record?.compactVersion !== 1 ||
+            !(value.record.data instanceof Uint8Array) || !value.record.data.length ||
+            typeof value.digest !== 'string' || !/^[a-f0-9]{64}$/.test(value.digest)) { fallback(); return; }
+          finished = true; cleanup(); result(value.record, value.digest);
+        };
+        worker.onerror = event => { event.preventDefault?.(); fallback(); };
+        worker.onmessageerror = fallback;
+        timer = setTimeout(fallback, 60000);
+        worker.postMessage(text);
+      } catch { fallback(); }
+    });
   }
   api.get = async uid => {
     await last;
@@ -253,7 +313,7 @@
     }
     return result;
   };
-  api.summary = summarize;
+  api.summary = row => summarize(row);
   api.isSummary = summaryRow;
   api.identity = row => summaryRow(row) ? row._npIdentity : g.NPTransfer.sha256(g.NPLanIdentity(row));
   api.historyDigests = () => Array.from(seen);

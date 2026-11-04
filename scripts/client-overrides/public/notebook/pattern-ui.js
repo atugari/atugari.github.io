@@ -5,7 +5,7 @@
  let page=null, dialog=null, jobsDialog=null, job=null, clock=null, saving=false, selectedId=null;
  let levelPolicy='exact',required=[],excluded=[],techniqueConditions=false;
  let storage;try{storage=window.localStorage;}catch(_){}
- const queue=window.NPPatternQueue||(window.NPPatternQueue=window.NPPatternJobsFactory.create({model,engine:document.getElementById('core-normal')?.textContent||'',storage,Worker:window.Worker,Blob:window.Blob,URL:window.URL,setTimeout:window.setTimeout.bind(window),clearTimeout:window.clearTimeout.bind(window)}));
+ const queue=window.NPPatternQueue||(window.NPPatternQueue=window.NPPatternJobsFactory.create({model,engine:(document.getElementById('core-normal')?.textContent||'')+'\n'+(document.getElementById('core-unique-solver')?.textContent||''),storage,Worker:window.Worker,Blob:window.Blob,URL:window.URL,setTimeout:window.setTimeout.bind(window),clearTimeout:window.clearTimeout.bind(window)}));
  let mask=[], omit=0, symmetry='none', brush='auto', difficulty=0, workspace='fit', sizeStep=0;
  let drawTool='pen',toolsTab='drawing',shapeStart=null;
  const drawTools=[['pen','なぞって描く'],['line','直線を描く'],['rectangle','四角の枠を描く'],['solid','四角を塗る'],['fill','囲みの中を塗る']];

@@ -4,7 +4,7 @@ const fs=require('node:fs'),path=require('node:path'),assert=require('node:asser
 const root=path.resolve(process.argv[2]||'_site'),version=JSON.parse(fs.readFileSync(path.join(root,'nanpure/version.json'))).version;
 const notebook=path.join(root,'nanpure/releases',version,'notebook'),html=fs.readFileSync(path.join(notebook,'index.html'),'utf8'),sources=new Map();
 for(const tag of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)){const id=tag[1].match(/\bid=["']([^"']+)["']/);if(id)sources.set(id[1],tag[2]);}
-const ids=['core-normal','core-big','core-killer','core-rect','core-giant','core-hundred','core-expert','core-master-logic','core-master','core-cover-logic','core-cover','core-resolution-logic','core-resolution','core-deduction','core-neighbor','core-step','core-cross','core-linked','core-variants','core-expansion','core-multi','common-source','generator-source','core-mixed-multi'];
+const ids=['core-normal','core-unique-solver','core-big','core-killer','core-rect','core-giant','core-hundred','core-expert','core-master-logic','core-master','core-cover-logic','core-cover','core-resolution-logic','core-resolution','core-deduction','core-neighbor','core-step','core-cross','core-linked','core-variants','core-expansion','core-multi','common-source','generator-source','core-mixed-multi'];
 for(const id of ids)assert(sources.has(id),'Missing generator source: '+id);
 const engine='var global=self;if(!self.globalThis)self.globalThis=self;\n'+ids.map(id=>sources.get(id)).join('\n');
 const fixture=fs.readFileSync('scripts/fixtures/generation-assist-retry.html','utf8').replaceAll('__RELEASE__',version);

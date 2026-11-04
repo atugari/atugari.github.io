@@ -62,6 +62,28 @@ function verify(p){
  const markup=ctx.NP.svgBoard(p,false);assert(markup.includes(p.linked.width*40+4));assert(markup.includes('data-multi-blocks'));assert(markup.includes('A '));
 }
 let generated=0,finderPuzzle;
+{
+ const sizes=Array(300).fill(4),links=sizes.slice(1).map((_,i)=>({parent:i,corner:'se'}));
+ let attempts=0;
+ assert.throws(()=>ctx.NanpureMulti.generateMixed('custom',sizes,1,'IMPOSSIBLE-CLUE-QUOTA',()=>attempts++,120000,links),{code:'NP_SEARCH_EXHAUSTED'});
+ assert.equal(attempts,0,'infeasible clue quota must not start a retry loop');
+}
+
+// Small boards cannot keep the global clue ratio individually after two
+// symbols are removed to make their shared cell necessary. Larger boards
+// absorb the remainder while the complete puzzle keeps its requested ratio.
+{
+ const sizes=Array.from({length:21},(_,i)=>[4,6,9][i%3]);
+ const links=sizes.slice(1).map((_,i)=>({parent:i,corner:'se'}));
+ const p=ctx.NanpureMulti.generateMixed('custom',sizes,1,'MIXED-CLUE-QUOTA',null,5000,links);
+ assert.equal(ctx.NP.validate(p),true);
+ assert.equal(p.rating.clues,Math.round(p.solution.length*.65));
+ assert.equal(p.verification.sharedWitnesses.length,20);
+ const result=ctx.NanpureMulti.exact(p,3000);
+ assert.equal(result.timeout,false);assert.equal(result.count,1);
+ assert.equal(ctx.NanpureMulti.solve(p,1).solved,true);
+ generated++;
+}
 for(const n of ctx.NanpureMulti.mixedSizes){const p=ctx.NanpureMulti.generateMixed('pair',[n,9],1,'SIZE-'+n,null,5000);verify(p);generated++;}
 for(let level=2;level<=5;level++){const p=ctx.NanpureMulti.generateMixed('pair',[4,9],level,'LV-'+level,null,10000);verify(p);assert.equal(p.level,level);if(level>=3)assert.equal(ctx.NanpureMulti.solve(p,ctx.NanpureMulti.caps[level-1]-1).solved,false);generated++;}
 for(const [shape,ns] of [['relay',[4,9,6]],['samurai',[9,4,6,8,9]]]){verify(ctx.NanpureMulti.generateMixed(shape,ns,1,'SHAPE-'+shape,null,5000));generated++;}

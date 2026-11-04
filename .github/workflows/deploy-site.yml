@@ -134,6 +134,8 @@ jobs:
           export PLAYWRIGHT_MODULE="$RUNNER_TEMP/nanpure-browser/node_modules/playwright"
           export CHROME_BIN="$(command -v google-chrome || command -v chromium)"
           node scripts/check-nanpure-lazy-storage-browser.cjs _site
+          node scripts/check-nanpure-generated-storage.cjs
+          node scripts/check-nanpure-generated-storage-browser.cjs _site
           node scripts/check-nanpure-recovery-pack.cjs
 
       - name: Check personal galleries on desktop and mobile

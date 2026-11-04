@@ -140,57 +140,68 @@
     const members = linked.cells.map(() => []);
     units.forEach((u, j) => u.forEach(i => members[i].push(j)));
     const edgePeers = linked.cells.map((_,i) => extra.has(i) ? [...extra.get(i)] : []);
-    const marked = new Uint32Array(linked.cells.length);
+    const marked = new Uint32Array(linked.cells.length), peerBuffer=[];
     const peers = members.map((membership, i) => {
-      const result = [], stamp = i + 1;
-      marked[i] = stamp;
-      for (const unit of membership) for (const peer of units[unit]) if (marked[peer] !== stamp) { marked[peer] = stamp; result.push(peer); }
-      for (const peer of edgePeers[i]) if (marked[peer] !== stamp) { marked[peer] = stamp; result.push(peer); }
-      return Uint32Array.from(result);
+      const stamp=i+1;let count=0;
+      marked[i]=stamp;
+      for(const unit of membership)for(const peer of units[unit])if(marked[peer]!==stamp){marked[peer]=stamp;peerBuffer[count++]=peer;}
+      for(const peer of edgePeers[i])if(marked[peer]!==stamp){marked[peer]=stamp;peerBuffer[count++]=peer;}
+      const result=new Uint32Array(count);
+      for(let j=0;j<count;j++)result[j]=peerBuffer[j];
+      return result;
     });
     const result = {units, members, peers, edgePeers, domains, boards: linked.boards, cellBoards}; cached.set(linked, result); return result;
   }
   function solve(p, cap = 4, model = setup(p.linked), deadline = Infinity) {
-    const c = p.puzzle.map((v, i) => v ? (1 << (v - 1)) & model.domains[i] : model.domains[i]);
-    const fixed = [], used = model.units.map(()=>0);
-    for (let unit=0;unit<model.units.length;unit++) for (const i of model.units[unit]) if (p.puzzle[i]) {
-      if (!c[i] || used[unit] & c[i]) return {solved:false,bad:true};
-      used[unit] |= c[i];
-    }
-    for (let i=0;i<c.length;i++) {
-      if (p.puzzle[i]) {
-        if (model.edgePeers[i].some(j=>j<i && p.puzzle[j]===p.puzzle[i])) return {solved:false,bad:true};
-        continue;
+    const puzzle=p.puzzle, c=new Array(puzzle.length), fixed=new Uint32Array(puzzle.length), used=new Uint32Array(model.units.length);
+    let fixedCount=0, remaining=0, invalid=false;
+    for(let i=0;i<c.length;i++) {
+      const value=puzzle[i];
+      c[i]=value ? (1<<(value-1)) & model.domains[i] : model.domains[i];
+      if(!value)continue;
+      if(!c[i])return {solved:false,bad:true};
+      for(const unit of model.members[i]) {
+        if(used[unit]&c[i])return {solved:false,bad:true};
+        used[unit]|=c[i];
       }
-      for (const unit of model.members[i]) c[i] &= ~used[unit];
-      for (const peer of model.edgePeers[i]) if (p.puzzle[peer]) c[i] &= ~(1 << (p.puzzle[peer]-1));
-      if (single(c[i])) fixed.push(i);
+      for(const peer of model.edgePeers[i])if(peer<i&&puzzle[peer]===value)return {solved:false,bad:true};
     }
-    let hardest = 1, moves = 0, read = 0;
-    const cut = (i, m) => {
-      const previous = c[i], v = previous & m;
-      if (v === previous) return false;
-      c[i] = v; moves++;
-      if (single(v) && !single(previous)) fixed.push(i);
+    for(let i=0;i<c.length;i++)if(!puzzle[i]) {
+      let candidates=c[i];
+      for(const unit of model.members[i])candidates&=~used[unit];
+      for(const peer of model.edgePeers[i])if(puzzle[peer])candidates&=~(1<<(puzzle[peer]-1));
+      c[i]=candidates;
+      if(!candidates)return {solved:false,bad:true};
+      if(single(candidates))fixed[fixedCount++]=i;
+      else remaining++;
+    }
+    let hardest=1,moves=0,read=0;
+    const cut=(i,m)=>{
+      const previous=c[i],value=previous&m;
+      if(value===previous)return false;
+      c[i]=value;moves++;
+      if(!value)invalid=true;
+      else if(single(value)&&!single(previous)){fixed[fixedCount++]=i;remaining--;}
       return true;
     };
-    for (;;) {
-      if (Date.now() >= deadline) return {solved: false, timeout: true};
-      while (read < fixed.length) {
-        const i = fixed[read++];
-        if (!c[i]) return {solved:false,bad:true};
-        for (const j of model.peers[i]) if (c[j] & c[i]) cut(j,~c[i]);
+    for(;;){
+      if(Date.now()>=deadline)return {solved:false,timeout:true};
+      while(read<fixedCount){
+        const i=fixed[read++];
+        if(invalid)return {solved:false,bad:true};
+        for(const peer of model.peers[i])if(c[peer]&c[i])cut(peer,~c[i]);
       }
-      if (c.some(v => !v)) return {solved: false, bad: true};
-      let changed = false;
-      if (c.every(single)) return {solved: true, grid: c.map(digit), hardest, moves};
-      if (cap >= 2) {
-        for (const u of model.units) for (let d = 0; d < u.length; d++) {
-          const bit = 1 << d, places = u.filter(i => c[i] & bit);
-          if (!places.length) return {solved: false, bad: true};
-          if (places.length === 1) changed = cut(places[0], bit) || changed;
+      if(invalid)return {solved:false,bad:true};
+      let changed=false;
+      if(!remaining)return {solved:true,grid:c.map(digit),hardest,moves};
+      if(cap>=2){
+        for(const unit of model.units)for(let d=0;d<unit.length;d++){
+          const bit=1<<d;let at=-1;
+          for(const i of unit)if(c[i]&bit){if(at>=0){at=-2;break;}at=i;}
+          if(at===-1)return {solved:false,bad:true};
+          if(at>=0)changed=cut(at,bit)||changed;
         }
-        if (changed) { hardest = Math.max(hardest, 2); continue; }
+        if(changed){hardest=Math.max(hardest,2);continue;}
       }
       if (cap >= 3) {
         for (const u of model.units) {
@@ -229,11 +240,24 @@
   function search(p, end, limit, rng, maxNodes = Infinity) {
     const model = setup(p.linked), countCells = p.puzzle.length;
     const candidates = new Uint32Array(countCells), unresolved = new Set(), trail = [];
+    const used = new Uint32Array(model.units.length);
     let count = 0, nodes = 0, solution, expired = false, work = 0;
     for (let i = 0; i < countCells; i++) {
       const value = p.puzzle[i];
       if (!Number.isInteger(value) || value < 0 || value > 25) return {count:0,timeout:false};
       candidates[i] = value ? (1 << (value - 1)) & model.domains[i] : model.domains[i];
+      if (!candidates[i]) return {count:0,timeout:false};
+      if (value) {
+        for (const unit of model.members[i]) {
+          if (used[unit] & candidates[i]) return {count:0,timeout:false};
+          used[unit] |= candidates[i];
+        }
+        for (const peer of model.edgePeers[i]) if (peer<i && p.puzzle[peer]===value) return {count:0,timeout:false};
+      }
+    }
+    for (let i=0;i<countCells;i++) if (!p.puzzle[i]) {
+      for (const unit of model.members[i]) candidates[i] &= ~used[unit];
+      for (const peer of model.edgePeers[i]) if (p.puzzle[peer]) candidates[i] &= ~(1<<(p.puzzle[peer]-1));
       if (!candidates[i]) return {count:0,timeout:false};
       if (!single(candidates[i])) unresolved.add(i);
     }
@@ -253,7 +277,7 @@
         return true;
       }
       if (initial < 0) {
-        for (let i = 0; i < countCells; i++) if (single(candidates[i])) fixed.push(i);
+        for (let i = 0; i < countCells; i++) if (!p.puzzle[i] && single(candidates[i])) fixed.push(i);
         for (let i = 0; i < model.units.length; i++) { queued[i] = 1; dirty.push(i); }
       } else { fixed.push(initial); queueUnits(initial); }
       while (fixedRead < fixed.length || dirtyRead < dirty.length) {
@@ -543,7 +567,8 @@
         if (!found) return null;
       } else if (!solve({puzzle},cap,localModel,end).solved) return null;
       const localPuzzle={puzzle,solution:known,protectedCells:incoming<0?new Set():new Set([incoming])};
-      const goal=Math.floor(target*totals[next]/totalUnique)+(incoming>=0?1:0);
+      const quota=Math.floor(target*totals[next]/totalUnique)+(incoming>=0?1:0);
+      const goal=Math.min(quota,puzzle.filter(Boolean).length);
       const clues=reduceClues(localPuzzle,localModel,cap,rng,end,goal);
       if (clues!==goal) return null;
       for(let i=0;i<board.map.length;i++)if(model.cellBoards[board.map[i]].length===1)p.puzzle[board.map[i]]=puzzle[i];
@@ -581,12 +606,21 @@
     const order = connectionOrder(model), overlaps = model.cellBoards.filter(owners => owners.length > 1);
     const tree = overlaps.length === values.length-1 && overlaps.every(owners=>owners.length===2);
     const parents = tree ? new Map(order.map(({next,parent})=>[next,parent])) : undefined;
+    const target = Math.round(linked.cells.length * (level === 1 ? .65 : level === 2 ? .42 : .23));
+    if (tree && values.length>20 && level<=2) {
+      // Every shared cell stays blank, and each dependent board omits two
+      // whole symbol classes. More clues than this bound cannot be produced.
+      const maximumClues=model.boards.reduce((total,board,index)=>{
+        const unique=board.map.reduce((count,i)=>count+(model.cellBoards[i].length===1),0);
+        return total+(index===order.anchor ? unique : Math.min(unique,board.n*board.n-2*board.n));
+      },0);
+      if(target>maximumClues)throw Object.assign(Error('指定した組み合わせと難易度を引き続き探しています。'),{code:'NP_SEARCH_EXHAUSTED'});
+    }
     let tries = 0;
     while (Date.now() < end) {
       progress?.('各盤面の大きさ・共有マス・難易度を確認中（' + ++tries + '回目）');
       const solution = completed(linked, rng, end); if (!solution) continue;
       const p = {kind: 'multi', n: Math.max(...values), level, id, linked, multiVersion: 2, solution, puzzle: solution.slice()};
-      const target = Math.round(solution.length * (level === 1 ? .65 : level === 2 ? .42 : .23));
       let clues;
       if (tree && values.length>20) {
         clues=treeClues(p,model,order,level>=3?1:cap,rng,end,level>=3?Math.round(solution.length*.65):target);
