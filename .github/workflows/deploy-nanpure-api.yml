@@ -1,4 +1,4 @@
-name: Deploy isolated Nanpure vending trial
+name: Deploy Nanpure vending service
 
 on:
   push:
@@ -23,7 +23,8 @@ jobs:
     env:
       CLOUDFLARE_ACCOUNT_ID: '3fb1db1d33caddf96fec77fac7d571e6'
       WRANGLER_SEND_METRICS: 'false'
-      NANPURE_PILOT_OWNER_HASH: 'f511b84e0ebed5400786a1d983727243d19b76a95ec06355af4846d6a6629cd4'
+      NANPURE_VENDING_PUBLIC_PLAY: '1'
+      NANPURE_PILOT_PRESERVE_OWNER: '1'
     steps:
       - uses: actions/checkout@v6
         with:
@@ -52,10 +53,6 @@ jobs:
             ' "$db_name"
           }
           trial_id="$(lookup)"
-          if [ -z "$trial_id" ]; then
-            npx --no-install wrangler d1 create "$db_name" --location apac --no-update-config
-            trial_id="$(lookup)"
-          fi
           if ! [[ "$trial_id" =~ ^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$ ]]; then
             echo 'Trial database ID could not be verified.' >&2
             exit 1
@@ -70,11 +67,19 @@ jobs:
           if (c.name !== 'nanpure-vending-pilot' || c.d1_databases.length !== 1 ||
               c.d1_databases[0].database_name !== 'nanpure-vending-pilot-db' ||
               c.d1_databases[0].database_id !== process.env.NANPURE_PILOT_DB_ID ||
+              c.vars.VENDING_CATALOGUE_ENABLED !== '1' ||
+              c.vars.VENDING_PUBLIC_PLAY !== process.env.NANPURE_VENDING_PUBLIC_PLAY ||
+              c.keep_vars !== true || Object.hasOwn(c.vars, 'OWNER_KEY_HASH') ||
               c.routes?.length || c.route) throw Error('Unverified pilot deployment destination');
+          JS
+          node --input-type=module - <<'JS'
+          const trial = await fetch('https://nanpure-vending-pilot.puzzle-hub-4826.workers.dev/nanpure/vending/',
+            {signal: AbortSignal.timeout(10000)});
+          if (!trial.ok || !/試験用の管理者キー/.test(await trial.text())) throw Error('Existing private trial was not verified');
           JS
           npx --no-install wrangler d1 migrations apply DB --remote --config pilot/wrangler.generated.json
           npx --no-install wrangler deploy --config pilot/wrangler.generated.json | tee "$RUNNER_TEMP/vending-trial-deploy.log"
-      - name: Check public entry and unauthenticated phone access
+      - name: Check public stock and restricted owner access
         run: |
           node --input-type=module - <<'JS'
           import {readFileSync,appendFileSync} from 'node:fs';
@@ -89,14 +94,31 @@ jobs:
                 method:'POST',headers:{'Content-Type':'application/json'},
                 body:JSON.stringify({action:'poll'}),signal:AbortSignal.timeout(10000)
               });
-              if (page.ok && /試験|管理者/.test(await page.text()) && worker.status === 403) {
+              const originHeader = 'https://atugari.github.io';
+              const shelf = await fetch(origin + '/api/vending/public', {
+                headers: {Origin: originHeader}, signal: AbortSignal.timeout(10000)
+              });
+              const owner = await fetch(origin + '/api/vending/admin', {signal: AbortSignal.timeout(10000)});
+              const privateShelf = await fetch(origin + '/api/vending', {signal: AbortSignal.timeout(10000)});
+              const preflight = await fetch(origin + '/api/vending/public', {
+                method: 'OPTIONS', signal: AbortSignal.timeout(10000),
+                headers: {Origin: originHeader, 'Access-Control-Request-Method': 'POST',
+                  'Access-Control-Request-Headers': 'content-type,x-nanpure-key'}
+              });
+              const profiles = shelf.ok ? (await shelf.json()).profiles : null;
+              if (page.ok && /試験用の管理者キー/.test(await page.text()) && worker.status === 403 &&
+                  owner.status === 403 && privateShelf.status === 401 &&
+                  shelf.headers.get('access-control-allow-origin') === originHeader &&
+                  !shelf.headers.has('access-control-allow-credentials') &&
+                  Array.isArray(profiles) && profiles.every(profile => profile.available > 0) &&
+                  preflight.ok && preflight.headers.get('access-control-allow-origin') === originHeader) {
                 checked = true;
                 break;
               }
             } catch {}
             await new Promise(resolve => setTimeout(resolve, 3000));
           }
-          if (!checked) throw Error('Trial entry and unauthenticated phone denial could not be verified');
+          if (!checked) throw Error('Public stock or private trial access controls could not be verified');
           appendFileSync(process.env.GITHUB_STEP_SUMMARY, '## Isolated trial\n\n' + origin + '/nanpure/vending/\n');
           console.log('Verified isolated trial: ' + origin + '/nanpure/vending/');
           JS
