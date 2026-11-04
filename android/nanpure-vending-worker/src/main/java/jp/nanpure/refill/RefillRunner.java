@@ -1,6 +1,8 @@
 package jp.nanpure.refill;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
@@ -19,6 +21,7 @@ import java.util.function.Consumer;
 
 final class RefillRunner {
     private static final ReentrantLock EXCLUSIVE = new ReentrantLock();
+    private static final IntentFilter BATTERY_STATE = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
     private static final int ROUND_MS = 75000;
     private static final long SESSION_MS = 4 * 60 * 1000;
     private static final long IDLE_MS = 60 * 1000;
@@ -172,16 +175,19 @@ final class RefillRunner {
     private boolean canWork(Network network, String token) {
         if (stopped || token.isEmpty() || !token.equals(store.token()) ||
                 (!foreground && (!store.enabled() || RefillService.isRunning()))) return false;
-        BatteryManager battery = context.getSystemService(BatteryManager.class);
-        if (!battery.isCharging()) {
-            return blocked("充電待ち");
-        }
+        if (!hasExternalPower()) return blocked("電源接続待ち");
         if (Build.VERSION.SDK_INT >= 29 && context.getSystemService(PowerManager.class).getCurrentThermalStatus()
                 >= PowerManager.THERMAL_STATUS_SEVERE) {
             return blocked("端末の温度が下がるまで待機");
         }
         if (!networkAllowed(network)) return blocked("許可した回線につながるまで待機");
         return true;
+    }
+
+    private boolean hasExternalPower() {
+        Intent state = context.registerReceiver(null, BATTERY_STATE);
+        // Power can stay connected when the battery has temporarily stopped charging.
+        return state != null && state.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0) > 0;
     }
 
     private boolean networkAllowed(Network network) {
