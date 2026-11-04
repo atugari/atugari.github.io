@@ -9,6 +9,7 @@ const {window:w}=parseHTML(html),values=new Map(),requests=[],errors=[],interval
 // Search crawlers and readers without JavaScript must receive useful public content.
 // Check before running any client script so an empty app shell cannot regress unnoticed.
 assert(w.document.querySelector('#root h1')?.textContent.includes('ナンプレ帳'),'Missing pre-rendered home heading');
+assert(!w.document.querySelector('.designed-home :is(.home-bottom-links,.home-version,[data-home-guide],[data-pare-entry])'),'Removed home shortcuts must be absent before JavaScript');
 const initialIntro=w.document.querySelector('#root .site-intro');
 assert(initialIntro&&initialIntro.textContent.includes('数独')&&initialIntro.textContent.includes('無料'),'Missing visible public introduction');
 assert.equal(w.document.querySelector('link[rel="canonical"]')?.getAttribute('href'),'https://atugari.github.io/nanpure/');
@@ -47,7 +48,7 @@ function button(text){const b=[...w.document.querySelectorAll('button')].find(x=
  assert(!intervals.includes(500),'Home must not run a half-second play clock');
  const daily=w.document.querySelector('button.daily-choice');assert(daily);assert(!w.document.querySelector('a.daily-choice'));
  const membership='https://ofuse.me/memberships/5107',letter='https://ofuse.me/o?uid=228296';
- const homeSupport=w.document.querySelector('.home-support-button');assert.equal(homeSupport.getAttribute('href'),membership);assert(homeSupport.textContent.includes('100円'));assert.equal(w.document.querySelector('.header-support').getAttribute('href'),letter);
+ const homeSupport=w.document.querySelector('.home-support-button');assert.equal(homeSupport.getAttribute('href'),membership);assert.equal(homeSupport.textContent,'月100円で製作者を応援しよう♫');assert.equal(w.document.querySelector('.header-support').getAttribute('href'),letter);
  const menu=w.document.querySelector('.menu-button');assert(menu,'Menu button missing');menu.click();await settle(()=>w.document.querySelector('.site-menu'),'menu panel');assert(w.document.querySelector('.site-menu'));
  const supportEntry=[...w.document.querySelectorAll('.menu-entry')].find(x=>x.querySelector('strong')?.textContent==='制作を応援');assert(supportEntry);supportEntry.click();await settle(()=>w.document.querySelector('.membership-support'),'membership support panel');
  const support=w.document.querySelector('.membership-support');assert(support.textContent.includes('メンバー限定の機能や追加特典はありません。'));assert(support.textContent.includes('問題づくり・プレイ・印刷は無料で使えます。'));
@@ -58,7 +59,9 @@ function button(text){const b=[...w.document.querySelectorAll('button')].find(x=
  const iframe=w.document.querySelector('iframe.notebook');assert.equal(iframe.getAttribute('src'),manifest.base+'notebook/index.html');
  button('‹ 戻る');await settle(()=>w.document.querySelector('.site-shell.mode-home'),'return home');assert(w.document.querySelector('.site-shell').classList.contains('mode-home'));
  button('お問い合わせ');await settle(()=>w.document.querySelector('.contact-form'),'contact panel');assert(w.document.querySelector('.contact-form'));assert(!w.document.querySelector('.pages-online'));
- button('閉じる ×');await settle(()=>!w.document.querySelector('.contact-form'),'contact dismissal');button('ランキング');await settle(()=>w.document.querySelector('.ranking'),'ranking panel');assert(w.document.querySelector('.ranking'));
+ button('閉じる ×');await settle(()=>!w.document.querySelector('.contact-form'),'contact dismissal');
+ button('日替わりナンプレに挑戦する');await settle(()=>w.document.querySelector('.daily-ranking-link'),'daily ranking entry');
+ w.document.querySelector('.daily-ranking-link').click();await settle(()=>w.document.querySelector('.ranking'),'ranking panel');assert(w.document.querySelector('.ranking'));
  assert.equal(errors.length,0,errors.join('\n'));assert(requests.some(x=>x===manifest.online+'/api/contact?summary=1'));
  assert(!html.includes('chatgpt.site'));
  log.log('PASS shipped shell: startup, free-play/back, native daily/contact/ranking, Cloudflare API transport, versioned assets');
