@@ -23,6 +23,7 @@ jobs:
     env:
       CLOUDFLARE_ACCOUNT_ID: '3fb1db1d33caddf96fec77fac7d571e6'
       WRANGLER_SEND_METRICS: 'false'
+      NANPURE_PILOT_CATALOGUE: '1'
       NANPURE_PILOT_OWNER_HASH: 'f511b84e0ebed5400786a1d983727243d19b76a95ec06355af4846d6a6629cd4'
     steps:
       - uses: actions/checkout@v6
