@@ -365,6 +365,32 @@ test('the gated catalogue exactly matches all 427 APK conditions and serves regi
   assert.equal((await reserve(key(404), profile)).status, 400);
 });
 
+test('catalogue preserves nested level 17 cover proofs within bounded depth', async t => {
+  const { env, call, mobile, pair, result, collect } = await setup(t);
+  env.VENDING_CATALOGUE_ENABLED = '1';
+  const [{ puzzle }] = JSON.parse(gunzipSync(Buffer.from(readFileSync(
+    new URL('../../nanpure/collection/data/C148/0000.gz.b64', import.meta.url), 'utf8'
+  ), 'base64')));
+  const profile = 'normal:9:17:0::::', id = key(405);
+  assert.equal((await call(trial, { action: 'order', id, count: 1, reserve: true, profile }, { client: one })).status, 200);
+  await pair(one, 'App 0.2.0');
+  const { data: { job } } = await mobile(one, { action: 'poll', version: 2, ready: [profile] });
+  assert.equal(job.profile, profile);
+  let tooDeep = 0;
+  for (let i = 0; i < 16; i++) tooDeep = [tooDeep];
+  for (const malformed of [
+    { coverVersion: 2 },
+    { logicProof: [...puzzle.logicProof, [tooDeep]] },
+    { logicProof: [...puzzle.logicProof, '<svg>'] },
+    { logicProof: [...puzzle.logicProof, Array(1025).fill(0)] }
+  ]) assert.equal((await result(one, job, { ...puzzle, ...malformed })).status, 400);
+  assert.deepEqual(await result(one, job, puzzle), { status: 200, data: { ok: true } });
+  const { puzzles: [received] } = (await collect(one, id)).data;
+  assert.equal(received.uid, puzzle.uid);
+  assert.equal(received.coverVersion, 1);
+  assert.deepEqual(received.logicProof, puzzle.logicProof);
+});
+
 test('catalogue reserves first, backs off long unfinished releases, and keeps counts accurate', async t => {
   const { DB, env, call, mobile, pair, result } = await setup(t);
   env.VENDING_CATALOGUE_ENABLED = '1';
