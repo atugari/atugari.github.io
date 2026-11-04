@@ -7,6 +7,7 @@ import { normalProfileShape, validateNormalProfile } from './shared/vending-norm
 import { variantProfileShape, validateVariantProfile } from './shared/vending-variants.js';
 import { cataloguePuzzleShape, verifyCataloguePuzzle, fingerprintCataloguePuzzle } from './shared/vending-catalogue.js';
 import { hundredProfileShape, validateHundredProfile, fingerprintHundredPuzzle } from './shared/vending-hundred.js';
+import { createEnrollment, enrollDevice, listEnrollments, maxVendingDevices, revokeEnrollment } from './vending-enrollment.js';
 
 const rule = { kind: 'normal', n: 9, level: 18 };
 const pilotProfile = 'normal:9:18:0::::';
@@ -17,7 +18,7 @@ const leaseLifetime = 8 * 60_000;
 const stockReportInterval = 15 * 60_000;
 const orderLifetime = 7 * 24 * 60 * 60_000;
 const receiptLifetime = orderLifetime;
-const maxDevices = 30;
+const maxDevices = maxVendingDevices;
 const maxOpenPerClient = 5;
 const maxOutstanding = 200;
 const maxOrder = 10;
@@ -182,7 +183,7 @@ async function admin(request, env, now) {
   if (!await owner(request, env)) fail(403, '管理用キーを確認してください。');
   const db = env.DB;
   if (request.method === 'GET') {
-    const [stock, devices, state, list] = await Promise.all([
+    const [stock, devices, state, list, enrollments] = await Promise.all([
       shelf(db),
       db.prepare(`SELECT id,name,created,last_seen AS lastSeen,
         stock_count AS stockCount,stock_bytes AS stockBytes,stock_updated AS stockUpdatedAt,
@@ -190,13 +191,16 @@ async function admin(request, env, now) {
         FROM vending_devices WHERE revoked IS NULL ORDER BY created,id`).bind(now).all(),
       db.prepare(`SELECT (SELECT COALESCE(SUM(waiting),0) FROM vending_catalogue WHERE waiting>0) AS waiting,
         (SELECT COUNT(*) FROM vending_jobs WHERE done IS NULL AND lease_until>?) AS leased`).bind(now).first(),
-      wantsProfiles(request) ? profiles(db, true, catalogueEnabled(env)) : null
+      wantsProfiles(request) ? profiles(db, true, catalogueEnabled(env)) : null,
+      listEnrollments(db)
     ]);
-    return json({ shelf: stock, devices: devices.results.map(d => ({ ...d, working: Boolean(d.working) })), ...state,
+    return json({ shelf: stock, devices: devices.results.map(d => ({ ...d, working: Boolean(d.working) })), enrollments, ...state,
       ...(list ? { profiles: list } : {}) });
   }
 
   const data = await input(request, 1000);
+  if (data.action === 'enrollment_create') return createEnrollment(db, data, now, env.OWNER_KEY_HASH);
+  if (data.action === 'enrollment_revoke') return revokeEnrollment(db, data, now);
   if (data.action === 'pair') {
     const name = typeof data.name === 'string' ? data.name.trim() : '';
     if (!name || name.length > 40) fail(400, '端末名を1〜40文字で入力してください。');
@@ -421,6 +425,7 @@ async function worker(request, db, now, expanded) {
   const bearer = auth.startsWith('Bearer ') && validKey(auth.slice(7));
   const data = await input(request, bearer ? (expanded ? catalogueMaxResultBytes : maxResultBytes) : 1000);
   if (data.action === 'register') return register(db, data, now);
+  if (data.action === 'enroll') return enrollDevice(db, data, now);
   const device = await getDevice(request, db);
   if (data.action === 'poll') return poll(db, device, now, data, expanded);
   if (!validKey(data.id) || !validKey(data.lease)) fail(400, '補充の割り当てを確認してください。');
