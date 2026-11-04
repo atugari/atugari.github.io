@@ -1,5 +1,6 @@
 package jp.nanpure.refill;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -16,12 +17,18 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
+import java.util.function.IntSupplier;
 
 final class RefillRunner {
     private static final ReentrantLock EXCLUSIVE = new ReentrantLock();
@@ -29,6 +36,9 @@ final class RefillRunner {
     private static final long IDLE_MS = 60_000;
     private static final long RETRY_MS = 30_000;
     private static final long RETRY_PROFILE_MS = 5 * 60_000;
+    private static final long MEMORY_SAMPLE_MS = 5_000;
+    private static final long MEMORY_HEADROOM = 128L * 1024 * 1024;
+    private static final long ESTIMATED_MEMORY_PER_LANE = 128L * 1024 * 1024;
     static final long NEXT_ROUND = 1;
     private static final int REMOTE_BURST = 2;
     private static volatile RefillRunner scheduled;
@@ -36,6 +46,7 @@ final class RefillRunner {
     private final Context context;
     private final RefillStore store;
     private final boolean foreground;
+    private final int coolLanes;
     private final Consumer<String> update;
     private final Map<String, Long> retryProfileAfter = new HashMap<>();
     private volatile boolean stopped;
@@ -44,6 +55,10 @@ final class RefillRunner {
     private long nextSummary;
     private long nextLocalStatus;
     private long nextCursorSave;
+    private long retryParallelAfter;
+    private long nextMemorySample;
+    private int memoryLanes = 1;
+    private boolean memoryLow = true;
     private int localCursor = -1;
     private int remoteRounds;
 
@@ -51,6 +66,7 @@ final class RefillRunner {
         this.context = context;
         this.store = new RefillStore(context);
         this.foreground = foreground;
+        this.coolLanes = foreground ? coolLaneLimit(context) : 1;
         this.update = update;
     }
 
@@ -248,34 +264,67 @@ final class RefillRunner {
             status("空き容量を確保するまで端末在庫の生成を停止します");
             return false;
         }
-        RefillProfiles.Profile profile = profiles.get(selected);
-        localCursor = (selected + 1) % profiles.size();
+        RefillProfiles.Profile first = profiles.get(selected);
+        int laneLimit = searchLaneLimit();
+        List<String> work = new ArrayList<>();
+        Map<String, Long> claims = laneLimit == 1 ? counts : new HashMap<>(counts);
+        int budget = generationBudget(first, false);
+        while (selected >= 0 && work.size() < laneLimit) {
+            String key = profiles.get(selected).key;
+            work.add(key);
+            localCursor = (selected + 1) % profiles.size();
+            if (work.size() >= laneLimit) break;
+            claims.merge(key, 1L, Long::sum);
+            selected = selectProfile(profiles, claims, target, budget);
+        }
         long now = SystemClock.elapsedRealtime();
         if (now >= nextCursorSave) {
             store.vaultCursor(token, localCursor);
             nextCursorSave = now + 1_000;
         }
-        JSONObject puzzle = generateOne(profile, token, false, null);
-        if (puzzle == null) {
-            retryProfileAfter.put(profile.key, SystemClock.elapsedRealtime() + RETRY_PROFILE_MS);
+        JSONObject round = runSearch(first, work, token, false, null, work.size() == 1 ? laneLimit : work.size());
+        if (round == null) {
+            if (laneLimit == 1) retryProfileAfter.put(first.key, SystemClock.elapsedRealtime() + RETRY_PROFILE_MS);
             return true;
         }
-        if (!token.equals(store.token())) return false;
-        if (counts.getOrDefault(profile.key, 0L) >= store.vaultTarget()) return true;
-        RefillVault.Save saved = vault.save(profile.key, puzzle);
-        if (saved == RefillVault.Save.STORED) {
-            counts.merge(profile.key, 1L, Long::sum);
-            summarize(vault, token, counts, sent, !canWork(token));
-        } else if (saved == RefillVault.Save.NO_SPACE) {
-            status("空き容量を確保するまで端末在庫の生成を停止します");
-            return false;
-        } else {
-            retryProfileAfter.put(profile.key, SystemClock.elapsedRealtime() + RETRY_PROFILE_MS);
+        JSONArray results = work.size() == 1 ? new JSONArray().put(round.put("profile", first.key)) :
+                round.getJSONArray("results");
+        Set<String> stored = new HashSet<>();
+        Set<String> retry = new HashSet<>();
+        for (int i = 0; i < results.length(); i++) {
+            if (!token.equals(store.token())) return false;
+            JSONObject result = results.getJSONObject(i);
+            String key = result.getString("profile");
+            JSONObject puzzle = result.optJSONObject("puzzle");
+            if (puzzle == null) {
+                retry.add(key);
+                continue;
+            }
+            if (counts.getOrDefault(key, 0L) >= store.vaultTarget()) continue;
+            RefillVault.Save saved = vault.save(key, puzzle);
+            if (saved == RefillVault.Save.STORED) {
+                counts.merge(key, 1L, Long::sum);
+                stored.add(key);
+            } else if (saved == RefillVault.Save.NO_SPACE) {
+                summarize(vault, token, counts, sent, true);
+                status("空き容量を確保するまで端末在庫の生成を停止します");
+                return false;
+            } else {
+                retry.add(key);
+            }
         }
+        retry.removeAll(stored);
+        long retryAt = SystemClock.elapsedRealtime() + RETRY_PROFILE_MS;
+        for (String key : retry) retryProfileAfter.put(key, retryAt);
+        if (!stored.isEmpty()) summarize(vault, token, counts, sent, !canWork(token));
         return true;
     }
 
     private int selectProfile(List<RefillProfiles.Profile> profiles, Map<String, Long> counts, int target) {
+        return selectProfile(profiles, counts, target, 0);
+    }
+
+    private int selectProfile(List<RefillProfiles.Profile> profiles, Map<String, Long> counts, int target, int budget) {
         int selected = -1;
         long lowest = target;
         long now = SystemClock.elapsedRealtime();
@@ -283,7 +332,9 @@ final class RefillRunner {
         int start = localCursor;
         for (int i = 0; i < profiles.size(); i++) {
             int index = (start + i) % profiles.size();
-            String key = profiles.get(index).key;
+            RefillProfiles.Profile profile = profiles.get(index);
+            if (budget != 0 && generationBudget(profile, false) != budget) continue;
+            String key = profile.key;
             long count = counts.getOrDefault(key, 0L);
             if (count < lowest && retryProfileAfter.getOrDefault(key, 0L) <= now) {
                 selected = index;
@@ -296,14 +347,28 @@ final class RefillRunner {
 
     private JSONObject generateOne(RefillProfiles.Profile profile, String token, boolean remote, Network network)
             throws InterruptedException {
-        String condition = profile.n + "×" + profile.n + " Lv." + profile.level;
+        // Short standard puzzles finish faster without starting competing workers.
+        int lanes = "normal".equals(profile.kind) && profile.level <= 3 ? 1 : searchLaneLimit();
+        JSONObject result = runSearch(profile, Collections.singletonList(profile.key), token, remote, network, lanes);
+        return result == null ? null : result.optJSONObject("puzzle");
+    }
+
+    private static int generationBudget(RefillProfiles.Profile profile, boolean remote) {
+        return remote || profile.n >= 36 || RefillProfiles.PILOT_KEY.equals(profile.key) ? 75_000 : 20_000;
+    }
+
+    private JSONObject runSearch(RefillProfiles.Profile first, List<String> profiles, String token, boolean remote,
+            Network network, int lanes) throws InterruptedException {
+        String condition = first.n + "×" + first.n + " Lv." + first.level;
+        String message = profiles.size() > 1 ? "端末在庫用を探索中" :
+                RefillProfiles.PILOT_KEY.equals(first.key) && remote ? "至高の条件に合う問題を探索中" :
+                (remote ? "補充用を探索中・" : "端末在庫用を探索中・") + condition;
         long now = SystemClock.elapsedRealtime();
         if (remote || now >= nextLocalStatus) {
-            status(RefillProfiles.PILOT_KEY.equals(profile.key) && remote ? "至高の条件に合う問題を探索中" :
-                    (remote ? "補充用を探索中・" : "端末在庫用を探索中・") + condition);
+            status(lanes > 1 ? laneStatus(message, lanes) : message);
             if (!remote) nextLocalStatus = now + 1_000;
         }
-        int budget = remote || profile.n >= 36 || RefillProfiles.PILOT_KEY.equals(profile.key) ? 75_000 : 20_000;
+        int budget = generationBudget(first, remote);
         PowerManager.WakeLock wake = null;
         RefillEngine current = engineForRound();
         try {
@@ -313,12 +378,19 @@ final class RefillRunner {
                 wake.setReferenceCounted(false);
                 wake.acquire(budget + 26_000L);
             }
-            JSONObject result = current.generate(profile.key, budget,
-                    () -> canWork(token) && (store.vaultTarget() > 0 || (remote && canSend(network))));
-            if (result.has("error")) closeEngine();
-            return result.optJSONObject("puzzle");
+            BooleanSupplier canContinue =
+                    () -> canWork(token) && (store.vaultTarget() > 0 || (remote && canSend(network)));
+            IntSupplier limit = reportLaneReductions(lanes, message);
+            JSONObject result = profiles.size() == 1
+                    ? current.generate(first.key, budget, canContinue, lanes, limit)
+                    : current.generateBatch(profiles, budget, canContinue, limit);
+            if (failedSearch(result)) {
+                resetSearch(lanes);
+                return null;
+            }
+            return result;
         } catch (TimeoutException | IOException error) {
-            closeEngine();
+            resetSearch(lanes);
             return null;
         } catch (InterruptedException error) {
             closeEngine();
@@ -326,6 +398,86 @@ final class RefillRunner {
             throw error;
         } finally {
             if (wake != null && wake.isHeld()) wake.release();
+        }
+    }
+
+    static int coolLaneLimit(Context context) {
+        if (Build.VERSION.SDK_INT < 29) return 1;
+        int processors = Math.min(RefillEngine.MAX_LANES, Math.max(1, Runtime.getRuntime().availableProcessors()));
+        ActivityManager activity = context.getSystemService(ActivityManager.class);
+        return activity != null && activity.isLowRamDevice() ? Math.min(2, processors) : processors;
+    }
+
+    private int searchLaneLimit() {
+        return Math.min(operatingLaneLimit(), memoryLanes);
+    }
+
+    private int operatingLaneLimit() {
+        if (coolLanes <= 1 || !store.maximumPerformance() || SystemClock.elapsedRealtime() < retryParallelAfter) {
+            return 1;
+        }
+        PowerManager power = context.getSystemService(PowerManager.class);
+        if (power.isPowerSaveMode()) return 1;
+        int thermal = power.getCurrentThermalStatus();
+        if (thermal >= PowerManager.THERMAL_STATUS_MODERATE) return 1;
+        sampleMemory();
+        if (memoryLow) return 1;
+        return thermal == PowerManager.THERMAL_STATUS_LIGHT ? Math.max(1, coolLanes / 2) : coolLanes;
+    }
+
+    private void sampleMemory() {
+        long now = SystemClock.elapsedRealtime();
+        if (now < nextMemorySample) return;
+        nextMemorySample = now + MEMORY_SAMPLE_MS;
+        ActivityManager manager = context.getSystemService(ActivityManager.class);
+        if (manager == null) {
+            memoryLanes = 1;
+            memoryLow = true;
+            return;
+        }
+        ActivityManager.MemoryInfo info = new ActivityManager.MemoryInfo();
+        manager.getMemoryInfo(info);
+        long spare = info.availMem - info.threshold - MEMORY_HEADROOM;
+        memoryLow = info.lowMemory || spare < 0;
+        memoryLanes = (int) Math.max(1, Math.min(coolLanes, spare / ESTIMATED_MEMORY_PER_LANE));
+    }
+
+    private IntSupplier reportLaneReductions(int lanes, String message) {
+        return new IntSupplier() {
+            private int remaining = lanes;
+
+            @Override public int getAsInt() {
+                // The in-flight workers already account for part of the reported
+                // memory. Reduce them for memory pressure, not for their allocation.
+                int allowed = operatingLaneLimit();
+                if (allowed < remaining) {
+                    remaining = allowed;
+                    status(laneStatus(message, remaining));
+                }
+                return remaining;
+            }
+        };
+    }
+
+    private static String laneStatus(String message, int lanes) {
+        return message + "（同時探索 " + lanes + "本）";
+    }
+
+    private static boolean failedSearch(JSONObject result) {
+        if (result.has("error")) return true;
+        JSONArray results = result.optJSONArray("results");
+        if (results == null || results.length() == 0) return false;
+        for (int i = 0; i < results.length(); i++) {
+            if (!results.optJSONObject(i).has("error")) return false;
+        }
+        return true;
+    }
+
+    private void resetSearch(int lanes) {
+        closeEngine();
+        if (lanes > 1) {
+            retryParallelAfter = SystemClock.elapsedRealtime() + RETRY_MS;
+            status("並列探索を一時休止・通常の探索へ切り替えます");
         }
     }
 

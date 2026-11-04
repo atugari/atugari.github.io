@@ -53,6 +53,7 @@ public final class MainActivity extends Activity {
     private TextView pairingHint;
     private Switch automatic;
     private Switch metered;
+    private Switch maximumPerformance;
     private Button register;
     private Button check;
     private Button vaultTarget;
@@ -141,6 +142,18 @@ public final class MainActivity extends Activity {
             RefillJob.schedule(this, true);
             RefillJob.request(this, 0);
         });
+        maximumPerformance = new Switch(this);
+        maximumPerformance.setText("連続補充で最大性能を使う");
+        add(settingsPanel, maximumPerformance, 9);
+        int availableLanes = RefillRunner.coolLaneLimit(this);
+        maximumPerformance.setEnabled(availableLanes > 1);
+        maximumPerformance.setOnCheckedChangeListener((view, checked) -> {
+            if (!updating) store.maximumPerformance(checked);
+        });
+        String performanceNote = availableLanes > 1
+                ? "充電中の手動の連続補充で最大" + availableLanes + "本を同時に探索します。発熱、空きメモリ、省電力状態に応じて本数を減らします。"
+                : "この端末では通常の探索を使います。";
+        add(settingsPanel, text(performanceNote, 13, MUTED, false), 4);
         vaultTarget = button("端末在庫の目標を設定する", false);
         add(settingsPanel, vaultTarget, 10);
         vaultTarget.setOnClickListener(view -> chooseVaultTarget());
@@ -337,6 +350,7 @@ public final class MainActivity extends Activity {
         updating = true;
         automatic.setChecked(store.enabled());
         metered.setChecked(store.meteredAllowed());
+        maximumPerformance.setChecked(store.maximumPerformance());
         updating = false;
         setText(status, store.status());
         String info = "補充した問題  " + store.sent() + "問";

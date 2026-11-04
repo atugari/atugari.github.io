@@ -127,7 +127,86 @@ try {
   callbacks.get(timerId).callback();
   assert.deepEqual(replies.shift(), [5, {exhausted: true}]);
   assert.equal(callbacks.size, 0);
-  console.log('Pinned refill engine: 427 profiles, bounded Lv18 and repeated Worker rounds passed.');
+
+  const pool = () => workers.filter(current => !current.terminated);
+  page.runRefillRound(6, cachedProfile, 75000, 3);
+  const [primary, broken, helper] = pool();
+  primary.search(70000);
+  broken.onerror();
+  assert.equal(broken.terminated, true);
+  assert.equal(replies.length, 0);
+  helper.search(100);
+  assert.deepEqual(replies.shift(), [6, {profile: cachedProfile, puzzle: {candidates: 1}}]);
+  assert.deepEqual(pool(), [primary, helper]);
+
+  page.runRefillRound(7, cachedProfile, 75000, 3);
+  const loser = pool()[2];
+  primary.search(100);
+  assert.deepEqual(replies.shift(), [7, {profile: cachedProfile, puzzle: {candidates: 2}}]);
+  assert.equal(helper.terminated, true);
+  assert.equal(loser.terminated, true);
+  assert.deepEqual(pool(), [primary]);
+
+  page.runRefillRound(8, [cachedProfile, pilot], 75000, 8);
+  assert.equal(pool().length, 2);
+  const [large, expert] = pool();
+  assert.equal(large, primary);
+  assert.equal(expert.message.profile, pilot);
+  assert.equal(expert.message.budgetMs, 73000);
+  helper.onmessage({data: {id: 8, result: {profile: pilot, puzzle: {stale: true}}}});
+  assert.equal(replies.length, 0);
+  large.search(100);
+  assert.equal(replies.length, 0);
+  callbacks.get(timerId).callback();
+  assert.deepEqual(replies.shift(), [8, {results: [
+    {profile: cachedProfile, puzzle: {candidates: 3}}, {profile: pilot, exhausted: true},
+  ]}]);
+  assert.deepEqual(pool(), []);
+
+  page.runRefillRound(9, [cachedProfile, pilot, cachedProfile], 75000, 3);
+  const [kept, trimmed, finished] = pool();
+  finished.search(100);
+  page.setRefillLaneLimit(8, 1);
+  assert.equal(pool().length, 3);
+  page.setRefillLaneLimit(9, 1);
+  page.setRefillLaneLimit(9, 3);
+  assert.deepEqual(pool(), [kept]);
+  trimmed.onmessage({data: {id: 9, result: {profile: pilot, puzzle: {stale: true}}}});
+  assert.equal(replies.length, 0);
+  kept.search(100);
+  assert.deepEqual(replies.shift(), [9, {results: [
+    {profile: cachedProfile, puzzle: {candidates: 1}}, {profile: cachedProfile, puzzle: {candidates: 1}},
+  ]}]);
+
+  const records = [];
+  let recordCalls = 0;
+  page.RefillBridge.record = (roundId, json) => {
+    recordCalls++;
+    if (recordCalls === 2) return false;
+    if (recordCalls === 3) throw new Error('bridge stopped');
+    records.push([roundId, JSON.parse(json)]);
+    return true;
+  };
+  page.runRefillRound(10, [cachedProfile, cachedProfile, cachedProfile, pilot], 75000, 4);
+  const [accepted, rejected, throwing] = pool();
+  accepted.search(100);
+  rejected.search(100);
+  throwing.search(100);
+  assert.deepEqual(records, [[10, {profile: cachedProfile, puzzle: {candidates: 2}}]]);
+  assert.equal(replies.length, 0);
+  callbacks.get(timerId).callback();
+  assert.deepEqual(replies.shift(), [10, {results: [
+    {profile: cachedProfile, error: 'engine'}, {profile: cachedProfile, error: 'engine'},
+    {profile: pilot, exhausted: true},
+  ]}]);
+  assert.deepEqual(pool(), []);
+
+  page.runRefillRound(11, cachedProfile, 75000);
+  pool()[0].search(100);
+  assert.deepEqual(replies.shift(), [11, {profile: cachedProfile, puzzle: {candidates: 1}}]);
+  assert.equal(recordCalls, 3);
+  assert.equal(callbacks.size, 0);
+  console.log('Pinned refill engine: 427 profiles, bounded Lv18, parallel races, incremental batches and Worker reuse passed.');
 } finally {
   fs.rmSync(temp, {recursive: true, force: true});
 }

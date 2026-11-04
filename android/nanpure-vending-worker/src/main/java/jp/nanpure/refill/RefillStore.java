@@ -21,6 +21,7 @@ final class RefillStore {
     String endpoint() { return values.getString("endpoint", BuildConfig.ENDPOINT); }
     boolean enabled() { return values.getBoolean("enabled", false); }
     boolean meteredAllowed() { return values.getBoolean("metered", false); }
+    boolean maximumPerformance() { return values.getBoolean("maximumPerformance", false); }
     boolean notificationsAsked() { return values.getBoolean("notificationsAsked", false); }
     int sent() { return values.getInt("sent", 0); }
     long updated() { return values.getLong("updated", 0); }
@@ -33,6 +34,7 @@ final class RefillStore {
 
     void enabled(boolean enabled) { values.edit().putBoolean("enabled", enabled).apply(); }
     void meteredAllowed(boolean allowed) { values.edit().putBoolean("metered", allowed).apply(); }
+    void maximumPerformance(boolean enabled) { values.edit().putBoolean("maximumPerformance", enabled).apply(); }
     void markNotificationsAsked() { values.edit().putBoolean("notificationsAsked", true).apply(); }
     void vaultTarget(int target) { values.edit().putInt("vaultTarget", target).apply(); }
 

@@ -12,23 +12,30 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.BooleanSupplier;
+import java.util.function.IntSupplier;
 
 final class RefillEngine {
     private static final String HOST = "nanpure-refill.invalid";
     private static final String START = "https://" + HOST + "/index.html";
     private static final Handler MAIN = new Handler(Looper.getMainLooper());
+    static final int MAX_LANES = 16;
+    private static final int MAX_RESULT_CHARS = 300_000;
     private final Context context;
     private volatile Round active;
     private volatile boolean closed;
@@ -38,14 +45,53 @@ final class RefillEngine {
 
     private static final class Round {
         final int id, budgetMs;
-        final String profile;
+        final List<String> profiles;
+        final boolean batch;
         final CompletableFuture<JSONObject> result = new CompletableFuture<>();
+        private final JSONArray recorded = new JSONArray();
+        private final Map<String, Integer> assigned = new HashMap<>();
+        volatile int lanes;
         boolean started;
 
-        Round(int id, String profile, int budgetMs) {
+        Round(int id, List<String> profiles, boolean batch, int budgetMs, int lanes) {
             this.id = id;
-            this.profile = profile;
+            this.profiles = profiles;
+            this.batch = batch;
             this.budgetMs = budgetMs;
+            this.lanes = lanes;
+            if (batch) for (String profile : profiles) assigned.merge(profile, 1, Integer::sum);
+        }
+
+        private void claimResult(JSONObject entry) throws JSONException {
+            String profile = entry.getString("profile");
+            int remaining = assigned.getOrDefault(profile, 0);
+            if (remaining == 0) throw new JSONException("Unexpected batch refill profile");
+            assigned.put(profile, remaining - 1);
+        }
+
+        synchronized boolean record(JSONObject entry) throws JSONException {
+            if (!batch || result.isDone() || entry.optJSONObject("puzzle") == null) return false;
+            claimResult(entry);
+            recorded.put(entry);
+            return true;
+        }
+
+        synchronized void finish(JSONObject value) throws JSONException {
+            if (result.isDone()) return;
+            if (!batch) {
+                if (value.has("puzzle") && !profiles.get(0).equals(value.optString("profile"))) {
+                    throw new JSONException("Unexpected refill profile");
+                }
+            } else {
+                JSONArray results = value.getJSONArray("results");
+                for (int i = 0; i < results.length(); i++) {
+                    JSONObject entry = results.getJSONObject(i);
+                    claimResult(entry);
+                    recorded.put(entry);
+                }
+                value.put("results", recorded);
+            }
+            result.complete(value);
         }
     }
 
@@ -60,16 +106,42 @@ final class RefillEngine {
 
     JSONObject generate(String profile, int budgetMs, BooleanSupplier canContinue)
             throws InterruptedException, IOException, TimeoutException {
-        if (budgetMs < 500 || budgetMs > 120000 || RefillProfiles.find(context, profile) == null) {
+        return generate(profile, budgetMs, canContinue, 1, () -> 1);
+    }
+
+    JSONObject generate(String profile, int budgetMs, BooleanSupplier canContinue, int lanes,
+            IntSupplier laneLimit) throws InterruptedException, IOException, TimeoutException {
+        return generateRound(Collections.singletonList(profile), false, budgetMs, canContinue, lanes, laneLimit);
+    }
+
+    JSONObject generateBatch(List<String> profiles, int budgetMs, BooleanSupplier canContinue,
+            IntSupplier laneLimit) throws InterruptedException, IOException, TimeoutException {
+        return generateRound(profiles, true, budgetMs, canContinue, profiles.size(), laneLimit);
+    }
+
+    private JSONObject generateRound(List<String> profiles, boolean batch, int budgetMs, BooleanSupplier canContinue,
+            int lanes, IntSupplier laneLimit) throws InterruptedException, IOException, TimeoutException {
+        if (budgetMs < 500 || budgetMs > 120000 || lanes < 1 || lanes > MAX_LANES ||
+                profiles.isEmpty() || profiles.size() > lanes) {
             throw new IOException("Unknown refill profile or invalid search budget");
         }
-        Round round = begin(profile, budgetMs);
+        for (String profile : profiles) {
+            if (RefillProfiles.find(context, profile) == null) throw new IOException("Unknown refill profile");
+        }
+        Round round = begin(profiles, batch, budgetMs, lanes);
         MAIN.post(() -> load(round));
         long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(budgetMs + 25000L);
         try {
             while (true) {
                 if (round.result.isDone()) return round.result.get();
                 if (!canContinue.getAsBoolean()) throw new InterruptedException("Refill conditions changed");
+                if (round.lanes > 1) {
+                    int limit = Math.max(1, laneLimit.getAsInt());
+                    if (limit < round.lanes) {
+                        round.lanes = limit;
+                        MAIN.post(() -> lowerLaneLimit(round));
+                    }
+                }
                 long remaining = deadline - System.nanoTime();
                 if (remaining <= 0) throw new TimeoutException();
                 try {
@@ -91,9 +163,9 @@ final class RefillEngine {
         }
     }
 
-    private synchronized Round begin(String profile, int budgetMs) throws IOException {
+    private synchronized Round begin(List<String> profiles, boolean batch, int budgetMs, int lanes) throws IOException {
         if (closed || active != null) throw new IOException("Refill engine is unavailable");
-        Round round = new Round(++nextId, profile, budgetMs);
+        Round round = new Round(++nextId, profiles, batch, budgetMs, lanes);
         active = round;
         return round;
     }
@@ -167,8 +239,19 @@ final class RefillEngine {
         if (closed || active != round || !ready || round.started) return;
         round.started = true;
         try {
+            String profiles = round.batch ? new JSONArray(round.profiles).toString() :
+                    JSONObject.quote(round.profiles.get(0));
             view.evaluateJavascript("runRefillRound(" + round.id + "," +
-                    JSONObject.quote(round.profile) + "," + round.budgetMs + ")", null);
+                    profiles + "," + round.budgetMs + "," + round.lanes + ")", null);
+        } catch (RuntimeException error) {
+            fail(error);
+        }
+    }
+
+    private void lowerLaneLimit(Round round) {
+        if (closed || active != round || !ready || !round.started) return;
+        try {
+            view.evaluateJavascript("setRefillLaneLimit(" + round.id + "," + round.lanes + ")", null);
         } catch (RuntimeException error) {
             fail(error);
         }
@@ -196,19 +279,27 @@ final class RefillEngine {
     }
 
     public final class ResultBridge {
+        @JavascriptInterface public boolean record(int id, String json) {
+            Round round = active;
+            if (round == null || round.id != id || closed || json == null || json.length() > MAX_RESULT_CHARS) {
+                return false;
+            }
+            try {
+                return round.record(new JSONObject(json));
+            } catch (JSONException error) {
+                return false;
+            }
+        }
+
         @JavascriptInterface public void finish(int id, String json) {
             Round round = active;
             if (round == null || round.id != id || closed) return;
-            if (json == null || json.length() > 300000) {
+            if (json == null || json.length() > MAX_RESULT_CHARS) {
                 round.result.completeExceptionally(new IOException("Invalid engine response size"));
                 return;
             }
             try {
-                JSONObject value = new JSONObject(json);
-                if (value.has("puzzle") && !round.profile.equals(value.optString("profile"))) {
-                    throw new JSONException("Unexpected refill profile");
-                }
-                round.result.complete(value);
+                round.finish(new JSONObject(json));
             } catch (JSONException error) {
                 round.result.completeExceptionally(error);
             }
