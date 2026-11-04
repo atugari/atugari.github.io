@@ -37,28 +37,30 @@ async function setup(browser,width,height,theme='color'){
    assert.equal(await page.locator('.theme-settings h2').textContent(),'背景とボタンを変更');
    assert.equal(await page.locator('.theme-save-note,.theme-option-copy').count(),0);
    const initial=await page.evaluate(()=>NPSiteTheme.get());
-   const seen=new Set();
-   for(let i=0;i<5;i++){
-    const id=await preview.getAttribute('data-theme-preview');
-    const expected=id+(width<=650?'-mobile.webp':'-desktop.webp');
-    await page.waitForFunction(filename=>{
-     const image=document.querySelector('.theme-preview-choice img');
-     return image?.currentSrc.endsWith(filename)&&image.complete&&image.naturalWidth>0;
-    },expected);
+   const themeIds=['notebook','color','lounge','contrast-light','contrast-dark'];
+   const first=themeIds.indexOf(initial);
+   assert(first>=0);
+   for(let i=0;i<themeIds.length;i++){
+    const id=themeIds[(first+i)%themeIds.length];
+    const filename=id+(width<=650?'-mobile.webp':'-desktop.webp');
+    await page.waitForFunction(({id,filename})=>{
+     const preview=document.querySelector('.theme-preview-choice'),image=preview?.querySelector('img');
+     return preview?.dataset.themePreview===id&&image?.currentSrc.endsWith(filename)&&image.complete&&image.naturalWidth>0;
+    },{id,filename}).catch(async error=>{
+     const actual=await preview.evaluate(e=>({id:e.dataset.themePreview,src:e.querySelector('img').currentSrc,viewport:[innerWidth,innerHeight]}));
+     throw Error('Expected '+filename+', got '+JSON.stringify(actual),{cause:error});
+    });
     const image=await preview.locator('img').evaluate(image=>({width:image.naturalWidth,height:image.naturalHeight}));
     assert.equal(await page.locator('.theme-settings img').count(),1);
     assert.equal(image.width<image.height,width<=650);
-    seen.add(id);
     if(id.startsWith('contrast-')){
      await preview.click();
-     await page.waitForFunction(theme=>document.documentElement.dataset.siteTheme===theme,id);
-     assert.equal(await preview.getAttribute('aria-pressed'),'true');
+     await page.waitForFunction(theme=>document.documentElement.dataset.siteTheme===theme&&document.querySelector('.theme-preview-choice')?.getAttribute('aria-pressed')==='true',id);
      assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('np-site-theme-v1')).theme),id);
      assert.equal(await page.evaluate(()=>getComputedStyle(document.body).backgroundColor),id==='contrast-dark'?'rgb(18, 24, 33)':'rgb(242, 245, 248)');
     }
     await next.click();
    }
-   assert.deepEqual([...seen].sort(),['color','contrast-dark','contrast-light','lounge','notebook']);
    await page.evaluate(theme=>NPSiteTheme.set(theme),initial);
    await close.click();await menu.waitFor();
    assert(await design.evaluate(button=>button===document.activeElement),'Focus returns to the design button');
