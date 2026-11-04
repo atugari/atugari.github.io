@@ -12,7 +12,7 @@ assert(!/localStorage\.(?:clear|removeItem)|indexedDB\.deleteDatabase/.test(read
 assert(read('puzzles/magic-square/index.html').includes('プレイは準備中'));
 assert(!read('scripts/client-overrides/app/game.tsx').includes('className="shiru-entry"'),'The generating source must not restore the old home entry');
 assert(read('scripts/client-overrides/app/game.tsx').includes('<GroupedHome '),'The shell renders the grouped home');
-assert(read('scripts/client-overrides/app/grouped-home.tsx').includes('data-pare-entry=""'),'The home component owns the relocation link');
+assert(!read('scripts/client-overrides/app/grouped-home.tsx').includes('data-pare-entry'),'The Sudoku home has no Pareasobi entry');
 const manifest=JSON.parse(read('nanpure/release-manifest.json'));
 for(const [file,expected]of Object.entries(manifest.pareasobiNavigation.sources))assert.equal(require('node:crypto').createHash('sha256').update(read(file)).digest('hex'),expected,'Navigation source manifest: '+file);
 console.log('PASS Pareasobi routes: eight direct entries, '+(catalog.total-6340).toLocaleString('en-US')+' Sudoku and 6,340 cross puzzles, original IDs and save keys preserved, creation-only magic square.');

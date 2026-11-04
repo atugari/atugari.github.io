@@ -20,12 +20,7 @@
 .np-home-ready .shiru-entry strong{font-size:18px;line-height:1.2}
 .np-home-ready .shiru-entry small{font-size:12px;line-height:1.4;margin-top:3px}
 .np-home-ready .home-resume{min-height:42px;margin:0;padding:8px 12px;font-size:15px}
-.np-home-ready .home-bottom-links{min-height:44px;margin:0;padding:0;flex:none}
-.np-home-ready .home-bottom-links button{min-width:0;min-height:44px;padding:5px 4px;font-size:max(13px,var(--ui-min-font,0px));line-height:1.35;gap:5px;flex:1}
-.np-home-ready .home-bottom-links svg{width:17px;height:17px;flex:none}
-.np-home-ready .home-support-button{min-height:32px;margin:0;padding:4px 8px;font-size:max(14px,var(--ui-min-font,0px))}
 .np-home-ready .tutorial-entry,.np-home-ready>.site-intro{display:none}
-.np-home-ready .home-version{min-height:24px;margin:0;padding:2px 4px;font-size:12px;line-height:1.4}
 .np-home-guide{width:min(620px,calc(100vw - 20px));max-height:calc(100dvh - 24px);padding:0;border:1px solid var(--theme-line,#bac9c0);border-radius:18px;background:var(--theme-surface,#fffdf7);color:var(--theme-ink,#20372c);box-sizing:border-box}
 .np-home-guide::backdrop{background:#122b21a8}
 .np-home-guide>header{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px;background:inherit;border-bottom:1px solid var(--theme-line,#bac9c0);z-index:1}
@@ -49,15 +44,11 @@
 .np-home-more summary{cursor:pointer;padding:12px 14px;min-height:44px;box-sizing:border-box;font-size:max(15px,var(--ui-min-font,0px));font-weight:700}
 .np-home-more nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:8px 0 0}
 .np-home-more nav a{display:flex;align-items:center;justify-content:center;min-width:0;min-height:44px;padding:10px;border:1px solid var(--theme-line,#b8cbbd);border-radius:8px;color:inherit;text-decoration:none;font-size:max(14px,var(--ui-min-font,0px));line-height:1.5;text-align:center}
-.np-stepped-home .np-pare-entry{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0;min-height:44px;padding:5px 2px;text-decoration:none;color:var(--theme-ink,#20372c);font-size:max(14px,var(--ui-min-font,0px))}
-.np-stepped-home .np-pare-entry small{display:none}
-.np-stepped-home :is(.np-collection-entry,.np-pare-entry) .choice-arrow{position:static;flex:none}
-.np-stepped-home .home-bottom-links{display:flex;flex-wrap:wrap;gap:4px}
-.np-stepped-home .home-bottom-links button{font-size:max(14px,var(--ui-min-font,0px))}
+.np-stepped-home .np-collection-entry .choice-arrow{position:static;flex:none}
 .np-stepped-home .np-home-more summary:focus-visible,.np-stepped-home a:focus-visible{outline:3px solid var(--theme-accent,#3d7659);outline-offset:3px}
 .np-stepped-home .np-collection-entry strong{font-size:18px}
 @media(min-width:600px){.np-stepped-home .start-choices{flex-basis:190px;min-height:190px;max-height:240px}.np-stepped-home .choice-card{position:relative}.np-stepped-home .choice-arrow{position:absolute;right:15px;bottom:18px}.np-stepped-home .np-collection-entry .choice-arrow{position:static}}
-@media(max-width:359px){.np-home-more nav{grid-template-columns:1fr}.np-stepped-home .choice-copy strong{font-size:19px}.np-stepped-home .home-bottom-links button{flex-basis:30%}}
+@media(max-width:359px){.np-home-more nav{grid-template-columns:1fr}.np-stepped-home .choice-copy strong{font-size:19px}}
 
 .np-home-more:not([open]) > nav { display: none; }
 
@@ -83,14 +74,38 @@
 }
 
 
+/* The support link is two thirds of a home card in both dimensions. */
+.np-stepped-home {
+  --home-card-width: 100%;
+  --home-card-height: 84px;
+  --home-card-gap: 10px;
+}
+.np-stepped-home .home-support-button {
+  box-sizing: border-box;
+  align-self: center;
+  width: calc(var(--home-card-width) * 2 / 3);
+  min-height: calc(var(--home-card-height) * 2 / 3);
+  margin: 0;
+  padding: 6px 10px;
+  border: 1px solid var(--theme-line, #b8cbbd);
+  background: var(--theme-surface, #fffdf7);
+  font-size: max(14px, var(--ui-min-font, 0px));
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+.np-stepped-home .home-support-button:hover {
+  border-color: var(--theme-accent, #3d7659);
+}
+
 /* All five home destinations share the same card layout. */
 .np-stepped-home .start-choices {
   align-items: start;
+  gap: var(--home-card-gap);
 }
 .np-stepped-home .start-choices .choice-card {
   width: 100%;
   min-width: 0;
-  min-height: 84px;
+  min-height: var(--home-card-height);
   text-decoration: none;
 }
 .np-stepped-home .choice-copy {
@@ -119,6 +134,16 @@
   rotate: 90deg;
 }
 @media (max-width: 600px) {
+  .np-stepped-home .start-choices {
+    grid-template-columns: 1fr;
+    flex-basis: auto;
+    min-height: 0;
+    max-height: none;
+  }
+  .np-stepped-home .start-choices .choice-card {
+    flex-direction: row;
+    align-items: center;
+  }
   .np-stepped-home .choice-art {
     width: 44px;
     height: 44px;
@@ -128,12 +153,13 @@
   }
 }
 @media (min-width: 601px) {
+  .np-stepped-home {
+    --home-card-width: calc((100% - 2 * var(--home-card-gap)) / 3);
+    --home-card-height: 164px;
+  }
   .np-stepped-home .start-choices {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     max-height: none;
-  }
-  .np-stepped-home .start-choices .choice-card {
-    min-height: 150px;
   }
   .np-stepped-home .choice-copy strong {
     font-size: max(20px, var(--ui-min-font, 0px));

@@ -1,7 +1,6 @@
 'use client';
 // The creation entry opens the notebook directly at its generation menu.
-export default function GroupedHome({t,onPractice,onDaily,onPanel,resume,markRead,unread,version,Theme,Intro,showRanking}:any){
- const news=()=>{markRead();onPanel('updates')};
+export default function GroupedHome({t,onPractice,onDaily,onPanel,resume,Theme,Intro}:any){
  const art=(symbol:string)=><span className="choice-art" aria-hidden="true"><span className="art-emblem">{symbol}</span></span>;
  const arrow=<span className="choice-arrow" aria-hidden="true">›</span>;
  return <main className="start-screen designed-home np-stepped-home np-home-ready" data-grouped-home="" data-stepped-home="">
@@ -17,10 +16,7 @@ export default function GroupedHome({t,onPractice,onDaily,onPanel,resume,markRea
    </details>
   </div>
   {resume&&<button type="button" className="secondary-action home-resume" onClick={resume}>{t('続きから遊ぶ')}</button>}
-  <div className="home-bottom-links">{showRanking&&<button type="button" onClick={()=>onPanel('ranking')}>{t('ランキング')}</button>}<button type="button" onClick={news}>{t('更新のお知らせ')}{unread&&<span className="home-new-dot" aria-label={t('新着')}/>}</button><button type="button" data-home-guide="" onClick={()=>(window as any).NPHomeLayout?.showGuide()}>{t('遊び方と保存')}</button></div>
-  <a className="np-pare-entry" data-pare-entry="" href="/puzzles/"><span><strong>{t('ほかのパズルはパレあそびへ')}</strong><small>{t('シルプレ・和同開珎・クロスワードなど')}</small></span>{arrow}</a>
-  <a className="home-support-button" href="https://ofuse.me/memberships/5107" target="_blank" rel="noopener noreferrer">{t('月100円で制作を応援')} ↗</a>
-  <button type="button" className="home-version" onClick={news}><span translate="no" data-i18n-skip="true">{version}</span></button>
+  <a className="home-support-button" href="https://ofuse.me/memberships/5107" target="_blank" rel="noopener noreferrer">{t('月100円で製作者を応援しよう♫')}</a>
   <button type="button" className="tutorial-entry" hidden onClick={()=>onPanel('tutorial')}>{t('遊び方を確認する')}</button><Intro/>
  </main>
 }

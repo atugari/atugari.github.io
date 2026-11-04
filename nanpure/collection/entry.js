@@ -1,6 +1,6 @@
 (function(w){'use strict';
 if(w.NPCollectionEntry)return;
-const navigation=document.createElement('script');navigation.src='/puzzles/navigation.js?v=20261104-home-cards';document.head.append(navigation);
+const navigation=document.createElement('script');navigation.src='/puzzles/navigation.js?v=20261104-home-cleanup';document.head.append(navigation);
 const learnMessages={"en":"Learn solving techniques","zh-Hans":"学习解题方法","zh-Hant":"學習解題方法","ko":"풀이 기법 배우기","es":"Aprender técnicas","fr":"Apprendre les techniques","de":"Lösungstechniken lernen","pt":"Aprender técnicas","it":"Impara le tecniche","nl":"Leer oplostechnieken","sv":"Lär dig lösningstekniker","pl":"Poznaj techniki","cs":"Naučte se techniky","ru":"Изучить приёмы решения","id":"Pelajari teknik","vi":"Học kỹ thuật giải","th":"เรียนรู้เทคนิคการแก้","hi":"हल करने की तकनीकें सीखें","ar":"تعلّم طرق الحل"};
 // Register feature copy before the shared runtime walks the home text.
 w.NPTranslations=w.NPTranslations||{};w.NPTranslations['解法で学ぶ']=learnMessages;

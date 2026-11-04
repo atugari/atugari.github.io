@@ -67,3 +67,4 @@ module.exports['ナンプレを作る'] = module.exports['問題を作る'];
 module.exports['日替わりナンプレに挑戦する'] = module.exports['日替わり問題に挑戦する'];
 
 Object.assign(module.exports,require('./catalog-home-93.json'));
+Object.assign(module.exports,require('./catalog-home-94.json'));
