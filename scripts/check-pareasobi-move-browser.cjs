@@ -18,7 +18,8 @@ await page.goto(origin+'/nanpure/?lang=ja');
 await page.getByRole('link',{name:'月100円で製作者を応援しよう♫',exact:true}).waitFor();
 assert.equal(await page.locator('.designed-home [data-pare-entry]').count(),0);
 assert.equal(await page.locator('.shiru-entry').isVisible(),false);
-await page.locator('.main-choice').click();const notebook=page.frameLocator('iframe.notebook');await notebook.locator('[data-action="open-crossword"]').waitFor({state:'attached'});await notebook.locator('[data-action="open-crossword"]').waitFor({state:'hidden'});await notebook.locator('[data-action="open-prototype"]').waitFor({state:'attached'});await notebook.locator('[data-action="open-prototype"]').waitFor({state:'hidden'});assert.equal(await notebook.locator('[data-action="open-crossword"]').isVisible(),false);assert.equal(await notebook.locator('[data-action="open-prototype"]').isVisible(),false);
+// The prerendered home buttons receive their click handlers when the shell mounts.
+await page.waitForFunction(()=>window.NPAchievementShellAttached);await page.locator('.main-choice').click();const notebook=page.frameLocator('iframe.notebook');await notebook.locator('[data-action="open-notebook"]').waitFor();await notebook.locator('[data-action="open-crossword"]').waitFor({state:'attached'});await notebook.locator('[data-action="open-crossword"]').waitFor({state:'hidden'});await notebook.locator('[data-action="open-prototype"]').waitFor({state:'attached'});await notebook.locator('[data-action="open-prototype"]').waitFor({state:'hidden'});assert.equal(await notebook.locator('[data-action="open-crossword"]').isVisible(),false);assert.equal(await notebook.locator('[data-action="open-prototype"]').isVisible(),false);
 assert.equal(await notebook.locator('.homechoices a[href="/puzzles/"]').count(),0,'The Sudoku play menu has no Pareasobi tile');
 assert(await notebook.locator('[data-action="open-notebook"]').isVisible(),'Sudoku remains available from the play menu');
 await page.goto(origin+'/puzzles/');
@@ -137,7 +138,7 @@ for(const viewport of [{width:1280,height:800},{width:375,height:812},{width:812
   await page.waitForFunction(uid=>document.querySelector('#game')?.contentWindow?.NanpureAppTest?.getCurrent()?.uid===uid,before.uid);
   assert.deepEqual(await page.evaluate(()=>document.querySelector('#game').contentWindow.NanpureAppTest.getCurrent().grid),before.grid,'New '+n+'x'+n+' reload at '+viewport.width);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'New board outer width');
-  await page.locator('#back').click();await page.locator('#library:not([hidden])').waitFor();await page.locator('#library header a[href="/nanpure/"]').click();await page.locator('.main-choice').click();await page.frameLocator('iframe.notebook').locator('[data-collection-entry]').waitFor();
+  await page.locator('#back').click();await page.locator('#library:not([hidden])').waitFor();await page.locator('#library header a[href="/nanpure/"]').click();await page.waitForFunction(()=>window.NPAchievementShellAttached);await page.locator('.main-choice').click();await page.frameLocator('iframe.notebook').locator('[data-collection-entry]').waitFor();
  }
  console.log('PASS appended sizes '+viewport.width+'x'+viewport.height+': filters, start, keypad, erase, undo, durable grid, reload and notebook return');
 }
