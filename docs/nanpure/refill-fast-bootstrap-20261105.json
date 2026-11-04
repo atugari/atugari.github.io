@@ -1,0 +1,32 @@
+{
+  "tests": 13,
+  "scope": "Unmodified production RefillStore and RefillBootstrap; fake private SharedPreferences/AssetManager; Gson JSON adapter; synthetic endpoint and tokens only.",
+  "assertions": 228,
+  "passed": [
+    "missing asset preserves manual registration fallback",
+    "first import persists token and requested initial settings together",
+    "repeat launch and process restart preserve user changes",
+    "existing manual registration and pending work are never overwritten",
+    "manual registration completed during asset read wins",
+    "successful unpair prevents preset resurrection after restart",
+    "manual registration can still be used after unpair",
+    "two application contexts preserve separate old and new preferences",
+    "bad, incomplete and oversized presets fail without durable writes",
+    "asset IO failure is reported and remains retryable",
+    "failed disk commit is reported and can retry after process restart",
+    "two simultaneous preset imports accept only one credential",
+    "unpair wins a concurrent race against preset import"
+  ],
+  "ok": true,
+  "limitations": [
+    "No Android runtime, UI or real SQLite installation test",
+    "Android JSON parser and disk-failure implementation are not reproduced in full",
+    "No network, administrator key, real worker token or production API accessed"
+  ],
+  "sourceSHA256": {
+    "src/main/java/jp/nanpure/refill/RefillStore.java": "824efbba134e18071e363f8c53b39c82fe7f1b431d81024db7f7e06e0bbc9b12",
+    "src/main/java/jp/nanpure/refill/RefillBootstrap.java": "c0f5810badfc304855242341f47cabaa7ccf777fa641e9b716006b06196fe62a"
+  },
+  "ranAt": "2026-11-04T21:39:15.808404+00:00",
+  "java": "openjdk version \"17.0.21\" 2026-10-20"
+}

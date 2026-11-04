@@ -13,16 +13,19 @@ android {
     compileSdk 35
 
     defaultConfig {
-        applicationId 'jp.nanpure.refill'
+        applicationId 'jp.nanpure.refill.fast'
         minSdk 26
         targetSdk 35
-        versionCode 7
-        versionName '0.2.3'
+        versionCode 8
+        versionName '0.3.0'
         buildConfigField 'String', 'ENDPOINT', '"' + workerEndpoint + '"'
     }
 
     buildFeatures { buildConfig = true }
-    sourceSets { main.assets.srcDir(layout.buildDirectory.dir('engine-assets')) }
+    sourceSets {
+        main.assets.srcDir(layout.buildDirectory.dir('engine-assets'))
+        main.assets.srcDir(layout.buildDirectory.dir('private-assets'))
+    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
@@ -38,3 +41,30 @@ tasks.register('prepareEngine', Exec) {
     commandLine 'node', file('prepare-engine.cjs'), engine.get().asFile
 }
 tasks.named('preBuild').configure { dependsOn('prepareEngine') }
+
+def bootstrapPath = providers.environmentVariable('NANPURE_REFILL_BOOTSTRAP_FILE').orNull
+tasks.register('preparePrivateBootstrap') {
+    def target = layout.buildDirectory.file('private-assets/refill-bootstrap.json')
+    inputs.property('configured', bootstrapPath != null)
+    inputs.property('endpoint', workerEndpoint)
+    if (bootstrapPath != null) inputs.file(file(bootstrapPath))
+    outputs.dir(layout.buildDirectory.dir('private-assets'))
+    doLast {
+        def output = target.get().asFile
+        delete(output)
+        if (bootstrapPath != null) {
+            def source = file(bootstrapPath)
+            def data = new groovy.json.JsonSlurper().parse(source, 'UTF-8')
+            if (data.format != 1 || data.endpoint != workerEndpoint ||
+                    !(data.token instanceof String) || !(data.token ==~ /[a-f0-9]{64}/) ||
+                    !data.keySet().every { it in ['format', 'endpoint', 'token', 'deviceId', 'name'] }) {
+                throw new GradleException('Invalid private device bootstrap configuration.')
+            }
+            output.parentFile.mkdirs()
+            output.setText(groovy.json.JsonOutput.toJson([
+                format: 1, endpoint: data.endpoint, token: data.token
+            ]) + '\n', 'UTF-8')
+        }
+    }
+}
+tasks.named('preBuild').configure { dependsOn('preparePrivateBootstrap') }

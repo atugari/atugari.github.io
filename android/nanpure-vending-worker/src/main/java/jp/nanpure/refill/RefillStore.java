@@ -31,6 +31,22 @@ final class RefillStore {
     long vaultCount() { return values.getLong("vaultCount", -1); }
     long vaultBytes() { return values.getLong("vaultBytes", 0); }
     int vaultProfiles() { return values.getInt("vaultProfiles", 0); }
+    boolean bootstrapConsumed() { return values.getBoolean("bootstrapConsumed", false); }
+
+    boolean applyBootstrap(String deviceToken, String service) throws IOException {
+        synchronized (REGISTRATION) {
+            if (bootstrapConsumed() || !token().isEmpty()) return false;
+            if (!deviceToken.matches("[a-f0-9]{64}") || !BuildConfig.ENDPOINT.equals(service)) {
+                throw new IOException("Invalid preset registration");
+            }
+            write(values.edit().putString("token", deviceToken).putString("endpoint", service)
+                    .putBoolean("bootstrapConsumed", true).putBoolean("enabled", false)
+                    .putBoolean("maximumPerformance", true).putInt("vaultTarget", 10)
+                    .putString("status", "登録済み・補充を始められます")
+                    .putLong("updated", System.currentTimeMillis()));
+            return true;
+        }
+    }
 
     void enabled(boolean enabled) { values.edit().putBoolean("enabled", enabled).apply(); }
     void meteredAllowed(boolean allowed) { values.edit().putBoolean("metered", allowed).apply(); }
@@ -87,7 +103,7 @@ final class RefillStore {
 
     void unpair() throws IOException {
         synchronized (REGISTRATION) {
-            write(values.edit().clear());
+            write(values.edit().clear().putBoolean("bootstrapConsumed", true));
         }
     }
 

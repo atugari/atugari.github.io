@@ -84,5 +84,8 @@ node benchmark-speed.cjs suite --out /tmp/refill-speed-results.json
 - 0.2.3エンジンSHA-256：`098f0b1c5fba839e2388ad2b9736c708a4a7a7a745d4532ea552183b1f2a67f4`。
 - 条件定義SHA-256：`2ea481830a4b4da38907a44f56c721b53c83b62e4e63d67eafddee533e8f11da`。
 
-配布時は [Android側README](../../android/nanpure-vending-worker/README.md#上書き更新の署名) に記録した
+配布時は [0.2.3時点のREADME](https://github.com/atugari/atugari.github.io/blob/110aadbfab42ff982cb1c422b3d482ec6dc1b59f/android/nanpure-vending-worker/README.md#上書き更新の署名) に記録した
 元の証明書と署名を照合する。元の秘密鍵を復元できない状態では、登録・端末在庫を維持する上書き更新APKを配布できない。
+
+その後の0.3.0では、アプリIDを分けて旧版と共存する方式へ移行した。
+この記録は0.2.3の高速化エンジンを検証した時点のもの。

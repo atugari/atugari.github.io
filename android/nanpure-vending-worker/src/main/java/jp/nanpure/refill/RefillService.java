@@ -138,7 +138,7 @@ public final class RefillService extends Service {
                 PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
         return new Notification.Builder(this, CHANNEL)
                 .setSmallIcon(getApplicationInfo().icon)
-                .setContentTitle("ナンプレ補充係・連続補充")
+                .setContentTitle("ナンプレ補充係 高速版・連続補充")
                 .setContentText(message)
                 .setOnlyAlertOnce(true)
                 .setOngoing(true)

@@ -70,6 +70,13 @@ public final class MainActivity extends Activity {
     @Override public void onCreate(Bundle saved) {
         super.onCreate(saved);
         store = new RefillStore(this);
+        boolean presetApplied = false;
+        boolean presetFailed = false;
+        try {
+            presetApplied = RefillBootstrap.apply(this, store);
+        } catch (Exception error) {
+            presetFailed = true;
+        }
         WindowInsets rootInsets = getWindow().getDecorView().getRootWindowInsets();
         ScrollView scroll = new ScrollView(this);
         scroll.setFillViewport(true);
@@ -86,8 +93,9 @@ public final class MainActivity extends Activity {
 
         TextView eyebrow = text("ナンプレ帳  /  自販機", 13, ACCENT, true);
         content.addView(eyebrow);
-        TextView title = text("ナンプレ補充係", 31, INK, true);
+        TextView title = text("ナンプレ補充係 高速版", 28, INK, true);
         add(content, title, 4);
+        add(content, text("0.3.0", 13, ACCENT, false), 4);
         add(content, text("このスマホで問題を作り、依頼に合わせてサイトへ送ります。", 15, MUTED, false), 12);
 
         LinearLayout summary = card();
@@ -103,7 +111,7 @@ public final class MainActivity extends Activity {
         pairingPanel = card();
         add(content, pairingPanel, 14);
         pairingPanel.addView(text("初回登録", 19, INK, true));
-        pairingHint = text("管理画面の登録リンクを開くか、登録コードを貼り付けてください。", 14, MUTED, false);
+        pairingHint = text("高速版用の登録リンクを開くか、登録コードを貼り付けてください。", 14, MUTED, false);
         add(pairingPanel, pairingHint, 6);
         code = field("登録コード");
         add(pairingPanel, code, 10);
@@ -195,6 +203,8 @@ public final class MainActivity extends Activity {
         add(content, text("端末在庫を有効にすると、回線がない間も電源につないで問題を作れます。"
                 + "自動補充の開始時刻はAndroidが決めます。", 13, MUTED, false), 6);
         applyLink(getIntent());
+        if (presetApplied) notice.setText("登録済みです。電源につないで「連続補充を今すぐ始める」を押してください。");
+        else if (presetFailed) notice.setText("登録設定を読み込めませんでした。もう一度アプリを開いてください。");
         refresh();
     }
 
@@ -219,7 +229,7 @@ public final class MainActivity extends Activity {
     private void applyLink(Intent intent) {
         Uri data = intent.getData();
         if (!store.token().isEmpty() || data == null ||
-                !"nanpure-refill".equals(data.getScheme()) || !"pair".equals(data.getHost())) return;
+                !"nanpure-refill-fast".equals(data.getScheme()) || !"pair".equals(data.getHost())) return;
         String linkCode = data.getQueryParameter("code");
         if (linkCode != null && linkCode.matches("[a-f0-9]{64}")) {
             code.setText(linkCode);
@@ -245,6 +255,22 @@ public final class MainActivity extends Activity {
     }
 
     private void chooseVaultTarget() {
+        String[] choices = {"端末在庫を作らない", "各10問", "各100問", "各1,000問", "各10,000問", "数を指定する"};
+        int[] targets = {0, 10, 100, 1000, 10000};
+        new AlertDialog.Builder(this).setTitle("端末在庫の目標問数")
+                .setItems(choices, (dialog, which) -> {
+                    if (which == targets.length) {
+                        chooseCustomVaultTarget();
+                    } else {
+                        store.vaultTarget(targets[which]);
+                        RefillJob.schedule(this, true);
+                        RefillJob.request(this, 0);
+                        refresh();
+                    }
+                }).setNegativeButton("戻る", null).show();
+    }
+
+    private void chooseCustomVaultTarget() {
         EditText input = field("条件ごとの目標問数");
         input.setInputType(InputType.TYPE_CLASS_NUMBER);
         input.setText(Integer.toString(store.vaultTarget() > 0 ? store.vaultTarget() : 10));
