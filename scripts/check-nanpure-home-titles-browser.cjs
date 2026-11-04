@@ -40,9 +40,13 @@ async function setup(browser,width,height,theme='color'){
    const seen=new Set();
    for(let i=0;i<5;i++){
     const id=await preview.getAttribute('data-theme-preview');
-    const image=await preview.locator('img').evaluate(async image=>{await image.decode();return{url:image.currentSrc,width:image.naturalWidth,height:image.naturalHeight}});
+    const expected=id+(width<=650?'-mobile.webp':'-desktop.webp');
+    await page.waitForFunction(filename=>{
+     const image=document.querySelector('.theme-preview-choice img');
+     return image?.currentSrc.endsWith(filename)&&image.complete&&image.naturalWidth>0;
+    },expected);
+    const image=await preview.locator('img').evaluate(image=>({width:image.naturalWidth,height:image.naturalHeight}));
     assert.equal(await page.locator('.theme-settings img').count(),1);
-    assert(image.url.endsWith(id+(width<=650?'-mobile.webp':'-desktop.webp')));
     assert.equal(image.width<image.height,width<=650);
     seen.add(id);
     if(id.startsWith('contrast-')){
