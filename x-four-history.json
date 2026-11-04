@@ -567,10 +567,10 @@
       "key": "2026-11-04@12:00",
       "day": "2026-11-04",
       "slot": "12:00",
-      "status": "ready",
-      "post_id": null,
+      "status": "sent",
+      "post_id": "2117814367987073172",
       "due": 1793761200000,
-      "sent_at": null,
+      "sent_at": 1793761267579,
       "error": null,
       "date": "2026-11-04",
       "fingerprints": [
