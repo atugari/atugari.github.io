@@ -21,12 +21,12 @@ ACCOUNT = "3fb1db1d33caddf96fec77fac7d571e6"
 WORKER = "nanpure-vending-pilot"
 DATABASE = "f812ddef-4e57-424b-90af-60d7b2f6bfb1"
 PRODUCTION_DB = "7bb28b61-5fe2-47ce-b71b-b0e04fc3747b"
-EXPECTED_VERSION = "c05affbd-6e32-40e5-8ac2-a4693418dbbb"
+# Read-only inspection confirmed this rollback contains the exact original code.
+EXPECTED_VERSION = "8e81153e-0374-4e62-ace9-35ac7e55c6d5"
 EXPECTED_BUNDLE = "369a2c961c4c6f9e80736ee8c8594d11b63ff01c5a8e4abc97662444a275de12"
 MIGRATION_HASH = "2ffd8c57ee032a441ea2197dbda832ad90c24b22ac7565cc8ff4db303ae463bd"
 BASE = "https://api.cloudflare.com/client/v4/accounts/" + ACCOUNT
 SCRIPT = "/workers/scripts/" + WORKER
-PUBLIC = "https://nanpure-vending-pilot.puzzle-hub-4826.workers.dev"
 ROOT = Path(__file__).resolve().parents[2]
 EXPECTED_BINDINGS = {
     "ASSETS": "assets", "DB": "d1", "NOTEBOOK_PATH": "plain_text",
@@ -224,22 +224,6 @@ def restore_our_upload(token, settings, metadata, originals, expected_modules):
     print(json.dumps({"previous_code_restored": True, "additive_schema_retained": True}))
 
 
-def public_probe(path, method="GET", data=None, origin=None):
-    headers = {"Cache-Control": "no-cache"}
-    if origin:
-        headers["Origin"] = origin
-    if data is not None:
-        headers["Content-Type"] = "application/json"
-    request = urllib.request.Request(PUBLIC + path, method=method, data=None if data is None else json.dumps(data).encode(), headers=headers)
-    try:
-        response = urllib.request.urlopen(request, timeout=30)
-    except urllib.error.HTTPError as error:
-        response = error
-    with response:
-        raw = response.read(2 * 1024 * 1024)
-        return {"status": response.status, "digest": digest(raw), "body": raw}
-
-
 def main():
     if os.environ.get("GITHUB_REPOSITORY") != "atugari/atugari.github.io" or os.environ.get("GITHUB_REF") != "refs/heads/nanpure-vending-pilot":
         raise RuntimeError("This deploy is restricted to the isolated pilot branch")
@@ -253,10 +237,6 @@ def main():
     originals = current_modules(token)
     if set(originals) != {"worker.js"} or digest(originals["worker.js"][0]) != EXPECTED_BUNDLE:
         raise RuntimeError("Pilot source differs from the inspected version")
-    checks = [("/", "GET", None, None), ("/api/vending/worker", "GET", None, None),
-              ("/api/vending/admin", "GET", None, None),
-              ("/api/vending/worker", "POST", {"action": "poll"}, "https://example.invalid")]
-    baseline = [public_probe(*check) for check in checks]
     with tempfile.TemporaryDirectory(prefix="nanpure-pilot-") as temporary:
         directory = Path(temporary)
         os.chmod(directory, 0o700)
@@ -265,6 +245,12 @@ def main():
         subprocess.run(["node", str(ROOT / ".github/nanpure-vending-pilot/patch-worker.mjs"), str(original_path), str(directory / "patched")], check=True, cwd=ROOT)
         modules = {name: ((directory / "patched" / name).read_bytes(), "application/javascript+module") for name in ("worker.js", "fleet-vending.mjs")}
         subprocess.run(["node", "--check", str(directory / "patched/worker.js")], check=True, cwd=ROOT)
+        # The hosted runner receives non-JSON 403s from the public endpoint, as
+        # recorded by inspect.py. Verify the real modules offline here; perform
+        # authenticated live enrollment from the authorized client after deploy.
+        subprocess.run(["node", str(ROOT / ".github/nanpure-vending-pilot/rehearse-live.mjs"),
+                        str(original_path), str(directory / "patched/worker.js")], check=True, cwd=ROOT,
+                       env={"PATH": os.environ.get("PATH", ""), "NODE_NO_WARNINGS": "1"})
         if current_version(token) != EXPECTED_VERSION:
             raise RuntimeError("Pilot version changed before migration")
         apply_additive_migration(token)
@@ -274,11 +260,14 @@ def main():
         metadata = upload_metadata(settings)
         print(json.dumps({"ready_to_deploy": True, "worker": WORKER, "preserve_assets": True,
                           "preserve_bindings": True, "only_vending_function_redirected": True}))
+        phase = "upload"
         try:
             uploaded = upload(token, metadata, modules)
+            phase = "active version"
             deployed = current_version(token)
             if deployed == EXPECTED_VERSION:
                 raise RuntimeError("A new pilot version was not activated")
+            phase = "uploaded module identity"
             live = current_modules(token)
             if module_hashes(live) != module_hashes(modules) or current_version(token) != deployed:
                 raise RuntimeError("Deployed pilot module verification failed")
@@ -287,24 +276,19 @@ def main():
             returned_version = uploaded.get("version_id")
             if returned_version and returned_version != deployed:
                 raise RuntimeError("Upload response and active version differ")
+            phase = "preserved configuration"
             after_settings = api(SCRIPT + "/settings", token)
             assert_settings(after_settings)
             for key in PRESERVED_SETTINGS:
                 if settings.get(key) != after_settings.get(key):
                     raise RuntimeError("Existing pilot setting was not preserved: " + key)
-            for index, check in enumerate(checks):
-                actual = public_probe(*check)
-                if (actual["status"], actual["digest"]) != (baseline[index]["status"], baseline[index]["digest"]):
-                    raise RuntimeError("Existing pilot route behavior changed")
-            enrolled = public_probe("/api/vending/worker", "POST", {"action": "enroll", "enrollmentKey": "0" * 64, "token": "1" * 64, "name": "verification"})
-            if enrolled["status"] != 403 or json.loads(enrolled["body"]).get("code") != "enrollment_invalid":
-                raise RuntimeError("Enrollment route did not reject an unknown key")
-        except Exception:
+        except Exception as error:
             restore_our_upload(token, settings, metadata, originals, modules)
-            raise
+            raise RuntimeError("Verification failed at " + phase + ": " + str(error)) from None
         print(json.dumps({"deployed": True, "worker": WORKER, "version_id": deployed,
-                          "previous_version_id": EXPECTED_VERSION, "existing_routes_preserved": len(checks),
-                          "assets_and_bindings_preserved": True, "unknown_enrollment_rejected": True,
+                          "previous_version_id": EXPECTED_VERSION, "existing_outer_worker_bytes_preserved": True,
+                          "assets_and_bindings_preserved": True, "actual_modules_rehearsed_offline": True,
+                          "authenticated_live_enrollment_verification": "required from authorized client",
                           "module_hashes": {n: digest(v[0]) for n, v in modules.items()}}))
 
 

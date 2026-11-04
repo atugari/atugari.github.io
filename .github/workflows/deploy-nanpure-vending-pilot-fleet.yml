@@ -9,6 +9,7 @@ on:
       - '.github/nanpure-vending-pilot/deploy.test.py'
       - '.github/nanpure-vending-pilot/patch-worker.mjs'
       - '.github/nanpure-vending-pilot/patch-worker.test.mjs'
+      - '.github/nanpure-vending-pilot/rehearse-live.mjs'
       - 'nanpure-api/src/vending-enrollment.js'
       - 'nanpure-api/src/vending.js'
       - 'nanpure-api/migrations/0015_vending_enrollment.sql'
