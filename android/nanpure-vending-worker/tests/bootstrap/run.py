@@ -47,12 +47,16 @@ def source_hashes():
 hashes = source_hashes()
 sources = sorted((here / 'src').rglob('*.java')) + production
 with tempfile.TemporaryDirectory(prefix='refill-bootstrap-') as classes:
-    subprocess.run([str(javac), '-encoding', 'UTF-8', '-cp', str(gson),
-                    '-d', classes, *map(str, sources)], check=True)
+    compiled = subprocess.run([str(javac), '-encoding', 'UTF-8', '-cp', str(gson),
+                               '-d', classes, *map(str, sources)],
+                              capture_output=True, text=True, timeout=60)
+    if compiled.returncode:
+        sys.stderr.write(compiled.stdout + compiled.stderr)
+        raise SystemExit(compiled.returncode)
     result = subprocess.run(
         [str(java), '-ea', '-cp', os.pathsep.join([classes, str(gson)]),
          'jp.nanpure.refill.RefillBootstrapHarness'],
-        capture_output=True, text=True)
+        capture_output=True, text=True, timeout=60)
     if result.returncode:
         sys.stderr.write(result.stdout + result.stderr)
         raise SystemExit(result.returncode)

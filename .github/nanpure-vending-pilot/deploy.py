@@ -143,14 +143,15 @@ def apply_additive_migration(token):
     existing_new = {k: v for k, v in before.items() if k in NEW_OBJECTS}
     if existing_new and existing_new != expected:
         raise RuntimeError("Existing enrollment schema does not match the reviewed migration")
-    if "d1_migrations" not in before:
-        raise RuntimeError("The existing migration ledger was not found")
     devices_before = query(token, "SELECT id,token_hash,name,created,revoked FROM vending_devices ORDER BY id")[0]["results"]
     catalogue_before = query(token, "SELECT COUNT(*) AS n FROM vending_catalogue")[0]["results"][0]["n"]
     if catalogue_before != 427:
         raise RuntimeError("The expected 427-condition pilot catalogue was not found")
-    mark = "INSERT INTO d1_migrations(name) SELECT '0015_vending_enrollment.sql' WHERE NOT EXISTS(SELECT 1 FROM d1_migrations WHERE name='0015_vending_enrollment.sql');"
-    query(token, ("" if existing_new else source.decode()) + "\n" + mark)
+    ledger_present = "d1_migrations" in before
+    mark = "INSERT INTO d1_migrations(name) SELECT '0015_vending_enrollment.sql' WHERE NOT EXISTS(SELECT 1 FROM d1_migrations WHERE name='0015_vending_enrollment.sql');" if ledger_present else ""
+    changes = ("" if existing_new else source.decode()) + "\n" + mark
+    if changes.strip():
+        query(token, changes)
     after = normalize_schema(schema(token))
     if {k: v for k, v in after.items() if k in NEW_OBJECTS} != expected:
         raise RuntimeError("Enrollment schema verification failed")
@@ -161,7 +162,7 @@ def apply_additive_migration(token):
         raise RuntimeError("Existing device records changed during the migration; inspect before deploying")
     print(json.dumps({"migration": "0015_vending_enrollment.sql", "isolated_database": True,
                       "existing_devices_preserved": len(devices_before), "catalogue_conditions": catalogue_before,
-                      "existing_schema_preserved": True}))
+                      "existing_schema_preserved": True, "existing_migration_ledger_updated": ledger_present}))
 
 
 def upload_metadata(settings):

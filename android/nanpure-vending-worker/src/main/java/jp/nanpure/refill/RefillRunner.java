@@ -42,9 +42,54 @@ final class RefillRunner {
     static final long NEXT_ROUND = 1;
     private static final int REMOTE_BURST = 2;
     private static volatile RefillRunner scheduled;
+    private static volatile RefillRunner active;
+
+    interface RegistrationAction<T> {
+        T run() throws IOException, JSONException;
+    }
+
+    static <T> T withRegistrationLock(RegistrationAction<T> action)
+            throws IOException, JSONException, InterruptedException {
+        EXCLUSIVE.lockInterruptibly();
+        try {
+            return action.run();
+        } finally {
+            EXCLUSIVE.unlock();
+        }
+    }
+
+    static void preemptForRegistration() {
+        RefillRunner running = active;
+        if (running != null) running.stop();
+        preemptScheduled();
+    }
+
+    static boolean prepareEnrollmentStock(Context context, RefillStore store, RefillStore.EnrollmentAttempt attempt)
+            throws IOException, JSONException, InterruptedException {
+        return withRegistrationLock(() -> {
+            if (!store.isCurrentEnrollment(attempt)) return false;
+            if (attempt.previousToken.isEmpty()) return true;
+            RefillVault vault = new RefillVault(context, attempt.endpoint);
+            JSONObject legacy = store.pending();
+            if (legacy != null) {
+                JSONObject puzzle = legacy.getJSONObject("p");
+                if (vault.find(RefillProfiles.PILOT_KEY, puzzle) == null &&
+                        vault.save(RefillProfiles.PILOT_KEY, puzzle) == RefillVault.Save.NO_SPACE) {
+                    throw new IOException("Local stock cannot be migrated yet");
+                }
+                // Only the finished puzzle is carried over. The old job and lease
+                // belong to the shared registration and must never be sent as the new phone.
+                if (!store.clearPending(attempt.previousToken, false)) return false;
+            }
+            vault.releaseRegistration(attempt.previousToken, attempt.endpoint);
+            return store.isCurrentEnrollment(attempt);
+        });
+    }
 
     private final Context context;
     private final RefillStore store;
+    private final String registrationToken;
+    private final String registrationEndpoint;
     private final boolean foreground;
     private final int coolLanes;
     private final Consumer<String> update;
@@ -65,6 +110,8 @@ final class RefillRunner {
     RefillRunner(Context context, boolean foreground, Consumer<String> update) {
         this.context = context;
         this.store = new RefillStore(context);
+        this.registrationToken = store.token();
+        this.registrationEndpoint = store.endpoint();
         this.foreground = foreground;
         this.coolLanes = foreground ? coolLaneLimit(context) : 1;
         this.update = update;
@@ -88,12 +135,14 @@ final class RefillRunner {
         if (foreground) EXCLUSIVE.lockInterruptibly();
         else if (!EXCLUSIVE.tryLock()) return 0;
         try {
+            active = this;
             if (!foreground) {
                 scheduled = this;
                 if (RefillService.isRunning()) return 0;
             }
             return refill(network);
         } finally {
+            if (active == this) active = null;
             if (!foreground) scheduled = null;
             EXCLUSIVE.unlock();
         }
@@ -531,7 +580,7 @@ final class RefillRunner {
     }
 
     private void release(RefillApi api, Network network, String token, JSONObject job) {
-        if (!token.equals(store.token()) || !networkAllowed(network)) return;
+        if (!store.registrationReady() || !token.equals(store.token()) || !networkAllowed(network)) return;
         try {
             api.call(token, RefillApi.action("release").put("id", job.getString("id"))
                     .put("lease", job.getString("lease")));
@@ -548,7 +597,8 @@ final class RefillRunner {
     }
 
     private boolean canWork(String token) {
-        if (stopped || token.isEmpty() || !token.equals(store.token()) ||
+        if (stopped || !store.registrationReady() || token.isEmpty() || !token.equals(registrationToken) ||
+                !token.equals(store.token()) || !registrationEndpoint.equals(store.endpoint()) ||
                 (!foreground && (!store.enabled() || RefillService.isRunning()))) return false;
         if (!hasExternalPower()) {
             status("電源接続待ち");

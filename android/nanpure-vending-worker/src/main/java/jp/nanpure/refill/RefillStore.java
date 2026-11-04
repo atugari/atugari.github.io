@@ -7,11 +7,34 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.IdentityHashMap;
 
 final class RefillStore {
     private static final Object REGISTRATION = new Object();
+    // A failed commit can still change SharedPreferences' memory. Keep the last attempt
+    // fenced until a later commit proves that it is durable, even across Store instances.
+    private static final IdentityHashMap<SharedPreferences, EnrollmentAttempt> UNCERTAIN = new IdentityHashMap<>();
     private final SharedPreferences values;
+
+    static final class EnrollmentAttempt {
+        final String token;
+        final String endpoint;
+        final String previousToken;
+        final boolean fresh;
+        final long generation;
+
+        private EnrollmentAttempt(String token, String endpoint, String previousToken, boolean fresh, long generation) {
+            this.token = token;
+            this.endpoint = endpoint;
+            this.previousToken = previousToken;
+            this.fresh = fresh;
+            this.generation = generation;
+        }
+    }
 
     RefillStore(Context context) {
         values = context.getSharedPreferences("refill", Context.MODE_PRIVATE);
@@ -32,6 +55,136 @@ final class RefillStore {
     long vaultBytes() { return values.getLong("vaultBytes", 0); }
     int vaultProfiles() { return values.getInt("vaultProfiles", 0); }
     boolean bootstrapConsumed() { return values.getBoolean("bootstrapConsumed", false); }
+
+    boolean registrationPending() {
+        synchronized (REGISTRATION) { return registrationPendingLocked(); }
+    }
+
+    boolean registrationReady() {
+        synchronized (REGISTRATION) { return !registrationPendingLocked() && !token().isEmpty(); }
+    }
+
+    private boolean registrationPendingLocked() {
+        return UNCERTAIN.containsKey(values) || values.getBoolean("enrollmentPending", false);
+    }
+
+    EnrollmentAttempt pendingEnrollment() {
+        synchronized (REGISTRATION) { return pendingEnrollmentLocked(); }
+    }
+
+    private EnrollmentAttempt pendingEnrollmentLocked() {
+        EnrollmentAttempt uncertain = UNCERTAIN.get(values);
+        if (uncertain != null) return uncertain;
+        if (!values.getBoolean("enrollmentPending", false)) return null;
+        return new EnrollmentAttempt(values.getString("enrollmentToken", ""),
+                values.getString("enrollmentEndpoint", ""), values.getString("enrollmentPreviousToken", ""),
+                values.getBoolean("enrollmentFresh", false), values.getLong("registrationGeneration", 0));
+    }
+
+    EnrollmentAttempt prepareEnrollment(String service, String legacyTokenSha256) throws IOException {
+        synchronized (REGISTRATION) {
+            if (!BuildConfig.ENDPOINT.equals(service) || !legacyTokenSha256.matches("[a-f0-9]{64}")) {
+                throw new IOException("Invalid automatic registration configuration");
+            }
+            EnrollmentAttempt pending = pendingEnrollmentLocked();
+            if (pending != null) {
+                validateAttempt(pending, service);
+                persistEnrollment(pending);
+                return pending;
+            }
+            String previous = token();
+            boolean fresh = previous.isEmpty();
+            if (fresh ? bootstrapConsumed() :
+                    !endpoint().equals(service) || !digest(previous).equals(legacyTokenSha256)) return null;
+            EnrollmentAttempt attempt = new EnrollmentAttempt(randomToken(), service, previous, fresh,
+                    values.getLong("registrationGeneration", 0) + 1);
+            SharedPreferences.Editor edit = pendingEdit(attempt);
+            if (fresh) edit.putBoolean("enabled", false).putBoolean("maximumPerformance", true).putInt("vaultTarget", 10);
+            edit.putString("status", "このスマホを自動登録しています・接続待ち")
+                    .putLong("updated", System.currentTimeMillis());
+            UNCERTAIN.put(values, attempt);
+            write(edit);
+            UNCERTAIN.remove(values);
+            return attempt;
+        }
+    }
+
+    boolean isCurrentEnrollment(EnrollmentAttempt attempt) {
+        synchronized (REGISTRATION) { return isCurrentEnrollmentLocked(attempt); }
+    }
+
+    private boolean isCurrentEnrollmentLocked(EnrollmentAttempt attempt) {
+        EnrollmentAttempt current = pendingEnrollmentLocked();
+        return attempt != null && current != null && attempt.generation == current.generation &&
+                attempt.token.equals(current.token) && attempt.endpoint.equals(current.endpoint) &&
+                attempt.previousToken.equals(current.previousToken) && attempt.fresh == current.fresh;
+    }
+
+    boolean persistEnrollment(EnrollmentAttempt attempt) throws IOException {
+        synchronized (REGISTRATION) {
+            if (!isCurrentEnrollmentLocked(attempt)) return false;
+            validateAttempt(attempt, BuildConfig.ENDPOINT);
+            UNCERTAIN.put(values, attempt);
+            // Always commit again immediately before HTTP. In-memory preferences alone
+            // cannot prove that an earlier failed commit saved this token to disk.
+            write(pendingEdit(attempt));
+            UNCERTAIN.remove(values);
+            return true;
+        }
+    }
+
+    boolean completeEnrollment(EnrollmentAttempt attempt, String deviceId) throws IOException {
+        synchronized (REGISTRATION) {
+            if (!isCurrentEnrollmentLocked(attempt)) return false;
+            if (deviceId == null || deviceId.isEmpty() || deviceId.length() > 128) {
+                throw new IOException("Invalid automatic registration response");
+            }
+            if (!values.getString("pending", "").isEmpty()) {
+                throw new IOException("A local delivery still requires migration");
+            }
+            UNCERTAIN.put(values, attempt);
+            try {
+                write(clearEnrollment(values.edit()).putString("token", attempt.token).putString("endpoint", attempt.endpoint)
+                        .putString("registrationDeviceId", deviceId).putBoolean("bootstrapConsumed", true)
+                        .remove("pairCode").remove("pairEndpoint").remove("pairToken")
+                        .putString("status", "このスマホを登録しました・補充を始められます")
+                        .putLong("updated", System.currentTimeMillis()));
+            } catch (IOException failure) {
+                // Later preference edits must not flush the failed final state from
+                // memory. Restore the same pending attempt; readiness remains fenced.
+                pendingEdit(attempt).apply();
+                throw failure;
+            }
+            UNCERTAIN.remove(values);
+            return true;
+        }
+    }
+
+    void enrollmentStatus(EnrollmentAttempt attempt, String message) {
+        synchronized (REGISTRATION) {
+            if (isCurrentEnrollmentLocked(attempt)) writeStatus(message);
+        }
+    }
+
+    private SharedPreferences.Editor pendingEdit(EnrollmentAttempt attempt) {
+        return values.edit().putBoolean("enrollmentPending", true).putString("enrollmentToken", attempt.token)
+                .putString("enrollmentEndpoint", attempt.endpoint).putString("enrollmentPreviousToken", attempt.previousToken)
+                .putBoolean("enrollmentFresh", attempt.fresh).putLong("registrationGeneration", attempt.generation)
+                .putBoolean("bootstrapConsumed", true).putString("token", attempt.previousToken)
+                .putString("endpoint", attempt.endpoint);
+    }
+
+    private static SharedPreferences.Editor clearEnrollment(SharedPreferences.Editor edit) {
+        return edit.remove("enrollmentPending").remove("enrollmentToken").remove("enrollmentEndpoint")
+                .remove("enrollmentPreviousToken").remove("enrollmentFresh");
+    }
+
+    private static void validateAttempt(EnrollmentAttempt attempt, String endpoint) throws IOException {
+        if (!attempt.token.matches("[a-f0-9]{64}") || !attempt.endpoint.equals(endpoint) || attempt.generation <= 0 ||
+                (!attempt.previousToken.isEmpty() && !attempt.previousToken.matches("[a-f0-9]{64}"))) {
+            throw new IOException("Invalid saved automatic registration");
+        }
+    }
 
     boolean applyBootstrap(String deviceToken, String service) throws IOException {
         synchronized (REGISTRATION) {
@@ -72,15 +225,46 @@ final class RefillStore {
     }
 
     void status(String status) {
-        if (!status.equals(status())) {
-            values.edit().putString("status", status).putLong("updated", System.currentTimeMillis()).apply();
+        synchronized (REGISTRATION) {
+            if (!registrationPendingLocked()) writeStatus(status);
         }
     }
 
+    void status(String activeToken, String activeEndpoint, String message) {
+        synchronized (REGISTRATION) {
+            if (!registrationPendingLocked() && !activeToken.isEmpty() && activeToken.equals(token()) &&
+                    activeEndpoint.equals(endpoint())) writeStatus(message);
+        }
+    }
+
+    boolean registrationRejected(String activeToken, String activeEndpoint) {
+        synchronized (REGISTRATION) {
+            if (registrationPendingLocked() || activeToken.isEmpty() || !activeToken.equals(token()) ||
+                    !activeEndpoint.equals(endpoint())) return false;
+            values.edit().putBoolean("enabled", false).putString("status", "端末登録を確認してください")
+                    .putLong("updated", System.currentTimeMillis()).apply();
+            return true;
+        }
+    }
+
+    private void writeStatus(String status) {
+        if (!status.equals(status())) values.edit().putString("status", status)
+                .putLong("updated", System.currentTimeMillis()).apply();
+    }
+
     String pairingToken(String code, String endpoint) throws IOException {
-        String previous = values.getString("pairCode", "");
-        String token = values.getString("pairToken", "");
-        if (code.equals(previous) && endpoint.equals(values.getString("pairEndpoint", "")) && token.length() == 64) return token;
+        synchronized (REGISTRATION) {
+            if (registrationPendingLocked()) throw new IOException("Automatic registration is pending");
+            String previous = values.getString("pairCode", "");
+            String token = values.getString("pairToken", "");
+            if (!code.equals(previous) || !endpoint.equals(values.getString("pairEndpoint", "")) ||
+                    !token.matches("[a-f0-9]{64}")) token = randomToken();
+            write(values.edit().putString("pairCode", code).putString("pairEndpoint", endpoint).putString("pairToken", token));
+            return token;
+        }
+    }
+
+    private static String randomToken() {
         byte[] bytes = new byte[32];
         new SecureRandom().nextBytes(bytes);
         StringBuilder key = new StringBuilder(64);
@@ -88,14 +272,29 @@ final class RefillStore {
             key.append(Character.forDigit((digit & 0xff) >>> 4, 16));
             key.append(Character.forDigit(digit & 0xf, 16));
         }
-        token = key.toString();
-        write(values.edit().putString("pairCode", code).putString("pairEndpoint", endpoint).putString("pairToken", token));
-        return token;
+        return key.toString();
+    }
+
+    private static String digest(String value) throws IOException {
+        try {
+            byte[] bytes = MessageDigest.getInstance("SHA-256").digest(value.getBytes(StandardCharsets.UTF_8));
+            StringBuilder result = new StringBuilder(64);
+            for (byte digit : bytes) {
+                result.append(Character.forDigit((digit & 0xff) >>> 4, 16));
+                result.append(Character.forDigit(digit & 0xf, 16));
+            }
+            return result.toString();
+        } catch (NoSuchAlgorithmException error) {
+            throw new IOException("SHA-256 is unavailable", error);
+        }
     }
 
     void paired(String token, String endpoint) throws IOException {
         synchronized (REGISTRATION) {
-            write(values.edit().putString("token", token).putString("endpoint", endpoint).putBoolean("enabled", true)
+            long generation = values.getLong("registrationGeneration", 0) + 1;
+            UNCERTAIN.remove(values);
+            write(clearEnrollment(values.edit()).putString("token", token).putString("endpoint", endpoint).putBoolean("enabled", true)
+                    .putBoolean("bootstrapConsumed", true).putLong("registrationGeneration", generation)
                     .remove("pairCode").remove("pairEndpoint").remove("pairToken"));
             status("登録済み・補充の条件待ち");
         }
@@ -103,7 +302,9 @@ final class RefillStore {
 
     void unpair() throws IOException {
         synchronized (REGISTRATION) {
-            write(values.edit().clear().putBoolean("bootstrapConsumed", true));
+            long generation = values.getLong("registrationGeneration", 0) + 1;
+            UNCERTAIN.remove(values);
+            write(values.edit().clear().putBoolean("bootstrapConsumed", true).putLong("registrationGeneration", generation));
         }
     }
 

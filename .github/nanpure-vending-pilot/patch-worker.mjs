@@ -23,7 +23,10 @@ const expectedBody = `{
 }`;
 
 class PatchError extends Error {
-  constructor(code, message) { super(message); this.code = code; }
+  constructor(code, message, diagnostics) {
+    super(message); this.code = code;
+    if (diagnostics) this.diagnostics = diagnostics;
+  }
 }
 const demand = (condition, code, message) => {
   if (!condition) throw new PatchError(code, message);
@@ -79,6 +82,53 @@ function canonical(value, aliases = new Map()) {
 const identifiers = (nodes, expected) => nodes.length === expected.length &&
   nodes.every((node, index) => node.type === 'Identifier' && node.name === expected[index]);
 
+function isNameHelper(ast, callee) {
+  if (callee?.type !== 'Identifier' || !/^__name\d*$/.test(callee.name)) return false;
+  const declarations = topBindings(ast, callee.name);
+  if (declarations.length !== 1) return false;
+  const helper = declarations[0], define = helper?.body?.callee;
+  if (helper?.type !== 'ArrowFunctionExpression' || define?.type !== 'Identifier' ||
+      !/^__defProp\d*$/.test(define.name)) return false;
+  const definitions = topBindings(ast, define.name), property = definitions[0];
+  if (definitions.length !== 1 || property?.type !== 'MemberExpression' || property.computed ||
+      property.object.type !== 'Identifier' || property.object.name !== 'Object' ||
+      property.property.type !== 'Identifier' || property.property.name !== 'defineProperty' ||
+      topBindings(ast, 'Object').length !== 0) return false;
+  const expected = parse('const expected=(target,value)=>__defProp(target,"name",{value,configurable:true});')
+    .body[0].declarations[0].init;
+  return JSON.stringify(canonical(helper, new Map([[define.name, '__defProp']]))) ===
+    JSON.stringify(canonical(expected));
+}
+
+function isNameCall(ast, expression, valueType, originalName) {
+  return expression?.type === 'CallExpression' && !expression.optional &&
+    isNameHelper(ast, expression.callee) && expression.arguments.length === 2 &&
+    expression.arguments[0].type === valueType && expression.arguments[1].type === 'Literal' &&
+    expression.arguments[1].value === originalName;
+}
+
+function unwrapFunctionName(ast, binding, originalName) {
+  // keepNames wraps inferred arrow names in the same esbuild helper. Only
+  // that exact helper and the known original name can be ignored for AST
+  // validation; the annotation itself remains byte-for-byte in the output.
+  return isNameCall(ast, binding, 'ArrowFunctionExpression', originalName) ? binding.arguments[0] : binding;
+}
+
+function problemDiagnostics(node) {
+  const members = node.body.body, constructor = members.find(member => member.kind === 'constructor');
+  return {
+    classMemberTypes: members.map(member => member.type),
+    extendsError: node.superClass?.type === 'Identifier' && node.superClass.name === 'Error',
+    constructorCount: members.filter(member => member.kind === 'constructor').length,
+    constructorParameterTypes: constructor?.value.params.map(param => param.type) || [],
+    constructorParameterNames: constructor?.value.params.map(param =>
+      param.type === 'Identifier' && /^(status|message)\d*$/.test(param.name) ? param.name : '<other>') || [],
+    constructorStatementTypes: constructor?.value.body.body.map(statement => statement.type) || [],
+    staticBlockStatementTypes: members.filter(member => member.type === 'StaticBlock')
+      .map(member => member.body.map(statement => statement.type))
+  };
+}
+
 function assertProblemClass(ast) {
   const candidates = [];
   walk(ast, node => {
@@ -92,12 +142,19 @@ function assertProblemClass(ast) {
   const { name, node } = candidates[0];
   demand(topBindings(ast, name).length === 1 && topBindings(ast, name)[0] === node,
     'PROBLEM_CLASS', 'The legacy Problem class must have one module-level binding.');
-  const constructor = node.body.body[0];
+  const members = node.body.body;
+  const annotation = members[0];
+  const annotated = annotation?.type === 'StaticBlock' && annotation.body.length === 1 &&
+    annotation.body[0].type === 'ExpressionStatement' &&
+    isNameCall(ast, annotation.body[0].expression, 'ThisExpression', 'Problem');
+  const constructor = members[annotated ? 1 : 0];
   const expected = parse('class Expected extends Error { constructor(status,message){super(message);this.status=status;} }')
     .body[0].body.body[0];
-  demand(node.superClass?.type === 'Identifier' && node.superClass.name === 'Error' &&
-    node.body.body.length === 1 && JSON.stringify(canonical(constructor)) === JSON.stringify(canonical(expected)),
-    'PROBLEM_CLASS', 'The legacy Problem constructor does not match the supported contract.');
+  if (!(node.superClass?.type === 'Identifier' && node.superClass.name === 'Error' &&
+      members.length === (annotated ? 2 : 1) &&
+      JSON.stringify(canonical(constructor)) === JSON.stringify(canonical(expected))))
+    throw new PatchError('PROBLEM_CLASS', 'The legacy Problem constructor does not match the supported contract.',
+      problemDiagnostics(node));
   return name;
 }
 
@@ -141,7 +198,7 @@ function inspect(source) {
   for (const [base, called] of targets) {
     const declarations = topBindings(ast, called);
     demand(declarations.length === 1 && declarations[0], 'VENDING_BINDING', 'A legacy vending dependency is ambiguous.');
-    bindings.set(base, declarations[0]);
+    bindings.set(base, unwrapFunctionName(ast, declarations[0], base));
   }
   demand(assertFlag(bindings.get('vendingEnabled'), 'VENDING_ENABLED') &&
     assertFlag(bindings.get('catalogueEnabled'), 'VENDING_CATALOGUE_ENABLED'),
@@ -248,7 +305,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
   main(process.argv.slice(2)).catch(error => {
     const known = error instanceof PatchError;
     process.stderr.write(JSON.stringify({ ok: false, code: known ? error.code : 'PATCH_FAILED',
-      message: known ? error.message : 'Patching failed without logging module source or binding values.' }) + '\n');
+      message: known ? error.message : 'Patching failed without logging module source or binding values.',
+      ...(known && error.diagnostics ? { diagnostics: error.diagnostics } : {}) }) + '\n');
     process.exitCode = 1;
   });
 }

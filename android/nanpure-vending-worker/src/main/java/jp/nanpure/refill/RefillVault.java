@@ -243,6 +243,13 @@ final class RefillVault {
         database.getWritableDatabase().delete("vault_deliveries", DELIVERY_KEY, delivery.key());
     }
 
+    void releaseRegistration(String previousToken, String endpoint) {
+        // Keep the completed entries and historical counters. A job/lease is owned
+        // by its original registration, even when the new phone uses the same endpoint.
+        String owner = owner(previousToken, endpoint);
+        database.getWritableDatabase().delete("vault_deliveries", "scope=? AND owner=?", new String[]{scope, owner});
+    }
+
     long acknowledge(Delivery delivery) {
         checkScope(delivery);
         SQLiteDatabase db = database.getWritableDatabase();

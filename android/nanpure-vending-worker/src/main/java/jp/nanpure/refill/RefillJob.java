@@ -20,16 +20,35 @@ import java.io.IOException;
 public final class RefillJob extends JobService {
     private static final int PERIODIC = 5180;
     private static final int CHECK = 5181;
+    private static final int ENROLLMENT = 5184;
     private static final long QUARTER_HOUR = 15 * 60 * 1000;
     private static final long BURST_MS = 120_000;
     private static final int BURST_ROUNDS = 64;
     private final Handler main = new Handler(Looper.getMainLooper());
     private Run active;
+    private JobParameters enrollment;
 
     static void schedule(Context context, boolean replace) {
         RefillStore store = new RefillStore(context);
         JobScheduler scheduler = context.getSystemService(JobScheduler.class);
-        if (!store.enabled() || store.token().isEmpty()) {
+        if (store.registrationPending()) {
+            scheduler.cancel(PERIODIC);
+            scheduler.cancel(CHECK);
+            if (replace) scheduler.cancel(ENROLLMENT);
+            if (scheduler.getPendingJob(ENROLLMENT) == null) {
+                // Registration needs no charging session. Persist its retry entry so
+                // process death or a reboot while offline cannot strand a saved token.
+                int result = scheduler.schedule(new JobInfo.Builder(ENROLLMENT, new ComponentName(context, RefillJob.class))
+                        .setRequiredNetworkType(store.meteredAllowed() ? JobInfo.NETWORK_TYPE_ANY : JobInfo.NETWORK_TYPE_UNMETERED)
+                        .setPeriodic(QUARTER_HOUR).setPersisted(true).build());
+                if (result != JobScheduler.RESULT_SUCCESS) {
+                    store.enrollmentStatus(store.pendingEnrollment(), "自動登録待ち・この画面を開いて再試行してください");
+                }
+            }
+            return;
+        }
+        scheduler.cancel(ENROLLMENT);
+        if (!store.enabled() || !store.registrationReady()) {
             scheduler.cancel(PERIODIC);
             scheduler.cancel(CHECK);
             return;
@@ -49,7 +68,7 @@ public final class RefillJob extends JobService {
 
     static void request(Context context, long delayMs) {
         RefillStore store = new RefillStore(context);
-        if (!store.enabled() || store.token().isEmpty() || RefillService.isRunning()) return;
+        if (!store.enabled() || !store.registrationReady() || RefillService.isRunning()) return;
         JobScheduler scheduler = context.getSystemService(JobScheduler.class);
         if (scheduler.getPendingJob(CHECK) != null) return;
         scheduler.schedule(base(context, CHECK, store).setMinimumLatency(delayMs).build());
@@ -66,6 +85,35 @@ public final class RefillJob extends JobService {
     }
 
     @Override public boolean onStartJob(JobParameters parameters) {
+        RefillStore store = new RefillStore(this);
+        try {
+            RefillBootstrap.apply(this, store);
+        } catch (IOException | JSONException error) {
+            store.status("自動登録の設定または端末保存を確認してください");
+            if (!store.registrationPending()) return false;
+        }
+        if (!store.registrationReady()) {
+            schedule(this, false);
+            if (store.registrationPending()) {
+                if (parameters.getJobId() == ENROLLMENT) {
+                    if (enrollment != null) return false;
+                    enrollment = parameters;
+                    RefillEnrollment.request(this, () -> {
+                        if (enrollment != parameters) return;
+                        enrollment = null;
+                        jobFinished(parameters, false);
+                    });
+                    return true;
+                }
+                RefillEnrollment.request(this);
+            }
+            return false;
+        }
+        if (parameters.getJobId() == ENROLLMENT) {
+            schedule(this, false);
+            return false;
+        }
+        if (!store.enabled()) return false;
         if (active != null || RefillService.isRunning()) return false;
         Run run = new Run(parameters);
         active = run;
@@ -74,11 +122,16 @@ public final class RefillJob extends JobService {
     }
 
     @Override public boolean onStopJob(JobParameters parameters) {
+        if (parameters.getJobId() == ENROLLMENT) {
+            enrollment = null;
+            return new RefillStore(this).registrationPending();
+        }
         if (active != null && active.parameters.getJobId() == parameters.getJobId()) active.stop();
         return true;
     }
 
     @Override public void onDestroy() {
+        enrollment = null;
         if (active != null) active.stop();
         super.onDestroy();
     }
@@ -87,7 +140,10 @@ public final class RefillJob extends JobService {
         final JobParameters parameters;
         final Thread thread;
         final RefillStore store = new RefillStore(RefillJob.this);
-        final RefillRunner runner = new RefillRunner(RefillJob.this, false, store::status);
+        final String registrationToken = store.token();
+        final String registrationEndpoint = store.endpoint();
+        final RefillRunner runner = new RefillRunner(RefillJob.this, false,
+                message -> store.status(registrationToken, registrationEndpoint, message));
         volatile boolean stopped;
 
         Run(JobParameters parameters) {
@@ -102,7 +158,8 @@ public final class RefillJob extends JobService {
         }
 
         private boolean report() {
-            return !stopped && !RefillService.isRunning() && !store.token().isEmpty();
+            return !stopped && !RefillService.isRunning() && store.registrationReady() &&
+                    registrationToken.equals(store.token()) && registrationEndpoint.equals(store.endpoint());
         }
 
         @Override public void run() {
@@ -121,16 +178,15 @@ public final class RefillJob extends JobService {
             } catch (RefillApi.HttpFailure error) {
                 if (report()) {
                     if (error.status == 403) {
-                        store.enabled(false);
-                        store.status("端末登録を確認してください");
+                        store.registrationRejected(registrationToken, registrationEndpoint);
                     } else {
-                        store.status("サーバーの応答待ち・次の確認で再試行");
+                        store.status(registrationToken, registrationEndpoint, "サーバーの応答待ち・次の確認で再試行");
                     }
                 }
             } catch (InterruptedException error) {
                 Thread.currentThread().interrupt();
             } catch (IOException | JSONException | RuntimeException error) {
-                if (report()) store.status("補充を中断しました・次の確認で再試行");
+                if (report()) store.status(registrationToken, registrationEndpoint, "補充を中断しました・次の確認で再試行");
             } finally {
                 runner.stop();
                 long next = followUp;
@@ -138,13 +194,13 @@ public final class RefillJob extends JobService {
                     if (active != this) return;
                     active = null;
                     if (stopped) {
-                        if (!RefillService.isRunning() && store.enabled() && !store.token().isEmpty()) {
-                            store.status("補充を中断・条件がそろい次第再開");
+                        if (!RefillService.isRunning() && store.enabled()) {
+                            store.status(registrationToken, registrationEndpoint, "補充を中断・条件がそろい次第再開");
                         }
                         return;
                     }
                     jobFinished(parameters, false);
-                    if (!store.enabled()) schedule(RefillJob.this, false);
+                    if (!store.enabled() || !store.registrationReady()) schedule(RefillJob.this, false);
                     if (next > 0) main.postDelayed(() -> request(RefillJob.this, next), 500);
                 });
             }

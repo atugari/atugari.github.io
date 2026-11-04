@@ -60,8 +60,10 @@ public final class MainActivity extends Activity {
     private boolean updating;
     private boolean busy;
     private boolean requestingNotifications;
+    private boolean automaticRegistration;
     private final Runnable refreshTask = new Runnable() {
         @Override public void run() {
+            if (store.registrationPending()) RefillEnrollment.request(MainActivity.this);
             refresh();
             main.postDelayed(this, 1000);
         }
@@ -77,6 +79,7 @@ public final class MainActivity extends Activity {
         } catch (Exception error) {
             presetFailed = true;
         }
+        automaticRegistration = presetApplied || store.registrationPending();
         WindowInsets rootInsets = getWindow().getDecorView().getRootWindowInsets();
         ScrollView scroll = new ScrollView(this);
         scroll.setFillViewport(true);
@@ -95,7 +98,7 @@ public final class MainActivity extends Activity {
         content.addView(eyebrow);
         TextView title = text("ナンプレ補充係 高速版", 28, INK, true);
         add(content, title, 4);
-        add(content, text("0.3.0", 13, ACCENT, false), 4);
+        add(content, text(BuildConfig.VERSION_NAME, 13, ACCENT, false), 4);
         add(content, text("このスマホで問題を作り、依頼に合わせてサイトへ送ります。", 15, MUTED, false), 12);
 
         LinearLayout summary = card();
@@ -188,8 +191,10 @@ public final class MainActivity extends Activity {
                 .setPositiveButton("登録を解除する", (dialog, which) -> {
                     try {
                         stopService(new Intent(this, RefillService.class));
+                        RefillRunner.preemptForRegistration();
                         store.unpair();
                         RefillJob.schedule(this, true);
+                        automaticRegistration = false;
                         notice.setText("");
                         refresh();
                     } catch (Exception error) {
@@ -203,7 +208,7 @@ public final class MainActivity extends Activity {
         add(content, text("端末在庫を有効にすると、回線がない間も電源につないで問題を作れます。"
                 + "自動補充の開始時刻はAndroidが決めます。", 13, MUTED, false), 6);
         applyLink(getIntent());
-        if (presetApplied) notice.setText("登録済みです。電源につないで「連続補充を今すぐ始める」を押してください。");
+        if (presetApplied) notice.setText("登録コードの入力は不要です。このスマホ専用の登録を自動で進めます。");
         else if (presetFailed) notice.setText("登録設定を読み込めませんでした。もう一度アプリを開いてください。");
         refresh();
     }
@@ -228,7 +233,7 @@ public final class MainActivity extends Activity {
 
     private void applyLink(Intent intent) {
         Uri data = intent.getData();
-        if (!store.token().isEmpty() || data == null ||
+        if (store.registrationPending() || !store.token().isEmpty() || data == null ||
                 !"nanpure-refill-fast".equals(data.getScheme()) || !"pair".equals(data.getHost())) return;
         String linkCode = data.getQueryParameter("code");
         if (linkCode != null && linkCode.matches("[a-f0-9]{64}")) {
@@ -245,7 +250,7 @@ public final class MainActivity extends Activity {
     }
 
     private void startContinuous() {
-        if (isDestroyed() || store.token().isEmpty()) return;
+        if (isDestroyed() || !store.registrationReady()) return;
         try {
             RefillService.start(this);
             notice.setText("");
@@ -307,7 +312,7 @@ public final class MainActivity extends Activity {
     }
 
     private void pair() {
-        if (busy || !store.token().isEmpty()) return;
+        if (busy || store.registrationPending() || !store.token().isEmpty()) return;
         String inputCode = code.getText().toString().trim();
         if (inputCode.isEmpty() || inputCode.length() > 128) {
             notice.setText("管理画面の登録コードを入力してください。");
@@ -367,12 +372,21 @@ public final class MainActivity extends Activity {
     }
 
     private void refresh() {
-        boolean paired = !store.token().isEmpty();
-        pairingPanel.setVisibility(paired ? View.GONE : View.VISIBLE);
-        settingsPanel.setVisibility(paired ? View.VISIBLE : View.GONE);
-        register.setEnabled(!busy);
+        boolean pending = store.registrationPending();
+        boolean paired = store.registrationReady();
+        pairingPanel.setVisibility(paired || pending ? View.GONE : View.VISIBLE);
+        settingsPanel.setVisibility(paired || pending ? View.VISIBLE : View.GONE);
+        register.setEnabled(!busy && !pending);
         check.setEnabled(paired && !requestingNotifications);
-        setText(check, RefillService.isRunning() ? "連続補充を停止する" : "連続補充を今すぐ始める");
+        setText(check, pending ? "このスマホの自動登録を待っています" :
+                RefillService.isRunning() ? "連続補充を停止する" : "連続補充を今すぐ始める");
+        if (automaticRegistration) {
+            if (pending) setText(notice, "登録コードの入力は不要です。通信できる状態で、このスマホ専用の登録を進めます。");
+            else if (paired) {
+                setText(notice, "このスマホを登録しました。電源につないで「連続補充を今すぐ始める」を押してください。");
+                automaticRegistration = false;
+            }
+        }
         updating = true;
         automatic.setChecked(store.enabled());
         metered.setChecked(store.meteredAllowed());
@@ -386,7 +400,7 @@ public final class MainActivity extends Activity {
         }
         setText(completed, info);
         long count = store.vaultCount();
-        vaultSummary.setVisibility(paired ? View.VISIBLE : View.GONE);
+        vaultSummary.setVisibility(paired || pending ? View.VISIBLE : View.GONE);
         setText(vaultSummary, count < 0 ? "端末在庫は補充を開始すると表示します" :
                 "端末在庫  " + count + "問（" + store.vaultProfiles() + "条件）  ·  問題データ "
                         + Formatter.formatShortFileSize(this, store.vaultBytes()));

@@ -6,10 +6,10 @@ The resulting APK is aligned and unsigned; signing is a separate operation.
 Example:
   python3 build-apk.py --project /path/to/nanpure-vending-worker \
       --sdk /path/to/sdk --jdk /path/to/jdk17 --build-tools 35.0.0 \
-      --out /path/to/nanpure-refill-fast-0.3.0-unsigned.apk
+      --out /path/to/nanpure-refill-fast-0.3.1-unsigned.apk
 
-An optional --bootstrap file is validated and reduced to format/endpoint/token.
-Its token is never written to logs or build metadata.
+An optional format-2 --bootstrap file supplies a worker-only enrollment grant
+and the legacy registration fingerprint. Neither is written to logs or build metadata.
 """
 from __future__ import annotations
 
@@ -27,7 +27,7 @@ import xml.etree.ElementTree as ET
 import zipfile
 
 ANDROID_NS = 'http://schemas.android.com/apk/res/android'
-ALLOWED_BOOTSTRAP_KEYS = {'format', 'endpoint', 'token', 'deviceId', 'name'}
+ALLOWED_BOOTSTRAP_KEYS = {'format', 'endpoint', 'enrollmentKey', 'legacyTokenSha256'}
 
 
 def sha256(path: Path) -> str:
@@ -74,18 +74,20 @@ def load_config(project: Path, endpoint_override: str | None) -> dict:
 def load_bootstrap(path: Path | None, endpoint: str) -> dict | None:
     if path is None:
         return None
-    if path.stat().st_size > 65536:
+    if path.stat().st_size > 8192:
         raise ValueError('Private bootstrap file is too large')
     try:
         value = json.loads(path.read_text(encoding='utf-8'))
     except (UnicodeError, json.JSONDecodeError) as error:
         raise ValueError('Invalid private bootstrap JSON') from error
-    if (not isinstance(value, dict) or not set(value).issubset(ALLOWED_BOOTSTRAP_KEYS)
-            or type(value.get('format')) is not int or value['format'] != 1
-            or value.get('endpoint') != endpoint or not isinstance(value.get('token'), str)
-            or not re.fullmatch(r'[a-f0-9]{64}', value['token'])):
-        raise ValueError('Invalid private device bootstrap configuration')
-    return {'format': 1, 'endpoint': value['endpoint'], 'token': value['token']}
+    if (not isinstance(value, dict) or set(value) != ALLOWED_BOOTSTRAP_KEYS
+            or type(value.get('format')) is not int or value['format'] != 2
+            or value.get('endpoint') != endpoint or not isinstance(value.get('enrollmentKey'), str)
+            or not re.fullmatch(r'[a-f0-9]{64}', value['enrollmentKey'])
+            or not isinstance(value.get('legacyTokenSha256'), str)
+            or not re.fullmatch(r'[a-f0-9]{64}', value['legacyTokenSha256'])):
+        raise ValueError('Invalid private automatic registration configuration')
+    return {name: value[name] for name in ['format', 'endpoint', 'enrollmentKey', 'legacyTokenSha256']}
 
 
 def run(command: list[str], env: dict, cwd: Path, label: str, capture: bool = False) -> str:

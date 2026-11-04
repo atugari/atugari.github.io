@@ -33,6 +33,8 @@ public final class RefillService extends Service {
     private Thread worker;
     private volatile boolean stopping;
     private String notificationText;
+    private String registrationToken = "";
+    private String registrationEndpoint = "";
 
     static boolean isRunning() { return running; }
 
@@ -63,13 +65,31 @@ public final class RefillService extends Service {
         } else {
             startForeground(NOTIFICATION, notice);
         }
-        if (store.token().isEmpty()) {
+        try {
+            RefillBootstrap.apply(this, store);
+        } catch (IOException | JSONException error) {
+            store.status("自動登録の設定または端末保存を確認してください");
+            if (store.registrationPending()) {
+                RefillJob.schedule(this, false);
+                RefillEnrollment.request(this);
+            }
+            stopForeground(STOP_FOREGROUND_REMOVE);
+            stopSelf();
+            return START_NOT_STICKY;
+        }
+        if (!store.registrationReady()) {
+            if (store.registrationPending()) {
+                RefillJob.schedule(this, false);
+                RefillEnrollment.request(this);
+            }
             stopForeground(STOP_FOREGROUND_REMOVE);
             stopSelf();
             return START_NOT_STICKY;
         }
 
         running = true;
+        registrationToken = store.token();
+        registrationEndpoint = store.endpoint();
         runner = new RefillRunner(this, true, this::status);
         RefillRunner.preemptScheduled();
         store.status(notificationText);
@@ -89,8 +109,9 @@ public final class RefillService extends Service {
                     next = current.execute(network);
                 } catch (RefillApi.HttpFailure error) {
                     if (error.status == 403) {
-                        store.enabled(false);
-                        status("端末登録を確認してください");
+                        if (store.registrationRejected(registrationToken, registrationEndpoint)) {
+                            status("端末登録を確認してください");
+                        }
                         break;
                     }
                     status("サーバーの応答待ち・連続補充で再試行します");
@@ -121,13 +142,18 @@ public final class RefillService extends Service {
     }
 
     private void status(String message) {
-        if (stopping || store.token().isEmpty()) return;
-        store.status(message);
+        if (stopping || !currentRegistration()) return;
+        store.status(registrationToken, registrationEndpoint, message);
         main.post(() -> {
-            if (stopping || worker == null || message.equals(notificationText)) return;
+            if (stopping || worker == null || !currentRegistration() || message.equals(notificationText)) return;
             notificationText = message;
             getSystemService(NotificationManager.class).notify(NOTIFICATION, notification(message));
         });
+    }
+
+    private boolean currentRegistration() {
+        return store != null && store.registrationReady() && registrationToken.equals(store.token()) &&
+                registrationEndpoint.equals(store.endpoint());
     }
 
     private Notification notification(String message) {
@@ -152,7 +178,7 @@ public final class RefillService extends Service {
         stopping = true;
         if (runner != null) runner.stop();
         if (worker != null) worker.interrupt();
-        if (store != null && !store.token().isEmpty()) store.status("連続補充を停止しました");
+        if (store != null) store.status(registrationToken, registrationEndpoint, "連続補充を停止しました");
     }
 
     private void finish(RefillRunner current) {

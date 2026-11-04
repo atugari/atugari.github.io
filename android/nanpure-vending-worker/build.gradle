@@ -16,8 +16,8 @@ android {
         applicationId 'jp.nanpure.refill.fast'
         minSdk 26
         targetSdk 35
-        versionCode 8
-        versionName '0.3.0'
+        versionCode 9
+        versionName '0.3.1'
         buildConfigField 'String', 'ENDPOINT', '"' + workerEndpoint + '"'
     }
 
@@ -55,14 +55,17 @@ tasks.register('preparePrivateBootstrap') {
         if (bootstrapPath != null) {
             def source = file(bootstrapPath)
             def data = new groovy.json.JsonSlurper().parse(source, 'UTF-8')
-            if (data.format != 1 || data.endpoint != workerEndpoint ||
-                    !(data.token instanceof String) || !(data.token ==~ /[a-f0-9]{64}/) ||
-                    !data.keySet().every { it in ['format', 'endpoint', 'token', 'deviceId', 'name'] }) {
-                throw new GradleException('Invalid private device bootstrap configuration.')
+            if (!(data instanceof Map) || !(data.format instanceof Integer) || data.format != 2 ||
+                    data.endpoint != workerEndpoint ||
+                    !(data.enrollmentKey instanceof String) || !(data.enrollmentKey ==~ /[a-f0-9]{64}/) ||
+                    !(data.legacyTokenSha256 instanceof String) || !(data.legacyTokenSha256 ==~ /[a-f0-9]{64}/) ||
+                    data.keySet() != ['format', 'endpoint', 'enrollmentKey', 'legacyTokenSha256'].toSet()) {
+                throw new GradleException('Invalid private automatic registration configuration.')
             }
             output.parentFile.mkdirs()
             output.setText(groovy.json.JsonOutput.toJson([
-                format: 1, endpoint: data.endpoint, token: data.token
+                format: 2, endpoint: data.endpoint, enrollmentKey: data.enrollmentKey,
+                legacyTokenSha256: data.legacyTokenSha256
             ]) + '\n', 'UTF-8')
         }
     }

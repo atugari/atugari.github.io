@@ -4,6 +4,7 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync, existsSync } from 'no
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { createRequire } from 'node:module';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import { buildFleetModule, patchWorkerSource, readPinnedWorker, sha256 } from './patch-worker.mjs';
 
@@ -107,6 +108,41 @@ test('unsupported signatures, routes, guards, errors and binding collisions fail
     [source + '\n// ' + namespace, 'NAMESPACE_COLLISION']
   ];
   for (const [input, code] of cases) assert.throws(() => patchWorkerSource(input, namespace), failure(code));
+});
+
+test('installed esbuild and Wrangler keepNames output accepts only exact name annotations', async () => {
+  const app = createRequire(new URL('../../nanpure-api/package.json', import.meta.url));
+  const wrangler = createRequire(app.resolve('wrangler/package.json'));
+  for (const build of [app('esbuild'), wrangler('esbuild')]) {
+    const { code } = await build.transform(fixture(), {
+      loader: 'js', format: 'esm', target: 'es2022', keepNames: true, minify: false
+    });
+    assert(code.includes('__name(this, "Problem")'));
+    assert(code.includes('"vendingEnabled"'));
+    const result = patchWorkerSource(code, namespace);
+    assert(result.source.endsWith(code.slice(result.bodyEnd)));
+    assert.equal(result.originalSHA256, sha256(code));
+    for (const bad of [
+      code.replace('__name(this, "Problem")', '__name(this, "Unrecognized")'),
+      code.replace('__name(this, "Problem");', '__name(this, "Problem"); void 0;'),
+      code.replace('__name(this, "Problem")', '__name({}, "Problem")'),
+      code.replace('Object.defineProperty', 'Object.assign'),
+      code.replace('configurable: true', 'configurable: false')
+    ]) assert.throws(() => patchWorkerSource(bad, namespace), failure('PROBLEM_CLASS'));
+    assert.throws(() => patchWorkerSource(code.replace('"vendingEnabled"', '"Unrecognized"'), namespace),
+      failure('FEATURE_GUARD'));
+    const broken = code.replace('this.status = status;', 'this.status = status; "SYNTHETIC_HIDDEN_VALUE";');
+    assert.notEqual(broken, code);
+    assert.throws(() => patchWorkerSource(broken, namespace), error => {
+      assert.equal(error.code, 'PROBLEM_CLASS');
+      assert.deepEqual(error.diagnostics.classMemberTypes, ['StaticBlock', 'MethodDefinition']);
+      assert.deepEqual(error.diagnostics.constructorParameterNames, ['status', 'message']);
+      const encoded = JSON.stringify(error.diagnostics);
+      assert(!encoded.includes('SYNTHETIC_HIDDEN_VALUE'));
+      assert(!encoded.includes('this.status'));
+      return true;
+    });
+  }
 });
 
 test('production CLI rejects an unreviewed hash without output modules or source diagnostics', t => {
