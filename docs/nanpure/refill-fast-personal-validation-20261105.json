@@ -1,0 +1,200 @@
+{
+  "validation": "personal Android APK",
+  "checked_at_utc": "2026-11-04T22:03:04.295108+00:00",
+  "api_requests_performed": false,
+  "signing_performed": false,
+  "generation_tests_performed": false,
+  "device_runtime_test_performed": false,
+  "credentials_redacted": true,
+  "checks": [
+    {
+      "name": "expected_endpoint_is_authorized_worker_endpoint",
+      "passed": true
+    },
+    {
+      "name": "expected_bootstrap_format_is_integer_1",
+      "passed": true
+    },
+    {
+      "name": "worker_credential_is_distinct_from_administrator",
+      "passed": true
+    },
+    {
+      "name": "apk_signature_verifies",
+      "passed": true
+    },
+    {
+      "name": "one_signer_matches_saved_public_certificate",
+      "passed": true
+    },
+    {
+      "name": "zip_alignment_valid",
+      "passed": true
+    },
+    {
+      "name": "aapt_badging_succeeds",
+      "passed": true
+    },
+    {
+      "name": "separate_application_id_and_expected_version",
+      "passed": true
+    },
+    {
+      "name": "expected_application_label",
+      "passed": true
+    },
+    {
+      "name": "expected_sdk_levels",
+      "passed": true
+    },
+    {
+      "name": "fully_qualified_launch_activity",
+      "passed": true
+    },
+    {
+      "name": "binary_manifest_reads",
+      "passed": true
+    },
+    {
+      "name": "fully_qualified_services",
+      "passed": true
+    },
+    {
+      "name": "separate_pairing_scheme",
+      "passed": true
+    },
+    {
+      "name": "release_debugging_disabled",
+      "passed": true
+    },
+    {
+      "name": "android_backup_disabled",
+      "passed": true
+    },
+    {
+      "name": "zip_crc_valid",
+      "passed": true
+    },
+    {
+      "name": "no_duplicate_zip_members",
+      "passed": true
+    },
+    {
+      "name": "bootstrap_has_exactly_three_allowed_keys",
+      "passed": true
+    },
+    {
+      "name": "bootstrap_format_is_integer_1",
+      "passed": true
+    },
+    {
+      "name": "bootstrap_endpoint_matches_expected",
+      "passed": true
+    },
+    {
+      "name": "bootstrap_token_is_lowercase_hex_64",
+      "passed": true
+    },
+    {
+      "name": "bootstrap_token_matches_registered_worker",
+      "passed": true
+    },
+    {
+      "name": "worker_token_only_in_private_bootstrap_asset",
+      "passed": true
+    },
+    {
+      "name": "administrator_credential_absent_from_all_apk_entries_and_archive",
+      "passed": true
+    },
+    {
+      "name": "no_private_key_or_admin_filename_packaged",
+      "passed": true
+    },
+    {
+      "name": "resource_table_is_uncompressed",
+      "passed": true
+    },
+    {
+      "name": "dex_is_compatible_038",
+      "passed": true
+    },
+    {
+      "name": "compiled_endpoint_matches_bootstrap",
+      "passed": true
+    },
+    {
+      "name": "engine_matches_previously_verified_optimized_build",
+      "passed": true
+    },
+    {
+      "name": "profiles_match_previously_verified_catalogue",
+      "passed": true
+    },
+    {
+      "name": "all_427_unique_profile_keys_present",
+      "passed": true
+    },
+    {
+      "name": "all_23_rules_present",
+      "passed": true
+    }
+  ],
+  "apk": {
+    "bytes": 263090,
+    "sha256": "10428ce4629bde912a8d26e5e536ccb4732d58f31979f22240263db8616b61dd",
+    "name": "nanpure-refill-fast-0.3.0.apk"
+  },
+  "signature_schemes": {
+    "v1": false,
+    "v2": true,
+    "v3": true,
+    "v3.1": false,
+    "v4": false
+  },
+  "application": {
+    "application_id": "jp.nanpure.refill.fast",
+    "version_code": 8,
+    "version_name": "0.3.0",
+    "label": "ナンプレ補充係 高速版",
+    "min_sdk": 26,
+    "target_sdk": 35
+  },
+  "generator": {
+    "engine_sha256": "098f0b1c5fba839e2388ad2b9736c708a4a7a7a745d4532ea552183b1f2a67f4",
+    "profiles_sha256": "2ea481830a4b4da38907a44f56c721b53c83b62e4e63d67eafddee533e8f11da",
+    "profile_count": 427,
+    "rule_count": 23
+  },
+  "bootstrap": {
+    "included": true,
+    "keys": [
+      "endpoint",
+      "format",
+      "token"
+    ],
+    "values_redacted": true
+  },
+  "first_run": {
+    "registration_input_required": false,
+    "starts_on_launch": false,
+    "start_button": "連続補充を今すぐ始める",
+    "external_power_required": true,
+    "notification_prompt_on_android_13_plus_if_not_previously_asked": true,
+    "maximum_performance_default": true,
+    "local_stock_target_per_condition": 10,
+    "automatic_refill_default": false,
+    "metered_network_default": false
+  },
+  "completed": true,
+  "passed": true,
+  "passed_checks": 33,
+  "total_checks": 33,
+  "registration": {
+    "dedicated_device_registered": true,
+    "admin_read_confirmed": true,
+    "previous_devices_retained": true,
+    "dedicated_devices_added": 1,
+    "worker_credential_only": true
+  }
+}
