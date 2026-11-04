@@ -78,7 +78,10 @@ async function setup(browser,width,height,theme='color'){
    return Math.abs((circle.left+circle.right)-(icon.left+icon.right))<1&&Math.abs((circle.top+circle.bottom)-(icon.top+icon.bottom))<1;
   }));
   assert(centered,'Each chevron is centered in its circle');
-  assert.deepEqual(await page.locator('.designed-home .start-choices strong').allTextContents(),['ナンプレで遊ぶ','ナンプレを作る','日替わりナンプレに挑戦する','ナンプレを学ぶ','ナンプレの作品を見る']);
+  const vending=page.getByRole('link',{name:'問題の自販機',exact:true});
+  await vending.waitFor();
+  assert.equal(await vending.getAttribute('href'),'/nanpure/vending/play/');
+  assert.deepEqual(await page.locator('.designed-home .start-choices strong').allTextContents(),['ナンプレで遊ぶ','問題の自販機','ナンプレを作る','日替わりナンプレに挑戦する','ナンプレを学ぶ','ナンプレの作品を見る']);
   assert.equal(await page.locator('.designed-home [data-collection-entry]').count(),0);
   assert.equal(await page.locator('.designed-home :is(.home-bottom-links,.home-version,[data-home-guide],[data-pare-entry])').count(),0);
   const support=page.locator('.home-support-button');
@@ -87,8 +90,8 @@ async function setup(browser,width,height,theme='color'){
   const playSize=await page.locator('.main-choice').boundingBox(),supportSize=await support.boundingBox();
   for(const side of ['width','height'])assert(Math.abs(supportSize[side]-playSize[side]*2/3)<1,'Support '+side+' is two thirds of the play card');
   const cards=await page.locator('.start-choices .choice-card').evaluateAll(nodes=>nodes.map(e=>({height:e.offsetHeight,width:e.offsetWidth,background:getComputedStyle(e).backgroundColor})));
-  for(const card of cards)assert.deepEqual([card.width,card.height],[cards[0].width,cards[0].height],'All five entry cards have the same size');
-  assert.notEqual(cards[3].background,cards[4].background,'Learning and works use different colors');
+  for(const card of cards)assert.deepEqual([card.width,card.height],[cards[0].width,cards[0].height],'All home entry cards have the same size');
+  assert.notEqual(cards[4].background,cards[5].background,'Learning and works use different colors');
   assert.equal(await page.locator('.learn-choice').getAttribute('href'),'/nanpure/learn/');
   await page.locator('.works-choice').click();
   assert(await page.locator('.np-home-more .home-event').isVisible());

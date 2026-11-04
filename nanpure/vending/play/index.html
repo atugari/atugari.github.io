@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f3f6ed">
+  <meta name="description" content="ナンプレ帳の問題の自販機。遊びたい条件を選んで、完成済みの問題を無料ですぐに遊べます。">
+  <title>問題の自販機 | ナンプレ帳</title>
+  <link rel="stylesheet" href="./vending.css">
+  <link rel="stylesheet" href="./public.css">
+  <script type="module" src="./public.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">本文へ移動</a>
+  <header class="topbar">
+    <a class="brand" href="/nanpure/"><span class="brand-icon" aria-hidden="true"></span>ナンプレ帳</a>
+    <a id="home-link" class="back-link" href="/nanpure/">ナンプレ帳に戻る</a>
+    <a id="shelf-link" class="back-link" href="#main" hidden>自販機に戻る</a>
+  </header>
+  <main id="main" class="public-shelf">
+    <section class="hero public-hero" aria-labelledby="title">
+      <div class="hero-copy">
+        <p class="eyebrow">無料・登録不要</p>
+        <h1 id="title" tabindex="-1">問題の自販機</h1>
+        <p>できあがったナンプレを、1問ずつ受け取って遊べます。</p>
+      </div>
+      <svg class="hero-board" viewBox="0 0 180 180" aria-hidden="true">
+        <rect x="1" y="1" width="178" height="178" rx="8" class="board-face"/>
+        <path class="board-accent" d="M60 60h60v60H60z"/>
+        <path class="board-light" d="M20 1v178m20-178v178m40-178v178m20-178v178m40-178v178m20-178v178M1 20h178m-178 20h178m-178 40h178m-178 20h178m-178 40h178m-178 20h178"/>
+        <path class="board-heavy" d="M60 1v178m60-178v178M1 60h178m-178 60h178"/>
+        <g class="board-digits">
+          <text x="30" y="10">4</text><text x="110" y="10">3</text><text x="150" y="30">6</text>
+          <text x="10" y="50">2</text><text x="90" y="50">8</text><text x="50" y="70">7</text>
+          <text x="110" y="90">1</text><text x="170" y="90">4</text><text x="70" y="110">6</text>
+          <text x="10" y="130">5</text><text x="90" y="150">2</text><text x="150" y="170">9</text>
+        </g>
+      </svg>
+    </section>
+    <section class="panel public-panel" aria-labelledby="shelf-title">
+      <div class="panel-heading">
+        <h2 id="shelf-title">今すぐ遊べる問題</h2>
+        <button id="refresh" class="text-button" type="button">在庫を更新する</button>
+      </div>
+      <fieldset id="profile-picker" class="profile-picker" hidden>
+        <legend>問題の条件</legend>
+        <div class="profile-fields">
+          <label>ルール<select id="profile-kind"></select></label>
+          <label>盤面の大きさ<select id="profile-size"></select></label>
+          <label>難易度<select id="profile-level"></select></label>
+          <label>形・複雑さ<select id="profile-shape"></select></label>
+        </div>
+      </fieldset>
+      <div id="stock" class="stock" hidden>
+        <div><strong id="shelf-rule"></strong><span id="shelf-detail"></span></div>
+        <div class="stock-amount"><span>在庫</span><div><strong id="available"></strong> 問</div></div>
+      </div>
+      <div class="actions public-actions">
+        <button id="take" class="primary" type="button" hidden>この条件で遊ぶ</button>
+        <button id="retry" class="secondary" type="button" hidden>同じ受け取りを再試行</button>
+        <button id="reopen" class="secondary" type="button" hidden>受け取った問題を開く</button>
+      </div>
+      <p id="notice" class="notice" role="status">在庫を確認しています…</p>
+      <a class="inline-link" href="/nanpure/#numbers">問題帳を開く</a>
+      <noscript><p>在庫の確認と受け取りにはJavaScriptを有効にしてください。</p></noscript>
+    </section>
+  </main>
+  <section id="game" class="public-game" aria-label="受け取ったナンプレ" hidden></section>
+</body>
+</html>

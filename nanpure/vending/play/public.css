@@ -1,0 +1,14 @@
+.public-shelf { width: min(calc(100% - 2rem), 53rem); padding-bottom: 2rem; }
+.public-hero { min-height: 12rem; }
+.public-panel { margin-top: 1rem; }
+.public-actions { margin-top: 1rem; }
+.public-actions:not(:has(> :not([hidden]))) { display: none; }
+.public-panel > .inline-link { margin-top: .45rem; }
+.public-game { width: 100%; }
+.public-game.loading { position: fixed; inset: 0; opacity: 0; pointer-events: none; z-index: -1; }
+.public-game iframe { width: 100%; height: max(26rem, calc(100dvh - 4.35rem)); display: block; border: 0; }
+@media (max-width: 28rem) {
+  .public-shelf { width: calc(100% - 1.4rem); }
+  .public-hero { min-height: 0; }
+  .public-game iframe { height: max(23rem, calc(100dvh - 3.7rem)); }
+}
