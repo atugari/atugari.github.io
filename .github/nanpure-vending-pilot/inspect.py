@@ -36,6 +36,33 @@ def read_json(path, token):
         raise RuntimeError("Cloudflare metadata request failed; error codes=" + json.dumps(codes))
     return value.get("result")
 
+def inspect_public_protocol():
+    # Invalid, synthetic credentials cannot register a device or claim work.
+    public = "https://nanpure-vending-pilot.puzzle-hub-4826.workers.dev"
+    payload = json.dumps({"action": "enroll", "enrollmentKey": "0" * 64,
+                          "token": "1" * 64, "name": "verification"}).encode()
+    results = []
+    for with_origin in (False, True):
+        headers = {"Content-Type": "application/json", "Cache-Control": "no-cache"}
+        if with_origin:
+            headers["Origin"] = public
+        request = urllib.request.Request(public + "/api/vending/worker", method="POST", data=payload, headers=headers)
+        try:
+            response = urllib.request.urlopen(request, timeout=30)
+        except urllib.error.HTTPError as error:
+            response = error
+        with response:
+            raw = response.read(1024 * 1024)
+            try:
+                value = json.loads(raw)
+                is_json = isinstance(value, dict)
+            except (ValueError, UnicodeDecodeError):
+                is_json = False
+            results.append({"origin_header": with_origin, "status": response.status,
+                            "body_bytes": len(raw), "json_object": is_json,
+                            "content_type": response.headers.get("Content-Type")})
+    return results
+
 def main():
     token = os.environ.get("CLOUDFLARE_API_TOKEN", "")
     if len(token) < 20:
@@ -95,6 +122,7 @@ def main():
             }} for v in (version_items or [])[:3]
         ],
         "modules": modules,
+        "public_protocol_probes": inspect_public_protocol(),
     }
     print(json.dumps(report, ensure_ascii=False, indent=2))
     if not isolated:
