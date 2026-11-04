@@ -4,6 +4,7 @@
 if(window.NPPuzzleNavigation)return;
 const routes={'open-shirupure':'shirupure','open-crossword':'crossword','open-tenbin':'tenbin','wado-generator':'wado','magic-generator':'magic-square','open-prototype':'workshop'};
 const copy={"ja":["ほかのパズルはパレあそびへ","シルプレ・和同開珎・クロスワードなど"],"en":["More puzzles on Pareasobi","Shirupure, kanji puzzles and crosswords"],"zh-Hans":["更多谜题，请前往 Pareasobi","符号分区、汉字填空、纵横字谜等"],"zh-Hant":["更多謎題，請前往 Pareasobi","符號分區、漢字填空、縱橫字謎等"],"ko":["더 많은 퍼즐은 Pareasobi에서","시루푸레, 한자 퍼즐, 크로스워드 등"],"es":["Más puzles en Pareasobi","Shirupure, puzles de kanji y crucigramas"],"fr":["Plus de jeux sur Pareasobi","Shirupure, énigmes de kanji et mots croisés"],"de":["Weitere Rätsel auf Pareasobi","Shirupure, Kanji-Rätsel und Kreuzworträtsel"],"pt":["Mais desafios em Pareasobi","Shirupure, desafios de kanji e palavras cruzadas"],"it":["Altri puzzle su Pareasobi","Shirupure, enigmi di kanji e cruciverba"],"nl":["Meer puzzels op Pareasobi","Shirupure, kanjipuzzels en kruiswoordraadsels"],"sv":["Fler pussel på Pareasobi","Shirupure, kanjipussel och korsord"],"pl":["Więcej łamigłówek w Pareasobi","Shirupure, łamigłówki kanji i krzyżówki"],"cs":["Další hlavolamy na Pareasobi","Shirupure, hlavolamy s kandži a křížovky"],"ru":["Больше головоломок на Pareasobi","Shirupure, головоломки с кандзи и кроссворды"],"id":["Teka-teki lainnya di Pareasobi","Shirupure, teka-teki kanji dan teka-teki silang"],"vi":["Thêm câu đố trên Pareasobi","Shirupure, câu đố kanji và ô chữ"],"th":["ปริศนาเพิ่มเติมที่ Pareasobi","Shirupure ปริศนาคันจิ และปริศนาอักษรไขว้"],"hi":["Pareasobi पर और पहेलियाँ","Shirupure, कांजी पहेलियाँ और वर्ग पहेलियाँ"],"ar":["المزيد من الألغاز على Pareasobi","Shirupure وألغاز الكانجي والكلمات المتقاطعة"]};
+const collectionLabels={"ja":"すぐ遊べるナンプレ集","en":"Ready-to-play Sudoku","zh-Hans":"即玩数独题集","zh-Hant":"即玩數獨題集","ko":"바로 푸는 스도쿠 모음","es":"Colección de sudokus listos para jugar","fr":"Grilles de sudoku prêtes à jouer","de":"Sofort spielbare Sudokus","pt":"Sudokus prontos para jogar","it":"Sudoku pronti da giocare","nl":"Speelklare sudoku’s","sv":"Sudoku att spela direkt","pl":"Sudoku gotowe do gry","cs":"Sudoku připravená ke hraní","ru":"Готовые судоку","id":"Kumpulan Sudoku siap main","vi":"Bộ Sudoku chơi ngay","th":"รวมซูโดกุพร้อมเล่น","hi":"खेलने के लिए तैयार सुडोकू","ar":"مجموعة سودوكو جاهزة للعب"};
 const seen=new WeakSet();
 function install(w){
  try{
@@ -35,6 +36,27 @@ function install(w){
     }
     const language=w.NPI18n?.get?.()||d.documentElement.lang||'ja',text=copy[language]||copy.en;
     for(const [selector,value]of [['strong',text[0]],['small',text[1]]])if(a.querySelector(selector).textContent!==value)a.querySelector(selector).textContent=value;
+   }
+   const playMenu=d.querySelector('.homechoices [data-action="open-notebook"]')?.closest('.homechoices');
+   let collection=null;
+   d.querySelectorAll('a[data-collection-entry]').forEach(link=>{
+    if(playMenu?.contains(link)&&!collection)collection=link;else link.remove();
+   });
+   if(playMenu){
+    if(!collection){
+     collection=d.createElement('a');
+     collection.href='/nanpure/collection/';
+     collection.target='_top';
+     collection.className='choice';
+     collection.dataset.collectionEntry='';
+     collection.setAttribute('data-i18n-skip','');
+     collection.innerHTML='<span class="text"><strong></strong></span><span class="arrow" aria-hidden="true">›</span>';
+     playMenu.append(collection);
+    }
+    const language=w.NPI18n?.get?.()||d.documentElement.lang||'ja';
+    const label=collectionLabels[language]||collectionLabels.en;
+    const title=collection.querySelector('strong');
+    if(title.textContent!==label)title.textContent=label;
    }
    d.querySelectorAll('iframe').forEach(f=>{if(f.dataset.pareWatching)return;f.dataset.pareWatching='';f.addEventListener('load',()=>visit(f));visit(f)});
   }

@@ -12,7 +12,16 @@ async function setup(browser,width,height,theme='color'){
   const f=await setup(browser,width,height,theme),{page}=f;
   assert.equal(await page.locator('.header h1.brand').textContent(),'ナンプレ帳');
   assert.equal(await page.locator('.designed-home .start-title').count(),0);
-  assert.deepEqual(await page.locator('.designed-home .start-choices strong').allTextContents(),['ナンプレで遊ぶ','ナンプレを作る','日替わりナンプレに挑戦する']);
+  assert.deepEqual(await page.locator('.designed-home .start-choices strong').allTextContents(),['ナンプレで遊ぶ','ナンプレを作る','日替わりナンプレに挑戦する','ナンプレを学ぶ','ナンプレの作品を見る']);
+  assert.equal(await page.locator('.designed-home [data-collection-entry]').count(),0);
+  const cards=await page.locator('.start-choices .choice-card').evaluateAll(nodes=>nodes.map(e=>({height:e.offsetHeight,width:e.offsetWidth,background:getComputedStyle(e).backgroundColor})));
+  for(const card of cards)assert.deepEqual([card.width,card.height],[cards[0].width,cards[0].height],'All five entry cards have the same size');
+  assert.notEqual(cards[3].background,cards[4].background,'Learning and works use different colors');
+  assert.equal(await page.locator('.learn-choice').getAttribute('href'),'/nanpure/learn/');
+  await page.locator('.works-choice').click();
+  assert(await page.locator('.np-home-more .home-event').isVisible());
+  await page.locator('.works-choice').click();
+  await page.evaluate(()=>{window.scrollTo(0,0);document.querySelector('.designed-home').scrollTop=0});
   const box=await page.evaluate(()=>{const m=document.querySelector('.designed-home'),rects=Array.from(m.querySelectorAll('button,a')).filter(e=>e.getClientRects().length&&getComputedStyle(e).visibility!=='hidden').map(e=>({text:e.textContent.trim(),r:e.getBoundingClientRect().toJSON()}));return{height:m.clientHeight,scroll:m.scrollHeight,width:innerWidth,viewport:innerHeight,rects};});
   assert(box.scroll>=box.height,JSON.stringify({width,height,...box}));
   for(const a of box.rects){assert(a.r.top>=0,a.text+' is above the page');assert(a.r.left>=-1&&a.r.right<=width+1,a.text+' is outside horizontal bounds');}
@@ -27,6 +36,10 @@ async function setup(browser,width,height,theme='color'){
   await page.goto(site+'/nanpure/');
   await page.locator('.main-choice').click();
   await page.frameLocator('iframe.notebook').locator('[data-action="open-notebook"]').waitFor();
+  const collection=page.frameLocator('iframe.notebook').locator('[data-collection-entry]');
+  await collection.waitFor();
+  assert.equal(await collection.locator('strong').textContent(),'すぐ遊べるナンプレ集');
+  assert.equal(await collection.getAttribute('href'),'/nanpure/collection/');
   await page.locator('.back-button').click();
   await page.locator('.daily-choice').click();await page.locator('.difficulty-screen').waitFor();await page.waitForFunction(()=>!document.querySelector('[data-np-titles],[data-home-guide]'));await page.locator('.back-button').click();await page.locator('.np-home-ready [data-np-titles]').waitFor({state:'attached'});await page.locator('.menu-button').click();await page.locator('.site-menu [data-np-titles]').click();await page.locator('.np-titles[open]').waitFor();assert.deepEqual(f.errors,[]);await f.context.close();console.log('PASS home bounds, no overlapping actions, static title details, notification preference and return home:',width,height,theme);
  }

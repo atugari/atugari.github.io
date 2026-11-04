@@ -65,3 +65,5 @@ Object.assign(module.exports,require('./catalog-home-91.json'));
 // The home labels specify Sudoku. Reuse the equivalent translations in other languages.
 module.exports['ナンプレを作る'] = module.exports['問題を作る'];
 module.exports['日替わりナンプレに挑戦する'] = module.exports['日替わり問題に挑戦する'];
+
+Object.assign(module.exports,require('./catalog-home-93.json'));

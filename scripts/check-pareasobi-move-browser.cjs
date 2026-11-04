@@ -135,7 +135,7 @@ for(const viewport of [{width:1280,height:800},{width:375,height:812},{width:812
   await page.waitForFunction(uid=>document.querySelector('#game')?.contentWindow?.NanpureAppTest?.getCurrent()?.uid===uid,before.uid);
   assert.deepEqual(await page.evaluate(()=>document.querySelector('#game').contentWindow.NanpureAppTest.getCurrent().grid),before.grid,'New '+n+'x'+n+' reload at '+viewport.width);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'New board outer width');
-  await page.locator('#back').click();await page.locator('#library:not([hidden])').waitFor();await page.locator('#library header a[href="/nanpure/"]').click();await page.locator('[data-collection-entry]').waitFor();
+  await page.locator('#back').click();await page.locator('#library:not([hidden])').waitFor();await page.locator('#library header a[href="/nanpure/"]').click();await page.locator('.main-choice').click();await page.frameLocator('iframe.notebook').locator('[data-collection-entry]').waitFor();
  }
  console.log('PASS appended sizes '+viewport.width+'x'+viewport.height+': filters, start, keypad, erase, undo, durable grid, reload and notebook return');
 }

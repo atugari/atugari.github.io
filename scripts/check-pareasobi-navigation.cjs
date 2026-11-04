@@ -5,7 +5,7 @@ const source=fs.readFileSync(path.join(__dirname,'../puzzles/navigation.js'),'ut
 function environment(){
  const listeners={},observers=[],assigned=[],notices=[],byId=new Map();
  const d={documentElement:{lang:'ja'},head:{append(){}},body:{prepend:node=>notices.push(node)},
-  querySelectorAll:()=>[],querySelector:()=>d.body,getElementById:id=>byId.get(id),
+  querySelectorAll:()=>[],querySelector:selector=>selector==='main'?d.body:null,getElementById:id=>byId.get(id),
   createElement:()=>({setAttribute(){},set id(v){this._id=v;byId.set(v,this)},get id(){return this._id}}),
   addEventListener:(name,fn)=>listeners[name]=fn};
  const w={document:d,location:{assign:url=>assigned.push(url)},addEventListener(){},requestAnimationFrame:fn=>fn(),
