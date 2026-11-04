@@ -49,11 +49,15 @@ function button(text){const b=[...w.document.querySelectorAll('button')].find(x=
  const daily=w.document.querySelector('button.daily-choice');assert(daily);assert(!w.document.querySelector('a.daily-choice'));
  const membership='https://ofuse.me/memberships/5107',letter='https://ofuse.me/o?uid=228296';
  const homeSupport=w.document.querySelector('.home-support-button');assert.equal(homeSupport.getAttribute('href'),membership);assert.equal(homeSupport.textContent,'月100円で製作者を応援しよう♫');assert.equal(w.document.querySelector('.header-support').getAttribute('href'),letter);
- const menu=w.document.querySelector('.menu-button');assert(menu,'Menu button missing');menu.click();await settle(()=>w.document.querySelector('.site-menu'),'menu panel');assert(w.document.querySelector('.site-menu'));
+ const menu=w.document.querySelector('.menu-button');assert(menu,'Menu button missing');assert.equal(menu.textContent.trim(),'設定');menu.click();await settle(()=>w.document.querySelector('.site-menu'),'menu panel');assert(w.document.querySelector('.site-menu'));
+ assert.equal(w.document.querySelector('.menu-categories').children.length,5);
+ assert(!w.document.querySelector('.site-menu [data-menu-panel="ranking"]'));
+ w.document.querySelector('[data-menu-group="help"]').open=true;
  const supportEntry=[...w.document.querySelectorAll('.menu-entry')].find(x=>x.querySelector('strong')?.textContent==='制作を応援');assert(supportEntry);supportEntry.click();await settle(()=>w.document.querySelector('.membership-support'),'membership support panel');
  const support=w.document.querySelector('.membership-support');assert(support.textContent.includes('メンバー限定の機能や追加特典はありません。'));assert(support.textContent.includes('問題づくり・プレイ・印刷は無料で使えます。'));
  const memberLinks=[...support.querySelectorAll('a')];assert.deepEqual(memberLinks.map(x=>x.getAttribute('href')),[membership,letter]);for(const link of memberLinks){assert.equal(link.getAttribute('target'),'_blank');assert.equal(link.getAttribute('rel'),'noopener noreferrer')}
- button('閉じる ×');await settle(()=>!w.document.querySelector('.membership-support'),'support dismissal');
+ button('閉じる ×');await settle(()=>!w.document.querySelector('.membership-support')&&!w.document.querySelector('.site-menu').parentElement.hidden,'return to settings after support');
+ button('閉じる ×');await settle(()=>!w.document.querySelector('.site-menu'),'settings dismissal');
  const free=w.document.querySelector('.main-choice');free.click();await settle(()=>w.document.querySelector('.site-shell.mode-practice')&&w.document.querySelector('iframe.notebook'),'free-play render');assert(w.document.querySelector('.site-shell').classList.contains('mode-practice'));
  assert(w.document.querySelector('.practice-loading[role="status"]'),'First notebook load has a visible status');
  const iframe=w.document.querySelector('iframe.notebook');assert.equal(iframe.getAttribute('src'),manifest.base+'notebook/index.html');

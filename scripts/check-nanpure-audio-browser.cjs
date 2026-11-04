@@ -90,12 +90,12 @@ async function embedded(browser){
 }
 async function nativeAndNotebook(browser){
  const f=await setup(browser,{daily:true}),{page}=f;
- await page.locator('.menu-button').click();await page.locator('.menu-entry').filter({hasText:'BGM・効果音'}).click();
+ await page.locator('.menu-button').click();await page.locator('[data-menu-group="play"] > summary').click();await page.locator('[data-menu-panel="audio"]').click();
  await page.locator('.audio-settings .sound-toggle input').nth(0).check();await page.locator('.audio-settings .sound-toggle input').nth(1).check();await page.locator('.audio-settings select').nth(1).selectOption('glass');await page.locator('.sound-volume input').first().fill('50');
  await page.locator('.sound-preview').click();await playing(page);
  await page.locator('.sound-preview').click();await stopped(page);
  await page.locator('.sound-samples button').first().click();await effect(page,'glass_001');
- await page.keyboard.press('Escape');await page.locator('.home-resume').click();await page.locator('.variable-board').waitFor();await playing(page);
+ await page.keyboard.press('Escape');await page.locator('.site-menu').waitFor();await page.locator('.game-dialog .dialog-close').click();await page.locator('.home-resume').click();await page.locator('.variable-board').waitFor();await playing(page);
  const beforeNative=await page.evaluate(()=>__media.length);await page.locator('.variable-board [data-cell="0"]').click();await page.locator('[data-native-number="1"]').click();await effect(page,'glass_001',beforeNative);
  await page.goto(site+'/nanpure/');await page.locator('.main-choice').waitFor();const frame=await openNotebook(page);await playing(page);
  const beforeFree=await page.evaluate(()=>__media.length);await frame.locator('#board [data-cell="0"]').click();await frame.locator('[data-action="number"][data-number="1"]').click();await effect(page,'glass_001',beforeFree);

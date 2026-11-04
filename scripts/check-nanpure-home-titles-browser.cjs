@@ -11,6 +11,35 @@ async function setup(browser,width,height,theme='color'){
  for(const[width,height,theme]of [[360,730,'color'],[375,667,'notebook'],[320,568,'color'],[390,844,'lounge'],[600,800,'color'],[900,950,'color']]){
   const f=await setup(browser,width,height,theme),{page}=f;
   assert.equal(await page.locator('.header h1.brand').textContent(),'ナンプレ帳');
+  const homeSettings=page.getByRole('button',{name:'設定',exact:true});
+  const settingsBox=await homeSettings.boundingBox();
+  assert(settingsBox.width>=84&&settingsBox.height>=46,'The settings button is large enough for touch');
+  await page.waitForFunction(()=>!!window.NPSiteLayout);
+  assert.equal(await page.locator('.header [data-site-layout-select]').count(),0,'The home header has no layout switch');
+  if(width===320||width===900){
+   await homeSettings.click();
+   const menu=page.locator('.site-menu'),close=page.locator('.game-dialog .dialog-close');
+   await menu.waitFor();
+   assert.equal(await menu.locator('.menu-categories > *').count(),5);
+   assert.equal(await menu.locator('[data-menu-panel="ranking"]').count(),0);
+   const help=menu.locator('[data-menu-group="help"]');
+   assert.equal(await help.locator('[data-menu-panel="faq"]').isVisible(),false);
+   await help.locator('summary').click();
+   await help.locator('[data-menu-panel="faq"]').click();
+   await page.locator('.faq-panel').waitFor();
+   await close.click();await menu.waitFor();
+   assert(await help.locator('[data-menu-panel="faq"]').isVisible(),'The expanded group stays open');
+   const design=menu.locator('[data-menu-panel="theme"]');
+   await design.click();await page.locator('.theme-settings').waitFor();
+   assert.equal(await menu.isVisible(),false);
+   await close.click();await menu.waitFor();
+   assert(await design.evaluate(button=>button===document.activeElement),'Focus returns to the design button');
+   await menu.locator('[data-menu-panel="settings"]').click();
+   await page.locator('.play-settings .ps-category').first().waitFor();
+   await page.locator('.play-settings [data-site-layout-select]').waitFor();
+   await close.click();await menu.waitFor();
+   await close.click();await page.locator('.game-dialog[open]').waitFor({state:'detached'});
+  }
   assert.equal(await page.locator('.designed-home .start-title').count(),0);
   assert.deepEqual(await page.locator('.designed-home .start-choices strong').allTextContents(),['ナンプレで遊ぶ','ナンプレを作る','日替わりナンプレに挑戦する','ナンプレを学ぶ','ナンプレの作品を見る']);
   assert.equal(await page.locator('.designed-home [data-collection-entry]').count(),0);
@@ -32,7 +61,7 @@ async function setup(browser,width,height,theme='color'){
   assert(box.scroll>=box.height,JSON.stringify({width,height,...box}));
   for(const a of box.rects){assert(a.r.top>=0,a.text+' is above the page');assert(a.r.left>=-1&&a.r.right<=width+1,a.text+' is outside horizontal bounds');}
   for(let i=0;i<box.rects.length;i++)for(let j=i+1;j<box.rects.length;j++){const a=box.rects[i],b=box.rects[j];assert(!(Math.min(a.r.right,b.r.right)-Math.max(a.r.left,b.r.left)>2&&Math.min(a.r.bottom,b.r.bottom)-Math.max(a.r.top,b.r.top)>2),'overlapping home actions: '+a.text+' / '+b.text);}
-  if(await page.locator('.home-topline [data-np-titles]').isVisible())await page.locator('.home-topline [data-np-titles]').click();else{await page.locator('.menu-button').click();await page.locator('.site-menu [data-np-titles]').click();}await page.locator('.np-titles[open]').waitFor();assert.equal(await page.locator('.np-title-tabs [data-filter=earned]').getAttribute('aria-pressed'),'true');
+  if(await page.locator('.home-topline [data-np-titles]').isVisible())await page.locator('.home-topline [data-np-titles]').click();else{await page.locator('.menu-button').click();await page.locator('[data-menu-group="records"] > summary').click();await page.locator('.site-menu [data-np-titles]').click();}await page.locator('.np-titles[open]').waitFor();assert.equal(await page.locator('.np-title-tabs [data-filter=earned]').getAttribute('aria-pressed'),'true');
   const tile=page.locator('.np-title-card.earned').first();await tile.click();await page.locator('.np-title-details[open]').waitFor();assert((await page.locator('.np-title-description').textContent()).length>0);assert.equal(await page.locator('.np-title-details').evaluate(e=>getComputedStyle(e).animationName),'none');await page.locator('.np-title-details>header button').click();
   await page.locator('.np-title-notification input').uncheck();await page.waitForFunction(()=>NPAchievements.getState().notification==='off');await page.evaluate(()=>NPAchievements.capture('ui',{action:'last-book'}));await page.locator('.np-titles>header button').click();if(await page.locator('.game-dialog[open]').isVisible())await page.locator('.game-dialog .dialog-close').click();assert.equal(await page.locator('.np-title-toast').count(),0);
   await page.reload();await page.locator('.np-home-ready').waitFor();assert.equal(await page.evaluate(()=>NPAchievements.getState().notification),'off');assert(await page.evaluate(()=>!!NPAchievements.getState().earned['NP-0001']));
@@ -46,6 +75,6 @@ async function setup(browser,width,height,theme='color'){
   assert.equal(await collection.locator('strong').textContent(),'すぐ遊べるナンプレ集');
   assert.equal(await collection.getAttribute('href'),'/nanpure/collection/');
   await page.locator('.back-button').click();
-  await page.locator('.daily-choice').click();await page.locator('.difficulty-screen').waitFor();await page.waitForFunction(()=>!document.querySelector('[data-np-titles]'));await page.locator('.back-button').click();await page.locator('.np-home-ready [data-np-titles]').waitFor({state:'attached'});await page.locator('.menu-button').click();await page.locator('.site-menu [data-np-titles]').click();await page.locator('.np-titles[open]').waitFor();assert.deepEqual(f.errors,[]);await f.context.close();console.log('PASS home bounds, no overlapping actions, static title details, notification preference and return home:',width,height,theme);
+  await page.locator('.daily-choice').click();await page.locator('.difficulty-screen').waitFor();await page.waitForFunction(()=>!document.querySelector('[data-np-titles]'));await page.locator('.back-button').click();await page.locator('.np-home-ready [data-np-titles]').waitFor({state:'attached'});await page.locator('.menu-button').click();await page.locator('[data-menu-group="records"] > summary').click();await page.locator('.site-menu [data-np-titles]').click();await page.locator('.np-titles[open]').waitFor();assert.deepEqual(f.errors,[]);await f.context.close();console.log('PASS home bounds, no overlapping actions, static title details, notification preference and return home:',width,height,theme);
  }
 }finally{await browser.close()}})().catch(e=>{console.error(e);process.exit(1)});

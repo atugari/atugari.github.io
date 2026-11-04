@@ -377,7 +377,10 @@ async function checkResponsiveFreePlay(browser,root,viewport){
   await expectNotebookText(frame,nineSelector,'9',label+' literal9 before language switch');
   for(const lang of ['ja','en']){
    await page.locator('.menu-button').click();
-   await page.locator('.site-menu .language-picker select').selectOption(lang);
+   await page.locator('.site-menu [data-menu-panel="settings"]').click();
+   await page.locator('.play-settings .language-picker select').selectOption(lang);
+   await page.locator('.play-settings .dialog-close').click();
+   await page.locator('.site-menu').waitFor();
    await page.locator('.game-dialog .dialog-close').click();
    await frame.waitForFunction(lang=>window.NPI18n?.get()===lang,lang,{timeout:15000});
    await twoAnimationFrames(frame);

@@ -165,3 +165,41 @@
     font-size: max(20px, var(--ui-min-font, 0px));
   }
 }
+
+.site-shell.mode-home > .header .home-settings-button {
+  min-width: 84px;
+  min-height: 46px;
+  padding: 8px 14px;
+  font-size: max(19px, var(--ui-min-font, 0px));
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.site-menu .menu-categories,
+.site-menu .menu-group-items,
+.site-menu .menu-records {
+  display: grid;
+  gap: 8px;
+}
+.site-menu .menu-group {
+  min-width: 0;
+}
+.site-menu .menu-group > summary {
+  cursor: pointer;
+  list-style: none;
+}
+.site-menu .menu-group > summary::-webkit-details-marker {
+  display: none;
+}
+.site-menu .menu-group[open] > summary .menu-chevron {
+  rotate: 90deg;
+}
+.site-menu .menu-group-items {
+  margin-block-start: 8px;
+  margin-inline-start: 12px;
+  padding-inline-start: 8px;
+  border-inline-start: 2px solid var(--theme-line, #b8cbbd);
+}
+.site-menu .menu-group:not([open]) > .menu-group-items {
+  display: none;
+}

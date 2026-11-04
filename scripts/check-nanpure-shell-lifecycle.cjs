@@ -36,7 +36,7 @@ function environment({path='/notebook/index.html',state='complete',app=true,fram
   if(app){child.NPWebsiteHome=()=>actions.push('rules');child.NPWebsiteTool=action=>actions.push(action);child.NPStorage={flush:async()=>{}};child.NPRecovery={capture:async()=>({}),validate(){}};child.NPVideo={allAttempts:()=>[]}}
   const frameElement={contentWindow:child,addEventListener:(type,fn)=>{if(!frameListeners.has(type))frameListeners.set(type,new Set());frameListeners.get(type).add(fn)},removeEventListener:(type,fn)=>frameListeners.get(type)?.delete(fn)};
   const ctx={console,frameRef:{current:frame?frameElement:null},pendingTool:{current:null},expectedDocument:{current:'/notebook/index.html'},
-    practiceLoaded:false,practiceStatus:'loading',locale:'en',panel:null,dataFrameRef:{current:null},dataFrameLoaded:false,dataFrameStatus:'loading',backupOperation:{current:false},restoreInProgress:{current:false},backupBusy:false,
+    practiceLoaded:false,practiceStatus:'loading',locale:'en',panel:null,settingsMenuReturn:{current:null},dataFrameRef:{current:null},dataFrameLoaded:false,dataFrameStatus:'loading',backupOperation:{current:false},restoreInProgress:{current:false},backupBusy:false,
     PS(value){ctx.practiceStatus=typeof value==='function'?value(ctx.practiceStatus):value;statuses.push(ctx.practiceStatus)},
     PL:value=>{ctx.practiceLoaded=value;loads.push(value)},T:value=>tabs.push(value),P:value=>panels.push(value),
     setDataFrameLoaded:value=>{ctx.dataFrameLoaded=value},setDataFrameStatus:value=>{ctx.dataFrameStatus=typeof value==='function'?value(ctx.dataFrameStatus):value},

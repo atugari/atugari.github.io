@@ -15,7 +15,7 @@ const settingsPages=[
  ['help','ルール・保存','ルール・記録・問題の操作'],
 ] as const;
 type SettingsPage=typeof settingsPages[number][0];
-export default function PlaySettings({value,onChange,ranked,onPractice,onStats,boardControls,gameInfo,onReset,onGuide,onAudio,onClose}:{value:PlayOptions;onChange:(v:PlayOptions)=>void;ranked:boolean;onPractice:()=>void;onStats:()=>void;boardControls?:ReactNode;gameInfo?:ReactNode;onReset?:()=>void;onGuide?:()=>void;onAudio?:()=>void;onClose?:()=>void}){
+export default function PlaySettings({value,onChange,ranked,onPractice,onStats,boardControls,gameInfo,onReset,onGuide,onAudio,onClose,menuPreferences}:{value:PlayOptions;onChange:(v:PlayOptions)=>void;ranked:boolean;onPractice:()=>void;onStats:()=>void;boardControls?:ReactNode;gameInfo?:ReactNode;onReset?:()=>void;onGuide?:()=>void;onAudio?:()=>void;onClose?:()=>void;menuPreferences?:ReactNode}){
  const{t}=useLocale();
  const appearance=useBoardAppearance();
  const highlight=(key:'area'|'same',label:string)=><HighlightChoice label={label} kind={key==='area'?'areaStrength':'sameStrength'} enabled={value[key]} strength={appearance.value[key==='area'?'areaStrength':'sameStrength']} onChange={n=>{if(!n||appearance.change(key==='area'?'areaStrength':'sameStrength',n))set(key,!!n)}}/>;
@@ -28,6 +28,7 @@ export default function PlaySettings({value,onChange,ranked,onPractice,onStats,b
  return <section className="play-settings ps-organized" ref={root}>
   <header className="ps-header">{page&&<button className="ps-back" type="button" onClick={()=>open(null)} aria-label={t('設定一覧に戻る')}>‹</button>}<h2 tabIndex={-1} ref={heading}>{t(page?settingsPages.find(item=>item[0]===page)![1]:'プレイ中の設定')}</h2>{onClose&&<button className="dialog-close ps-close" type="button" onClick={onClose} aria-label={t('閉じる')}>{t('閉じる')} ×</button>}</header>
   <div className="ps-menu" hidden={page!==null}>
+   {menuPreferences}
    <p className="ps-intro">{t('項目を選んで設定できます。変更はすぐに反映されます。')}</p>
    <nav className="ps-category-list" aria-label={t('プレイ中の設定')}>{settingsPages.map(([id,label,description])=><button type="button" key={id} className="ps-category" onClick={()=>open(id)} aria-controls={'daily-settings-'+id}><span className="ps-category-icon"><SettingsIcon name={id}/></span><span><strong>{t(label)}</strong><small>{t(description)}</small></span><span className="ps-chevron" aria-hidden="true">›</span></button>)}</nav>
   </div>
