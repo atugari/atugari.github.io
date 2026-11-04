@@ -27,16 +27,16 @@ const killerCageSizes = [4, 4, 5, 6];
 
 // Auxiliary data are small constraint definitions and rating summaries. Bound
 // them independently of the HTTP byte limit before the release validators run.
-function bounded(value, budget, depth = 0) {
-  if (--budget.remaining < 0 || depth > 8) return false;
+function bounded(value, budget, depth = 0, maxDepth = 8) {
+  if (--budget.remaining < 0 || depth > maxDepth) return false;
   if (typeof value === 'string') return value.length <= 1024 && !/[<>]/.test(value);
   if (typeof value === 'number') return Number.isFinite(value);
   if (typeof value === 'boolean' || value === null) return true;
-  if (Array.isArray(value)) return value.length <= 1024 && value.every(v => bounded(v, budget, depth + 1));
+  if (Array.isArray(value)) return value.length <= 1024 && value.every(v => bounded(v, budget, depth + 1, maxDepth));
   if (!value || typeof value !== 'object') return false;
   const keys = Object.keys(value);
   return keys.length <= 40 && keys.every(k => k.length <= 80 && !forbiddenKeys.has(k) &&
-    bounded(value[k], budget, depth + 1));
+    bounded(value[k], budget, depth + 1, maxDepth));
 }
 
 function blockOf(n, blockRows, blockCols, cell) {
@@ -150,7 +150,10 @@ export function cataloguePuzzleShape(raw, profile) {
   }
   for (const field of metadata) {
     if (raw[field] === undefined) continue;
-    if (!bounded(raw[field], budget)) return null;
+    // Cover v1 traces nest deduction paths inside each alternative branch.
+    const coverProof = field === 'logicProof' && kind === 'normal' && n === 9 && level === 17 &&
+      raw.coverVersion === 1 && Array.isArray(raw.logicProof);
+    if (!bounded(raw[field], budget, 0, coverProof ? 16 : 8)) return null;
     p[field] = raw[field];
   }
   try {
