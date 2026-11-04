@@ -3,7 +3,7 @@ plugins {
 }
 
 def workerEndpoint = providers.environmentVariable('NANPURE_REFILL_ENDPOINT')
-    .orElse('https://puzzle-api.puzzle-hub-4826.workers.dev/api/vending/worker').get()
+    .orElse('https://nanpure-vending-pilot.puzzle-hub-4826.workers.dev/api/vending/worker').get()
 if (!(workerEndpoint ==~ /https:\/\/[A-Za-z0-9.-]+(:[0-9]+)?\/api\/vending\/worker|http:\/\/(10\.0\.2\.2|127\.0\.0\.1|localhost):[0-9]+\/api\/vending\/worker/)) {
     throw new GradleException('Invalid refill endpoint.')
 }
@@ -16,8 +16,8 @@ android {
         applicationId 'jp.nanpure.refill'
         minSdk 26
         targetSdk 35
-        versionCode 1
-        versionName '0.1.0'
+        versionCode 2
+        versionName '0.1.1'
         buildConfigField 'String', 'ENDPOINT', '"' + workerEndpoint + '"'
     }
 

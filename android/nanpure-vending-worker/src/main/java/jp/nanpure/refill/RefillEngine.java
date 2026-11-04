@@ -18,10 +18,12 @@ import org.json.JSONObject;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.BooleanSupplier;
 
 final class RefillEngine {
     private static final String HOST = "nanpure-refill.invalid";
@@ -35,10 +37,24 @@ final class RefillEngine {
         this.context = context;
     }
 
-    JSONObject generate(int budgetMs) throws InterruptedException, IOException, TimeoutException {
+    JSONObject generate(int budgetMs, BooleanSupplier canContinue)
+            throws InterruptedException, IOException, TimeoutException {
         MAIN.post(() -> load(budgetMs));
+        long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(budgetMs + 25000L);
         try {
-            return result.get(budgetMs + 25000L, TimeUnit.MILLISECONDS);
+            while (true) {
+                if (result.isDone()) return result.get();
+                if (!canContinue.getAsBoolean()) throw new InterruptedException("Refill conditions changed");
+                long remaining = deadline - System.nanoTime();
+                if (remaining <= 0) throw new TimeoutException();
+                try {
+                    return result.get(Math.min(TimeUnit.SECONDS.toNanos(1), remaining), TimeUnit.NANOSECONDS);
+                } catch (TimeoutException ignored) {
+                    // Recheck charging, network and thermal conditions while the worker searches.
+                }
+            }
+        } catch (CancellationException error) {
+            throw new InterruptedException("Refill search cancelled");
         } catch (ExecutionException error) {
             throw new IOException("Refill engine could not start", error.getCause());
         } finally {

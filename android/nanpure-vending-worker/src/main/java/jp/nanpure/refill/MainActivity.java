@@ -1,8 +1,10 @@
 package jp.nanpure.refill;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Insets;
 import android.graphics.Typeface;
@@ -33,6 +35,7 @@ public final class MainActivity extends Activity {
     private static final int ACCENT = 0xff674b86;
     private static final int BACKDROP = 0xfff6f2f9;
     private static final int PAPER = Color.WHITE;
+    private static final int NOTIFICATIONS = 5183;
 
     private final Handler main = new Handler(Looper.getMainLooper());
     private RefillStore store;
@@ -43,12 +46,14 @@ public final class MainActivity extends Activity {
     private TextView notice;
     private TextView status;
     private TextView completed;
+    private TextView pairingHint;
     private Switch automatic;
     private Switch metered;
     private Button register;
     private Button check;
     private boolean updating;
     private boolean busy;
+    private boolean requestingNotifications;
     private final Runnable refreshTask = new Runnable() {
         @Override public void run() {
             refresh();
@@ -91,7 +96,8 @@ public final class MainActivity extends Activity {
         pairingPanel = card();
         add(content, pairingPanel, 14);
         pairingPanel.addView(text("初回登録", 19, INK, true));
-        add(pairingPanel, text("管理画面で発行した登録コードを貼り付けてください。", 14, MUTED, false), 6);
+        pairingHint = text("管理画面の登録リンクを開くか、登録コードを貼り付けてください。", 14, MUTED, false);
+        add(pairingPanel, pairingHint, 6);
         code = field("登録コード");
         add(pairingPanel, code, 10);
         Button showEndpoint = button("接続先を設定", false);
@@ -116,7 +122,7 @@ public final class MainActivity extends Activity {
         automatic.setOnCheckedChangeListener((view, checked) -> {
             if (updating) return;
             store.enabled(checked);
-            store.status(checked ? "充電と回線の条件待ち" : "自動補充を停止中");
+            if (!RefillService.isRunning()) store.status(checked ? "充電と回線の条件待ち" : "自動補充を停止中");
             RefillJob.schedule(this, true);
             if (checked) RefillJob.request(this, 0);
         });
@@ -129,12 +135,19 @@ public final class MainActivity extends Activity {
             RefillJob.schedule(this, true);
             RefillJob.request(this, 0);
         });
-        check = button("補充の依頼を今すぐ確認する", true);
+        check = button("連続補充を今すぐ始める", true);
         add(settingsPanel, check, 12);
         check.setOnClickListener(view -> {
-            store.status("補充の確認を予約しました");
-            RefillJob.request(this, 0);
-            refresh();
+            if (RefillService.isRunning()) {
+                RefillService.stop(this);
+            } else if (Build.VERSION.SDK_INT >= 33 && !store.notificationsAsked() &&
+                    checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                requestingNotifications = true;
+                store.markNotificationsAsked();
+                requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, NOTIFICATIONS);
+            } else {
+                startContinuous();
+            }
         });
         Button unpair = button("このスマホの登録を解除する", false);
         add(settingsPanel, unpair, 6);
@@ -144,6 +157,7 @@ public final class MainActivity extends Activity {
                 .setNegativeButton("戻る", null)
                 .setPositiveButton("登録を解除する", (dialog, which) -> {
                     try {
+                        stopService(new Intent(this, RefillService.class));
                         store.unpair();
                         RefillJob.schedule(this, true);
                         notice.setText("");
@@ -156,7 +170,7 @@ public final class MainActivity extends Activity {
         notice = text("", 14, MUTED, false);
         notice.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
         add(content, notice, 12);
-        add(content, text("自動補充の開始時刻はAndroidが決めます。"
+        add(content, text("連続補充はこの画面または通知から停止できます。自動補充の開始時刻はAndroidが決めます。"
                 + "通信が切れた場合は、完成済みの問題を端末に残して再送します。", 13, MUTED, false), 6);
         applyLink(getIntent());
         refresh();
@@ -185,7 +199,27 @@ public final class MainActivity extends Activity {
         if (!store.token().isEmpty() || data == null ||
                 !"nanpure-refill".equals(data.getScheme()) || !"pair".equals(data.getHost())) return;
         String linkCode = data.getQueryParameter("code");
-        if (linkCode != null && linkCode.length() <= 128) code.setText(linkCode);
+        if (linkCode != null && linkCode.matches("[a-f0-9]{64}")) {
+            code.setText(linkCode);
+            pairingHint.setText("登録リンクを受け取りました。「このスマホを登録する」を押してください。");
+        }
+    }
+
+    @Override public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] results) {
+        super.onRequestPermissionsResult(requestCode, permissions, results);
+        if (requestCode != NOTIFICATIONS) return;
+        requestingNotifications = false;
+        startContinuous();
+    }
+
+    private void startContinuous() {
+        if (isDestroyed() || store.token().isEmpty()) return;
+        try {
+            RefillService.start(this);
+            notice.setText("");
+        } catch (RuntimeException error) {
+            notice.setText("連続補充を始められませんでした。この画面でもう一度お試しください。");
+        }
     }
 
     private void pair() {
@@ -253,7 +287,8 @@ public final class MainActivity extends Activity {
         pairingPanel.setVisibility(paired ? View.GONE : View.VISIBLE);
         settingsPanel.setVisibility(paired ? View.VISIBLE : View.GONE);
         register.setEnabled(!busy);
-        check.setEnabled(store.enabled());
+        check.setEnabled(paired && !requestingNotifications);
+        check.setText(RefillService.isRunning() ? "連続補充を停止する" : "連続補充を今すぐ始める");
         updating = true;
         automatic.setChecked(store.enabled());
         metered.setChecked(store.meteredAllowed());

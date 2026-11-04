@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noindex, nofollow">
+  <title>スマホを登録する | ナンプレ帳</title>
+  <style>
+    body { margin: 0; padding: 2rem 1rem; color: #242e22; background: #f3f6ed; font: 1rem/1.65 system-ui, sans-serif; }
+    main { max-width: 28rem; margin: 0 auto; padding: 1.5rem; background: #fff; border-radius: 1rem; }
+    h1 { font-size: 1.45rem; line-height: 1.3; }
+    a { display: inline-block; padding: .8rem 1rem; color: #fff; background: #305e39; border-radius: .55rem; }
+    a[hidden] { display: none; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>ナンプレ補充係に登録する</h1>
+    <p id="notice">このQRコードを管理画面からもう一度読み取ってください。</p>
+    <a id="open" hidden>補充アプリを開く</a>
+  </main>
+  <script type="module">
+    // The fragment stays in the browser and is never sent to the server.
+    const code = new URLSearchParams(location.hash.slice(1)).get('code');
+    if (code && /^[a-f0-9]{64}$/.test(code)) {
+      const open = document.getElementById('open');
+      open.href = 'nanpure-refill://pair?code=' + code;
+      open.hidden = false;
+      document.getElementById('notice').textContent =
+        '補充アプリを開き、画面で「このスマホを登録する」を押してください。';
+    }
+  </script>
+</body>
+</html>

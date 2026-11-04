@@ -196,10 +196,17 @@ async function main() {
     await owner.locator('#owner-connect').click();
     await owner.locator('#device-name').fill('試験用Xperia');
     await owner.locator('#make-pair').click();
-    await owner.locator('#pair-code').waitFor();
+    await owner.locator('#pair-code').waitFor({state: 'attached'});
     await owner.waitForFunction(() => document.querySelector('#pair-code')?.value?.trim());
     const pairing = trace.find(entry => entry.path === ownerPath && entry.request?.action === 'pair');
     assert(pairing?.response?.code, 'The owner UI generated a one-time pairing code');
+    const deepLink = 'nanpure-refill://pair?code=' + pairing.response.code;
+    assert.equal(await owner.locator('#open-pair').getAttribute('href'), deepLink);
+    const pairPage = await context.newPage();
+    await pairPage.goto(site + '/nanpure/vending/pair.html#code=' + pairing.response.code);
+    await pairPage.locator('#open').waitFor();
+    assert.equal(await pairPage.locator('#open').getAttribute('href'), deepLink);
+    await pairPage.close();
     await succeed(workerPath, {action: 'register', code: pairing.response.code, token: workerToken});
     const reuse = await call(workerPath, {
       action: 'register', code: pairing.response.code, token: randomBytes(32).toString('hex')

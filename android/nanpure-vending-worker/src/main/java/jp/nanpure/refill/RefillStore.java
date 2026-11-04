@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.security.SecureRandom;
 
 final class RefillStore {
+    private static final Object REGISTRATION = new Object();
     private final SharedPreferences values;
 
     RefillStore(Context context) {
@@ -20,12 +21,14 @@ final class RefillStore {
     String endpoint() { return values.getString("endpoint", BuildConfig.ENDPOINT); }
     boolean enabled() { return values.getBoolean("enabled", false); }
     boolean meteredAllowed() { return values.getBoolean("metered", false); }
+    boolean notificationsAsked() { return values.getBoolean("notificationsAsked", false); }
     int sent() { return values.getInt("sent", 0); }
     long updated() { return values.getLong("updated", 0); }
     String status() { return values.getString("status", "未登録"); }
 
     void enabled(boolean enabled) { values.edit().putBoolean("enabled", enabled).apply(); }
     void meteredAllowed(boolean allowed) { values.edit().putBoolean("metered", allowed).apply(); }
+    void markNotificationsAsked() { values.edit().putBoolean("notificationsAsked", true).apply(); }
 
     void status(String status) {
         values.edit().putString("status", status).putLong("updated", System.currentTimeMillis()).apply();
@@ -48,13 +51,17 @@ final class RefillStore {
     }
 
     void paired(String token, String endpoint) throws IOException {
-        write(values.edit().putString("token", token).putString("endpoint", endpoint).putBoolean("enabled", true)
-                .remove("pairCode").remove("pairEndpoint").remove("pairToken"));
-        status("登録済み・補充の条件待ち");
+        synchronized (REGISTRATION) {
+            write(values.edit().putString("token", token).putString("endpoint", endpoint).putBoolean("enabled", true)
+                    .remove("pairCode").remove("pairEndpoint").remove("pairToken"));
+            status("登録済み・補充の条件待ち");
+        }
     }
 
     void unpair() throws IOException {
-        write(values.edit().clear());
+        synchronized (REGISTRATION) {
+            write(values.edit().clear());
+        }
     }
 
     JSONObject pending() throws JSONException {
@@ -62,14 +69,22 @@ final class RefillStore {
         return encoded.isEmpty() ? null : new JSONObject(encoded);
     }
 
-    void pending(JSONObject payload) throws IOException {
-        write(values.edit().putString("pending", payload.toString()));
+    boolean pending(String token, JSONObject payload) throws IOException {
+        synchronized (REGISTRATION) {
+            if (!token.equals(token())) return false;
+            write(values.edit().putString("pending", payload.toString()));
+            return true;
+        }
     }
 
-    void clearPending(boolean accepted) throws IOException {
-        SharedPreferences.Editor edit = values.edit().remove("pending");
-        if (accepted) edit.putInt("sent", sent() + 1);
-        write(edit);
+    boolean clearPending(String token, boolean accepted) throws IOException {
+        synchronized (REGISTRATION) {
+            if (!token.equals(token())) return false;
+            SharedPreferences.Editor edit = values.edit().remove("pending");
+            if (accepted) edit.putInt("sent", sent() + 1);
+            write(edit);
+            return true;
+        }
     }
 
     private static void write(SharedPreferences.Editor edit) throws IOException {
