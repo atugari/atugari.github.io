@@ -1,0 +1,72 @@
+.display-select{width:100%;min-height:48px;padding:10px;font:inherit;border:1px solid #b7c6b5;border-radius:10px;background:#fff;color:#25382f}
+@media screen{
+html[data-palette=cream],html[data-palette=cream] body,html[data-palette=cream] .play-dock{background:#f5efdf}
+html[data-palette=mint],html[data-palette=mint] body,html[data-palette=mint] .play-dock{background:#e2f2e7}
+html[data-palette=cream] #board .cell:not(:where(.vh-unit,.vh-witness,.vh-focus,.vh-cut)){background:#fff9eb}
+html[data-palette=mint] #board .cell:not(:where(.vh-unit,.vh-witness,.vh-focus,.vh-cut)){background:#f0fff4}
+html:is([data-palette=cream],[data-palette=mint]) #board .cell:not(:where(.vh-unit,.vh-witness,.vh-focus,.vh-cut)).peer{background:#e3ead7}
+html:is([data-palette=cream],[data-palette=mint]) #board .cell:not(:where(.vh-unit,.vh-witness,.vh-focus,.vh-cut)).same{background:#dcebf5}
+html:is([data-palette=cream],[data-palette=mint]) #board .cell:not(:where(.vh-unit,.vh-witness,.vh-focus,.vh-cut)).selected{background:#c4dfb3}
+html:is([data-palette=cream],[data-palette=mint]) #board .cell:not(:where(.vh-unit,.vh-witness,.vh-focus,.vh-cut)).wrong{background:#ffe0d6}
+html[data-digit-size=small] #board .cell>span:not([class]){font-size:85%}
+html[data-digit-size=large] #board .cell>span:not([class]){font-size:115%}
+}
+@media screen{
+html[data-display=dark]{color-scheme:dark;color:#e6eee8;background:#18241f;--green:#a1d4b8;--muted:#b2bfb6;--line:#52685b;--rust:#ffc59d}
+html[data-display=dark] body{background:#18241f}
+html[data-display=dark] :is(.back,.choice,.complexity-choice,.size-choice,.layout-choice,.review,.empty,.finder-card,.custom-layout,.modal,.count-grid button,.filters button,.tools button,.number-pad button,.pager button,.pager select,.proof-tools button,.proof-pages button,.neighbor-example span){background:#26382f;color:#e6eee8;border-color:#52685b}
+html[data-display=dark] :is(input:not([type=checkbox]):not([type=radio]),select,textarea){background:#26382f!important;color:#e6eee8!important;border-color:#6f8978!important}
+html[data-display=dark] :is(.secondary,.chip,.sizing-tabs,.neighbor-rules,.reference-explanation){background:#304b3d;color:#d6f1de}
+html[data-display=dark] :is(.primary,.filters button.on,.sizing-tabs button.on,.number-pad button.on,.selected .tick,.practice-pad [aria-pressed=true]){background:#a1d4b8;color:#14291d;border-color:#a1d4b8}
+html[data-display=dark] :is(.choice:hover,.library-card.selected,.tools button.on,.bulk-kinds .on){background:#3b5745;color:#edfff2;border-color:#abd9ba}
+html[data-display=dark] :is(.play-dock,.proof-viewer){background:#18241f;color:#e6eee8}
+html[data-display=dark] .sticky-next{background:linear-gradient(0deg,#18241f 90%,#18241f00)}
+html[data-display=dark] :is(.notice,.storage-warning){background:#4e4129;color:#ffe3a6}
+html[data-display=dark] .notice.error{background:#522f2d;color:#ffd0c5}
+html[data-display=dark] :is(.play-status,.neighbor-rules small){color:#b9d7be}
+html[data-display=dark] :is(.play-board,.board-scroll,.practice-board){background:#233229;border-color:#a4bca9}
+html[data-display=dark] .cell{background:#233229;color:#9fd6ff}
+html[data-display=dark] .cell.given{color:#f0f5ef}
+html[data-display=dark] .cell.peer{background:#304337}
+html[data-display=dark] .cell.same{background:#304c60}
+html[data-display=dark] .cell.selected{background:#405e39;box-shadow:inset 0 0 0 2px #b9e4a4}
+html[data-display=dark] .cell.wrong{background:#592f2c;color:#ffb9ac}
+html[data-display=dark] .cell .notes{color:#c1d4c5}
+html[data-display=dark] .cell .cage-label{color:#f2d4ae}
+html[data-display=dark] .cage-border{border-color:#d4b28c}
+/* SVG puzzle overlays contain their own light-theme text and geometry. */
+html[data-display=dark] :is(.board-lines,.variant-underlay){filter:invert(.88) hue-rotate(180deg)}
+html[data-display=dark] .practice-cell{color:#f0f5ef;border-color:#60796a}
+html[data-display=dark] .practice-cell.area{background:#4e482d}
+html[data-display=dark] .practice-cell.clue{background:#294e70}
+html[data-display=dark] .practice-cell.target{outline-color:#ffd28a}
+html[data-display=dark] .practice-cell.success{background:#355939}
+html[data-display=dark] .practice-cell .strike{color:#ffb3aa}
+html[data-display=dark] #hint-panel{background:#26382f;border-color:#64836d}
+html[data-display=dark] #hint-panel button{background:#304b3d;color:#e6eee8;border-color:#64836d}
+html[data-display=dark] #hint-panel :is([aria-pressed=true],.vh-return){background:#a1d4b8;color:#14291d}
+html[data-display=dark] #board .vh-unit{background:#4e482d}
+html[data-display=dark] #board .vh-witness{background:#294e70;box-shadow:inset 0 0 0 2px #82beff}
+html[data-display=dark] #board .vh-focus{background:#355939;box-shadow:inset 0 0 0 3px #b3eba8}
+html[data-display=dark] #board .vh-cut{background:#592f2c}
+html[data-display=dark] .vh-mark{color:#b2d9ff}
+html[data-display=dark] .vh-mark .vh-strike{color:#ffb3aa}
+html[data-display=dark] .vh-focus .vh-mark{color:#c5f7ba}
+html[data-display=dark] .board-lines .grid-thin{stroke:#829487}
+/* Paper previews and independent puzzle renderers keep their original palette. */
+html[data-display=dark] :is(.print-mini,.print-proof,.proof-canvas,.preview-grid,.size-preview,.complexity-preview,.proto-board){color-scheme:light;color:#25382f;background:white}
+html[data-palette=purple],html[data-palette=purple] body,html[data-palette=purple] .play-dock{background:#292337}
+html[data-palette=purple] :is(.choice,.modal,.review,.secondary,.tools button,.number-pad button){background:#3b324d;color:#f1eaf9;border-color:#857696}
+html[data-palette=purple] #board .cell:not(:where(.vh-unit,.vh-witness,.vh-focus,.vh-cut)){background:#30283e}
+html[data-palette=purple] #board .cell:not(:where(.vh-unit,.vh-witness,.vh-focus,.vh-cut)).peer{background:#423651}
+html[data-palette=purple] #board .cell:not(:where(.vh-unit,.vh-witness,.vh-focus,.vh-cut)).same{background:#3e4b6c}
+html[data-palette=purple] #board .cell:not(:where(.vh-unit,.vh-witness,.vh-focus,.vh-cut)).selected{background:#564267;box-shadow:inset 0 0 0 2px #d4b4f0}
+html[data-palette=purple] #board .cell:not(:where(.vh-unit,.vh-witness,.vh-focus,.vh-cut)).wrong{background:#592f2c}
+}
+
+@media screen{
+html[data-digit-size=small] #board [data-linked-digit]{font-size:18.7px}
+html[data-digit-size=large] #board [data-linked-digit]{font-size:25.3px}
+html[data-digit-size=small] #board [data-multi-digit]{font-size:19.55px}
+html[data-digit-size=large] #board [data-multi-digit]{font-size:26.45px}
+}

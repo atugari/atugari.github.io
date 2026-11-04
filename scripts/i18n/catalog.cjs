@@ -69,3 +69,4 @@ module.exports['日替わりナンプレに挑戦する'] = module.exports['日�
 Object.assign(module.exports,require('./catalog-home-93.json'));
 Object.assign(module.exports,require('./catalog-home-94.json'));
 Object.assign(module.exports,require('./catalog-home-95.json'));
+Object.assign(module.exports,require('./catalog-home-96.json'));

@@ -1,0 +1,87 @@
+/* The two contrast palettes use border styles and symbols as well as color. */
+html[data-site-theme][data-site-theme="contrast-light"] {
+  --theme-paper: #f2f5f8;
+  --theme-surface: #fff;
+  --theme-ink: #162233;
+  --theme-muted: #40536a;
+  --theme-line: #4e637c;
+  --theme-accent: #16458a;
+  --theme-soft: #e6effc;
+  --theme-gold: #805100;
+  --contrast-primary: #16458a;
+  --contrast-on-primary: #fff;
+  --contrast-warm: #fff0c0;
+  --contrast-on-warm: #452c00;
+  --contrast-focus: #805100;
+}
+html[data-site-theme][data-site-theme="contrast-dark"] {
+  --theme-paper: #121821;
+  --theme-surface: #1e2936;
+  --theme-ink: #f7f9fc;
+  --theme-muted: #c8d5e3;
+  --theme-line: #adc4de;
+  --theme-accent: #a9d7ff;
+  --theme-soft: #263b50;
+  --theme-gold: #ffdc82;
+  --contrast-primary: #a9d7ff;
+  --contrast-on-primary: #122a46;
+  --contrast-warm: #ffdc82;
+  --contrast-on-warm: #412b00;
+  --contrast-focus: #ffdc82;
+}
+html:is([data-site-theme="contrast-light"],[data-site-theme="contrast-dark"]) {
+  --ink: var(--theme-ink);
+  --muted: var(--theme-muted);
+  --line: var(--theme-line);
+  --green: var(--theme-accent);
+  --paper: var(--theme-paper);
+  background: var(--theme-paper);
+  color: var(--theme-ink);
+}
+html:is([data-site-theme="contrast-light"],[data-site-theme="contrast-dark"]) :is(body,#app,.site-shell,.play-dock) {
+  background-color: var(--theme-paper);
+  color: var(--theme-ink);
+}
+html:is([data-site-theme="contrast-light"],[data-site-theme="contrast-dark"]) :is(.choice-card,.homechoices .choice,.menu-entry,.np-titles-entry,.header button,dialog,.theme-entry,.home-support-button,.np-home-more nav a) {
+  background: var(--theme-surface);
+  color: var(--theme-ink);
+  border-color: var(--theme-line);
+}
+html:is([data-site-theme="contrast-light"],[data-site-theme="contrast-dark"]) .designed-home .choice-card {
+  border-width: 2px;
+  box-shadow: none;
+}
+html:is([data-site-theme="contrast-light"],[data-site-theme="contrast-dark"]) .designed-home .choice-card::after {
+  display: none;
+}
+html:is([data-site-theme="contrast-light"],[data-site-theme="contrast-dark"]) .designed-home :is(.choice-card strong,.choice-arrow,.art-emblem) {
+  color: inherit;
+}
+html:is([data-site-theme="contrast-light"],[data-site-theme="contrast-dark"]) :is(.designed-home .main-choice,.homechoices .choice:first-child,.primary) {
+  background: var(--contrast-primary);
+  color: var(--contrast-on-primary);
+}
+html:is([data-site-theme="contrast-light"],[data-site-theme="contrast-dark"]) .designed-home .daily-choice {
+  background: var(--contrast-warm);
+  color: var(--contrast-on-warm);
+  border-style: double;
+  border-width: 4px;
+}
+html:is([data-site-theme="contrast-light"],[data-site-theme="contrast-dark"]) .designed-home .works-choice {
+  border-style: dashed;
+}
+html:is([data-site-theme="contrast-light"],[data-site-theme="contrast-dark"]) .designed-home .art-emblem {
+  background: none;
+  box-shadow: none;
+}
+html:is([data-site-theme="contrast-light"],[data-site-theme="contrast-dark"]) :focus-visible {
+  outline: 3px solid var(--contrast-focus);
+  outline-offset: 3px;
+}
+@media print {
+  html:is([data-site-theme="contrast-light"],[data-site-theme="contrast-dark"]),
+  html:is([data-site-theme="contrast-light"],[data-site-theme="contrast-dark"]) :is(body,#app) {
+    background: #fff;
+    color: #000;
+  }
+}

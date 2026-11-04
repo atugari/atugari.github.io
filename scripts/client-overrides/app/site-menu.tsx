@@ -17,7 +17,7 @@ export default function SiteMenu({onOpen,daily,unread,newVersion}:{onOpen:(panel
  return <section className="site-menu">
   <h2>{t('設定・メニュー')}</h2>
   <div className="menu-categories">
-   {item('theme','デザイン','3つの雰囲気を切り替える',Palette,'gold')}
+   {item('theme','背景とボタンを変更','画面を見ながら配色を選ぶ',Palette,'gold')}
    {item('settings','見やすさ・操作の設定','色・文字の大きさ・タップの補助',SlidersHorizontal)}
    {group('play','遊び方・音','チュートリアル・キーボード・BGM',BookOpen,'green',<>
     {item('tutorial','遊び方・チュートリアル','数字の入れ方を試す',BookOpen)}

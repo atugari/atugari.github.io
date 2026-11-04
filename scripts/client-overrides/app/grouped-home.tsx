@@ -2,7 +2,7 @@
 // The creation entry opens the notebook directly at its generation menu.
 export default function GroupedHome({t,onPractice,onDaily,onPanel,resume,Theme,Intro}:any){
  const art=(symbol:string)=><span className="choice-art" aria-hidden="true"><span className="art-emblem">{symbol}</span></span>;
- const arrow=<span className="choice-arrow" aria-hidden="true">›</span>;
+ const arrow=<span className="choice-arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></span>;
  return <main className="start-screen designed-home np-stepped-home np-home-ready" data-grouped-home="" data-stepped-home="">
   <div className="home-topline"><Theme compact onOpen={()=>onPanel('theme')}/></div>
   <div className="start-choices">

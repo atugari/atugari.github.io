@@ -203,3 +203,104 @@
 .site-menu .menu-group:not([open]) > .menu-group-items {
   display: none;
 }
+
+/* A vector chevron shares the exact center of its circular outline. */
+.np-stepped-home .start-choices .choice-arrow {
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+}
+.np-stepped-home .choice-arrow svg,
+.theme-preview-nav svg {
+  width: 16px;
+  height: 16px;
+  display: block;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+@media (max-width: 600px) {
+  .np-stepped-home .start-choices .choice-arrow {
+    position: static;
+  }
+  .np-stepped-home .theme-entry {
+    min-width: 0;
+    flex: 1.8 1 0;
+  }
+  .np-stepped-home .theme-entry > span:first-of-type {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .np-stepped-home .theme-entry small {
+    flex: none;
+  }
+}
+
+.game-dialog:has(.theme-preview-settings) {
+  width: min(960px, calc(100% - 16px));
+  max-width: none;
+}
+.theme-preview-settings {
+  display: grid;
+  gap: 8px;
+}
+.theme-preview-settings h2 {
+  margin: 0;
+  font-size: max(clamp(18px, 4.5vw, 24px), var(--ui-min-font, 0px));
+}
+.theme-preview-nav {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+.theme-preview-nav > div {
+  display: grid;
+  overflow-wrap: anywhere;
+}
+.theme-preview-nav small {
+  color: var(--theme-muted);
+  font-variant-numeric: tabular-nums;
+}
+.theme-preview-nav button,
+.theme-preview-choice {
+  cursor: pointer;
+  border: 1px solid var(--theme-line);
+  border-radius: 12px;
+  background: var(--theme-surface);
+  color: var(--theme-ink);
+}
+.theme-preview-nav button {
+  min-height: 44px;
+  display: grid;
+  place-items: center;
+}
+.theme-preview-choice {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  width: 100%;
+  min-width: 0;
+  padding: 5px 5px 8px;
+  font: inherit;
+  font-weight: 700;
+}
+.theme-preview-choice img {
+  display: block;
+  max-width: 100%;
+  max-height: max(126px, calc(100dvh - 248px));
+  width: auto;
+  height: auto;
+  border-radius: 8px;
+}
+.theme-preview-choice[aria-pressed="true"] {
+  border: 2px solid var(--theme-accent);
+}
+.theme-preview-choice:focus-visible,
+.theme-preview-nav button:focus-visible {
+  outline: 3px solid var(--theme-accent);
+  outline-offset: 2px;
+}

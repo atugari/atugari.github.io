@@ -30,8 +30,32 @@ async function setup(browser,width,height,theme='color'){
    await close.click();await menu.waitFor();
    assert(await help.locator('[data-menu-panel="faq"]').isVisible(),'The expanded group stays open');
    const design=menu.locator('[data-menu-panel="theme"]');
+   assert.equal(await design.locator('strong').textContent(),'背景とボタンを変更');
    await design.click();await page.locator('.theme-settings').waitFor();
    assert.equal(await menu.isVisible(),false);
+   const preview=page.locator('.theme-preview-choice'),next=page.getByRole('button',{name:'次へ',exact:true});
+   assert.equal(await page.locator('.theme-settings h2').textContent(),'背景とボタンを変更');
+   assert.equal(await page.locator('.theme-save-note,.theme-option-copy').count(),0);
+   const initial=await page.evaluate(()=>NPSiteTheme.get());
+   const seen=new Set();
+   for(let i=0;i<5;i++){
+    const id=await preview.getAttribute('data-theme-preview');
+    const image=await preview.locator('img').evaluate(async image=>{await image.decode();return{url:image.currentSrc,width:image.naturalWidth,height:image.naturalHeight}});
+    assert.equal(await page.locator('.theme-settings img').count(),1);
+    assert(image.url.endsWith(id+(width<=650?'-mobile.webp':'-desktop.webp')));
+    assert.equal(image.width<image.height,width<=650);
+    seen.add(id);
+    if(id.startsWith('contrast-')){
+     await preview.click();
+     await page.waitForFunction(theme=>document.documentElement.dataset.siteTheme===theme,id);
+     assert.equal(await preview.getAttribute('aria-pressed'),'true');
+     assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('np-site-theme-v1')).theme),id);
+     assert.equal(await page.evaluate(()=>getComputedStyle(document.body).backgroundColor),id==='contrast-dark'?'rgb(18, 24, 33)':'rgb(242, 245, 248)');
+    }
+    await next.click();
+   }
+   assert.deepEqual([...seen].sort(),['color','contrast-dark','contrast-light','lounge','notebook']);
+   await page.evaluate(theme=>NPSiteTheme.set(theme),initial);
    await close.click();await menu.waitFor();
    assert(await design.evaluate(button=>button===document.activeElement),'Focus returns to the design button');
    await menu.locator('[data-menu-panel="settings"]').click();
@@ -41,6 +65,13 @@ async function setup(browser,width,height,theme='color'){
    await close.click();await page.locator('.game-dialog[open]').waitFor({state:'detached'});
   }
   assert.equal(await page.locator('.designed-home .start-title').count(),0);
+  assert.match(await page.locator('.theme-entry.compact').textContent(),/^背景とボタンを変更/);
+  assert.match(await page.locator('.home-topline [data-np-titles]').textContent(),/^称号一覧/);
+  const centered=await page.locator('.start-choices .choice-arrow').evaluateAll(nodes=>nodes.every(node=>{
+   const circle=node.getBoundingClientRect(),icon=node.querySelector('svg').getBoundingClientRect();
+   return Math.abs((circle.left+circle.right)-(icon.left+icon.right))<1&&Math.abs((circle.top+circle.bottom)-(icon.top+icon.bottom))<1;
+  }));
+  assert(centered,'Each chevron is centered in its circle');
   assert.deepEqual(await page.locator('.designed-home .start-choices strong').allTextContents(),['ナンプレで遊ぶ','ナンプレを作る','日替わりナンプレに挑戦する','ナンプレを学ぶ','ナンプレの作品を見る']);
   assert.equal(await page.locator('.designed-home [data-collection-entry]').count(),0);
   assert.equal(await page.locator('.designed-home :is(.home-bottom-links,.home-version,[data-home-guide],[data-pare-entry])').count(),0);
