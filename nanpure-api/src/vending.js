@@ -89,7 +89,7 @@ async function encodePuzzle(p) {
   return new Response(stream).arrayBuffer();
 }
 
-async function decodePuzzle(bytes) {
+export async function decodePuzzle(bytes) {
   const payload = new Uint8Array(bytes);
   const response = new Response(payload);
   if (payload[0] === 123) return response.json();

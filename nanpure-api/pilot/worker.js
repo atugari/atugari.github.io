@@ -1,6 +1,7 @@
 import api from '../src/index.js';
 import {body, hash, newKey, validKey} from '../src/http.js';
 import {cleanVending} from '../src/vending.js';
+import {publicPath, publicVending} from './public-vending.js';
 
 const shelf = '/nanpure/vending/';
 const ownerPage = shelf + 'owner.html';
@@ -117,6 +118,7 @@ async function route(request, env) {
 
 export default {
   async fetch(request, env) {
+    if (new URL(request.url).pathname === publicPath) return publicVending(request, env);
     return privateResponse(await route(request, env));
   },
   async scheduled(_event, env) {
