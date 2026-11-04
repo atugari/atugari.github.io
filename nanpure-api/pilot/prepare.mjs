@@ -7,7 +7,7 @@ const api = fileURLToPath(new URL('..', import.meta.url));
 const source = fileURLToPath(new URL('../../nanpure/', import.meta.url));
 const generated = join(pilot, '.generated');
 const configFile = join(pilot, 'wrangler.generated.json');
-const {NANPURE_PILOT_DB_ID: id, NANPURE_PILOT_OWNER_HASH: ownerHash, NANPURE_PILOT_CATALOGUE: catalogue} = process.env;
+const {NANPURE_PILOT_DB_ID: id, NANPURE_PILOT_OWNER_HASH: ownerHash} = process.env;
 if (!/^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/.test(id || '')) {
   throw new Error('Set NANPURE_PILOT_DB_ID to the ID of the isolated nanpure-vending-pilot-db database.');
 }
@@ -59,8 +59,7 @@ writeFileSync(configFile, JSON.stringify({
   assets: {directory: './.generated/assets', binding: 'ASSETS', html_handling: 'none', run_worker_first: true},
   d1_databases: [{binding: 'DB', database_name: 'nanpure-vending-pilot-db', database_id: id,
     migrations_dir: './.generated/migrations'}],
-  vars: {VENDING_ENABLED: '1', ...(catalogue === '1' ? {VENDING_CATALOGUE_ENABLED: '1'} : {}),
-    OWNER_KEY_HASH: ownerHash, NOTEBOOK_PATH: notebook},
+  vars: {VENDING_ENABLED: '1', VENDING_CATALOGUE_ENABLED: '1', OWNER_KEY_HASH: ownerHash, NOTEBOOK_PATH: notebook},
   triggers: {crons: ['17 15 * * *']}
 }, null, 2) + '\n', {mode: 0o600});
 console.log('Prepared the private trial Worker, notebook assets, and isolated D1 migrations.');
