@@ -49,7 +49,11 @@ function button(text){const b=[...w.document.querySelectorAll('button')].find(x=
  const daily=w.document.querySelector('button.daily-choice');assert(daily);assert(!w.document.querySelector('a.daily-choice'));
  const membership='https://ofuse.me/memberships/5107',letter='https://ofuse.me/o?uid=228296';
  const homeSupport=w.document.querySelector('.home-support-button');assert.equal(homeSupport.getAttribute('href'),membership);assert.equal(homeSupport.textContent,'月100円で製作者を応援しよう♫');assert.equal(w.document.querySelector('.header-support').getAttribute('href'),letter);
- const menu=w.document.querySelector('.menu-button');assert(menu,'Menu button missing');assert.equal(menu.textContent.trim(),'設定');menu.click();await settle(()=>w.document.querySelector('.site-menu'),'menu panel');assert(w.document.querySelector('.site-menu'));
+ const menu=w.document.querySelector('.home-settings-button');assert(menu,'Home settings button missing');
+ assert.equal(menu.getAttribute('aria-label'),'設定');
+ const menuLabel=menu.cloneNode(true);menuLabel.querySelectorAll('[aria-hidden="true"]').forEach(node=>node.remove());
+ assert.equal(menuLabel.textContent.trim(),'設定');
+ menu.click();await settle(()=>w.document.querySelector('.site-menu'),'menu panel');assert(w.document.querySelector('.site-menu'));
  assert.equal(w.document.querySelector('.menu-categories').children.length,5);
  assert(!w.document.querySelector('.site-menu [data-menu-panel="ranking"]'));
  w.document.querySelector('[data-menu-group="help"]').open=true;
