@@ -50,26 +50,27 @@
   </div>
 
   <div class="card">
-    <label>お問い合わせの種類</label>
+    <label for="contact-type">お問い合わせの種類</label>
     <select id="contact-type">
       <option value="">選択してください</option>
       <option value="bug">不具合・バグの報告</option>
       <option value="cheat">チート判定された（身に覚えがない）</option>
+      <option value="name-report">不適切なランキング名を報告</option>
       <option value="nick">ニックネームについて</option>
       <option value="ranking">ランキングについて</option>
       <option value="suggest">改善のご提案</option>
       <option value="other">その他</option>
     </select>
 
-    <label>お問い合わせ内容</label>
-    <textarea id="contact-body" placeholder="できるだけ詳しくご記入ください。不具合の場合は、いつ・どんな操作をした時に起きたか教えていただけると助かります。" oninput="updateCount()"></textarea>
+    <label for="contact-body">お問い合わせ内容</label>
+    <textarea id="contact-body" maxlength="1000" placeholder="できるだけ詳しくご記入ください。不具合の場合は、いつ・どんな操作をした時に起きたか教えていただけると助かります。" oninput="updateCount()"></textarea>
     <div class="char-count"><span id="char-count">0</span> / 1000文字</div>
 
-    <label>メールアドレス（返信が必要な場合）</label>
+    <label for="contact-email">メールアドレス（返信が必要な場合）</label>
     <input type="text" id="contact-email" placeholder="例：example@email.com（任意）">
 
     <button class="submit-btn" id="submit-btn" onclick="submitContact()">送信する</button>
-    <div class="notice">※ お問い合わせ内容はFirebaseに保存されます。個人情報は返信目的以外には使用しません。</div>
+    <div class="notice">「送信する」を押すと、種類・本文・受付日時・入力した返信先を運営者のFirebaseに保存します。運営者がお問い合わせや報告を確認し、必要に応じて返信します。<a href="privacy.html">プライバシーポリシー</a></div>
     <div class="success-msg" id="success-msg">
       お問い合わせを受け付けました。<br>ご連絡ありがとうございます。
     </div>
@@ -97,6 +98,13 @@
     document.getElementById('char-count').textContent = len;
   }
 
+  const reportedName = new URLSearchParams(location.hash.slice(1)).get('report');
+  if (reportedName) {
+    document.getElementById('contact-type').value = 'name-report';
+    document.getElementById('contact-body').value = '丸場所記憶ゲームのランキング名「' + reportedName.slice(0, 100) + '」を報告します。\n気になった点：';
+    updateCount();
+  }
+
   async function submitContact(){
     const type  = document.getElementById('contact-type').value;
     const body  = document.getElementById('contact-body').value.trim();
@@ -112,8 +120,6 @@
 
     try {
       const key = 'contact_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
-      const nick = localStorage.getItem('adgame_nick') || '（未登録）';
-      const deviceId = localStorage.getItem('adgame_device_id') || '不明';
 
       const res = await fetch(DB_URL + '/contacts/' + key + '.json', {
         method: 'PUT',
@@ -122,10 +128,7 @@
           type,
           body,
           email: email || null,
-          nick,
-          deviceId,
           sentAt: Date.now(),
-          ua: navigator.userAgent.slice(0,100),
         })
       });
 

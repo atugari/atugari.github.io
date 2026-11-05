@@ -371,14 +371,15 @@
           '<span class="rank-num ' + rc + '">' + medal + '</span>' +
           '<div class="rank-info">' +
             '<div class="rank-name' + (isMe?' me-name':'') + '">' +
-              entry.name + (isMe ? ' ◀ あなた' : '') +
             '</div>' +
             '<div class="rank-sub">上位 ' + topPct + '%</div>' +
           '</div>' +
           '<div>' +
-            '<div class="rank-score">' + entry.best + ' 壁</div>' +
+            '<div class="rank-score"></div>' +
           '</div>';
 
+        row.querySelector('.rank-name').textContent = entry.name + (isMe ? ' ◀ あなた' : '');
+        row.querySelector('.rank-score').textContent = entry.best + ' 壁';
         el.appendChild(row);
       });
 

@@ -27,8 +27,6 @@
     .site-nav-links{display:flex;flex-wrap:wrap;gap:6px 16px;}
     .site-nav-links a{display:inline-flex;align-items:center;min-height:44px;color:var(--text);font-weight:500;text-underline-offset:3px;}
     .screen{display:none;} .screen.active{display:block;}
-    .ad-label{font-size:10px;color:var(--text3);text-align:center;margin-bottom:4px;letter-spacing:0.05em;}
-    .adsense-slot{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--rs);min-height:70px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--text3);margin-bottom:16px;}
     .nick-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);padding:24px 20px;margin-bottom:16px;text-align:center;}
     .nick-card h1{font-size:20px;font-weight:500;margin-bottom:6px;}
     .nick-card p{font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.8;}
@@ -100,6 +98,8 @@
     .rank-name{color:var(--text);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
     .rank-name.me{color:var(--blue);}
     .rank-date{font-size:10px;color:var(--text3);margin-top:1px;}
+    .rank-hof{font-size:10px;background:#FAC775;color:#412402;padding:1px 5px;border-radius:4px;margin-left:4px;}
+    .rank-date a{color:var(--blue);font-size:12px;display:inline-block;padding:3px 4px;}
     .rank-score{font-family:'DM Mono',monospace;color:var(--text);flex-shrink:0;text-align:right;}
     .more-btn{display:block;width:100%;padding:12px;text-align:center;font-size:12px;border-top:1px solid var(--border2);background:none;border-left:none;border-right:none;border-bottom:none;cursor:pointer;color:var(--text2);font-family:'Noto Sans JP',sans-serif;}
     .rank-empty,.rank-loading{padding:20px 16px;font-size:12px;color:var(--text3);text-align:center;}
@@ -155,7 +155,6 @@
     #gp-guide-panel .gp-act{color:rgba(220,215,200,0.8);}
   </style>
   <meta name="google-adsense-account" content="ca-pub-5560584474086870">
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5560584474086870" crossorigin="anonymous"></script>
 <link rel="canonical" href="https://atugari.github.io/">
 <meta property="og:site_name" content="パレあそび">
 <meta property="og:title" content="丸場所記憶ゲーム｜パレあそび（ぱれあそび）">
@@ -258,14 +257,6 @@
         <span class="disp-settings-hd-arrow" id="disp-arrow">▼</span>
       </div>
       <div class="disp-body" id="disp-body">
-        <div class="disp-row" id="disp-row-ad" style="display:none;">
-          <span class="disp-label">バナー広告</span>
-          <label class="toggle-wrap" id="tog-ad-wrap">
-            <input type="checkbox" id="tog-ad" onchange="applyDispSettings()">
-            <span class="toggle-track"></span>
-            <span class="toggle-thumb"></span>
-          </label>
-        </div>
         <div class="disp-row">
           <span class="disp-label">ニュース</span>
           <label class="toggle-wrap">
@@ -515,11 +506,6 @@
   const ONE_WEEK=7*24*60*60*1000;
   const ONE_DAY=24*60*60*1000;
 
-  // 広告トグルのロック状態キー
-  const AD_LOCKED_KEY = 'adgame_ad_locked';
-  // 広告トグル行を完全に非表示にするキー
-  const AD_ROW_HIDDEN_KEY = 'adgame_ad_row_hidden';
-
   // 称号マスターデータ
   const TITLE_DEFS = [
     // ===== スコア系 =====
@@ -629,7 +615,7 @@
 
     // ===== 特殊称号 =====
     { id:'ad_killer', type:'secret', icon:'🙏', name:'それは勘弁してくれ……',
-      desc:'広告を非表示にしようとした',
+      desc:'以前のバージョンで取得した記念称号。',
       nameHidden:'それは○弁してくれ……', descHidden:'何かを消そうとした、あなたへ。',
       check:()=>false },
     { id:'cheat_detected', type:'arcane', icon:'🃏', name:'一つの手段',
@@ -800,6 +786,35 @@
     }catch(e){}
   }
 
+  function createRankingRow(entry, i, showHallOfFame) {
+    const row = document.createElement('div');
+    row.className = 'ranking-row';
+    row.innerHTML = '<span class="rank-num"></span><div class="rank-info"><div class="rank-name"></div><div class="rank-date"></div></div><span class="rank-score"></span>';
+    const place = row.querySelector('.rank-num');
+    if (i < 3) place.classList.add(['gold', 'silver', 'bronze'][i]);
+    place.textContent = (i + 1) + '位';
+    const name = row.querySelector('.rank-name');
+    name.textContent = entry.name;
+    if (showHallOfFame && entry.hallOfFame) {
+      const badge = document.createElement('span');
+      badge.className = 'rank-hof';
+      badge.textContent = '殿堂';
+      name.append(badge);
+    }
+    if (entry.name === nickname && entry.deviceId === DEVICE_ID) {
+      name.classList.add('me');
+      name.append(' ◀ あなた');
+    }
+    const details = row.querySelector('.rank-date');
+    const report = document.createElement('a');
+    report.href = 'contact.html#' + new URLSearchParams({report: entry.name});
+    report.textContent = '名前を報告';
+    report.setAttribute('aria-label', entry.name + 'の名前を報告');
+    details.append(fmtDate(entry._displayDate), ' ', report);
+    row.querySelector('.rank-score').textContent = entry._displayScore.toLocaleString() + 'pt';
+    return row;
+  }
+
   async function loadRanking(tab){
     const el=document.getElementById('rank-list-result');
     if(!el)return;
@@ -838,22 +853,7 @@
 
       function renderRows(list){
         el.innerHTML='';
-        list.forEach((entry,i)=>{
-          const row=document.createElement('div');
-          row.className='ranking-row';
-          const rc=i===0?'gold':i===1?'silver':i===2?'bronze':'';
-          const medal=i===0?'1位':i===1?'2位':i===2?'3位':(i+1)+'位';
-          const isMe=entry.name===nickname&&entry.deviceId===DEVICE_ID;
-          const hofBadge=entry.hallOfFame?'<span style="font-size:10px;background:#FAC775;color:#412402;padding:1px 5px;border-radius:4px;margin-left:4px;">殿堂</span>':'';
-          row.innerHTML=
-            '<span class="rank-num '+rc+'">'+medal+'</span>'+
-            '<div class="rank-info">'+
-              '<div class="rank-name'+(isMe?' me':'')+'">'+entry.name+hofBadge+(isMe?' ◀ あなた':'')+'</div>'+
-              '<div class="rank-date">'+fmtDate(entry._displayDate)+'</div>'+
-            '</div>'+
-            '<span class="rank-score">'+entry._displayScore.toLocaleString()+'pt</span>';
-          el.appendChild(row);
-        });
+        list.forEach((entry, i) => el.appendChild(createRankingRow(entry, i, true)));
       }
       // 全期間・月間タブは全件表示、week/dayは10件+もっと見るボタン
       if(tab==='all'||tab==='month'){
@@ -1374,7 +1374,6 @@
     try {
       const s = JSON.parse(localStorage.getItem('adgame_disp') || '{}');
       return {
-        ad:      s.ad      !== false,
         news:    s.news    !== false,
         banner:  s.banner  !== false,
         titles:  s.titles  !== false,
@@ -1382,24 +1381,18 @@
         game:    s.game    !== false,
       };
     } catch(e) {
-      return { ad:true, news:true, banner:true, titles:true, updates:true, game:true };
+      return { news:true, banner:true, titles:true, updates:true, game:true };
     }
   }
 
   function applyDispSettings() {
     const s = {
-      ad:      document.getElementById('tog-ad').checked,
       news:    document.getElementById('tog-news').checked,
       banner:  document.getElementById('tog-banner').checked,
       titles:  document.getElementById('tog-titles').checked,
       updates: document.getElementById('tog-updates').checked,
       game:    document.getElementById('tog-game').checked,
     };
-
-    if (!s.ad && !localStorage.getItem(AD_LOCKED_KEY)) {
-      grantAdKillerTitle();
-      return;
-    }
 
     localStorage.setItem('adgame_disp', JSON.stringify(s));
     const show = (id, visible) => { const el=document.getElementById(id); if(el) el.style.display = visible ? '' : 'none'; };
@@ -1414,22 +1407,13 @@
   }
 
   function initDispSettings() {
-    if(!localStorage.getItem(AD_LOCKED_KEY)){
-      try {
-        const disp = JSON.parse(localStorage.getItem('adgame_disp') || '{}');
-        if(disp.ad === false){ disp.ad = true; localStorage.setItem('adgame_disp', JSON.stringify(disp)); }
-      } catch(e) {}
-    }
     const s = getDispSettings();
-    document.getElementById('tog-ad').checked      = s.ad;
     document.getElementById('tog-news').checked    = s.news;
     document.getElementById('tog-banner').checked  = s.banner;
     document.getElementById('tog-titles').checked  = s.titles;
     document.getElementById('tog-updates').checked = s.updates;
     document.getElementById('tog-game').checked    = s.game;
 
-    if(localStorage.getItem(AD_LOCKED_KEY)==='1') lockAdToggle();
-    applyAdRowHidden();
     applyDispSettings();
   }
 
@@ -1510,93 +1494,6 @@
     arrow.classList.toggle('open', !isOpen);
   }
 
-  // 称号「それは勘弁してくれ……」付与＋広告強制ON＋トグルロック
-  function grantAdKillerTitle() {
-    // 広告を強制ONに戻す
-    const tog = document.getElementById('tog-ad');
-    tog.checked = true;
-
-    // 称号付与
-    const existing = getMyTitles();
-    const existingIds = new Set(existing.map(t => t.id));
-    const def = TITLE_DEFS.find(d => d.id === 'ad_killer');
-    if (def && !existingIds.has('ad_killer')) {
-      existing.unshift({ id: 'ad_killer', obtainedAt: Date.now() });
-      saveMyTitles(existing);
-      showTitleToast(def);
-      renderHomeTitles();
-    }
-
-    // トグルをロック（無効化＋見た目グレーアウト）
-    lockAdToggle();
-
-    // 設定を保存（ad=true で）
-    const s = {
-      ad: true,
-      news:    document.getElementById('tog-news').checked,
-      banner:  document.getElementById('tog-banner').checked,
-      titles:  document.getElementById('tog-titles').checked,
-      updates: document.getElementById('tog-updates').checked,
-      game:    document.getElementById('tog-game').checked,
-    };
-    localStorage.setItem('adgame_disp', JSON.stringify(s));
-    localStorage.setItem(AD_LOCKED_KEY, '1');
-
-    const show = (id, visible) => { const el=document.getElementById(id); if(el) el.style.display = visible ? '' : 'none'; };
-    show('news-banner',        s.news);
-    show('monthly-banner',     s.banner);
-    show('titles-section',     s.titles);
-    show('update-log-section', s.updates);
-    show('nick-card-wrap',     s.game);
-    if(s.banner) loadBannerRanking(currentBannerTab);
-    if(s.titles) renderHomeTitles();
-    if(s.news)   loadNewsBanner();
-  }
-
-  function lockAdToggle() {
-    const tog = document.getElementById('tog-ad');
-    const wrap = document.getElementById('tog-ad-wrap');
-    if(tog) tog.disabled = true;
-    if(wrap) { wrap.style.opacity='0.35'; wrap.style.pointerEvents='none'; wrap.style.cursor='not-allowed'; }
-  }
-
-  // 広告トグル行を完全に非表示にする（titles.htmlから呼ばれる想定でlocalStorageキーで管理）
-  function applyAdRowHidden() {
-    if(localStorage.getItem(AD_ROW_HIDDEN_KEY)==='1') {
-      const row = document.getElementById('disp-row-ad');
-      if(row) row.style.display='none';
-    }
-  }
-
-  function initDispSettings() {
-    // AD_LOCKED_KEYがないのにadgame_dispのadがfalseになっている場合は修正
-    // （デバッグリセット後などに広告が非表示のままになる問題を防ぐ）
-    if(!localStorage.getItem(AD_LOCKED_KEY)){
-      try {
-        const disp = JSON.parse(localStorage.getItem('adgame_disp') || '{}');
-        if(disp.ad === false){
-          disp.ad = true;
-          localStorage.setItem('adgame_disp', JSON.stringify(disp));
-        }
-      } catch(e) {}
-    }
-
-    const s = getDispSettings();
-    document.getElementById('tog-ad').checked      = s.ad;
-    document.getElementById('tog-news').checked    = s.news;
-    document.getElementById('tog-banner').checked  = s.banner;
-    document.getElementById('tog-titles').checked  = s.titles;
-    document.getElementById('tog-updates').checked = s.updates;
-    document.getElementById('tog-game').checked    = s.game;
-
-    // ロック状態を復元
-    if(localStorage.getItem(AD_LOCKED_KEY)==='1') lockAdToggle();
-    // 広告行の非表示を復元
-    applyAdRowHidden();
-
-    applyDispSettings();
-  }
-
   // 後方互換：古いキーを削除
   localStorage.removeItem('adgame_banner_hidden');
   localStorage.removeItem('adgame_sections_hidden');
@@ -1650,9 +1547,10 @@
 
       // ランダムに1件表示
       const item = newsItems[Math.floor(Math.random()*newsItems.length)];
-      el.innerHTML = '<div style="font-size:13px;color:var(--text);line-height:1.8;">'
-        + (item.link ? '<a href="'+item.link+'" style="color:var(--blue);text-decoration:none;">'+item.text+'</a>' : item.text)
-        + '</div>';
+      const message = document.createElement(item.link ? 'a' : 'span');
+      if (item.link) message.href = item.link;
+      message.textContent = item.text;
+      el.replaceChildren(message);
 
     } catch(e){ showNewsDefault(el); }
   }
@@ -1779,19 +1677,7 @@
       if(entries.length===0){el.innerHTML='<div class="rank-empty">'+(tab==='all'?'まだ記録がありません':'この期間の記録はありません')+'</div>';return;}
       el.innerHTML='';
       top10.forEach((entry,i)=>{
-        const row=document.createElement('div');
-        row.className='ranking-row';
-        const rc=i===0?'gold':i===1?'silver':i===2?'bronze':'';
-        const medal=i===0?'1位':i===1?'2位':i===2?'3位':(i+1)+'位';
-        const isMe=entry.name===nickname&&entry.deviceId===DEVICE_ID;
-        row.innerHTML=
-          '<span class="rank-num '+rc+'">'+medal+'</span>'+
-          '<div class="rank-info">'+
-            '<div class="rank-name'+(isMe?' me':'')+'">'+entry.name+(isMe?' ◀ あなた':'')+'</div>'+
-            '<div class="rank-date">'+fmtDate(entry._displayDate)+'</div>'+
-          '</div>'+
-          '<span class="rank-score">'+entry._displayScore.toLocaleString()+'pt</span>';
-        el.appendChild(row);
+        el.appendChild(createRankingRow(entry, i, false));
       });
     } catch(e) {
       el.innerHTML='<div class="rank-empty">読み込みに失敗しました</div>';

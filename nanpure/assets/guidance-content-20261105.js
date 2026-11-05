@@ -11,6 +11,7 @@
     section.id = 'advertising';
     section.innerHTML = `<h2>広告とCookie</h2>
       <p>Google AdSenseで広告を配信する場合、Googleや提携する第三者の広告配信事業者はCookieを利用します。このサイトやほかのサイトへの過去のアクセスに基づいて、興味に合った広告を表示することがあります。</p>
+      <p>広告タグが読み込まれると、閲覧ページのURLやIPアドレスなどがGoogleや提携先に送信されることがあります。これらの事業者はCookieの保存・読み取りやウェブビーコン（計測用の小さな画像など）を使い、端末やブラウザの識別子などを収集することがあります。この情報は広告の配信、効果測定、不正防止のために利用され、提携先と共有されることがあります。</p>
       <ul>
         <li><a href="https://adssettings.google.com/">Googleの広告設定でパーソナライズド広告を無効にする</a></li>
         <li><a href="https://optout.aboutads.info/">WebChoicesで参加企業の広告のパーソナライズを無効にする</a></li>

@@ -1840,13 +1840,16 @@ async function showHof(){
   const data=await _dbGet('/dungeon/halloffame');
   if(!data){list.innerHTML='<div class="hof-empty">まだ殿堂入りはいません</div>';return;}
   const entries=Object.values(data).sort((a,b)=>a.ts-b.ts);
-  list.innerHTML=entries.map((e,i)=>
-    '<div class="hof-entry">'+
-      '<div class="hof-rank">'+(i+1)+'</div>'+
-      '<div class="hof-name">'+e.nick+'</div>'+
-      '<div class="hof-date">'+e.date+'</div>'+
-    '</div>'
-  ).join('');
+  list.replaceChildren();
+  entries.forEach((entry, i) => {
+    const row = document.createElement('div');
+    row.className = 'hof-entry';
+    row.innerHTML = '<div class="hof-rank"></div><div class="hof-name"></div><div class="hof-date"></div>';
+    row.querySelector('.hof-rank').textContent = i + 1;
+    row.querySelector('.hof-name').textContent = entry.nick;
+    row.querySelector('.hof-date').textContent = entry.date;
+    list.appendChild(row);
+  });
 }
 function closeHof(){
   document.getElementById('halloffame-modal').classList.remove('open');
