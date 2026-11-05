@@ -5,7 +5,7 @@
   "base": "/nanpure/releases/2026.11.05.100/",
   "online": "https://puzzle-api.puzzle-hub-4826.workers.dev",
   "files": {
-    "nanpure/index.html": "447c8ca7ac373c057135c7244e8a8e2f203f69b74b50ce835c6d471f77787ad3",
+    "nanpure/index.html": "9dca1d59762fe97d7f6863b2a61586d61542c8f90478eef5aca184d4dabb1845",
     "nanpure/vending/play/home-entry.js": "a58c27790d1c35c0e3123cc4b1583986178d15e9783b98c250c0eb8278a5d29a",
     "nanpure/vending/play/index.html": "0ec632994c5d4455a494e92453e96c15eee295f797696defcd5ecbe4a2eaeb62",
     "nanpure/vending/play/notebook.js": "cc3db5b8898fbe666d1d9466657f6232662330968e7868047ffc6bfd522d4833",
