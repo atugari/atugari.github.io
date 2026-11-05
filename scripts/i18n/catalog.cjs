@@ -73,4 +73,3 @@ Object.assign(module.exports,require('./catalog-home-96.json'));
 
 Object.assign(module.exports,require('./catalog-multi-20.cjs'));
 Object.assign(module.exports,require('./catalog-multi-300.cjs'));
-Object.assign(module.exports,require('./catalog-advertising.json'));
