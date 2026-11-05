@@ -33,8 +33,9 @@
   }
   function validRules(values, rules) {
     if (rules === undefined) return values.map(() => 'normal');
-    if (!Array.isArray(rules) || rules.length !== values.length ||
-        values.some((n, i) => !rulesForSize(n).includes(rules[i]))) throw Error('各盤面の大きさに合うルールを選び直してください。');
+    if (!Array.isArray(rules) || rules.length !== values.length) throw Error('各盤面の大きさに合うルールを選び直してください。');
+    const invalid=values.findIndex((n,i)=>!rulesForSize(n).includes(rules[i]));
+    if(invalid>=0)throw Error('盤面'+boardName(invalid)+'のルールを選び直してください。9×9は6種類、それ以外のサイズは通常ルールを選べます。');
     return rules;
   }
   function layout(shape, values, links, rules, preview = false, checkDomains = true) {
@@ -66,10 +67,14 @@
         const a=boards[pending.pop()];
         boards.forEach((b,i)=>{if(!connected.has(i)&&sharesCell(a,b)){connected.add(i);pending.push(i);}});
       }
-      if(connected.size!==boards.length)throw Error('盤面同士を1マス以上重ね、すべての盤面をつないでください。');
+      if(connected.size!==boards.length){
+        const isolated=boards.findIndex((_,i)=>!connected.has(i));
+        throw Error('盤面'+boardName(isolated)+'から盤面Aへつながっていません。盤面同士を1マス以上重ね、すべての盤面をつないでください。');
+      }
       for(let i=1;i<boards.length;i++){
         const a=boards[i];
-        if(boards.slice(0,i).some(b=>a.x===b.x&&a.y===b.y&&a.n===b.n))throw Error('同じ大きさの盤面が完全に一致しています。位置をずらしてください。');
+        const same=boards.findIndex(b=>a.x===b.x&&a.y===b.y&&a.n===b.n);
+        if(same<i)throw Error('盤面'+boardName(same)+'と盤面'+boardName(i)+'が完全に一致しています。どちらかの位置をずらしてください。');
       }
     }
     const minX = Math.min(...boards.map(b => b.x)), minY = Math.min(...boards.map(b => b.y));
@@ -85,9 +90,13 @@
     const linked={shape, ...(shape==='custom'?{links:links.map(l=>'dx' in l?{parent:l.parent,dx:l.dx,dy:l.dy}:{parent:l.parent,corner:l.corner})}:{}), boards, cells, width: Math.max(...boards.map(b => b.x + b.n)), height: Math.max(...boards.map(b => b.y + b.n))};
     if(!preview && checkDomains){
       const {domains}=geometry(linked);
-      for(const board of boards) for(const unit of localUnits(board)) {
+      for(const [index,board] of boards.entries()) for(const [j,unit] of localUnits(board).entries()) {
         const limits=unit.map(i=>digit(domains[i])).sort((a,b)=>a-b);
-        if(limits.some((n,i)=>n<=i))throw Error('この重なりでは行・列・枠の数字が足りません。小さい盤面の重なりを減らしてください。');
+        const short=limits.findIndex((n,i)=>n<=i);
+        if(short>=0) {
+          const n=board.n, group=j<n?'行'+(j+1):j<2*n?'列'+(j-n+1):j<3*n?'枠'+(j-2*n+1):'追加ルールの組';
+          throw Error('盤面'+boardName(index)+'の'+group+'は、この重なりでは数字が足りません。'+(short+1)+'マスに1〜'+limits[short]+'しか使えないため、小さい盤面の重なりを減らしてください。');
+        }
       }
     }
     return linked;
@@ -432,21 +441,43 @@
     }
     return order;
   }
+  // In the graph of peers (including extra-rule edges), swapping two digits
+  // on one connected two-colour component preserves every constraint. Keep
+  // the rest of each digit's occurrences available as givens.
+  const localModelCache = new Map();
+  function localModel(board) {
+    const key = board.n + ':' + (board.rule || 'normal');
+    if (!localModelCache.has(key)) {
+      const map = board.map.map((_,i)=>i);
+      localModelCache.set(key,setup({boards:[{...board,map}],cells:map}));
+    }
+    return localModelCache.get(key);
+  }
+  function tradeCells(board, solution, at, other) {
+    const peers = localModel(board).peers, a = solution[board.map[at]];
+    const queue = [at], seen = new Set(queue);
+    for (let j=0;j<queue.length;j++) for (const peer of peers[queue[j]]) {
+      const value=solution[board.map[peer]];
+      if ((value===a || value===other) && !seen.has(peer)) { seen.add(peer); queue.push(peer); }
+    }
+    return queue.map(i=>board.map[i]);
+  }
   function sharedWitnesses(p, model = setup(p.linked), parents) {
     const witnesses = [];
-    for (const [board,b] of p.linked.boards.entries()) {
-      const clues = new Set(b.map.map(i => p.puzzle[i]));
-      const parent = parents?.get(board);
-      const cell = b.map.find(i => (parent === undefined ? model.cellBoards[i].length > 1 : model.cellBoards[i].includes(parent)) && !clues.has(p.solution[i]));
-      if (cell === undefined) continue;
-      const a = p.solution[cell];
-      const other = Array.from({length:b.n},(_,i)=>i+1).find(v=>v!==a&&!clues.has(v));
-      if (other === undefined) continue;
-      // This is an actual isolated-board alternate solution, not just a
-      // human solver stalling. The swap changes a blank physical overlap.
-      const alternate = i => p.solution[i] === a ? other : p.solution[i] === other ? a : p.solution[i];
-      if (!p.puzzle[cell] && b.map.every(i => !p.puzzle[i] || p.puzzle[i] === alternate(i)) && boardValid(b,alternate)) {
-        witnesses.push({board, cell, digits:[a,other]});
+    for (const [board,b] of model.boards.entries()) {
+      const parent=parents?.get(board);
+      boardSearch: for(let at=0;at<b.map.length;at++) {
+        const cell=b.map[at], owners=model.cellBoards[cell];
+        if(p.puzzle[cell] || owners.length<2 || parent!==undefined&&!owners.includes(parent))continue;
+        const a=p.solution[cell];
+        for(let other=1;other<=b.n;other++)if(other!==a) {
+          const cells=tradeCells(b,p.solution,at,other);
+          if(cells.some(i=>p.puzzle[i]))continue;
+          const swap=new Set(cells);
+          if(!boardValid(b,i=>!swap.has(i)?p.solution[i]:p.solution[i]===a?other:a))continue;
+          witnesses.push({board,cell,digits:[a,other]});
+          break boardSearch;
+        }
       }
     }
     return witnesses;
@@ -464,55 +495,55 @@
     p.puzzle.forEach((v, i) => { if (!Number.isInteger(v) || v < 0 || v && v !== p.solution[i]) throw Error('問題と答えが一致しません。'); });
     return true;
   }
-  function seedShared(p,model,order,cap,rng,end,target) {
-    let clueCount = p.puzzle.filter(Boolean).length;
-    const {boards,cellBoards} = model, localModels = new Map();
-    function seed(next,parent) {
-      const board = boards[next], related = parent===undefined ? i=>cellBoards[i].length>1 : i=>cellBoards[i].includes(parent);
-      const shared = new Set(board.map.filter(related).map(i=>p.solution[i]));
-      const ds = shuffle(Array.from({length:board.n},(_,i)=>i+1),rng);
-      for (let a=0;a<ds.length;a++) for (let b=a+1;b<ds.length;b++) {
-        if (Date.now() >= end) return false;
-        if (!shared.has(ds[a])&&!shared.has(ds[b])) continue;
-        const changed = board.map.filter(i=>p.puzzle[i]&&(p.solution[i]===ds[a]||p.solution[i]===ds[b]));
-        if (clueCount-changed.length < target) continue;
-        for (const i of changed) p.puzzle[i] = 0;
-        if (solve(p,cap,model,end).solved) { clueCount -= changed.length; return true; }
-        for (const i of changed) p.puzzle[i] = p.solution[i];
-      }
-      return false;
-    }
-    let seeded = 0;
-    function seedBatch(entries) {
-      if (Date.now() >= end) return;
-      if (entries.length === 1) { if (seed(entries[0].next,entries[0].parent)) seeded++; return; }
-      const removed = new Set();
-      for (const {next,parent} of entries) {
-        const board = boards[next];
-        const shared = board.map.find(i => cellBoards[i].includes(parent));
-        if (shared === undefined) continue;
-        const a = p.solution[shared], options = shuffle(Array.from({length:board.n},(_,i)=>i+1).filter(d=>d!==a),rng);
-        const localKey = board.n+':'+(board.rule||'normal');
-        if (!localModels.has(localKey)) {
-          const local = {boards:[{...board,map:board.map.map((_,i)=>i)}],cells:board.map.map(()=>({}))};
-          localModels.set(localKey,setup(local));
+  function seedShared(p,model,order,cap,rng,end,target,parents) {
+    let clues=p.solution.length;
+    function* options(index) {
+      const board=model.boards[index], parent=parents?.get(index);
+      const shared=shuffle(board.map.map((_,i)=>i).filter(i=>{
+        const owners=model.cellBoards[board.map[i]];
+        return owners.length>1 && (parent===undefined || owners.includes(parent));
+      }),rng);
+      const digits=shuffle(Array.from({length:board.n},(_,i)=>i+1),rng);
+      for(const at of shared) {
+        if(Date.now()>=end)return;
+        const candidates=[];
+        for(const other of digits) {
+          if(other===p.solution[board.map[at]])continue;
+          const changed=tradeCells(board,p.solution,at,other).filter(i=>p.puzzle[i]);
+          if(clues-changed.length>=target)candidates.push(changed);
         }
-        const localModel = localModels.get(localKey), known = board.map.map(i=>p.solution[i]);
-        const b = options.find(other=> {
-          const puzzle = known.map((value,i)=>cellBoards[board.map[i]].includes(parent) || value!==a && value!==other ? value : 0);
-          return solve({puzzle},cap,localModel,end).solved;
-        }) ?? options[0];
-        for (const i of board.map) if (p.puzzle[i] && (p.solution[i] === a || p.solution[i] === b)) { removed.add(i); p.puzzle[i] = 0; }
+        yield* candidates.sort((a,b)=>a.length-b.length);
       }
-      if (removed.size && clueCount-removed.size >= target && solve(p,cap,model,end).solved) { clueCount -= removed.size; seeded += entries.length; return; }
-      for (const i of removed) p.puzzle[i] = p.solution[i];
-      const middle = Math.floor(entries.length / 2);
-      seedBatch(entries.slice(0,middle)); seedBatch(entries.slice(middle));
     }
-    if (boards.length > 20) seedBatch(order);
-    else for (const {next,parent} of order) if (seed(next,parent)) seeded++;
-    if (seeded) return true;
-    return shuffle(boards.map((_,i)=>i),rng).some(i=>seed(i));
+    // Try a batch together, bisecting a rejected batch. Most large grids
+    // need a single global propagation per batch rather than per board.
+    const entries=[order.anchor,...order.map(edge=>edge.next)];
+    function seed(start,endIndex) {
+      if(Date.now()>=end)return false;
+      if(endIndex===start+1) {
+        for(const cells of options(entries[start])) {
+          for(const i of cells)p.puzzle[i]=0;
+          if(!cells.length||solve(p,cap,model,end).solved){clues-=cells.length;return true;}
+          for(const i of cells)p.puzzle[i]=p.solution[i];
+        }
+        return false;
+      }
+      const removed=[];
+      let at=start;
+      for(;at<endIndex;at++) {
+        const cells=options(entries[at]).next().value;
+        if(!cells)break;
+        for(const i of cells){p.puzzle[i]=0;removed.push(i);}
+        clues-=cells.length;
+      }
+      if(at===endIndex && solve(p,cap,model,end).solved)return true;
+      for(const i of removed)p.puzzle[i]=p.solution[i];
+      clues+=removed.length;
+      const mid=(start+endIndex)>>1;
+      return seed(start,mid)&&seed(mid,endIndex);
+    }
+    if(entries.length>20)return seed(0,entries.length);
+    return entries.every((_,i)=>seed(i,i+1));
   }
   function reduceClues(p,model,cap,rng,end,target,requireLower = false) {
     let reachedDifficulty = false, accepted = 0;
@@ -543,54 +574,74 @@
     return clues;
   }
   function treeClues(p,model,order,cap,rng,end,target) {
-    const localModels = new Map(), totals = model.boards.map(b=>b.map.filter(i=>model.cellBoards[i].length===1).length);
-    const totalUnique = totals.reduce((a,b)=>a+b,0), missing = new Map();
-    p.puzzle = p.solution.map((value,i)=>model.cellBoards[i].length>1 ? 0 : value);
-    for (const {next,parent} of [{next:order.anchor??0},...order]) {
-      if (Date.now() >= end) return null;
-      const board=model.boards[next], localKey=board.n+':'+(board.rule||'normal');
-      if (!localModels.has(localKey)) {
-        const local={boards:[{...board,map:board.map.map((_,i)=>i)}],cells:board.map.map(()=>({}))};
-        localModels.set(localKey,setup(local));
+    const first=order[0], anchor=order.anchor;
+    const entries=[{next:anchor,parent:first.next},...order];
+    let remainingUnique=p.solution.length-order.length, remainingTarget=target;
+    p.puzzle=p.solution.map((v,i)=>model.cellBoards[i].length===1?v:0);
+    const forbidden=new Set();
+    // Both boards at the first joint depend on it. Their two possible
+    // values differ, so that joint can be resolved from both boards.
+    let firstOther=0;
+    for(const {next,parent} of entries) {
+      if(Date.now()>=end)return null;
+      const board=model.boards[next], local=localModel(board);
+      const incoming=board.map.findIndex(i=>model.cellBoards[i].includes(parent));
+      const known=board.map.map(i=>p.solution[i]), initial=board.map.map(i=>p.puzzle[i]);
+      const a=known[incoming], firstJoint=next===anchor||next===first.next;
+      const options=shuffle(Array.from({length:board.n},(_,i)=>i+1),rng)
+        .filter(d=>d!==a && (next!==first.next || d!==firstOther)).map(d=>({d}));
+      // Small boards have little spare clue capacity. For larger boards,
+      // compute only the trades we actually try.
+      if(board.n<=6) {
+        for(const option of options)option.cells=tradeCells(board,p.solution,incoming,option.d);
+        options.sort((a,b)=>a.cells.length-b.cells.length);
       }
-      const localModel=localModels.get(localKey), known=board.map.map(i=>p.solution[i]);
-      const incoming=parent===undefined ? -1 : board.map.findIndex(i=>model.cellBoards[i].includes(parent));
-      const initial=board.map.map(i=>p.puzzle[i]);
-      if (incoming>=0) initial[incoming]=known[incoming];
-      let puzzle=initial, pair=[];
-      if (incoming>=0) {
-        const a=known[incoming]; let found=false;
-        for (const b of shuffle(Array.from({length:board.n},(_,i)=>i+1).filter(d=>d!==a),rng)) {
-          puzzle=initial.map((v,i)=>i===incoming || v!==a&&v!==b ? v : 0);
-          if (solve({puzzle},cap,localModel,end).solved) { pair=[a,b]; found=true; break; }
+      let trial;
+      for(const option of options) {
+        const d=option.d, cells=option.cells??tradeCells(board,p.solution,incoming,d);
+        const swap=new Set(cells);
+        const puzzle=initial.map((v,i)=>swap.has(board.map[i])?0:v);
+        if(firstJoint) {
+          let choices=local.domains[incoming];
+          for(const peer of local.peers[incoming])if(puzzle[peer])choices&=~(1<<(puzzle[peer]-1));
+          if(choices & ~((1<<(a-1))|(1<<(d-1))))continue;
         }
-        if (!found) return null;
-      } else if (!solve({puzzle},cap,localModel,end).solved) return null;
-      const localPuzzle={puzzle,solution:known,protectedCells:incoming<0?new Set():new Set([incoming])};
-      const quota=Math.floor(target*totals[next]/totalUnique)+(incoming>=0?1:0);
-      const goal=Math.min(quota,puzzle.filter(Boolean).length);
-      const clues=reduceClues(localPuzzle,localModel,cap,rng,end,goal);
-      if (clues!==goal) return null;
-      for(let i=0;i<board.map.length;i++)if(model.cellBoards[board.map[i]].length===1)p.puzzle[board.map[i]]=puzzle[i];
-      missing.set(next,pair);
+        puzzle[incoming]=a;
+        if(!solve({puzzle},cap,local,end).solved)continue;
+        trial={puzzle,solution:known,protectedCells:new Set([incoming])};
+        if(next===anchor)firstOther=d;
+        for(const i of cells)forbidden.add(i);
+        break;
+      }
+      if(!trial)return null;
+      const uniqueHere=board.map.reduce((n,i)=>n+(model.cellBoards[i].length===1),0);
+      // Debit the actual contribution. Dense first boards or smaller
+      // boards below quota should not force repeated whole-layout solves.
+      const quota=remainingUnique ? Math.max(0,Math.round(remainingTarget*uniqueHere/remainingUnique)) : 0;
+      if(!firstJoint)reduceClues(trial,local,cap,rng,end,quota+1);
+      remainingUnique-=uniqueHere;
+      for(let i=0;i<board.map.length;i++)if(model.cellBoards[board.map[i]].length===1) {
+        p.puzzle[board.map[i]]=trial.puzzle[i];
+        if(trial.puzzle[i])remainingTarget--;
+      }
     }
     let clues=p.puzzle.filter(Boolean).length;
-    for(let i=0;i<p.puzzle.length&&clues<target;i++)if(!p.puzzle[i]&&model.cellBoards[i].length===1){
-      const owner=model.cellBoards[i][0];
-      if(!missing.get(owner).includes(p.solution[i])){p.puzzle[i]=p.solution[i];clues++;}
+    for(let i=0;i<p.puzzle.length && clues<target;i++)if(!p.puzzle[i] && model.cellBoards[i].length===1 && !forbidden.has(i)) {
+      p.puzzle[i]=p.solution[i]; clues++;
     }
+    if(clues>target)clues=reduceClues(p,model,cap,rng,end,target);
     return clues===target?clues:null;
   }
   function hardenTree(p,model,order,cap,rng,end) {
     for (const {next,parent} of [{next:order.anchor??0},...order]) {
       if (Date.now() >= end) return false;
-      const board=model.boards[next], local={boards:[{...board,map:board.map.map((_,i)=>i)}],cells:board.map.map(()=>({}))};
-      const localModel=setup(local), solution=board.map.map(i=>p.solution[i]), puzzle=board.map.map(i=>p.puzzle[i]);
+      const board=model.boards[next], local=localModel(board);
+      const solution=board.map.map(i=>p.solution[i]), puzzle=board.map.map(i=>p.puzzle[i]);
       const incoming=parent===undefined?-1:board.map.findIndex(i=>model.cellBoards[i].includes(parent));
       if(incoming>=0)puzzle[incoming]=solution[incoming];
       const trial={puzzle,solution,protectedCells:incoming<0?new Set():new Set([incoming])};
-      reduceClues(trial,localModel,cap,rng,end,Math.round(board.n*board.n*.2),true);
-      const lower=solve(trial,cap-1,localModel,end);
+      reduceClues(trial,local,cap,rng,end,Math.round(board.n*board.n*.2),true);
+      const lower=solve(trial,cap-1,local,end);
       if(lower.solved || lower.timeout)continue;
       const removed=[];
       for(let i=0;i<board.map.length;i++)if(model.cellBoards[board.map[i]].length===1 && p.puzzle[board.map[i]]&&!puzzle[i]){removed.push(board.map[i]);p.puzzle[board.map[i]]=0;}
@@ -599,30 +650,26 @@
     }
     return false;
   }
+  function preflightMixed(shape, values, level, links, rules) {
+    const linked=layout(shape,values,links,rules);
+    const maximum=Math.max(...values)===4?2:5;
+    if(!Number.isInteger(level)||level<1||level>maximum)throw Error('この盤面サイズでは難易度1〜'+maximum+'を選んでください。');
+    return linked;
+  }
   function generate(shape, values, level, id, progress, budget = 120000, links, rules) {
-    const linked = layout(shape, values, links, rules), model = setup(linked), cap = multi.caps[level - 1];
-    if (!Number.isInteger(level) || level < 1 || level > (Math.max(...values)===4?2:5)) throw Error('難易度を選び直してください。');
+    const linked = preflightMixed(shape,values,level,links,rules), model = setup(linked), cap = multi.caps[level - 1];
     const rng = root.NanpureVariants.rngFor('mixed-multi:' + shape + ':' + values.join(',') + ':' + (rules||[]).join(',') + ':' + level + ':' + id), end = Date.now() + budget;
     const order = connectionOrder(model), overlaps = model.cellBoards.filter(owners => owners.length > 1);
     const tree = overlaps.length === values.length-1 && overlaps.every(owners=>owners.length===2);
     const parents = tree ? new Map(order.map(({next,parent})=>[next,parent])) : undefined;
     const target = Math.round(linked.cells.length * (level === 1 ? .65 : level === 2 ? .42 : .23));
-    if (tree && values.length>20 && level<=2) {
-      // Every shared cell stays blank, and each dependent board omits two
-      // whole symbol classes. More clues than this bound cannot be produced.
-      const maximumClues=model.boards.reduce((total,board,index)=>{
-        const unique=board.map.reduce((count,i)=>count+(model.cellBoards[i].length===1),0);
-        return total+(index===order.anchor ? unique : Math.min(unique,board.n*board.n-2*board.n));
-      },0);
-      if(target>maximumClues)throw Object.assign(Error('指定した組み合わせと難易度を引き続き探しています。'),{code:'NP_SEARCH_EXHAUSTED'});
-    }
     let tries = 0;
     while (Date.now() < end) {
       progress?.('各盤面の大きさ・共有マス・難易度を確認中（' + ++tries + '回目）');
       const solution = completed(linked, rng, end); if (!solution) continue;
       const p = {kind: 'multi', n: Math.max(...values), level, id, linked, multiVersion: 2, solution, puzzle: solution.slice()};
       let clues;
-      if (tree && values.length>20) {
+      if (tree && (values.length>20 || level<=2)) {
         clues=treeClues(p,model,order,level>=3?1:cap,rng,end,level>=3?Math.round(solution.length*.65):target);
         if (clues===null) continue;
         if (level>=3) {
@@ -630,20 +677,20 @@
           clues=p.puzzle.filter(Boolean).length;
         }
       } else {
-        if (!seedShared(p,model,order,cap,rng,end,target)) continue;
+        if (!seedShared(p,model,order,cap,rng,end,target,parents)) continue;
         clues=reduceClues(p,model,cap,rng,end,target,level>=3);
       }
       const proof = solve(p,cap,model,end);
       if (!proof.solved || level<=2&&clues!==target || level>=3&&solve(p,cap-1,model,end).solved) continue;
       const witnesses = sharedWitnesses(p,model,parents);
-      if (!witnesses.length || tree&&order.some(({next})=>!witnesses.some(w=>w.board===next)) || Date.now()>=end) continue;
+      if (witnesses.length!==values.length || Date.now()>=end) continue;
       const check = exact(p, Math.max(1,Math.min(10000,end-Date.now())));
       if (check.timeout || check.count !== 1 || check.solution.some((v, i) => v !== solution[i])) continue;
       validate(p);
       p.rating = {level, hardest: proof.hardest, noGuess: true, unique: true, needsShared: true, clues};
       p.verification = {method: 'mixed-multi-independent-exact', nodes: check.nodes, sharedWitnesses:witnesses}; return p;
     }
-    throw Object.assign(Error('指定した組み合わせと難易度を引き続き探しています。'), {code: 'NP_SEARCH_EXHAUSTED'});
+    throw Object.assign(Error('指定時間内に、全盤面が共有マスを必要とし、指定難易度で解ける唯一解を見つけられませんでした。再試行するか、重なり方や難易度を変えてください。'), {code: 'NP_SEARCH_EXHAUSTED'});
   }
   const palette=[
     {name:'緑',color:'#26734b',tint:'#eef8f0'},{name:'青',color:'#2366b1',tint:'#edf4ff'},
@@ -739,6 +786,7 @@
   multi.previewLayout = (shape,values,links,rules) => layout(shape,values,links,rules,true);
   multi.mixedSizes = sizes;
   multi.mixedLayout = layout;
+  multi.preflightMixed = preflightMixed;
   multi.generateMixed = generate;
   multi.describeSizes = p => {
     const values = p.linked?.boards.map(b=>b.n||9) || p.multiSizes || Array(counts[p.multiShape||'pair']||2).fill(9);
@@ -794,7 +842,7 @@
         Object.assign(p, {created: Date.now(), uid: 'multi-' + p.id + '-' + Date.now().toString(36), elapsed: 0, completed: false, grid: p.puzzle.slice(), notes: {}});
         if (!root.NPGenerationMatches(p, cfg)) throw Error('盤面の組み合わせが一致しません。');
         return p;
-      } catch (e) { if (e.code !== 'NP_SEARCH_EXHAUSTED') throw e; if(cfg.multiShape==='custom')throw Error('指定した配置と難易度では問題を見つけられませんでした。重なり方か難易度を変えて、もう一度作ってください。'); progress?.(e.message); }
+      } catch (e) { if (e.code !== 'NP_SEARCH_EXHAUSTED') throw e; if(cfg.multiShape==='custom')throw e; progress?.(e.message); }
     }
   };
 })(typeof window !== 'undefined' ? window : self);

@@ -22,6 +22,63 @@ function verifyWitness(p, witness) {
  assert(!result.timeout&&result.count>0,'isolated board has a completion changing this shared blank');
  assert.equal(result.solution[at],digits[1]);
 }
+function verifyDependencies(p) {
+ const witnesses=p.verification.sharedWitnesses;
+ assert.deepEqual(Array.from(new Set(witnesses.map(w=>w.board))).sort((a,b)=>a-b),
+   Array.from(p.linked.boards,(_,i)=>i),'every physical board, including the first, needs a shared blank');
+ for(const w of witnesses)verifyWitness(p,w);
+}
+// For a one-cell 4x4 chain we can count solutions without calling either
+// shipped solver. Tabulate all 288 local completions, then join on the shared
+// value. The counts at a boundary include every compatible prefix, capped at 2.
+function fourByFourCompletions(){
+ const completions=[],grid=[];
+ function fill(i){
+  if(i===16){completions.push(grid.slice());return;}
+  const row=Math.floor(i/4),col=i%4;
+  for(let v=1;v<=4;v++){
+   let ok=true;
+   for(let j=0;j<i;j++){
+    const r=Math.floor(j/4),c=j%4;
+    if(grid[j]===v&&(row===r||col===c||(row>>1)===(r>>1)&&(col>>1)===(c>>1))){ok=false;break;}
+   }
+   if(ok){grid[i]=v;fill(i+1);}
+  }
+ }
+ fill(0);assert.equal(completions.length,288);return completions;
+}
+const fours=fourByFourCompletions();
+function verifyFourChain(p){
+ const boards=p.linked.boards;
+ assert.equal(p.puzzle.length,15*boards.length+1);
+ let ways=[1,0,0,0,0];
+ for(const [i,b] of boards.entries()){
+  assert.equal(b.n,4);
+  if(i)assert.equal(b.map[0],boards[i-1].map[15],'SE-to-NW one-cell chain');
+  const clues=b.map.map(j=>p.puzzle[j]),remaining=fours.filter(g=>clues.every((v,j)=>!v||g[j]===v));
+  assert(remaining.some(g=>(i>0&&g[0]!==p.solution[b.map[0]]) || (i<boards.length-1&&g[15]!==p.solution[b.map[15]])),
+    'an alternate isolated completion changes a shared corner on board '+i);
+  const next=[0,0,0,0,0];
+  for(const g of remaining){
+   const out=i===boards.length-1?0:g[15];
+   next[out]=Math.min(2,next[out]+ways[i?g[0]:0]);
+  }
+  ways=next;
+ }
+ assert.equal(ways[0],1,'exact global count obtained by joining local completions');
+}
+function verifyRating(p) {
+ assert.equal(p.rating.level,p.level);
+ assert.equal(p.rating.noGuess,true);
+ assert.equal(p.rating.unique,true);
+ const clues=p.puzzle.filter(Boolean).length;
+ assert.equal(p.rating.clues,clues);
+ if(p.level<=2)assert.equal(clues,Math.round(p.puzzle.length*(p.level===1?.65:.42)));
+ const cap=ctx.NanpureMulti.caps[p.level-1],proof=ctx.NanpureMulti.solve(p,cap);
+ assert(proof.solved);assert.equal(proof.hardest,p.rating.hardest);
+ assert.deepEqual(Array.from(proof.grid),Array.from(p.solution));
+ if(p.level>=3)assert.equal(ctx.NanpureMulti.solve(p,cap-1).solved,false);
+}
 function verify(p){
  assert.equal(ctx.NP.validate(p),true);
  // Check each physical board directly, without using the engine's unit builder.
@@ -33,9 +90,9 @@ function verify(p){
   for(let r=0;r<n;r+=b.blockRows)for(let c=0;c<n;c+=b.blockCols)check(Array.from({length:n},(_,i)=>b.map[(r+Math.floor(i/b.blockCols))*n+c+i%b.blockCols]));
  }
  const exact=ctx.NanpureMulti.exact(p,3000);assert.equal(exact.timeout,false);assert.equal(exact.count,1);assert.deepEqual(Array.from(exact.solution),Array.from(p.solution));
- const logic=ctx.NanpureMulti.solve(p,p.rating.hardest);assert.equal(logic.solved,true);assert.deepEqual(Array.from(logic.grid),Array.from(p.solution));
+ verifyRating(p);
  assert(ctx.NanpureMulti.needsShared(p));assert(p.puzzle.some(v=>v===0));
- assert(p.verification.sharedWitnesses.length>0);verifyWitness(p,p.verification.sharedWitnesses[0]);
+ verifyDependencies(p);
  p.grid=p.puzzle.slice();p.notes={};p.uid='mixed-test-'+p.id;p.elapsed=0;p.completed=false;
  const model=ctx.NPLogicalHints.model(p);assert.equal(model.invalid,false);assert(model.units.every(u=>p.linked.boards.some(b=>u.ids.length===b.n)));
  const memo=ctx.NPMemo.candidates(p);
@@ -62,26 +119,33 @@ function verify(p){
  const markup=ctx.NP.svgBoard(p,false);assert(markup.includes(p.linked.width*40+4));assert(markup.includes('data-multi-blocks'));assert(markup.includes('A '));
 }
 let generated=0,finderPuzzle;
-{
- const sizes=Array(300).fill(4),links=sizes.slice(1).map((_,i)=>({parent:i,corner:'se'}));
- let attempts=0;
- assert.throws(()=>ctx.NanpureMulti.generateMixed('custom',sizes,1,'IMPOSSIBLE-CLUE-QUOTA',()=>attempts++,120000,links),{code:'NP_SEARCH_EXHAUSTED'});
- assert.equal(attempts,0,'infeasible clue quota must not start a retry loop');
+// Exercise both sides of the 20-board algorithm boundary and maximum size.
+// Pass --all-counts to generate every allowed count and run the same oracle.
+const chainCounts=process.argv.includes('--all-counts')?Array.from({length:299},(_,i)=>i+2):[2,20,21,299,300];
+for(const count of chainCounts)for(const level of count===300?[1,2]:[1]){
+ const sizes=Array(count).fill(4),id='FOUR-CHAIN-'+count+'-'+level;
+ const p=ctx.NanpureMulti.generateMixed('custom',sizes,level,id,null,60000);
+ assert.equal(p.id,id);assert.equal(p.level,level);assert.equal(p.linked.boards.length,count);
+ assert.equal(ctx.NP.validate(p),true);verifyRating(p);verifyDependencies(p);verifyFourChain(p);
+ generated++;
 }
-
-// Small boards cannot keep the global clue ratio individually after two
-// symbols are removed to make their shared cell necessary. Larger boards
-// absorb the remainder while the complete puzzle keeps its requested ratio.
 {
- const sizes=Array.from({length:21},(_,i)=>[4,6,9][i%3]);
+ const sizes=Array.from({length:300},(_,i)=>[4,6,9][i%3]);
  const links=sizes.slice(1).map((_,i)=>({parent:i,corner:'se'}));
- const p=ctx.NanpureMulti.generateMixed('custom',sizes,1,'MIXED-CLUE-QUOTA',null,5000,links);
+ const p=ctx.NanpureMulti.generateMixed('custom',sizes,1,'MIXED-CLUE-QUOTA',null,60000,links);
  assert.equal(ctx.NP.validate(p),true);
- assert.equal(p.rating.clues,Math.round(p.solution.length*.65));
- assert.equal(p.verification.sharedWitnesses.length,20);
- const result=ctx.NanpureMulti.exact(p,3000);
+ verifyRating(p);verifyDependencies(p);
+ const result=ctx.NanpureMulti.exact(p,15000);
  assert.equal(result.timeout,false);assert.equal(result.count,1);
- assert.equal(ctx.NanpureMulti.solve(p,1).solved,true);
+ generated++;
+}
+// 20 by 15 block-aligned grid: many cycles and cells owned by four boards.
+{
+ const sizes=Array(300).fill(9);
+ const links=sizes.slice(1).map((_,i)=>({parent:0,dx:6*((i+1)%20),dy:6*Math.floor((i+1)/20)}));
+ const p=ctx.NanpureMulti.generateMixed('custom',sizes,1,'GRID-300',null,60000,links);
+ assert(ctx.NP.validate(p));verifyRating(p);verifyDependencies(p);
+ const check=ctx.NanpureMulti.exact(p,15000);assert(!check.timeout);assert.equal(check.count,1);
  generated++;
 }
 for(const n of ctx.NanpureMulti.mixedSizes){const p=ctx.NanpureMulti.generateMixed('pair',[n,9],1,'SIZE-'+n,null,5000);verify(p);generated++;}
@@ -104,6 +168,7 @@ for(const [ns,links,id] of [
  [[4,4],[{parent:0,dx:1,dy:1}],'LARGE-OVERLAP'],
  [[4,6],[{parent:0,dx:3,dy:2}],'MIXED-OFFSET'],
  [[9,9,9],[{parent:0,dx:6,dy:0},{parent:0,dx:3,dy:6}],'TRIPLE'],
+ [[9,9,9,9],[{parent:0,dx:6,dy:0},{parent:0,dx:0,dy:6},{parent:1,dx:0,dy:6}],'FOUR-CYCLE'],
  // The recording's D board overlaps C and F, but not its coordinate reference A.
  [flower.sizes,flower.links,'RECORDED-FLOWER'],
  // A later board may bridge two earlier boards which do not overlap each other.
@@ -125,7 +190,16 @@ for(const [ns,links,id] of [
  const focused=ctx.NanpureMulti.art(p,p.puzzle,{},at,[],1);assert(focused.includes('data-multi-focus="1"'));assert.equal((focused.match(/data-multi-outline=/g)||[]).length,ns.length);
  for(let i=0;i<ns.length;i++){assert(ctx.NanpureMulti.boardLabel(p,i).includes(ns[i]+'×'+ns[i]));assert(ctx.NanpureMulti.miniMap(p,i).includes('multi-mini-map'));}
 }
-assert.throws(()=>ctx.NanpureMulti.mixedLayout('custom',[4,9],[{parent:0,dx:0,dy:0}]),/数字が足りません/);
+// Known structural conflicts must surface before a single search attempt.
+for(const [sizes,links,reason] of [
+ [[4,9],[{parent:0,dx:0,dy:0}],/数字が足りません/],
+ [[4,4],[{parent:0,dx:0,dy:0}],/完全に一致/],
+ [[4,4],[{parent:0,dx:4,dy:0}],/すべての盤面/]
+]){
+ let attempts=0;
+ assert.throws(()=>ctx.NanpureMulti.generateMixed('custom',sizes,1,'PREFLIGHT',()=>attempts++,60000,links),reason);
+ assert.equal(attempts,0);
+}
 assert.throws(()=>ctx.NanpureMulti.mixedLayout('custom',[9,9],[{parent:0,dx:0,dy:0}]),/完全に一致/);
 assert.throws(()=>ctx.NanpureMulti.mixedLayout('custom',[9,9],[{parent:0,dx:9,dy:0}]),/1マス以上/);
 assert.throws(()=>ctx.NanpureMulti.mixedLayout('custom',[9,9,9,9],[{parent:0,dx:6,dy:6},{parent:0,dx:24,dy:0},{parent:2,dx:6,dy:6}]),/すべての盤面/,'two separate overlapping components are disconnected');
@@ -136,6 +210,16 @@ assert.throws(()=>ctx.NanpureMulti.mixedLayout('custom',[4,9],[{parent:1,corner:
 assert.throws(()=>ctx.NanpureMulti.generateMixed('custom',[4,4],5,'invalid',null,20));
 assert.equal(ctx.NP.maxLevel('multi',4),2);
 const old={kind:'multi',n:9,multiVersion:1,linked:ctx.NanpureMulti.layout('pair')};old.solution=ctx.NanpureMulti.completed(old.linked,ctx.NanpureVariants.rngFor('OLD'));old.puzzle=old.solution.slice();assert(ctx.NP.validate(old));assert(ctx.NanpureMulti.solve(old).solved);
+// An in-progress v2 backup captured from .100 has just the child witness.
+{
+ const snapshot=fs.readFileSync(path.join(__dirname,'fixtures/multi-v100-save.json'),'utf8').trim();
+ const saved=ctx.NPCompact.parse(snapshot),p=saved.puzzles[0];
+ assert.equal(ctx.NP.validate(p),true);assert.equal(p.id,'A1b3D');
+ assert.equal(p.verification.sharedWitnesses.length,1);
+ assert.equal(require('node:crypto').createHash('sha256').update(JSON.stringify(p)).digest('hex'),
+   'c04d70790e1c526c5093b4bcc3d81ab5e92af85d64a97650c7c14539db85f354');
+ assert.equal(ctx.NPCompact.stringify(saved),snapshot,'old ID, progress and proof round-trip unchanged');
+}
 const maxBoards=ctx.NanpureMulti.maxBoards;
 assert.equal(maxBoards,300);
 const twenty=Array(20).fill(9),chain=twenty.slice(1).map((_,i)=>({parent:i,corner:'se'}));
@@ -146,8 +230,6 @@ const twentyRules=ctx.NanpureMulti.generateMixed('custom',twenty,1,'TWENTY-MIXED
 verify(twentyRules);generated++;
 assert.equal(twentyRules.linked.boards.length,20);
 assert.deepEqual(Array.from(twentyRules.linked.boards,b=>b.rule||'normal'),rotatingRules);
-assert.equal(twentyRules.verification.sharedWitnesses.length,19);
-for(const witness of twentyRules.verification.sharedWitnesses)verifyWitness(twentyRules,witness);
 const cfg20={kind:'multi',n:9,level:1,multiShape:'custom',multiSizes:twenty,multiLinks:chain,multiRules:rotatingRules,count:1};
 assert(ctx.NPBatch.valid(cfg20));assert(ctx.NPGenerationMatches(twentyRules,cfg20));
 assert(!ctx.NPGenerationMatches(twentyRules,{...cfg20,multiRules:twenty.map(()=> 'normal')}));
@@ -160,8 +242,7 @@ const largeSizes=Array(maxBoards).fill(9),largeRules=largeSizes.map((_,i)=>avail
 const large=ctx.NanpureMulti.generateMixed('custom',largeSizes,1,'THREE-HUNDRED',null,60000,undefined,largeRules);
 assert.equal(large.linked.boards.length,maxBoards);
 assert.equal(ctx.NP.validate(large),true);
-assert.equal(large.verification.sharedWitnesses.length,maxBoards-1);
-for(const witness of large.verification.sharedWitnesses)verifyWitness(large,witness);
+verifyRating(large);verifyDependencies(large);
 const largeExact=ctx.NanpureMulti.exact(large,15000);
 assert(!largeExact.timeout);assert.equal(largeExact.count,1);
 assert.deepEqual(Array.from(largeExact.solution),Array.from(large.solution));
@@ -202,7 +283,19 @@ let redraws=0;const attributes={},status={textContent:''};
 const svg={getScreenCTM:()=>({a:.8,d:.8,e:10,f:20}),querySelector:()=>({setAttribute:(k,v)=>attributes[k]=v})};
 const editor={querySelector:()=>svg,setPointerCapture(){}};
 const editorCtx=vm.createContext({E:{multiShape:'custom',multiSizes:[9,9],multiLinks:[{parent:0,dx:6,dy:6}]},NanpureMulti:ctx.NanpureMulti,NP:ctx.NP,r:ctx.NP.KIND,document:{addEventListener:(type,fn)=>handlers[type]=fn,querySelector:()=>status},fn:()=>redraws++,$e:()=>'',u:ctx.NP.esc,Ue:()=>'',h:-1});
+vm.runInContext(app.slice(app.indexOf('function Ue('),app.indexOf('function We(')),editorCtx);
 vm.runInContext(app.slice(editorStart,editorEnd),editorCtx);
+const reviewCfg={kind:'multi',multiShape:'custom',multiSizes:[4,4],level:1,multiLinks:[{parent:0,corner:'se'}]};
+for(const [cfg,message] of [
+ [{...reviewCfg,level:3},/難易度1〜2/],
+ [{...reviewCfg,multiLinks:[{parent:0,dx:4,dy:0}]},/1マス以上/]
+]){
+ const review=editorCtx.generationReviewButton(cfg);
+ assert(review.includes('role="alert"'));assert.match(review,message);
+ assert.match(review,/<button[^>]*data-action="generate"[^>]*disabled/);
+}
+const validReview=editorCtx.generationReviewButton(reviewCfg);
+assert.match(validReview,/data-action="generate"/);assert(!validReview.includes('disabled'));assert(!validReview.includes('role="alert"'));
 assert(editorCtx.mixedSettings().includes('data-multi-offset="1"'));
 const pointer={target:{closest:()=>editor},pointerId:7,button:0,clientX:330,clientY:340,preventDefault(){}};
 handlers.pointerdown(pointer);handlers.pointermove({...pointer,clientX:266,clientY:308});handlers.pointerup({...pointer,clientX:266,clientY:308});
