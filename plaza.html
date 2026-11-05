@@ -592,7 +592,7 @@
       color: #bbb;
       line-height: 2.5;
     }
-    .footer a { color: #999; text-decoration: none; }
+    .footer a { color: #525252; font-size: 14px; text-underline-offset: .2em; }
 
     /* フッターブランド: グリッチ演出 */
     .footer-brand {
@@ -637,15 +637,6 @@
     }
     .footer a:active { color: #555; }
   
-    /* ===== AdSense 広告 ===== */
-    .ad-wrap{
-      display:none;
-      width:100%;max-width:480px;margin:0 auto;
-      text-align:center;
-      min-height:50px;
-      overflow:hidden;
-    }
-    .ad-wrap ins{ display:block; }
 .nanpure-bg{background:linear-gradient(135deg,#fff 40%,#edf5ec);border-color:#b6cdbb}.nanpure-bg .card-tag{color:#467756}.nanpure-bg .card-title{color:#214c32}
 
     /* Move Moove Mooove: square jump and goal */
@@ -663,7 +654,6 @@
     }
     .game-card.move-bg .card-title { letter-spacing: .02em; }
 </style>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=YOUR_PUBLISHER_ID" crossorigin="anonymous"></script>
 <meta property="og:site_name" content="パレあそび">
 <script type="application/ld+json" data-pareasobi-site>{
   "@context": "https://schema.org",
@@ -726,16 +716,6 @@
 </head>
 <body>
 
-<!-- 広告:上部 -->
-<div class="ad-wrap">
-  <ins class="adsbygoogle"
-       style="display:block;text-align:center;"
-       data-ad-client="YOUR_PUBLISHER_ID"
-       data-ad-slot="YOUR_SLOT_ID_TOP"
-       data-ad-format="auto"
-       data-full-width-responsive="true"></ins>
-  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-</div>
 <div class="app">
 
   <header style="text-align:center;margin:0 0 36px">
@@ -887,20 +867,11 @@
   </div>
 
   
-<!-- 広告:下部 -->
-<div class="ad-wrap">
-  <ins class="adsbygoogle"
-       style="display:block;text-align:center;"
-       data-ad-client="YOUR_PUBLISHER_ID"
-       data-ad-slot="YOUR_SLOT_ID_BOTTOM"
-       data-ad-format="auto"
-       data-full-width-responsive="true"></ins>
-  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-</div>
-<div class="footer">
+  <footer class="footer">
+    <a href="/privacy.html#advertising">広告・プライバシーポリシー</a><br>
     <span class="footer-brand" data-text="パレあそび">パレあそび</span><br>
     <span style="font-size:9px;letter-spacing:0.05em;">ver2026.10.30</span>
-  </div>
+  </footer>
 
 </div>
 

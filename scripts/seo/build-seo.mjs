@@ -107,6 +107,9 @@ export function buildSearchPages(repo,version,base) {
     if(!/^[a-z][a-z0-9-]*$/.test(guide.slug)||slugs.has(guide.slug))throw Error('Invalid or duplicate guide slug');
     slugs.add(guide.slug);
     const url=siteURL+guide.slug+'/';
+    const isShirupure=guide.slug==='shirupure';
+    const playUrl=isShirupure?'/puzzles/shirupure/':'/nanpure/';
+    const playTitle=isShirupure?'シルプレで遊ぶ':'ナンプレ帳を開く';
     const graph=[{'@type':'WebPage','@id':url,name:guide.title,url,description:guide.description,inLanguage:'ja',about:{'@id':siteURL+'#app'},dateModified:date},
       {'@type':'BreadcrumbList',itemListElement:[{'@type':'ListItem',position:1,name:'ナンプレ帳',item:siteURL},{'@type':'ListItem',position:2,name:guide.label||guide.title,item:url}]}];
     const related=content.guides.filter(item=>item.slug!==guide.slug).map(item=>`<a href="/nanpure/${item.slug}/"><span>${escapeHTML(item.label||item.title)}</span><span aria-hidden="true">›</span></a>`).join('');
@@ -115,12 +118,12 @@ export function buildSearchPages(repo,version,base) {
 ${searchHead({title:guide.title+' — ナンプレ帳',description:guide.description,url,icon:base+'favicon.svg',graph})}
 <script src="${base}site-theme.js"></script><link rel="stylesheet" href="/nanpure/assets/guide.css?v=theme-97"><link rel="stylesheet" href="/nanpure/assets/international.css?v=theme-97"></head>
 <body><a class="skip-link" href="#content">本文へ移動</a>
-<header class="guide-header"><a class="brand" href="/nanpure/"><span class="brand-mark" aria-hidden="true">数</span>ナンプレ帳</a><a class="header-play" href="/nanpure/">遊ぶ <span aria-hidden="true">↗</span></a></header>
+<header class="guide-header"><a class="brand" href="/nanpure/"><span class="brand-mark" aria-hidden="true">数</span>ナンプレ帳</a><a class="header-play" href="${playUrl}">${isShirupure?playTitle:'遊ぶ'} <span aria-hidden="true">↗</span></a></header>
 <main id="content" class="guide-main"><nav class="breadcrumbs" aria-label="現在の位置"><a href="/nanpure/">ナンプレ帳</a><span aria-hidden="true">/</span><span>${escapeHTML(guide.label||guide.title)}</span></nav>
 <article><header class="article-header"><p class="eyebrow">ナンプレ帳の使い方</p><h1>${escapeHTML(guide.heading||guide.title.split('｜')[0])}</h1><p class="lead">${escapeHTML(guide.lead)}</p></header>
 <nav class="contents" aria-label="このページの内容"><strong>このページの内容</strong><ol>${guide.sections.map((section,index)=>`<li><a href="#section-${index+1}">${escapeHTML(section.heading)}</a></li>`).join('')}</ol></nav>
 ${guide.sections.map(sectionHTML).join('\n')}
-<section class="play-callout"><h2>ナンプレ帳で遊んでみる</h2><p>インストール・会員登録なしで、スマホやパソコンのブラウザから遊べます。</p><div class="play-links"><a class="primary" href="/nanpure/">ナンプレ帳を開く</a><a href="/nanpure/?view=daily">日替わり問題を選ぶ</a><a href="/nanpure/?view=tutorial">操作を練習する</a></div></section>
+<section class="play-callout"><h2>${isShirupure?'パレあそびでシルプレに挑戦':'ナンプレ帳で遊んでみる'}</h2><p>インストール・会員登録なしで、スマホやパソコンのブラウザから遊べます。</p><div class="play-links"><a class="primary" href="${playUrl}">${playTitle}</a>${isShirupure?'<a href="/plaza.html">パレあそびのゲーム一覧</a>':'<a href="/nanpure/?view=daily">日替わり問題を選ぶ</a><a href="/nanpure/?view=tutorial">操作を練習する</a>'}</div></section>
 </article><nav class="related" aria-label="ほかの遊び方ガイド"><h2>あわせて読む</h2>${related}</nav>
 </main><footer class="guide-footer">${languageNavigation(repo)}<a href="/nanpure/">ナンプレ帳ホーム</a><a href="/nanpure/?view=privacy">利用案内・プライバシー</a><a href="/nanpure/?view=contact">お問い合わせ</a><p>更新：<time datetime="${date}">${date}</time> <span>サイト ${version}</span></p></footer></body></html>\n`);
   }
