@@ -180,13 +180,13 @@ async function loadRanking(){
         '<span class="rank-num '+rc+'">'+medal+'</span>'+
         '<div class="rank-info">'+
           '<div class="rank-name'+(isMe?' me-name':'')+'">'+
-            entry.nick+(isMe?' ◀ あなた':'')+
           '</div>'+
           '<div class="rank-sub">上位 '+pct+'%　全'+total+'人中</div>'+
         '</div>'+
         '<div>'+
           '<div class="rank-score">'+entry.count+'<span class="rank-score-unit"> 到達</span></div>'+
         '</div>';
+      row.querySelector('.rank-name').textContent = entry.nick + (isMe ? ' ◀ あなた' : '');
       el.appendChild(row);
     });
 
@@ -208,13 +208,16 @@ async function loadHallOfFame(){
     if(!data){el.innerHTML='<div class="rank-empty">まだ殿堂入りはいません</div>';return;}
     const entries=Object.values(data).sort((a,b)=>a.ts-b.ts);
     if(entries.length===0){el.innerHTML='<div class="rank-empty">まだ殿堂入りはいません</div>';return;}
-    el.innerHTML=entries.map((e,i)=>
-      '<div class="hof-row">'+
-        '<div class="hof-order">'+(i+1)+'</div>'+
-        '<div class="hof-name">'+e.nick+'</div>'+
-        '<div class="hof-date">'+e.date+'</div>'+
-      '</div>'
-    ).join('');
+    el.replaceChildren();
+    entries.forEach((entry, i) => {
+      const row = document.createElement('div');
+      row.className = 'hof-row';
+      row.innerHTML = '<div class="hof-order"></div><div class="hof-name"></div><div class="hof-date"></div>';
+      row.querySelector('.hof-order').textContent = i + 1;
+      row.querySelector('.hof-name').textContent = entry.nick;
+      row.querySelector('.hof-date').textContent = entry.date;
+      el.appendChild(row);
+    });
   }catch(e){
     el.innerHTML='<div class="rank-empty">読み込みに失敗しました</div>';
   }

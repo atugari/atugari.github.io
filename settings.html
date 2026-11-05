@@ -70,9 +70,10 @@
 <div id="progress-modal">
   <div class="modal-inner">
     <div class="modal-title" id="modal-title">データを消去中...</div>
-    <div class="modal-msg" id="modal-msg">ランキングデータを削除しています</div>
+    <div class="modal-msg" id="modal-msg" role="status">ランキングデータを削除しています</div>
     <div class="modal-bar-wrap"><div class="modal-bar" id="modal-bar"></div></div>
-    <button class="modal-close" id="modal-close" onclick="location.href='index.html'">ホームへ戻る</button>
+    <button type="button" class="modal-close" id="modal-retry" onclick="runDelete()">もう一度消去する</button>
+    <button type="button" class="modal-close" id="modal-close" onclick="location.href='index.html'">ゲームのホームへ戻る</button>
   </div>
 </div>
 
@@ -83,7 +84,7 @@
   </div>
 
   <!-- 消えるデータの説明 -->
-  <div class="section-title">データをリセットすると消えるもの</div>
+  <div class="section-title">丸場所記憶ゲームで消去するデータ</div>
   <div class="card">
     <div class="data-list">
       <div class="data-item">
@@ -97,21 +98,21 @@
         <div class="data-icon">🏆</div>
         <div class="data-body">
           <div class="data-name">ランキングスコア</div>
-          <div class="data-desc">あなたのスコアがランキングから完全に削除されます。1位のデータが消えた場合は2位以下が繰り上がります。</div>
+          <div class="data-desc">この端末の現在のニックネームで登録したランキングと殿堂入りの記録を消去します。</div>
         </div>
       </div>
       <div class="data-item">
         <div class="data-icon">🎖️</div>
         <div class="data-body">
           <div class="data-name">入手した称号</div>
-          <div class="data-desc">これまでに入手した称号がすべて消えます。再度条件を満たすと再入手できます。</div>
+          <div class="data-desc">この端末で入手した丸場所記憶ゲームの称号を消去します。</div>
         </div>
       </div>
       <div class="data-item">
         <div class="data-icon">⚙️</div>
         <div class="data-body">
-          <div class="data-name">表示設定・広告ロック</div>
-          <div class="data-desc">ホームの表示設定がすべて初期状態に戻ります。広告トグルのロックも解除されます。</div>
+          <div class="data-name">ホームの表示設定</div>
+          <div class="data-desc">ニュース・ランキング・ゲームカードなどの表示設定が初期状態に戻ります。</div>
         </div>
       </div>
       <div class="data-item">
@@ -127,7 +128,7 @@
   <!-- 警告 -->
   <div class="warn-banner">
     <strong>注意：この操作は取り消せません。</strong><br>
-    消去したランキングスコアや称号は元に戻せません。本当にすべてのデータを消してよい場合のみ進めてください。
+    消去したランキングスコアや称号は元に戻せません。丸場所記憶ゲームのデータを消してよい場合のみ進めてください。
   </div>
 
   <!-- スライダー確認 -->
@@ -144,7 +145,7 @@
     <div class="slider-done" id="slider-done">
       <div class="slider-done-msg">スライダー確認完了。次のステップに進んでください。</div>
       <div class="section-title" style="margin-bottom:8px;">ステップ 2 — 削除ボタンを押す</div>
-      <button class="delete-btn" id="delete-btn" onclick="confirmDelete()">すべてのデータを消去する</button>
+      <button class="delete-btn" id="delete-btn" onclick="confirmDelete()">丸場所記憶ゲームのデータを消去する</button>
     </div>
   </div>
 
@@ -159,6 +160,7 @@
   </footer>
 </div>
 
+<script src="maru-storage.js"></script>
 <script>
   const DB_URL = 'https://ad-game-7b40a-default-rtdb.asia-southeast1.firebasedatabase.app';
 
@@ -240,9 +242,9 @@
     const nick = localStorage.getItem('adgame_nick') || '（未登録）';
     const ok = confirm(
       '【最終確認】\n\n' +
-      'ニックネーム「' + nick + '」のすべてのデータを\n' +
-      '完全に消去します。\n\n' +
-      '・ランキングスコア\n' +
+      '丸場所記憶ゲームのデータを消去します。\n' +
+      'この端末のニックネーム「' + nick + '」\n\n' +
+      '・現在のニックネームで登録したランキングと殿堂入りの記録\n' +
       '・称号\n' +
       '・表示設定\n' +
       '・端末ID\n\n' +
@@ -257,56 +259,62 @@
     );
     if(!ok2) return;
 
-    runDelete(nick);
+    runDelete();
   }
 
-  async function runDelete(nick){
+  async function deleteMaruRecord(url, deviceId) {
+    const signal = AbortSignal.timeout?.(15000);
+    const read = await fetch(url, {cache:'no-store', signal, headers:{'X-Firebase-ETag':'true'}});
+    if (!read.ok) throw new Error('サーバーの応答: HTTP ' + read.status);
+    const record = await read.json();
+    if (record === null) return;
+    if (!deviceId || !record.deviceId) throw new Error('記録を登録した端末を確認できません。');
+    if (record.deviceId !== deviceId) return;
+    const tag = read.headers.get('ETag');
+    if (!tag) throw new Error('記録の更新状態を確認できません。');
+    const result = await fetch(url, {method:'DELETE', signal, headers:{'If-Match':tag}});
+    if (!result.ok) throw new Error('サーバーの応答: HTTP ' + result.status);
+  }
+
+  async function runDelete() {
     const modal = document.getElementById('progress-modal');
-    const bar   = document.getElementById('modal-bar');
-    const msg   = document.getElementById('modal-msg');
+    const bar = document.getElementById('modal-bar');
+    const msg = document.getElementById('modal-msg');
     const title = document.getElementById('modal-title');
+    const retry = document.getElementById('modal-retry');
+    const close = document.getElementById('modal-close');
+    retry.style.display = close.style.display = 'none';
     modal.classList.add('show');
-
-    function setProgress(pct, text){
-      bar.style.width = pct + '%';
-      msg.textContent = text;
-    }
-
+    title.textContent = '丸場所記憶ゲームのデータを消去中…';
+    bar.style.width = '0%';
+    const confirmed = [];
+    let step = '端末データ';
     try {
-      // 1. Firebaseからランキングスコアを削除
-      setProgress(10, 'ランキングデータを削除中...');
-      const savedNick = localStorage.getItem('adgame_nick');
-      if(savedNick){
-        const key = encodeURIComponent(savedNick.trim().replace(/[.#$[\]/]/g,'_'));
-        await fetch(DB_URL + '/rankings/' + key + '.json', { method: 'DELETE' });
+      const nick = localStorage.getItem('adgame_nick');
+      const deviceId = localStorage.getItem('adgame_device_id');
+      if (nick && nick.trim()) {
+        const key = encodeURIComponent(nick.trim().replace(/[.#$[\]/]/g, '_'));
+        for (const [path, label] of [['rankings','ランキング'], ['halloffame','殿堂入り']]) {
+          step = label;
+          msg.textContent = label + 'の記録を確認しています。';
+          await deleteMaruRecord(DB_URL + '/' + path + '/' + key + '.json', deviceId);
+          confirmed.push(label);
+          bar.style.width = (confirmed.length * 35) + '%';
+        }
       }
-      setProgress(40, 'ランキングデータを削除しました');
-
-      // 2. Firebaseから殿堂入りデータも削除
-      setProgress(50, '殿堂入りデータを確認中...');
-      if(savedNick){
-        const key = encodeURIComponent(savedNick.trim().replace(/[.#$[\]/]/g,'_'));
-        await fetch(DB_URL + '/halloffame/' + key + '.json', { method: 'DELETE' });
-      }
-      setProgress(70, '完了');
-
-      // 3. localStorageを全消去
-      setProgress(85, '端末のデータを消去中...');
-      localStorage.clear();
-      setProgress(100, 'すべてのデータを消去しました');
-
-      // 完了表示
+      step = '端末データ';
+      clearMaruGameStorage();
+      bar.style.width = '100%';
       title.textContent = '消去完了';
-      msg.textContent = 'すべてのデータを消去しました。ホームへ戻ると新規プレイヤーとして開始できます。';
-      document.getElementById('modal-close').style.display = 'block';
-
-    } catch(e) {
-      // ネットワークエラーでもlocalStorageは消す
-      localStorage.clear();
-      setProgress(100, '完了（一部ネットワークエラーあり）');
-      title.textContent = '消去完了';
-      msg.textContent = '端末データは消去しました。ランキング削除に失敗した可能性があります。ホームへ戻ってください。';
-      document.getElementById('modal-close').style.display = 'block';
+      msg.textContent = 'この端末の丸場所記憶ゲームのデータを消去しました。';
+    } catch (error) {
+      title.textContent = '消去を完了できませんでした';
+      const progress = confirmed.length ? '確認済みの項目：' + confirmed.join('・') + '。' : '';
+      msg.textContent = progress + step + 'の消去を確認できません。' +
+        (error instanceof TypeError || error.name === 'TimeoutError' ? '通信状況を確認してください。' : error.message);
+      retry.style.display = 'block';
+    } finally {
+      close.style.display = 'block';
     }
   }
 </script>

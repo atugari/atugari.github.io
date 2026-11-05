@@ -116,7 +116,7 @@ export function buildSearchPages(repo,version,base) {
     write(`nanpure/${guide.slug}/index.html`,`<!doctype html>
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#f4efe3">
 ${searchHead({title:guide.title+' — ナンプレ帳',description:guide.description,url,icon:base+'favicon.svg',graph})}
-<script src="${base}site-theme.js"></script><link rel="stylesheet" href="/nanpure/assets/guide.css?v=theme-97"><link rel="stylesheet" href="/nanpure/assets/international.css?v=theme-97"></head>
+${guide.slug==='guide'?'<style>.guide-banner{margin:0 0 2rem;text-align:center;color:var(--muted)}.guide-banner small{display:block;margin-bottom:.4rem}.guide-banner:has(>ins[data-ad-status="unfilled"]){display:none}@media print{.guide-banner{display:none}}</style><script defer src="/nanpure/assets/guide-banner.js"></script>':''}<script src="${base}site-theme.js"></script><link rel="stylesheet" href="/nanpure/assets/guide.css?v=theme-97"><link rel="stylesheet" href="/nanpure/assets/international.css?v=theme-97"></head>
 <body><a class="skip-link" href="#content">本文へ移動</a>
 <header class="guide-header"><a class="brand" href="/nanpure/"><span class="brand-mark" aria-hidden="true">数</span>ナンプレ帳</a><a class="header-play" href="${playUrl}">${isShirupure?playTitle:'遊ぶ'} <span aria-hidden="true">↗</span></a></header>
 <main id="content" class="guide-main"><nav class="breadcrumbs" aria-label="現在の位置"><a href="/nanpure/">ナンプレ帳</a><span aria-hidden="true">/</span><span>${escapeHTML(guide.label||guide.title)}</span></nav>

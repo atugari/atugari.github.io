@@ -164,11 +164,11 @@
     el.innerHTML =
       '<div class="score-card">'+
         '<div class="score-card-name">プレイヤー</div>'+
-        '<div class="score-card-nick">'+nick+'</div>'+
+        '<div class="score-card-nick"></div>'+
         '<div class="score-grid">'+
           '<div class="score-box">'+
             '<div class="score-box-label">ハイスコア</div>'+
-            '<div class="score-box-val accent">'+fmtScore(myScore)+'</div>'+
+            '<div class="score-box-val accent"></div>'+
           '</div>'+
           '<div class="score-box">'+
             '<div class="score-box-label">ランキング</div>'+
@@ -187,6 +187,8 @@
         '</div>'+
         (myRank>0?'<div class="rank-badge '+rankClass+'">全期間 '+rankText+'</div>':'')+''+
       '</div>';
+    el.querySelector('.score-card-nick').textContent = nick;
+    el.querySelector('.score-box-val.accent').textContent = fmtScore(myScore);
   }
 
   // テンプレート定義
