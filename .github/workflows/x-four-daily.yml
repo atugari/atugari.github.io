@@ -92,7 +92,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           REPO_ROOT: ${{ github.workspace }}
           X_FOUR_POST_ENABLED: ${{ vars.X_FOUR_POST_ENABLED || 'true' }}
-          X_FOUR_INCLUDE_URL: ${{ vars.X_FOUR_INCLUDE_URL || 'false' }}
+          X_FOUR_INCLUDE_URL: true
           X_QUEUE_CHECK: ${{ github.event_name == 'push' && 'true' || 'false' }}
           X_API_SECRET: ${{ secrets.X_API_SECRET }}
           X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
@@ -103,5 +103,5 @@ jobs:
           REPO_ROOT: ${{ github.workspace }}
           X_FOUR_MODE: preview
           X_FOUR_SLOT: ${{ inputs.slot || '08:00' }}
-          X_FOUR_INCLUDE_URL: ${{ vars.X_FOUR_INCLUDE_URL || 'false' }}
+          X_FOUR_INCLUDE_URL: true
         run: python scripts/x-four/run.py
