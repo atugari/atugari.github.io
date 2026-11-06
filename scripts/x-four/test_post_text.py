@@ -20,6 +20,11 @@ class PostDateTests(unittest.TestCase):
             expected=template.replace('{date_label}',f'{parsed.month}/{parsed.day}').replace('シルプレ・数独・和同開珎・クロスワード。','・'.join(item['title'] for item in daily_plan(day))+'。')
             with self.subTest(day=day):self.assertEqual(render_text(day),expected)
 
+    def test_url_is_included_in_the_approved_link_post(self):
+        text=render_text('2026-11-06',True)
+        self.assertIn('https://atugari.github.io/nanpure/',text)
+        self.assertEqual(text.count('https://atugari.github.io/nanpure/'),1)
+
     def test_invalid_calendar_dates_are_rejected(self):
         for day in ('2026-02-29','2026-11-31','2026-13-01'):
             with self.subTest(day=day),self.assertRaises(ValueError):render_text(day)
