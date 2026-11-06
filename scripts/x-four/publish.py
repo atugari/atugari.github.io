@@ -103,7 +103,7 @@ def validate(directory):
     if weighted>25000:raise ValueError('Post exceeds the long-form X text length')
     if weighted>280:
         if post.get('requires_longform') is not True:raise ValueError('Post exceeds the standard X text length; long-form is required')
-        if post['text'] not in (render_text(post['date']),render_text(post['date'],True)):
+        if post['text'] not in (render_text(post['date'],False,post.get('slot','08:00')),render_text(post['date'],True,post.get('slot','08:00'))):
             raise ValueError('Long-form text does not match the approved copy')
     for item in post['images']:
         p=directory/item['file']
