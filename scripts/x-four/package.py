@@ -34,7 +34,7 @@ def alt_text(item,p,number):
 alts=[alt_text(item,json.loads((root/item['data_file']).read_text()),'①②③④'[i]) for i,item in enumerate(questions)]
 assert all(0<len(a)<=1000 for a in alts),[len(a) for a in alts]
 include_url=os.environ.get('X_FOUR_INCLUDE_URL','true').lower()=='true'
-text=render_text(day,include_url)
+text=render_text(day,include_url,meta['slot'])
 names=[item['file'] for item in questions]
 assert {p.name for p in out.glob('*.png')}==set(names)
 for name in names:assert 0<(out/name).stat().st_size<5*1024*1024
