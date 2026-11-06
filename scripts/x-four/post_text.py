@@ -4,16 +4,17 @@ from pathlib import Path
 import re
 from daily_plan import daily_plan
 
-def render_text(day,include_url=False):
+def render_text(day,include_url=False,slot='08:00'):
+    hooks={'08:00':'朝の頭の体操に、まずは1問！','12:00':'休憩時間に、気軽に1問！','18:00':'今日の気分転換に、パズルはいかが？','21:00':'夜のひと休みに、じっくり挑戦！'}
+    if slot not in hooks:raise ValueError('Invalid publication slot')
     parsed=date.fromisoformat(day)
     # Match the publication clock's M/D header on every month/day, including 1-9.
     label=f'{parsed.month}/{parsed.day}'
     text=(Path(__file__).parent/'approved-post.txt').read_text(encoding='utf-8').rstrip('\n')
-    text=text.replace('{date_label}',label)
+    text=text.replace('{date_label}',label).replace('{slot_message}',hooks[slot])
     text=text.replace('シルプレ・数独・和同開珎・クロスワード。','・'.join(item['title'] for item in daily_plan(day))+'。')
     if include_url:
-        guide='サイトへは画像に載せたURLかQRコードからどうぞ！'
-        text=text.replace(guide,guide+'\nhttps://atugari.github.io/nanpure/')
+        text=text.replace('無料で遊べる「ナンプレ帳」→','無料で遊べる「ナンプレ帳」→\nhttps://atugari.github.io/nanpure/')
     return text
 
 def weighted_length(text):
