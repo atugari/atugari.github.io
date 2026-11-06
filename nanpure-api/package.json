@@ -7,6 +7,11 @@
     "node": ">=22"
   },
   "scripts": {
+    "prepare:vending-proof": "node scripts/prepare-vending-proof.mjs",
+    "prebuild": "npm run prepare:vending-proof",
+    "pretest": "npm run prepare:vending-proof",
+    "predev": "npm run prepare:vending-proof",
+    "predeploy": "npm run prepare:vending-proof",
     "build": "node --check src/index.js && node --test test/*.test.mjs",
     "test": "node --test test/*.test.mjs",
     "dev": "wrangler dev",

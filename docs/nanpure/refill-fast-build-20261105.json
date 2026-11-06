@@ -1,0 +1,121 @@
+{
+  "method": "official Android SDK CLI",
+  "implementation_commit": "1b0784caf995f6bfb0ca1eb32dfa2874161b622c",
+  "base_unsigned_build": {
+    "method": "official Android SDK CLI",
+    "signed": false,
+    "bootstrap_included": false,
+    "configuration": {
+      "namespace": "jp.nanpure.refill",
+      "application_id": "jp.nanpure.refill.fast",
+      "version_name": "0.3.0",
+      "version_code": 8,
+      "compile_sdk": 35,
+      "min_sdk": 26,
+      "target_sdk": 35,
+      "endpoint": "https://nanpure-vending-pilot.puzzle-hub-4826.workers.dev/api/vending/worker"
+    },
+    "bytes": 253920,
+    "sha256": "e6a8661f9567fb8f6dceefd98fa119fd05c66e0ca1c6d17aa203756d7098b380",
+    "engine_sha256": "098f0b1c5fba839e2388ad2b9736c708a4a7a7a745d4532ea552183b1f2a67f4",
+    "profiles_sha256": "2ea481830a4b4da38907a44f56c721b53c83b62e4e63d67eafddee533e8f11da",
+    "profile_count": 427,
+    "rule_count": 23,
+    "source_sha256": {
+      "build.gradle": "798e0960bcf99add14482be9e5bb00be570b5ef267d4f40ab37e84d442fc2494",
+      "prepare-engine.cjs": "203401d78a29e65ace8e52ad03d2e93c98f399a25efedc30d39b76b977631c00",
+      "engine-overrides/unique-solver.js": "0d26407f7129c31c84821e8b3d491e91cbfa13598f9f48b4493542dc122f5e18",
+      "src/main/AndroidManifest.xml": "ebc639610a0d66e5a19eb1833615aa734f7c0866ec1f8320b5463cdbd2d6f111",
+      "src/main/java/jp/nanpure/refill/MainActivity.java": "2a6c564e292b609ea4adbfe82b91a5c5ca4873f02199142c83e89d1fa02771ab",
+      "src/main/java/jp/nanpure/refill/RefillApi.java": "e07c695d347668e04fb7b35aa7b91b35964ff085ff915c54d026f3b787ce8182",
+      "src/main/java/jp/nanpure/refill/RefillBootstrap.java": "c0f5810badfc304855242341f47cabaa7ccf777fa641e9b716006b06196fe62a",
+      "src/main/java/jp/nanpure/refill/RefillEngine.java": "367754071b3f45ece9fe863c2651135d471276de99308dbb1593c3fb081bdf78",
+      "src/main/java/jp/nanpure/refill/RefillJob.java": "2efc8aabb5a94384c15e350c7932a342437a2612617231c920a0ab694ca9ca90",
+      "src/main/java/jp/nanpure/refill/RefillProfiles.java": "785060bf559a1d71dc0a1c4d0c6f1dbbe1b4e059e2946b54f7169c2e8aacce97",
+      "src/main/java/jp/nanpure/refill/RefillRunner.java": "756b8a93d3dce86f8e840984fad735bb34ce22f251de06696627e6e1b75c7c9f",
+      "src/main/java/jp/nanpure/refill/RefillService.java": "c73e56ee947151f9a6968c42442051f4e188b0a46d9becf3a7269b3a4076700a",
+      "src/main/java/jp/nanpure/refill/RefillStore.java": "824efbba134e18071e363f8c53b39c82fe7f1b431d81024db7f7e06e0bbc9b12",
+      "src/main/java/jp/nanpure/refill/RefillVault.java": "a8a680387019f3e307cfbd6e43c89c97e69322a41d45c1406ac60e871d656346",
+      "src/main/res/drawable/refill_icon.xml": "ee4e358a3e508bf2a2ba7f72461c09a4a65a08874dea7c5e898d6f3b3d6c526f",
+      "src/main/res/xml/refill_network_security.xml": "fbb78b5b8bcea19bbbaa6de6531d673e03acd9cc90e39b3a976f2e1185b7f21e",
+      "src/main/assets/bridge.js": "18d5f5d7122eae6e2f7571571b1ff904853de02db5772060aabfa0c8fa5a0bf5",
+      "src/main/assets/index.html": "2f98ae1ce6d871d3eb820e154f1a6dd50bcd166e3af3e48f471e443d42061e73",
+      "src/main/assets/round.js": "69b200ad3e3036e30461e438b33f3f73a2fe0e7bf18797fe801ae82c6e00d85c"
+    },
+    "elapsed_seconds": 8.19
+  },
+  "base_signed_apk": {
+    "bytes": 263016,
+    "sha256": "362613d2f56bcb2a88e3d9f9f1a4011b469d62a3998aafb483e626f81f147b7e",
+    "signatureVerified": true,
+    "certificateSHA256": "978df197bc7028ee85ce1f871cdcec66acfd21e331c4709f3fd3a45275da37b4",
+    "containsBootstrap": false,
+    "distributionStatus": "Historical base APK without registration; superseded by the registered private APK."
+  },
+  "registered_unsigned_build": {
+    "method": "official Android SDK CLI",
+    "signed": false,
+    "bootstrap_included": true,
+    "configuration": {
+      "namespace": "jp.nanpure.refill",
+      "application_id": "jp.nanpure.refill.fast",
+      "version_name": "0.3.0",
+      "version_code": 8,
+      "compile_sdk": 35,
+      "min_sdk": 26,
+      "target_sdk": 35,
+      "endpoint": "https://nanpure-vending-pilot.puzzle-hub-4826.workers.dev/api/vending/worker"
+    },
+    "bytes": 254196,
+    "sha256": "46a451ef47f83d8eb5acff5cdb5023d8e2a33ec403d253428935cb3b7bb65d78",
+    "engine_sha256": "098f0b1c5fba839e2388ad2b9736c708a4a7a7a745d4532ea552183b1f2a67f4",
+    "profiles_sha256": "2ea481830a4b4da38907a44f56c721b53c83b62e4e63d67eafddee533e8f11da",
+    "profile_count": 427,
+    "rule_count": 23,
+    "source_sha256": {
+      "build.gradle": "798e0960bcf99add14482be9e5bb00be570b5ef267d4f40ab37e84d442fc2494",
+      "prepare-engine.cjs": "203401d78a29e65ace8e52ad03d2e93c98f399a25efedc30d39b76b977631c00",
+      "engine-overrides/unique-solver.js": "0d26407f7129c31c84821e8b3d491e91cbfa13598f9f48b4493542dc122f5e18",
+      "src/main/AndroidManifest.xml": "ebc639610a0d66e5a19eb1833615aa734f7c0866ec1f8320b5463cdbd2d6f111",
+      "src/main/java/jp/nanpure/refill/MainActivity.java": "2a6c564e292b609ea4adbfe82b91a5c5ca4873f02199142c83e89d1fa02771ab",
+      "src/main/java/jp/nanpure/refill/RefillApi.java": "e07c695d347668e04fb7b35aa7b91b35964ff085ff915c54d026f3b787ce8182",
+      "src/main/java/jp/nanpure/refill/RefillBootstrap.java": "c0f5810badfc304855242341f47cabaa7ccf777fa641e9b716006b06196fe62a",
+      "src/main/java/jp/nanpure/refill/RefillEngine.java": "367754071b3f45ece9fe863c2651135d471276de99308dbb1593c3fb081bdf78",
+      "src/main/java/jp/nanpure/refill/RefillJob.java": "2efc8aabb5a94384c15e350c7932a342437a2612617231c920a0ab694ca9ca90",
+      "src/main/java/jp/nanpure/refill/RefillProfiles.java": "785060bf559a1d71dc0a1c4d0c6f1dbbe1b4e059e2946b54f7169c2e8aacce97",
+      "src/main/java/jp/nanpure/refill/RefillRunner.java": "756b8a93d3dce86f8e840984fad735bb34ce22f251de06696627e6e1b75c7c9f",
+      "src/main/java/jp/nanpure/refill/RefillService.java": "c73e56ee947151f9a6968c42442051f4e188b0a46d9becf3a7269b3a4076700a",
+      "src/main/java/jp/nanpure/refill/RefillStore.java": "824efbba134e18071e363f8c53b39c82fe7f1b431d81024db7f7e06e0bbc9b12",
+      "src/main/java/jp/nanpure/refill/RefillVault.java": "a8a680387019f3e307cfbd6e43c89c97e69322a41d45c1406ac60e871d656346",
+      "src/main/res/drawable/refill_icon.xml": "ee4e358a3e508bf2a2ba7f72461c09a4a65a08874dea7c5e898d6f3b3d6c526f",
+      "src/main/res/xml/refill_network_security.xml": "fbb78b5b8bcea19bbbaa6de6531d673e03acd9cc90e39b3a976f2e1185b7f21e",
+      "src/main/assets/bridge.js": "18d5f5d7122eae6e2f7571571b1ff904853de02db5772060aabfa0c8fa5a0bf5",
+      "src/main/assets/index.html": "2f98ae1ce6d871d3eb820e154f1a6dd50bcd166e3af3e48f471e443d42061e73",
+      "src/main/assets/round.js": "69b200ad3e3036e30461e438b33f3f73a2fe0e7bf18797fe801ae82c6e00d85c"
+    },
+    "elapsed_seconds": 8.41
+  },
+  "registered_signed_apk": {
+    "bytes": 263090,
+    "sha256": "10428ce4629bde912a8d26e5e536ccb4732d58f31979f22240263db8616b61dd",
+    "name": "nanpure-refill-fast-0.3.0.apk",
+    "signatureVerified": true,
+    "certificateSHA256": "978df197bc7028ee85ce1f871cdcec66acfd21e331c4709f3fd3a45275da37b4",
+    "containsBootstrap": true,
+    "signatureSchemes": {
+      "v1": false,
+      "v2": true,
+      "v3": true,
+      "v3.1": false,
+      "v4": false
+    }
+  },
+  "registrationStatus": "Dedicated worker registered and confirmed active through the authenticated admin API; previous devices retained. Worker-only preset included in the private APK.",
+  "validation": {
+    "passed": true,
+    "passedChecks": 33,
+    "totalChecks": 33,
+    "record": "refill-fast-personal-validation-20261105.json",
+    "deviceRuntimeTestPerformed": false
+  }
+}

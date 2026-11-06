@@ -1,0 +1,12 @@
+.gradle/
+build/
+local.properties
+*.jks
+*.keystore
+*.p12
+refill-bootstrap.json
+private-assets/
+device-bootstrap.json
+signing.json
+__pycache__/
+*.pyc

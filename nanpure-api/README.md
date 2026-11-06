@@ -123,3 +123,103 @@ Production smoke tests must use disposable credentials and avoid public rankings
 ## Retired network search
 
 The Wado network-search integration was removed in 2026.10.24.51. The former endpoint returns HTTP 410 before any database or provider work. No search provider, key or search budget is used. Current Wado play and print pages use only the bundled dictionaries and hints.
+
+## Automatic enrollment for the private Xperia fleet
+
+The isolated vending pilot can provision a separate worker credential for each
+installation of one private APK. Apply the additive
+`0015_vending_enrollment.sql` migration to that pilot's existing D1 database
+before updating its Worker. Existing devices, pair codes, jobs, orders and stock
+are retained. The default `wrangler.jsonc` and main-branch workflow still target
+the production API; they are not the pilot deployment configuration.
+
+The owner creates a bounded enrollment capability through
+`POST /api/vending/admin`, using the existing owner bearer authentication and
+allowed Origin. Generate a fresh random 256-bit `enrollmentKey` and persist it
+privately **before** sending this request:
+
+```json
+{
+  "action": "enrollment_create",
+  "enrollmentKey": "<64 lowercase hexadecimal characters>",
+  "name": "Xperia fleet",
+  "maxDevices": 30,
+  "expires": null
+}
+```
+
+`maxDevices` may be 1–30 and defaults to 30. `expires` is an absolute Unix
+timestamp in milliseconds or `null` (the default, until the owner revokes it).
+The response contains `ok`, `id`, `name`, `maxDevices`, `activeDevices`,
+`created`, `expires`, `revoked` and `revokedAt`. The raw key is never returned
+or stored in D1. Retrying the same key and configuration returns the same grant;
+changing its configuration returns `409 enrollment_conflict`. A creation retry
+does not renew an expired or revoked grant. This avoids creating unrecoverable
+keys when a response is lost.
+
+Bundle only this enrollment key and the worker endpoint in the private APK.
+Each installation generates and durably stores its own random 256-bit worker
+`token` before the first network request. It then sends, without an owner or
+existing worker bearer credential, to `POST /api/vending/worker`:
+
+```json
+{
+  "action": "enroll",
+  "enrollmentKey": "<the private enrollment key>",
+  "token": "<this installation's persisted 64-character worker token>",
+  "name": "Xperia"
+}
+```
+
+Device names are trimmed and must contain 1–40 characters without control
+characters. The unauthenticated request body limit is 1,000 bytes. Success is
+`{ "ok": true, "id": "..." }`. Retrying the same grant and token returns the
+same device ID; another grant or a legacy manually paired token cannot be
+claimed. Keep the same token when retrying a transport failure or HTTP 5xx.
+
+Grant capacity counts only devices whose registration has not been revoked.
+Revoking a device frees its slot, but the old token remains revoked and cannot
+resurrect. The total active-device limit is 32, allowing the two existing
+registrations and 30 new installations. Admission checks both limits inside
+the insertion transaction, so parallel callers cannot overbook the fleet.
+The device row and membership are committed together using D1 `batch()`;
+a failure rolls back both. The job scheduler uses the same total-device bound.
+
+`GET /api/vending/admin` adds an `enrollments` list containing the public grant
+fields above, without keys or hashes. The owner can stop new enrollment with
+`{ "action": "enrollment_revoke", "id": "..." }`. Grant expiry or revocation
+does not revoke existing workers, and retries by an existing active member
+still succeed. Individual device revocation continues to use the existing
+`{ "action": "revoke", "id": "..." }` operation.
+
+Enrollment failures return `{ "code": "...", "error": "..." }`:
+
+| HTTP | Code | Meaning |
+| --- | --- | --- |
+| 400 | `enrollment_invalid_request` | Malformed settings or credential reuse |
+| 403 | `enrollment_invalid` | Unknown enrollment key |
+| 403 | `enrollment_revoked` | New enrollment stopped by the owner |
+| 403 | `enrollment_expired` | Deadline passed for new devices |
+| 403 | `device_revoked` | This device was revoked; its token stays revoked |
+| 409 | `enrollment_full` | This grant's active-device slots are full |
+| 409 | `device_limit` | The global active-device limit is full |
+| 409 | `token_conflict` | The token belongs to a manual registration or another grant |
+| 503 | `enrollment_unavailable` | Retry later with the same persisted token |
+
+The app must not generate a new token to evade one of the 4xx responses. APK
+updates from the shared 0.3.0 credential enroll each installation separately;
+the backend does not revoke the shared legacy device or transfer its leases.
+The Android migration must preserve local inventory and settle or retain
+pending work under its original credential before switching identities.
+
+Targeted checks use the actual Worker request handler and real SQLite through
+the D1 test binding. They cover parallel capacity, idempotency, grant/device
+revocation, expiry, authorization, rollback and preservation of old data:
+
+```sh
+node scripts/prepare-vending-proof.mjs
+node --test test/vending-enrollment.test.mjs
+node --test --test-name-pattern='pilot flag, scoped phone registration|oldest reservations receive checked puzzles' test/vending.test.mjs
+```
+
+These checks use synthetic credentials and do not call a deployed service.

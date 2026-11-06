@@ -1,0 +1,19 @@
+{
+  "passed": 11,
+  "failed": 0,
+  "synthetic_data_only": true,
+  "script_sha256": "69471ceac1377bbff07ffd8ff503e7986782cac04adf93fce9dea6e35fe47381",
+  "cases": [
+    "valid fixture reduced to exactly format/endpoint/token",
+    "omitted bootstrap returns None",
+    "boolean format rejected",
+    "unsupported format rejected",
+    "endpoint mismatch rejected",
+    "uppercase hexadecimal token rejected",
+    "short token rejected",
+    "non-string token rejected",
+    "unexpected ownerKey field rejected",
+    "array JSON rejected",
+    "missing token rejected"
+  ]
+}

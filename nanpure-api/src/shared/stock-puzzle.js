@@ -60,7 +60,10 @@ export function canonicalPuzzle(p) {
         const puzzle = at.map(i => p.puzzle[i] ? digits.get(p.puzzle[i]) : 0);
         const regions = p.kind === 'neighbor' ? [] : at.map(i => { const r = p.regions[i]; if (!regionLabels.has(r))
             regionLabels.set(r, regionLabels.size); return regionLabels.get(r); });
-        const cages = (p.cages || []).map(c => c.cells.map(i => to[i]).sort((a, b) => a - b)).sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b)));
+        const cages = (p.cages || []).map(c => {
+            const cells = c.cells.map(i => to[i]).sort((a, b) => a - b);
+            return { cells, key: JSON.stringify(cells) };
+        }).sort((a, b) => a.key.localeCompare(b.key)).map(c => c.cells);
         const links = (p.links || []).map(l => l.map(i => to[i]).sort((a, b) => a - b)).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
         const key = JSON.stringify([p.kind, n, puzzle, solution, regions, cages, links]);
         if (!best || key < best)

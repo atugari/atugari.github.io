@@ -1,0 +1,56 @@
+name: Deploy isolated Nanpure phone enrollment
+
+on:
+  push:
+    branches: [nanpure-vending-pilot]
+    paths:
+      - '.github/workflows/deploy-nanpure-vending-pilot-fleet.yml'
+      - '.github/nanpure-vending-pilot/deploy.py'
+      - '.github/nanpure-vending-pilot/deploy.test.py'
+      - '.github/nanpure-vending-pilot/patch-worker.mjs'
+      - '.github/nanpure-vending-pilot/patch-worker.test.mjs'
+      - '.github/nanpure-vending-pilot/rehearse-live.mjs'
+      - 'nanpure-api/src/vending-enrollment.js'
+      - 'nanpure-api/src/vending.js'
+      - 'nanpure-api/migrations/0015_vending_enrollment.sql'
+      - 'nanpure-api/test/vending-enrollment.test.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-nanpure-vending-pilot-fleet
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.repository == 'atugari/atugari.github.io' && github.ref == 'refs/heads/nanpure-vending-pilot'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: nanpure-api/package-lock.json
+      - name: Install locked tools without package scripts
+        working-directory: nanpure-api
+        run: npm ci --ignore-scripts
+      - name: Prepare verifier and validate enrollment regressions
+        working-directory: nanpure-api
+        run: |
+          node scripts/prepare-vending-proof.mjs
+          node --test test/vending-enrollment.test.mjs
+          node --test --test-name-pattern='pilot flag, scoped phone registration|oldest reservations receive checked puzzles' test/vending.test.mjs
+      - name: Validate the guarded source transformation
+        run: |
+          node --test .github/nanpure-vending-pilot/patch-worker.test.mjs
+          python3 .github/nanpure-vending-pilot/deploy.test.py
+      - name: Update only the existing isolated pilot
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: python3 .github/nanpure-vending-pilot/deploy.py

@@ -1,0 +1,1304 @@
+{
+  "createdAt": "2026-11-04T21:06:04.600Z",
+  "task": "suite",
+  "metadata": {
+    "baselineSHA256": "e9fc54cc9396e046580c51e8c41de1308a9d18ceb5f56c3c98e0976a94dcae45",
+    "candidateSHA256": "098f0b1c5fba839e2388ad2b9736c708a4a7a7a745d4532ea552183b1f2a67f4",
+    "solverSHA256": "0d26407f7129c31c84821e8b3d491e91cbfa13598f9f48b4493542dc122f5e18",
+    "roundSHA256": "69b200ad3e3036e30461e438b33f3f73a2fe0e7bf18797fe801ae82c6e00d85c",
+    "bridgeSHA256": "18d5f5d7122eae6e2f7571571b1ff904853de02db5772060aabfa0c8fa5a0bf5",
+    "profiles": 427,
+    "profileSHA256": "2ea481830a4b4da38907a44f56c721b53c83b62e4e63d67eafddee533e8f11da",
+    "node": "v24.22.1",
+    "platform": "linux",
+    "architecture": "x64",
+    "cpu": "INTEL(R) XEON(R) PLATINUM 8573C",
+    "availableParallelism": 8,
+    "cgroupCPU": "800000 100000",
+    "note": "Desktop Node/V8; these are not Xperia/Android WebView timing measurements."
+  },
+  "runs": {
+    "prefix-l16": {
+      "pairs": [
+        {
+          "baseline": {
+            "mode": "baseline",
+            "level": 16,
+            "seed": "aBc12",
+            "repetition": 1,
+            "prefixStarts": 5,
+            "budgetMs": null,
+            "hardTimeoutMs": 30000,
+            "workerTimeoutIncludingStartupMs": 35000,
+            "status": "prefix",
+            "elapsedMs": 5128.124,
+            "fastUniqueVersion": 0,
+            "probes": 0,
+            "solves": 405,
+            "certifies": 0,
+            "starts": 6,
+            "uniqueMs": 0,
+            "solveMs": 5105.494,
+            "certifyMs": 0,
+            "largestUniqueMs": 0,
+            "largestSolveMs": 455.043,
+            "probeHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "solveHash": "baef3294e59206e562f0c811fef5eab4cb4d2cbc9a5b73b76755ecec9f715475"
+          },
+          "candidate": {
+            "mode": "candidate",
+            "level": 16,
+            "seed": "aBc12",
+            "repetition": 1,
+            "prefixStarts": 5,
+            "budgetMs": null,
+            "hardTimeoutMs": 30000,
+            "workerTimeoutIncludingStartupMs": 35000,
+            "status": "prefix",
+            "elapsedMs": 5528.162,
+            "fastUniqueVersion": 1,
+            "probes": 0,
+            "solves": 405,
+            "certifies": 0,
+            "starts": 6,
+            "uniqueMs": 0,
+            "solveMs": 5494.325,
+            "certifyMs": 0,
+            "largestUniqueMs": 0,
+            "largestSolveMs": 317.371,
+            "probeHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "solveHash": "baef3294e59206e562f0c811fef5eab4cb4d2cbc9a5b73b76755ecec9f715475"
+          },
+          "checks": {
+            "comparable": true,
+            "candidateSequenceIdentical": true,
+            "logicalWorkIdentical": true,
+            "finalPuzzleIdentical": null,
+            "proofIdentical": null
+          }
+        },
+        {
+          "candidate": {
+            "mode": "candidate",
+            "level": 16,
+            "seed": "aBc12",
+            "repetition": 2,
+            "prefixStarts": 5,
+            "budgetMs": null,
+            "hardTimeoutMs": 30000,
+            "workerTimeoutIncludingStartupMs": 35000,
+            "status": "prefix",
+            "elapsedMs": 5330.379,
+            "fastUniqueVersion": 1,
+            "probes": 0,
+            "solves": 405,
+            "certifies": 0,
+            "starts": 6,
+            "uniqueMs": 0,
+            "solveMs": 5310.109,
+            "certifyMs": 0,
+            "largestUniqueMs": 0,
+            "largestSolveMs": 400.234,
+            "probeHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "solveHash": "baef3294e59206e562f0c811fef5eab4cb4d2cbc9a5b73b76755ecec9f715475"
+          },
+          "baseline": {
+            "mode": "baseline",
+            "level": 16,
+            "seed": "aBc12",
+            "repetition": 2,
+            "prefixStarts": 5,
+            "budgetMs": null,
+            "hardTimeoutMs": 30000,
+            "workerTimeoutIncludingStartupMs": 35000,
+            "status": "prefix",
+            "elapsedMs": 3784.485,
+            "fastUniqueVersion": 0,
+            "probes": 0,
+            "solves": 405,
+            "certifies": 0,
+            "starts": 6,
+            "uniqueMs": 0,
+            "solveMs": 3769.288,
+            "certifyMs": 0,
+            "largestUniqueMs": 0,
+            "largestSolveMs": 189.023,
+            "probeHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "solveHash": "baef3294e59206e562f0c811fef5eab4cb4d2cbc9a5b73b76755ecec9f715475"
+          },
+          "checks": {
+            "comparable": true,
+            "candidateSequenceIdentical": true,
+            "logicalWorkIdentical": true,
+            "finalPuzzleIdentical": null,
+            "proofIdentical": null
+          }
+        },
+        {
+          "baseline": {
+            "mode": "baseline",
+            "level": 16,
+            "seed": "aBc12",
+            "repetition": 3,
+            "prefixStarts": 5,
+            "budgetMs": null,
+            "hardTimeoutMs": 30000,
+            "workerTimeoutIncludingStartupMs": 35000,
+            "status": "prefix",
+            "elapsedMs": 4896.285,
+            "fastUniqueVersion": 0,
+            "probes": 0,
+            "solves": 405,
+            "certifies": 0,
+            "starts": 6,
+            "uniqueMs": 0,
+            "solveMs": 4873.982,
+            "certifyMs": 0,
+            "largestUniqueMs": 0,
+            "largestSolveMs": 420.468,
+            "probeHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "solveHash": "baef3294e59206e562f0c811fef5eab4cb4d2cbc9a5b73b76755ecec9f715475"
+          },
+          "candidate": {
+            "mode": "candidate",
+            "level": 16,
+            "seed": "aBc12",
+            "repetition": 3,
+            "prefixStarts": 5,
+            "budgetMs": null,
+            "hardTimeoutMs": 30000,
+            "workerTimeoutIncludingStartupMs": 35000,
+            "status": "prefix",
+            "elapsedMs": 3958.69,
+            "fastUniqueVersion": 1,
+            "probes": 0,
+            "solves": 405,
+            "certifies": 0,
+            "starts": 6,
+            "uniqueMs": 0,
+            "solveMs": 3941.524,
+            "certifyMs": 0,
+            "largestUniqueMs": 0,
+            "largestSolveMs": 167.743,
+            "probeHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "solveHash": "baef3294e59206e562f0c811fef5eab4cb4d2cbc9a5b73b76755ecec9f715475"
+          },
+          "checks": {
+            "comparable": true,
+            "candidateSequenceIdentical": true,
+            "logicalWorkIdentical": true,
+            "finalPuzzleIdentical": null,
+            "proofIdentical": null
+          }
+        }
+      ],
+      "summary": {
+        "pairs": 3,
+        "identicalWorkPairs": 3,
+        "baselineMedianMs": 4896.285,
+        "candidateMedianMs": 5330.379,
+        "baselineCompleted": 0,
+        "candidateCompleted": 0,
+        "completedPairMedianBaselineMs": null,
+        "completedPairMedianCandidateMs": null,
+        "note": "The general medians are workload/slice durations. Only completedPairMedian* denotes completed-puzzle generation time."
+      }
+    },
+    "prefix-l18": {
+      "pairs": [
+        {
+          "baseline": {
+            "mode": "baseline",
+            "level": 18,
+            "seed": "aBc12",
+            "repetition": 1,
+            "prefixStarts": 5,
+            "budgetMs": null,
+            "hardTimeoutMs": 30000,
+            "workerTimeoutIncludingStartupMs": 35000,
+            "status": "prefix",
+            "elapsedMs": 2857.794,
+            "fastUniqueVersion": 0,
+            "probes": 705,
+            "solves": 301,
+            "certifies": 0,
+            "starts": 6,
+            "uniqueMs": 2111.329,
+            "solveMs": 700.785,
+            "certifyMs": 0,
+            "largestUniqueMs": 131.265,
+            "largestSolveMs": 508.704,
+            "probeHash": "2a048455c444d35d939afa90a6c342c6194267905c1c6e1c170b36db36bc1945",
+            "solveHash": "c6d636077357902404b3c44d70bd4069e699540916ddd8ce513df3a6de2213a6"
+          },
+          "candidate": {
+            "mode": "candidate",
+            "level": 18,
+            "seed": "aBc12",
+            "repetition": 1,
+            "prefixStarts": 5,
+            "budgetMs": null,
+            "hardTimeoutMs": 30000,
+            "workerTimeoutIncludingStartupMs": 35000,
+            "status": "prefix",
+            "elapsedMs": 729.834,
+            "fastUniqueVersion": 1,
+            "probes": 705,
+            "solves": 301,
+            "certifies": 0,
+            "starts": 6,
+            "uniqueMs": 94.305,
+            "solveMs": 601.476,
+            "certifyMs": 0,
+            "largestUniqueMs": 4.06,
+            "largestSolveMs": 409.271,
+            "probeHash": "2a048455c444d35d939afa90a6c342c6194267905c1c6e1c170b36db36bc1945",
+            "solveHash": "c6d636077357902404b3c44d70bd4069e699540916ddd8ce513df3a6de2213a6"
+          },
+          "checks": {
+            "comparable": true,
+            "candidateSequenceIdentical": true,
+            "logicalWorkIdentical": true,
+            "finalPuzzleIdentical": null,
+            "proofIdentical": null
+          }
+        },
+        {
+          "candidate": {
+            "mode": "candidate",
+            "level": 18,
+            "seed": "aBc12",
+            "repetition": 2,
+            "prefixStarts": 5,
+            "budgetMs": null,
+            "hardTimeoutMs": 30000,
+            "workerTimeoutIncludingStartupMs": 35000,
+            "status": "prefix",
+            "elapsedMs": 909.929,
+            "fastUniqueVersion": 1,
+            "probes": 705,
+            "solves": 301,
+            "certifies": 0,
+            "starts": 6,
+            "uniqueMs": 112.593,
+            "solveMs": 749.034,
+            "certifyMs": 0,
+            "largestUniqueMs": 3.865,
+            "largestSolveMs": 439.177,
+            "probeHash": "2a048455c444d35d939afa90a6c342c6194267905c1c6e1c170b36db36bc1945",
+            "solveHash": "c6d636077357902404b3c44d70bd4069e699540916ddd8ce513df3a6de2213a6"
+          },
+          "baseline": {
+            "mode": "baseline",
+            "level": 18,
+            "seed": "aBc12",
+            "repetition": 2,
+            "prefixStarts": 5,
+            "budgetMs": null,
+            "hardTimeoutMs": 30000,
+            "workerTimeoutIncludingStartupMs": 35000,
+            "status": "prefix",
+            "elapsedMs": 4451.203,
+            "fastUniqueVersion": 0,
+            "probes": 705,
+            "solves": 301,
+            "certifies": 0,
+            "starts": 6,
+            "uniqueMs": 3510.756,
+            "solveMs": 796.845,
+            "certifyMs": 0,
+            "largestUniqueMs": 305.392,
+            "largestSolveMs": 448.91,
+            "probeHash": "2a048455c444d35d939afa90a6c342c6194267905c1c6e1c170b36db36bc1945",
+            "solveHash": "c6d636077357902404b3c44d70bd4069e699540916ddd8ce513df3a6de2213a6"
+          },
+          "checks": {
+            "comparable": true,
+            "candidateSequenceIdentical": true,
+            "logicalWorkIdentical": true,
+            "finalPuzzleIdentical": null,
+            "proofIdentical": null
+          }
+        },
+        {
+          "baseline": {
+            "mode": "baseline",
+            "level": 18,
+            "seed": "aBc12",
+            "repetition": 3,
+            "prefixStarts": 5,
+            "budgetMs": null,
+            "hardTimeoutMs": 30000,
+            "workerTimeoutIncludingStartupMs": 35000,
+            "status": "prefix",
+            "elapsedMs": 3916.458,
+            "fastUniqueVersion": 0,
+            "probes": 705,
+            "solves": 301,
+            "certifies": 0,
+            "starts": 6,
+            "uniqueMs": 3011.768,
+            "solveMs": 775.493,
+            "certifyMs": 0,
+            "largestUniqueMs": 161.148,
+            "largestSolveMs": 342.975,
+            "probeHash": "2a048455c444d35d939afa90a6c342c6194267905c1c6e1c170b36db36bc1945",
+            "solveHash": "c6d636077357902404b3c44d70bd4069e699540916ddd8ce513df3a6de2213a6"
+          },
+          "candidate": {
+            "mode": "candidate",
+            "level": 18,
+            "seed": "aBc12",
+            "repetition": 3,
+            "prefixStarts": 5,
+            "budgetMs": null,
+            "hardTimeoutMs": 30000,
+            "workerTimeoutIncludingStartupMs": 35000,
+            "status": "prefix",
+            "elapsedMs": 920.321,
+            "fastUniqueVersion": 1,
+            "probes": 705,
+            "solves": 301,
+            "certifies": 0,
+            "starts": 6,
+            "uniqueMs": 112.533,
+            "solveMs": 770.953,
+            "certifyMs": 0,
+            "largestUniqueMs": 5.325,
+            "largestSolveMs": 491.41,
+            "probeHash": "2a048455c444d35d939afa90a6c342c6194267905c1c6e1c170b36db36bc1945",
+            "solveHash": "c6d636077357902404b3c44d70bd4069e699540916ddd8ce513df3a6de2213a6"
+          },
+          "checks": {
+            "comparable": true,
+            "candidateSequenceIdentical": true,
+            "logicalWorkIdentical": true,
+            "finalPuzzleIdentical": null,
+            "proofIdentical": null
+          }
+        }
+      ],
+      "summary": {
+        "pairs": 3,
+        "identicalWorkPairs": 3,
+        "baselineMedianMs": 3916.458,
+        "candidateMedianMs": 909.929,
+        "baselineCompleted": 0,
+        "candidateCompleted": 0,
+        "completedPairMedianBaselineMs": null,
+        "completedPairMedianCandidateMs": null,
+        "note": "The general medians are workload/slice durations. Only completedPairMedian* denotes completed-puzzle generation time."
+      }
+    },
+    "complete-l18": {
+      "pairs": [
+        {
+          "baseline": {
+            "mode": "baseline",
+            "level": 18,
+            "seed": "Xperi",
+            "repetition": 1,
+            "prefixStarts": null,
+            "budgetMs": 30000,
+            "hardTimeoutMs": 35000,
+            "workerTimeoutIncludingStartupMs": 40000,
+            "status": "generated",
+            "elapsedMs": 8902.421,
+            "fastUniqueVersion": 0,
+            "probes": 2329,
+            "solves": 1036,
+            "certifies": 1,
+            "starts": 17,
+            "uniqueMs": 5741.983,
+            "solveMs": 3030.53,
+            "certifyMs": 4.966,
+            "largestUniqueMs": 210.234,
+            "largestSolveMs": 831.835,
+            "probeHash": "cd5d971ac237b1f0426df808cfa5c1f706b7630cae8c2cb6aabf6855677377ea",
+            "solveHash": "dfb5da66bb64ce17de1eaa0c698628a9f5a7f03828abaca067542e991cdcd400",
+            "completed": {
+              "id": "Xperi",
+              "puzzleHash": "db2d299389859730897496146d5cd4c9fd20e648806115b119eb2f9641d738a7",
+              "grid": "000040300019050007780000000003084000000600000800020605400090070000000902001078000",
+              "solution": "265847391319256847784319256653784129192635784847921635436192578578463912921578463",
+              "proofHash": "9c18ad8129c631b6e58f69d8f4e804da722d14971d547d52dde021c6aeee789d",
+              "rating": {
+                "level": 18,
+                "humanSolvable": true,
+                "noGuess": true,
+                "unique": true,
+                "clues": 24,
+                "technique": "bounded-clause-resolution"
+              },
+              "verification": {
+                "unique": true,
+                "method": "independent-set-proof-replay",
+                "legacySolverSolved": false,
+                "coverSolverSolved": false,
+                "steps": 87,
+                "resolutionCount": 1,
+                "maxProofClauses": 67
+              },
+              "proofVerified": true,
+              "unique": true
+            }
+          },
+          "candidate": {
+            "mode": "candidate",
+            "level": 18,
+            "seed": "Xperi",
+            "repetition": 1,
+            "prefixStarts": null,
+            "budgetMs": 30000,
+            "hardTimeoutMs": 35000,
+            "workerTimeoutIncludingStartupMs": 40000,
+            "status": "generated",
+            "elapsedMs": 3378.115,
+            "fastUniqueVersion": 1,
+            "probes": 2329,
+            "solves": 1036,
+            "certifies": 1,
+            "starts": 17,
+            "uniqueMs": 203.657,
+            "solveMs": 3084.092,
+            "certifyMs": 9.252,
+            "largestUniqueMs": 5.8,
+            "largestSolveMs": 807.727,
+            "probeHash": "cd5d971ac237b1f0426df808cfa5c1f706b7630cae8c2cb6aabf6855677377ea",
+            "solveHash": "dfb5da66bb64ce17de1eaa0c698628a9f5a7f03828abaca067542e991cdcd400",
+            "completed": {
+              "id": "Xperi",
+              "puzzleHash": "db2d299389859730897496146d5cd4c9fd20e648806115b119eb2f9641d738a7",
+              "grid": "000040300019050007780000000003084000000600000800020605400090070000000902001078000",
+              "solution": "265847391319256847784319256653784129192635784847921635436192578578463912921578463",
+              "proofHash": "9c18ad8129c631b6e58f69d8f4e804da722d14971d547d52dde021c6aeee789d",
+              "rating": {
+                "level": 18,
+                "humanSolvable": true,
+                "noGuess": true,
+                "unique": true,
+                "clues": 24,
+                "technique": "bounded-clause-resolution"
+              },
+              "verification": {
+                "unique": true,
+                "method": "independent-set-proof-replay",
+                "legacySolverSolved": false,
+                "coverSolverSolved": false,
+                "steps": 87,
+                "resolutionCount": 1,
+                "maxProofClauses": 67
+              },
+              "proofVerified": true,
+              "unique": true
+            }
+          },
+          "checks": {
+            "comparable": true,
+            "candidateSequenceIdentical": true,
+            "logicalWorkIdentical": true,
+            "finalPuzzleIdentical": true,
+            "proofIdentical": true
+          }
+        },
+        {
+          "candidate": {
+            "mode": "candidate",
+            "level": 18,
+            "seed": "Xperi",
+            "repetition": 2,
+            "prefixStarts": null,
+            "budgetMs": 30000,
+            "hardTimeoutMs": 35000,
+            "workerTimeoutIncludingStartupMs": 40000,
+            "status": "generated",
+            "elapsedMs": 3057.404,
+            "fastUniqueVersion": 1,
+            "probes": 2329,
+            "solves": 1036,
+            "certifies": 1,
+            "starts": 17,
+            "uniqueMs": 201.137,
+            "solveMs": 2775.546,
+            "certifyMs": 6.134,
+            "largestUniqueMs": 4.777,
+            "largestSolveMs": 719.241,
+            "probeHash": "cd5d971ac237b1f0426df808cfa5c1f706b7630cae8c2cb6aabf6855677377ea",
+            "solveHash": "dfb5da66bb64ce17de1eaa0c698628a9f5a7f03828abaca067542e991cdcd400",
+            "completed": {
+              "id": "Xperi",
+              "puzzleHash": "db2d299389859730897496146d5cd4c9fd20e648806115b119eb2f9641d738a7",
+              "grid": "000040300019050007780000000003084000000600000800020605400090070000000902001078000",
+              "solution": "265847391319256847784319256653784129192635784847921635436192578578463912921578463",
+              "proofHash": "9c18ad8129c631b6e58f69d8f4e804da722d14971d547d52dde021c6aeee789d",
+              "rating": {
+                "level": 18,
+                "humanSolvable": true,
+                "noGuess": true,
+                "unique": true,
+                "clues": 24,
+                "technique": "bounded-clause-resolution"
+              },
+              "verification": {
+                "unique": true,
+                "method": "independent-set-proof-replay",
+                "legacySolverSolved": false,
+                "coverSolverSolved": false,
+                "steps": 87,
+                "resolutionCount": 1,
+                "maxProofClauses": 67
+              },
+              "proofVerified": true,
+              "unique": true
+            }
+          },
+          "baseline": {
+            "mode": "baseline",
+            "level": 18,
+            "seed": "Xperi",
+            "repetition": 2,
+            "prefixStarts": null,
+            "budgetMs": 30000,
+            "hardTimeoutMs": 35000,
+            "workerTimeoutIncludingStartupMs": 40000,
+            "status": "generated",
+            "elapsedMs": 8509.057,
+            "fastUniqueVersion": 0,
+            "probes": 2329,
+            "solves": 1036,
+            "certifies": 1,
+            "starts": 17,
+            "uniqueMs": 5287.481,
+            "solveMs": 3093.843,
+            "certifyMs": 6.157,
+            "largestUniqueMs": 82.059,
+            "largestSolveMs": 822.482,
+            "probeHash": "cd5d971ac237b1f0426df808cfa5c1f706b7630cae8c2cb6aabf6855677377ea",
+            "solveHash": "dfb5da66bb64ce17de1eaa0c698628a9f5a7f03828abaca067542e991cdcd400",
+            "completed": {
+              "id": "Xperi",
+              "puzzleHash": "db2d299389859730897496146d5cd4c9fd20e648806115b119eb2f9641d738a7",
+              "grid": "000040300019050007780000000003084000000600000800020605400090070000000902001078000",
+              "solution": "265847391319256847784319256653784129192635784847921635436192578578463912921578463",
+              "proofHash": "9c18ad8129c631b6e58f69d8f4e804da722d14971d547d52dde021c6aeee789d",
+              "rating": {
+                "level": 18,
+                "humanSolvable": true,
+                "noGuess": true,
+                "unique": true,
+                "clues": 24,
+                "technique": "bounded-clause-resolution"
+              },
+              "verification": {
+                "unique": true,
+                "method": "independent-set-proof-replay",
+                "legacySolverSolved": false,
+                "coverSolverSolved": false,
+                "steps": 87,
+                "resolutionCount": 1,
+                "maxProofClauses": 67
+              },
+              "proofVerified": true,
+              "unique": true
+            }
+          },
+          "checks": {
+            "comparable": true,
+            "candidateSequenceIdentical": true,
+            "logicalWorkIdentical": true,
+            "finalPuzzleIdentical": true,
+            "proofIdentical": true
+          }
+        },
+        {
+          "baseline": {
+            "mode": "baseline",
+            "level": 18,
+            "seed": "Xperi",
+            "repetition": 3,
+            "prefixStarts": null,
+            "budgetMs": 30000,
+            "hardTimeoutMs": 35000,
+            "workerTimeoutIncludingStartupMs": 40000,
+            "status": "generated",
+            "elapsedMs": 8990.659,
+            "fastUniqueVersion": 0,
+            "probes": 2329,
+            "solves": 1036,
+            "certifies": 1,
+            "starts": 17,
+            "uniqueMs": 5729.691,
+            "solveMs": 3112.623,
+            "certifyMs": 6.232,
+            "largestUniqueMs": 87.96,
+            "largestSolveMs": 799.04,
+            "probeHash": "cd5d971ac237b1f0426df808cfa5c1f706b7630cae8c2cb6aabf6855677377ea",
+            "solveHash": "dfb5da66bb64ce17de1eaa0c698628a9f5a7f03828abaca067542e991cdcd400",
+            "completed": {
+              "id": "Xperi",
+              "puzzleHash": "db2d299389859730897496146d5cd4c9fd20e648806115b119eb2f9641d738a7",
+              "grid": "000040300019050007780000000003084000000600000800020605400090070000000902001078000",
+              "solution": "265847391319256847784319256653784129192635784847921635436192578578463912921578463",
+              "proofHash": "9c18ad8129c631b6e58f69d8f4e804da722d14971d547d52dde021c6aeee789d",
+              "rating": {
+                "level": 18,
+                "humanSolvable": true,
+                "noGuess": true,
+                "unique": true,
+                "clues": 24,
+                "technique": "bounded-clause-resolution"
+              },
+              "verification": {
+                "unique": true,
+                "method": "independent-set-proof-replay",
+                "legacySolverSolved": false,
+                "coverSolverSolved": false,
+                "steps": 87,
+                "resolutionCount": 1,
+                "maxProofClauses": 67
+              },
+              "proofVerified": true,
+              "unique": true
+            }
+          },
+          "candidate": {
+            "mode": "candidate",
+            "level": 18,
+            "seed": "Xperi",
+            "repetition": 3,
+            "prefixStarts": null,
+            "budgetMs": 30000,
+            "hardTimeoutMs": 35000,
+            "workerTimeoutIncludingStartupMs": 40000,
+            "status": "generated",
+            "elapsedMs": 3100.043,
+            "fastUniqueVersion": 1,
+            "probes": 2329,
+            "solves": 1036,
+            "certifies": 1,
+            "starts": 17,
+            "uniqueMs": 204.172,
+            "solveMs": 2811.14,
+            "certifyMs": 5.981,
+            "largestUniqueMs": 6.414,
+            "largestSolveMs": 710.258,
+            "probeHash": "cd5d971ac237b1f0426df808cfa5c1f706b7630cae8c2cb6aabf6855677377ea",
+            "solveHash": "dfb5da66bb64ce17de1eaa0c698628a9f5a7f03828abaca067542e991cdcd400",
+            "completed": {
+              "id": "Xperi",
+              "puzzleHash": "db2d299389859730897496146d5cd4c9fd20e648806115b119eb2f9641d738a7",
+              "grid": "000040300019050007780000000003084000000600000800020605400090070000000902001078000",
+              "solution": "265847391319256847784319256653784129192635784847921635436192578578463912921578463",
+              "proofHash": "9c18ad8129c631b6e58f69d8f4e804da722d14971d547d52dde021c6aeee789d",
+              "rating": {
+                "level": 18,
+                "humanSolvable": true,
+                "noGuess": true,
+                "unique": true,
+                "clues": 24,
+                "technique": "bounded-clause-resolution"
+              },
+              "verification": {
+                "unique": true,
+                "method": "independent-set-proof-replay",
+                "legacySolverSolved": false,
+                "coverSolverSolved": false,
+                "steps": 87,
+                "resolutionCount": 1,
+                "maxProofClauses": 67
+              },
+              "proofVerified": true,
+              "unique": true
+            }
+          },
+          "checks": {
+            "comparable": true,
+            "candidateSequenceIdentical": true,
+            "logicalWorkIdentical": true,
+            "finalPuzzleIdentical": true,
+            "proofIdentical": true
+          }
+        }
+      ],
+      "summary": {
+        "pairs": 3,
+        "identicalWorkPairs": 3,
+        "baselineMedianMs": 8902.421,
+        "candidateMedianMs": 3100.043,
+        "baselineCompleted": 3,
+        "candidateCompleted": 3,
+        "completedPairMedianBaselineMs": 8902.421,
+        "completedPairMedianCandidateMs": 3100.043,
+        "note": "The general medians are workload/slice durations. Only completedPairMedian* denotes completed-puzzle generation time."
+      }
+    },
+    "complete-l16": {
+      "pairs": [
+        {
+          "baseline": {
+            "mode": "baseline",
+            "level": 16,
+            "seed": "A2asR",
+            "repetition": 1,
+            "status": "hard-timeout",
+            "budgetMs": 15000,
+            "prefixStarts": null,
+            "hardTimeoutMs": 20000,
+            "lastProgress": {
+              "type": "progress",
+              "elapsedMs": 8868.608447000006,
+              "starts": 11
+            }
+          },
+          "candidate": {
+            "mode": "candidate",
+            "level": 16,
+            "seed": "A2asR",
+            "repetition": 1,
+            "prefixStarts": null,
+            "budgetMs": 15000,
+            "hardTimeoutMs": 20000,
+            "workerTimeoutIncludingStartupMs": 25000,
+            "status": "exhausted",
+            "elapsedMs": 15487.658,
+            "error": {
+              "code": "NP_SEARCH_EXHAUSTED",
+              "message": "超極限の条件に合う問題を引き続き探しています。"
+            },
+            "fastUniqueVersion": 1,
+            "probes": 0,
+            "solves": 972,
+            "certifies": 0,
+            "starts": 12,
+            "uniqueMs": 0,
+            "solveMs": 15371.643,
+            "certifyMs": 0,
+            "largestUniqueMs": 0,
+            "largestSolveMs": 1608.799,
+            "probeHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "solveHash": "33d901eb6f24111301cb7ac1f34d67cadcacc8df5ac89fb843ec5e889836503a"
+          },
+          "checks": {
+            "comparable": false,
+            "candidateSequenceIdentical": false,
+            "logicalWorkIdentical": false,
+            "finalPuzzleIdentical": null,
+            "proofIdentical": null
+          }
+        },
+        {
+          "candidate": {
+            "mode": "candidate",
+            "level": 16,
+            "seed": "Aud16",
+            "repetition": 2,
+            "prefixStarts": null,
+            "budgetMs": 15000,
+            "hardTimeoutMs": 20000,
+            "workerTimeoutIncludingStartupMs": 25000,
+            "status": "generated",
+            "elapsedMs": 8834.913,
+            "fastUniqueVersion": 1,
+            "probes": 1,
+            "solves": 648,
+            "certifies": 1,
+            "starts": 8,
+            "uniqueMs": 5.545,
+            "solveMs": 8779.275,
+            "certifyMs": 3.256,
+            "largestUniqueMs": 5.545,
+            "largestSolveMs": 376.958,
+            "probeHash": "ba4615194ba89338556210b427cbcdf3669b61d4b871da71db0de4996c4cabf3",
+            "solveHash": "a9d41b63e628db106273cfba34b2f509f98c2ca963b2fad4b48c588eac23b20d",
+            "completed": {
+              "id": "Aud16",
+              "puzzleHash": "4371a15addb451e7c5316b4045a7cf3960af3b040950755707fed7f178249cac",
+              "grid": "025400000007000900000050003000010000060800200000300045008000009010020604500600000",
+              "solution": "925473168437168952186952473854217396369845217271396845648731529713529684592684731",
+              "proofHash": "799ff4397880221e05a3157749ef0029b4eb9676c7201b3f138bddde3f7b5ef1",
+              "rating": {
+                "level": 16,
+                "humanSolvable": true,
+                "noGuess": true,
+                "unique": true,
+                "clues": 22,
+                "technique": "candidate-bundle-chain"
+              },
+              "verification": {
+                "unique": true,
+                "method": "independent-set-proof-replay",
+                "legacySolverSolved": false,
+                "ordinaryAICSolved": false,
+                "steps": 87,
+                "bundleCount": 5,
+                "maxChainLinks": 11
+              },
+              "proofVerified": true,
+              "unique": true
+            }
+          },
+          "baseline": {
+            "mode": "baseline",
+            "level": 16,
+            "seed": "Aud16",
+            "repetition": 2,
+            "prefixStarts": null,
+            "budgetMs": 15000,
+            "hardTimeoutMs": 20000,
+            "workerTimeoutIncludingStartupMs": 25000,
+            "status": "generated",
+            "elapsedMs": 8493.958,
+            "fastUniqueVersion": 0,
+            "probes": 1,
+            "solves": 648,
+            "certifies": 1,
+            "starts": 8,
+            "uniqueMs": 78.831,
+            "solveMs": 8374.093,
+            "certifyMs": 2.447,
+            "largestUniqueMs": 78.831,
+            "largestSolveMs": 282.37,
+            "probeHash": "ba4615194ba89338556210b427cbcdf3669b61d4b871da71db0de4996c4cabf3",
+            "solveHash": "a9d41b63e628db106273cfba34b2f509f98c2ca963b2fad4b48c588eac23b20d",
+            "completed": {
+              "id": "Aud16",
+              "puzzleHash": "4371a15addb451e7c5316b4045a7cf3960af3b040950755707fed7f178249cac",
+              "grid": "025400000007000900000050003000010000060800200000300045008000009010020604500600000",
+              "solution": "925473168437168952186952473854217396369845217271396845648731529713529684592684731",
+              "proofHash": "799ff4397880221e05a3157749ef0029b4eb9676c7201b3f138bddde3f7b5ef1",
+              "rating": {
+                "level": 16,
+                "humanSolvable": true,
+                "noGuess": true,
+                "unique": true,
+                "clues": 22,
+                "technique": "candidate-bundle-chain"
+              },
+              "verification": {
+                "unique": true,
+                "method": "independent-set-proof-replay",
+                "legacySolverSolved": false,
+                "ordinaryAICSolved": false,
+                "steps": 87,
+                "bundleCount": 5,
+                "maxChainLinks": 11
+              },
+              "proofVerified": true,
+              "unique": true
+            }
+          },
+          "checks": {
+            "comparable": true,
+            "candidateSequenceIdentical": true,
+            "logicalWorkIdentical": true,
+            "finalPuzzleIdentical": true,
+            "proofIdentical": true
+          }
+        },
+        {
+          "baseline": {
+            "mode": "baseline",
+            "level": 16,
+            "seed": "Xperi",
+            "repetition": 3,
+            "prefixStarts": null,
+            "budgetMs": 15000,
+            "hardTimeoutMs": 20000,
+            "workerTimeoutIncludingStartupMs": 25000,
+            "status": "exhausted",
+            "elapsedMs": 15237.5,
+            "error": {
+              "code": "NP_SEARCH_EXHAUSTED",
+              "message": "超極限の条件に合う問題を引き続き探しています。"
+            },
+            "fastUniqueVersion": 0,
+            "probes": 0,
+            "solves": 1296,
+            "certifies": 0,
+            "starts": 16,
+            "uniqueMs": 0,
+            "solveMs": 15183.783,
+            "certifyMs": 0,
+            "largestUniqueMs": 0,
+            "largestSolveMs": 447.911,
+            "probeHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "solveHash": "fb21828fb874a2f862ecb5536c79ab1fe858dadd284203255c76dcbfcbe9174e"
+          },
+          "candidate": {
+            "mode": "candidate",
+            "level": 16,
+            "seed": "Xperi",
+            "repetition": 3,
+            "prefixStarts": null,
+            "budgetMs": 15000,
+            "hardTimeoutMs": 20000,
+            "workerTimeoutIncludingStartupMs": 25000,
+            "status": "exhausted",
+            "elapsedMs": 15924.327,
+            "error": {
+              "code": "NP_SEARCH_EXHAUSTED",
+              "message": "超極限の条件に合う問題を引き続き探しています。"
+            },
+            "fastUniqueVersion": 1,
+            "probes": 0,
+            "solves": 1377,
+            "certifies": 0,
+            "starts": 17,
+            "uniqueMs": 0,
+            "solveMs": 15873.061,
+            "certifyMs": 0,
+            "largestUniqueMs": 0,
+            "largestSolveMs": 420.61,
+            "probeHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "solveHash": "84ef4ee8ba730c06c8ac57379fdc46d433c6acbcd8274bc62641de0c4012886c"
+          },
+          "checks": {
+            "comparable": false,
+            "candidateSequenceIdentical": false,
+            "logicalWorkIdentical": false,
+            "finalPuzzleIdentical": null,
+            "proofIdentical": null
+          }
+        }
+      ],
+      "summary": {
+        "pairs": 3,
+        "identicalWorkPairs": 1,
+        "baselineMedianMs": 11865.729,
+        "candidateMedianMs": 15487.658,
+        "baselineCompleted": 1,
+        "candidateCompleted": 1,
+        "completedPairMedianBaselineMs": 8493.958,
+        "completedPairMedianCandidateMs": 8834.913,
+        "note": "The general medians are workload/slice durations. Only completedPairMedian* denotes completed-puzzle generation time."
+      }
+    },
+    "parallel-baseline": {
+      "mode": "baseline",
+      "laneCount": 8,
+      "budgetMs": 15000,
+      "seeds": [
+        "Xperi",
+        "aBc12",
+        "Aud18",
+        "Audit",
+        "A2asR",
+        "AJWkl",
+        "Bench",
+        "Fast3"
+      ],
+      "id": 1,
+      "result": {
+        "exhausted": true
+      },
+      "elapsedMs": 15005.21,
+      "readiness": [
+        {
+          "type": "ready",
+          "lane": 0,
+          "seed": "Xperi",
+          "fastUniqueVersion": 0
+        },
+        {
+          "type": "ready",
+          "lane": 1,
+          "seed": "aBc12",
+          "fastUniqueVersion": 0
+        },
+        {
+          "type": "ready",
+          "lane": 3,
+          "seed": "Audit",
+          "fastUniqueVersion": 0
+        },
+        {
+          "type": "ready",
+          "lane": 2,
+          "seed": "Aud18",
+          "fastUniqueVersion": 0
+        },
+        {
+          "type": "ready",
+          "lane": 7,
+          "seed": "Fast3",
+          "fastUniqueVersion": 0
+        },
+        {
+          "type": "ready",
+          "lane": 5,
+          "seed": "AJWkl",
+          "fastUniqueVersion": 0
+        },
+        {
+          "type": "ready",
+          "lane": 4,
+          "seed": "A2asR",
+          "fastUniqueVersion": 0
+        },
+        {
+          "type": "ready",
+          "lane": 6,
+          "seed": "Bench",
+          "fastUniqueVersion": 0
+        }
+      ],
+      "workerDetails": [
+        {
+          "lane": 0,
+          "seed": "Xperi",
+          "request": {
+            "id": 1,
+            "profile": "normal:9:18:0::::",
+            "budgetMs": 13500
+          },
+          "terminatedByBridge": true
+        },
+        {
+          "lane": 1,
+          "seed": "aBc12",
+          "request": {
+            "id": 1,
+            "profile": "normal:9:18:0::::",
+            "budgetMs": 13500
+          },
+          "terminatedByBridge": true
+        },
+        {
+          "lane": 2,
+          "seed": "Aud18",
+          "request": {
+            "id": 1,
+            "profile": "normal:9:18:0::::",
+            "budgetMs": 13500
+          },
+          "terminatedByBridge": true
+        },
+        {
+          "lane": 3,
+          "seed": "Audit",
+          "request": {
+            "id": 1,
+            "profile": "normal:9:18:0::::",
+            "budgetMs": 13500
+          },
+          "terminatedByBridge": true
+        },
+        {
+          "lane": 4,
+          "seed": "A2asR",
+          "request": {
+            "id": 1,
+            "profile": "normal:9:18:0::::",
+            "budgetMs": 13500
+          },
+          "terminatedByBridge": true
+        },
+        {
+          "lane": 5,
+          "seed": "AJWkl",
+          "request": {
+            "id": 1,
+            "profile": "normal:9:18:0::::",
+            "budgetMs": 13500
+          },
+          "terminatedByBridge": true
+        },
+        {
+          "lane": 6,
+          "seed": "Bench",
+          "request": {
+            "id": 1,
+            "profile": "normal:9:18:0::::",
+            "budgetMs": 13500
+          },
+          "terminatedByBridge": true
+        },
+        {
+          "lane": 7,
+          "seed": "Fast3",
+          "request": {
+            "id": 1,
+            "profile": "normal:9:18:0::::",
+            "budgetMs": 13500
+          },
+          "terminatedByBridge": true
+        }
+      ],
+      "scope": "Original bridge.js -> original round.js -> complete engine in 8 real Node worker threads. Native Android/WebView/JNI/network/storage are not exercised."
+    },
+    "parallel-candidate": {
+      "mode": "candidate",
+      "laneCount": 8,
+      "budgetMs": 15000,
+      "seeds": [
+        "Xperi",
+        "aBc12",
+        "Aud18",
+        "Audit",
+        "A2asR",
+        "AJWkl",
+        "Bench",
+        "Fast3"
+      ],
+      "id": 1,
+      "result": {
+        "profile": "normal:9:18:0::::",
+        "generated": true,
+        "id": "Xperi",
+        "grid": "000040300019050007780000000003084000000600000800020605400090070000000902001078000",
+        "solution": "265847391319256847784319256653784129192635784847921635436192578578463912921578463",
+        "rating": {
+          "level": 18,
+          "humanSolvable": true,
+          "noGuess": true,
+          "unique": true,
+          "clues": 24,
+          "technique": "bounded-clause-resolution"
+        },
+        "proofHash": "9c18ad8129c631b6e58f69d8f4e804da722d14971d547d52dde021c6aeee789d",
+        "proofVerified": true
+      },
+      "elapsedMs": 9787.954,
+      "readiness": [
+        {
+          "type": "ready",
+          "lane": 1,
+          "seed": "aBc12",
+          "fastUniqueVersion": 1
+        },
+        {
+          "type": "ready",
+          "lane": 4,
+          "seed": "A2asR",
+          "fastUniqueVersion": 1
+        },
+        {
+          "type": "ready",
+          "lane": 2,
+          "seed": "Aud18",
+          "fastUniqueVersion": 1
+        },
+        {
+          "type": "ready",
+          "lane": 5,
+          "seed": "AJWkl",
+          "fastUniqueVersion": 1
+        },
+        {
+          "type": "ready",
+          "lane": 0,
+          "seed": "Xperi",
+          "fastUniqueVersion": 1
+        },
+        {
+          "type": "ready",
+          "lane": 3,
+          "seed": "Audit",
+          "fastUniqueVersion": 1
+        },
+        {
+          "type": "ready",
+          "lane": 7,
+          "seed": "Fast3",
+          "fastUniqueVersion": 1
+        },
+        {
+          "type": "ready",
+          "lane": 6,
+          "seed": "Bench",
+          "fastUniqueVersion": 1
+        }
+      ],
+      "workerDetails": [
+        {
+          "lane": 0,
+          "seed": "Xperi",
+          "request": {
+            "id": 1,
+            "profile": "normal:9:18:0::::",
+            "budgetMs": 13500
+          },
+          "terminatedByBridge": false
+        },
+        {
+          "lane": 1,
+          "seed": "aBc12",
+          "request": {
+            "id": 1,
+            "profile": "normal:9:18:0::::",
+            "budgetMs": 13500
+          },
+          "terminatedByBridge": true
+        },
+        {
+          "lane": 2,
+          "seed": "Aud18",
+          "request": {
+            "id": 1,
+            "profile": "normal:9:18:0::::",
+            "budgetMs": 13500
+          },
+          "terminatedByBridge": true
+        },
+        {
+          "lane": 3,
+          "seed": "Audit",
+          "request": {
+            "id": 1,
+            "profile": "normal:9:18:0::::",
+            "budgetMs": 13500
+          },
+          "terminatedByBridge": true
+        },
+        {
+          "lane": 4,
+          "seed": "A2asR",
+          "request": {
+            "id": 1,
+            "profile": "normal:9:18:0::::",
+            "budgetMs": 13500
+          },
+          "terminatedByBridge": true
+        },
+        {
+          "lane": 5,
+          "seed": "AJWkl",
+          "request": {
+            "id": 1,
+            "profile": "normal:9:18:0::::",
+            "budgetMs": 13500
+          },
+          "terminatedByBridge": true
+        },
+        {
+          "lane": 6,
+          "seed": "Bench",
+          "request": {
+            "id": 1,
+            "profile": "normal:9:18:0::::",
+            "budgetMs": 13500
+          },
+          "terminatedByBridge": true
+        },
+        {
+          "lane": 7,
+          "seed": "Fast3",
+          "request": {
+            "id": 1,
+            "profile": "normal:9:18:0::::",
+            "budgetMs": 13500
+          },
+          "terminatedByBridge": true
+        }
+      ],
+      "scope": "Original bridge.js -> original round.js -> complete engine in 8 real Node worker threads. Native Android/WebView/JNI/network/storage are not exercised."
+    }
+  },
+  "notes": [
+    "No application sources or APK contents were modified by this benchmark.",
+    "A new V8 Worker/isolate is used for every single-case run; engine loading is outside generation timing.",
+    "Baseline/candidate ordering alternates. Timed runs instrument the same candidate and logic hashes in both variants.",
+    "No network requests, server reservations, uploads, or Android database writes are made."
+  ],
+  "finishedAt": "2026-11-04T21:09:27.380Z"
+}
