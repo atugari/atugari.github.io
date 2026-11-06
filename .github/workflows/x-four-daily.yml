@@ -4,6 +4,9 @@ on:
   push:
     branches: [main]
     paths: ['scripts/x-four/**', 'nanpure-x-worker/**', '.github/workflows/x-four-daily.yml']
+  pull_request:
+    branches: [main]
+    paths: ['scripts/x-four/**', 'nanpure-x-worker/**', '.github/workflows/x-four-daily.yml']
   workflow_dispatch:
     inputs:
       mode:
@@ -87,7 +90,7 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y fonts-noto-cjk
       - name: Reserve future questions without immediate publication
-        if: github.event_name != 'workflow_dispatch' || inputs.mode == 'queue'
+        if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.mode == 'queue')
         env:
           GITHUB_TOKEN: ${{ github.token }}
           REPO_ROOT: ${{ github.workspace }}
