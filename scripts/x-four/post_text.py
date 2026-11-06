@@ -1,7 +1,6 @@
 """Render varied search-intent copy for the four daily X slots."""
 from datetime import date
 from pathlib import Path
-import re
 from daily_plan import daily_plan
 
 SLOT_COPY = {
@@ -25,6 +24,11 @@ def render_text(day, include_url=False, slot='08:00'):
     return text
 
 def weighted_length(text):
-    without_urls = re.sub(r'https?://\\S+', '', text)
     count = sum(1 if ord(c) <= 0x10ff or 0x2000 <= ord(c) <= 0x200d or 0x2010 <= ord(c) <= 0x201f or 0x2032 <= ord(c) <= 0x2037 else 2 for c in without_urls)
-    return count + 23 * len(re.findall(r'https?://\\S+', text))
+
+    urls = [token for token in text.split() if token.startswith(('http://', 'https://'))]
+    without_urls = text
+    for url in urls:
+        without_urls = without_urls.replace(url, '')
+    count = sum(1 if ord(c) <= 0x10ff or 0x2000 <= ord(c) <= 0x200d or 0x2010 <= ord(c) <= 0x201f or 0x2032 <= ord(c) <= 0x2037 else 2 for c in without_urls)
+    return count + 23 * len(urls)
