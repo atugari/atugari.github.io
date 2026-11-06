@@ -98,10 +98,10 @@ class PublicationTests(unittest.TestCase):
     def test_missing_alt_rejected(self):
         self.data['images'][1]['alt']='';self.save()
         with self.assertRaises(ValueError):validate(self.root)
-    def test_approved_long_post_is_sent_in_full_with_four_images(self):
-        self.data['text']=render_text(self.data['date'])
-        self.data['requires_longform']=True;self.save()
-        self.assertGreater(weighted_length(self.data['text']),280)
+    def test_approved_search_post_is_sent_in_full_with_four_images(self):
+        self.data['text']=render_text(self.data['date'],True,'08:00')
+        self.data['requires_longform']=False;self.save()
+        self.assertLessEqual(weighted_length(self.data['text']),280)
         events=[];client=Client(events)
         self.assertEqual(publish(self.root,Ledger(events),client,'parade166'),'123456')
         self.assertEqual(client.text,self.data['text'])
@@ -112,7 +112,8 @@ class PublicationTests(unittest.TestCase):
         self.data['requires_longform']=True;self.save()
         with self.assertRaisesRegex(ValueError,'approved copy'):validate(self.root)
     def test_long_post_requires_explicit_manifest_flag(self):
-        self.data['text']=render_text(self.data['date']);self.save()
+        self.data['text']='x'*300
+        self.data['requires_longform']=False;self.save()
         with self.assertRaisesRegex(ValueError,'long-form is required'):validate(self.root)
     def test_oauth_reference_signature(self):
         # OAuth 1.0 reference request: independently published signature vector.
