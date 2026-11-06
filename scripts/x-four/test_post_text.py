@@ -11,14 +11,14 @@ class PostDateTests(unittest.TestCase):
             while day.year == year:
                 with self.subTest(day=day):
                     for slot in SLOT_COPY:
-                        self.assertTrue(render_text(day.isoformat(), True, slot).startswith(f'【今日の4問｜{day.month}/{day.day}】\\n'))
+                        self.assertEqual(render_text(day.isoformat(), True, slot).splitlines()[0], f'【今日の4問｜{day.month}/{day.day}】')
                 day += timedelta(days=1)
 
     def test_all_four_slots_cover_distinct_search_phrases_and_hashtags(self):
         day = '2026-11-06'
         posts = [render_text(day, True, slot) for slot in SLOT_COPY]
         self.assertEqual(len(set(posts)), 4)
-        combined = '\\n'.join(posts)
+        combined = ''.join(posts)
         for phrase in ('ナンプレ', '数独', '無料パズル', '脳トレ', '問題集', '頭の体操', '毎日更新'):
             self.assertIn(phrase, combined)
         for slot, (_, tags) in SLOT_COPY.items():
