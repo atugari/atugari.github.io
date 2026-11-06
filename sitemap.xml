@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://atugari.github.io/plaza.html</loc><lastmod>2026-11-05</lastmod></url>
-  <url><loc>https://atugari.github.io/nanpure/</loc><lastmod>2026-11-05</lastmod></url>
-  <url><loc>https://atugari.github.io/nanpure/guide/</loc><lastmod>2026-11-05</lastmod></url>
-  <url><loc>https://atugari.github.io/nanpure/sudoku-types/</loc><lastmod>2026-11-05</lastmod></url>
-  <url><loc>https://atugari.github.io/nanpure/print/</loc><lastmod>2026-11-05</lastmod></url>
-  <url><loc>https://atugari.github.io/nanpure/shirupure/</loc><lastmod>2026-11-05</lastmod></url>
-  <url><loc>https://atugari.github.io/nanpure/daily-sudoku/</loc><lastmod>2026-11-05</lastmod></url>
+  <url><loc>https://atugari.github.io/plaza.html</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://atugari.github.io/nanpure/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://atugari.github.io/nanpure/guide/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://atugari.github.io/nanpure/sudoku-types/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://atugari.github.io/nanpure/print/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://atugari.github.io/nanpure/shirupure/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://atugari.github.io/nanpure/daily-sudoku/</loc><lastmod>2026-11-06</lastmod></url>
   <url><loc>https://atugari.github.io/nanpure/en/</loc><lastmod>2026-11-05</lastmod></url>
   <url><loc>https://atugari.github.io/nanpure/zh-hans/</loc><lastmod>2026-11-05</lastmod></url>
   <url><loc>https://atugari.github.io/nanpure/zh-hant/</loc><lastmod>2026-11-05</lastmod></url>
@@ -26,18 +26,31 @@
   <url><loc>https://atugari.github.io/nanpure/th/</loc><lastmod>2026-11-05</lastmod></url>
   <url><loc>https://atugari.github.io/nanpure/hi/</loc><lastmod>2026-11-05</lastmod></url>
   <url><loc>https://atugari.github.io/nanpure/ar/</loc><lastmod>2026-11-05</lastmod></url>
-  <url><loc>https://atugari.github.io/puzzles/shirupure/</loc><lastmod>2026-10-29</lastmod></url>
-  <url><loc>https://atugari.github.io/puzzles/wado/</loc><lastmod>2026-10-29</lastmod></url>
-  <url><loc>https://atugari.github.io/puzzles/crossword/</loc><lastmod>2026-10-29</lastmod></url>
-  <url><loc>https://atugari.github.io/puzzles/cross/</loc><lastmod>2026-10-29</lastmod></url>
+  <url><loc>https://atugari.github.io/puzzles/shirupure/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://atugari.github.io/puzzles/wado/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://atugari.github.io/puzzles/crossword/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://atugari.github.io/puzzles/cross/</loc><lastmod>2026-11-06</lastmod></url>
   <url><loc>https://atugari.github.io/</loc><lastmod>2026-11-05</lastmod></url>
-  <url><loc>https://atugari.github.io/nanpure/collection/</loc><lastmod>2026-10-30</lastmod></url>
-  <url><loc>https://atugari.github.io/puzzles/</loc><lastmod>2026-10-30</lastmod></url>
+  <url><loc>https://atugari.github.io/nanpure/collection/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://atugari.github.io/puzzles/</loc><lastmod>2026-11-06</lastmod></url>
   <url><loc>https://atugari.github.io/puzzles/cross/stock/</loc><lastmod>2026-10-30</lastmod></url>
-  <url><loc>https://atugari.github.io/puzzles/tenbin/</loc><lastmod>2026-10-30</lastmod></url>
-  <url><loc>https://atugari.github.io/puzzles/paths/</loc><lastmod>2026-10-30</lastmod></url>
-  <url><loc>https://atugari.github.io/puzzles/studio/</loc><lastmod>2026-10-30</lastmod></url>
-  <url><loc>https://atugari.github.io/puzzles/workshop/</loc><lastmod>2026-10-30</lastmod></url>
+  <url><loc>https://atugari.github.io/puzzles/tenbin/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://atugari.github.io/puzzles/paths/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://atugari.github.io/puzzles/studio/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://atugari.github.io/puzzles/workshop/</loc><lastmod>2026-11-06</lastmod></url>
   <url><loc>https://atugari.github.io/privacy.html</loc><lastmod>2026-11-05</lastmod></url>
-  <url><loc>https://atugari.github.io/nanpure/learn/</loc></url>
+  <url><loc>https://atugari.github.io/nanpure/learn/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://atugari.github.io/dungeon.html</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://atugari.github.io/move-moove-mooove.html</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://atugari.github.io/speed.html</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://atugari.github.io/kuroshiro/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://atugari.github.io/combination-blocks.html</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://atugari.github.io/narabe100.html</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://atugari.github.io/echo-dive.html</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://atugari.github.io/maze/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://atugari.github.io/shopping-memo.html</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://atugari.github.io/timer-gauge.html</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://atugari.github.io/skins.html</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://atugari.github.io/nanpure/killer-sudoku/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://atugari.github.io/nanpure/large-sudoku/</loc><lastmod>2026-11-06</lastmod></url>
 </urlset>

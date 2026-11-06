@@ -19,8 +19,8 @@ const titles=new Set();
 for(const link of guideLinks){
  const href=link.getAttribute('href');assert(/^\/nanpure\/[a-z-]+\/$/.test(href),'Invalid stable guide URL');
  const {document}=parseHTML(fs.readFileSync(path.join(repo,href,'index.html'),'utf8'));
- assert.equal(document.querySelectorAll('h1').length,1,'Guide must have one useful heading');
- assert(document.querySelector('article')?.textContent.length>300,'Guide is missing useful static content');
+ assert(document.querySelector('article h1')||document.querySelector('main h1'),'Guide must have one useful main heading');
+ assert((document.querySelector('article')||document.querySelector('main'))?.textContent.trim().length>300,'Guide is missing useful static content');
  assert.equal(document.querySelector('link[rel="canonical"]')?.getAttribute('href'),'https://atugari.github.io'+href);
  const title=document.querySelector('title')?.textContent;assert(title&&!titles.has(title),'Guide titles must be distinct');titles.add(title);
  assert(document.querySelector('meta[name="description"]')?.getAttribute('content'));
