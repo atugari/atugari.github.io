@@ -15,7 +15,7 @@ test('refill baseline seeds all 427 profiles without changing the published 1046
   assert.equal(rows.reduce((sum, row) => sum + row.baseline_count, 0), 104619);
   assert.equal(rows.filter(row => row.baseline_count > 0).length, 302);
   assert.equal(rows.filter(row => row.baseline_count === 0).length, 125);
-  assert.equal(rows.filter(row => row.baseline_count < 100).length, 82);
+  assert.equal(rows.filter(row => row.baseline_count > 0 && row.baseline_count < 100).length, 82);
   assert.equal(rows.filter(row => row.baseline_count >= 100).length, 220);
 
   for (const row of rows) {
