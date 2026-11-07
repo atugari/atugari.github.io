@@ -13,9 +13,9 @@
 2. `nanpure/collection/player-storage.js` はブラウザIndexedDB `nanpure-chou-data` の個人ライブラリを管理する。問題本体は `puzzles`、一覧は `summaries`、重複履歴は `seen`。これは利用者端末内の保存領域で、全利用者共通の10万問在庫ではない。
 3. `nanpure-api/src/import.js` の管理者インポート許可テーブルは attempts / inquiries / daily_assignments のみ。一般問題集を受け入れる仕組みではない。
 4. `nanpure-api/src/generation.js` は現在 normal・9×9・指定levelの生成リレーを扱う。問題自販機向けのAPIを、全ルールの一般問題集補充APIとして流用してはならない。
-5. 提供済みのAndroid 0.3.1 APKをローカルで読み取り、通信先が `/api/vending/worker` であること、端末登録・poll・lease・result・complete/releaseに関係する実装文字列が含まれることを確認。これは現在の `nanpure-api` リポジトリ内には見つからず、別のWorkersサービスとして構成されている。
+5. Android 0.3.1の通信先 `/api/vending/worker` に対応するサーバー実装を `nanpure-vending-pilot` ブランチで発見。`nanpure-api/src/vending.js` と `vending-enrollment.js` が実装本体で、専用Workerへの安全な差分適用処理は `.github/nanpure-vending-pilot/patch-worker.mjs` と `deploy.py`。
 6. APKの `assets/refill-bootstrap.json` に登録用キーが埋め込まれていることを確認。キー値は文書・GitHub・回答へ転載しない。APKから抽出可能なため、長期の共通秘密として扱わず、既存登録方式の失効・ローテーション計画が必要。
-7. APKと一緒に提供されたprivate ZIPにはAndroidアプリのソース一式は含まれず、署名関連ファイルとビルド情報が中心。APKは解析できるが、元ソースの正確なrequest/response型までは確定していない。
+7. private ZIPには署名関連ファイル・端末bootstrap情報等が含まれるが、公開リポジトリへは絶対に追加しない。Androidソースは `nanpure-vending-pilot` ブランチで確認済み。
 
 ## 実装方針
 
@@ -65,22 +65,39 @@ Androidソースは同リポジトリの `nanpure-vending-pilot` ブランチ、
 - 端末側はSQLiteで完成品・配送割当てを永続化し、再送では同じjob IDとleaseを使う。完成品はサーバーの成功応答まで保持される。端末側の重複ID/digestもチェックする。
 - 新規端末登録は別のenrollment手順で行い、端末ごとに異なるトークンを作る設計。管理者資格情報はAndroidアプリへ入れない。
 
-## 未確定のサーバー側契約
+## 既存サーバー実装の発見・確認結果
 
-上記はAndroid側の送受信仕様であり、Workers側の実装コードそのものではない。現時点でGitHubに確認できた公開ソースはAndroid側で、Workerのサーバー実装ソースはこのリポジトリの検索・既知パスでは見つかっていない。したがって以下はまだ未確認であり、既存Workersの実装を取得するまで推測で変更しない。
+`nanpure-vending-pilot` ブランチの以下の実装を確認した。
 
-- poll時の在庫集計・jobの優先順位・lease期限・同時claim制御
-- resultの問題検証内容、重複判定の範囲、保存先と保存形式
-- `shelf_full` の判定基準、既存問題集10万問超との連携
-- enrollment用APIのルート、登録上限、失効・ローテーションの実装
-- 既存WorkersがどのD1/KV/R2等を使っているか、Cloudflare環境のbinding
+- `nanpure-api/src/vending.js`: `/api/vending/worker` の `register` / `enroll` / `poll` / `result` / `release` と、管理者・注文APIを実装。
+- `nanpure-api/src/vending-enrollment.js`: 登録キーのハッシュ保存、端末ごとのトークン、再送の冪等性、登録失効、端末数上限を実装。
+- `nanpure-api/migrations/0010_vending.sql`〜`0015_vending_enrollment.sql`: 端末、ジョブ、問題、プロファイル、カタログ、登録管理のD1スキーマ。
+- `nanpure-api/scripts/generate-vending-catalogue.mjs`: Androidの固定リリースから427プロファイルを生成し、`0014_vending_catalogue_profiles.sql`を作る。
+- `.github/nanpure-vending-pilot/patch-worker.mjs`: 既存Workerの外側のルート・資産・bindingを保持し、`vending()`関数だけを専用モジュールへ転送する差分を生成。
+- `.github/nanpure-vending-pilot/deploy.py`とデプロイworkflow: 対象Workerのバージョン・モジュールhash・設定を確認し、対象が想定どおりの場合だけ差分をアップロード。失敗時も自分のアップロードと確認できる場合に限って復元する。
 
-**重要:** Androidの `ready` は「端末内に在庫があるprofile」の一覧であり、サイト全体の未プレイ在庫数ではない。Androidのローカル目標10問と、ユーザーが求めるサイト共通の条件別目標100問は別概念として扱う。
+既存サーバーの処理は次のとおり。
+
+1. 端末認証は `Authorization: Bearer <端末別token>`。tokenそのものではなくハッシュをD1に保存。
+2. pollは端末ごとに同時1ジョブ。leaseは8分で、同じ端末からの再pollでは有効なジョブを返す。
+3. 427プロファイルの全条件をジョブに含め、Android側のプロファイルと照合。
+4. resultはプロファイルに応じて盤面・解答・追加制約・唯一解・難易度等を検証し、フィンガープリントとUIDの重複を拒否。
+5. D1への問題保存とジョブ完了をトリガーで連動。保存できたものだけを在庫として計上。
+6. `duplicate` / `lease_expired` / `shelf_full` / `already_finished` の再送応答を実装。
+7. 登録枠は全体32台、enrollment grantは最大30台。既存の手動登録端末も枠に含む。
+
+### まだ解決していない重要な差
+
+既存の補充Workerは、ユーザーが求めるサイト共通の10万問超の問題集を直接参照していない。専用WorkerのD1にある `vending_puzzles` / `vending_catalogue` が在庫の正本であり、GitHub Pagesの `nanpure/collection/catalog.json` とgzipパックは別の保管・配信系統。
+
+また既存Workerの `vending_catalogue.target` は現行migration上1〜30の制約で、Android 0.3.1の既存プロファイル目標も小規模な補充棚を想定している。したがって、現在のWorkerをそのまま「各条件100問」に設定するだけでは要件を満たさない。既存10万問超をプロファイル別に集計し、既存配信データと新規受入データの重複を横断して防ぎ、検証済み補充分をサイトの次世代カタログへ安全に取り込む接続が別途必要。
+
+**重要:** Androidの `ready` は端末内在庫のあるprofile一覧であり、サイト全体の未プレイ在庫数ではない。端末内の在庫目標とサイト共通の条件別目標100問は別概念。
 
 ## 今回の変更範囲
 
 - 設計文書を追加。
-- `nanpure-api/migrations/0002_refill_pipeline.sql` を追加。補充プロフィール、補充ジョブ、受信バッチ、受入問題の4テーブルと索引を定義。
+- `nanpure-api/migrations/0010_refill_pipeline.sql` を追加。補充プロフィール、補充ジョブ、受信バッチ、受入問題の4テーブルと索引を定義。既存の `0002_cloudflare_application.sql` とmigration番号が衝突しないよう `0010` へ修正済み。
 - migrationはGitHub上のDraft PRに追加済みだが、本番D1には未適用。
-- APIルート、認証、検証、在庫集計、Android通信、カタログ再生成、APK、既存問題データにはまだ変更を加えていない。
+- このPRでは専用の4テーブルmigrationと設計文書を整備中。既存pilot Workerの実装は別ブランチに存在するが、10万問超の既存コレクションとの統合、100問目標、サイト用カタログの安全な再生成は未実装。
 - 秘密情報は含めない。
