@@ -6,6 +6,9 @@ on:
     paths:
       - 'nanpure-api/migrations/**'
       - 'nanpure-api/test/refill-schema.test.mjs'
+      - 'nanpure-api/test/refill-admin.test.mjs'
+      - 'nanpure-api/src/refill.js'
+      - 'nanpure-api/src/index.js'
       - '.github/workflows/test-refill-pipeline.yml'
   pull_request:
     paths:
@@ -26,4 +29,4 @@ jobs:
         with:
           node-version: 22
       - name: Test additive refill migrations and published baseline
-        run: node --test nanpure-api/test/refill-schema.test.mjs
+        run: node --test nanpure-api/test/refill-schema.test.mjs nanpure-api/test/refill-admin.test.mjs
