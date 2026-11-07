@@ -1,5 +1,6 @@
 import {generation,cleanGeneration} from './generation.js';
 import{Problem,json,siteOrigin,fail}from'./http.js';
+import{refillAdmin}from'./refill.js';
 import{daily,ranking,archive}from'./daily.js';
 import{contact,contactImage,admin}from'./contact.js';
 import{cloud}from'./cloud.js';
@@ -29,6 +30,7 @@ export default {async scheduled(event,env){if(cloudRetired())await deleteRetired
     const rows=await env.DB.prepare('SELECT name FROM sqlite_master WHERE type=?').bind('table').all();const names=new Set(rows.results.map(r=>r.name));
     response=json({ok:true,service:'puzzle-api',version:apiVersion,siteVersion:env.SITE_VERSION||null,database:'connected',schema:tables.every(t=>names.has(t))?'installed':'pending',gameApi:'ready',cloud:{...cloudRetirement,retired:cloudRetired()}});
    }else if(['/api/generation','/api/generation/relay'].includes(url.pathname))response=await generation(request,env,url);
+   else if(url.pathname==='/api/refill/admin')response=await refillAdmin(request,env);
    else if(url.pathname==='/api/daily')response=await daily(request,env.DB);
    else if(url.pathname==='/api/ranking'&&request.method==='GET')response=await ranking(url,env.DB,request);
    else if(url.pathname==='/api/ranking-profile')response=await rankingProfile(request,env.DB);
