@@ -115,7 +115,7 @@ for (const config of configs) {
         sourceConfig: config.cid, sourcePack: descriptor.file,
         puzzle: {
           ...normalized,
-          created: normalized.created ?? 0,
+          created: normalized.created ?? Date.now(),
           grid: normalized.puzzle.slice(),
           elapsed: 0, completed: false, notes: {},
           verification: {
