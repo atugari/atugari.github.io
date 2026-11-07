@@ -27,12 +27,17 @@ const args = process.argv.slice(2);
 const option = name => { const i = args.indexOf(name); return i < 0 ? null : args[i + 1] ?? null; };
 const limitConfig = Number(option('--limit-config') || 0);
 const stockPath = option('--stock');
+const existingPath = option('--existing');
 const outputPath = option('--output');
 const wantPlan = args.includes('--plan');
 if (wantPlan && (!stockPath || !outputPath)) {
   throw new Error('--plan requires both --stock <snapshot.json> and --output <plan.json>.');
 }
 const stock = stockPath ? JSON.parse(readFileSync(resolve(stockPath), 'utf8')) : null;
+const existing = existingPath ? JSON.parse(readFileSync(resolve(existingPath), 'utf8')) : { uids: [], digests: [] };
+if (!Array.isArray(existing.uids) || !Array.isArray(existing.digests)) {
+  throw new Error('Existing-stock snapshot must contain uids and digests arrays.');
+}
 if (stock && (!stock.profiles || typeof stock.profiles !== 'object')) {
   throw new Error('Stock snapshot must contain a profiles object keyed by exact vending profile.');
 }
@@ -45,8 +50,8 @@ if (profiles.length !== 427) throw new Error('Expected the fixed 427-profile ven
 const profileByKey = new Map(profiles.map(p => [p.profile, p]));
 const configs = limitConfig > 0 ? catalog.configs.slice(0, limitConfig) : catalog.configs;
 
-const seenUids = new Set();
-const seenFingerprints = new Set();
+const seenUids = new Set(existing.uids);
+const seenFingerprints = new Set(existing.digests);
 const totals = {
   catalogTotal: catalog.total, configsChecked: 0, matchedConfigs: 0, unmatchedConfigs: 0,
   packsChecked: 0, recordsRead: 0, validRecords: 0, invalidRecords: 0,
