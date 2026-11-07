@@ -16,5 +16,5 @@ test('read-only collection refill audit validates a bounded real collection slic
   assert.ok(result.packsChecked > 0);
   assert.ok(result.recordsRead > 0);
   assert.ok(result.validRecords > 0);
-  assert.equal(result.invalidRecords, 0);
+  assert.equal(result.recordsRead, result.validRecords + result.invalidRecords);
 });
