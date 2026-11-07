@@ -102,6 +102,8 @@ Androidソースは同リポジトリの `nanpure-vending-pilot` ブランチ、
 - 設計文書を追加。
 - `nanpure-api/migrations/0010_refill_pipeline.sql` と `0011_refill_catalogue_baseline.sql` を追加。補充プロフィール427件、基準在庫104,619問、補充ジョブ、受信バッチ、受入問題のテーブルと索引を定義。既存の `0002_cloudflare_application.sql` とmigration番号が衝突しないよう `0010` 以降へ修正済み。
 - `nanpure-api/test/refill-schema.test.mjs` と `.github/workflows/test-refill-pipeline.yml` を追加。migration適用後に427プロフィール・104,619件・不足分布・目標100・初期無効状態を自動検証する。
+- `nanpure-api/src/refill.js` と `/api/refill/admin` を追加。管理者キー必須の読み取り専用APIで、基準在庫・追加受入在庫・条件別不足数・ジョブ状態・バッチ状態を確認できる。`?profiles=1` で427条件の内訳を返す。
+- `nanpure-api/test/refill-admin.test.mjs` を追加し、管理者認証・427条件の在庫集計・100問との差分・読み取り専用を検査する。
 - migrationはGitHub上のDraft PRに追加済みだが、本番D1には未適用。
 - このPRでは専用の4テーブルmigrationと設計文書を整備中。既存pilot Workerの実装は別ブランチに存在するが、10万問超の既存コレクションとの統合、100問目標、サイト用カタログの安全な再生成は未実装。
 - 秘密情報は含めない。
