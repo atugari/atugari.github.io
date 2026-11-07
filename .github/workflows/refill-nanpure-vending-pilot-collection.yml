@@ -1,0 +1,47 @@
+name: Refill isolated Nanpure vending pilot from registered collection
+
+on:
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: "Actually apply target-100 migration and import into the isolated pilot D1 (otherwise read-only)"
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nanpure-vending-collection-refill-pilot
+  cancel-in-progress: false
+
+jobs:
+  refill:
+    if: github.repository == 'atugari/atugari.github.io' && github.ref == 'refs/heads/feat/vending-stock-target-100-20261107'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: nanpure-api/package-lock.json
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Install pinned API dependencies
+        working-directory: nanpure-api
+        run: npm ci
+      - name: Audit collection and optionally refill isolated pilot shelves
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if [ "${{ inputs.apply }}" = "true" ]; then
+            python3 .github/nanpure-vending-pilot/import_collection.py --apply
+          else
+            python3 .github/nanpure-vending-pilot/import_collection.py --dry-run
+          fi
