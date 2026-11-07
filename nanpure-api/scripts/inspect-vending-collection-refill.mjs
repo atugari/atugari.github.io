@@ -134,7 +134,7 @@ for (const config of configs) {
   const current = stock?.profiles?.[profile.profile];
   if (wantPlan && (!current || !Number.isInteger(current.available) || current.available < 0 ||
       !Number.isInteger(current.target) || current.target < 1 || current.target > 100 ||
-      typeof current.expanded !== 'boolean')) {
+      !(current.expanded === true || current.expanded === false || current.expanded === 0 || current.expanded === 1))) {
     throw new Error('Stock snapshot lacks available/target/expanded values for ' + profile.profile);
   }
   // Only expanded shelves are raised to 100 by migration 0016. The six
