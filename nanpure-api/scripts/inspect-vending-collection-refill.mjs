@@ -134,13 +134,14 @@ for (const config of configs) {
   const current = stock?.profiles?.[profile.profile];
   if (wantPlan && (!current || !Number.isInteger(current.available) || current.available < 0 ||
       !Number.isInteger(current.target) || current.target < 1 || current.target > 100 ||
+      !Number.isInteger(current.waiting) || current.waiting < 0 ||
       !(current.expanded === true || current.expanded === false || current.expanded === 0 || current.expanded === 1))) {
     throw new Error('Stock snapshot lacks available/target/expanded values for ' + profile.profile);
   }
   // Only expanded shelves are raised to 100 by migration 0016. The six
   // original shelves retain their existing configured target.
   const target = wantPlan ? (current.expanded ? 100 : current.target) : null;
-  const deficit = wantPlan ? Math.max(0, target - current.available) : 0;
+  const deficit = wantPlan ? Math.max(0, current.waiting + target - current.available) : 0;
   const selected = wantPlan ? candidates.slice(0, deficit) : [];
   if (wantPlan && selected.length !== deficit) {
     errors.push({ profile: profile.profile, deficit, candidates: candidates.length,
@@ -148,7 +149,7 @@ for (const config of configs) {
   }
   shelves.push({
     cid: config.cid, profile: profile.profile, sourceCount: config.count,
-    candidates: candidates.length, ...(wantPlan ? { current: current.available, target, expanded: current.expanded, deficit, selected: selected.length } : {})
+    candidates: candidates.length, ...(wantPlan ? { current: current.available, waiting: current.waiting, target, expanded: current.expanded, deficit, selected: selected.length } : {})
   });
   if (selected.length) plan.push(...selected.map(item => ({ profile: profile.profile, ...item })));
 }
