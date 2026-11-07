@@ -1,0 +1,29 @@
+name: Test refill inventory schema
+
+on:
+  push:
+    branches: [refill-handoff/phase1-design]
+    paths:
+      - 'nanpure-api/migrations/**'
+      - 'nanpure-api/test/refill-schema.test.mjs'
+      - '.github/workflows/test-refill-pipeline.yml'
+  pull_request:
+    paths:
+      - 'nanpure-api/migrations/**'
+      - 'nanpure-api/test/refill-schema.test.mjs'
+      - '.github/workflows/test-refill-pipeline.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  schema:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - name: Test additive refill migrations and published baseline
+        run: node --test nanpure-api/test/refill-schema.test.mjs
