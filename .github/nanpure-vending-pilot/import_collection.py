@@ -81,6 +81,12 @@ def ensure_catalogue():
             expected = 100 if old["expanded"] == 1 else old["target"]
             if new["target"] != expected:
                 raise RuntimeError("Unexpected target after migration.")
+    # Keep Wrangler's migration ledger in sync when this database has one.
+    ledger = rows("SELECT name FROM sqlite_master WHERE type='table' AND name='d1_migrations'")
+    if ledger:
+        query("INSERT INTO d1_migrations(name) SELECT ? WHERE NOT EXISTS "
+              "(SELECT 1 FROM d1_migrations WHERE name=?)",
+              ["0016_vending_stock_target_100.sql", "0016_vending_stock_target_100.sql"])
     final = rows("SELECT COUNT(*) AS n FROM vending_catalogue WHERE expanded=1 AND target<>100")[0]["n"]
     if final:
         raise RuntimeError("Expanded shelves did not all reach target 100.")
