@@ -51,6 +51,32 @@
 
 停止は一括削除ではなく、まず生成UIを無効化するフラグで切り替え、問題があれば即時に戻せるようにする。安定確認後にサイト内生成エンジンのコードを別リリースで削除する。
 
+
+## Android 0.3.1の既存API契約（ソース確認済み）
+
+Androidソースは同リポジトリの `nanpure-vending-pilot` ブランチ、コミット `085607c4faf16281c24411e66d94f4fbd937be4a` の `android/nanpure-vending-worker/` で確認した。
+
+- 接続先は専用Workersサービスの `/api/vending/worker`。HTTPSのPOSTでJSONを送信し、端末トークンは `Authorization: Bearer <token>`。リダイレクトは追従しない。タイムアウトは接続・読取各15秒。成功時はHTTP 200かつJSON `ok:true` を要求する。
+- `poll`: `action:"poll"`、`version:2`、端末側の `ready`（在庫のあるprofile key配列）、`stock`（端末内の総件数とバイト数）を送る。応答の `job` がなければ待機。
+- jobには少なくとも `id`、`lease`、`profile`、`kind`、`n`、`level`、`complexity`、`multiShape`、`linkedShape` が必要。Androidはローカル427プロフィールと全項目一致しない依頼を処理しない。
+- `result`: `action:"result"`、`id`、`lease`、`p`（完成した問題JSON）を送る。成功応答後に限り端末SQLiteから配送記録と完成品を消去する。
+- `release`: `action:"release"`、`id`、`lease`。未送信時に依頼を返却する。失敗時はリース期限切れで再割当てされる想定。
+- HTTP 400/413は端末側で完成品を破棄。409 `duplicate` も破棄。409 `lease_expired` / `shelf_full` / `already_finished` は配送割当てだけを解除し、端末内完成品を保持。403は端末登録拒否として処理。
+- 端末側はSQLiteで完成品・配送割当てを永続化し、再送では同じjob IDとleaseを使う。完成品はサーバーの成功応答まで保持される。端末側の重複ID/digestもチェックする。
+- 新規端末登録は別のenrollment手順で行い、端末ごとに異なるトークンを作る設計。管理者資格情報はAndroidアプリへ入れない。
+
+## 未確定のサーバー側契約
+
+上記はAndroid側の送受信仕様であり、Workers側の実装コードそのものではない。現時点でGitHubに確認できた公開ソースはAndroid側で、Workerのサーバー実装ソースはこのリポジトリの検索・既知パスでは見つかっていない。したがって以下はまだ未確認であり、既存Workersの実装を取得するまで推測で変更しない。
+
+- poll時の在庫集計・jobの優先順位・lease期限・同時claim制御
+- resultの問題検証内容、重複判定の範囲、保存先と保存形式
+- `shelf_full` の判定基準、既存問題集10万問超との連携
+- enrollment用APIのルート、登録上限、失効・ローテーションの実装
+- 既存WorkersがどのD1/KV/R2等を使っているか、Cloudflare環境のbinding
+
+**重要:** Androidの `ready` は「端末内に在庫があるprofile」の一覧であり、サイト全体の未プレイ在庫数ではない。Androidのローカル目標10問と、ユーザーが求めるサイト共通の条件別目標100問は別概念として扱う。
+
 ## 今回の変更範囲
 
 - 設計文書を追加。
