@@ -2,10 +2,21 @@
 -- Does not alter or delete existing puzzle, daily-stock, or player data.
 CREATE TABLE IF NOT EXISTS refill_profiles (
   profile_key TEXT PRIMARY KEY NOT NULL,
+  catalogue_key TEXT,
   descriptor TEXT NOT NULL,
+  baseline_count INTEGER NOT NULL DEFAULT 0 CHECK(baseline_count >= 0),
   target_count INTEGER NOT NULL DEFAULT 100 CHECK(target_count BETWEEN 1 AND 10000),
+  catalog_release TEXT,
   enabled INTEGER NOT NULL DEFAULT 0 CHECK(enabled IN (0,1)),
   updated INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS refill_baseline_snapshots (
+  id INTEGER PRIMARY KEY CHECK(id=1),
+  catalog_release TEXT NOT NULL,
+  total_count INTEGER NOT NULL CHECK(total_count >= 0),
+  profile_count INTEGER NOT NULL CHECK(profile_count > 0),
+  created INTEGER NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS refill_jobs (
