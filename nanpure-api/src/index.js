@@ -1,5 +1,6 @@
 import {generation,cleanGeneration} from './generation.js';
 import{Problem,json,siteOrigin,fail}from'./http.js';
+import{refillAdmin}from'./refill.js';
 import{daily,ranking,archive}from'./daily.js';
 import{contact,contactImage,admin}from'./contact.js';
 import{cloud}from'./cloud.js';
