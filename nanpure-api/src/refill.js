@@ -50,7 +50,7 @@ export async function refillAdmin(request, env) {
     }));
   }
   return json({
-    enabled: false,
+    enabled: totals.enabledProfiles > 0,
     snapshot,
     totals: { ...totals, targetCount: 100 },
     jobs: jobs.results,
