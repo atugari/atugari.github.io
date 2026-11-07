@@ -51,6 +51,8 @@ CREATE TABLE IF NOT EXISTS refill_items (
   profile_key TEXT NOT NULL REFERENCES refill_profiles(profile_key),
   batch_id TEXT NOT NULL REFERENCES refill_batches(id),
   payload TEXT NOT NULL,
-  created INTEGER NOT NULL
+  created INTEGER NOT NULL,
+  exported_at INTEGER,
+  export_release TEXT
 );
 CREATE INDEX IF NOT EXISTS refill_items_profile ON refill_items(profile_key, created);
