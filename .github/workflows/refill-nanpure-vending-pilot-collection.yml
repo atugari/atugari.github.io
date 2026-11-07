@@ -36,6 +36,9 @@ jobs:
       - name: Install pinned API dependencies
         working-directory: nanpure-api
         run: npm ci
+      - name: Generate the pinned vending validation engine
+        working-directory: nanpure-api
+        run: npm run prepare:vending-proof
       - name: Audit collection and optionally refill isolated pilot shelves
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
