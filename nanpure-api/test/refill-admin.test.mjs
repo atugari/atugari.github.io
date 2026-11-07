@@ -33,6 +33,7 @@ test('refill inventory inspection is owner-only and does not expose profile rows
   assert.equal(response.data.totals.profileCount, 427);
   assert.equal(response.data.totals.baselineCount, 104619);
   assert.equal(response.data.totals.shortageProfiles, 207);
+  assert.equal(response.data.totals.totalShortage, 16051);
   assert.equal(response.data.totals.emptyProfiles, 125);
   assert.equal(response.data.totals.enabledProfiles, 0);
   assert.equal('profiles' in response.data, false);
