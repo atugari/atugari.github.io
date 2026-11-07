@@ -7,7 +7,7 @@ const inventorySql = `SELECT p.profile_key AS profileKey,p.catalogue_key AS cata
     WHERE i.profile_key=p.profile_key AND i.exported_at IS NULL) AS pendingItems,
   p.baseline_count+(SELECT COUNT(*) FROM refill_items i
     WHERE i.profile_key=p.profile_key AND i.exported_at IS NULL) AS inventoryCount
-  FROM refill_profiles p ORDER BY p.kind,p.n,p.level,p.profile_key`;
+  FROM refill_profiles p ORDER BY p.profile_key`;
 
 export async function refillAdmin(request, env) {
   if (request.method !== 'GET') fail(405, 'この操作は利用できません。');
