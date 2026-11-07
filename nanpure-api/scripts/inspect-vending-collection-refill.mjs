@@ -132,10 +132,15 @@ for (const config of configs) {
   }
 
   const current = stock?.profiles?.[profile.profile];
-  if (wantPlan && (!Number.isInteger(current) || current < 0)) {
-    throw new Error('Stock snapshot lacks a non-negative available count for ' + profile.profile);
+  if (wantPlan && (!current || !Number.isInteger(current.available) || current.available < 0 ||
+      !Number.isInteger(current.target) || current.target < 1 || current.target > 100 ||
+      typeof current.expanded !== 'boolean')) {
+    throw new Error('Stock snapshot lacks available/target/expanded values for ' + profile.profile);
   }
-  const deficit = wantPlan ? Math.max(0, 100 - current) : 0;
+  // Only expanded shelves are raised to 100 by migration 0016. The six
+  // original shelves retain their existing configured target.
+  const target = wantPlan ? (current.expanded ? 100 : current.target) : null;
+  const deficit = wantPlan ? Math.max(0, target - current.available) : 0;
   const selected = wantPlan ? candidates.slice(0, deficit) : [];
   if (wantPlan && selected.length !== deficit) {
     errors.push({ profile: profile.profile, deficit, candidates: candidates.length,
@@ -143,15 +148,15 @@ for (const config of configs) {
   }
   shelves.push({
     cid: config.cid, profile: profile.profile, sourceCount: config.count,
-    candidates: candidates.length, ...(wantPlan ? { current, target: 100, deficit, selected: selected.length } : {})
+    candidates: candidates.length, ...(wantPlan ? { current: current.available, target, expanded: current.expanded, deficit, selected: selected.length } : {})
   });
   if (selected.length) plan.push(...selected.map(item => ({ profile: profile.profile, ...item })));
 }
 
 const report = { generatedAt: new Date().toISOString(), sourceRelease: catalog.release,
   readOnly: true, totals, shelves, errors,
-  ...(wantPlan ? { target: 100, plannedImports: plan.length, plan } : {}) };
-const summary = { ...totals, target: wantPlan ? 100 : null,
+  ...(wantPlan ? { expandedTarget: 100, plannedImports: plan.length, plan } : {}) };
+const summary = { ...totals, expandedTarget: wantPlan ? 100 : null,
   plannedImports: wantPlan ? plan.length : null, shelvesWithErrors: errors.length };
 console.log(JSON.stringify(summary, null, 2));
 if (outputPath) writeFileSync(resolve(outputPath), JSON.stringify(report));
