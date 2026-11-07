@@ -1,3 +1,14 @@
+-- These triggers are attached to the other vending tables, so DROP TABLE above
+-- does not remove them. Drop them explicitly before recreating their definitions.
+DROP TRIGGER IF EXISTS vending_catalogue_target;
+DROP TRIGGER IF EXISTS vending_catalogue_lease;
+DROP TRIGGER IF EXISTS vending_catalogue_stock_insert;
+DROP TRIGGER IF EXISTS vending_catalogue_stock_update;
+DROP TRIGGER IF EXISTS vending_catalogue_stock_delete;
+DROP TRIGGER IF EXISTS vending_catalogue_wait_insert;
+DROP TRIGGER IF EXISTS vending_catalogue_wait_update;
+DROP TRIGGER IF EXISTS vending_catalogue_wait_delete;
+
 -- Raise expanded vending shelves to 100 without changing the legacy six-profile shelf.
 -- Rebuild only the catalogue table because SQLite cannot alter a CHECK constraint.
 -- Existing stock, reservations, leases, profile metadata and counters are copied verbatim.
@@ -30,17 +41,6 @@ FROM vending_catalogue;
 
 DROP TABLE vending_catalogue;
 ALTER TABLE vending_catalogue_new RENAME TO vending_catalogue;
-
--- These triggers are attached to the other vending tables, so DROP TABLE above
--- does not remove them. Drop them explicitly before recreating their definitions.
-DROP TRIGGER IF EXISTS vending_catalogue_target;
-DROP TRIGGER IF EXISTS vending_catalogue_lease;
-DROP TRIGGER IF EXISTS vending_catalogue_stock_insert;
-DROP TRIGGER IF EXISTS vending_catalogue_stock_update;
-DROP TRIGGER IF EXISTS vending_catalogue_stock_delete;
-DROP TRIGGER IF EXISTS vending_catalogue_wait_insert;
-DROP TRIGGER IF EXISTS vending_catalogue_wait_update;
-DROP TRIGGER IF EXISTS vending_catalogue_wait_delete;
 
 CREATE INDEX vending_catalogue_base ON vending_catalogue (kind,n,level,profile) WHERE expanded=0;
 CREATE INDEX vending_catalogue_reservations ON vending_catalogue (retry_after,last_job,profile) WHERE waiting>0;
