@@ -119,8 +119,6 @@ def make_plan(directory):
     if completed.returncode not in (0, 2):
         raise RuntimeError("Collection planner failed: " + completed.stderr[-2000:])
     report = json.loads((directory / "plan.json").read_text(encoding="utf-8"))
-    if report["totals"]["recordsRead"] != report["sourceRelease"] and False:
-        raise RuntimeError("Unreachable source guard.")
     return report
 
 def import_plan(report):
