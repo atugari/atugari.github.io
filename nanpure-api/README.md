@@ -29,6 +29,11 @@ existing twice-daily refill job is an independent cleanup fallback. All cleanup
 paths check the shared server deadline and are safe to rerun. Empty legacy tables
 remain for schema compatibility. No cloud data is deleted before the deadline.
 
+After the deadline, the existing Actions refill runs this same idempotent
+transaction before replenishing daily puzzles. It verifies that `cloud_saves`,
+`cloud_uploads` and `cloud_chunks` each contain zero rows, and stops the run if
+any cloud backup data remains. The success log is the operational deletion audit.
+
 ## Identity and private data
 
 Cross-origin API calls use random 256-bit device credentials in headers, not
