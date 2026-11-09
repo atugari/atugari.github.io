@@ -14,7 +14,7 @@ export async function collectPareasobiEvent(request,env){
  const now=Date.now(),day=japanDay(now);
  await limit(env.DB,request,'pareasobi-analytics',180,3600000);
  const [visitor,session,eventId]=await Promise.all([
-  hash(day+':pareasobi:visitor:'+data.visitor),
+  hash('pareasobi:visitor:'+data.visitor),
   hash(day+':pareasobi:session:'+data.session),
   hash('pareasobi:event:'+data.eventId)
  ]);
