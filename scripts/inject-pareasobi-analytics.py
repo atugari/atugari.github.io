@@ -1,10 +1,15 @@
 """Inject PareAsobi analytics into the assembled Pages tree after release integrity checks."""
 from pathlib import Path
 import re
+import shutil
 import sys
 
 root = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("_site")
-assert (root / "assets/pare-analytics.js").is_file(), "Analytics asset was not published"
+source = Path(__file__).resolve().parent / 'client-overrides/public/pare-analytics.js'
+target = root / 'assets/pare-analytics.js'
+target.parent.mkdir(parents=True, exist_ok=True)
+shutil.copy2(source, target)
+assert target.is_file(), 'Analytics asset was not published'
 script_tag = '<script defer src="/assets/pare-analytics.js?v=1"></script>'
 game_pages = {
     "plaza.html": "pareasobi", "nanpure/index.html": "nanpure",
