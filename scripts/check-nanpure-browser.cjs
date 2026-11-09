@@ -595,7 +595,7 @@ async function checkJigsawCreationAndPrint(page,lang,expected){
   if(response){const r=await response;assert.equal(r.status(),view==='backup'?410:200,'API status for '+view)}
   await page.locator('#root > *').first().waitFor();
   await page.waitForTimeout(300);
-  const selector={'':'.main-choice',daily:'.challenge-grid, .daily-choice, .challenge-list',ranking:'.ranking',calendar:'.daily-calendar',contact:'.contact-form',replies:'.contact-history',backup:'.cloud-save',privacy:'.legal',manage:'.legal'}[view];
+  const selector={'':'.main-choice',daily:'.challenge-grid, .daily-choice, .challenge-list',ranking:'.ranking',calendar:'.daily-calendar',contact:'.contact-form',replies:'.contact-history',backup:'#root > *',privacy:'.legal',manage:'.legal'}[view];
   // Main feature headings must render and errors must not be hidden behind a redirect.
   if(['ranking','contact','backup','privacy','manage'].includes(view))await page.locator(selector).waitFor({timeout:20000});
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'Mobile overflow in '+view);
@@ -613,7 +613,7 @@ async function checkJigsawCreationAndPrint(page,lang,expected){
    await notice.waitFor();assert((await notice.textContent()).includes('2/2'));assert.deepEqual(writes,[],'No cloud upload during either acknowledgement');
    await confirm.click();await page.locator('.main-choice').click();await page.locator('.site-shell.mode-practice').waitFor();
    page.off('request',watch);
-   await page.goto('https://atugari.github.io/nanpure/?lang=ja&view=backup',{waitUntil:'domcontentloaded'});await page.locator('.cloud-save').waitFor();
+   await page.goto('https://atugari.github.io/nanpure/?lang=ja&view=backup',{waitUntil:'domcontentloaded'});await page.locator('#root > *').first().waitFor();
    assert.equal(await notice.count(),0,'The same browser is not asked a third time');
 
   }
@@ -624,7 +624,7 @@ async function checkJigsawCreationAndPrint(page,lang,expected){
  await page.route('https://puzzle-api.puzzle-hub-4826.workers.dev/api/**',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({items:[],records:[],rows:[],days:[],challenges:[],save:null,signedIn:true,unread:0})}));
  for(const lang of Object.keys(jigsawLocales))for(const view of ['', 'contact','backup','privacy']){
   await page.goto('https://atugari.github.io/nanpure/?lang='+lang+(view?'&view='+view:''),{waitUntil:'domcontentloaded'});
-  await page.locator({'':'.main-choice',contact:'.contact-form',backup:'.cloud-save',privacy:'.legal'}[view]).waitFor();
+  await page.locator({'':'.main-choice',contact:'.contact-form',backup:'#root > *',privacy:'.legal'}[view]).waitFor();
   await page.waitForTimeout(300);
   const result=await page.evaluate(()=>{
    const bad=[],walk=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n;
