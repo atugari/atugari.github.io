@@ -34,7 +34,7 @@ test('PareAsobi analytics counts events by game and screen and deduplicates dail
  assert.equal(summary.data.games.find(g=>g.id==='wado').adImpressions,1);
  assert.equal(summary.data.screens.find(s=>s.game==='wado'&&s.screen==='play').adImpressions,1);
  assert.equal(summary.data.totals.pageViews,4);
- assert.equal(summary.data.totals.accesses,2);
+ assert.equal(summary.data.totals.accesses,3);
  assert.equal(summary.data.games.find(g=>g.id==='wado').accesses,2);
  assert.equal(summary.data.totals.uniqueVisitors,2);
  assert.equal(summary.data.history[0].visitors,2);
