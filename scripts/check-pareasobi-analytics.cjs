@@ -13,7 +13,7 @@ for(const href of cards){
  assert(fs.existsSync(path.join(root,file)),`Game entry not found: ${href} -> ${file}`);
  const html=read(file);
  if(!html.trim()){console.warn('Skipped empty game entry: '+href);continue;}
- if(file.startsWith('puzzles/')&&file!=='puzzles/index.html')assert(readSource('puzzles/entry.js').includes('/assets/pare-analytics.js'),`Puzzle entry missing deployed analytics asset: ${href}`);else assert(html.includes('/assets/pare-analytics.js'),`Game missing deployed analytics asset: ${href}`);
+ assert(html.includes('/assets/pare-analytics.js'),`Game missing deployed analytics asset: ${href}`);
  assert(/<body[^>]*data-game=/.test(html),`Game missing stable analytics ID: ${href}`);
 }
 assert(hub.includes('/assets/pare-analytics.js'),'PareAsobi hub must be measured');
