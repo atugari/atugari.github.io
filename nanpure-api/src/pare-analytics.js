@@ -38,10 +38,10 @@ export async function pareAnalytics(request,env,url){
   const gameFor=id=>{if(!games.has(id))games.set(id,{id,pageViews:0,accesses:0,players:0,completions:0,screenViews:0,adImpressions:0,adClicks:0});return games.get(id)};
   const add=(o,event,n)=>{if(event==='page_view')o.pageViews+=n;else if(event==='game_access')o.accesses+=n;else if(event==='game_start')o.players+=n;else if(event==='game_complete')o.completions+=n;else if(event==='screen_view')o.screenViews+=n;else if(event==='ad_impression')o.adImpressions+=n;else if(event==='ad_click')o.adClicks+=n};
   for(const row of daily.results||[]){
-   const n=Number(row.count)||0,g=gameFor(row.game);add(g,row.event,n);
-   const h=history.get(row.day)||{day:row.day,pageViews:0,accesses:0,starts:0,players:0,adImpressions:0};if(row.event==='game_start')h.starts+=n;else add(h,row.event,n);history.set(row.day,h);
+   const n=Number(row.count)||0,g=gameFor(row.game);add(g,row.event,n);if(row.event==='page_view'&&!['pareasobi','puzzles','home','site'].includes(row.game))g.accesses+=n;
+   const h=history.get(row.day)||{day:row.day,pageViews:0,accesses:0,starts:0,players:0,visitors:0,adImpressions:0};if(row.event==='game_start')h.starts+=n;else{add(h,row.event,n);if(row.event==='page_view'&&!['pareasobi','puzzles','home','site'].includes(row.game))h.accesses+=n;}history.set(row.day,h);
    const key=row.game+':'+row.screen,sc=screens.get(key)||{game:row.game,screen:row.screen,pageViews:0,accesses:0,starts:0,completions:0,views:0,adImpressions:0,adClicks:0};
-   if(row.event==='page_view')sc.pageViews+=n;else if(row.event==='game_access')sc.accesses+=n;else if(row.event==='game_start')sc.starts+=n;else if(row.event==='game_complete')sc.completions+=n;else if(row.event==='screen_view')sc.views+=n;else if(row.event==='ad_impression')sc.adImpressions+=n;else if(row.event==='ad_click')sc.adClicks+=n;
+   if(row.event==='page_view'){sc.pageViews+=n;if(!['pareasobi','puzzles','home','site'].includes(row.game))sc.accesses+=n;}else if(row.event==='game_access')sc.accesses+=n;else if(row.event==='game_start')sc.starts+=n;else if(row.event==='game_complete')sc.completions+=n;else if(row.event==='screen_view')sc.views+=n;else if(row.event==='ad_impression')sc.adImpressions+=n;else if(row.event==='ad_click')sc.adClicks+=n;
    screens.set(key,sc);
   }
   const uniqueByDay=new Map(),uniqueTotals=new Map();
