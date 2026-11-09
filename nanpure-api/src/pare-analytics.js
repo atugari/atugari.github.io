@@ -38,7 +38,7 @@ export async function pareAnalytics(request,env,url){
   const add=(o,event,n)=>{if(event==='page_view')o.pageViews+=n;else if(event==='game_access')o.accesses+=n;else if(event==='game_start')o.players+=n;else if(event==='game_complete')o.completions+=n;else if(event==='screen_view')o.screenViews+=n;else if(event==='ad_impression')o.adImpressions+=n;else if(event==='ad_click')o.adClicks+=n};
   for(const row of daily.results||[]){
    const n=Number(row.count)||0,g=gameFor(row.game);add(g,row.event,n);
-   const h=history.get(row.day)||{day:row.day,pageViews:0,accesses:0,players:0,adImpressions:0};add(h,row.event,n);history.set(row.day,h);
+   const h=history.get(row.day)||{day:row.day,pageViews:0,accesses:0,starts:0,players:0,adImpressions:0};if(row.event==='game_start')h.starts+=n;else add(h,row.event,n);history.set(row.day,h);
    const key=row.game+':'+row.screen,sc=screens.get(key)||{game:row.game,screen:row.screen,pageViews:0,accesses:0,starts:0,completions:0,views:0,adImpressions:0,adClicks:0};
    if(row.event==='page_view')sc.pageViews+=n;else if(row.event==='game_access')sc.accesses+=n;else if(row.event==='game_start')sc.starts+=n;else if(row.event==='game_complete')sc.completions+=n;else if(row.event==='screen_view')sc.views+=n;else if(row.event==='ad_impression')sc.adImpressions+=n;else if(row.event==='ad_click')sc.adClicks+=n;
    screens.set(key,sc);
@@ -48,7 +48,7 @@ export async function pareAnalytics(request,env,url){
    const n=Number(row.count)||0,key=row.day+':'+row.game,all=uniqueByDay.get(key)||{day:row.day,game:row.game,visitors:0,players:0};
    if(row.kind==='player')all.players=n;else all.visitors=n;uniqueByDay.set(key,all);
    const g=uniqueTotals.get(row.game)||{visitors:0,players:0};if(row.kind==='player')g.players+=n;else g.visitors+=n;uniqueTotals.set(row.game,g);
-   const h=history.get(row.day)||{day:row.day,pageViews:0,accesses:0,players:0,adImpressions:0};if(row.kind==='player')h.players+=n;history.set(row.day,h);
+   const h=history.get(row.day)||{day:row.day,pageViews:0,accesses:0,starts:0,players:0,adImpressions:0};if(row.kind==='player')h.players+=n;history.set(row.day,h);
   }
   for(const [id,g]of games){const u=uniqueTotals.get(id)||{};g.uniqueVisitors=u.visitors||0;g.uniquePlayers=u.players||0;g.sessions=0;}
   for(const row of sessions.results||[]){const g=gameFor(row.game);g.sessions=Number(row.count)||0;}
