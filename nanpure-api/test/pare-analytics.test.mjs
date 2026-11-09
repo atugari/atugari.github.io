@@ -17,10 +17,10 @@ async function setup(t){
 }
 test('PareAsobi analytics counts events by game and screen and deduplicates daily people',async t=>{
  const{DB,call}=await setup(t),makeEvent=(game,screen,kind,who=visitor,sess=session)=>({visitor:who,session:sess,game,screen,event:kind});
- for(const [game,screen,event]of [['pareasobi','home','page_view'],['wado','entry','page_view'],['wado','entry','game_access'],['wado','play','game_start'],['wado','play','game_start'],['wado','play','ad_impression'],['shirupure','entry','page_view']]){
+ for(const [game,screen,event]of [['pareasobi','home','page_view'],['wado','entry','page_view'],['wado','play','game_start'],['wado','play','game_start'],['wado','play','ad_impression'],['shirupure','entry','page_view']]){
   const r=await call('/api/pare/analytics',{data:makeEvent(game,screen,event)});assert.equal(r.status,200);
  }
- await call('/api/pare/analytics',{data:makeEvent('wado','play','game_access','d'.repeat(64),'e'.repeat(64))});
+ await call('/api/pare/analytics',{data:makeEvent('wado','entry','page_view','d'.repeat(64),'e'.repeat(64))});
  const day='2026-11-10';
  const rows=DB.raw.prepare('SELECT game,screen,event,count FROM pare_analytics_daily ORDER BY game,screen,event').all();
  const find=(g,s,e)=>rows.find(x=>x.game===g&&x.screen===s&&x.event===e)?.count||0;
@@ -33,7 +33,9 @@ test('PareAsobi analytics counts events by game and screen and deduplicates dail
  assert.equal(summary.status,200);assert.equal(summary.data.games.find(g=>g.id==='wado').uniquePlayers,1);
  assert.equal(summary.data.games.find(g=>g.id==='wado').adImpressions,1);
  assert.equal(summary.data.screens.find(s=>s.game==='wado'&&s.screen==='play').adImpressions,1);
- assert.equal(summary.data.totals.pageViews,3);
+ assert.equal(summary.data.totals.pageViews,4);
+ assert.equal(summary.data.totals.accesses,2);
+ assert.equal(summary.data.games.find(g=>g.id==='wado').accesses,2);
  assert.equal(summary.data.totals.uniqueVisitors,2);
  assert.equal(summary.data.history[0].visitors,2);
  assert.equal(summary.data.history[0].day,day);
