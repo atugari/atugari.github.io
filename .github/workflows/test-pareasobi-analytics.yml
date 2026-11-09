@@ -34,8 +34,10 @@ jobs:
       - name: Run API tests
         working-directory: nanpure-api
         run: npm run build
-      - name: Check tracker syntax
-        run: node --check scripts/client-overrides/public/pareasobi-analytics.js
+      - name: Check tracker and build-injection syntax
+        run: |
+          node --check scripts/client-overrides/public/pareasobi-analytics.js
+          python3 -m py_compile scripts/enhance-nanpure.py
       - name: Check dashboard script syntax
         run: |
           node --input-type=module <<'NODE'
