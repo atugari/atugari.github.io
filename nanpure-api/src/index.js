@@ -1,5 +1,6 @@
 import {generation,cleanGeneration} from './generation.js';
 import{Problem,json,siteOrigin,fail}from'./http.js';
+import{japanDay}from'./shared/daily-plan.js';
 import{daily,ranking,archive}from'./daily.js';
 import{contact,contactImage,admin}from'./contact.js';
 import{cloud}from'./cloud.js';
@@ -10,8 +11,9 @@ import{exhibitions}from'./exhibitions.js';
 import{rankingProfile}from'./ranking-profile.js';
 import{importLegacy}from'./import.js';
 import{visit,overview,apiVersion}from'./owner.js';
-const tables=['generation_relays','generation_requests','attempts','daily_stock','daily_assignments','daily_maintenance','inquiries','cloud_saves','rate_limits','contact_images','cloud_uploads','cloud_chunks','visit_sessions','visit_browsers','visit_days','owner_usage_snapshots','achievement_members','achievement_owned','galleries','ranking_profiles','exhibition_entries','exhibition_reactions','gallery_replays'];
-export default {async scheduled(event,env){if(cloudRetired())await deleteRetiredCloudData(env.DB);await cleanGeneration(env.DB);},async fetch(request,env){let response;const url=new URL(request.url),origin=request.headers.get('origin');
+import{pareAnalytics}from'./pare-analytics.js';
+const tables=['generation_relays','generation_requests','attempts','daily_stock','daily_assignments','daily_maintenance','inquiries','cloud_saves','rate_limits','contact_images','cloud_uploads','cloud_chunks','visit_sessions','visit_browsers','visit_days','owner_usage_snapshots','achievement_members','achievement_owned','galleries','ranking_profiles','exhibition_entries','exhibition_reactions','gallery_replays','pare_analytics_daily','pare_analytics_unique','pare_analytics_sessions'];
+export default {async scheduled(event,env){if(cloudRetired())await deleteRetiredCloudData(env.DB);await cleanGeneration(env.DB);if(env.DB){const cutoff=japanDay(Date.now()-90*86400000);await env.DB.batch([env.DB.prepare('DELETE FROM pare_analytics_unique WHERE day<?').bind(cutoff),env.DB.prepare('DELETE FROM pare_analytics_sessions WHERE day<?').bind(cutoff),env.DB.prepare('DELETE FROM pare_analytics_daily WHERE day<?').bind(cutoff)]);}},async fetch(request,env){let response;const url=new URL(request.url),origin=request.headers.get('origin');
  try{
   if(origin!==null&&origin!==siteOrigin&&origin!==url.origin)fail(403,'送信元を確認できません。');
   if(url.pathname==='/api/wado/web-search')fail(410,'ネット検索機能は提供を終了しました。');
@@ -42,6 +44,7 @@ export default {async scheduled(event,env){if(cloudRetired())await deleteRetired
    else if(url.pathname==='/api/admin')response=await admin(request,env);
    else if(url.pathname==='/api/admin/import'&&request.method==='POST')response=await importLegacy(request,env);
    else if(url.pathname==='/api/visits')response=await visit(request,env);
+   else if(url.pathname==='/api/pare/analytics')response=await pareAnalytics(request,env,url);
    else if(url.pathname==='/api/owner/overview')response=await overview(request,env);
    else fail(404,'ページがありません。');
   }
