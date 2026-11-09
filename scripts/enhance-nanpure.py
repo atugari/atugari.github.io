@@ -27,7 +27,10 @@ for name, expected in manifest['files'].items():
     relative = Path(name)
     assert not relative.is_absolute() and '..' not in relative.parts, name
     content = (root / relative).read_bytes()
-    assert hashlib.sha256(content).hexdigest() == expected, f'Release file changed: {name}'
+    actual = hashlib.sha256(content).hexdigest()
+    if actual != expected:
+        print(f'INTEGRITY DEBUG {name}: expected={expected} actual={actual} bytes={len(content)}', flush=True)
+    assert actual == expected, f'Release file changed: {name}'
 base = root / manifest['base'].lstrip('/')
 assert (base / 'notebook/shirupure.html').is_file()
 assert (base / 'notebook/crossword.html').is_file()
