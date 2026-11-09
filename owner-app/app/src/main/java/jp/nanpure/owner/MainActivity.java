@@ -365,7 +365,7 @@ public final class MainActivity extends Activity {
         analyticsProblem = "";
         final int requestId = ++analyticsGeneration;
         final String key = ownerKey;
-        if (resumed && tab == 4) render();
+        if (resumed && tab == 2) render();
         network.execute(() -> {
             JSONObject result = null;
             String failure = "";
@@ -378,7 +378,7 @@ public final class MainActivity extends Activity {
                 analyticsBusy = false;
                 if (fresh != null) { analytics = fresh; analyticsProblem = ""; }
                 else analyticsProblem = message;
-                if (resumed && tab == 4) render();
+                if (resumed && tab == 2) render();
             });
         });
     }
