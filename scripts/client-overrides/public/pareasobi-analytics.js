@@ -21,16 +21,16 @@ function emit(event,screen='home',eventId=random()){
  const payload={visitor,session,eventId,game,page,screen:String(screen||'home').slice(0,48),event};
  try{fetch(API,{method:'POST',mode:'cors',credentials:'omit',keepalive:true,headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).catch(()=>{})}catch{}
 }
-let currentScreen='',started=false;
+let currentScreen='',started=false,lastStartAt=0;
 function screen(name){name=String(name||'home').slice(0,48);if(name===currentScreen)return;currentScreen=name;emit('screen_view',name)}
 emit('page_view','document');screen(document.body?.dataset?.screen||'home');
-function start(){if(started)return;started=true;emit('game_start',currentScreen||'play')}
+function start(){const now=Date.now();if(now-lastStartAt<2500)return;lastStartAt=now;started=true;emit('game_start',currentScreen||'play')}
 function complete(){emit('game_complete',currentScreen||'result')}
 function abandon(){if(started){emit('game_abandon',currentScreen||'play');started=false}}
 window.addEventListener('pare:analytics',e=>{const d=e.detail||{};if(d.event==='game_start')start();else if(d.event==='game_complete')complete();else if(d.event==='game_abandon')abandon();else if(d.event==='screen_view')screen(d.screen)});
 document.addEventListener('click',e=>{
  const target=e.target.closest?.('button,a,[data-analytics-event],[data-analytics-start],[data-analytics-screen]');if(!target)return;
- if(target.dataset.analyticsEvent==='game_complete')complete();else if(target.hasAttribute('data-analytics-start'))start();else if(target.dataset.analyticsScreen)screen(target.dataset.analyticsScreen);else if(game!=='plaza'&&/^(開始|スタート|遊ぶ|挑戦する|プレイ開始|新しい問題で遊ぶ)/.test((target.textContent||'').trim()))start();
+ if(target.dataset.analyticsEvent==='game_complete')complete();else if(target.hasAttribute('data-analytics-start'))start();else if(target.dataset.analyticsScreen)screen(target.dataset.analyticsScreen);else if(game!=='plaza'&&/(で遊ぶ|に挑戦|開始|スタート|プレイする|始める)/.test((target.textContent||'').trim()))start();
 },true);
 function routeMessage(data){
  if(data.type==='np-notebook-route'){const route=String(data.key||'').split(':').pop()||'home';screen(route);if(['play','game','tutorial'].includes(route))start();else if(started)abandon()}
@@ -46,8 +46,8 @@ function inspectAds(root=document){
   const filled=el.getAttribute('data-ad-status')==='filled'||el.dataset.adStatus==='filled';
   if(!filled)continue;
   adSeen.add(el);
-  if(!('IntersectionObserver'in window)){emit('ad_impression',currentScreen||'home');continue}
-  const observer=new IntersectionObserver(entries=>{for(const entry of entries)if(entry.isIntersecting&&entry.intersectionRatio>=.5){observer.disconnect();setTimeout(()=>{const r=el.getBoundingClientRect(),visible=r.width>0&&r.height>0&&r.bottom>0&&r.top<innerHeight;if(visible)emit('ad_impression',currentScreen||'home')},1000)}},{threshold:[.5]});
+  if(!('IntersectionObserver'in window)){emit('ad_impression',el.closest?.('[data-screen]')?.dataset.screen||currentScreen||'home');continue}
+  const observer=new IntersectionObserver(entries=>{for(const entry of entries)if(entry.isIntersecting&&entry.intersectionRatio>=.5){observer.disconnect();setTimeout(()=>{const r=el.getBoundingClientRect(),visible=r.width>0&&r.height>0&&r.bottom>0&&r.top<innerHeight;if(visible)emit('ad_impression',el.closest?.('[data-screen]')?.dataset.screen||currentScreen||'home')},1000)}},{threshold:[.5]});
   observer.observe(el);
  }
 }
