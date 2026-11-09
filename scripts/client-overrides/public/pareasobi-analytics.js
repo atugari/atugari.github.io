@@ -29,7 +29,7 @@ function complete(){emit('game_complete',currentScreen||'result')}
 function abandon(){if(started){emit('game_abandon',currentScreen||'play');started=false}}
 window.addEventListener('pare:analytics',e=>{const d=e.detail||{};if(d.event==='game_start')start();else if(d.event==='game_complete')complete();else if(d.event==='game_abandon')abandon();else if(d.event==='screen_view')screen(d.screen)});
 document.addEventListener('click',e=>{
- const target=e.target.closest?.('[data-analytics-event],[data-analytics-start],[data-analytics-screen]');if(!target)return;
+ const target=e.target.closest?.('button,a,[data-analytics-event],[data-analytics-start],[data-analytics-screen]');if(!target)return;
  if(target.dataset.analyticsEvent==='game_complete')complete();else if(target.hasAttribute('data-analytics-start'))start();else if(target.dataset.analyticsScreen)screen(target.dataset.analyticsScreen);else if(game!=='plaza'&&/^(開始|スタート|遊ぶ|挑戦する|プレイ開始|新しい問題で遊ぶ)/.test((target.textContent||'').trim()))start();
 },true);
 function routeMessage(data){
@@ -50,6 +50,6 @@ function inspectAds(root=document){
   observer.observe(el);
  }
 }
-inspectAds();new MutationObserver(records=>{for(const r of records){if(r.type==='attributes')inspectAds(r.target.parentElement||document);for(const n of r.addedNodes)if(n.nodeType===1)inspectAds(n)}}).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['data-ad-status']});
+inspectAds();new MutationObserver(records=>{for(const r of records){if(r.type==='attributes')inspectAds(r.target.parentElement||document);for(const n of r.addedNodes)if(n.nodeType===1)inspectAds(n)}}).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['data-ad-status']});\nnew MutationObserver(()=>{const node=document.body?.matches?.('[data-screen]')?document.body:document.querySelector('[data-screen]');if(node?.dataset.screen)screen(node.dataset.screen)}).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['data-screen']});
 window.PareAnalytics={screen,start,complete,abandon};
 })();
