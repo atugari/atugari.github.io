@@ -50,11 +50,13 @@ function planChecks({paths,readAt,sameBlob=()=>false,base='base',head='head',for
   const lightweight=new Set([
     '.github/workflows/deploy-site.yml','scripts/select-site-checks.cjs','scripts/check-site-check-selection.cjs','scripts/check-release-integrity.cjs',
     'scripts/check-generation-assist.cjs','scripts/check-generation-assist-browser.cjs','scripts/fixtures/generation-assist-retry.html',
+    '.github/workflows/build-owner-app.yml','owner-app/README.md','owner-app/app/build.gradle','owner-app/app/src/main/AndroidManifest.xml','owner-app/app/src/main/java/jp/nanpure/owner/MainActivity.java',
+    'index.html','dungeon.html','move-moove-mooove.html','speed.html','combination-blocks.html','narabe100.html','echo-dive.html','shopping-memo.html','timer-gauge.html','skins.html','maze/index.html',
     'scripts/client-overrides/public/notebook/generation-assist.js','scripts/prepare-generation-assist-retry-release.mjs',
     'scripts/release-notes.json','nanpure/releases.json','nanpure-api/src/generation.js','nanpure-api/test/generation.test.mjs'
   ]);
   for(const p of semantic){
-    if(lightweight.has(p))continue;
+    if(lightweight.has(p)||p.startsWith('nanpure-api/'))continue;
     if(/^scripts\/collection-100k\//.test(p)||/^nanpure\/collection\//.test(p)){
       selected.corpus=true;if(/\.(?:js|mjs|html|css)$/.test(p))selected.notebook=true;continue;
     }
