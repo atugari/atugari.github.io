@@ -22,7 +22,7 @@ function emit(event,screen='home',eventId=random()){
  try{fetch(API,{method:'POST',mode:'cors',credentials:'omit',keepalive:true,headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).catch(()=>{})}catch{}
 }
 let currentScreen='',started=false,lastStartAt=0;
-function screen(name){name=String(name||'home').slice(0,48);if(name===currentScreen)return;currentScreen=name;emit('screen_view',name);if(/^(result|complete|clear|finish|finished|ending)$/i.test(name))complete();else if(started&&/^(home|menu|setup)$/i.test(name))abandon();else if(['play','game','tutorial'].includes(name))start()}
+function screen(name){name=String(name||'home').slice(0,48);if(name===currentScreen)return;currentScreen=name;emit('screen_view',name);if(/^(result|complete|clear|finish|finished|ending)$/i.test(name))complete();else if(['play','game','tutorial'].includes(name))start();else if(started)abandon()}
 emit('page_view','document');screen(document.body?.dataset?.screen||'home');
 function start(){const now=Date.now();if(now-lastStartAt<2500)return;lastStartAt=now;started=true;emit('game_start',currentScreen||'play')}
 function complete(){emit('game_complete',currentScreen||'result')}
@@ -60,6 +60,8 @@ const watchedFrames=new WeakSet();
 function watchFrame(frame){
  const attach=()=>{try{const view=frame.contentWindow,doc=view.document;if(!doc||watchedFrames.has(doc))return;watchedFrames.add(doc);inspectAds(doc,view);new view.MutationObserver(records=>{for(const r of records){if(r.type==='attributes')inspectAds(r.target.parentElement||doc,view);for(const n of r.addedNodes)if(n.nodeType===1)inspectAds(n,view)}}).observe(doc.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['data-ad-status']})}catch{}};
  frame.addEventListener('load',attach);try{if(frame.contentDocument?.readyState==='complete')attach()}catch{}
+ const readScreen=()=>{try{const doc=frame.contentDocument;if(!doc)return;const bodyScreen=doc.body?.dataset?.screen;if(bodyScreen){screen(bodyScreen);return}for(const [id,name] of [['play-setup','setup'],['play-game','play'],['play-library','library']]){const el=doc.getElementById(id);if(el&&!el.hidden){screen(name);return}}const marked=doc.querySelector('[data-screen]');if(marked?.dataset.screen)screen(marked.dataset.screen)}catch{}};
+ frame.addEventListener('load',readScreen);const timer=setInterval(()=>{if(!frame.isConnected){clearInterval(timer);return}readScreen()},1500);
 }
 document.querySelectorAll('iframe').forEach(watchFrame);
 new MutationObserver(records=>{for(const r of records)for(const n of r.addedNodes)if(n.nodeType===1){if(n.tagName==='IFRAME')watchFrame(n);n.querySelectorAll?.('iframe').forEach(watchFrame)}}).observe(document.body,{subtree:true,childList:true});
