@@ -66,13 +66,13 @@ if root.name == '_site':
         if page.is_file():
             html = page.read_text()
             if '/assets/pareasobi-analytics.js' not in html and '</body>' in html:
-                page.write_text(html.replace('</body>', script_tag + '\\n</body>'))
+                page.write_text(html.replace('</body>', script_tag + '\n</body>'))
     entry = root / 'puzzles/entry.js'
     if entry.is_file():
         source = entry.read_text()
         marker = "const frame=document.getElementById('game')"
         if marker in source and 'pareasobi-analytics.js' not in source:
-            loader = "const analytics=document.createElement('script');analytics.defer=true;analytics.src='/assets/pareasobi-analytics.js?v=20261110';document.head.append(analytics);\\n"
+            loader = "const analytics=document.createElement('script');analytics.defer=true;analytics.src='/assets/pareasobi-analytics.js?v=20261110';document.head.append(analytics);\n"
             entry.write_text(source.replace(marker, loader + marker, 1))
 
 # Build helpers are not website pages. Keep them out of the public Pages artifact.
