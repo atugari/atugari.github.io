@@ -406,6 +406,56 @@ public final class MainActivity extends Activity {
         add(page,button("受付番号をコピー",false,()->copy("受付番号",item.optString("id"))));
     }
 
+    
+    private String gameLabel(String id){
+        switch(id){
+            case "pareasobi":return "パレあそび全体";case "nanpure":return "ナンプレ帳";
+            case "maru":return "丸場所記憶ゲーム";case "tobe":return "飛べ飛";case "move-moove-mooove":return "Move Moove Mooove";
+            case "speed":return "スピード";case "kuroshiro":return "黒白";case "combination-blocks":return "Combine & Discover";
+            case "narabe100":return "ならべパズル100";case "echo-dive":return "エコーダイブ";case "maze":return "迷路ラボ";
+            case "shopping-memo":return "ショッピング メモ";case "timer-gauge":return "メータータイマー";case "skins":return "きせかえギャラリー";
+            case "shirupure":return "シルプレ";case "wado":return "和同開珎";case "crossword":return "クロスワード";
+            case "cross":return "クロスてんびん";case "tenbin":return "天秤";case "paths":return "しるしのこみち";
+            case "studio":return "シルプレ工房";case "workshop":return "パズルの試作室";case "magic-square":return "魔方陣";
+            case "puzzles":return "パズル一覧";default:return id;
+        }
+    }
+    private void showPareAnalytics(LinearLayout page){
+        title(page,"パレあそびの利用状況",analyticsDays+"日間 · 日本時間");
+        LinearLayout periods=row();
+        for(int d:new int[]{7,30,90}){final int days=d;Button b=button(days+"日",analyticsDays==days,()->{analyticsDays=days;refresh(true);});LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(0,dp(46),1);if(d!=7)p.leftMargin=dp(7);periods.addView(b,p);}add(page,periods);gap(page,14);
+        if(pareAnalytics==null){if(!analyticsProblem.isEmpty())note(page,analyticsProblem,true);empty(page,"分析データを取得できません","計測を開始した後のデータがここに表示されます。");return;}
+        JSONObject totals=obj(pareAnalytics,"totals");
+        LinearLayout first=row();stats(first,"ページ表示",number(totals,"pageViews"),"回",false);stats(first,"訪問端末",number(totals,"uniqueVisitors"),"台",true);add(page,first);gap(page,10);
+        LinearLayout second=row();stats(second,"遊んだ端末",number(totals,"uniquePlayers"),"台",true);stats(second,"ゲーム開始",number(totals,"players"),"回",false);add(page,second);gap(page,10);
+        LinearLayout third=row();stats(third,"ゲームへのアクセス",number(totals,"accesses"),"回",false);stats(third,"プレイセッション",number(totals,"sessions"),"回",false);add(page,third);gap(page,16);
+        section(page,"ゲーム別の利用状況");
+        JSONArray games=pareAnalytics.optJSONArray("games");int shown=0;
+        if(games!=null)for(int i=0;i<games.length();i++){JSONObject g=games.optJSONObject(i);if(g==null)continue;shown++;LinearLayout c=card(page);
+            add(c,text(gameLabel(g.optString("id")),17,INK,true));gap(c,10);
+            pair(c,"ページ表示",number(g,"pageViews")+"回");pair(c,"アクセス",number(g,"accesses")+"回");
+            pair(c,"遊んだ端末",number(g,"uniquePlayers")+"台");pair(c,"ゲーム開始",number(g,"players")+"回");
+            pair(c,"プレイセッション",number(g,"sessions")+"回");pair(c,"クリア",number(g,"completions")+"回");
+            pair(c,"広告表示",number(g,"adImpressions")+"回");pair(c,"広告クリック",number(g,"adClicks")+"回");
+        }
+        if(shown==0)empty(page,"まだゲーム別の記録はありません","各ゲームへのアクセスが記録されると、ここに表示されます。");
+        section(page,"画面別の広告表示");
+        JSONArray screens=pareAnalytics.optJSONArray("screens");int adRows=0;
+        if(screens!=null)for(int i=0;i<screens.length();i++){JSONObject sc=screens.optJSONObject(i);if(sc==null)continue;long impressions=sc.optLong("adImpressions"),clicks=sc.optLong("adClicks");if(impressions==0&&clicks==0)continue;adRows++;LinearLayout c=card(page);
+            add(c,text(gameLabel(sc.optString("game"))+" · "+sc.optString("screen"),15,INK,true));gap(c,8);
+            pair(c,"広告表示",number(sc,"adImpressions")+"回");pair(c,"広告クリック",number(sc,"adClicks")+"回");
+        }
+        if(adRows==0)empty(page,"広告の表示記録はまだありません","広告を導入した後、実際に表示された通知を受け取った回数を画面ごとに集計します。");
+        section(page,"日ごとの推移");
+        JSONArray history=pareAnalytics.optJSONArray("history");
+        if(history!=null)for(int i=history.length()-1;i>=0;i--){JSONObject d=history.optJSONObject(i);if(d==null)continue;LinearLayout c=card(page);add(c,text(d.optString("day"),14,INK,true));gap(c,7);
+            pair(c,"ページ表示 / アクセス",number(d,"pageViews")+"回 / "+number(d,"accesses")+"回");
+            pair(c,"遊んだ端末",number(d,"players")+"台");pair(c,"広告表示",number(d,"adImpressions")+"回");
+        }
+        note(page,"端末数は同じ日のブラウザー単位の推定値で、実人数ではありません。DNT・GPCを有効にした訪問は集計しません。広告表示数は、広告が実際に表示されたと確認できたイベントのみです。",false);
+        if(!analyticsProblem.isEmpty())note(page,analyticsProblem,true);
+    }
+
     private void showSettings(LinearLayout page){
         title(page,"作者室の設定","接続と管理先へのショートカット");
         LinearLayout c=card(page);pair(c,"作者室アプリ","1.0.0");pair(c,"サイト",(version.isEmpty()?str(obj(overview,"site"),"version","未取得"):version)+(versionStale?"（前回確認）":""));pair(c,"サーバー",str(obj(overview,"site"),"apiVersion","未取得"));
