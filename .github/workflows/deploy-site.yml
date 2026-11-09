@@ -108,6 +108,9 @@ jobs:
           node scripts/check-release-integrity.cjs _site
           node scripts/check-public-release-policy.cjs
 
+      - name: Inject Pareasobi analytics after release integrity checks
+        run: python3 scripts/inject-pareasobi-analytics.py _site
+
       - name: Check generation assistance in a real browser Worker
         shell: bash
         run: |
