@@ -54,7 +54,7 @@ button,select,input,summary,.check{touch-action:manipulation}
 #maze.selecting,#maze.editing-targets,.custom-waveform-wrap,.custom-waveform-wrap canvas{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 </style>
 <link rel="canonical" href="https://atugari.github.io/maze/"><meta name="robots" content="index, follow, max-image-preview:large"><meta property="og:type" content="website"><meta property="og:site_name" content="パレあそび"><meta property="og:title" content="迷路ラボ｜迷路を自動生成して探索方法を比較｜パレあそび"><meta property="og:description" content="13種類の作り方で迷路を自動生成し、4種類の探索アルゴリズムを動かして比較できる無料ツール。迷路作成や経路探索をスマホ・PCで体験できます。"><meta property="og:url" content="https://atugari.github.io/maze/"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="迷路ラボ｜迷路を自動生成して探索方法を比較｜パレあそび"><meta name="twitter:description" content="13種類の作り方で迷路を自動生成し、4種類の探索アルゴリズムを動かして比較できる無料ツール。迷路作成や経路探索をスマホ・PCで体験できます。"><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"迷路ラボ","url":"https://atugari.github.io/maze/","description":"13種類の作り方で迷路を自動生成し、4種類の探索アルゴリズムを動かして比較できる無料ツール。迷路作成や経路探索をスマホ・PCで体験できます。","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","isAccessibleForFree":true,"inLanguage":"ja"}</script></head>
-<body>
+<body data-game="maze">
 <header class="topbar"><h1>迷路の生成と探索</h1><small>オフライン対応・ホーム画面に追加可</small></header>
 <main class="workspace">
 <aside class="panel controls" aria-label="迷路と探索の設定">
@@ -656,5 +656,6 @@ if('ResizeObserver'in window){new ResizeObserver(scheduleDraw).observe(canvas.pa
 renderPresetList();const sharedPreset=decodePresetLink();if(sharedPreset){applyPreset(sharedPreset,true);$('preset-clear-hash').hidden=false;}describe();syncCustomAudioUI();beginGeneration(true);if($('keep-awake').checked)setWakeLockWanted(true);if(sharedPreset)status('共有された設定を読み込みました。「新しい迷路」で反映できます。');if(typeof navigator!=='undefined'&&'serviceWorker'in navigator&&location.protocol!=='file:')navigator.serviceWorker.register('./sw.js').catch(()=>{});
 })();
 </script>
+<script defer src="/scripts/client-overrides/public/pare-analytics.js?v=1"></script>
 </body>
 </html>
