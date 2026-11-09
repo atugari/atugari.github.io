@@ -442,13 +442,13 @@ public final class MainActivity extends Activity {
             pair(c,"広告表示",number(g,"adImpressions")+"回");pair(c,"広告クリック",number(g,"adClicks")+"回");
         }
         if(shown==0)empty(page,"まだゲーム別の記録はありません","各ゲームへのアクセスが記録されると、ここに表示されます。");
-        section(page,"画面別の広告表示");
-        JSONArray screens=pareAnalytics.optJSONArray("screens");int adRows=0;
-        if(screens!=null)for(int i=0;i<screens.length();i++){JSONObject sc=screens.optJSONObject(i);if(sc==null)continue;long impressions=sc.optLong("adImpressions"),clicks=sc.optLong("adClicks");if(impressions==0&&clicks==0)continue;adRows++;LinearLayout c=card(page);
+        section(page,"画面別の利用状況・広告表示");
+        JSONArray screens=pareAnalytics.optJSONArray("screens");int screenRows=0;
+        if(screens!=null)for(int i=0;i<screens.length();i++){JSONObject sc=screens.optJSONObject(i);if(sc==null)continue;long views=sc.optLong("views"),impressions=sc.optLong("adImpressions"),clicks=sc.optLong("adClicks");if(views==0&&impressions==0&&clicks==0)continue;screenRows++;LinearLayout c=card(page);
             add(c,text(gameLabel(sc.optString("game"))+" · "+sc.optString("screen"),15,INK,true));gap(c,8);
-            pair(c,"広告表示",number(sc,"adImpressions")+"回");pair(c,"広告クリック",number(sc,"adClicks")+"回");
+            pair(c,"画面表示",number(sc,"views")+"回");pair(c,"広告表示",number(sc,"adImpressions")+"回");pair(c,"広告クリック",number(sc,"adClicks")+"回");
         }
-        if(adRows==0)empty(page,"広告の表示記録はまだありません","広告を導入した後、実際に表示された通知を受け取った回数を画面ごとに集計します。");
+        if(screenRows==0)empty(page,"画面別の記録はまだありません","画面切替の記録や、広告を導入した後の実際の表示通知が届くとここに表示します。");
         section(page,"日ごとの推移");
         JSONArray history=pareAnalytics.optJSONArray("history");
         if(history!=null)for(int i=history.length()-1;i>=0;i--){JSONObject d=history.optJSONObject(i);if(d==null)continue;LinearLayout c=card(page);add(c,text(d.optString("day"),14,INK,true));gap(c,7);
