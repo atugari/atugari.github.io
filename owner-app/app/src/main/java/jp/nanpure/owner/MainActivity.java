@@ -217,7 +217,7 @@ public final class MainActivity extends Activity {
         add(access,button("管理用ファイルから読み込む",false,this::importKey));
         loginError = text(message,13,ERROR,false); loginError.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE); gap(access,12); add(access,loginError);
         note(c,"接続できたキーは、この端末内で暗号化して保存します。初回のみ入力が必要です。",false);
-        add(c,text("作者室 1.0.0 · Android 8.0以降",12,MUTED,false));
+        add(c,text("管理室 1.1.0 · Android 8.0以降",12,MUTED,false));
     }
 
     private void login(String raw) {
@@ -460,7 +460,7 @@ public final class MainActivity extends Activity {
 
     private void showSettings(LinearLayout page){
         title(page,"作者室の設定","接続と管理先へのショートカット");
-        LinearLayout c=card(page);pair(c,"作者室アプリ","1.0.0");pair(c,"サイト",(version.isEmpty()?str(obj(overview,"site"),"version","未取得"):version)+(versionStale?"（前回確認）":""));pair(c,"サーバー",str(obj(overview,"site"),"apiVersion","未取得"));
+        LinearLayout c=card(page);pair(c,"管理室アプリ","1.1.0");pair(c,"サイト",(version.isEmpty()?str(obj(overview,"site"),"version","未取得"):version)+(versionStale?"（前回確認）":""));pair(c,"サーバー",str(obj(overview,"site"),"apiVersion","未取得"));
         add(c,text("管理用キーはこの端末内で暗号化しています。お問い合わせの内容を端末のファイルへ保存しません。",12,MUTED,false));
         actionRow(page,"パレあそびを開く","ゲーム・ツール一覧",()->open(SITE));
         actionRow(page,"ナンプレ帳を開く","ナンプレ帳のトップページ",()->open(NANPURE_SITE));
@@ -521,7 +521,7 @@ public final class MainActivity extends Activity {
     }
     private void logout(){generation++;busy=false;ownerKey="";overview=null;pareAnalytics=null;inquiries=new JSONArray();detail=null;version="";versionStale=false;problem="";getSharedPreferences(PREFS,MODE_PRIVATE).edit().clear().apply();
         try{KeyStore store=KeyStore.getInstance("AndroidKeyStore");store.load(null);store.deleteEntry(KEY_ALIAS);}catch(Exception ignored){}showLogin("");}
-    private void open(String address){if(!address.equals(SITE)&&!address.equals(MANAGE)&&!address.equals(CLOUDFLARE)&&!address.equals(GITHUB))return;
+    private void open(String address){if(!address.equals(SITE)&&!address.equals(NANPURE_SITE)&&!address.equals(MANAGE)&&!address.equals(CLOUDFLARE)&&!address.equals(GITHUB))return;
         try{startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(address)));}catch(Exception ignored){toast("ブラウザーを開けませんでした。");}}
     private void copy(String label,String value){ClipboardManager clipboard=(ClipboardManager)getSystemService(Context.CLIPBOARD_SERVICE);clipboard.setPrimaryClip(ClipData.newPlainText(label,value));toast("コピーしました");}
     private void toast(String value){Toast.makeText(this,value,Toast.LENGTH_SHORT).show();}
