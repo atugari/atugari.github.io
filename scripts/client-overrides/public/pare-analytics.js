@@ -19,7 +19,7 @@
  }
  const api=window.PareAnalytics={screen:(name)=>send('screen_view',name),start:()=>send('game_start',document.body?.dataset?.screen||'play'),complete:()=>send('game_complete',document.body?.dataset?.screen||'result'),adImpression:(slot,screen)=>send('ad_impression',screen||slot||'unknown'),adClick:(slot,screen)=>send('ad_click',screen||slot||'unknown'),event:send};
  send('page_view',document.body?.dataset?.screen||'entry');
- if(!['site','pareasobi','plaza','home','puzzles'].includes(game))send('game_access','entry');
+
  document.addEventListener('pare-game-start',()=>api.start());
  document.addEventListener('click',e=>{const target=e.target.closest?.('[data-action="start"],[data-start-game],#btn-start,#btn-murige,#start-btn,.launch,[onclick*="startGame"],[onclick*="startChallenge"]');if(target)api.start();else{const button=e.target.closest?.('button,a');if(button&&/(遊ぶ|スタート|開始する|挑戦する|プレイする)/.test((button.textContent||'').trim()))api.start();}if(e.target.closest?.('[data-action="complete"],[data-game-complete]'))api.complete();},true);
  document.addEventListener('pare-game-complete',()=>api.complete());
