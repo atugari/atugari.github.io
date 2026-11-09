@@ -9,7 +9,7 @@ for(const href of cards){
  if(!file||file.endsWith('/'))file+='index.html';
  assert(fs.existsSync(path.join(root,file)),`Game entry not found: ${href} -> ${file}`);
  const html=read(file);
- assert(html.includes('/scripts/client-overrides/public/pare-analytics.js'),`Game missing analytics loader: ${href}`);
+ if(file.startsWith('puzzles/')&&file!=='puzzles/index.html')assert(entry.includes('/scripts/client-overrides/public/pare-analytics.js'),`Puzzle entry missing analytics loader: ${href}`);else assert(html.includes('/scripts/client-overrides/public/pare-analytics.js'),`Game missing analytics loader: ${href}`);
  assert(/<body[^>]*data-game=/.test(html),`Game missing stable analytics ID: ${href}`);
 }
 assert(hub.includes('/scripts/client-overrides/public/pare-analytics.js'),'PareAsobi hub must be measured');
