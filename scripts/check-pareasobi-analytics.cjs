@@ -8,7 +8,7 @@ const cards=[...hub.matchAll(/<a class="game-card[^"]*" href="([^"]+)"/g)].map(m
 assert(cards.length>=15,'Expected the published PareAsobi game catalogue');
 for(const href of cards){
  const url=new URL(href,'https://atugari.github.io/plaza.html');
- let file=decodeURIComponent(url.pathname).replace(/^\\//,'');
+ let file=decodeURIComponent(url.pathname).slice(1);
  if(!file||file.endsWith('/'))file+='index.html';
  assert(fs.existsSync(path.join(root,file)),`Game entry not found: ${href} -> ${file}`);
  const html=read(file);
