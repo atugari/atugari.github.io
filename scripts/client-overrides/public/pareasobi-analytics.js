@@ -42,9 +42,10 @@ const adSeen=new WeakSet();
 function inspectAds(root=document){
  const selector='ins.adsbygoogle,[data-ad-slot][data-ad-status],.ad-container[data-ad-status="filled"]';
  const nodes=[...(root.matches?.(selector)?[root]:[]),...(root.querySelectorAll?.(selector)||[])];
- for(const el of nodes){if(adSeen.has(el))continue;
+ for(const el of nodes){
   const filled=el.getAttribute('data-ad-status')==='filled'||el.dataset.adStatus==='filled';
-  if(!filled)continue;
+  if(!filled){adSeen.delete(el);continue;}
+  if(adSeen.has(el))continue;
   adSeen.add(el);
   if(!('IntersectionObserver'in window)){emit('ad_impression',el.closest?.('[data-screen]')?.dataset.screen||currentScreen||'home');continue}
   const observer=new IntersectionObserver(entries=>{for(const entry of entries)if(entry.isIntersecting&&entry.intersectionRatio>=.5){observer.disconnect();setTimeout(()=>{const r=el.getBoundingClientRect(),visible=r.width>0&&r.height>0&&r.bottom>0&&r.top<innerHeight;if(visible)emit('ad_impression',el.closest?.('[data-screen]')?.dataset.screen||currentScreen||'home')},1000)}},{threshold:[.5]});
