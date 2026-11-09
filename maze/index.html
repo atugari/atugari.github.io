@@ -656,5 +656,6 @@ if('ResizeObserver'in window){new ResizeObserver(scheduleDraw).observe(canvas.pa
 renderPresetList();const sharedPreset=decodePresetLink();if(sharedPreset){applyPreset(sharedPreset,true);$('preset-clear-hash').hidden=false;}describe();syncCustomAudioUI();beginGeneration(true);if($('keep-awake').checked)setWakeLockWanted(true);if(sharedPreset)status('共有された設定を読み込みました。「新しい迷路」で反映できます。');if(typeof navigator!=='undefined'&&'serviceWorker'in navigator&&location.protocol!=='file:')navigator.serviceWorker.register('./sw.js').catch(()=>{});
 })();
 </script>
-<script defer src="/scripts/client-overrides/public/pareasobi-analytics.js?v=20261110"></script>\n</body>
+<script defer src="/scripts/client-overrides/public/pareasobi-analytics.js?v=20261110"></script>
+</body>
 </html>
