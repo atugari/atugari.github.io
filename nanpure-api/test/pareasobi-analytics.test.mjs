@@ -30,8 +30,8 @@ test('Pareasobi event collection is anonymous, validated, deduplicated and owner
  assert.equal(DB.raw.prepare('SELECT visitor FROM pareasobi_events LIMIT 1').get().visitor,await hash('pareasobi:visitor:'+visitor));
  assert.notEqual(DB.raw.prepare('SELECT visitor FROM pareasobi_events LIMIT 1').get().visitor,visitor);
  const report=await call('/api/pareasobi/analytics?range=30d',{admin:true});
- assert.equal(report.status,200);assert.equal(report.data.totals.pageViews,1);assert.equal(report.data.totals.visitors,1);
- assert.equal(report.data.totals.adImpressions,1);assert.equal(report.data.games[0].game,'wado');
+ assert.equal(report.status,200);assert.equal(report.data.totals.pageViews,1);assert.equal(report.data.totals.visitors,1);assert.equal(report.data.totals.players,1);
+ assert.equal(report.data.totals.adImpressions,1);assert.equal(report.data.games[0].game,'wado');assert.equal(report.data.games[0].players,1);
  assert.equal(report.data.ads[0].screen,'play');assert.equal(report.headers.get('cache-control'),'no-store');
  for(const bad of [event('4'.repeat(64),'ad_impression',{payload:'secret'}),event('5'.repeat(64),'not-real'),event('6'.repeat(64),'page_view',{game:'unlisted'}),event('7'.repeat(64),'page_view',{page:'x'.repeat(181)})])
   assert.equal((await call('/api/pareasobi/event',{data:bad})).status,400);
