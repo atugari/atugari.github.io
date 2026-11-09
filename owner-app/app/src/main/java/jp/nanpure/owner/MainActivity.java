@@ -108,7 +108,7 @@ public final class MainActivity extends Activity {
 
     @Override public void onResume() {
         super.onResume(); resumed = true;
-        if (!ownerKey.isEmpty()) { if (!busy && overviewExpired()) refresh(false); else render(); }
+        if (!ownerKey.isEmpty()) { if (analytics == null && !analyticsBusy) loadAnalytics(analyticsRange); if (!busy && overviewExpired()) refresh(false); else render(); }
     }
     @Override public void onPause() { resumed = false; super.onPause(); }
     @Override public void onSaveInstanceState(Bundle out) { out.putInt("tab", tab); super.onSaveInstanceState(out); }
