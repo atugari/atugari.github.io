@@ -51,7 +51,7 @@ html,body{height:100%;background:#06080c;color:var(--fg);font-family:"Hiragino S
 @media (prefers-reduced-motion:reduce){#banner,#tip,#hud,#tui{transition:none}}
 </style>
 <meta name="description" content="真っ暗な洞窟を音の反響で探りながら進む探索ゲーム。見えない道や周囲の気配を音から読み取り、出口を目指そう。"><link rel="canonical" href="https://atugari.github.io/echo-dive.html"><meta name="robots" content="index, follow, max-image-preview:large"><meta property="og:type" content="website"><meta property="og:site_name" content="パレあそび"><meta property="og:title" content="エコーダイブ｜音の反響で進む無料探索ゲーム｜パレあそび"><meta property="og:description" content="真っ暗な洞窟を音の反響で探りながら進む探索ゲーム。見えない道や周囲の気配を音から読み取り、出口を目指そう。"><meta property="og:url" content="https://atugari.github.io/echo-dive.html"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="エコーダイブ｜音の反響で進む無料探索ゲーム｜パレあそび"><meta name="twitter:description" content="真っ暗な洞窟を音の反響で探りながら進む探索ゲーム。見えない道や周囲の気配を音から読み取り、出口を目指そう。"><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"エコーダイブ","url":"https://atugari.github.io/echo-dive.html","description":"真っ暗な洞窟を音の反響で探りながら進む探索ゲーム。見えない道や周囲の気配を音から読み取り、出口を目指そう。","applicationCategory":"GameApplication","operatingSystem":"Any","isAccessibleForFree":true,"inLanguage":"ja","offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"}}</script></head>
-<body>
+<body data-game="echo-dive">
 <div id="game">
 <canvas id="c"></canvas>
 <div id="hud">
@@ -590,5 +590,6 @@ G.best=loadBest();startTitle();requestAnimationFrame(frame);
 window.__echo={G,genLevel,startRun,update,render,ping,throwStone,keys,joy,get L(){return L;}};
 })();
 </script>
+<script defer src="/scripts/client-overrides/public/pare-analytics.js?v=1"></script>
 </body>
 </html>
