@@ -6,7 +6,8 @@ on:
       - 'nanpure-api/**'
       - 'pareasobi-analytics.html'
       - 'scripts/client-overrides/public/pareasobi-analytics.js'
-      - 'scripts/enhance-nanpure.py'
+      - 'scripts/inject-pareasobi-analytics.py'
+      - '.github/workflows/deploy-site.yml'
       - 'plaza.html'
       - 'puzzles/entry.js'
       - '.github/workflows/test-pareasobi-analytics.yml'
@@ -37,7 +38,7 @@ jobs:
       - name: Check tracker and build-injection syntax
         run: |
           node --check scripts/client-overrides/public/pareasobi-analytics.js
-          python3 -m py_compile scripts/enhance-nanpure.py
+          python3 -m py_compile scripts/inject-pareasobi-analytics.py
       - name: Check dashboard script syntax
         run: |
           node --input-type=module <<'NODE'
