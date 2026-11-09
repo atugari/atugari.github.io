@@ -288,7 +288,7 @@ jobs:
           npm install --prefix "$RUNNER_TEMP/wado-browser" --no-audit --no-fund playwright@1.62.1 linkedom@0.18.13
           "$RUNNER_TEMP/wado-browser/node_modules/.bin/playwright" install --with-deps webkit
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends fonts-noto-cjk poppler-utils
+          sudo apt-get install -y --no-install-recommends poppler-utils
           python3 -m venv "$RUNNER_TEMP/wado-python"
           "$RUNNER_TEMP/wado-python/bin/pip" install pypdf==6.10.0 pdfplumber==0.11.9
       - name: Check hint state and reviewed vocabulary
