@@ -1,20 +1,16 @@
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 const root=process.cwd(),read=p=>fs.readFileSync(path.join(root,p),'utf8');
-const hub=read('plaza.html'),entry=read('puzzles/entry.js'),tracker=read('scripts/client-overrides/public/pare-analytics.js');
+const hub=read('plaza.html'),tracker=read('scripts/client-overrides/public/pare-analytics.js');
 const cards=[...hub.matchAll(/<a class="game-card[^"]*" href="([^"]+)"/g)].map(m=>m[1]);
 assert(cards.length>=15,'Expected the published PareAsobi game catalogue');
 for(const href of cards){
  const url=new URL(href,'https://atugari.github.io/plaza.html');
  let file=decodeURIComponent(url.pathname).replace(/^\//,'');
  if(!file||file.endsWith('/'))file+='index.html';
- if(file.startsWith('puzzles/')){
-  assert(entry.includes('/scripts/client-overrides/public/pare-analytics.js'),`Puzzle entry missing analytics loader: ${href}`);
- }else{
-  assert(fs.existsSync(path.join(root,file)),`Game entry not found: ${href} -> ${file}`);
-  const html=read(file);
-  assert(html.includes('/scripts/client-overrides/public/pare-analytics.js'),`Game missing analytics loader: ${href}`);
-  assert(/<body[^>]*data-game=/.test(html),`Game missing stable analytics ID: ${href}`);
- }
+ assert(fs.existsSync(path.join(root,file)),`Game entry not found: ${href} -> ${file}`);
+ const html=read(file);
+ assert(html.includes('/scripts/client-overrides/public/pare-analytics.js'),`Game missing analytics loader: ${href}`);
+ assert(/<body[^>]*data-game=/.test(html),`Game missing stable analytics ID: ${href}`);
 }
 assert(hub.includes('/scripts/client-overrides/public/pare-analytics.js'),'PareAsobi hub must be measured');
 assert(tracker.includes('navigator.globalPrivacyControl===true'),'Respect Global Privacy Control');
