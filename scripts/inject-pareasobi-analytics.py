@@ -34,7 +34,7 @@ for name, game in game_pages.items():
     if "/scripts/client-overrides/public/pare-analytics.js" in html:
         html = html.replace("/scripts/client-overrides/public/pare-analytics.js", "/assets/pare-analytics.js")
     if "/assets/pare-analytics.js" not in html and "</body>" in html:
-        html = html.replace("</body>", script_tag + "\\n</body>", 1)
+        html = html.replace("</body>", script_tag + "\n</body>", 1)
     assert "/assets/pare-analytics.js" in html, f"Analytics script missing: {name}"
     page.write_text(html)
 print("Injected PareAsobi analytics after release integrity checks.")
