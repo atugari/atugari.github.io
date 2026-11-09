@@ -27,7 +27,7 @@ emit('page_view','document');screen(document.body?.dataset?.screen||'home');
 function start(){const now=Date.now();if(now-lastStartAt<2500)return;lastStartAt=now;started=true;emit('game_start',currentScreen||'play')}
 function complete(){emit('game_complete',currentScreen||'result')}
 function abandon(){if(started){emit('game_abandon',currentScreen||'play');started=false}}
-window.addEventListener('pare:analytics',e=>{const d=e.detail||{};if(d.event==='game_start')start();else if(d.event==='game_complete')complete();else if(d.event==='game_abandon')abandon();else if(d.event==='screen_view')screen(d.screen)});
+window.addEventListener('pare:analytics',e=>{const d=e.detail||{};if(d.event==='game_start')start();else if(d.event==='game_complete')complete();else if(d.event==='game_abandon')abandon();else if(d.event==='screen_view')screen(d.screen);else if(d.event==='ad_impression')emit('ad_impression',d.screen||currentScreen||'home')});
 document.addEventListener('click',e=>{
  const target=e.target.closest?.('button,a,[data-analytics-event],[data-analytics-start],[data-analytics-screen]');if(!target)return;
  if(target.dataset.analyticsEvent==='game_complete')complete();else if(target.hasAttribute('data-analytics-start'))start();else if(target.dataset.analyticsScreen)screen(target.dataset.analyticsScreen);else if(game!=='plaza'&&/(で遊ぶ|に挑戦|開始|スタート|プレイする|始める)/.test((target.textContent||'').trim()))start();
