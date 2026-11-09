@@ -96,6 +96,11 @@ jobs:
           cp -a kuroshiro/dist-pages/. _site/kuroshiro/
           touch _site/.nojekyll
 
+      - name: Publish PareAsobi analytics asset
+        run: |
+          mkdir -p _site/assets
+          cp _site/scripts/client-overrides/public/pare-analytics.js _site/assets/pare-analytics.js
+
       - name: Bundle Nanpure help and contact
         run: python3 scripts/enhance-nanpure.py _site
 
@@ -107,6 +112,12 @@ jobs:
           node --test scripts/check-site-check-selection.cjs
           node scripts/check-release-integrity.cjs _site
           node scripts/check-public-release-policy.cjs
+
+      - name: Inject PareAsobi analytics after release integrity checks
+        run: python3 scripts/inject-pareasobi-analytics.py _site
+
+      - name: Check PareAsobi analytics in assembled Pages output
+        run: node scripts/check-pareasobi-analytics.cjs _site
 
       - name: Check generation assistance in a real browser Worker
         shell: bash

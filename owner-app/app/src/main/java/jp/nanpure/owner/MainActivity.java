@@ -60,9 +60,10 @@ import javax.net.ssl.HttpsURLConnection;
 /** Small native, read-only author console. No WebView, remote code or bundled credentials. */
 public final class MainActivity extends Activity {
     private static final String API = "https://puzzle-api.puzzle-hub-4826.workers.dev";
-    private static final String SITE = "https://atugari.github.io/nanpure/";
+    private static final String SITE = "https://atugari.github.io/plaza.html";
+    private static final String NANPURE_SITE = "https://atugari.github.io/nanpure/";
     private static final String VERSION = "https://atugari.github.io/nanpure-version.json";
-    private static final String MANAGE = SITE + "?view=manage";
+    private static final String MANAGE = NANPURE_SITE + "?view=manage";
     private static final String CLOUDFLARE = "https://dash.cloudflare.com/";
     private static final String GITHUB = "https://github.com/atugari/atugari.github.io/actions";
     private static final String KEY_ALIAS = "nanpure_owner_access_v1";
@@ -84,7 +85,9 @@ public final class MainActivity extends Activity {
     private TextView loginError;
     private Button loginButton;
     private String ownerKey = "", version = "", problem = "", inquiryProblem = "";
-    private JSONObject overview;
+    private JSONObject overview, pareAnalytics;
+    private String analyticsProblem = "";
+    private int analyticsDays = 30;
     private JSONArray inquiries = new JSONArray();
     private int tab = 0, generation = 0;
     private boolean busy, destroyed, resumed, versionStale;
@@ -98,7 +101,7 @@ public final class MainActivity extends Activity {
         getWindow().setStatusBarColor(BG);
         getWindow().setNavigationBarColor(Color.WHITE);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
-        if (state != null) tab = Math.max(0, Math.min(4, state.getInt("tab", 0)));
+        if (state != null) tab = Math.max(0, Math.min(5, state.getInt("tab", 0)));
         try { ownerKey = readSavedKey(); } catch (Exception ignored) { ownerKey = ""; }
         if (ownerKey.isEmpty()) showLogin(""); else render();
     }
@@ -201,8 +204,8 @@ public final class MainActivity extends Activity {
         LinearLayout c = column(); c.setPadding(dp(24), dp(42), dp(24), dp(30)); scroll.addView(c);
         TextView mark = text("N", 34, Color.WHITE, true); mark.setGravity(Gravity.CENTER); mark.setBackground(shape(GREEN,0,20));
         c.addView(mark,new LinearLayout.LayoutParams(dp(64),dp(64))); gap(c,24);
-        add(c,text("ナンプレ帳",15,GREEN,true)); gap(c,6); add(c,text("作者室",32,INK,true)); gap(c,12);
-        add(c,text("訪問状況、無料枠、お問い合わせを\nひとつのアプリで確認できます。",16,MUTED,false)); gap(c,28);
+        add(c,text("パレあそび",15,GREEN,true)); gap(c,6); add(c,text("管理室",32,INK,true)); gap(c,12);
+        add(c,text("パレあそび全体と各ゲームの利用状況や広告表示、ナンプレ帳の無料枠とお問い合わせを確認できます。",16,MUTED,false)); gap(c,28);
         LinearLayout access = card(c); add(access,text("作者として接続",19,INK,true)); gap(access,14);
         add(access,text("管理用キー",14,INK,true)); gap(access,8);
         keyInput = new EditText(this); keyInput.setSingleLine(true); keyInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
@@ -214,7 +217,7 @@ public final class MainActivity extends Activity {
         add(access,button("管理用ファイルから読み込む",false,this::importKey));
         loginError = text(message,13,ERROR,false); loginError.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE); gap(access,12); add(access,loginError);
         note(c,"接続できたキーは、この端末内で暗号化して保存します。初回のみ入力が必要です。",false);
-        add(c,text("作者室 1.0.0 · Android 8.0以降",12,MUTED,false));
+        add(c,text("管理室 1.1.0 · Android 8.0以降",12,MUTED,false));
     }
 
     private void login(String raw) {
@@ -224,18 +227,19 @@ public final class MainActivity extends Activity {
         busy = true; loginButton.setEnabled(false); loginButton.setText("接続を確認中…"); loginError.setText("");
         final int current = ++generation;
         network.execute(() -> {
-            JSONObject data = null; JSONArray items = null; String error = "", contactError = "", siteVersion = ""; long receivedAt = 0;
+            JSONObject data = null, analytics = null; JSONArray items = null; String error = "", contactError = "", analyticsFailure = "", siteVersion = ""; long receivedAt = 0;
             try { data = request(API + "/api/owner/overview", key); receivedAt = System.currentTimeMillis(); saveKey(key); }
             catch (Exception ex) { error = friendly(ex); }
             if (error.isEmpty() && data != null) {
+                try { analytics = request(API + "/api/pare/analytics?days=" + analyticsDays, key); } catch (Exception ex) { analyticsFailure = "パレあそび分析を取得できませんでした。更新して再試行できます。"; }
                 try { items = request(API + "/api/admin", key).optJSONArray("items"); } catch (Exception ex) { contactError = "お問い合わせを取得できませんでした。更新で再試行できます。"; }
                 try { siteVersion = str(request(VERSION, null), "version", ""); } catch (Exception ignored) {}
             }
-            final JSONObject result = data; final JSONArray newItems = items; final String message = error, contactFailure = contactError, newVersion = siteVersion; final long overviewReceivedAt = receivedAt;
+            final JSONObject result = data, analyticsResult = analytics; final JSONArray newItems = items; final String message = error, contactFailure = contactError, analyticsFailureMessage = analyticsFailure, newVersion = siteVersion; final long overviewReceivedAt = receivedAt;
             main.post(() -> {
                 if (destroyed || current != generation) return; busy = false;
                 if (!message.isEmpty()) { loginButton.setEnabled(true); loginButton.setText("接続する"); loginError.setText(message); return; }
-                ownerKey = key; overview = result; fetchedAt = overviewReceivedAt; problem = ""; inquiryProblem = contactFailure;
+                ownerKey = key; overview = result; pareAnalytics = analyticsResult; analyticsProblem = analyticsFailureMessage; fetchedAt = overviewReceivedAt; problem = ""; inquiryProblem = contactFailure;
                 if (newItems != null) inquiries = newItems; updateVersion(newVersion, result);
                 InputMethodManager im = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE); im.hideSoftInputFromWindow(keyInput.getWindowToken(),0);
                 keyInput.setText(""); if (resumed) render();
@@ -262,21 +266,22 @@ public final class MainActivity extends Activity {
         if (ownerKey.isEmpty()) { showLogin(""); return; }
         root = column(); root.setBackgroundColor(BG); root.setFitsSystemWindows(true); setContentView(root);
         LinearLayout header = row(); header.setPadding(dp(20),dp(12),dp(16),dp(10));
-        LinearLayout name = column(); add(name,text("ナンプレ帳",12,GREEN,true)); add(name,text("作者室",22,INK,true));
+        LinearLayout name = column(); add(name,text("パレあそび",12,GREEN,true)); add(name,text("管理室",22,INK,true));
         header.addView(name,new LinearLayout.LayoutParams(0,-2,1));
         Button refresh = button(busy ? "取得中…" : "更新",false,() -> refresh(true)); refresh.setEnabled(!busy); header.addView(refresh,new LinearLayout.LayoutParams(dp(84),dp(48))); add(root,header);
         ScrollView scroll = new ScrollView(this); scroll.setFillViewport(true); scroll.setClipToPadding(false);
         root.addView(scroll,new LinearLayout.LayoutParams(-1,0,1)); body = column(); body.setPadding(dp(20),dp(14),dp(20),dp(22)); scroll.addView(body);
         if (!problem.isEmpty()) note(body,problem + (overview == null ? "" : "\n前回取得した内容を表示しています。"),true);
-        if (tab == 4 && detail == null) showSettings(body);
+        if (tab == 5 && detail == null) showSettings(body);
         else if (overview == null) { empty(body,busy?"状況を読み込んでいます":"まだ取得できていません",busy?"少しお待ちください。":"上の「更新」から再試行できます。"); }
         else if (detail != null) showInquiryDetail(body);
         else if (tab == 0) showHome(body);
         else if (tab == 1) showTraffic(body);
         else if (tab == 2) showUsage(body);
         else if (tab == 3) showInquiries(body);
+        else if (tab == 4) showPareAnalytics(body);
         bottom = row(); bottom.setBackgroundColor(Color.WHITE); bottom.setPadding(dp(8),dp(6),dp(8),dp(10));
-        String[] names = {"概況","訪問","使用量","問合せ","設定"};
+        String[] names = {"概況","訪問","使用量","問合せ","分析","設定"};
         for (int n = 0; n < names.length; n++) { final int index=n; TextView b=text(names[n],13,tab==n?GREEN:MUTED,tab==n); b.setGravity(Gravity.CENTER); b.setPadding(dp(3),dp(16),dp(3),dp(16));
             b.setBackground(shape(tab==n?PALE:Color.WHITE,0,12)); b.setFocusable(true); b.setContentDescription(names[n]+(tab==n?"、選択中":"")); b.setSelected(tab==n);
             b.setOnClickListener(v->{tab=index;detail=null;render();}); LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(0,dp(52),1); p.setMargins(dp(2),0,dp(2),0);bottom.addView(b,p); }
@@ -302,6 +307,7 @@ public final class MainActivity extends Activity {
         JSONObject usage=obj(overview,"usage");JSONArray metrics=usage==null?null:usage.optJSONArray("metrics");boolean near=false,missing=false;
         if(metrics!=null)for(int i=0;i<metrics.length();i++){JSONObject m=metrics.optJSONObject(i);if(m==null)continue;if(!"ready".equals(metricStatus(m)))missing=true;else if(m.optDouble("limit",0)>0&&m.optDouble("used",0)/m.optDouble("limit")>=.8)near=true;}
         actionRow(page,near?"無料枠が残り少なくなっています":"無料枠の使用状況",missing?"未取得・前回の値を含みます。使用量画面で確認できます。":"サーバー・データの利用状況を確認",()->{tab=2;render();});
+        actionRow(page,"パレあそびの利用状況","全ゲーム・画面別の広告表示・アクセス集計",()->{tab=4;render();});
         actionRow(page,"お問い合わせを確認",number(contacts,"received")+"件の新着 · 全"+number(contacts,"total")+"件",()->{tab=3;render();});
         note(page,"訪問端末は、同じ日のブラウザーをまとめた目安です。人数そのものではありません。",false);
     }
@@ -315,7 +321,8 @@ public final class MainActivity extends Activity {
     private void empty(LinearLayout page,String heading,String explanation){LinearLayout c=card(page);add(c,text(heading,18,INK,true));gap(c,10);add(c,text(explanation,14,MUTED,false));}
 
     private void showTraffic(LinearLayout page){
-        JSONObject traffic=obj(overview,"traffic"),today=obj(traffic,"today");title(page,"訪問のようす",str(traffic,"day","今日")+" · 日本時間で日付を集計");
+        JSONObject traffic=obj(overview,"traffic"),today=obj(traffic,"today");title(page,"ナンプレ帳の訪問",str(traffic,"day","今日")+" · 日本時間で日付を集計");
+        note(page,"パレあそび全体とゲーム別の利用状況は、下の「分析」から確認できます。",false);
         boolean currentDay=trafficIsToday(traffic);LinearLayout r=row();stats(r,currentDay?"今日の訪問端末":"表示日の訪問端末",number(today,"browsers"),"台",true);stats(r,currentDay?"今日の訪問回数":"表示日の訪問回数",number(today,"visits"),"回",false);add(page,r);gap(page,18);
         if(!currentDay)note(page,"前回取得した日の記録です。今日の訪問は更新して確認してください。",true);
         note(page,str(traffic,"note","訪問端末は同日のブラウザー単位の目安です。人数とは異なります。"),false);
@@ -402,11 +409,62 @@ public final class MainActivity extends Activity {
         add(page,button("受付番号をコピー",false,()->copy("受付番号",item.optString("id"))));
     }
 
+    
+    private String gameLabel(String id){
+        switch(id){
+            case "pareasobi":return "パレあそび全体";case "nanpure":return "ナンプレ帳";
+            case "maru":return "丸場所記憶ゲーム";case "tobe":return "飛べ飛";case "move-moove-mooove":return "Move Moove Mooove";
+            case "speed":return "スピード";case "kuroshiro":return "黒白";case "combination-blocks":return "Combine & Discover";
+            case "narabe100":return "ならべパズル100";case "echo-dive":return "エコーダイブ";case "maze":return "迷路ラボ";
+            case "shopping-memo":return "ショッピング メモ";case "timer-gauge":return "メータータイマー";case "skins":return "きせかえギャラリー";
+            case "shirupure":return "シルプレ";case "wado":return "和同開珎";case "crossword":return "クロスワード";
+            case "cross":return "クロスてんびん";case "tenbin":return "天秤";case "paths":return "しるしのこみち";
+            case "studio":return "シルプレ工房";case "workshop":return "パズルの試作室";case "magic-square":return "魔方陣";
+            case "puzzles":return "パズル一覧";default:return id;
+        }
+    }
+    private void showPareAnalytics(LinearLayout page){
+        title(page,"パレあそびの利用状況",analyticsDays+"日間 · 日本時間");
+        LinearLayout periods=row();
+        for(int d:new int[]{7,30,90}){final int days=d;Button b=button(days+"日",analyticsDays==days,()->{analyticsDays=days;refresh(true);});LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(0,dp(46),1);if(d!=7)p.leftMargin=dp(7);periods.addView(b,p);}add(page,periods);gap(page,14);
+        if(pareAnalytics==null){if(!analyticsProblem.isEmpty())note(page,analyticsProblem,true);empty(page,"分析データを取得できません","計測を開始した後のデータがここに表示されます。");return;}
+        JSONObject totals=obj(pareAnalytics,"totals");
+        LinearLayout first=row();stats(first,"ページ表示",number(totals,"pageViews"),"回",false);stats(first,"訪問端末（延べ）",number(totals,"uniqueVisitors"),"台",true);add(page,first);gap(page,10);
+        LinearLayout second=row();stats(second,"遊んだ端末（延べ）",number(totals,"uniquePlayers"),"台",true);stats(second,"ゲーム開始",number(totals,"players"),"回",false);add(page,second);gap(page,10);
+        LinearLayout third=row();stats(third,"ゲームへのアクセス",number(totals,"accesses"),"回",false);stats(third,"プレイセッション",number(totals,"sessions"),"回",false);add(page,third);gap(page,16);
+        section(page,"ゲーム別の利用状況");
+        JSONArray games=pareAnalytics.optJSONArray("games");int shown=0;
+        if(games!=null)for(int i=0;i<games.length();i++){JSONObject g=games.optJSONObject(i);if(g==null)continue;shown++;LinearLayout c=card(page);
+            add(c,text(gameLabel(g.optString("id")),17,INK,true));gap(c,10);
+            pair(c,"ページ表示",number(g,"pageViews")+"回");pair(c,"アクセス",number(g,"accesses")+"回");
+            pair(c,"遊んだ端末（延べ）",number(g,"uniquePlayers")+"台");pair(c,"ゲーム開始",number(g,"players")+"回");
+            pair(c,"プレイセッション",number(g,"sessions")+"回");pair(c,"クリア",number(g,"completions")+"回");
+            pair(c,"広告表示",number(g,"adImpressions")+"回");pair(c,"広告クリック",number(g,"adClicks")+"回");
+        }
+        if(shown==0)empty(page,"まだゲーム別の記録はありません","各ゲームへのアクセスが記録されると、ここに表示されます。");
+        section(page,"画面別の利用状況・広告表示");
+        JSONArray screens=pareAnalytics.optJSONArray("screens");int screenRows=0;
+        if(screens!=null)for(int i=0;i<screens.length();i++){JSONObject sc=screens.optJSONObject(i);if(sc==null)continue;long views=sc.optLong("views"),impressions=sc.optLong("adImpressions"),clicks=sc.optLong("adClicks");if(views==0&&impressions==0&&clicks==0)continue;screenRows++;LinearLayout c=card(page);
+            add(c,text(gameLabel(sc.optString("game"))+" · "+sc.optString("screen"),15,INK,true));gap(c,8);
+            pair(c,"画面表示",number(sc,"views")+"回");pair(c,"広告表示",number(sc,"adImpressions")+"回");pair(c,"広告クリック",number(sc,"adClicks")+"回");
+        }
+        if(screenRows==0)empty(page,"画面別の記録はまだありません","画面切替の記録や、広告を導入した後の実際の表示通知が届くとここに表示します。");
+        section(page,"日ごとの推移");
+        JSONArray history=pareAnalytics.optJSONArray("history");
+        if(history!=null)for(int i=history.length()-1;i>=0;i--){JSONObject d=history.optJSONObject(i);if(d==null)continue;LinearLayout c=card(page);add(c,text(d.optString("day"),14,INK,true));gap(c,7);
+            pair(c,"ページ表示 / アクセス",number(d,"pageViews")+"回 / "+number(d,"accesses")+"回");
+            pair(c,"訪問端末（延べ）",number(d,"visitors")+"台");pair(c,"遊んだ端末（延べ）",number(d,"players")+"台");pair(c,"広告表示",number(d,"adImpressions")+"回");
+        }
+        note(page,"端末数は同じ日のブラウザー単位の推定値で、実人数ではありません。DNT・GPCを有効にした訪問は集計しません。広告表示数は、広告が実際に表示されたと確認できたイベントのみです。",false);
+        if(!analyticsProblem.isEmpty())note(page,analyticsProblem,true);
+    }
+
     private void showSettings(LinearLayout page){
         title(page,"作者室の設定","接続と管理先へのショートカット");
-        LinearLayout c=card(page);pair(c,"作者室アプリ","1.0.0");pair(c,"サイト",(version.isEmpty()?str(obj(overview,"site"),"version","未取得"):version)+(versionStale?"（前回確認）":""));pair(c,"サーバー",str(obj(overview,"site"),"apiVersion","未取得"));
+        LinearLayout c=card(page);pair(c,"管理室アプリ","1.1.0");pair(c,"サイト",(version.isEmpty()?str(obj(overview,"site"),"version","未取得"):version)+(versionStale?"（前回確認）":""));pair(c,"サーバー",str(obj(overview,"site"),"apiVersion","未取得"));
         add(c,text("管理用キーはこの端末内で暗号化しています。お問い合わせの内容を端末のファイルへ保存しません。",12,MUTED,false));
-        actionRow(page,"ナンプレ帳を開く","公開中のサイト",()->open(SITE));
+        actionRow(page,"パレあそびを開く","ゲーム・ツール一覧",()->open(SITE));
+        actionRow(page,"ナンプレ帳を開く","ナンプレ帳のトップページ",()->open(NANPURE_SITE));
         actionRow(page,"Cloudflareを開く","無料枠・サーバー・データベース",()->open(CLOUDFLARE));
         actionRow(page,"公開処理を確認","GitHubの更新履歴と実行状況",()->open(GITHUB));
         actionRow(page,"お問い合わせ管理","ブラウザーの管理画面",()->open(MANAGE));
@@ -417,13 +475,14 @@ public final class MainActivity extends Activity {
     private void refresh(boolean requested){
         if(!resumed||busy||ownerKey.isEmpty())return;busy=true;final String key=ownerKey;final int current=++generation;render();
         network.execute(()->{
-            JSONObject data=null;JSONArray items=null;String error="",contactError="",siteVersion="";long receivedAt=0;
+            JSONObject data=null,analytics=null;JSONArray items=null;String error="",contactError="",analyticsFailure="",siteVersion="";long receivedAt=0;
             try{data=request(API+"/api/owner/overview",key);receivedAt=System.currentTimeMillis();}catch(Exception ex){error=friendly(ex);}
-            if(data!=null){try{items=request(API+"/api/admin",key).optJSONArray("items");}catch(Exception ex){contactError="お問い合わせを取得できませんでした。更新で再試行できます。";}
+            if(data!=null){try{analytics=request(API+"/api/pare/analytics?days="+analyticsDays,key);}catch(Exception ex){analyticsFailure="パレあそび分析を取得できませんでした。更新して再試行できます。";}
+                try{items=request(API+"/api/admin",key).optJSONArray("items");}catch(Exception ex){contactError="お問い合わせを取得できませんでした。更新で再試行できます。";}
                 try{siteVersion=str(request(VERSION,null),"version","");}catch(Exception ignored){}}
-            final JSONObject result=data;final JSONArray newItems=items;final String failure=error,contactFailure=contactError,newVersion=siteVersion;final long overviewReceivedAt=receivedAt;
+            final JSONObject result=data,analyticsResult=analytics;final JSONArray newItems=items;final String failure=error,contactFailure=contactError,analyticsFailureMessage=analyticsFailure,newVersion=siteVersion;final long overviewReceivedAt=receivedAt;
             main.post(()->{if(destroyed||current!=generation)return;busy=false;problem=failure;
-                if(result!=null){overview=result;fetchedAt=overviewReceivedAt;inquiryProblem=contactFailure;if(newItems!=null){inquiries=newItems;if(detail!=null){String id=detail.optString("id");for(int i=0;i<inquiries.length();i++){JSONObject item=inquiries.optJSONObject(i);if(item!=null&&id.equals(item.optString("id"))){detail=item;break;}}}}updateVersion(newVersion,result);}
+                if(result!=null){overview=result;if(analyticsResult!=null)pareAnalytics=analyticsResult;analyticsProblem=analyticsFailureMessage;fetchedAt=overviewReceivedAt;inquiryProblem=contactFailure;if(newItems!=null){inquiries=newItems;if(detail!=null){String id=detail.optString("id");for(int i=0;i<inquiries.length();i++){JSONObject item=inquiries.optJSONObject(i);if(item!=null&&id.equals(item.optString("id"))){detail=item;break;}}}}updateVersion(newVersion,result);}
                 if(resumed){render();if(requested&&failure.isEmpty())toast("最新の状況に更新しました");}});
         });
     }
@@ -461,9 +520,9 @@ public final class MainActivity extends Activity {
         SharedPreferences p=getSharedPreferences(PREFS,MODE_PRIVATE);String encrypted=p.getString("ciphertext",null),iv=p.getString("iv",null);if(encrypted==null||iv==null)return "";
         Cipher c=Cipher.getInstance("AES/GCM/NoPadding");c.init(Cipher.DECRYPT_MODE,storageKey(),new GCMParameterSpec(128,Base64.decode(iv,Base64.NO_WRAP)));String key=new String(c.doFinal(Base64.decode(encrypted,Base64.NO_WRAP)),StandardCharsets.UTF_8);return key.matches("[a-f0-9]{64}")?key:"";
     }
-    private void logout(){generation++;busy=false;ownerKey="";overview=null;inquiries=new JSONArray();detail=null;version="";versionStale=false;problem="";getSharedPreferences(PREFS,MODE_PRIVATE).edit().clear().apply();
+    private void logout(){generation++;busy=false;ownerKey="";overview=null;pareAnalytics=null;inquiries=new JSONArray();detail=null;version="";versionStale=false;problem="";getSharedPreferences(PREFS,MODE_PRIVATE).edit().clear().apply();
         try{KeyStore store=KeyStore.getInstance("AndroidKeyStore");store.load(null);store.deleteEntry(KEY_ALIAS);}catch(Exception ignored){}showLogin("");}
-    private void open(String address){if(!address.equals(SITE)&&!address.equals(MANAGE)&&!address.equals(CLOUDFLARE)&&!address.equals(GITHUB))return;
+    private void open(String address){if(!address.equals(SITE)&&!address.equals(NANPURE_SITE)&&!address.equals(MANAGE)&&!address.equals(CLOUDFLARE)&&!address.equals(GITHUB))return;
         try{startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(address)));}catch(Exception ignored){toast("ブラウザーを開けませんでした。");}}
     private void copy(String label,String value){ClipboardManager clipboard=(ClipboardManager)getSystemService(Context.CLIPBOARD_SERVICE);clipboard.setPrimaryClip(ClipData.newPlainText(label,value));toast("コピーしました");}
     private void toast(String value){Toast.makeText(this,value,Toast.LENGTH_SHORT).show();}
