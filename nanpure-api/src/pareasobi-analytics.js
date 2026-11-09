@@ -58,7 +58,7 @@ export async function pareasobiAnalytics(request,env){
  ]);
  const asNum=x=>Number(x)||0;
  return json({ok:true,generatedAt:now,range,from,today,timezone:'Asia/Tokyo',
-  totals:Object.fromEntries(['events','visitors','sessions','pageViews','starts','completes','abandons','adImpressions'].map(k=>[k,asNum(totals?.[k])])),
+  totals:Object.fromEntries(['events','visitors','sessions','players','pageViews','starts','completes','abandons','adImpressions'].map(k=>[k,asNum(totals?.[k])])),
   daily:daily.results.map(r=>({day:r.day,pageViews:asNum(r.pageViews),visitors:asNum(r.visitors),starts:asNum(r.starts),adImpressions:asNum(r.adImpressions)})),
   games:byGame.results.map(r=>Object.fromEntries(Object.entries(r).map(([k,v])=>[k,typeof v==='number'?v: v]))),
   screens:byScreen.results,ads:ads.results,events:events.results,
