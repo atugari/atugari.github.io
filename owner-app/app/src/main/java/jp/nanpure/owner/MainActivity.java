@@ -84,7 +84,10 @@ public final class MainActivity extends Activity {
     private TextView loginError;
     private Button loginButton;
     private String ownerKey = "", version = "", problem = "", inquiryProblem = "";
-    private JSONObject overview;
+    private JSONObject overview, analytics;
+    private String analyticsRange = "30d", analyticsProblem = "";
+    private boolean analyticsBusy;
+    private int analyticsGeneration;
     private JSONArray inquiries = new JSONArray();
     private int tab = 0, generation = 0;
     private boolean busy, destroyed, resumed, versionStale;
@@ -98,7 +101,7 @@ public final class MainActivity extends Activity {
         getWindow().setStatusBarColor(BG);
         getWindow().setNavigationBarColor(Color.WHITE);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
-        if (state != null) tab = Math.max(0, Math.min(4, state.getInt("tab", 0)));
+        if (state != null) tab = Math.max(0, Math.min(5, state.getInt("tab", 0)));
         try { ownerKey = readSavedKey(); } catch (Exception ignored) { ownerKey = ""; }
         if (ownerKey.isEmpty()) showLogin(""); else render();
     }
@@ -239,6 +242,7 @@ public final class MainActivity extends Activity {
                 if (newItems != null) inquiries = newItems; updateVersion(newVersion, result);
                 InputMethodManager im = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE); im.hideSoftInputFromWindow(keyInput.getWindowToken(),0);
                 keyInput.setText(""); if (resumed) render();
+                loadAnalytics(analyticsRange);
             });
         });
     }
@@ -268,15 +272,16 @@ public final class MainActivity extends Activity {
         ScrollView scroll = new ScrollView(this); scroll.setFillViewport(true); scroll.setClipToPadding(false);
         root.addView(scroll,new LinearLayout.LayoutParams(-1,0,1)); body = column(); body.setPadding(dp(20),dp(14),dp(20),dp(22)); scroll.addView(body);
         if (!problem.isEmpty()) note(body,problem + (overview == null ? "" : "\n前回取得した内容を表示しています。"),true);
-        if (tab == 4 && detail == null) showSettings(body);
+        if (tab == 5 && detail == null) showSettings(body);
         else if (overview == null) { empty(body,busy?"状況を読み込んでいます":"まだ取得できていません",busy?"少しお待ちください。":"上の「更新」から再試行できます。"); }
         else if (detail != null) showInquiryDetail(body);
         else if (tab == 0) showHome(body);
         else if (tab == 1) showTraffic(body);
         else if (tab == 2) showUsage(body);
         else if (tab == 3) showInquiries(body);
+        else if (tab == 4) showAnalytics(body);
         bottom = row(); bottom.setBackgroundColor(Color.WHITE); bottom.setPadding(dp(8),dp(6),dp(8),dp(10));
-        String[] names = {"概況","訪問","使用量","問合せ","設定"};
+        String[] names = {"概況","訪問","ゲーム","使用量","問合せ","設定"};
         for (int n = 0; n < names.length; n++) { final int index=n; TextView b=text(names[n],13,tab==n?GREEN:MUTED,tab==n); b.setGravity(Gravity.CENTER); b.setPadding(dp(3),dp(16),dp(3),dp(16));
             b.setBackground(shape(tab==n?PALE:Color.WHITE,0,12)); b.setFocusable(true); b.setContentDescription(names[n]+(tab==n?"、選択中":"")); b.setSelected(tab==n);
             b.setOnClickListener(v->{tab=index;detail=null;render();}); LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(0,dp(52),1); p.setMargins(dp(2),0,dp(2),0);bottom.addView(b,p); }
@@ -325,6 +330,135 @@ public final class MainActivity extends Activity {
         for(int i=days.length()-1;i>=0;i--){JSONObject d=days.optJSONObject(i);if(d==null)continue;pair(c,str(d,"day",""),number(d,"browsers")+"台 / "+number(d,"visits")+"回");
             meter(c,d.optDouble("browsers",0)/max,GREEN);gap(c,14);}
         add(page,text("計測開始 "+when(epoch(traffic,"since")),12,MUTED,false));
+    }
+
+
+    private String gameLabel(String game) {
+        switch (game) {
+            case "plaza": return "パレあそび";
+            case "nanpure": return "ナンプレ帳";
+            case "shirupure": return "シルプレ";
+            case "wado": return "和同開珎";
+            case "crossword": return "クロスワード";
+            case "cross": return "クロスてんびん";
+            case "tenbin": return "天秤";
+            case "paths": return "しるしのこみち";
+            case "studio": return "シルプレ工房";
+            case "workshop": return "パズルの試作室";
+            case "maru": return "丸場所記憶ゲーム";
+            case "tobe": return "飛べ飛";
+            case "maze": return "迷路";
+            case "speed": return "スピード";
+            case "kuroshiro": return "黒白";
+            case "move": return "Move Moove Mooove";
+            case "memo": return "ショッピングメモ";
+            case "timer": return "メータータイマー";
+            case "skins": return "きせかえ";
+            default: return "その他";
+        }
+    }
+
+    private void loadAnalytics(String range) {
+        if (ownerKey.isEmpty()) return;
+        analyticsRange = range;
+        analyticsBusy = true;
+        analyticsProblem = "";
+        final int requestId = ++analyticsGeneration;
+        final String key = ownerKey;
+        if (resumed && tab == 4) render();
+        network.execute(() -> {
+            JSONObject result = null;
+            String failure = "";
+            try { result = request(API + "/api/pareasobi/analytics?range=" + range, key); }
+            catch (Exception ex) { failure = friendly(ex); }
+            final JSONObject fresh = result;
+            final String message = failure;
+            main.post(() -> {
+                if (destroyed || requestId != analyticsGeneration || !key.equals(ownerKey)) return;
+                analyticsBusy = false;
+                if (fresh != null) { analytics = fresh; analyticsProblem = ""; }
+                else analyticsProblem = message;
+                if (resumed && tab == 4) render();
+            });
+        });
+    }
+
+    private void showAnalytics(LinearLayout page) {
+        String period = analyticsRange.equals("today") ? "今日" : analyticsRange.equals("7d") ? "直近7日" : analyticsRange.equals("90d") ? "直近90日" : "直近30日";
+        title(page, "パレあそびの利用状況", period + " · 日本時間");
+        LinearLayout filters = row();
+        String[] ranges = {"today", "7d", "30d", "90d"};
+        String[] labels = {"今日", "7日", "30日", "90日"};
+        for (int i = 0; i < ranges.length; i++) {
+            final String selected = ranges[i];
+            Button b = button(labels[i], analyticsRange.equals(selected), () -> loadAnalytics(selected));
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, dp(44), 1);
+            if (i > 0) lp.leftMargin = dp(6);
+            filters.addView(b, lp);
+        }
+        add(page, filters); gap(page, 16);
+        if (analyticsBusy && analytics == null) {
+            empty(page, "利用状況を取得しています", "少しお待ちください。");
+            return;
+        }
+        if (analytics == null) {
+            empty(page, "利用状況を取得できません", analyticsProblem.isEmpty() ? "更新して再試行してください。" : analyticsProblem);
+            add(page, button("再取得", true, () -> loadAnalytics(analyticsRange)));
+            return;
+        }
+        if (!analyticsProblem.isEmpty()) note(page, analyticsProblem + " 前回取得した内容を表示しています。", true);
+        JSONObject totals = obj(analytics, "totals");
+        LinearLayout first = row();
+        stats(first, "アクセス数", number(totals, "pageViews"), "回", true);
+        stats(first, "利用ブラウザー", number(totals, "visitors"), "台", false);
+        add(page, first); gap(page, 10);
+        LinearLayout second = row();
+        stats(second, "プレイ開始", number(totals, "starts"), "回", false);
+        stats(second, "広告表示", number(totals, "adImpressions"), "回", true);
+        add(page, second); gap(page, 10);
+        LinearLayout third = row();
+        stats(third, "クリア", number(totals, "completes"), "回", false);
+        stats(third, "途中離脱", number(totals, "abandons"), "回", false);
+        add(page, third); gap(page, 18);
+        note(page, str(analytics, "note", "利用ブラウザー数は実人数ではなく匿名の推計です。"), false);
+
+        section(page, "ゲーム別の利用状況");
+        JSONArray games = analytics.optJSONArray("games");
+        if (games == null || games.length() == 0) empty(page, "まだ記録がありません", "計測開始後のアクセスがここに表示されます。");
+        else for (int i = 0; i < games.length(); i++) {
+            JSONObject g = games.optJSONObject(i); if (g == null) continue;
+            LinearLayout c = card(page);
+            add(c, text(gameLabel(str(g, "game", "other")), 16, INK, true)); gap(c, 12);
+            pair(c, "アクセス", number(g, "pageViews") + "回");
+            pair(c, "利用ブラウザー", number(g, "visitors") + "台");
+            pair(c, "プレイ開始", number(g, "starts") + "回");
+            pair(c, "クリア", number(g, "completes") + "回");
+            pair(c, "広告表示", number(g, "adImpressions") + "回");
+        }
+
+        section(page, "ゲーム内の画面別表示");
+        JSONArray screens = analytics.optJSONArray("screens");
+        if (screens == null || screens.length() == 0) empty(page, "画面別データはまだありません", "各ゲームの画面遷移を計測できたものから表示します。");
+        else for (int i = 0; i < screens.length(); i++) {
+            JSONObject item = screens.optJSONObject(i); if (item == null) continue;
+            LinearLayout c = card(page);
+            add(c, text(gameLabel(str(item, "game", "other")) + " · " + str(item, "screen", "画面"), 15, INK, true)); gap(c, 8);
+            pair(c, "表示回数", number(item, "views") + "回");
+            pair(c, "利用ブラウザー", number(item, "visitors") + "台");
+        }
+
+        section(page, "広告の表示回数");
+        JSONArray ads = analytics.optJSONArray("ads");
+        if (ads == null || ads.length() == 0) empty(page, "広告表示はまだありません", "広告を導入して実際に表示された枠から記録します。");
+        else for (int i = 0; i < ads.length(); i++) {
+            JSONObject item = ads.optJSONObject(i); if (item == null) continue;
+            LinearLayout c = card(page);
+            add(c, text(gameLabel(str(item, "game", "other")) + " · " + str(item, "screen", "画面"), 15, INK, true)); gap(c, 8);
+            pair(c, "表示回数", number(item, "impressions") + "回");
+            pair(c, "利用ブラウザー", number(item, "visitors") + "台");
+            add(c, text(str(item, "page", ""), 11, MUTED, false));
+        }
+        add(page, button("この画面を更新", false, () -> loadAnalytics(analyticsRange)));
     }
 
     private void showUsage(LinearLayout page){
@@ -461,7 +595,7 @@ public final class MainActivity extends Activity {
         SharedPreferences p=getSharedPreferences(PREFS,MODE_PRIVATE);String encrypted=p.getString("ciphertext",null),iv=p.getString("iv",null);if(encrypted==null||iv==null)return "";
         Cipher c=Cipher.getInstance("AES/GCM/NoPadding");c.init(Cipher.DECRYPT_MODE,storageKey(),new GCMParameterSpec(128,Base64.decode(iv,Base64.NO_WRAP)));String key=new String(c.doFinal(Base64.decode(encrypted,Base64.NO_WRAP)),StandardCharsets.UTF_8);return key.matches("[a-f0-9]{64}")?key:"";
     }
-    private void logout(){generation++;busy=false;ownerKey="";overview=null;inquiries=new JSONArray();detail=null;version="";versionStale=false;problem="";getSharedPreferences(PREFS,MODE_PRIVATE).edit().clear().apply();
+    private void logout(){generation++;busy=false;ownerKey="";overview=null;analytics=null;analyticsProblem="";analyticsBusy=false;analyticsGeneration++;inquiries=new JSONArray();detail=null;version="";versionStale=false;problem="";getSharedPreferences(PREFS,MODE_PRIVATE).edit().clear().apply();
         try{KeyStore store=KeyStore.getInstance("AndroidKeyStore");store.load(null);store.deleteEntry(KEY_ALIAS);}catch(Exception ignored){}showLogin("");}
     private void open(String address){if(!address.equals(SITE)&&!address.equals(MANAGE)&&!address.equals(CLOUDFLARE)&&!address.equals(GITHUB))return;
         try{startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(address)));}catch(Exception ignored){toast("ブラウザーを開けませんでした。");}}
