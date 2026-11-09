@@ -307,6 +307,7 @@ public final class MainActivity extends Activity {
         JSONObject usage=obj(overview,"usage");JSONArray metrics=usage==null?null:usage.optJSONArray("metrics");boolean near=false,missing=false;
         if(metrics!=null)for(int i=0;i<metrics.length();i++){JSONObject m=metrics.optJSONObject(i);if(m==null)continue;if(!"ready".equals(metricStatus(m)))missing=true;else if(m.optDouble("limit",0)>0&&m.optDouble("used",0)/m.optDouble("limit")>=.8)near=true;}
         actionRow(page,near?"無料枠が残り少なくなっています":"無料枠の使用状況",missing?"未取得・前回の値を含みます。使用量画面で確認できます。":"サーバー・データの利用状況を確認",()->{tab=2;render();});
+        actionRow(page,"パレあそびの利用状況","全ゲーム・画面別の広告表示・アクセス集計",()->{tab=4;render();});
         actionRow(page,"お問い合わせを確認",number(contacts,"received")+"件の新着 · 全"+number(contacts,"total")+"件",()->{tab=3;render();});
         note(page,"訪問端末は、同じ日のブラウザーをまとめた目安です。人数そのものではありません。",false);
     }
