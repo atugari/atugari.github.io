@@ -58,10 +58,9 @@ const shell=document.querySelector('.site-shell');if(shell)new MutationObserver(
 
 const watchedFrames=new WeakSet();
 function watchFrame(frame){
- const attach=()=>{try{const view=frame.contentWindow,doc=view.document;if(!doc||watchedFrames.has(doc))return;watchedFrames.add(doc);inspectAds(doc,view);new view.MutationObserver(records=>{for(const r of records){if(r.type==='attributes')inspectAds(r.target.parentElement||doc,view);for(const n of r.addedNodes)if(n.nodeType===1)inspectAds(n,view)}}).observe(doc.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['data-ad-status']})}catch{}};
+ const readScreen=doc=>{try{for(const [id,name] of [['play-setup','setup'],['play-game','play'],['play-library','library']]){const el=doc.getElementById(id);if(el&&!el.hidden){screen(name);return}}const bodyScreen=doc.body?.dataset?.screen;if(bodyScreen){screen(bodyScreen);return}const marked=doc.querySelector('[data-screen]');if(marked?.dataset.screen)screen(marked.dataset.screen)}catch{}};
+ const attach=()=>{try{const view=frame.contentWindow,doc=view.document;if(!doc||watchedFrames.has(doc))return;watchedFrames.add(doc);inspectAds(doc,view);readScreen(doc);new view.MutationObserver(records=>{for(const r of records){if(r.type==='attributes')inspectAds(r.target.parentElement||doc,view);for(const n of r.addedNodes)if(n.nodeType===1)inspectAds(n,view)}readScreen(doc)}).observe(doc.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['data-ad-status','hidden','data-screen']})}catch{}};
  frame.addEventListener('load',attach);try{if(frame.contentDocument?.readyState==='complete')attach()}catch{}
- const readScreen=()=>{try{const doc=frame.contentDocument;if(!doc)return;const bodyScreen=doc.body?.dataset?.screen;if(bodyScreen){screen(bodyScreen);return}for(const [id,name] of [['play-setup','setup'],['play-game','play'],['play-library','library']]){const el=doc.getElementById(id);if(el&&!el.hidden){screen(name);return}}const marked=doc.querySelector('[data-screen]');if(marked?.dataset.screen)screen(marked.dataset.screen)}catch{}};
- frame.addEventListener('load',readScreen);const timer=setInterval(()=>{if(!frame.isConnected){clearInterval(timer);return}readScreen()},1500);
 }
 document.querySelectorAll('iframe').forEach(watchFrame);
 new MutationObserver(records=>{for(const r of records)for(const n of r.addedNodes)if(n.nodeType===1){if(n.tagName==='IFRAME')watchFrame(n);n.querySelectorAll?.('iframe').forEach(watchFrame)}}).observe(document.body,{subtree:true,childList:true});
