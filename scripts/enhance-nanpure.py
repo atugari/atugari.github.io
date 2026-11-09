@@ -75,13 +75,13 @@ if root.name == '_site':
         if not html.strip():
             print(f'Skipped empty game entry: {name}', flush=True)
             continue
-        if not re.search(r'<body[^>]*\\bdata-game=', html, re.I):
-            html, count = re.subn(r'<body\\b', f'<body data-game="{game}"', html, count=1, flags=re.I)
+        if not re.search(r'<body[^>]*\bdata-game=', html, re.I):
+            html, count = re.subn(r'<body\b', f'<body data-game="{game}"', html, count=1, flags=re.I)
             assert count == 1, f'Missing body element: {name}'
         if '/scripts/client-overrides/public/pare-analytics.js' in html:
             html = html.replace('/scripts/client-overrides/public/pare-analytics.js', '/assets/pare-analytics.js')
         if '/assets/pare-analytics.js' not in html and '</body>' in html:
-            html = html.replace('</body>', script_tag + '\\n</body>', 1)
+            html = html.replace('</body>', script_tag + '\n</body>', 1)
         assert '/assets/pare-analytics.js' in html, f'Analytics script missing: {name}'
         page.write_text(html)
 
