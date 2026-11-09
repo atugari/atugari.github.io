@@ -50,7 +50,7 @@ async function contextFor(browser,width,height){
   await entry.click();
   await page.locator('.update-news').waitFor({state:'visible',timeout:15000});
   const seen=await page.evaluate(()=>localStorage.getItem('np-release-seen'));
-  assert(seen&&/^\\d{4}\\.\\d{2}\\.\\d+\\.\\d+$/.test(seen),'opening updates persists the seen release version');
+  assert(seen&&/^\d{4}\.\d{2}\.\d+\.\d+$/.test(seen),'opening updates persists the seen release version');
   await page.locator('.game-dialog .dialog-close').click();
   await page.waitForFunction(()=>document.querySelector('.home-updates-entry .home-updates-dot')===null);
   assert.equal(await page.locator('.update-news').count(),0,'updates panel closes');
