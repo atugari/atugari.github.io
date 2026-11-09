@@ -13,6 +13,7 @@ for(const f of walk(out).filter(f=>/\.(html|js|css)$/.test(f))){let s=fs.readFil
 buildTranslationAssets(path.join(out,'notebook'),version,{previousDirectory:path.join(root,oldBase,'notebook')});
 const theme=path.join(out,'site-theme.js');fs.appendFileSync(theme,'\n(()=>{const base=document.currentScript?.src;if(!base||window.NPSiteLayout)return;const s=document.createElement("script");s.src=new URL("site-layout.js",base).href;document.head.append(s)})();\n');
 let component=read('scripts/client-overrides/app/grouped-home.tsx').replace("'use client';",'').replace('export default function GroupedHome','function NPGroupedHome');
+if(!component.includes('home-updates-entry')||!component.includes('markRead?.()'))throw Error('Grouped home is missing the optional updates entry.');
 component=transformSync(component,{loader:'tsx',jsx:'transform',jsxFactory:'NPHomeJSX',target:'es2022'}).code;
 const shellFile=path.join(out,'shell/main.js');let shell=fs.readFileSync(shellFile,'utf8'),patches=[],homeFound=0,versionFound=0;
 function visit(n){if(!n||typeof n!=='object')return;
