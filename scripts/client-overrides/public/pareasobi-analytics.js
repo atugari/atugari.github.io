@@ -40,7 +40,8 @@ window.addEventListener('message',e=>{if(e.origin===ORIGIN&&e.source!==window)ro
 window.addEventListener('hashchange',()=>screen(location.hash.slice(1)||'home'));
 const adSeen=new WeakSet();
 function inspectAds(root=document){
- const selector='ins.adsbygoogle,[data-ad-slot][data-ad-status],.ad-container[data-ad-status="filled"]';\n const nodes=[...(root.matches?.(selector)?[root]:[]),...(root.querySelectorAll?.(selector)||[])];
+ const selector='ins.adsbygoogle,[data-ad-slot][data-ad-status],.ad-container[data-ad-status="filled"]';
+ const nodes=[...(root.matches?.(selector)?[root]:[]),...(root.querySelectorAll?.(selector)||[])];
  for(const el of nodes){if(adSeen.has(el))continue;
   const filled=el.getAttribute('data-ad-status')==='filled'||el.dataset.adStatus==='filled';
   if(!filled)continue;
@@ -50,6 +51,7 @@ function inspectAds(root=document){
   observer.observe(el);
  }
 }
-inspectAds();new MutationObserver(records=>{for(const r of records){if(r.type==='attributes')inspectAds(r.target.parentElement||document);for(const n of r.addedNodes)if(n.nodeType===1)inspectAds(n)}}).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['data-ad-status']});\nnew MutationObserver(()=>{const node=document.body?.matches?.('[data-screen]')?document.body:document.querySelector('[data-screen]');if(node?.dataset.screen)screen(node.dataset.screen)}).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['data-screen']});
+inspectAds();new MutationObserver(records=>{for(const r of records){if(r.type==='attributes')inspectAds(r.target.parentElement||document);for(const n of r.addedNodes)if(n.nodeType===1)inspectAds(n)}}).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['data-ad-status']});
+new MutationObserver(()=>{const node=document.body?.matches?.('[data-screen]')?document.body:document.querySelector('[data-screen]');if(node?.dataset.screen)screen(node.dataset.screen)}).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['data-screen']});
 window.PareAnalytics={screen,start,complete,abandon};
 })();
