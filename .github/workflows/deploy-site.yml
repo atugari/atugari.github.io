@@ -251,6 +251,10 @@ jobs:
         if: needs.changes.outputs.learning == 'true'
         run: node scripts/check-nanpure-learning.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
 
+      - name: Add creator notice after release integrity checks
+        if: github.event_name != 'pull_request'
+        run: python3 scripts/add-creator-notice.py _site
+
       - name: Configure Pages
         if: github.event_name != 'pull_request'
         uses: actions/configure-pages@v5
