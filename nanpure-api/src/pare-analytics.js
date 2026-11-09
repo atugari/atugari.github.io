@@ -47,8 +47,10 @@ export async function pareAnalytics(request,env,url){
   for(const row of unique.results||[]){
    const n=Number(row.count)||0,key=row.day+':'+row.game,all=uniqueByDay.get(key)||{day:row.day,game:row.game,visitors:0,players:0};
    if(row.kind==='player')all.players=n;else all.visitors=n;uniqueByDay.set(key,all);
+   const h=history.get(row.day)||{day:row.day,pageViews:0,accesses:0,starts:0,players:0,visitors:0,adImpressions:0};
+   if(row.game==='pareasobi'){if(row.kind==='player')h.players=n;else h.visitors=n;history.set(row.day,h);continue;}
    const g=uniqueTotals.get(row.game)||{visitors:0,players:0};if(row.kind==='player')g.players+=n;else g.visitors+=n;uniqueTotals.set(row.game,g);
-   const h=history.get(row.day)||{day:row.day,pageViews:0,accesses:0,starts:0,players:0,adImpressions:0};if(row.kind==='player')h.players+=n;history.set(row.day,h);
+   history.set(row.day,h);
   }
   for(const [id,g]of games){const u=uniqueTotals.get(id)||{};g.uniqueVisitors=u.visitors||0;g.uniquePlayers=u.players||0;g.sessions=0;}
   for(const row of sessions.results||[]){const g=gameFor(row.game);g.sessions=Number(row.count)||0;}
