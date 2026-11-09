@@ -17,6 +17,8 @@ const copy={
  '自分の展示室（制作中）':'My gallery (Beta)',
  '解答リプレイ':'Solution replays',
  'ほかのパズルはパレあそびへ':'More puzzles at Pare Asobi',
+ '更新情報':'Updates',
+ '未読のお知らせあり':'Unread updates',
  'シルプレ・和同開珎・クロスワードなど':'Shirupure, Wado, crosswords and more',
  '表示方法を保存できませんでした。この画面では切り替えられます。':'The layout could not be saved. It still applies to this page.',
  '画面の表示方法':'Screen layout',

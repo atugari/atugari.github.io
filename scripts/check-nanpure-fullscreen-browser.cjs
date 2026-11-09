@@ -53,7 +53,10 @@ async function journey(page,frame,{multi=false,native=true}={}){
   const f=await setup(browser,viewport),cfg=catalog.configs.find(c=>c.kind===kind&&c.n===n);await f.page.goto(origin+'/nanpure/collection/?p=P-'+String(cfg.start).padStart(6,'0'));await f.page.waitForFunction(()=>document.querySelector('#game')?.contentWindow?.NPBoardFullscreen);
   const frame=await(await f.page.locator('#game').elementHandle()).contentFrame();await journey(f.page,frame,{multi:kind==='multi'});assert.deepEqual(f.errors,[]);await f.context.close();
  }
- const f=await setup(browser,{width:1440,height:900});await f.page.goto(origin+'/nanpure/');await f.page.locator('.main-choice').click();
+ const f=await setup(browser,{width:1440,height:900});await f.page.goto(origin+'/nanpure/');
+ const home=await f.page.locator('.main-choice').count();
+ if(!home){const diagnostic=await f.page.evaluate(()=>({url:location.href,title:document.title,main:[...document.querySelectorAll('main')].map(e=>({class:e.className,text:e.innerText.slice(0,500)})),scripts:[...document.scripts].map(s=>s.src),body:document.body.innerText.slice(0,1200)}));throw new Error('Home entry missing after boot: '+JSON.stringify({diagnostic,pageErrors:f.errors}));}
+ await f.page.locator('.main-choice').click();
  await f.page.waitForFunction(()=>[...document.querySelectorAll('iframe')].some(el=>el.contentWindow?.NanpureAppTest&&el.contentWindow?.NPBoardFullscreen));
  const iframe=f.page.locator('iframe[title="ナンプレ帳 問題生成とプレイ"]'),frame=await(await iframe.elementHandle()).contentFrame();
  await frame.locator('[data-action="open-notebook"]').waitFor();

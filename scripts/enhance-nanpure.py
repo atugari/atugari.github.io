@@ -23,11 +23,16 @@ for package in (root/'nanpure-audio').glob('*/index.json'):
         for item in archive.infolist():
             assert re.fullmatch(r'[a-z0-9_-]+\.mp3',item.filename),item.filename
             (target/item.filename).write_bytes(archive.read(item))
+mismatches = []
 for name, expected in manifest['files'].items():
     relative = Path(name)
     assert not relative.is_absolute() and '..' not in relative.parts, name
     content = (root / relative).read_bytes()
-    assert hashlib.sha256(content).hexdigest() == expected, f'Release file changed: {name}'
+    actual = hashlib.sha256(content).hexdigest()
+    if actual != expected:
+        print(f'INTEGRITY DEBUG {name}: expected={expected} actual={actual} bytes={len(content)}', flush=True)
+        mismatches.append(name)
+assert not mismatches, 'Release files changed: ' + ', '.join(mismatches)
 base = root / manifest['base'].lstrip('/')
 assert (base / 'notebook/shirupure.html').is_file()
 assert (base / 'notebook/crossword.html').is_file()

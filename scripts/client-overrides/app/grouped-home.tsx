@@ -1,10 +1,10 @@
 'use client';
 // The creation entry opens the notebook directly at its generation menu.
-export default function GroupedHome({t,onPractice,onDaily,onPanel,resume,Theme,Intro}:any){
+export default function GroupedHome({t,onPractice,onDaily,onPanel,markRead,unread,resume,Theme,Intro}:any){
  const art=(symbol:string)=><span className="choice-art" aria-hidden="true"><span className="art-emblem">{symbol}</span></span>;
  const arrow=<span className="choice-arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></span>;
  return <main className="start-screen designed-home np-stepped-home np-home-ready" data-grouped-home="" data-stepped-home="">
-  <div className="home-topline"><Theme compact onOpen={()=>onPanel('theme')}/></div>
+  <div className="home-topline"><Theme compact onOpen={()=>onPanel('theme')}/><button type="button" className="home-updates-entry" onClick={()=>{markRead?.();onPanel('updates')}}>{t('更新情報')}{unread&&<span className="home-updates-dot" aria-label={t('未読のお知らせあり')}/>}</button></div>
   <div className="start-choices">
    <button type="button" className="choice-card main-choice" onClick={()=>onPractice()}>{art('数')}<span className="choice-copy"><strong>{t('ナンプレで遊ぶ')}</strong></span>{arrow}</button>
    <button type="button" className="choice-card create-choice" onClick={()=>onPractice('open-create')}>{art('作')}<span className="choice-copy"><strong>{t('ナンプレを作る')}</strong></span>{arrow}</button>

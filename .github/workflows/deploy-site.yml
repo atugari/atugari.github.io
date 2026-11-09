@@ -72,6 +72,12 @@ jobs:
         working-directory: kuroshiro
         run: npm run build
 
+      - name: Generate and refresh pending grouped-home release
+        run: |
+          npm ci --prefix nanpure-api --no-audit --no-fund
+          node scripts/prepare-grouped-home-release.mjs
+          node scripts/refresh-grouped-home-release.mjs
+
       - name: Assemble whole site
         shell: bash
         run: |
@@ -146,6 +152,7 @@ jobs:
           export CHROME_BIN="$(command -v google-chrome || command -v chromium)"
           node scripts/check-nanpure-gallery-browser.cjs _site
           node scripts/check-nanpure-home-titles-browser.cjs _site
+          node scripts/check-pareasobi-intro-updates-browser.cjs _site
           node scripts/check-nanpure-exhibitions-browser.cjs _site
 
       - name: Check automatic ranking and nicknames on desktop and mobile
@@ -281,7 +288,7 @@ jobs:
           npm install --prefix "$RUNNER_TEMP/wado-browser" --no-audit --no-fund playwright@1.62.1 linkedom@0.18.13
           "$RUNNER_TEMP/wado-browser/node_modules/.bin/playwright" install --with-deps webkit
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends fonts-noto-cjk poppler-utils
+          sudo apt-get install -y --no-install-recommends poppler-utils
           python3 -m venv "$RUNNER_TEMP/wado-python"
           "$RUNNER_TEMP/wado-python/bin/pip" install pypdf==6.10.0 pdfplumber==0.11.9
       - name: Check hint state and reviewed vocabulary

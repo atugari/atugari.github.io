@@ -591,11 +591,14 @@ async function checkJigsawCreationAndPrint(page,lang,expected){
  for(const view of['','daily','ranking','calendar','contact','replies','backup','privacy','manage']){
   const apiPath={daily:'/api/daily',ranking:'/api/ranking',calendar:'/api/daily/archive',contact:'/api/contact',replies:'/api/contact',backup:'/api/cloud'}[view];
   const response=apiPath?page.waitForResponse(r=>{const u=new URL(r.url());return u.hostname==='puzzle-api.puzzle-hub-4826.workers.dev'&&u.pathname===apiPath&&!u.searchParams.has('summary')&&r.request().method()==='GET'},{timeout:20000}):null;
+  // The retirement notice is intentionally limited to browsers that previously
+  // connected cloud backup. Seed that legacy marker only for this isolated case.
+  if(view==='backup')await page.evaluate(()=>localStorage.setItem('np-cloud-sync-key-v1','a'.repeat(64)));
   await page.goto('https://atugari.github.io/nanpure/?lang=ja'+(view?'&view='+view:''),{waitUntil:'domcontentloaded'});
-  if(response){const r=await response;assert.equal(r.status(),200,'API status for '+view)}
+  if(response){const r=await response;assert.equal(r.status(),view==='backup'?410:200,'API status for '+view)}
   await page.locator('#root > *').first().waitFor();
   await page.waitForTimeout(300);
-  const selector={'':'.main-choice',daily:'.challenge-grid, .daily-choice, .challenge-list',ranking:'.ranking',calendar:'.daily-calendar',contact:'.contact-form',replies:'.contact-history',backup:'.cloud-save',privacy:'.legal',manage:'.legal'}[view];
+  const selector={'':'.main-choice',daily:'.challenge-grid, .daily-choice, .challenge-list',ranking:'.ranking',calendar:'.daily-calendar',contact:'.contact-form',replies:'.contact-history',backup:'#root > *',privacy:'.legal',manage:'.legal'}[view];
   // Main feature headings must render and errors must not be hidden behind a redirect.
   if(['ranking','contact','backup','privacy','manage'].includes(view))await page.locator(selector).waitFor({timeout:20000});
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'Mobile overflow in '+view);
@@ -603,19 +606,30 @@ async function checkJigsawCreationAndPrint(page,lang,expected){
   assert(!/通信できませんでした|読み込めませんでした/.test(await page.locator('body').innerText()),'API error in '+view);
   if(view==='daily')assert((await page.locator('body').innerText()).includes('日替わり'));
   if(view==='backup'){
-   assert((await page.locator('body').innerText()).includes('別の端末とつなぐ'));
-   const notice=page.locator('.np-cloud-retirement-dialog'),confirm=notice.locator('button');
-   await notice.waitFor();assert((await notice.textContent()).includes('1/2'));
-   assert(await notice.evaluate(e=>e.open&&e.matches(':modal')&&e.scrollWidth<=e.clientWidth+1),'First notice must be an accessible modal without horizontal clipping');
-   await confirm.click();
+   const notice=page.locator('.np-cloud-retirement-dialog');
+   const expired=await page.evaluate(()=>Boolean(window.NPCloudRetirement&&window.NPCloudRetirement.retirement<=Date.now()));
    const writes=[],watch=request=>{if(new URL(request.url()).pathname==='/api/cloud'&&request.method()==='POST')writes.push(request.url())};page.on('request',watch);
-   await page.getByRole('button',{name:'閉じる',exact:true}).click();
-   await notice.waitFor();assert((await notice.textContent()).includes('2/2'));assert.deepEqual(writes,[],'No cloud upload during either acknowledgement');
-   await confirm.click();await page.locator('.main-choice').click();await page.locator('.site-shell.mode-practice').waitFor();
+   if(expired){
+    // After the published retirement deadline, the API returns 410 and the cloud
+    // controls/notice are intentionally unavailable. The pre-deadline two-step
+    // dialog is covered by check-nanpure-cloud-notice.cjs.
+    await page.waitForTimeout(300);
+    assert.equal(await notice.count(),0,'Do not show a pre-retirement notice after the deadline');
+    assert.equal(await page.locator('.cloud-save .cloud-actions').count(),0,'Cloud save controls remain unavailable after retirement');
+    assert.deepEqual(writes,[],'No cloud writes after retirement');
+   }else{
+    // Before the deadline, the accessible retirement dialog requires two acknowledgements.
+    const confirm=notice.locator('button');
+    await notice.waitFor();assert((await notice.textContent()).includes('1/2'));
+    assert(await notice.evaluate(e=>e.open&&e.matches(':modal')&&e.scrollWidth<=e.clientWidth+1),'First notice must be an accessible modal without horizontal clipping');
+    await confirm.click();
+    await page.getByRole('button',{name:'閉じる',exact:true}).click();
+    await notice.waitFor();assert((await notice.textContent()).includes('2/2'));assert.deepEqual(writes,[],'No cloud upload during either acknowledgement');
+    await confirm.click();await page.locator('.main-choice').click();await page.locator('.site-shell.mode-practice').waitFor();
+    await page.goto('https://atugari.github.io/nanpure/?lang=ja&view=backup',{waitUntil:'domcontentloaded'});await page.locator('#root > *').first().waitFor();
+    assert.equal(await notice.count(),0,'The same browser is not asked a third time');
+   }
    page.off('request',watch);
-   await page.goto('https://atugari.github.io/nanpure/?lang=ja&view=backup',{waitUntil:'domcontentloaded'});await page.locator('.cloud-save').waitFor();
-   assert.equal(await notice.count(),0,'The same browser is not asked a third time');
-
   }
   console.log('PASS mobile view:',view||'home');
  }
@@ -624,7 +638,7 @@ async function checkJigsawCreationAndPrint(page,lang,expected){
  await page.route('https://puzzle-api.puzzle-hub-4826.workers.dev/api/**',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({items:[],records:[],rows:[],days:[],challenges:[],save:null,signedIn:true,unread:0})}));
  for(const lang of Object.keys(jigsawLocales))for(const view of ['', 'contact','backup','privacy']){
   await page.goto('https://atugari.github.io/nanpure/?lang='+lang+(view?'&view='+view:''),{waitUntil:'domcontentloaded'});
-  await page.locator({'':'.main-choice',contact:'.contact-form',backup:'.cloud-save',privacy:'.legal'}[view]).waitFor();
+  await page.locator({'':'.main-choice',contact:'.contact-form',backup:'#root > *',privacy:'.legal'}[view]).waitFor();
   await page.waitForTimeout(300);
   const result=await page.evaluate(()=>{
    const bad=[],walk=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n;
