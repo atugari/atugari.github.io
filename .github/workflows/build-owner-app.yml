@@ -6,6 +6,10 @@ on:
     paths:
       - 'owner-app/**'
       - '.github/workflows/build-owner-app.yml'
+  pull_request:
+    paths:
+      - 'owner-app/**'
+      - '.github/workflows/build-owner-app.yml'
   workflow_dispatch:
 
 permissions:
