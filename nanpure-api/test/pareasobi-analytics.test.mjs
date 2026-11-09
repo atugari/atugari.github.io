@@ -48,7 +48,9 @@ test('unique browser counts remain stable across days while daily game usage is 
  await call('/api/pareasobi/event',{data:{...event('b'.repeat(64),'game_start'),game:'crossword',page:'/puzzles/crossword/'}});
  const report=await call('/api/pareasobi/analytics?range=7d',{admin:true});
  assert.equal(report.data.totals.visitors,1);
- assert.equal(report.data.totals.starts,2);assert.equal(report.data.totals.players,1);
+ assert.equal(report.data.totals.starts,2);
+ assert.equal(report.data.totals.players,1);
+ assert.equal(report.data.games.every(g=>g.players===1),true);assert.equal(report.data.totals.players,1);
  assert.equal(report.data.daily.length,2);
  assert.equal(report.data.daily[0].day,first);
  assert.equal(report.data.games.length,2);
