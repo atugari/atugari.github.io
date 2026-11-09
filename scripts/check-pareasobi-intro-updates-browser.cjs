@@ -31,7 +31,7 @@ async function contextFor(browser,width,height){
     const intro=page.locator('details.game-intro'),summary=intro.locator('summary'),frame=page.locator('#game');
     await intro.waitFor();assert.equal(await intro.evaluate(e=>e.open),false,key+' starts collapsed');
     await frame.waitFor({state:'visible',timeout:30000});
-    await page.waitForFunction(()=>{const f=document.querySelector('#game');try{return !!f?.contentDocument?.querySelector('main')}catch{return false}},{timeout:30000});
+    await page.waitForFunction(()=>{const f=document.querySelector('#game');try{return !!f?.contentDocument?.querySelector('main')}catch{return false}},null,{timeout:30000});
     const before=await frame.boundingBox();assert(before&&before.height>120,key+' has a usable play area while collapsed');
     await summary.click();assert.equal(await intro.evaluate(e=>e.open),true,key+' opens');
     const expanded=await frame.boundingBox();assert(expanded&&expanded.height>80,key+' keeps the game visible while expanded');
