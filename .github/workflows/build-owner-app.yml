@@ -1,6 +1,11 @@
 name: Build Pareasobi author Android app
 
 on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'owner-app/**'
+      - '.github/workflows/build-owner-app.yml'
   push:
     branches: [main]
     paths:
