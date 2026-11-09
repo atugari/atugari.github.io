@@ -60,9 +60,10 @@ import javax.net.ssl.HttpsURLConnection;
 /** Small native, read-only author console. No WebView, remote code or bundled credentials. */
 public final class MainActivity extends Activity {
     private static final String API = "https://puzzle-api.puzzle-hub-4826.workers.dev";
-    private static final String SITE = "https://atugari.github.io/nanpure/";
+    private static final String SITE = "https://atugari.github.io/plaza.html";
+    private static final String NANPURE_SITE = "https://atugari.github.io/nanpure/";
     private static final String VERSION = "https://atugari.github.io/nanpure-version.json";
-    private static final String MANAGE = SITE + "?view=manage";
+    private static final String MANAGE = NANPURE_SITE + "?view=manage";
     private static final String CLOUDFLARE = "https://dash.cloudflare.com/";
     private static final String GITHUB = "https://github.com/atugari/atugari.github.io/actions";
     private static final String KEY_ALIAS = "nanpure_owner_access_v1";
@@ -84,7 +85,9 @@ public final class MainActivity extends Activity {
     private TextView loginError;
     private Button loginButton;
     private String ownerKey = "", version = "", problem = "", inquiryProblem = "";
-    private JSONObject overview;
+    private JSONObject overview, pareAnalytics;
+    private String analyticsProblem = "";
+    private int analyticsDays = 30;
     private JSONArray inquiries = new JSONArray();
     private int tab = 0, generation = 0;
     private boolean busy, destroyed, resumed, versionStale;
@@ -98,7 +101,7 @@ public final class MainActivity extends Activity {
         getWindow().setStatusBarColor(BG);
         getWindow().setNavigationBarColor(Color.WHITE);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
-        if (state != null) tab = Math.max(0, Math.min(4, state.getInt("tab", 0)));
+        if (state != null) tab = Math.max(0, Math.min(5, state.getInt("tab", 0)));
         try { ownerKey = readSavedKey(); } catch (Exception ignored) { ownerKey = ""; }
         if (ownerKey.isEmpty()) showLogin(""); else render();
     }
@@ -201,7 +204,7 @@ public final class MainActivity extends Activity {
         LinearLayout c = column(); c.setPadding(dp(24), dp(42), dp(24), dp(30)); scroll.addView(c);
         TextView mark = text("N", 34, Color.WHITE, true); mark.setGravity(Gravity.CENTER); mark.setBackground(shape(GREEN,0,20));
         c.addView(mark,new LinearLayout.LayoutParams(dp(64),dp(64))); gap(c,24);
-        add(c,text("ナンプレ帳",15,GREEN,true)); gap(c,6); add(c,text("作者室",32,INK,true)); gap(c,12);
+        add(c,text("パレあそび",15,GREEN,true)); gap(c,6); add(c,text("管理室",32,INK,true)); gap(c,12);
         add(c,text("訪問状況、無料枠、お問い合わせを\nひとつのアプリで確認できます。",16,MUTED,false)); gap(c,28);
         LinearLayout access = card(c); add(access,text("作者として接続",19,INK,true)); gap(access,14);
         add(access,text("管理用キー",14,INK,true)); gap(access,8);
@@ -262,21 +265,22 @@ public final class MainActivity extends Activity {
         if (ownerKey.isEmpty()) { showLogin(""); return; }
         root = column(); root.setBackgroundColor(BG); root.setFitsSystemWindows(true); setContentView(root);
         LinearLayout header = row(); header.setPadding(dp(20),dp(12),dp(16),dp(10));
-        LinearLayout name = column(); add(name,text("ナンプレ帳",12,GREEN,true)); add(name,text("作者室",22,INK,true));
+        LinearLayout name = column(); add(name,text("パレあそび",12,GREEN,true)); add(name,text("管理室",22,INK,true));
         header.addView(name,new LinearLayout.LayoutParams(0,-2,1));
         Button refresh = button(busy ? "取得中…" : "更新",false,() -> refresh(true)); refresh.setEnabled(!busy); header.addView(refresh,new LinearLayout.LayoutParams(dp(84),dp(48))); add(root,header);
         ScrollView scroll = new ScrollView(this); scroll.setFillViewport(true); scroll.setClipToPadding(false);
         root.addView(scroll,new LinearLayout.LayoutParams(-1,0,1)); body = column(); body.setPadding(dp(20),dp(14),dp(20),dp(22)); scroll.addView(body);
         if (!problem.isEmpty()) note(body,problem + (overview == null ? "" : "\n前回取得した内容を表示しています。"),true);
-        if (tab == 4 && detail == null) showSettings(body);
+        if (tab == 5 && detail == null) showSettings(body);
         else if (overview == null) { empty(body,busy?"状況を読み込んでいます":"まだ取得できていません",busy?"少しお待ちください。":"上の「更新」から再試行できます。"); }
         else if (detail != null) showInquiryDetail(body);
         else if (tab == 0) showHome(body);
         else if (tab == 1) showTraffic(body);
         else if (tab == 2) showUsage(body);
         else if (tab == 3) showInquiries(body);
+        else if (tab == 4) showPareAnalytics(body);
         bottom = row(); bottom.setBackgroundColor(Color.WHITE); bottom.setPadding(dp(8),dp(6),dp(8),dp(10));
-        String[] names = {"概況","訪問","使用量","問合せ","設定"};
+        String[] names = {"概況","訪問","使用量","問合せ","分析","設定"};
         for (int n = 0; n < names.length; n++) { final int index=n; TextView b=text(names[n],13,tab==n?GREEN:MUTED,tab==n); b.setGravity(Gravity.CENTER); b.setPadding(dp(3),dp(16),dp(3),dp(16));
             b.setBackground(shape(tab==n?PALE:Color.WHITE,0,12)); b.setFocusable(true); b.setContentDescription(names[n]+(tab==n?"、選択中":"")); b.setSelected(tab==n);
             b.setOnClickListener(v->{tab=index;detail=null;render();}); LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(0,dp(52),1); p.setMargins(dp(2),0,dp(2),0);bottom.addView(b,p); }
@@ -461,7 +465,7 @@ public final class MainActivity extends Activity {
         SharedPreferences p=getSharedPreferences(PREFS,MODE_PRIVATE);String encrypted=p.getString("ciphertext",null),iv=p.getString("iv",null);if(encrypted==null||iv==null)return "";
         Cipher c=Cipher.getInstance("AES/GCM/NoPadding");c.init(Cipher.DECRYPT_MODE,storageKey(),new GCMParameterSpec(128,Base64.decode(iv,Base64.NO_WRAP)));String key=new String(c.doFinal(Base64.decode(encrypted,Base64.NO_WRAP)),StandardCharsets.UTF_8);return key.matches("[a-f0-9]{64}")?key:"";
     }
-    private void logout(){generation++;busy=false;ownerKey="";overview=null;inquiries=new JSONArray();detail=null;version="";versionStale=false;problem="";getSharedPreferences(PREFS,MODE_PRIVATE).edit().clear().apply();
+    private void logout(){generation++;busy=false;ownerKey="";overview=null;pareAnalytics=null;inquiries=new JSONArray();detail=null;version="";versionStale=false;problem="";getSharedPreferences(PREFS,MODE_PRIVATE).edit().clear().apply();
         try{KeyStore store=KeyStore.getInstance("AndroidKeyStore");store.load(null);store.deleteEntry(KEY_ALIAS);}catch(Exception ignored){}showLogin("");}
     private void open(String address){if(!address.equals(SITE)&&!address.equals(MANAGE)&&!address.equals(CLOUDFLARE)&&!address.equals(GITHUB))return;
         try{startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(address)));}catch(Exception ignored){toast("ブラウザーを開けませんでした。");}}
