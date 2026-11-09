@@ -25,13 +25,13 @@ test('Pareasobi event collection is anonymous, validated, deduplicated and owner
  assert.equal((await call('/api/pareasobi/event',{data:event('1'.repeat(64),'page_view')})).status,200);
  assert.equal((await call('/api/pareasobi/event',{data:event('1'.repeat(64),'page_view')})).status,200);
  assert.equal((await call('/api/pareasobi/event',{data:event('2'.repeat(64),'screen_view')})).status,200);
- assert.equal((await call('/api/pareasobi/event',{data:event('3'.repeat(64),'ad_impression')})).status,200);
+ assert.equal((await call('/api/pareasobi/event',{data:event('3'.repeat(64),'ad_impression')})).status,200);\n assert.equal((await call('/api/pareasobi/event',{data:event('a'.repeat(64),'game_start')})).status,200);
  assert.equal(DB.raw.prepare('SELECT COUNT(*) n FROM pareasobi_events').get().n,3);
  assert.equal(DB.raw.prepare('SELECT visitor FROM pareasobi_events LIMIT 1').get().visitor,await hash('pareasobi:visitor:'+visitor));
  assert.notEqual(DB.raw.prepare('SELECT visitor FROM pareasobi_events LIMIT 1').get().visitor,visitor);
  const report=await call('/api/pareasobi/analytics?range=30d',{admin:true});
  assert.equal(report.status,200);assert.equal(report.data.totals.pageViews,1);assert.equal(report.data.totals.visitors,1);assert.equal(report.data.totals.players,1);
- assert.equal(report.data.totals.adImpressions,1);assert.equal(report.data.games[0].game,'wado');assert.equal(report.data.games[0].players,1);
+ assert.equal(report.data.totals.adImpressions,1);assert.equal(report.data.totals.starts,1);assert.equal(report.data.games[0].game,'wado');assert.equal(report.data.games[0].players,1);
  assert.equal(report.data.ads[0].screen,'play');assert.equal(report.headers.get('cache-control'),'no-store');
  for(const bad of [event('4'.repeat(64),'ad_impression',{payload:'secret'}),event('5'.repeat(64),'not-real'),event('6'.repeat(64),'page_view',{game:'unlisted'}),event('7'.repeat(64),'page_view',{page:'x'.repeat(181)})])
   assert.equal((await call('/api/pareasobi/event',{data:bad})).status,400);
@@ -47,7 +47,7 @@ test('unique browser counts remain stable across days while daily game usage is 
  await call('/api/pareasobi/event',{data:{...event('b'.repeat(64),'game_start'),game:'crossword',page:'/puzzles/crossword/'}});
  const report=await call('/api/pareasobi/analytics?range=7d',{admin:true});
  assert.equal(report.data.totals.visitors,1);
- assert.equal(report.data.totals.starts,2);
+ assert.equal(report.data.totals.starts,2);assert.equal(report.data.totals.players,1);
  assert.equal(report.data.daily.length,2);
  assert.equal(report.data.daily[0].day,first);
  assert.equal(report.data.games.length,2);
