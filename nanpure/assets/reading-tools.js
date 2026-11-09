@@ -30,7 +30,7 @@
   async function sync(){try{const child=frame?.contentWindow;if(!child?.NPI18n)return;await child.NPI18n.ready;if(child.NPI18n.get()!==NPI18n.get())await child.NPI18n.set(NPI18n.get());child.NPFurigana?.setEnabled(NPFurigana.getEnabled(),false)}catch{}}
   frame?.addEventListener('load',sync);
   window.addEventListener('np-language-change',()=>{select.value=NPI18n.get();select.setAttribute('aria-label',NPI18n.t('言語'));opener.setAttribute('aria-label',NPI18n.t('言語'));sync()});
-  window.addEventListener('nanpure-furigana-change',sync);
+  window.addEventListener('nanpure-furigana-change',event=>{const on=!!event.detail?.enabled;ruby.setAttribute('aria-pressed',String(on));ruby.setAttribute('aria-label','ふりがな '+(on?'ON':'OFF'));ruby.title='ふりがな '+(on?'ON':'OFF');sync()});ruby.setAttribute('aria-pressed',String(NPFurigana.getEnabled()));
   NPI18n.apply();NPFurigana.apply();sync();
   return window.NPReadingTools={version:current,sync};
  })();
