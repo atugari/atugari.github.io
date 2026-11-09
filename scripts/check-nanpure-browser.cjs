@@ -603,7 +603,8 @@ async function checkJigsawCreationAndPrint(page,lang,expected){
   assert(!/通信できませんでした|読み込めませんでした/.test(await page.locator('body').innerText()),'API error in '+view);
   if(view==='daily')assert((await page.locator('body').innerText()).includes('日替わり'));
   if(view==='backup'){
-   assert((await page.locator('body').innerText()).includes('別の端末とつなぐ'));
+   // The retired cloud-backup entry no longer uses the former connection heading.
+   // The accessible retirement dialog and its two acknowledgements are verified below.
    const notice=page.locator('.np-cloud-retirement-dialog'),confirm=notice.locator('button');
    await notice.waitFor();assert((await notice.textContent()).includes('1/2'));
    assert(await notice.evaluate(e=>e.open&&e.matches(':modal')&&e.scrollWidth<=e.clientWidth+1),'First notice must be an accessible modal without horizontal clipping');
