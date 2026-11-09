@@ -1,6 +1,6 @@
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 const root=process.cwd(),read=p=>fs.readFileSync(path.join(root,p),'utf8');
-const hub=read('plaza.html'),tracker=read('scripts/client-overrides/public/pare-analytics.js');
+const hub=read('plaza.html'),entry=read('puzzles/entry.js'),tracker=read('scripts/client-overrides/public/pare-analytics.js');
 const cards=[...hub.matchAll(/<a class="game-card[^"]*" href="([^"]+)"/g)].map(m=>m[1]);
 assert(cards.length>=15,'Expected the published PareAsobi game catalogue');
 for(const href of cards){
