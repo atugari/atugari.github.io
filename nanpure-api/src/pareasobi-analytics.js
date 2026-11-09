@@ -62,7 +62,7 @@ export async function pareasobiAnalytics(request,env){
   daily:daily.results.map(r=>({day:r.day,pageViews:asNum(r.pageViews),visitors:asNum(r.visitors),starts:asNum(r.starts),adImpressions:asNum(r.adImpressions)})),
   games:byGame.results.map(r=>Object.fromEntries(Object.entries(r).map(([k,v])=>[k,typeof v==='number'?v: v]))),
   screens:byScreen.results,ads:ads.results,events:events.results,
-  note:'利用者数は同じ日の同じブラウザーを1件とする匿名推計です。実人数ではありません。広告表示数は実表示を検知できた広告枠のみを数えます。'
+  note:'利用者数は同じブラウザーを1件とする匿名推計です。実人数ではありません。広告表示数は実表示を検知できた広告枠のみを数えます。'
  });
 }
 export async function cleanupPareasobiAnalytics(db,now=Date.now()){
