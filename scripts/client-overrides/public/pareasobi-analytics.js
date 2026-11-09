@@ -4,8 +4,8 @@ const ORIGIN='https://atugari.github.io',API='https://puzzle-api.puzzle-hub-4826
 if(location.origin!==ORIGIN||window.top!==window||navigator.doNotTrack==='1'||window.doNotTrack==='1'||navigator.globalPrivacyControl===true||new URLSearchParams(location.search).has('analytics-preview'))return;
 const labels={
  '/plaza.html':'plaza','/':'maru','/index.html':'maru','/dungeon.html':'tobe','/speed.html':'speed',
- '/kuroshiro/':'kuroshiro','/maze/':'maze','/move-moove-mooove.html':'move','/combination-blocks.html':'other',
- '/narabe100.html':'other','/echo-dive.html':'other','/shopping-memo.html':'memo','/timer-gauge.html':'timer','/skins.html':'skins'
+ '/kuroshiro/':'kuroshiro','/maze/':'maze','/move-moove-mooove.html':'move','/combination-blocks.html':'combination',
+ '/narabe100.html':'narabe100','/echo-dive.html':'echo','/shopping-memo.html':'memo','/timer-gauge.html':'timer','/skins.html':'skins'
 };
 function gameFor(path){
  if(labels[path])return labels[path];
