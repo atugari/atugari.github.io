@@ -53,6 +53,7 @@ function inspectAds(root=document){
  }
 }
 inspectAds();new MutationObserver(records=>{for(const r of records){if(r.type==='attributes')inspectAds(r.target.parentElement||document);for(const n of r.addedNodes)if(n.nodeType===1)inspectAds(n)}}).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['data-ad-status']});
-new MutationObserver(()=>{const node=document.body?.matches?.('[data-screen]')?document.body:document.querySelector('[data-screen]');if(node?.dataset.screen)screen(node.dataset.screen)}).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['data-screen']});\nconst shell=document.querySelector('.site-shell');if(shell)new MutationObserver(()=>{const mode=String(shell.className).match(/(?:^|\\s)mode-([a-z0-9_-]+)/i)?.[1];if(mode)screen(mode)}).observe(shell,{attributes:true,attributeFilter:['class']});
+new MutationObserver(()=>{const node=document.body?.matches?.('[data-screen]')?document.body:document.querySelector('[data-screen]');if(node?.dataset.screen)screen(node.dataset.screen)}).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['data-screen']});
+const shell=document.querySelector('.site-shell');if(shell)new MutationObserver(()=>{const mode=String(shell.className).match(/(?:^|\s)mode-([a-z0-9_-]+)/i)?.[1];if(mode)screen(mode)}).observe(shell,{attributes:true,attributeFilter:['class']});
 window.PareAnalytics={screen,start,complete,abandon};
 })();
