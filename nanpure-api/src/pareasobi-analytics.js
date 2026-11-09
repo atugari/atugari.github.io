@@ -30,7 +30,7 @@ export async function pareasobiAnalytics(request,env){
  if(!days)fail(400,'集計期間を確認してください。');
  const now=Date.now(),today=japanDay(now),from=japanDay(now-(days-1)*86400000),db=env.DB;
  const [totals,daily,byGame,byScreen,ads,events]=await Promise.all([
-  db.prepare(`SELECT COUNT(*) AS events,COUNT(DISTINCT visitor) AS visitors,COUNT(DISTINCT session) AS sessions,
+  db.prepare(`SELECT COUNT(*) AS events,COUNT(DISTINCT visitor) AS visitors,COUNT(DISTINCT CASE WHEN event='game_start' THEN visitor END) AS players,COUNT(DISTINCT session) AS sessions,COUNT(DISTINCT CASE WHEN event='game_start' THEN visitor END) AS players,
    SUM(CASE WHEN event='page_view' THEN 1 ELSE 0 END) AS pageViews,
    SUM(CASE WHEN event='game_start' THEN 1 ELSE 0 END) AS starts,
    SUM(CASE WHEN event='game_complete' THEN 1 ELSE 0 END) AS completes,
@@ -39,11 +39,11 @@ export async function pareasobiAnalytics(request,env){
    FROM pareasobi_events WHERE day>=?`).bind(from).first(),
   db.prepare(`SELECT day,
    SUM(CASE WHEN event='page_view' THEN 1 ELSE 0 END) AS pageViews,
-   COUNT(DISTINCT visitor) AS visitors,
+   COUNT(DISTINCT visitor) AS visitors,COUNT(DISTINCT CASE WHEN event='game_start' THEN visitor END) AS players,
    SUM(CASE WHEN event='game_start' THEN 1 ELSE 0 END) AS starts,
    SUM(CASE WHEN event='ad_impression' THEN 1 ELSE 0 END) AS adImpressions
    FROM pareasobi_events WHERE day>=? GROUP BY day ORDER BY day`).bind(from).all(),
-  db.prepare(`SELECT game,COUNT(DISTINCT visitor) AS visitors,COUNT(DISTINCT session) AS sessions,
+  db.prepare(`SELECT game,COUNT(DISTINCT visitor) AS visitors,COUNT(DISTINCT CASE WHEN event='game_start' THEN visitor END) AS players,COUNT(DISTINCT session) AS sessions,COUNT(DISTINCT CASE WHEN event='game_start' THEN visitor END) AS players,
    SUM(CASE WHEN event='page_view' THEN 1 ELSE 0 END) AS pageViews,
    SUM(CASE WHEN event='game_start' THEN 1 ELSE 0 END) AS starts,
    SUM(CASE WHEN event='game_complete' THEN 1 ELSE 0 END) AS completes,
