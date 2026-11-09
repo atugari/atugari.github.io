@@ -10,7 +10,7 @@ async function contextFor(browser,width,height){
  await context.route('**/*',async route=>{
   const u=new URL(route.request().url());
   if(u.origin===site){
-   const relative=decodeURIComponent(u.pathname).replace(/^\\//,'');
+   const relative=decodeURIComponent(u.pathname).replace(/^\//,'');
    const file=path.join(root,relative+(u.pathname.endsWith('/')?'index.html':''));
    if(fs.existsSync(file)&&fs.statSync(file).isFile())return route.fulfill({status:200,contentType:types[path.extname(file)]||'application/octet-stream',body:fs.readFileSync(file)});
    return route.fulfill({status:404,body:'not found'});
