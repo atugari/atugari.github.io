@@ -227,18 +227,19 @@ public final class MainActivity extends Activity {
         busy = true; loginButton.setEnabled(false); loginButton.setText("接続を確認中…"); loginError.setText("");
         final int current = ++generation;
         network.execute(() -> {
-            JSONObject data = null; JSONArray items = null; String error = "", contactError = "", siteVersion = ""; long receivedAt = 0;
+            JSONObject data = null, analytics = null; JSONArray items = null; String error = "", contactError = "", analyticsFailure = "", siteVersion = ""; long receivedAt = 0;
             try { data = request(API + "/api/owner/overview", key); receivedAt = System.currentTimeMillis(); saveKey(key); }
             catch (Exception ex) { error = friendly(ex); }
             if (error.isEmpty() && data != null) {
+                try { analytics = request(API + "/api/pare/analytics?days=" + analyticsDays, key); } catch (Exception ex) { analyticsFailure = "パレあそび分析を取得できませんでした。更新して再試行できます。"; }
                 try { items = request(API + "/api/admin", key).optJSONArray("items"); } catch (Exception ex) { contactError = "お問い合わせを取得できませんでした。更新で再試行できます。"; }
                 try { siteVersion = str(request(VERSION, null), "version", ""); } catch (Exception ignored) {}
             }
-            final JSONObject result = data; final JSONArray newItems = items; final String message = error, contactFailure = contactError, newVersion = siteVersion; final long overviewReceivedAt = receivedAt;
+            final JSONObject result = data, analyticsResult = analytics; final JSONArray newItems = items; final String message = error, contactFailure = contactError, analyticsFailureMessage = analyticsFailure, newVersion = siteVersion; final long overviewReceivedAt = receivedAt;
             main.post(() -> {
                 if (destroyed || current != generation) return; busy = false;
                 if (!message.isEmpty()) { loginButton.setEnabled(true); loginButton.setText("接続する"); loginError.setText(message); return; }
-                ownerKey = key; overview = result; fetchedAt = overviewReceivedAt; problem = ""; inquiryProblem = contactFailure;
+                ownerKey = key; overview = result; pareAnalytics = analyticsResult; analyticsProblem = analyticsFailureMessage; fetchedAt = overviewReceivedAt; problem = ""; inquiryProblem = contactFailure;
                 if (newItems != null) inquiries = newItems; updateVersion(newVersion, result);
                 InputMethodManager im = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE); im.hideSoftInputFromWindow(keyInput.getWindowToken(),0);
                 keyInput.setText(""); if (resumed) render();
@@ -471,13 +472,14 @@ public final class MainActivity extends Activity {
     private void refresh(boolean requested){
         if(!resumed||busy||ownerKey.isEmpty())return;busy=true;final String key=ownerKey;final int current=++generation;render();
         network.execute(()->{
-            JSONObject data=null;JSONArray items=null;String error="",contactError="",siteVersion="";long receivedAt=0;
+            JSONObject data=null,analytics=null;JSONArray items=null;String error="",contactError="",analyticsFailure="",siteVersion="";long receivedAt=0;
             try{data=request(API+"/api/owner/overview",key);receivedAt=System.currentTimeMillis();}catch(Exception ex){error=friendly(ex);}
-            if(data!=null){try{items=request(API+"/api/admin",key).optJSONArray("items");}catch(Exception ex){contactError="お問い合わせを取得できませんでした。更新で再試行できます。";}
+            if(data!=null){try{analytics=request(API+"/api/pare/analytics?days="+analyticsDays,key);}catch(Exception ex){analyticsFailure="パレあそび分析を取得できませんでした。更新して再試行できます。";}
+                try{items=request(API+"/api/admin",key).optJSONArray("items");}catch(Exception ex){contactError="お問い合わせを取得できませんでした。更新で再試行できます。";}
                 try{siteVersion=str(request(VERSION,null),"version","");}catch(Exception ignored){}}
-            final JSONObject result=data;final JSONArray newItems=items;final String failure=error,contactFailure=contactError,newVersion=siteVersion;final long overviewReceivedAt=receivedAt;
+            final JSONObject result=data,analyticsResult=analytics;final JSONArray newItems=items;final String failure=error,contactFailure=contactError,analyticsFailureMessage=analyticsFailure,newVersion=siteVersion;final long overviewReceivedAt=receivedAt;
             main.post(()->{if(destroyed||current!=generation)return;busy=false;problem=failure;
-                if(result!=null){overview=result;fetchedAt=overviewReceivedAt;inquiryProblem=contactFailure;if(newItems!=null){inquiries=newItems;if(detail!=null){String id=detail.optString("id");for(int i=0;i<inquiries.length();i++){JSONObject item=inquiries.optJSONObject(i);if(item!=null&&id.equals(item.optString("id"))){detail=item;break;}}}}updateVersion(newVersion,result);}
+                if(result!=null){overview=result;if(analyticsResult!=null)pareAnalytics=analyticsResult;analyticsProblem=analyticsFailureMessage;fetchedAt=overviewReceivedAt;inquiryProblem=contactFailure;if(newItems!=null){inquiries=newItems;if(detail!=null){String id=detail.optString("id");for(int i=0;i<inquiries.length();i++){JSONObject item=inquiries.optJSONObject(i);if(item!=null&&id.equals(item.optString("id"))){detail=item;break;}}}}updateVersion(newVersion,result);}
                 if(resumed){render();if(requested&&failure.isEmpty())toast("最新の状況に更新しました");}});
         });
     }
