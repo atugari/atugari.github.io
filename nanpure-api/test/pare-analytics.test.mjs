@@ -18,7 +18,7 @@ async function setup(t){
 test('PareAsobi analytics counts events by game and screen and deduplicates daily people',async t=>{
  const{DB,call}=await setup(t),makeEvent=(game,screen,kind,who=visitor,sess=session)=>({visitor:who,session:sess,game,screen,event:kind});
  for(const [game,screen,event]of [['pareasobi','home','page_view'],['wado','entry','page_view'],['wado','entry','game_access'],['wado','play','game_start'],['wado','play','game_start'],['wado','play','ad_impression'],['shirupure','entry','page_view']]){
-  const r=await call('/api/pare/analytics',{data:event(game,screen,event)});assert.equal(r.status,200);
+  const r=await call('/api/pare/analytics',{data:makeEvent(game,screen,event)});assert.equal(r.status,200);
  }
  await call('/api/pare/analytics',{data:makeEvent('wado','play','game_access','d'.repeat(64),'e'.repeat(64))});
  const day='2026-11-10';
