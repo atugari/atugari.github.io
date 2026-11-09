@@ -413,13 +413,17 @@ public final class MainActivity extends Activity {
         stats(first, "利用ブラウザー", number(totals, "visitors"), "台", false);
         add(page, first); gap(page, 10);
         LinearLayout second = row();
-        stats(second, "プレイ開始", number(totals, "starts"), "回", false);
-        stats(second, "広告表示", number(totals, "adImpressions"), "回", true);
+        stats(second, "プレイしたブラウザー", number(totals, "players"), "台", false);
+        stats(second, "プレイ開始", number(totals, "starts"), "回", true);
         add(page, second); gap(page, 10);
         LinearLayout third = row();
+        stats(third, "広告表示", number(totals, "adImpressions"), "回", true);
         stats(third, "クリア", number(totals, "completes"), "回", false);
-        stats(third, "途中離脱", number(totals, "abandons"), "回", false);
-        add(page, third); gap(page, 18);
+        add(page, third); gap(page, 10);
+        LinearLayout fourth = row();
+        stats(fourth, "途中離脱", number(totals, "abandons"), "回", false);
+        stats(fourth, "セッション", number(totals, "sessions"), "回", false);
+        add(page, fourth); gap(page, 18);
         note(page, str(analytics, "note", "利用ブラウザー数は実人数ではなく匿名の推計です。"), false);
 
         section(page, "ゲーム別の利用状況");
@@ -431,6 +435,7 @@ public final class MainActivity extends Activity {
             add(c, text(gameLabel(str(g, "game", "other")), 16, INK, true)); gap(c, 12);
             pair(c, "アクセス", number(g, "pageViews") + "回");
             pair(c, "利用ブラウザー", number(g, "visitors") + "台");
+            pair(c, "プレイしたブラウザー", number(g, "players") + "台");
             pair(c, "プレイ開始", number(g, "starts") + "回");
             pair(c, "クリア", number(g, "completes") + "回");
             pair(c, "広告表示", number(g, "adImpressions") + "回");
