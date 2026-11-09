@@ -277,9 +277,9 @@ public final class MainActivity extends Activity {
         else if (detail != null) showInquiryDetail(body);
         else if (tab == 0) showHome(body);
         else if (tab == 1) showTraffic(body);
-        else if (tab == 2) showUsage(body);
-        else if (tab == 3) showInquiries(body);
-        else if (tab == 4) showAnalytics(body);
+        else if (tab == 2) showAnalytics(body);
+        else if (tab == 3) showUsage(body);
+        else if (tab == 4) showInquiries(body);
         bottom = row(); bottom.setBackgroundColor(Color.WHITE); bottom.setPadding(dp(8),dp(6),dp(8),dp(10));
         String[] names = {"概況","訪問","ゲーム","使用量","問合せ","設定"};
         for (int n = 0; n < names.length; n++) { final int index=n; TextView b=text(names[n],13,tab==n?GREEN:MUTED,tab==n); b.setGravity(Gravity.CENTER); b.setPadding(dp(3),dp(16),dp(3),dp(16));
