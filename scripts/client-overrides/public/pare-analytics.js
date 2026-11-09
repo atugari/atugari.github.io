@@ -21,7 +21,10 @@
  send('page_view',document.body?.dataset?.screen||'entry');
  if(!['site','pareasobi','plaza','home','puzzles'].includes(game))send('game_access','entry');
  document.addEventListener('pare-game-start',()=>api.start());
- document.addEventListener('click',e=>{if(e.target.closest?.('[data-action="start"],[data-start-game]'))api.start();if(e.target.closest?.('[data-action="complete"],[data-game-complete]'))api.complete();},true);
+ document.addEventListener('click',e=>{if(e.target.closest?.('[data-action="start"],[data-start-game],#btn-start,#btn-murige,#start-btn,.launch,[onclick*="startGame"],[onclick*="startChallenge"]'))api.start();if(e.target.closest?.('[data-action="complete"],[data-game-complete]'))api.complete();},true);
  document.addEventListener('pare-game-complete',()=>api.complete());
+ document.addEventListener('pare-screen-change',e=>api.screen(e.detail?.screen||'unknown'));
+ let lastScreen=document.body?.dataset?.screen||'';
+ if(document.body)new MutationObserver(()=>{const next=document.body.dataset.screen||'';if(next&&next!==lastScreen){lastScreen=next;api.screen(next)}}).observe(document.body,{attributes:true,attributeFilter:['data-screen']});
  window.addEventListener('message',e=>{if(e.origin!==origin)return;const d=e.data;if(d?.type==='np-notebook-route'&&typeof d.key==='string')api.screen(d.key.split(':').pop());});
 })();
