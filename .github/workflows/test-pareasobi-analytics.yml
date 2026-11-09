@@ -41,8 +41,9 @@ jobs:
           import { readFileSync } from 'node:fs';
           import { Script } from 'node:vm';
           const html = readFileSync('pareasobi-analytics.html', 'utf8');
-          const scripts = [...html.matchAll(/<script>([\\s\\S]*?)<\\/script>/g)];
-          if (scripts.length !== 1) throw new Error('Expected one dashboard application script.');
-          new Script(scripts[0][1], { filename: 'pareasobi-analytics.html' });
+          const start = html.indexOf('<script>');
+          const end = html.indexOf('</script>', start + 8);
+          if (start < 0 || end < 0 || html.indexOf('<script>', start + 8) >= 0) throw new Error('Expected one dashboard application script.');
+          new Script(html.slice(start + 8, end), { filename: 'pareasobi-analytics.html' });
           console.log('Dashboard script syntax OK.');
           NODE
