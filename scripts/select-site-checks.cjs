@@ -54,6 +54,7 @@ function planChecks({paths,readAt,sameBlob=()=>false,base='base',head='head',for
     'index.html','dungeon.html','move-moove-mooove.html','speed.html','combination-blocks.html','narabe100.html','echo-dive.html','shopping-memo.html','timer-gauge.html','skins.html','maze/index.html',
     'scripts/client-overrides/public/notebook/generation-assist.js','scripts/prepare-generation-assist-retry-release.mjs',
     'privacy.html','scripts/inject-pareasobi-analytics.py',
+    'scripts/check-pareasobi-analytics.cjs','scripts/client-overrides/public/pare-analytics.js',
     'scripts/release-notes.json','nanpure/releases.json','nanpure-api/src/generation.js','nanpure-api/test/generation.test.mjs'
   ]);
   for(const p of semantic){
