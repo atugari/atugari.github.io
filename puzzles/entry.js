@@ -2,7 +2,7 @@
 const frame=document.getElementById('game'),status=document.getElementById('status'),game=document.body.dataset.game;
 const analytics=document.createElement('script');analytics.src='/scripts/client-overrides/public/pare-analytics.js?v=1';document.head.append(analytics);
 const targets={shirupure:'shirupure.html',wado:'wado-play.html',crossword:'crossword.html',cross:'index.html',tenbin:'tenbin.html',paths:'index.html',studio:'index.html',workshop:'index.html','magic-square':'magic-square.html'};
-let timer,attempts=0,initialized=false,base='';
+let timer,attempts=0,initialized=false,base='',analyticsPlaying=false;
 function fail(){status.hidden=false;status.replaceChildren(document.createTextNode('読み込めませんでした。通信を確認して、'));
  const retry=document.createElement('button');retry.type='button';retry.textContent='もう一度読み込む';retry.onclick=()=>location.reload();status.append(retry,document.createTextNode('。保存済みの記録はそのままです。'));frame.hidden=true;}
 function launch(w){
@@ -60,8 +60,7 @@ document.querySelector('[data-hub]')?.addEventListener('click',e=>{e.preventDefa
 window.addEventListener('message',e=>{
  if(e.origin!==location.origin||e.source!==frame.contentWindow)return;
  if(e.data?.type==='np-notebook-playing')(window.NPSiteAudio||frame.contentWindow.NPSiteAudio)?.setActive(!!e.data.playing);
- if(e.data?.type==='np-notebook-route'&&typeof e.data.key==='string'){const route=e.data.key.split(':').pop();window.PareAnalytics?.screen(route);if(['play','game','tutorial'].includes(route))window.PareAnalytics?.start();}
- if(e.data?.type==='np-notebook-route'&&typeof e.data.key==='string'){const route=e.data.key.split(':').pop();window.PareAnalytics?.screen(route);if(['play','game','tutorial'].includes(route))window.PareAnalytics?.start();}
+ if(e.data?.type==='np-notebook-route'&&typeof e.data.key==='string'){const route=e.data.key.split(':').pop();window.PareAnalytics?.screen(route);const playing=['play','game','tutorial'].includes(route);if(playing&&!analyticsPlaying)window.PareAnalytics?.start();analyticsPlaying=playing;}
  if(e.data?.type==='np-site-open'&&e.data.panel==='audio')showAudio();
 });
 const audioDialog=document.createElement('dialog');audioDialog.className='audio-dialog';audioDialog.setAttribute('aria-label','音の設定');document.body.append(audioDialog);
