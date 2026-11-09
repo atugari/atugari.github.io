@@ -258,6 +258,10 @@ jobs:
         if: needs.changes.outputs.learning == 'true'
         run: node scripts/check-nanpure-learning.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
 
+      - name: Inject Pareasobi analytics after all integrity and browser checks
+        if: github.event_name != 'pull_request'
+        run: python3 scripts/inject-pareasobi-analytics.py _site
+
       - name: Add creator notice after release integrity checks
         if: github.event_name != 'pull_request'
         run: python3 scripts/add-creator-notice.py _site
