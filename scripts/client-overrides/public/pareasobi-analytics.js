@@ -39,7 +39,7 @@ function routeMessage(data){
 window.addEventListener('message',e=>{if(e.origin===ORIGIN&&e.source!==window)routeMessage(e.data||{})});
 window.addEventListener('hashchange',()=>screen(location.hash.slice(1)||'home'));
 const adSeen=new WeakSet();
-function inspectAds(root=document){
+function inspectAds(root=document,view=window){
  const selector='ins.adsbygoogle,[data-ad-slot][data-ad-status],.ad-container[data-ad-status="filled"]';
  const nodes=[...(root.matches?.(selector)?[root]:[]),...(root.querySelectorAll?.(selector)||[])];
  for(const el of nodes){
@@ -47,13 +47,21 @@ function inspectAds(root=document){
   if(!filled){adSeen.delete(el);continue;}
   if(adSeen.has(el))continue;
   adSeen.add(el);
-  if(!('IntersectionObserver'in window)){emit('ad_impression',el.closest?.('[data-screen]')?.dataset.screen||currentScreen||'home');continue}
-  const observer=new IntersectionObserver(entries=>{for(const entry of entries)if(entry.isIntersecting&&entry.intersectionRatio>=.5){observer.disconnect();setTimeout(()=>{const r=el.getBoundingClientRect(),visible=r.width>0&&r.height>0&&r.bottom>0&&r.top<innerHeight;if(visible)emit('ad_impression',el.closest?.('[data-screen]')?.dataset.screen||currentScreen||'home')},1000)}},{threshold:[.5]});
+  if(!('IntersectionObserver'in view)){emit('ad_impression',el.closest?.('[data-screen]')?.dataset.screen||currentScreen||'home');continue}
+  const observer=new view.IntersectionObserver(entries=>{for(const entry of entries)if(entry.isIntersecting&&entry.intersectionRatio>=.5){observer.disconnect();view.setTimeout(()=>{const r=el.getBoundingClientRect(),visible=r.width>0&&r.height>0&&r.bottom>0&&r.top<view.innerHeight;if(visible)emit('ad_impression',el.closest?.('[data-screen]')?.dataset.screen||currentScreen||'home')},1000)}},{threshold:[.5]});
   observer.observe(el);
  }
 }
 inspectAds();new MutationObserver(records=>{for(const r of records){if(r.type==='attributes')inspectAds(r.target.parentElement||document);for(const n of r.addedNodes)if(n.nodeType===1)inspectAds(n)}}).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['data-ad-status']});
 new MutationObserver(()=>{const node=document.body?.matches?.('[data-screen]')?document.body:document.querySelector('[data-screen]');if(node?.dataset.screen)screen(node.dataset.screen)}).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['data-screen']});
 const shell=document.querySelector('.site-shell');if(shell)new MutationObserver(()=>{const mode=String(shell.className).match(/(?:^|\s)mode-([a-z0-9_-]+)/i)?.[1];if(mode)screen(mode)}).observe(shell,{attributes:true,attributeFilter:['class']});
+
+const watchedFrames=new WeakSet();
+function watchFrame(frame){
+ const attach=()=>{try{const view=frame.contentWindow,doc=view.document;if(!doc||watchedFrames.has(doc))return;watchedFrames.add(doc);inspectAds(doc,view);new view.MutationObserver(records=>{for(const r of records){if(r.type==='attributes')inspectAds(r.target.parentElement||doc,view);for(const n of r.addedNodes)if(n.nodeType===1)inspectAds(n,view)}}).observe(doc.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['data-ad-status']})}catch{}};
+ frame.addEventListener('load',attach);try{if(frame.contentDocument?.readyState==='complete')attach()}catch{}
+}
+document.querySelectorAll('iframe').forEach(watchFrame);
+new MutationObserver(records=>{for(const r of records)for(const n of r.addedNodes)if(n.nodeType===1){if(n.tagName==='IFRAME')watchFrame(n);n.querySelectorAll?.('iframe').forEach(watchFrame)}}).observe(document.body,{subtree:true,childList:true});
 window.PareAnalytics={screen,start,complete,abandon};
 })();
