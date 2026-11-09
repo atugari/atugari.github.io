@@ -1,7 +1,7 @@
 import {input,json,fail,owner,hash,validKey,limit} from './http.js';
 import {japanDay} from './shared/daily-plan.js';
 
-const games=new Set(['plaza','nanpure','shirupure','wado','crossword','cross','tenbin','paths','studio','workshop','maru','tobe','maze','speed','kuroshiro','move','memo','timer','skins','other']);
+const games=new Set(['plaza','nanpure','shirupure','wado','crossword','cross','tenbin','paths','studio','workshop','maru','tobe','maze','speed','kuroshiro','move','memo','timer','skins','combination','narabe100','echo','magic-square','other']);
 const events=new Set(['page_view','screen_view','game_start','game_complete','game_abandon','ad_impression']);
 const clean=(v,max)=>typeof v==='string'&&v.length>0&&v.length<=max&&!/[\u0000-\u001f]/.test(v);
 export async function collectPareasobiEvent(request,env){
