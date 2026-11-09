@@ -62,6 +62,7 @@ export async function pareAnalytics(request,env,url){
   totals.uniqueVisitors=Number(siteUnique?.count)||0;
   const sitePlayers=await db.prepare("SELECT COUNT(*) AS count FROM pare_analytics_unique WHERE day>=? AND game='pareasobi' AND kind='player'").bind(firstDay).first();
   totals.uniquePlayers=Number(sitePlayers?.count)||0;
+  const hub=games.get('pareasobi');if(hub){hub.uniqueVisitors=totals.uniqueVisitors;hub.uniquePlayers=totals.uniquePlayers;}
   totals.sessions=[...(sessions.results||[])].reduce((sum,row)=>sum+(Number(row.count)||0),0);
   return json({ok:true,generatedAt:now,timezone:'Asia/Tokyo',days,from:firstDay,to:today,totals,games:[...games.values()].sort((a,b)=>b.accesses-a.accesses||a.id.localeCompare(b.id)),screens:[...screens.values()].sort((a,b)=>b.adImpressions-a.adImpressions||b.views-a.views),history:[...history.values()].sort((a,b)=>a.day.localeCompare(b.day)),uniqueByDay:[...uniqueByDay.values()].sort((a,b)=>a.day.localeCompare(b.day)||a.game.localeCompare(b.game)),note:'利用者数は同じ日のブラウザー単位の推定値です。実人数ではありません。DNT/GPCを有効にした訪問は記録しません。広告表示は広告配信側の実表示コールバックを受けた場合のみ記録します。'});
  }
