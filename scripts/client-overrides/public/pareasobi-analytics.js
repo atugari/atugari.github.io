@@ -15,7 +15,7 @@ function gameFor(path){
 const game=gameFor(location.pathname),page=location.pathname.slice(0,180)||'/',day=()=>new Date(Date.now()+9*3600000).toISOString().slice(0,10);
 function random(){return Array.from(crypto.getRandomValues(new Uint8Array(32)),b=>b.toString(16).padStart(2,'0')).join('')}
 function id(storage,key){try{let v=storage.getItem(key);if(!/^[a-f0-9]{64}$/.test(v||'')){v=random();storage.setItem(key,v)}return v}catch{return random()}}
-let visitor,session;try{const d=day();visitor=id(localStorage,'pare-analytics-visitor-'+d);session=id(sessionStorage,'pare-analytics-session-'+d)}catch{visitor=random();session=random()}
+let visitor,session;try{const d=day();visitor=id(localStorage,'pare-analytics-visitor-v1');session=id(sessionStorage,'pare-analytics-session-'+d)}catch{visitor=random();session=random()}
 function emit(event,screen='home',eventId=random()){
  if(!['page_view','screen_view','game_start','game_complete','game_abandon','ad_impression'].includes(event))return;
  const payload={visitor,session,eventId,game,page,screen:String(screen||'home').slice(0,48),event};
@@ -30,7 +30,7 @@ function abandon(){if(started){emit('game_abandon',currentScreen||'play');starte
 window.addEventListener('pare:analytics',e=>{const d=e.detail||{};if(d.event==='game_start')start();else if(d.event==='game_complete')complete();else if(d.event==='game_abandon')abandon();else if(d.event==='screen_view')screen(d.screen)});
 document.addEventListener('click',e=>{
  const target=e.target.closest?.('[data-analytics-event],[data-analytics-start],[data-analytics-screen]');if(!target)return;
- if(target.dataset.analyticsEvent==='game_complete')complete();else if(target.hasAttribute('data-analytics-start'))start();else if(target.dataset.analyticsScreen)screen(target.dataset.analyticsScreen);
+ if(target.dataset.analyticsEvent==='game_complete')complete();else if(target.hasAttribute('data-analytics-start'))start();else if(target.dataset.analyticsScreen)screen(target.dataset.analyticsScreen);else if(game!=='plaza'&&/^(開始|スタート|遊ぶ|挑戦する|プレイ開始|新しい問題で遊ぶ)/.test((target.textContent||'').trim()))start();
 },true);
 function routeMessage(data){
  if(data.type==='np-notebook-route'){const route=String(data.key||'').split(':').pop()||'home';screen(route);if(['play','game','tutorial'].includes(route))start();else if(started)abandon()}
