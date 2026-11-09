@@ -205,7 +205,7 @@ public final class MainActivity extends Activity {
         TextView mark = text("N", 34, Color.WHITE, true); mark.setGravity(Gravity.CENTER); mark.setBackground(shape(GREEN,0,20));
         c.addView(mark,new LinearLayout.LayoutParams(dp(64),dp(64))); gap(c,24);
         add(c,text("パレあそび",15,GREEN,true)); gap(c,6); add(c,text("管理室",32,INK,true)); gap(c,12);
-        add(c,text("訪問状況、無料枠、お問い合わせを\nひとつのアプリで確認できます。",16,MUTED,false)); gap(c,28);
+        add(c,text("パレあそび全体と各ゲームの利用状況や広告表示、ナンプレ帳の無料枠とお問い合わせを確認できます。",16,MUTED,false)); gap(c,28);
         LinearLayout access = card(c); add(access,text("作者として接続",19,INK,true)); gap(access,14);
         add(access,text("管理用キー",14,INK,true)); gap(access,8);
         keyInput = new EditText(this); keyInput.setSingleLine(true); keyInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
@@ -320,7 +320,8 @@ public final class MainActivity extends Activity {
     private void empty(LinearLayout page,String heading,String explanation){LinearLayout c=card(page);add(c,text(heading,18,INK,true));gap(c,10);add(c,text(explanation,14,MUTED,false));}
 
     private void showTraffic(LinearLayout page){
-        JSONObject traffic=obj(overview,"traffic"),today=obj(traffic,"today");title(page,"訪問のようす",str(traffic,"day","今日")+" · 日本時間で日付を集計");
+        JSONObject traffic=obj(overview,"traffic"),today=obj(traffic,"today");title(page,"ナンプレ帳の訪問",str(traffic,"day","今日")+" · 日本時間で日付を集計");
+        note(page,"パレあそび全体とゲーム別の利用状況は、下の「分析」から確認できます。",false);
         boolean currentDay=trafficIsToday(traffic);LinearLayout r=row();stats(r,currentDay?"今日の訪問端末":"表示日の訪問端末",number(today,"browsers"),"台",true);stats(r,currentDay?"今日の訪問回数":"表示日の訪問回数",number(today,"visits"),"回",false);add(page,r);gap(page,18);
         if(!currentDay)note(page,"前回取得した日の記録です。今日の訪問は更新して確認してください。",true);
         note(page,str(traffic,"note","訪問端末は同日のブラウザー単位の目安です。人数とは異なります。"),false);
@@ -427,15 +428,15 @@ public final class MainActivity extends Activity {
         for(int d:new int[]{7,30,90}){final int days=d;Button b=button(days+"日",analyticsDays==days,()->{analyticsDays=days;refresh(true);});LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(0,dp(46),1);if(d!=7)p.leftMargin=dp(7);periods.addView(b,p);}add(page,periods);gap(page,14);
         if(pareAnalytics==null){if(!analyticsProblem.isEmpty())note(page,analyticsProblem,true);empty(page,"分析データを取得できません","計測を開始した後のデータがここに表示されます。");return;}
         JSONObject totals=obj(pareAnalytics,"totals");
-        LinearLayout first=row();stats(first,"ページ表示",number(totals,"pageViews"),"回",false);stats(first,"訪問端末",number(totals,"uniqueVisitors"),"台",true);add(page,first);gap(page,10);
-        LinearLayout second=row();stats(second,"遊んだ端末",number(totals,"uniquePlayers"),"台",true);stats(second,"ゲーム開始",number(totals,"players"),"回",false);add(page,second);gap(page,10);
+        LinearLayout first=row();stats(first,"ページ表示",number(totals,"pageViews"),"回",false);stats(first,"訪問端末（延べ）",number(totals,"uniqueVisitors"),"台",true);add(page,first);gap(page,10);
+        LinearLayout second=row();stats(second,"遊んだ端末（延べ）",number(totals,"uniquePlayers"),"台",true);stats(second,"ゲーム開始",number(totals,"players"),"回",false);add(page,second);gap(page,10);
         LinearLayout third=row();stats(third,"ゲームへのアクセス",number(totals,"accesses"),"回",false);stats(third,"プレイセッション",number(totals,"sessions"),"回",false);add(page,third);gap(page,16);
         section(page,"ゲーム別の利用状況");
         JSONArray games=pareAnalytics.optJSONArray("games");int shown=0;
         if(games!=null)for(int i=0;i<games.length();i++){JSONObject g=games.optJSONObject(i);if(g==null)continue;shown++;LinearLayout c=card(page);
             add(c,text(gameLabel(g.optString("id")),17,INK,true));gap(c,10);
             pair(c,"ページ表示",number(g,"pageViews")+"回");pair(c,"アクセス",number(g,"accesses")+"回");
-            pair(c,"遊んだ端末",number(g,"uniquePlayers")+"台");pair(c,"ゲーム開始",number(g,"players")+"回");
+            pair(c,"遊んだ端末（延べ）",number(g,"uniquePlayers")+"台");pair(c,"ゲーム開始",number(g,"players")+"回");
             pair(c,"プレイセッション",number(g,"sessions")+"回");pair(c,"クリア",number(g,"completions")+"回");
             pair(c,"広告表示",number(g,"adImpressions")+"回");pair(c,"広告クリック",number(g,"adClicks")+"回");
         }
@@ -451,7 +452,7 @@ public final class MainActivity extends Activity {
         JSONArray history=pareAnalytics.optJSONArray("history");
         if(history!=null)for(int i=history.length()-1;i>=0;i--){JSONObject d=history.optJSONObject(i);if(d==null)continue;LinearLayout c=card(page);add(c,text(d.optString("day"),14,INK,true));gap(c,7);
             pair(c,"ページ表示 / アクセス",number(d,"pageViews")+"回 / "+number(d,"accesses")+"回");
-            pair(c,"遊んだ端末",number(d,"players")+"台");pair(c,"広告表示",number(d,"adImpressions")+"回");
+            pair(c,"遊んだ端末（延べ）",number(d,"players")+"台");pair(c,"広告表示",number(d,"adImpressions")+"回");
         }
         note(page,"端末数は同じ日のブラウザー単位の推定値で、実人数ではありません。DNT・GPCを有効にした訪問は集計しません。広告表示数は、広告が実際に表示されたと確認できたイベントのみです。",false);
         if(!analyticsProblem.isEmpty())note(page,analyticsProblem,true);
@@ -461,7 +462,8 @@ public final class MainActivity extends Activity {
         title(page,"作者室の設定","接続と管理先へのショートカット");
         LinearLayout c=card(page);pair(c,"作者室アプリ","1.0.0");pair(c,"サイト",(version.isEmpty()?str(obj(overview,"site"),"version","未取得"):version)+(versionStale?"（前回確認）":""));pair(c,"サーバー",str(obj(overview,"site"),"apiVersion","未取得"));
         add(c,text("管理用キーはこの端末内で暗号化しています。お問い合わせの内容を端末のファイルへ保存しません。",12,MUTED,false));
-        actionRow(page,"ナンプレ帳を開く","公開中のサイト",()->open(SITE));
+        actionRow(page,"パレあそびを開く","ゲーム・ツール一覧",()->open(SITE));
+        actionRow(page,"ナンプレ帳を開く","ナンプレ帳のトップページ",()->open(NANPURE_SITE));
         actionRow(page,"Cloudflareを開く","無料枠・サーバー・データベース",()->open(CLOUDFLARE));
         actionRow(page,"公開処理を確認","GitHubの更新履歴と実行状況",()->open(GITHUB));
         actionRow(page,"お問い合わせ管理","ブラウザーの管理画面",()->open(MANAGE));
