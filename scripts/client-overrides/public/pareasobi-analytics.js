@@ -22,7 +22,7 @@ function emit(event,screen='home',eventId=random()){
  try{fetch(API,{method:'POST',mode:'cors',credentials:'omit',keepalive:true,headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).catch(()=>{})}catch{}
 }
 let currentScreen='',started=false,lastStartAt=0;
-function screen(name){name=String(name||'home').slice(0,48);if(name===currentScreen)return;currentScreen=name;emit('screen_view',name)}
+function screen(name){name=String(name||'home').slice(0,48);if(name===currentScreen)return;currentScreen=name;emit('screen_view',name);if(/^(result|complete|clear|finish|finished|ending)$/i.test(name))complete();else if(started&&/^(home|menu|setup)$/i.test(name))abandon();else if(['play','game','tutorial'].includes(name))start()}
 emit('page_view','document');screen(document.body?.dataset?.screen||'home');
 function start(){const now=Date.now();if(now-lastStartAt<2500)return;lastStartAt=now;started=true;emit('game_start',currentScreen||'play')}
 function complete(){emit('game_complete',currentScreen||'result')}
@@ -53,6 +53,6 @@ function inspectAds(root=document){
  }
 }
 inspectAds();new MutationObserver(records=>{for(const r of records){if(r.type==='attributes')inspectAds(r.target.parentElement||document);for(const n of r.addedNodes)if(n.nodeType===1)inspectAds(n)}}).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['data-ad-status']});
-new MutationObserver(()=>{const node=document.body?.matches?.('[data-screen]')?document.body:document.querySelector('[data-screen]');if(node?.dataset.screen)screen(node.dataset.screen)}).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['data-screen']});
+new MutationObserver(()=>{const node=document.body?.matches?.('[data-screen]')?document.body:document.querySelector('[data-screen]');if(node?.dataset.screen)screen(node.dataset.screen)}).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['data-screen']});\nconst shell=document.querySelector('.site-shell');if(shell)new MutationObserver(()=>{const mode=String(shell.className).match(/(?:^|\\s)mode-([a-z0-9_-]+)/i)?.[1];if(mode)screen(mode)}).observe(shell,{attributes:true,attributeFilter:['class']});
 window.PareAnalytics={screen,start,complete,abandon};
 })();
