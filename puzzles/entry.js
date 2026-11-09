@@ -1,6 +1,5 @@
 (()=>{'use strict';
 const frame=document.getElementById('game'),status=document.getElementById('status'),game=document.body.dataset.game;
-const analytics=document.createElement('script');analytics.src='/scripts/client-overrides/public/pare-analytics.js?v=1';document.head.append(analytics);
 const targets={shirupure:'shirupure.html',wado:'wado-play.html',crossword:'crossword.html',cross:'index.html',tenbin:'tenbin.html',paths:'index.html',studio:'index.html',workshop:'index.html','magic-square':'magic-square.html'};
 let timer,attempts=0,initialized=false,base='';
 function fail(){status.hidden=false;status.replaceChildren(document.createTextNode('読み込めませんでした。通信を確認して、'));
