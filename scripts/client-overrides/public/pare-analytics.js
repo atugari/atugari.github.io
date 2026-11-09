@@ -27,5 +27,5 @@
  let lastScreen=document.body?.dataset?.screen||'';
  if(document.body)new MutationObserver(()=>{const next=document.body.dataset.screen||'';if(next&&next!==lastScreen){lastScreen=next;api.screen(next)}}).observe(document.body,{attributes:true,attributeFilter:['data-screen']});
  let routePlaying=false;
- window.addEventListener('message',e=>{if(e.origin!==origin)return;const d=e.data;if(d?.type!=='np-notebook-route'||typeof d.key!=='string')return;const route=d.key.split(':').pop();api.screen(route);const playing=['play','game','tutorial'].includes(route);if(playing&&!routePlaying)api.start();routePlaying=playing;});
+ window.addEventListener('message',e=>{if(e.origin!==origin)return;const d=e.data;if(d?.type!=='np-notebook-route'||typeof d.key!=='string')return;if(d?.type==='np-notebook-playing'){const playing=!!d.playing;if(playing&&!routePlaying)api.start();routePlaying=playing;return;}if(d?.type!=='np-notebook-route'||typeof d.key!=='string')return;const route=d.key.split(':').pop();api.screen(route);const playing=['play','game','tutorial'].includes(route);if(playing&&!routePlaying)api.start();routePlaying=playing;});
 })();
