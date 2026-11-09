@@ -107,7 +107,7 @@ jobs:
           node --test scripts/check-site-check-selection.cjs
           node scripts/check-release-integrity.cjs _site
           node scripts/check-public-release-policy.cjs
-          node scripts/check-pareasobi-analytics.cjs
+          node scripts/check-pareasobi-analytics.cjs _site
 
       - name: Check generation assistance in a real browser Worker
         shell: bash
