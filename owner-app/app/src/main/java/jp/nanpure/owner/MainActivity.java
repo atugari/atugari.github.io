@@ -538,7 +538,7 @@ public final class MainActivity extends Activity {
 
     private void showSettings(LinearLayout page){
         title(page,"作者室の設定","接続と管理先へのショートカット");
-        LinearLayout c=card(page);pair(c,"作者室アプリ","1.0.0");pair(c,"サイト",(version.isEmpty()?str(obj(overview,"site"),"version","未取得"):version)+(versionStale?"（前回確認）":""));pair(c,"サーバー",str(obj(overview,"site"),"apiVersion","未取得"));
+        LinearLayout c=card(page);pair(c,"作者室アプリ","1.1.0");pair(c,"サイト",(version.isEmpty()?str(obj(overview,"site"),"version","未取得"):version)+(versionStale?"（前回確認）":""));pair(c,"サーバー",str(obj(overview,"site"),"apiVersion","未取得"));
         add(c,text("管理用キーはこの端末内で暗号化しています。お問い合わせの内容を端末のファイルへ保存しません。",12,MUTED,false));
         actionRow(page,"ナンプレ帳を開く","公開中のサイト",()->open(SITE));
         actionRow(page,"Cloudflareを開く","無料枠・サーバー・データベース",()->open(CLOUDFLARE));
