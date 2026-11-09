@@ -12,7 +12,7 @@ export async function collectPareasobiEvent(request,env){
    !validKey(data.visitor)||!validKey(data.session)||!validKey(data.eventId)||
    !games.has(data.game)||!events.has(data.event)||!clean(data.page,180)||!clean(data.screen,48))fail(400,'入力を確認してください。');
  const now=Date.now(),day=japanDay(now);
- await limit(env.DB,request,'pareasobi-analytics',180,3600000);
+ await limit(env.DB,request,'pareasobi-analytics',600,3600000);
  const [visitor,session,eventId]=await Promise.all([
   hash('pareasobi:visitor:'+data.visitor),
   hash(day+':pareasobi:session:'+data.session),
