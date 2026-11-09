@@ -33,7 +33,7 @@ document.addEventListener('click',e=>{
  if(target.dataset.analyticsEvent==='game_complete')complete();else if(target.hasAttribute('data-analytics-start'))start();else if(target.dataset.analyticsScreen)screen(target.dataset.analyticsScreen);else if(game!=='plaza'&&/(で遊ぶ|に挑戦|開始|スタート|プレイする|始める)/.test((target.textContent||'').trim()))start();
 },true);
 function routeMessage(data){
- if(data.type==='np-notebook-route'){const route=String(data.key||'').split(':').pop()||'home';screen(route);if(['play','game','tutorial'].includes(route))start();else if(started)abandon()}
+ if(data.type==='np-notebook-route'){let route=String(data.key||'').split(':').pop()||'home';try{const doc=document.querySelector('iframe#game')?.contentDocument;for(const [id,name] of [['play-setup','setup'],['play-game','play'],['play-library','library']]){const el=doc?.getElementById(id);if(el&&!el.hidden){route=name;break}}}catch{}screen(route)}
  else if(data.type==='np-notebook-playing'){if(data.playing)start();else if(started)abandon()}
 }
 window.addEventListener('message',e=>{if(e.origin===ORIGIN&&e.source!==window)routeMessage(e.data||{})});
