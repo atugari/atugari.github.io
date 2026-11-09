@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <title>脳トレ帳｜パレあそび</title>
+  <meta name="description" content="パレあそびの脳トレ帳。ナンプレ、クロスワード、シルプレ、和同開珎などのパズルを無料で楽しめます。">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://atugari.github.io/brain-training.html">
+  <meta property="og:title" content="脳トレ帳｜パレあそび">
+  <meta property="og:description" content="ナンプレや言葉のパズル、ひらめきパズルを楽しもう。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://atugari.github.io/brain-training.html">
+  <meta property="og:locale" content="ja_JP">
+  <meta name="twitter:card" content="summary">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html,body{min-height:100%;background:#fff;color:#1a1a1a;font-family:'Noto Serif JP',serif}
+    body{padding:0 16px}
+    .app{width:100%;max-width:480px;margin:0 auto;padding:34px 8px 52px}
+    .back{display:inline-flex;align-items:center;gap:7px;color:#777;text-decoration:none;font-size:12px;padding:8px 0;margin-bottom:22px}
+    .back:focus-visible,.puzzle-card:focus-visible{outline:3px solid #7b9b83;outline-offset:3px}
+    header{text-align:center;margin:0 0 28px}
+    .eyebrow{font:700 10px/1.5 'Courier New',monospace;letter-spacing:.28em;color:#aaa;margin-bottom:9px}
+    h1{font-size:clamp(32px,8vw,42px);font-weight:900;letter-spacing:.08em;line-height:1.35}
+    .intro{font-size:12px;line-height:1.9;color:#777;margin-top:9px}
+    .section{margin-top:25px}
+    .section-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0 2px 10px}
+    .section-title{font-size:14px;font-weight:900;letter-spacing:.08em}
+    .section-en{font:10px 'Courier New',monospace;color:#bbb;letter-spacing:.12em}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .puzzle-card{position:relative;display:flex;flex-direction:column;justify-content:center;min-height:116px;padding:15px 15px 14px;text-decoration:none;color:#1a1a1a;background:#fff;border:1.5px solid #e8e8e8;border-radius:12px;transition:background .12s,border-color .12s,transform .12s}
+    .puzzle-card:active{background:#f8f8f8;border-color:#c8c8c8;transform:scale(.99)}
+    .puzzle-card::after{content:'›';position:absolute;right:12px;top:12px;color:#c9c9c9;font-size:19px}
+    .puzzle-card.primary{background:linear-gradient(135deg,#fff 42%,#edf5ec);border-color:#b6cdbb}
+    .tag{font:10px 'Courier New',monospace;letter-spacing:.13em;color:#999;margin-bottom:7px}
+    .primary .tag{color:#467756}
+    .name{font-size:16px;font-weight:900;letter-spacing:.04em;margin-bottom:5px}
+    .desc{font-size:10px;line-height:1.7;color:#777}
+    .wide{grid-column:1/-1;min-height:94px}
+    .footer{text-align:center;margin-top:38px;font-size:11px;color:#bbb;line-height:2.4}
+    .footer a{color:#555;text-underline-offset:.2em}
+    @media(max-width:350px){.grid{grid-template-columns:1fr}.wide{grid-column:auto}}
+    @media(prefers-reduced-motion:reduce){.puzzle-card{transition:none}}
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"CollectionPage","name":"脳トレ帳","url":"https://atugari.github.io/brain-training.html","isPartOf":{"@type":"WebSite","name":"パレあそび","url":"https://atugari.github.io/"},"inLanguage":"ja"}
+  </script>
+</head>
+<body>
+<main class="app">
+  <a class="back" href="/plaza.html" aria-label="パレあそびへ戻る">‹ パレあそびへ戻る</a>
+  <header>
+    <p class="eyebrow">BRAIN TRAINING / PUZZLE LIBRARY</p>
+    <h1>脳トレ帳</h1>
+    <p class="intro">気になるパズルを選んで、じっくり挑戦。<br>遊ぶのも、問題を作るのも自由に。</p>
+  </header>
+
+  <section class="section" aria-labelledby="classic-title">
+    <div class="section-head"><h2 class="section-title" id="classic-title">定番パズル</h2><span class="section-en">CLASSIC</span></div>
+    <div class="grid">
+      <a class="puzzle-card primary wide" href="/nanpure/">
+        <span class="tag">SUDOKU</span><span class="name">ナンプレ帳</span>
+        <span class="desc">いろいろなルール・サイズのナンプレ。問題作成や印刷にも対応。</span>
+      </a>
+      <a class="puzzle-card" href="/puzzles/crossword/">
+        <span class="tag">WORDS</span><span class="name">クロスワード</span>
+        <span class="desc">ヒントを手がかりに言葉を埋めよう。</span>
+      </a>
+      <a class="puzzle-card" href="/puzzles/shirupure/">
+        <span class="tag">SHIRUPURE</span><span class="name">シルプレ</span>
+        <span class="desc">記号を仕切って部屋を作るパズル。</span>
+      </a>
+      <a class="puzzle-card" href="/puzzles/wado/">
+        <span class="tag">KANJI</span><span class="name">和同開珎</span>
+        <span class="desc">四つの熟語に共通する漢字を考えよう。</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="logic-title">
+    <div class="section-head"><h2 class="section-title" id="logic-title">ひらめきパズル</h2><span class="section-en">LOGIC</span></div>
+    <div class="grid">
+      <a class="puzzle-card" href="/puzzles/cross/">
+        <span class="tag">NUMBERS</span><span class="name">クロスてんびん</span>
+        <span class="desc">行・列と斜めの合計をそろえよう。</span>
+      </a>
+      <a class="puzzle-card" href="/puzzles/tenbin/">
+        <span class="tag">BALANCE</span><span class="name">天秤</span>
+        <span class="desc">比べながら一番重い記号を見つけよう。</span>
+      </a>
+      <a class="puzzle-card" href="/puzzles/paths/">
+        <span class="tag">PATH</span><span class="name">しるしのこみち</span>
+        <span class="desc">○から△を通って□へ道をつなごう。</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="create-title">
+    <div class="section-head"><h2 class="section-title" id="create-title">作る・試す</h2><span class="section-en">CREATE</span></div>
+    <div class="grid">
+      <a class="puzzle-card" href="/puzzles/studio/">
+        <span class="tag">CREATE</span><span class="name">シルプレ工房</span>
+        <span class="desc">問題を作って保存しよう。</span>
+      </a>
+      <a class="puzzle-card" href="/puzzles/workshop/">
+        <span class="tag">WORKSHOP</span><span class="name">パズルの試作室</span>
+        <span class="desc">制作中のルールや機能を試そう。</span>
+      </a>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <a href="/plaza.html">パレあそびへ戻る</a><br>
+    <span>脳トレ帳｜パレあそび</span>
+  </footer>
+</main>
+</body>
+</html>
