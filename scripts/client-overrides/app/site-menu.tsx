@@ -17,6 +17,7 @@ export default function SiteMenu({onOpen,daily,unread,newVersion}:{onOpen:(panel
  return <section className="site-menu">
   <h2>{t('設定・メニュー')}</h2>
   <div className="menu-categories">
+   <button className="menu-news" type="button" style={{position:'relative'}} onClick={event=>onOpen('updates',event.currentTarget)}><Sparkles size={19} aria-hidden="true"/><span>{t(newVersion?'新しい版があります':'更新・不具合修正')}</span>{(unread||newVersion)&&<span aria-label={t('未読のお知らせあり')} style={{position:'absolute',top:7,right:9,width:9,height:9,borderRadius:'50%',background:'#d22',boxShadow:'0 0 0 2px #fff7e7'}}/>}<ChevronRight size={17} aria-hidden="true"/></button>
    {item('theme','背景とボタンを変更','画面を見ながら配色を選ぶ',Palette,'gold')}
    {item('settings','見やすさ・操作の設定','色・文字の大きさ・タップの補助',SlidersHorizontal)}
    {group('play','遊び方・音','チュートリアル・キーボード・BGM',BookOpen,'green',<>
@@ -34,7 +35,6 @@ export default function SiteMenu({onOpen,daily,unread,newVersion}:{onOpen:(panel
     {item('contact','お問い合わせ','質問・不具合を送る／返答を見る',Mail,'blue')}
     {item('faq','よくある質問','気になることを調べる',HelpCircle)}
     {item('support','制作を応援','OFUSEで応援する',Heart,'rose')}
-    <button className="menu-news" type="button" onClick={event=>onOpen('updates',event.currentTarget)}><Sparkles size={19} aria-hidden="true"/><span>{t(newVersion?'新しい版があります':'更新・不具合修正')}</span>{(unread||newVersion)&&<small>{t('新着')}</small>}<ChevronRight size={17} aria-hidden="true"/></button>
     <button className="site-version-link" type="button" onClick={event=>onOpen('updates',event.currentTarget)}><span>{t('サイトのバージョン')}</span><code translate="no" data-i18n-skip="true">{currentVersion}</code><ChevronRight size={16} aria-hidden="true"/></button>
     <footer className="menu-footer"><a href="/privacy"><Shield size={16} aria-hidden="true"/>{t('利用案内')}</a><a href="https://atugari.github.io/plaza.html">{t('ゲーム広場へ')}<ExternalLink size={15} aria-hidden="true"/></a></footer>
    </>)}
