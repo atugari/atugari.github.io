@@ -61,6 +61,7 @@ window.addEventListener('message',e=>{
  if(e.origin!==location.origin||e.source!==frame.contentWindow)return;
  if(e.data?.type==='np-notebook-playing')(window.NPSiteAudio||frame.contentWindow.NPSiteAudio)?.setActive(!!e.data.playing);
  if(e.data?.type==='np-notebook-route'&&typeof e.data.key==='string'){const route=e.data.key.split(':').pop();window.PareAnalytics?.screen(route);if(['play','game','tutorial'].includes(route))window.PareAnalytics?.start();}
+ if(e.data?.type==='np-notebook-route'&&typeof e.data.key==='string'){const route=e.data.key.split(':').pop();window.PareAnalytics?.screen(route);if(['play','game','tutorial'].includes(route))window.PareAnalytics?.start();}
  if(e.data?.type==='np-site-open'&&e.data.panel==='audio')showAudio();
 });
 const audioDialog=document.createElement('dialog');audioDialog.className='audio-dialog';audioDialog.setAttribute('aria-label','音の設定');document.body.append(audioDialog);
