@@ -40,7 +40,7 @@ window.addEventListener('message',e=>{if(e.origin===ORIGIN&&e.source!==window)ro
 window.addEventListener('hashchange',()=>screen(location.hash.slice(1)||'home'));
 const adSeen=new WeakSet();
 function inspectAds(root=document){
- const nodes=root.querySelectorAll?.('ins.adsbygoogle,[data-ad-slot][data-ad-status],.ad-container[data-ad-status="filled"]')||[];
+ const selector='ins.adsbygoogle,[data-ad-slot][data-ad-status],.ad-container[data-ad-status="filled"]';\n const nodes=[...(root.matches?.(selector)?[root]:[]),...(root.querySelectorAll?.(selector)||[])];
  for(const el of nodes){if(adSeen.has(el))continue;
   const filled=el.getAttribute('data-ad-status')==='filled'||el.dataset.adStatus==='filled';
   if(!filled)continue;
