@@ -6,6 +6,7 @@ on:
       - 'nanpure-api/**'
       - 'pareasobi-analytics.html'
       - 'scripts/client-overrides/public/pareasobi-analytics.js'
+      - 'scripts/enhance-nanpure.py'
       - 'plaza.html'
       - 'puzzles/entry.js'
       - '.github/workflows/test-pareasobi-analytics.yml'
