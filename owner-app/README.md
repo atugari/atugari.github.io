@@ -1,13 +1,13 @@
-# ナンプレ帳 作者室 1.0.0
+# パレあそび 作者室 1.1.0
 
 Android 8.0以降向けの、作者専用のネイティブアプリです。一般公開されるAPKにも管理用キーやCloudflare APIトークンは含みません。
 
 ## 使い方
 
-1. 署名済みの `ナンプレ帳_作者室_1.0.0.apk` をインストールします。
+1. 署名済みの `パレあそび_作者室_1.1.0.apk` をインストールします。
 2. お問い合わせ管理に使っている64文字の管理用キーを貼り付けます。管理用テキストファイルから読み込むこともできます。
 3. 「接続する」を押すと、作者権限を確認したあとキーを端末内のAndroid Keystoreで暗号化して保存します。
-4. 画面下の「概況」「訪問」「使用量」「問合せ」「設定」で切り替えます。上の「更新」で最新情報を取得します。
+4. 画面下の「概況」「訪問」「ゲーム」「使用量」「問合せ」「設定」で切り替えます。「ゲーム」ではパレあそび・ナンプレ帳のアクセス、利用ブラウザー数、プレイ開始・クリア、画面別表示、広告表示回数を確認できます。上の「更新」で最新情報を取得します。
 
 サイトのバージョンと、このアプリのバージョンは別々に表示します。問い合わせへの返答は既存のブラウザー管理画面で行います。キーをURLへ自動で入れることはありません。
 
@@ -27,7 +27,7 @@ The GitHub workflow builds **an unsigned release APK** and packages the official
 Sign locally using a persistent private keystore outside this public repository:
 
 ```text
-java -jar apksigner.jar sign --ks /private/path/owner-release.jks --ks-key-alias nanpure-owner --out ナンプレ帳_作者室_1.0.0.apk nanpure-owner-1.0.0-unsigned.apk
+java -jar apksigner.jar sign --ks /private/path/owner-release.jks --ks-key-alias nanpure-owner --out ナンプレ帳_作者室_1.0.0.apk pareasobi-owner-1.1.0-unsigned.apk
 java -jar apksigner.jar verify --verbose --print-certs ナンプレ帳_作者室_1.0.0.apk
 ```
 
@@ -35,11 +35,11 @@ Keep the private keystore for subsequent updates. Never commit signing keys, key
 
 ## Data and network boundary
 
-- Owner API: `https://puzzle-api.puzzle-hub-4826.workers.dev/api/owner/overview` and `/api/admin` (GET only).
+- Owner API: `https://puzzle-api.puzzle-hub-4826.workers.dev/api/owner/overview`, `/api/admin`, and `/api/pareasobi/analytics` (GET only).
 - Public site version: `https://atugari.github.io/nanpure-version.json`, without an authorization header.
 - HTTPS only; redirects are rejected, so bearer credentials cannot follow a redirect.
 - The encrypted owner key is excluded from cloud backup and device transfer.
-- Inquiries are held in memory only. No analytics SDK, advertising SDK, or visit-tracking call is present in this author app.
+- Inquiries are held in memory only. No analytics SDK or advertising SDK is included. The app reads the site's first-party aggregate analytics API using the same owner key.
 - The app suppresses screenshots and task-switcher snapshots that could include private inquiries.
 
 ## Verification
