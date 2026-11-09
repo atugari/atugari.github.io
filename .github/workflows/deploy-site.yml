@@ -96,6 +96,11 @@ jobs:
           cp -a kuroshiro/dist-pages/. _site/kuroshiro/
           touch _site/.nojekyll
 
+      - name: Publish PareAsobi analytics asset
+        run: |
+          mkdir -p _site/assets
+          cp _site/scripts/client-overrides/public/pare-analytics.js _site/assets/pare-analytics.js
+
       - name: Bundle Nanpure help and contact
         run: python3 scripts/enhance-nanpure.py _site
 
