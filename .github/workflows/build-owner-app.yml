@@ -51,7 +51,7 @@ jobs:
           cp "$ANDROID_HOME/build-tools/35.0.0/lib/apksigner.jar" owner-app-artifact/apksigner.jar
           cp owner-app/app/build/reports/lint-results-release.html owner-app-artifact/lint-results.html
           cp owner-app/README.md owner-app-artifact/README.md
-          sha256sum owner-app-artifact/nanpure-owner-1.0.0-unsigned.apk owner-app-artifact/apksigner.jar > owner-app-artifact/SHA256SUMS
+          sha256sum owner-app-artifact/pareasobi-owner-1.1.0-unsigned.apk owner-app-artifact/apksigner.jar > owner-app-artifact/SHA256SUMS
       - uses: actions/upload-artifact@v4
         with:
           name: pareasobi-owner-android-1.1.0-unsigned
