@@ -72,6 +72,12 @@ jobs:
         working-directory: kuroshiro
         run: npm run build
 
+      - name: Generate and refresh pending grouped-home release
+        run: |
+          npm ci --prefix nanpure-api --no-audit --no-fund
+          node scripts/prepare-grouped-home-release.mjs
+          node scripts/refresh-grouped-home-release.mjs
+
       - name: Assemble whole site
         shell: bash
         run: |
