@@ -8,7 +8,7 @@
  const read=(storage,key,today)=>{try{const x=JSON.parse(storage.getItem(key)||'null');return x?.day===today&&/^[a-f0-9]{64}$/.test(x.id)?x:null}catch{return null}};
  let visitor,session;
  try{const d=day();visitor=read(localStorage,'pare-analytics-visitor',d)||{day:d,id:random()};session=read(sessionStorage,'pare-analytics-session',d)||{day:d,id:random()};localStorage.setItem('pare-analytics-visitor',JSON.stringify(visitor));sessionStorage.setItem('pare-analytics-session',JSON.stringify(session));}catch{return}
- const map={'/':'home','/plaza.html':'pareasobi','/nanpure/':'nanpure','/puzzles/wado/':'wado','/puzzles/shirupure/':'shirupure','/puzzles/crossword/':'crossword','/puzzles/cross/':'cross','/puzzles/tenbin/':'tenbin','/puzzles/paths/':'paths','/puzzles/studio/':'studio','/puzzles/workshop/':'workshop','/puzzles/magic-square/':'magic-square'};
+ const map={'/':'home','/plaza.html':'pareasobi','/nanpure/':'nanpure','/puzzles/wado/':'wado','/puzzles/shirupure/':'shirupure','/puzzles/crossword/':'crossword','/puzzles/cross/':'cross','/puzzles/tenbin/':'tenbin','/puzzles/paths/':'paths','/puzzles/studio/':'studio','/puzzles/workshop/':'workshop','/puzzles/magic-square/':'magic-square','/puzzles/':'puzzles'};
  function gameId(){const declared=document.body?.dataset?.game;if(declared)return String(declared).toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,40)||'unknown';return map[location.pathname]||location.pathname.split('/').filter(Boolean).pop()?.replace(/[^a-z0-9_-]/gi,'-').toLowerCase().slice(0,40)||'site'}
  const game=gameId();
  function send(event,screen='main'){
@@ -19,14 +19,7 @@
  }
  const api=window.PareAnalytics={screen:(name)=>send('screen_view',name),start:()=>send('game_start',document.body?.dataset?.screen||'play'),complete:()=>send('game_complete',document.body?.dataset?.screen||'result'),adImpression:(slot,screen)=>send('ad_impression',screen||slot||'unknown'),adClick:(slot,screen)=>send('ad_click',screen||slot||'unknown'),event:send};
  send('page_view',document.body?.dataset?.screen||'entry');
- if(game!=='site'&&game!=='plaza'&&game!=='home')send('game_access','entry');
- document.addEventListener('click',e=>{
-  const a=e.target.closest?.('a[href]');if(!a)return;
-  let u;try{u=new URL(a.href,location.href)}catch{return}
-  if(u.origin!==origin)return;
-  const id=map[u.pathname]||u.pathname.split('/').filter(Boolean).pop()?.replace(/[^a-z0-9_-]/gi,'-').toLowerCase().slice(0,40);
-  if(id&&id!=='plaza'&&id!=='home'&&id!=='site')send('game_access','entry');
- },true);
+ if(!['site','pareasobi','plaza','home','puzzles'].includes(game))send('game_access','entry');
  document.addEventListener('pare-game-start',()=>api.start());
  document.addEventListener('click',e=>{if(e.target.closest?.('[data-action="start"],[data-start-game]'))api.start();if(e.target.closest?.('[data-action="complete"],[data-game-complete]'))api.complete();},true);
  document.addEventListener('pare-game-complete',()=>api.complete());
