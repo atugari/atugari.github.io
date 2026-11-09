@@ -17,6 +17,7 @@ export async function pareAnalytics(request,env,url){
    const kind=data.event==='game_start'?'player':'visitor';
    statements.push(db.prepare('INSERT OR IGNORE INTO pare_analytics_unique(day,game,kind,visitor,created) VALUES(?,?,?,?,?)').bind(day,data.game,kind,visitor,now));
    if(data.event==='game_start')statements.push(db.prepare('INSERT OR IGNORE INTO pare_analytics_unique(day,game,kind,visitor,created) VALUES(?,?,?,?,?)').bind(day,'pareasobi','player',visitor,now));
+   else if(data.game!=='pareasobi')statements.push(db.prepare('INSERT OR IGNORE INTO pare_analytics_unique(day,game,kind,visitor,created) VALUES(?,?,?,?,?)').bind(day,'pareasobi','visitor',visitor,now));
   }
   if(['page_view','game_access','game_start'].includes(data.event)){
    statements.push(db.prepare('INSERT OR IGNORE INTO pare_analytics_sessions(day,game,session,created) VALUES(?,?,?,?)').bind(day,data.game,session,now));
