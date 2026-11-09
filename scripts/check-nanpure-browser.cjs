@@ -592,7 +592,7 @@ async function checkJigsawCreationAndPrint(page,lang,expected){
   const apiPath={daily:'/api/daily',ranking:'/api/ranking',calendar:'/api/daily/archive',contact:'/api/contact',replies:'/api/contact',backup:'/api/cloud'}[view];
   const response=apiPath?page.waitForResponse(r=>{const u=new URL(r.url());return u.hostname==='puzzle-api.puzzle-hub-4826.workers.dev'&&u.pathname===apiPath&&!u.searchParams.has('summary')&&r.request().method()==='GET'},{timeout:20000}):null;
   await page.goto('https://atugari.github.io/nanpure/?lang=ja'+(view?'&view='+view:''),{waitUntil:'domcontentloaded'});
-  if(response){const r=await response;assert.equal(r.status(),200,'API status for '+view)}
+  if(response){const r=await response;assert.equal(r.status(),view==='backup'?410:200,'API status for '+view)}
   await page.locator('#root > *').first().waitFor();
   await page.waitForTimeout(300);
   const selector={'':'.main-choice',daily:'.challenge-grid, .daily-choice, .challenge-list',ranking:'.ranking',calendar:'.daily-calendar',contact:'.contact-form',replies:'.contact-history',backup:'.cloud-save',privacy:'.legal',manage:'.legal'}[view];
