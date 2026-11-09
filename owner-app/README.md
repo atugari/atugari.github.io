@@ -28,7 +28,7 @@ Sign locally using a persistent private keystore outside this public repository:
 
 ```text
 java -jar apksigner.jar sign --ks /private/path/owner-release.jks --ks-key-alias nanpure-owner --out パレあそび管理室_1.1.0.apk pareasobi-owner-1.1.0-unsigned.apk
-java -jar apksigner.jar verify --verbose --print-certs ナンプレ帳_作者室_1.0.0.apk
+java -jar apksigner.jar verify --verbose --print-certs パレあそび管理室_1.1.0.apk
 ```
 
 Keep the private keystore for subsequent updates. Never commit signing keys, keystore passwords, owner keys, or Cloudflare credentials. No private key is uploaded by the build workflow.
