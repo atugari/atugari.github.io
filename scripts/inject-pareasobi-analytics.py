@@ -28,8 +28,8 @@ for name, game in game_pages.items():
     if not html.strip():
         print(f"Skipped empty game entry: {name}", flush=True)
         continue
-    if not re.search(r'<body[^>]*\\bdata-game=', html, re.I):
-        html, count = re.subn(r'<body\\b', f'<body data-game="{game}"', html, count=1, flags=re.I)
+    if not re.search(r'<body[^>]*\bdata-game=', html, re.I):
+        html, count = re.subn(r'<body\b', f'<body data-game="{game}"', html, count=1, flags=re.I)
         assert count == 1, f"Missing body element: {name}"
     if "/scripts/client-overrides/public/pare-analytics.js" in html:
         html = html.replace("/scripts/client-overrides/public/pare-analytics.js", "/assets/pare-analytics.js")
