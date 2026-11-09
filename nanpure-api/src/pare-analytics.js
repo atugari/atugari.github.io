@@ -16,6 +16,7 @@ export async function pareAnalytics(request,env,url){
   if(['page_view','game_access','game_start'].includes(data.event)){
    const kind=data.event==='game_start'?'player':'visitor';
    statements.push(db.prepare('INSERT OR IGNORE INTO pare_analytics_unique(day,game,kind,visitor,created) VALUES(?,?,?,?,?)').bind(day,data.game,kind,visitor,now));
+   if(data.event==='game_start')statements.push(db.prepare('INSERT OR IGNORE INTO pare_analytics_unique(day,game,kind,visitor,created) VALUES(?,?,?,?,?)').bind(day,'pareasobi','player',visitor,now));
   }
   if(['page_view','game_access','game_start'].includes(data.event)){
    statements.push(db.prepare('INSERT OR IGNORE INTO pare_analytics_sessions(day,game,session,created) VALUES(?,?,?,?)').bind(day,data.game,session,now));
@@ -27,9 +28,10 @@ export async function pareAnalytics(request,env,url){
   if(!await owner(request,env))fail(403,'管理用キーを入力してください。');
   const requested=Number(url.searchParams.get('days')||30),days=Number.isInteger(requested)?Math.max(1,Math.min(90,requested)):30;
   const now=Date.now(),today=japanDay(now),firstDay=japanDay(now-(days-1)*86400000);
-  const [daily,unique]=await Promise.all([
+  const [daily,unique,sessions]=await Promise.all([
    db.prepare('SELECT day,game,screen,event,count FROM pare_analytics_daily WHERE day>=? ORDER BY day,game,screen,event').bind(firstDay).all(),
-   db.prepare('SELECT day,game,kind,COUNT(*) AS count FROM pare_analytics_unique WHERE day>=? GROUP BY day,game,kind ORDER BY day,game,kind').bind(firstDay).all()
+   db.prepare('SELECT day,game,kind,COUNT(*) AS count FROM pare_analytics_unique WHERE day>=? GROUP BY day,game,kind ORDER BY day,game,kind').bind(firstDay).all(),
+   db.prepare('SELECT game,COUNT(*) AS count FROM pare_analytics_sessions WHERE day>=? GROUP BY game').bind(firstDay).all()
   ]);
   const games=new Map(),history=new Map(),screens=new Map();
   const gameFor=id=>{if(!games.has(id))games.set(id,{id,pageViews:0,accesses:0,players:0,completions:0,screenViews:0,adImpressions:0,adClicks:0});return games.get(id)};
@@ -48,12 +50,16 @@ export async function pareAnalytics(request,env,url){
    const g=uniqueTotals.get(row.game)||{visitors:0,players:0};if(row.kind==='player')g.players+=n;else g.visitors+=n;uniqueTotals.set(row.game,g);
    const h=history.get(row.day)||{day:row.day,pageViews:0,accesses:0,players:0,adImpressions:0};if(row.kind==='player')h.players+=n;history.set(row.day,h);
   }
-  for(const [id,g]of games){const u=uniqueTotals.get(id)||{};g.uniqueVisitors=u.visitors||0;g.uniquePlayers=u.players||0;}
-  const totals={pageViews:0,accesses:0,players:0,completions:0,screenViews:0,adImpressions:0,adClicks:0,uniqueVisitors:0,uniquePlayers:0};
+  for(const [id,g]of games){const u=uniqueTotals.get(id)||{};g.uniqueVisitors=u.visitors||0;g.uniquePlayers=u.players||0;g.sessions=0;}
+  for(const row of sessions.results||[]){const g=gameFor(row.game);g.sessions=Number(row.count)||0;}
+  const totals={pageViews:0,accesses:0,players:0,completions:0,screenViews:0,adImpressions:0,adClicks:0,uniqueVisitors:0,uniquePlayers:0,sessions:0};
   for(const g of games.values())for(const k of Object.keys(totals))totals[k]+=g[k]||0;
   // Site-wide unique people are deduplicated under one shared scope, not summed across games.
   const siteUnique=await db.prepare("SELECT COUNT(*) AS count FROM pare_analytics_unique WHERE day>=? AND game='pareasobi' AND kind='visitor'").bind(firstDay).first();
   totals.uniqueVisitors=Number(siteUnique?.count)||0;
+  const sitePlayers=await db.prepare("SELECT COUNT(*) AS count FROM pare_analytics_unique WHERE day>=? AND game='pareasobi' AND kind='player'").bind(firstDay).first();
+  totals.uniquePlayers=Number(sitePlayers?.count)||0;
+  totals.sessions=[...(sessions.results||[])].reduce((sum,row)=>sum+(Number(row.count)||0),0);
   return json({ok:true,generatedAt:now,timezone:'Asia/Tokyo',days,from:firstDay,to:today,totals,games:[...games.values()].sort((a,b)=>b.accesses-a.accesses||a.id.localeCompare(b.id)),screens:[...screens.values()].sort((a,b)=>b.adImpressions-a.adImpressions||b.views-a.views),history:[...history.values()].sort((a,b)=>a.day.localeCompare(b.day)),uniqueByDay:[...uniqueByDay.values()].sort((a,b)=>a.day.localeCompare(b.day)||a.game.localeCompare(b.game)),note:'利用者数は同じ日のブラウザー単位の推定値です。実人数ではありません。DNT/GPCを有効にした訪問は記録しません。広告表示は広告配信側の実表示コールバックを受けた場合のみ記録します。'});
  }
  fail(405,'この操作は利用できません。');
