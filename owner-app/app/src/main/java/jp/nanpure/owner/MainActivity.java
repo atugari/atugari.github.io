@@ -453,7 +453,7 @@ public final class MainActivity extends Activity {
         JSONArray history=pareAnalytics.optJSONArray("history");
         if(history!=null)for(int i=history.length()-1;i>=0;i--){JSONObject d=history.optJSONObject(i);if(d==null)continue;LinearLayout c=card(page);add(c,text(d.optString("day"),14,INK,true));gap(c,7);
             pair(c,"ページ表示 / アクセス",number(d,"pageViews")+"回 / "+number(d,"accesses")+"回");
-            pair(c,"遊んだ端末（延べ）",number(d,"players")+"台");pair(c,"広告表示",number(d,"adImpressions")+"回");
+            pair(c,"訪問端末（延べ）",number(d,"visitors")+"台");pair(c,"遊んだ端末（延べ）",number(d,"players")+"台");pair(c,"広告表示",number(d,"adImpressions")+"回");
         }
         note(page,"端末数は同じ日のブラウザー単位の推定値で、実人数ではありません。DNT・GPCを有効にした訪問は集計しません。広告表示数は、広告が実際に表示されたと確認できたイベントのみです。",false);
         if(!analyticsProblem.isEmpty())note(page,analyticsProblem,true);
