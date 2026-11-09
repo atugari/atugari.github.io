@@ -10,7 +10,7 @@ const labels={
 function gameFor(path){
  if(labels[path])return labels[path];
  if(path.startsWith('/nanpure/'))return'nanpure';
- const m=path.match(/^\/puzzles\/(shirupure|wado|crossword|cross|tenbin|paths|studio|workshop)\//);return m?m[1]:'other';
+ const m=path.match(/^\/puzzles\/(shirupure|wado|crossword|cross|tenbin|paths|studio|workshop|magic-square)\//);return m?m[1]:'other';
 }
 const game=gameFor(location.pathname),page=location.pathname.slice(0,180)||'/',day=()=>new Date(Date.now()+9*3600000).toISOString().slice(0,10);
 function random(){return Array.from(crypto.getRandomValues(new Uint8Array(32)),b=>b.toString(16).padStart(2,'0')).join('')}
