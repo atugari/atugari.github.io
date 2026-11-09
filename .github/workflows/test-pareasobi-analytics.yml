@@ -1,0 +1,34 @@
+name: Test PareAsobi analytics API
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'nanpure-api/**'
+      - 'scripts/client-overrides/public/pare-analytics.js'
+      - 'scripts/inject-pareasobi-analytics.py'
+      - 'scripts/check-pareasobi-analytics.cjs'
+      - '.github/workflows/test-pareasobi-analytics.yml'
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: nanpure-api/package-lock.json
+      - name: Install API test dependencies
+        working-directory: nanpure-api
+        run: npm ci --no-audit --no-fund
+      - name: Run API tests
+        working-directory: nanpure-api
+        run: npm run build
+      - name: Check analytics client and injection syntax
+        run: |
+          node --check scripts/client-overrides/public/pare-analytics.js
+          node --check scripts/check-pareasobi-analytics.cjs
+          python3 -m py_compile scripts/inject-pareasobi-analytics.py
