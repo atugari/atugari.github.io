@@ -45,6 +45,18 @@ for file in base.rglob('*'):
             # A root-relative old asset path would escape /nanpure on Pages.
             assert not re.search(r'''["'(]/(?:notebook|audio|themes)/''', text), f'Unmapped asset URL: {file}'
             assert 'sourceMappingURL=' not in text, f'Client source map URL: {file}'
+# Publish the first-party analytics tracker at a stable public asset path. This happens
+# after the release integrity check so protected game sources remain untouched.
+if root.name == '_site':
+    tracker_source = root / 'scripts/client-overrides/public/pare-analytics.js'
+    tracker_target = root / 'assets/pare-analytics.js'
+    tracker_target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(tracker_source, tracker_target)
+    for page in root.rglob('*.html'):
+        html = page.read_text()
+        if '/scripts/client-overrides/public/pare-analytics.js' in html:
+            page.write_text(html.replace('/scripts/client-overrides/public/pare-analytics.js', '/assets/pare-analytics.js'))
+
 # Build helpers are not website pages. Keep them out of the public Pages artifact.
 if root.name == '_site':
     shutil.rmtree(root / 'scripts', ignore_errors=True)
