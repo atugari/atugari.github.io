@@ -591,6 +591,9 @@ async function checkJigsawCreationAndPrint(page,lang,expected){
  for(const view of['','daily','ranking','calendar','contact','replies','backup','privacy','manage']){
   const apiPath={daily:'/api/daily',ranking:'/api/ranking',calendar:'/api/daily/archive',contact:'/api/contact',replies:'/api/contact',backup:'/api/cloud'}[view];
   const response=apiPath?page.waitForResponse(r=>{const u=new URL(r.url());return u.hostname==='puzzle-api.puzzle-hub-4826.workers.dev'&&u.pathname===apiPath&&!u.searchParams.has('summary')&&r.request().method()==='GET'},{timeout:20000}):null;
+  // The retirement notice is intentionally limited to browsers that previously
+  // connected cloud backup. Seed that legacy marker only for this isolated case.
+  if(view==='backup')await page.evaluate(()=>localStorage.setItem('np-cloud-sync-key-v1','a'.repeat(64)));
   await page.goto('https://atugari.github.io/nanpure/?lang=ja'+(view?'&view='+view:''),{waitUntil:'domcontentloaded'});
   if(response){const r=await response;assert.equal(r.status(),view==='backup'?410:200,'API status for '+view)}
   await page.locator('#root > *').first().waitFor();
