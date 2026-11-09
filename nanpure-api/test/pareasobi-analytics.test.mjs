@@ -25,8 +25,9 @@ test('Pareasobi event collection is anonymous, validated, deduplicated and owner
  assert.equal((await call('/api/pareasobi/event',{data:event('1'.repeat(64),'page_view')})).status,200);
  assert.equal((await call('/api/pareasobi/event',{data:event('1'.repeat(64),'page_view')})).status,200);
  assert.equal((await call('/api/pareasobi/event',{data:event('2'.repeat(64),'screen_view')})).status,200);
- assert.equal((await call('/api/pareasobi/event',{data:event('3'.repeat(64),'ad_impression')})).status,200);\n assert.equal((await call('/api/pareasobi/event',{data:event('a'.repeat(64),'game_start')})).status,200);
- assert.equal(DB.raw.prepare('SELECT COUNT(*) n FROM pareasobi_events').get().n,3);
+ assert.equal((await call('/api/pareasobi/event',{data:event('3'.repeat(64),'ad_impression')})).status,200);
+ assert.equal((await call('/api/pareasobi/event',{data:event('a'.repeat(64),'game_start')})).status,200);
+ assert.equal(DB.raw.prepare('SELECT COUNT(*) n FROM pareasobi_events').get().n,4);
  assert.equal(DB.raw.prepare('SELECT visitor FROM pareasobi_events LIMIT 1').get().visitor,await hash('pareasobi:visitor:'+visitor));
  assert.notEqual(DB.raw.prepare('SELECT visitor FROM pareasobi_events LIMIT 1').get().visitor,visitor);
  const report=await call('/api/pareasobi/analytics?range=30d',{admin:true});
