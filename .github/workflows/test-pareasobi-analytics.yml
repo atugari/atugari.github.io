@@ -1,0 +1,37 @@
+name: Test Pareasobi analytics
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'nanpure-api/**'
+      - 'pareasobi-analytics.html'
+      - 'scripts/client-overrides/public/pareasobi-analytics.js'
+      - 'plaza.html'
+      - 'puzzles/entry.js'
+      - '.github/workflows/test-pareasobi-analytics.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'nanpure-api/**'
+      - '.github/workflows/test-pareasobi-analytics.yml'
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: nanpure-api/package-lock.json
+      - name: Install API test dependencies
+        working-directory: nanpure-api
+        run: npm ci --no-audit --no-fund
+      - name: Run API tests
+        working-directory: nanpure-api
+        run: npm run build
+      - name: Check tracker syntax
+        run: node --check scripts/client-overrides/public/pareasobi-analytics.js
