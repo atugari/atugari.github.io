@@ -3,7 +3,7 @@ import {appendNotebookSharedStyles} from './notebook-shared-styles.mjs';
 import fs from 'node:fs';import path from 'node:path';import crypto from 'node:crypto';import{fileURLToPath}from'node:url';import{createRequire}from'node:module';
 import{patchNotebookApp}from'./i18n/patch-notebook.mjs';import{buildTranslationAssets}from'./i18n/build-assets.mjs';import{publicReleases,announcementVersion}from'./public-release-policy.mjs';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'),require=createRequire(import.meta.url),{parse}=require('../nanpure-api/node_modules/acorn'),{transformSync}=require('../nanpure-api/node_modules/esbuild');
-const previous='2026.11.03.86',version='2026.11.03.87',oldBase=`/nanpure/releases/${previous}/`,base=`/nanpure/releases/${version}/`,out=path.join(root,base),pub=path.join(root,'scripts/client-overrides/public');
+const previous='2026.11.05.100',version='2026.11.09.101',oldBase=`/nanpure/releases/${previous}/`,base=`/nanpure/releases/${version}/`,out=path.join(root,base),pub=path.join(root,'scripts/client-overrides/public');
 const read=f=>fs.readFileSync(path.join(root,f),'utf8'),hash=v=>crypto.createHash('sha256').update(v).digest('hex'),walk=d=>fs.readdirSync(d,{withFileTypes:true}).flatMap(e=>e.isDirectory()?walk(path.join(d,e.name)):[path.join(d,e.name)]);
 const prior=JSON.parse(read('nanpure/release-manifest.json')),notes=JSON.parse(read('scripts/release-notes.json'));if(prior.version!==previous||notes[0].version!==version||fs.existsSync(out))throw Error('Unexpected release state');
 for(const f of walk(path.join(root,oldBase)))if(hash(fs.readFileSync(f))!==prior.files[path.relative(root,f)])throw Error('Published asset changed '+f);
