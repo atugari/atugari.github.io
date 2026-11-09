@@ -204,7 +204,7 @@ public final class MainActivity extends Activity {
         LinearLayout c = column(); c.setPadding(dp(24), dp(42), dp(24), dp(30)); scroll.addView(c);
         TextView mark = text("N", 34, Color.WHITE, true); mark.setGravity(Gravity.CENTER); mark.setBackground(shape(GREEN,0,20));
         c.addView(mark,new LinearLayout.LayoutParams(dp(64),dp(64))); gap(c,24);
-        add(c,text("ナンプレ帳",15,GREEN,true)); gap(c,6); add(c,text("作者室",32,INK,true)); gap(c,12);
+        add(c,text("パレあそび 作者室",15,GREEN,true)); gap(c,6); add(c,text("作者室",32,INK,true)); gap(c,12);
         add(c,text("訪問状況、無料枠、お問い合わせを\nひとつのアプリで確認できます。",16,MUTED,false)); gap(c,28);
         LinearLayout access = card(c); add(access,text("作者として接続",19,INK,true)); gap(access,14);
         add(access,text("管理用キー",14,INK,true)); gap(access,8);
@@ -266,7 +266,7 @@ public final class MainActivity extends Activity {
         if (ownerKey.isEmpty()) { showLogin(""); return; }
         root = column(); root.setBackgroundColor(BG); root.setFitsSystemWindows(true); setContentView(root);
         LinearLayout header = row(); header.setPadding(dp(20),dp(12),dp(16),dp(10));
-        LinearLayout name = column(); add(name,text("ナンプレ帳",12,GREEN,true)); add(name,text("作者室",22,INK,true));
+        LinearLayout name = column(); add(name,text("パレあそび 作者室",12,GREEN,true)); add(name,text("作者室",22,INK,true));
         header.addView(name,new LinearLayout.LayoutParams(0,-2,1));
         Button refresh = button(busy ? "取得中…" : "更新",false,() -> refresh(true)); refresh.setEnabled(!busy); header.addView(refresh,new LinearLayout.LayoutParams(dp(84),dp(48))); add(root,header);
         ScrollView scroll = new ScrollView(this); scroll.setFillViewport(true); scroll.setClipToPadding(false);
@@ -336,7 +336,7 @@ public final class MainActivity extends Activity {
     private String gameLabel(String game) {
         switch (game) {
             case "plaza": return "パレあそび";
-            case "nanpure": return "ナンプレ帳";
+            case "nanpure": return "パレあそび 作者室";
             case "shirupure": return "シルプレ";
             case "wado": return "和同開珎";
             case "crossword": return "クロスワード";
@@ -565,7 +565,7 @@ public final class MainActivity extends Activity {
     private static JSONObject request(String address,String key)throws Exception{
         if(!address.startsWith(API+"/")&&!address.equals(VERSION))throw new SecurityException("Destination rejected");
         HttpsURLConnection c=(HttpsURLConnection)new URL(address).openConnection();c.setInstanceFollowRedirects(false);c.setRequestMethod("GET");c.setConnectTimeout(15000);c.setReadTimeout(20000);c.setUseCaches(false);
-        c.setRequestProperty("Accept","application/json");c.setRequestProperty("Cache-Control","no-cache");c.setRequestProperty("User-Agent","NanpureOwner/1.0.0 Android");
+        c.setRequestProperty("Accept","application/json");c.setRequestProperty("Cache-Control","no-cache");c.setRequestProperty("User-Agent","PareasobiOwner/1.1.0 Android");
         if(address.startsWith(API+"/")){c.setRequestProperty("Origin","https://atugari.github.io");if(key!=null&&!key.isEmpty())c.setRequestProperty("Authorization","Bearer "+key);}
         try{int status=c.getResponseCode();if(status==401||status==403)throw new AccessException();if(status<200||status>=300)throw new ApiException(status);
             try(InputStream in=c.getInputStream()){return new JSONObject(new String(readBytes(in,2*1024*1024),StandardCharsets.UTF_8));}
