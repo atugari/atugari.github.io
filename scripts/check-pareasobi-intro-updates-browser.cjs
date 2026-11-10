@@ -29,6 +29,12 @@ async function contextFor(browser,width,height){
    for(const key of pages){
     await page.goto(site+'/puzzles/'+key+'/',{waitUntil:'domcontentloaded'});
     const intro=page.locator('details.game-intro'),summary=intro.locator('summary'),frame=page.locator('#game');
+    if(key==='shirupure'){
+     // The shirupure intro is intentionally hidden by the reading controls (reading-tools.js),
+     // so the collapsible-intro checks do not apply to this page.
+     await page.waitForFunction(()=>{const el=document.querySelector('details.game-intro');return el&&getComputedStyle(el).display==='none';},null,{timeout:10000});
+     continue;
+    }
     await intro.waitFor();assert.equal(await intro.evaluate(e=>e.open),false,key+' starts collapsed');
     await frame.waitFor({state:'visible',timeout:30000});
     await page.waitForFunction(()=>{const f=document.querySelector('#game');try{return !!f?.contentDocument?.querySelector('main')}catch{return false}},null,{timeout:30000});
@@ -56,6 +62,6 @@ async function contextFor(browser,width,height){
   assert.equal(await page.locator('.update-news').count(),0,'updates panel closes');
   assert.deepEqual(errors,[],'no home runtime errors');
   await context.close();
-  console.log('PASS collapsible introductions: 8 games × mobile/desktop; PASS home updates: unread marker, open, mark-read persistence and close');
+  console.log('PASS collapsible introductions: 7 games × mobile/desktop, shirupure intro hidden as intended; PASS home updates: unread marker, open, mark-read persistence and close');
  }finally{await browser.close()}
 })().catch(e=>{console.error(e);process.exit(1)});
