@@ -28,6 +28,7 @@ jobs:
       contents: read
     outputs:
       notebook: ${{ steps.scope.outputs.notebook }}
+      reading: ${{ steps.scope.outputs.reading }}
       wado: ${{ steps.scope.outputs.wado }}
       corpus: ${{ steps.scope.outputs.corpus }}
       learning: ${{ steps.scope.outputs.learning }}
@@ -118,6 +119,12 @@ jobs:
 
       - name: Publish updated Nanpure reading controls after release integrity checks
         run: cp scripts/client-overrides/public/reading-tools.js _site/nanpure/assets/reading-tools.js
+
+      - name: Check language and furigana controls
+        if: needs.changes.outputs.reading == 'true'
+        run: |
+          node --check scripts/client-overrides/public/reading-tools.js
+          node scripts/check-reading-tools.cjs "$RUNNER_TEMP/nanpure-browser/node_modules/linkedom"
 
       - name: Check PareAsobi analytics in assembled Pages output
         run: node scripts/check-pareasobi-analytics.cjs _site
