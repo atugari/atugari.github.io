@@ -1,6 +1,10 @@
 'use strict';
 // Prune old Nanpure releases out of the assembled Pages artifact (_site).
 //
+// Invoked from scripts/enhance-nanpure.py while the site is assembled (the
+// workflow file itself cannot be changed through the API, so the hook lives
+// here instead). Only the assembled _site is pruned, never the repository.
+//
 // Why this exists: every Nanpure release is a full copy (~30MB) and the repo
 // keeps all of them, so the assembled site grew past 2GB and the GitHub Pages
 // deployment started timing out ("Timeout reached, aborting!"). Pages sites
