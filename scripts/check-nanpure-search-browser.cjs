@@ -51,8 +51,8 @@ async function setup(browser,javaScriptEnabled=true){
     assert.equal(await support.textContent(),'月100円で製作者を応援しよう♫');
     assert.equal(await game.locator('#search-directory,.language-directory').count(),0);
     assert(await support.evaluate(link=>[...document.querySelectorAll('body a,body button,body h1,body h2,body p')].every(node=>
-      !(link.compareDocumentPosition(node)&Node.DOCUMENT_POSITION_FOLLOWING)||!node.getClientRects().length
-    )),'The support link is the last visible home content');
+      node.closest('.nanpure-site-footer')||!(link.compareDocumentPosition(node)&Node.DOCUMENT_POSITION_FOLLOWING)||!node.getClientRects().length
+    )),'The support link is the last visible home content before the footer');
     await game.locator('.main-choice').click();await game.locator('.site-shell.mode-practice').waitFor();
     assert.equal(await game.locator('#search-directory').isVisible(),false,'Directory must not intrude on gameplay');
     await game.goto(origin+'/nanpure/?lang=en&view=privacy');await game.locator('.legal').waitFor();
