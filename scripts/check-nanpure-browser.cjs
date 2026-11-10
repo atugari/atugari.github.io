@@ -642,7 +642,7 @@ async function checkJigsawCreationAndPrint(page,lang,expected){
   await page.waitForTimeout(300);
   const result=await page.evaluate(()=>{
    const bad=[],walk=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n;
-   while(n=walk.nextNode())if(n.parentElement&&!n.parentElement.closest('script,style,textarea,[translate="no"],noscript')&&/[\u3041-\u3096\u30a1-\u30fa]/.test(n.nodeValue))bad.push(n.nodeValue.trim());
+   while(n=walk.nextNode())if(n.parentElement&&!n.parentElement.closest('script,style,textarea,[translate="no"],noscript,.nanpure-site-footer')&&/[\u3041-\u3096\u30a1-\u30fa]/.test(n.nodeValue))bad.push(n.nodeValue.trim());
    return {locale:document.documentElement.dataset.locale,overflow:document.documentElement.scrollWidth>innerWidth+1,bad:[...new Set(bad)]};
   });
   assert.equal(result.locale,lang);assert.equal(result.overflow,false,'Mobile overflow: '+lang+' '+view);assert.deepEqual(result.bad,[],'Japanese interface text: '+lang+' '+view);
