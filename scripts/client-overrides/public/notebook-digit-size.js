@@ -11,7 +11,7 @@
   const digits=board.querySelectorAll('.cell>span.np-workspace-digit'),contentLength=Array.from(digits).reduce((n,span)=>n+span.textContent.length,0);
   const signature=[scale,workspace,board.dataset.digitSize,board.className,board.clientWidth,board.clientHeight,cell.clientWidth,cell.clientHeight,cells.length,digits.length,contentLength].join('|');
   if(signature!==last){last=signature;
-   const columns=getComputedStyle(board).gridTemplateColumns.trim().split(/\\s+/).length||9,digitCount=String(board.classList.contains('hundred-board')?100:columns).length;
+   const columns=getComputedStyle(board).gridTemplateColumns.trim().split(/\s+/).length||9,digitCount=String(board.classList.contains('hundred-board')?100:columns).length;
    const limit=Math.max(1,Math.min(cell.clientHeight*(board.querySelector('.cage-label') ? .7 : .88),cell.clientWidth/(digitCount*.64)));
    for(const span of digits){
     if(span.classList.contains('notes')||span.classList.contains('hundred-notes')||span.classList.contains('cage-label')||span.classList.contains('cage-border'))continue;
