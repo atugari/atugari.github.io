@@ -46,7 +46,7 @@ test('dictionary text and reviewed test data still select Wado verification',()=
 });
 test('reading controls changes run only the notebook checks',()=>{
   const p=plan(['scripts/client-overrides/public/reading-tools.js']);
-  assert.equal(p.notebook,true);assert.equal(p.wado,false);assert.equal(p.learning,false);assert.equal(p.corpus,false);assert.equal(p.full,false);
+  assert.equal(p.notebook,false);assert.equal(p.reading,true);assert.equal(p.wado,false);assert.equal(p.learning,false);assert.equal(p.corpus,false);assert.equal(p.full,false);
 });
 test('shared language and theme changes also test the affected standalone puzzles',()=>{
   const p=plan(['scripts/client-overrides/public/site-theme.js']);assert.equal(p.notebook,true);assert.equal(p.wado,true);assert.equal(p.learning,true);assert.equal(p.corpus,false);
