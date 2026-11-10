@@ -24,7 +24,7 @@ function metadata(value){
   return Object.fromEntries(Object.keys(value).sort().filter(k=>!['version','announcementVersion','baseRelease','base','files','sources','sourceCommit'].includes(k)&&!k.endsWith('Sha256')).map(k=>[k,metadata(value[k])]));
 }
 function planChecks({paths,readAt,sameBlob=()=>false,base='base',head='head',forceFull=false}){
-  const selected={notebook:false,wado:false,corpus:false,learning:false,full:false},semantic=[];
+  const selected={notebook:false,reading:false,wado:false,corpus:false,learning:false,full:false},semantic=[];
   const all=()=>{for(const key of Object.keys(selected))selected[key]=true;};
   if(forceFull){all();return {...selected,semantic:['manual full verification']};}
   let oldVersion,newVersion;
@@ -65,7 +65,8 @@ function planChecks({paths,readAt,sameBlob=()=>false,base='base',head='head',for
     if(/(?:^|\/)(?:wado[^/]*|kanji[^/]*)(?:\/|\.)|^scripts\/check-nanpure-wado/.test(p)){selected.wado=true;continue;}
     if(/^nanpure\/learn\/|^scripts\/check-nanpure-learning/.test(p)){selected.learning=true;continue;}
     if(/^docs\/.*\.(?:md|txt)$/.test(p)||/(?:^|\/)(?:README|LICENSE|COPYING)(?:\.[^/]+)?$/i.test(p))continue;
-    if(/^scripts\/i18n\/|(?:site-theme|ui-text|reading-tools|language-layout)/.test(p)){selected.notebook=true;selected.wado=true;selected.learning=true;continue;}
+    if(/reading-tools/.test(p)){selected.reading=true;continue;}
+    if(/^scripts\/i18n\/|(?:site-theme|ui-text|language-layout)/.test(p)){selected.notebook=true;selected.wado=true;selected.learning=true;continue;}
     if(p==='scripts/seo/build-seo.mjs'){selected.notebook=true;continue;}
     if(/^scripts\/client-overrides\/(?:app|public)\/|^scripts\/check-(?:nanpure|pareasobi|community|reading)|^nanpure\/(?:index\.html|gallery\/|exhibitions\/)|^puzzles\//.test(p)){selected.notebook=true;continue;}
     if(/^kuroshiro\//.test(p)||p==='plaza.html')continue; // Kuroshiro is built on every publication.
@@ -91,7 +92,7 @@ function selectFromGit({base,head,forceFull=false}={}){
 module.exports={normalize,metadata,planChecks,selectFromGit};
 if(require.main===module){
   let result;try{result=selectFromGit({base:process.env.BASE_SHA,head:process.env.HEAD_SHA,forceFull:process.env.FULL_CHECK==='true'});}catch(error){console.warn('Cannot safely narrow checks:',error.message);result={notebook:true,wado:true,corpus:true,learning:true,full:true,semantic:['change detection unavailable']};}
-  if(process.env.GITHUB_OUTPUT)for(const key of ['notebook','wado','corpus','learning','full'])fs.appendFileSync(process.env.GITHUB_OUTPUT,key+'='+result[key]+'\n');
+  if(process.env.GITHUB_OUTPUT)for(const key of ['notebook','reading','wado','corpus','learning','full'])fs.appendFileSync(process.env.GITHUB_OUTPUT,key+'='+result[key]+'\n');
   if(process.env.GITHUB_STEP_SUMMARY)fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,'## Selected publication checks\n\nGeneration assistance, API, release integrity and selector tests always run.\n\n'+['notebook','wado','corpus','learning','full'].map(k=>'- '+k+': '+result[k]).join('\n')+'\n');
   console.log(JSON.stringify(result,null,2));
 }

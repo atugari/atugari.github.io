@@ -44,6 +44,10 @@ test('dictionary text and reviewed test data still select Wado verification',()=
   for(const p of ['scripts/wado/word-list.txt','docs/wado-verification-20261027/hint-matrix.json'])assert.equal(plan([p]).wado,true);
   assert.equal(plan(['unknown-runtime-config.txt']).full,true);
 });
+test('reading controls changes run only the notebook checks',()=>{
+  const p=plan(['scripts/client-overrides/public/reading-tools.js']);
+  assert.equal(p.notebook,false);assert.equal(p.reading,true);assert.equal(p.wado,false);assert.equal(p.learning,false);assert.equal(p.corpus,false);assert.equal(p.full,false);
+});
 test('shared language and theme changes also test the affected standalone puzzles',()=>{
   const p=plan(['scripts/client-overrides/public/site-theme.js']);assert.equal(p.notebook,true);assert.equal(p.wado,true);assert.equal(p.learning,true);assert.equal(p.corpus,false);
 });
