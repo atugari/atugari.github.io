@@ -9,6 +9,15 @@ from io import BytesIO
 
 root = Path(sys.argv[1]) if len(sys.argv) > 1 else Path('.')
 manifest = json.loads((root / 'nanpure/release-manifest.json').read_text())
+# Drop old releases from the published artifact before the audio packages
+# are unpacked and the manifest is verified. The repo keeps every release,
+# but publishing all of them made the site over 2GB and the Pages deployment
+# timed out, so only the newest releases plus the ones the site and its
+# checks still use are published. Only the assembled _site is pruned, never
+# the repository itself.
+if root.name == '_site':
+    import subprocess
+    subprocess.run(['node', str(Path(__file__).resolve().parent / 'prune-old-nanpure-releases.cjs'), str(root)], check=True)
 assert re.fullmatch(r'\d{4}\.\d{2}\.\d{2}\.\d+', manifest['version'])
 for package in (root/'nanpure-audio').glob('*/index.json'):
     metadata=json.loads(package.read_text())
