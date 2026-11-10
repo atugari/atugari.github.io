@@ -1,0 +1,20 @@
+{
+  "name": "パレあそび（丸場所記憶ゲーム）",
+  "short_name": "パレあそび",
+  "lang": "ja",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f7f6f2",
+  "theme_color": "#1D9E75",
+  "description": "パレあそび（ぱれあそび／パレアソビ）の丸場所記憶ゲーム。丸が消えた場所を5秒以内に当て、3ステージの合計スコアでランキングを競えます。",
+  "icons": [
+    {
+      "src": "./pare-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
