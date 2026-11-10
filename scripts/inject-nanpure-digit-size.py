@@ -14,7 +14,7 @@ html = page.read_text()
 tag = f'<script defer src="/nanpure/assets/notebook-digit-size.js?v=1"></script>'
 if tag not in html:
     assert "</body>" in html, f"Missing body close in {page}"
-    html = html.replace("</body>", tag + "\\n</body>", 1)
+    html = html.replace("</body>", tag + "\n</body>", 1)
     page.write_text(html)
 assert asset.is_file() and tag in page.read_text()
 print(f"Injected notebook digit-size correction for Nanpure {version}.")
