@@ -14,7 +14,7 @@
   if(signature===last)return;last=signature;
   const cells=Array.from(board.querySelectorAll('.cell'));
   const cell=cells[0];if(!cell)return;
-  const columns=getComputedStyle(board).gridTemplateColumns.trim().split(/\\s+/).length||9;
+  const columns=getComputedStyle(board).gridTemplateColumns.trim().split(/\s+/).length||9;
   const digitCount=String(board.classList.contains('hundred-board')?100:columns).length;
   const limit=Math.max(1,Math.min(cell.clientHeight*(board.querySelector('.cage-label') ? 0.7 : 0.88),cell.clientWidth/(digitCount*.64)));
   for(const span of board.querySelectorAll('.cell>span.np-workspace-digit')){
