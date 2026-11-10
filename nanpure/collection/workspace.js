@@ -189,8 +189,11 @@
  new MutationObserver(records=>{if(records.some(r=>r.addedNodes.length||r.removedNodes.length))schedule();}).observe(document.getElementById('app'),{childList:true,subtree:true});
  for(const type of ['resize','orientationchange'])w.addEventListener(type,()=>{finishDrag();requestAnimationFrame(()=>refresh());});
  document.addEventListener('np-board-viewchange',scheduleReadability);
- let observedKeyScale=document.documentElement.style.getPropertyValue('--np-key-scale');
- new MutationObserver(()=>{const next=document.documentElement.style.getPropertyValue('--np-key-scale');if(next!==observedKeyScale){observedKeyScale=next;schedule();}}).observe(document.documentElement,{attributes:true,attributeFilter:['style']});
+ let observedKeyScale=document.documentElement.style.getPropertyValue('--np-key-scale'),observedDigitSize=document.documentElement.dataset.digitSize;
+ new MutationObserver(()=>{
+  const nextKeyScale=document.documentElement.style.getPropertyValue('--np-key-scale'),nextDigitSize=document.documentElement.dataset.digitSize;
+  if(nextKeyScale!==observedKeyScale||nextDigitSize!==observedDigitSize){observedKeyScale=nextKeyScale;observedDigitSize=nextDigitSize;schedule();}
+ }).observe(document.documentElement,{attributes:true,attributeFilter:['style','data-digit-size']});
  w.addEventListener('blur',finishDrag);w.addEventListener('pagehide',finishDrag);document.addEventListener('visibilitychange',()=>{if(document.hidden)finishDrag();});
  w.NPCollectionWorkspace={refresh};w.NPPlayWorkspace=w.NPCollectionWorkspace;mount();
 })(window);
