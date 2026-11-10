@@ -45,32 +45,22 @@
   board.dataset.digitSize=String(prefs.digitSize);
   board.style.setProperty('--np-workspace-digit-scale',String(prefs.digitSize/100));
   const digitsInCells=Array.from(board.querySelectorAll('.cell>span:not(.notes,.hundred-notes,.cage-label,.cage-border)')).filter(text=>!text.children.length&&/^\d+$/.test(text.textContent.trim()));
+  for(const text of digitsInCells)text.classList.add('np-workspace-digit');
   const cell=board.querySelector('.cell');
-  let limit=Infinity;
   if(cell){
    const columns=getComputedStyle(board).gridTemplateColumns.trim().split(/\s+/).length;
    const digits=String(board.classList.contains('hundred-board')?100:columns).length;
-   limit=Math.min(cell.clientHeight*(board.querySelector('.cage-label') ? .7 : .88),cell.clientWidth/(digits*.64));
+   const limit=Math.min(cell.clientHeight*(board.querySelector('.cage-label') ? .7 : .88),cell.clientWidth/(digits*.64));
    board.style.setProperty('--np-workspace-digit-limit',px(Math.max(1,limit)));
-  }
-  // Capture the cell's actual base font before adding our class. The legacy
-  // small/normal/large selector only matches spans without a class, so adding
-  // np-workspace-digit otherwise silently disables that preference.
-  const displayScale={small:.85,normal:1,large:1.15}[document.documentElement.dataset.digitSize]||1;
-  for(const text of digitsInCells){
-   text.classList.add('np-workspace-digit');
-   const parentSize=parseFloat(getComputedStyle(text.parentElement).fontSize)||16;
-   const desired=parentSize*displayScale*prefs.digitSize/100;
-   let fitted=Math.min(desired,limit);
-   text.style.setProperty('font-size',px(Math.max(1,fitted)),'important');
-   text.style.setProperty('line-height','1','important');
-   text.style.setProperty('white-space','nowrap','important');
-   // Keep multi-digit values inside their cell even with large settings.
-   const rect=text.getBoundingClientRect(),box=text.parentElement.getBoundingClientRect();
-   const available=Math.max(1,box.width-Math.min(2,box.width*.04));
-   if(rect.width>available&&rect.width>0){
-    fitted=Math.max(1,fitted*available/rect.width);
-    text.style.setProperty('font-size',px(fitted),'important');
+   if(prefs.digitSize!==100){
+    // Font families and uneven cell borders have different glyph widths. Check
+    // the rendered numeric spans as well, rather than trusting a character ratio.
+    let fitted=limit;
+    for(const text of digitsInCells){
+     const rect=text.getBoundingClientRect(),box=text.parentElement.getBoundingClientRect(),available=Math.max(1,box.width-Math.min(2,box.width*.04));
+     if(rect.width>available)fitted=Math.min(fitted,parseFloat(getComputedStyle(text).fontSize)*available/rect.width);
+    }
+    if(fitted<limit)board.style.setProperty('--np-workspace-digit-limit',px(Math.max(1,fitted)));
    }
   }
   // Linked boards draw their main digits in SVG; candidate notes and clues keep
@@ -189,11 +179,8 @@
  new MutationObserver(records=>{if(records.some(r=>r.addedNodes.length||r.removedNodes.length))schedule();}).observe(document.getElementById('app'),{childList:true,subtree:true});
  for(const type of ['resize','orientationchange'])w.addEventListener(type,()=>{finishDrag();requestAnimationFrame(()=>refresh());});
  document.addEventListener('np-board-viewchange',scheduleReadability);
- let observedKeyScale=document.documentElement.style.getPropertyValue('--np-key-scale'),observedDigitSize=document.documentElement.dataset.digitSize;
- new MutationObserver(()=>{
-  const nextKeyScale=document.documentElement.style.getPropertyValue('--np-key-scale'),nextDigitSize=document.documentElement.dataset.digitSize;
-  if(nextKeyScale!==observedKeyScale||nextDigitSize!==observedDigitSize){observedKeyScale=nextKeyScale;observedDigitSize=nextDigitSize;schedule();}
- }).observe(document.documentElement,{attributes:true,attributeFilter:['style','data-digit-size']});
+ let observedKeyScale=document.documentElement.style.getPropertyValue('--np-key-scale');
+ new MutationObserver(()=>{const next=document.documentElement.style.getPropertyValue('--np-key-scale');if(next!==observedKeyScale){observedKeyScale=next;schedule();}}).observe(document.documentElement,{attributes:true,attributeFilter:['style']});
  w.addEventListener('blur',finishDrag);w.addEventListener('pagehide',finishDrag);document.addEventListener('visibilitychange',()=>{if(document.hidden)finishDrag();});
  w.NPCollectionWorkspace={refresh};w.NPPlayWorkspace=w.NPCollectionWorkspace;mount();
 })(window);
