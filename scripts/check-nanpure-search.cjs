@@ -53,9 +53,10 @@ for(const [code,url] of urls){
       assert.equal(target.pathname,'/nanpure/');
       assert.equal(target.searchParams.get('lang'),code,url+' game language retained');
     }
-    // The banner loader is a deferred ad script: it adds no content and the
-    // page stays readable without it, so it is the one runtime script allowed here.
-    assert.equal(document.querySelectorAll('script:not([type="application/ld+json"]):not([src="/nanpure/assets/guide-banner.js"])').length,0,'Static language pages must remain readable without runtime scripts');
+    // The banner loader and the AdSense verification script are async ad
+    // scripts: they add no content and the page stays readable without
+    // them, so they are the only runtime scripts allowed here.
+    assert.equal(document.querySelectorAll('script:not([type="application/ld+json"]):not([src="/nanpure/assets/guide-banner.js"]):not([src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5560584474086870"])').length,0,'Static language pages must remain readable without runtime scripts');
   }
 }
 const {document:daily}=parseHTML(fs.readFileSync(path.join(root,'nanpure/daily-sudoku/index.html'),'utf8'));
