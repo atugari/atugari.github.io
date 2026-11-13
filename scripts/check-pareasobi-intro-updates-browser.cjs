@@ -9,6 +9,7 @@ async function contextFor(browser,width,height){
  await context.addInitScript(()=>{Object.defineProperty(navigator,'doNotTrack',{get:()=> '1'});localStorage.removeItem('np-release-seen');});
  await context.route('**/*',async route=>{
   const u=new URL(route.request().url());
+  if(u.hostname==='pagead2.googlesyndication.com')return route.fulfill({status:200,contentType:'application/javascript',body:'/* AdSense is disabled in automated checks. */'});
   if(u.origin===site){
    const relative=decodeURIComponent(u.pathname).replace(/^\//,'');
    const file=path.join(root,relative+(u.pathname.endsWith('/')?'index.html':''));
