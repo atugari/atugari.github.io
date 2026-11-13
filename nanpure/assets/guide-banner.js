@@ -45,11 +45,15 @@
     return;
   }
 
-  const script = document.createElement('script');
-  script.async = true;
-  script.crossOrigin = 'anonymous';
-  script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + client;
-  script.addEventListener('error', () => banner.remove());
-  document.head.append(script);
+  // The AdSense verification script may already be in <head>; do not load
+  // the library twice.
+  if (!document.querySelector('script[src*="adsbygoogle.js"]')) {
+    const script = document.createElement('script');
+    script.async = true;
+    script.crossOrigin = 'anonymous';
+    script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + client;
+    script.addEventListener('error', () => banner.remove());
+    document.head.append(script);
+  }
   (window.adsbygoogle = window.adsbygoogle || []).push({});
 })();

@@ -48,7 +48,10 @@ async function assertDisabled(page, unit, requests) {
   assert.equal(await page.locator('.guide-banner').count(), 0);
   assert.equal(await unit.count(), 0);
   assert.equal(await page.evaluate(() => window.adsbygoogle), undefined);
-  assert.deepEqual(adRequests(requests), []);
+  // The AdSense verification script in <head> loads the library once on
+  // pages that carry it; the banner loader must not add a second copy.
+  const headScript = await page.evaluate(() => !!document.querySelector('script[src*="adsbygoogle.js"]'));
+  assert.deepEqual(adRequests(requests), headScript ? [googleScript] : []);
 }
 
 async function assertActive(page, unit, requests, sourceForTest) {
