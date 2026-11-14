@@ -16,8 +16,17 @@ class PromotionScheduleTests(unittest.TestCase):
         for day_index in range(7):
             day = f"2026-11-{14 + day_index:02d}"
             seen.extend(item["language"] for item in plan_day(day, sequence_start=day_index * 3))
-        self.assertEqual(seen[:len(LANGUAGES)], list(LANGUAGES))
+        # The planner returns chronological order, not rotation order.
         self.assertEqual(len(seen), 21)
+        chronological = sorted(
+            (item["sequence"], item["language"])
+            for day_index in range(7)
+            for item in plan_day(
+                f"2026-11-{14 + day_index:02d}",
+                sequence_start=day_index * 3,
+            )
+        )
+        self.assertEqual([language for _, language in chronological[:20]], list(LANGUAGES))
 
     def test_all_local_times_are_audience_evening(self):
         plan = plan_day("2026-11-14", sequence_start=12)
