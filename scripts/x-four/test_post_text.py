@@ -1,5 +1,4 @@
 from datetime import date, timedelta
-from pathlib import Path
 import unittest
 from daily_plan import daily_plan
 from post_text import render_text, weighted_length, SLOT_COPY
@@ -11,20 +10,21 @@ class PostDateTests(unittest.TestCase):
             while day.year == year:
                 with self.subTest(day=day):
                     for slot in SLOT_COPY:
-                        self.assertEqual(render_text(day.isoformat(), slot).splitlines()[0], f'【今日の4問｜{day.month}/{day.day}】')
+                        self.assertEqual(render_text(day.isoformat(), slot).splitlines()[0], f'【パレあそび｜今日の4問｜{day.month}/{day.day}】')
                 day += timedelta(days=1)
 
-    def test_all_four_slots_cover_distinct_search_phrases_and_hashtags(self):
+    def test_all_four_slots_cover_pareasobi_and_multiple_puzzle_types(self):
         day = '2026-11-06'
         posts = [render_text(day, slot) for slot in SLOT_COPY]
         self.assertEqual(len(set(posts)), 4)
         combined = ''.join(posts)
-        for phrase in ('ナンプレ', '数独', '無料パズル', '脳トレ', '問題集', '頭の体操', '毎日更新'):
+        for phrase in ('パレあそび', 'ナンプレ', 'クロスワード', '無料パズル', '脳トレ', '頭の体操', '毎日更新'):
             self.assertIn(phrase, combined)
+        self.assertNotIn('ナンプレ帳', combined)
         for slot, (_, tags) in SLOT_COPY.items():
             self.assertIn(tags, render_text(day, slot))
 
-    def test_no_url_is_included_in_any_slot(self):
+    def test_no_url_is_included_in_any_post_text(self):
         for slot in SLOT_COPY:
             text = render_text('2026-11-06', slot)
             self.assertNotIn('http://', text)
@@ -39,7 +39,7 @@ class PostDateTests(unittest.TestCase):
                 with self.subTest(day=day, slot=slot):
                     self.assertLessEqual(weighted_length(text), 280)
 
-    def test_no_url_mode_is_supported(self):
+    def test_old_nanpurecho_url_is_not_in_post_text(self):
         text = render_text('2026-11-06', '08:00')
         self.assertNotIn('https://atugari.github.io/nanpure/', text)
 
