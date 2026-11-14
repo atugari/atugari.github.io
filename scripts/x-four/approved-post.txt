@@ -3,5 +3,4 @@
 {puzzle_names}に挑戦！
 何問解ける？解けた数を返信してね。
 無料プレイ・問題作成・印刷はこちら
-{url_line}
 {hashtags}
