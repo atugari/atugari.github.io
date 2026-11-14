@@ -1,5 +1,5 @@
 from pathlib import Path
-import json,os,sys,hashlib
+import json,sys,hashlib
 from post_text import render_text,weighted_length
 from post_schedule import publication_key
 from daily_plan import daily_plan
@@ -29,12 +29,11 @@ def alt_text(item,p,number):
   for d,label in [(0,'ヨコ'),(1,'タテ')]:
    text+=label+'：'+'／'.join(str(e['num'])+'('+str(e['r']+1)+','+str(e['c']+1)+')'+e['clue'] for e in sorted(p['entries'],key=lambda e:e['num']) if e['d']==d)+'。'
  else:raise ValueError('Unknown puzzle family')
- return text+'画像下部に https://atugari.github.io/nanpure/ とQRコード。検索のヒントは「ナンプレ帳 atugari」。'
+ return text+'検索のヒントは「ナンプレ帳 atugari」。'
 
 alts=[alt_text(item,json.loads((root/item['data_file']).read_text()),'①②③④'[i]) for i,item in enumerate(questions)]
 assert all(0<len(a)<=1000 for a in alts),[len(a) for a in alts]
-include_url=os.environ.get('X_FOUR_INCLUDE_URL','true').lower()=='true'
-text=render_text(day,include_url,meta['slot'])
+text=render_text(day,meta['slot'])
 names=[item['file'] for item in questions]
 assert {p.name for p in out.glob('*.png')}==set(names)
 for name in names:assert 0<(out/name).stat().st_size<5*1024*1024

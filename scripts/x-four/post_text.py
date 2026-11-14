@@ -10,7 +10,7 @@ SLOT_COPY = {
     '21:00': ('数字パズル・言葉パズルで夜の頭の体操！', '#パズル #毎日更新 #脳トレ'),
 }
 
-def render_text(day, include_url=False, slot='08:00'):
+def render_text(day, slot='08:00'):
     if slot not in SLOT_COPY:
         raise ValueError('Invalid publication slot')
     parsed = date.fromisoformat(day)
@@ -20,7 +20,7 @@ def render_text(day, include_url=False, slot='08:00'):
     hook, hashtags = SLOT_COPY[slot]
     text = text.replace('{date_label}', label).replace('{slot_message}', hook)
     text = text.replace('{puzzle_names}', names).replace('{hashtags}', hashtags)
-    text = text.replace('{url_line}', 'https://atugari.github.io/nanpure/' if include_url else '')
+    text = text.replace('{url_line}', '')
     return text
 
 def weighted_length(text):
