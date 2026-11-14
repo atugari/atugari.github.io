@@ -8,7 +8,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 CATALOG_PATH = ROOT / "copy_catalog.json"
-URL_RE = re.compile(r"https://atugari\\.github\\.io/plaza\\.html")
+URL_RE = re.compile(r"https://atugari\.github\.io/plaza\.html")
 
 
 def load_catalog(path: Path = CATALOG_PATH) -> dict:
@@ -57,7 +57,7 @@ def build_post(locale: str, *, variant: int, focus: int, catalog: dict | None = 
     if variant not in range(3) or focus not in range(4):
         raise ValueError("variant and focus must be in their supported ranges")
     entry = data["posts_per_language"][locale]
-    text = f'{entry["intro"][variant]} {entry["spotlight"][focus]}\\n{entry["cta"]} {data["url"]}'
+    text = f'{entry["intro"][variant]} {entry["spotlight"][focus]}\n{entry["cta"]} {data["url"]}'
     if weighted_length(text) > 280:
         raise ValueError(f"Post exceeds the 280-character budget: {locale} ({weighted_length(text)})")
     if not URL_RE.search(text):
