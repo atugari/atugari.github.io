@@ -1,0 +1,427 @@
+{
+  "schema_version": 1,
+  "site_name": "パレあそび",
+  "url": "https://atugari.github.io/plaza.html",
+  "posts_per_language": {
+    "ja": {
+      "name": "日本語",
+      "intro": [
+        "4種類のパズルを楽しめる「パレあそび」。気分に合わせて遊ぶパズルを選ぼう！",
+        "ひらめく楽しさを、ひとつの場所に。パレあそびで気軽にパズルに挑戦！",
+        "今日はどのパズルにする？パレあそびには個性の違う4つのパズルがそろっています。"
+      ],
+      "games": [
+        "和同開珎",
+        "ナンプレ帳",
+        "クロスワード",
+        "シルプレ"
+      ],
+      "cta": "遊んでみよう！",
+      "spotlight": [
+        "漢字から言葉をひらめく和同開珎。",
+        "じっくり考えるナンプレ帳。",
+        "言葉を交差させて解くクロスワード。",
+        "印と区切りを考えるオリジナルパズル、シルプレ。"
+      ]
+    },
+    "en": {
+      "name": "English",
+      "intro": [
+        "Four kinds of puzzles, one place. Pick your next challenge at Pareasobi!",
+        "Ready for a little brain workout? Explore four different puzzles at Pareasobi.",
+        "What will you solve today? Find a puzzle that fits your mood at Pareasobi."
+      ],
+      "games": [
+        "Wadōkaichin (Japanese kanji word puzzle)",
+        "Sudoku",
+        "Crossword",
+        "Shirupure (original symbol logic puzzle)"
+      ],
+      "cta": "Play here:",
+      "spotlight": [
+        "Discover Wadōkaichin, a puzzle built around Japanese kanji and words.",
+        "Enjoy a thoughtful Sudoku challenge.",
+        "Connect clues and answers in a crossword.",
+        "Try Shirupure, an original logic puzzle using symbols and regions."
+      ]
+    },
+    "zh-hans": {
+      "name": "简体中文",
+      "intro": [
+        "一个地方，四种不同的益智挑战。来 Pareasobi 选一道喜欢的谜题吧！",
+        "想动动脑筋吗？Pareasobi 汇集了四种不同类型的益智游戏。",
+        "今天想挑战哪一种？来 Pareasobi 找到适合自己的谜题。"
+      ],
+      "games": [
+        "和同开珎（日文汉字文字谜题）",
+        "数独",
+        "填字游戏",
+        "Shirupure（原创符号逻辑谜题）"
+      ],
+      "cta": "开始游玩：",
+      "spotlight": [
+        "体验以日文汉字和词语为主题的和同开珎。",
+        "来挑战数独，享受推理的乐趣。",
+        "根据提示填写答案，完成填字游戏。",
+        "试试使用符号与区域进行推理的原创谜题 Shirupure。"
+      ]
+    },
+    "zh-hant": {
+      "name": "繁體中文",
+      "intro": [
+        "一個地方，四種不同的益智挑戰。來 Pareasobi 選一道喜歡的謎題吧！",
+        "想動動腦筋嗎？Pareasobi 集合了四種不同類型的益智遊戲。",
+        "今天想挑戰哪一種？來 Pareasobi 找到適合自己的謎題。"
+      ],
+      "games": [
+        "和同開珎（日文漢字文字謎題）",
+        "數獨",
+        "填字遊戲",
+        "Shirupure（原創符號邏輯謎題）"
+      ],
+      "cta": "開始遊玩：",
+      "spotlight": [
+        "體驗以日文漢字和詞語為主題的和同開珎。",
+        "來挑戰數獨，享受推理的樂趣。",
+        "根據提示填入答案，完成填字遊戲。",
+        "試試使用符號與區域進行推理的原創謎題 Shirupure。"
+      ]
+    },
+    "ko": {
+      "name": "한국어",
+      "intro": [
+        "한곳에서 즐기는 네 가지 퍼즐! Pareasobi에서 마음에 드는 도전을 골라 보세요.",
+        "잠깐 머리를 써 볼까요? Pareasobi에서 서로 다른 네 가지 퍼즐을 만나 보세요.",
+        "오늘은 어떤 퍼즐을 풀어 볼까요? Pareasobi에서 취향에 맞는 퍼즐을 찾아보세요."
+      ],
+      "games": [
+        "와도카이친(일본 한자 단어 퍼즐)",
+        "스도쿠",
+        "크로스워드",
+        "시루푸레(오리지널 기호 논리 퍼즐)"
+      ],
+      "cta": "지금 플레이:",
+      "spotlight": [
+        "일본 한자와 단어를 활용하는 와도카이친을 만나 보세요.",
+        "차근차근 추리하며 스도쿠에 도전해 보세요.",
+        "힌트를 따라 단어를 채우는 크로스워드를 즐겨 보세요.",
+        "기호와 영역을 활용하는 오리지널 논리 퍼즐 시루푸레에 도전해 보세요."
+      ]
+    },
+    "es": {
+      "name": "Español",
+      "intro": [
+        "Cuatro tipos de pasatiempos en un solo lugar. ¡Elige tu próximo reto en Pareasobi!",
+        "¿Te apetece ejercitar la mente? Descubre cuatro rompecabezas diferentes en Pareasobi.",
+        "¿Qué vas a resolver hoy? Encuentra un pasatiempo a tu gusto en Pareasobi."
+      ],
+      "games": [
+        "Wadōkaichin (juego japonés de kanji y palabras)",
+        "Sudoku",
+        "Crucigrama",
+        "Shirupure (rompecabezas lógico original con símbolos)"
+      ],
+      "cta": "Juega aquí:",
+      "spotlight": [
+        "Descubre Wadōkaichin, un juego basado en kanji y palabras japonesas.",
+        "Disfruta de un reto de Sudoku para pensar con calma.",
+        "Completa el crucigrama relacionando pistas y palabras.",
+        "Prueba Shirupure, un rompecabezas lógico original con símbolos y regiones."
+      ]
+    },
+    "fr": {
+      "name": "Français",
+      "intro": [
+        "Quatre types de casse-têtes au même endroit. Choisissez votre prochain défi sur Pareasobi !",
+        "Envie de faire travailler vos méninges ? Découvrez quatre puzzles différents sur Pareasobi.",
+        "Quel puzzle allez-vous résoudre aujourd’hui ? Trouvez votre défi sur Pareasobi."
+      ],
+      "games": [
+        "Wadōkaichin (jeu japonais de kanji et de mots)",
+        "Sudoku",
+        "Mots croisés",
+        "Shirupure (jeu de logique original avec symboles)"
+      ],
+      "cta": "Jouez ici :",
+      "spotlight": [
+        "Découvrez le Wadōkaichin, un jeu autour des kanji et des mots japonais.",
+        "Relevez un défi de Sudoku à votre rythme.",
+        "Reliez les indices et les réponses dans une grille de mots croisés.",
+        "Essayez Shirupure, un jeu de logique original fondé sur des symboles et des zones."
+      ]
+    },
+    "de": {
+      "name": "Deutsch",
+      "intro": [
+        "Vier Rätselarten an einem Ort. Finde deine nächste Herausforderung bei Pareasobi!",
+        "Lust auf etwas Denksport? Entdecke vier unterschiedliche Rätsel bei Pareasobi.",
+        "Was möchtest du heute lösen? Bei Pareasobi findest du ein Rätsel für deine Stimmung."
+      ],
+      "games": [
+        "Wadōkaichin (japanisches Kanji-Worträtsel)",
+        "Sudoku",
+        "Kreuzworträtsel",
+        "Shirupure (originelles Symbol-Logikrätsel)"
+      ],
+      "cta": "Hier spielen:",
+      "spotlight": [
+        "Entdecke Wadōkaichin, ein Rätsel rund um japanische Kanji und Wörter.",
+        "Stelle dich einer kniffligen Sudoku-Runde.",
+        "Fülle das Kreuzworträtsel mithilfe der Hinweise aus.",
+        "Probiere Shirupure aus – ein originelles Logikrätsel mit Symbolen und Bereichen."
+      ]
+    },
+    "pt": {
+      "name": "Português",
+      "intro": [
+        "Quatro tipos de passatempo em um só lugar. Escolha seu próximo desafio no Pareasobi!",
+        "Que tal exercitar a mente? Descubra quatro quebra-cabeças diferentes no Pareasobi.",
+        "O que você vai resolver hoje? Encontre um desafio do seu jeito no Pareasobi."
+      ],
+      "games": [
+        "Wadōkaichin (jogo japonês de kanji e palavras)",
+        "Sudoku",
+        "Palavras cruzadas",
+        "Shirupure (desafio lógico original com símbolos)"
+      ],
+      "cta": "Jogue aqui:",
+      "spotlight": [
+        "Conheça o Wadōkaichin, um jogo com kanji e palavras japonesas.",
+        "Experimente um desafio de Sudoku no seu ritmo.",
+        "Preencha as palavras cruzadas usando as pistas.",
+        "Experimente Shirupure, um desafio lógico original com símbolos e regiões."
+      ]
+    },
+    "it": {
+      "name": "Italiano",
+      "intro": [
+        "Quattro tipi di rompicapo in un solo posto. Scegli la tua prossima sfida su Pareasobi!",
+        "Hai voglia di allenare la mente? Scopri quattro rompicapo diversi su Pareasobi.",
+        "Che cosa risolverai oggi? Trova il rompicapo che fa per te su Pareasobi."
+      ],
+      "games": [
+        "Wadōkaichin (gioco giapponese di kanji e parole)",
+        "Sudoku",
+        "Parole crociate",
+        "Shirupure (rompicapo logico originale con simboli)"
+      ],
+      "cta": "Gioca qui:",
+      "spotlight": [
+        "Scopri Wadōkaichin, un gioco basato sui kanji e sulle parole giapponesi.",
+        "Mettiti alla prova con il Sudoku.",
+        "Completa le parole crociate seguendo gli indizi.",
+        "Prova Shirupure, un rompicapo logico originale con simboli e regioni."
+      ]
+    },
+    "nl": {
+      "name": "Nederlands",
+      "intro": [
+        "Vier soorten puzzels op één plek. Kies je volgende uitdaging bij Pareasobi!",
+        "Zin om je hersenen te trainen? Ontdek vier verschillende puzzels bij Pareasobi.",
+        "Wat ga jij vandaag oplossen? Vind een puzzel die bij je past bij Pareasobi."
+      ],
+      "games": [
+        "Wadōkaichin (Japanse kanji-woordpuzzel)",
+        "Sudoku",
+        "Kruiswoordraadsel",
+        "Shirupure (originele logische symboolpuzzel)"
+      ],
+      "cta": "Speel hier:",
+      "spotlight": [
+        "Ontdek Wadōkaichin, een puzzel met Japanse kanji en woorden.",
+        "Ga rustig de uitdaging aan met Sudoku.",
+        "Vul het kruiswoordraadsel in aan de hand van de aanwijzingen.",
+        "Probeer Shirupure, een originele logische puzzel met symbolen en gebieden."
+      ]
+    },
+    "sv": {
+      "name": "Svenska",
+      "intro": [
+        "Fyra sorters klurigheter på ett ställe. Välj din nästa utmaning hos Pareasobi!",
+        "Sugen på att träna hjärnan? Upptäck fyra olika pussel hos Pareasobi.",
+        "Vad vill du lösa i dag? Hitta ett pussel som passar dig hos Pareasobi."
+      ],
+      "games": [
+        "Wadōkaichin (japanskt kanji- och ordpussel)",
+        "Sudoku",
+        "Korsord",
+        "Shirupure (originellt logikpussel med symboler)"
+      ],
+      "cta": "Spela här:",
+      "spotlight": [
+        "Upptäck Wadōkaichin, ett pussel med japanska kanji och ord.",
+        "Ta dig an en klurig omgång sudoku.",
+        "Fyll i korsordet med hjälp av ledtrådarna.",
+        "Prova Shirupure, ett originellt logikpussel med symboler och områden."
+      ]
+    },
+    "pl": {
+      "name": "Polski",
+      "intro": [
+        "Cztery rodzaje łamigłówek w jednym miejscu. Wybierz swoje kolejne wyzwanie w Pareasobi!",
+        "Masz ochotę poćwiczyć umysł? Poznaj cztery różne łamigłówki w Pareasobi.",
+        "Co rozwiążesz dzisiaj? Znajdź łamigłówkę dla siebie w Pareasobi."
+      ],
+      "games": [
+        "Wadōkaichin (japońska łamigłówka z kanji i słowami)",
+        "Sudoku",
+        "Krzyżówka",
+        "Shirupure (autorska łamigłówka logiczna z symbolami)"
+      ],
+      "cta": "Zagraj tutaj:",
+      "spotlight": [
+        "Poznaj Wadōkaichin – łamigłówkę opartą na japońskich znakach kanji i słowach.",
+        "Podejmij wyzwanie sudoku i rozwiązuj je krok po kroku.",
+        "Uzupełnij krzyżówkę na podstawie wskazówek.",
+        "Wypróbuj Shirupure, autorską łamigłówkę logiczną z symbolami i obszarami."
+      ]
+    },
+    "cs": {
+      "name": "Čeština",
+      "intro": [
+        "Čtyři druhy hádanek na jednom místě. Vyberte si další výzvu na Pareasobi!",
+        "Chcete procvičit mysl? Objevte na Pareasobi čtyři různé logické hry.",
+        "Co si dnes vyluštíte? Najděte si na Pareasobi hádanku podle nálady."
+      ],
+      "games": [
+        "Wadōkaichin (japonská slovní hádanka s kandži)",
+        "Sudoku",
+        "Křížovka",
+        "Shirupure (originální logická hra se symboly)"
+      ],
+      "cta": "Hrajte zde:",
+      "spotlight": [
+        "Poznejte Wadōkaichin, hádanku založenou na japonských znacích kandži a slovech.",
+        "Vyzkoušejte logickou výzvu v sudoku.",
+        "Doplňte křížovku podle nápověd.",
+        "Vyzkoušejte Shirupure, originální logickou hru se symboly a oblastmi."
+      ]
+    },
+    "ru": {
+      "name": "Русский",
+      "intro": [
+        "Четыре вида головоломок в одном месте. Выберите новое испытание на Pareasobi!",
+        "Хотите размять мозг? Попробуйте четыре разные головоломки на Pareasobi.",
+        "Что будете решать сегодня? Найдите головоломку по настроению на Pareasobi."
+      ],
+      "games": [
+        "Вадōкайтин (японская головоломка с кандзи и словами)",
+        "Судоку",
+        "Кроссворд",
+        "Shirupure (оригинальная логическая головоломка с символами)"
+      ],
+      "cta": "Играть здесь:",
+      "spotlight": [
+        "Откройте для себя Вадōкайтин — игру с японскими кандзи и словами.",
+        "Попробуйте решить судоку в своём темпе.",
+        "Заполните кроссворд по подсказкам.",
+        "Попробуйте Shirupure — оригинальную логическую головоломку с символами и областями."
+      ]
+    },
+    "id": {
+      "name": "Bahasa Indonesia",
+      "intro": [
+        "Empat jenis teka-teki dalam satu tempat. Pilih tantangan berikutnya di Pareasobi!",
+        "Ingin melatih pikiran? Temukan empat permainan teka-teki berbeda di Pareasobi.",
+        "Mau memecahkan teka-teki apa hari ini? Temukan yang cocok untukmu di Pareasobi."
+      ],
+      "games": [
+        "Wadōkaichin (teka-teki kanji dan kata Jepang)",
+        "Sudoku",
+        "Teka-teki silang",
+        "Shirupure (teka-teki logika simbol orisinal)"
+      ],
+      "cta": "Main di sini:",
+      "spotlight": [
+        "Kenali Wadōkaichin, teka-teki yang menggunakan kanji dan kata Jepang.",
+        "Coba tantangan Sudoku dan pecahkan dengan tenang.",
+        "Isi teka-teki silang berdasarkan petunjuk.",
+        "Coba Shirupure, teka-teki logika orisinal dengan simbol dan wilayah."
+      ]
+    },
+    "vi": {
+      "name": "Tiếng Việt",
+      "intro": [
+        "Bốn loại câu đố trong cùng một nơi. Chọn thử thách tiếp theo tại Pareasobi!",
+        "Bạn muốn rèn luyện trí óc? Khám phá bốn trò giải đố khác nhau tại Pareasobi.",
+        "Hôm nay bạn muốn giải câu đố nào? Tìm thử thách phù hợp tại Pareasobi."
+      ],
+      "games": [
+        "Wadōkaichin (câu đố chữ Hán và từ vựng Nhật)",
+        "Sudoku",
+        "Ô chữ",
+        "Shirupure (câu đố logic ký hiệu độc đáo)"
+      ],
+      "cta": "Chơi tại đây:",
+      "spotlight": [
+        "Khám phá Wadōkaichin, câu đố sử dụng chữ Hán và từ ngữ Nhật Bản.",
+        "Thử sức với Sudoku và suy luận từng bước.",
+        "Điền đáp án vào ô chữ theo các gợi ý.",
+        "Thử Shirupure, câu đố logic độc đáo sử dụng ký hiệu và vùng."
+      ]
+    },
+    "th": {
+      "name": "ภาษาไทย",
+      "intro": [
+        "รวมปริศนา 4 รูปแบบไว้ในที่เดียว เลือกความท้าทายครั้งต่อไปได้ที่ Pareasobi!",
+        "อยากฝึกสมองไหม? มาลองเล่นเกมปริศนา 4 แบบที่แตกต่างกันบน Pareasobi",
+        "วันนี้อยากไขปริศนาแบบไหน? เลือกเกมที่เหมาะกับคุณได้ที่ Pareasobi"
+      ],
+      "games": [
+        "Wadōkaichin (ปริศนาคันจิและคำศัพท์ญี่ปุ่น)",
+        "ซูโดกุ",
+        "เกมปริศนาอักษรไขว้",
+        "Shirupure (เกมตรรกะสัญลักษณ์รูปแบบ原创)"
+      ],
+      "cta": "เล่นได้ที่นี่:",
+      "spotlight": [
+        "พบกับ Wadōkaichin ปริศนาที่ใช้คันจิและคำศัพท์ภาษาญี่ปุ่น",
+        "ลองท้าทายตัวเองด้วยซูโดกุ",
+        "เติมคำตอบลงในเกมอักษรไขว้จากคำใบ้",
+        "ลอง Shirupure เกมตรรกะต้นฉบับที่ใช้สัญลักษณ์และพื้นที่"
+      ]
+    },
+    "hi": {
+      "name": "हिन्दी",
+      "intro": [
+        "एक ही जगह पर चार तरह की पहेलियाँ। Pareasobi पर अपनी अगली चुनौती चुनें!",
+        "दिमाग़ को थोड़ा व्यस्त करना चाहते हैं? Pareasobi पर चार अलग-अलग पहेलियाँ आज़माएँ।",
+        "आज आप कौन-सी पहेली हल करेंगे? Pareasobi पर अपने मन की पहेली चुनें।"
+      ],
+      "games": [
+        "Wadōkaichin (जापानी कांजी शब्द पहेली)",
+        "सुडोकू",
+        "शब्द-जाल",
+        "Shirupure (मौलिक प्रतीक-आधारित तर्क पहेली)"
+      ],
+      "cta": "यहाँ खेलें:",
+      "spotlight": [
+        "Wadōkaichin आज़माएँ, यह जापानी कांजी और शब्दों पर आधारित पहेली है।",
+        "सुडोकू की चुनौती को अपनी गति से हल करें।",
+        "संकेतों की मदद से शब्द-जाल पूरा करें।",
+        "Shirupure आज़माएँ, प्रतीकों और क्षेत्रों पर आधारित मौलिक तर्क पहेली।"
+      ]
+    },
+    "ar": {
+      "name": "العربية",
+      "intro": [
+        "أربعة أنواع من الألغاز في مكان واحد. اختر تحديك القادم على Pareasobi!",
+        "هل ترغب في تنشيط ذهنك؟ اكتشف أربعة ألغاز مختلفة على Pareasobi.",
+        "ما اللغز الذي ستحله اليوم؟ اعثر على التحدي المناسب لك في Pareasobi."
+      ],
+      "games": [
+        "Wadōkaichin (لغز ياباني بالحروف والكلمات)",
+        "سودوكو",
+        "كلمات متقاطعة",
+        "Shirupure (لغز منطقي أصلي بالرموز)"
+      ],
+      "cta": "العب من هنا:",
+      "spotlight": [
+        "اكتشف Wadōkaichin، لغز يعتمد على الكانجي والكلمات اليابانية.",
+        "جرّب تحدي السودوكو وفكّر خطوة بخطوة.",
+        "أكمل الكلمات المتقاطعة بالاعتماد على التلميحات.",
+        "جرّب Shirupure، لغزًا منطقيًا أصليًا يستخدم الرموز والمناطق."
+      ]
+    }
+  }
+}
