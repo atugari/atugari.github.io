@@ -98,8 +98,15 @@ class PublicationTests(unittest.TestCase):
     def test_missing_alt_rejected(self):
         self.data['images'][1]['alt']='';self.save()
         with self.assertRaises(ValueError):validate(self.root)
+    def test_post_text_and_image_alt_reject_urls(self):
+        self.data['text']='問題はこちら https://atugari.github.io/nanpure/';self.save()
+        with self.assertRaisesRegex(ValueError,'URLs'):validate(self.root)
+        self.data['text']='【今日の問題】\\n4問に挑戦！'
+        self.data['images'][0]['alt']='画像下部にURL https://atugari.github.io/nanpure/'
+        self.save()
+        with self.assertRaisesRegex(ValueError,'ALT'):validate(self.root)
     def test_approved_search_post_is_sent_in_full_with_four_images(self):
-        self.data['text']=render_text(self.data['date'],True,'08:00')
+        self.data['text']=render_text(self.data['date'],'08:00')
         self.data['requires_longform']=False;self.save()
         self.assertLessEqual(weighted_length(self.data['text']),280)
         events=[];client=Client(events)
