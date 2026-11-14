@@ -56,7 +56,7 @@ def _candidates(day: date, language: str):
 
 
 def sequence_start_for_day(japan_day: str) -> int:
-    \"\"\"Return a stable sequence offset that advances by three every Japan day.\"\"\"
+    """Return a stable sequence offset that advances by three every Japan day."""
     return date.fromisoformat(japan_day).toordinal() * POSTS_PER_DAY
 
 
