@@ -1,6 +1,7 @@
 from pathlib import Path
 from functools import lru_cache
 import json,math,os,sys
+import qrcode,zxingcpp
 from PIL import Image,ImageDraw,ImageFont
 from fontTools.ttLib import TTFont
 from daily_plan import daily_plan
@@ -10,6 +11,7 @@ from font_text import readable
 ROOT=Path(sys.argv[1]).resolve()
 OUT=ROOT/'output';OUT.mkdir(exist_ok=True)
 S=2048
+URL='atugari.github.io/plaza.html'
 BG='#F7F4EC';INK='#1F302B';MUTED='#5A665F';LINE='#ADB5AC';WHITE='#FFFFFF'
 REG=Path(os.environ.get('X_FONT_REGULAR','/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc'));BOLD=Path(os.environ.get('X_FONT_BOLD','/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc'))
 CMAP=set(TTFont(BOLD,fontNumber=0).getBestCmap()) & set(TTFont(REG,fontNumber=0).getBestCmap())
@@ -57,10 +59,15 @@ def base(number,title,badge,accent,subtitle,answer=False):
  d.line((104,320,1944,320),fill=accent,width=5)
  text(d,(104,355),subtitle,43,INK,False,limit=1944)
  d.rectangle((0,1878,2048,2048),fill=INK)
- text(d,(104,1904),'ナンプレ帳',48,WHITE,True)
- text(d,(104,1986),'無料で遊ぶ・問題をつくる・A4印刷',27,'#D5E1D6')
- text(d,(1944,1912),'検索：ナンプレ帳 atugari',42,WHITE,False,'rt')
- text(d,(1944,1986),'無料プレイ・問題作成・印刷',27,'#D5E1D6',False,'rt')
+ text(d,(104,1904),'パレあそび',48,WHITE,True)
+ text(d,(104,1986),'脳トレ帳から各パズルへ',27,'#D5E1D6')
+ text(d,(1744,1908),URL,43,WHITE,False,'rt')
+ text(d,(1744,1986),'パレあそび atugari',28,'#D5E1D6',False,'rt')
+ qr=qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_M,box_size=4,border=4)
+ qr.add_data('https://'+URL);qr.make(fit=True)
+ q=qr.make_image(fill_color=INK,back_color=WHITE).convert('RGB')
+ assert q.width<=156 and q.height<=156
+ im.paste(q,(1944-q.width,2036-q.height))
 
  return im,d
 
@@ -198,5 +205,9 @@ assert not missing,missing
 assert len([p for p in OUT.glob('0*.png')])==4
 for p in OUT.glob('*.png'):
  assert p.stat().st_size<5*1024*1024
+ with Image.open(p) as im:
+  for size in (2048,1024):
+   scan=im if size==2048 else im.resize((size,size),Image.Resampling.LANCZOS)
+   assert 'https://'+URL in [b.text for b in zxingcpp.read_barcodes(scan)],('QR decode failed',p.name,size)
  print(p.name,p.stat().st_size)
-(ROOT/'render-audit.json').write_text(json.dumps({'canvas':[2048,2048],'all_images_below_5MB':True,'checked_text_objects':len(boxes),'missing_glyphs':missing,'arrow_clearance_pixels':35,'visible_url':False,'qr_code':False,'search_hint':'ナンプレ帳 atugari'},indent=2))
+(ROOT/'render-audit.json').write_text(json.dumps({'canvas':[2048,2048],'all_images_below_5MB':True,'checked_text_objects':len(boxes),'missing_glyphs':missing,'arrow_clearance_pixels':35,'visible_url':True,'url':'https://'+URL,'qr_code':True,'search_hint':'パレあそび atugari'},indent=2))
