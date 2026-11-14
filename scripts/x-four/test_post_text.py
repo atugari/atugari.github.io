@@ -22,7 +22,7 @@ class PostDateTests(unittest.TestCase):
         for phrase in ('ナンプレ', '数独', '無料パズル', '脳トレ', '問題集', '頭の体操', '毎日更新'):
             self.assertIn(phrase, combined)
         for slot, (_, tags) in SLOT_COPY.items():
-            self.assertIn(tags, render_text(day, True, slot))
+            self.assertIn(tags, render_text(day, slot))
 
     def test_no_url_is_included_in_any_slot(self):
         for slot in SLOT_COPY:
@@ -35,7 +35,7 @@ class PostDateTests(unittest.TestCase):
         for offset in range(365):
             day = start + timedelta(days=offset)
             for slot in SLOT_COPY:
-                text = render_text(day.isoformat(), True, slot)
+                text = render_text(day.isoformat(), slot)
                 with self.subTest(day=day, slot=slot):
                     self.assertLessEqual(weighted_length(text), 280)
 
