@@ -44,7 +44,7 @@ export function validateMeta(post,now){
  const due=dueFor(post.date,post.slot),key=post.date+'@'+post.slot;
  if(post.publication_id!==key||due<=now||due>now+4*86400000)fail(400,'Only future slots within four days can be prepared');
  const [year,month,day]=post.date.split('-').map(Number);
- if(typeof post.text!=='string'||!post.text.startsWith('【今日の4問｜'+month+'/'+day+'】\n')||post.text.length>25000)fail(400,'Post date and text do not match');
+ if(typeof post.text!=='string'||!post.text.startsWith('【パレあそび｜今日の4問｜'+month+'/'+day+'】\n')||post.text.length>25000)fail(400,'Post date and text do not match');
  if(post.plan_version!==1||!Array.isArray(post.questions)||post.questions.length!==4||new Set(post.questions.map(q=>q.rule)).size!==4)fail(400,'Four different verified rules are required');
  if(!Array.isArray(post.fingerprints)||post.fingerprints.length!==4||new Set(post.fingerprints).size!==4||post.fingerprints.some(h=>! /^[a-f0-9]{64}$/.test(h)))fail(400,'Invalid fingerprints');
  if(!Array.isArray(post.images)||post.images.length!==4||post.images.some((i,n)=>i.file!==post.questions[n].file||! /^[a-f0-9]{64}$/.test(i.sha256)||typeof i.alt!=='string'||!i.alt.length||i.alt.length>1000))fail(400,'Invalid image manifest');
