@@ -13,7 +13,7 @@ function database(){
 }
 function post(slot='08:00',salt='a'){
  const raw=Buffer.alloc(24);Buffer.from('89504e470d0a1a0a','hex').copy(raw);raw.writeUInt32BE(2048,16);raw.writeUInt32BE(2048,20);const hash=createHash('sha256').update(raw).digest('hex');
- return{raw,meta:{date:DAY,slot,publication_id:DAY+'@'+slot,plan_version:1,text:'【今日の4問｜10/26】\n承認済み本文',fingerprints:[0,1,2,3].map(n=>createHash('sha256').update(salt+n).digest('hex')),questions:[0,1,2,3].map(n=>({rule:'rule'+n,file:n+'.png'})),images:[0,1,2,3].map(n=>({file:n+'.png',alt:'問題 '+n,sha256:hash}))}};
+ return{raw,meta:{date:DAY,slot,publication_id:DAY+'@'+slot,plan_version:1,text:'【パレあそび｜今日の4問｜10/26】\n承認済み本文',fingerprints:[0,1,2,3].map(n=>createHash('sha256').update(salt+n).digest('hex')),questions:[0,1,2,3].map(n=>({rule:'rule'+n,file:n+'.png'})),images:[0,1,2,3].map(n=>({file:n+'.png',alt:'問題 '+n,sha256:hash}))}};
 }
 async function fixture(t,{ready=true,slot='08:00',salt='a'}={}){
  t.mock.method(Date,'now',()=>BASE);const {db,api}=database(),env={...secrets,DB:api},p=post(slot,salt),token=await queueToken(env);
@@ -51,7 +51,7 @@ test('scheduled publication sends the exact text and four IDs through the real J
 test('all four Japan slots map to the correct UTC dates',()=>{assert.equal(new Date(dueFor(DAY,'08:00')).toISOString(),'2026-10-25T23:00:00.000Z');for(const slot of SLOTS){const due=dueFor(DAY,slot);assert.equal(windowFor(due,due).key,DAY+'@'+slot)}assert.throws(()=>dueFor('2026-02-30','08:00'));assert.throws(()=>dueFor(DAY,'09:00'))});
 test('the actual 25th 21:00 -> 26th 00:34 incident cannot publish',()=>{const due=dueFor('2026-10-25','21:00');assert.equal(windowFor(due,Date.parse('2026-10-26T00:34:57+09:00')),null)});
 test('window rejects early, over 15 minutes and next-day runs',()=>{const due=dueFor(DAY,'21:00');assert.equal(windowFor(due,due-1),null);assert(windowFor(due,due+MAX_LATENESS));assert.equal(windowFor(due,due+MAX_LATENESS+1),null)});
-test('wrong image date and stale preparation are rejected',()=>{const p=post().meta;p.text='【今日の4問｜10/25】\n古い日付';assert.throws(()=>validateMeta(p,BASE));p.text='【今日の4問｜10/26】\n本文';assert.throws(()=>validateMeta(p,dueFor(DAY,'08:00')))});
+test('wrong image date and stale preparation are rejected',()=>{const p=post().meta;p.text='【パレあそび｜今日の4問｜10/25】\n古い日付';assert.throws(()=>validateMeta(p,BASE));p.text='【パレあそび｜今日の4問｜10/26】\n本文';assert.throws(()=>validateMeta(p,dueFor(DAY,'08:00')))});
 test('actual Python copy passes Worker validation across leap, month and year boundaries',()=>{
  const script=`import json,sys\nfrom datetime import date,timedelta\nsys.path.insert(0,'scripts/x-four')\nfrom post_text import render_text\nrows=[]\nfor year in (2024,2026,2027):\n day=date(year,1,1)\n while day.year==year:\n  rows.append({'date':day.isoformat(),'text':render_text(day.isoformat())})\n  day+=timedelta(days=1)\nprint(json.dumps(rows))`;
  const result=spawnSync('python3',['-c',script],{cwd:new URL('../../',import.meta.url),encoding:'utf8',maxBuffer:16*1024*1024});
