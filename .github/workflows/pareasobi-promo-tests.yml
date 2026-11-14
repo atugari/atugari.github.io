@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "scripts/pareasobi-promo/**"
+      - "nanpure-x-promo-worker/**"
       - ".github/workflows/pareasobi-promo-tests.yml"
   workflow_dispatch:
 
