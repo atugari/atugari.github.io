@@ -12,6 +12,8 @@ promotional stream. It is intentionally separate from `scripts/x-four/` and
 - The 20 locales match the current site language set: ja (root Japanese),
   en, zh-hans, zh-hant, ko, es, fr, de, pt, it, nl, sv, pl, cs, ru, id, vi,
   th, hi, ar.
+- The language rotation is date-derived and balanced: every language receives
+  exactly 3 posts in each 20-day cycle (60 posts total).
 - Each language is assigned a representative audience time zone. Posts are
   scheduled between 16:00 and 20:00 in that zone, with at least 90 minutes
   between UTC publication times.
@@ -27,6 +29,8 @@ promotional stream. It is intentionally separate from `scripts/x-four/` and
 - `copy.py`: builds a localized post from the copy catalog and enforces a
   conservative 280-character budget including the shortened URL allowance.
 - Unit tests cover the schedule and copy builder.
+- A separate queue schema has been added under nanpure-x-promo-worker/; it is
+  designed for its own D1 database and R2 bucket and starts with posting OFF.
 - A pull-request CI workflow runs these tests.
 
 ## Not yet implemented
