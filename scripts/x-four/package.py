@@ -29,7 +29,7 @@ def alt_text(item,p,number):
   for d,label in [(0,'ヨコ'),(1,'タテ')]:
    text+=label+'：'+'／'.join(str(e['num'])+'('+str(e['r']+1)+','+str(e['c']+1)+')'+e['clue'] for e in sorted(p['entries'],key=lambda e:e['num']) if e['d']==d)+'。'
  else:raise ValueError('Unknown puzzle family')
- return text+'検索のヒントは「ナンプレ帳 atugari」。'
+ return text+'パレあそび内の脳トレ帳から各パズルを選んで遊べます。'
 
 alts=[alt_text(item,json.loads((root/item['data_file']).read_text()),'①②③④'[i]) for i,item in enumerate(questions)]
 assert all(0<len(a)<=1000 for a in alts),[len(a) for a in alts]
