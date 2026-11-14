@@ -1,5 +1,6 @@
 import unittest
-from datetime import datetime
+from datetime import date, datetime, timedelta
+from collections import Counter
 
 from schedule import LANGUAGES, POSTS_PER_DAY, plan_day, validate_plan
 
@@ -27,6 +28,17 @@ class PromotionScheduleTests(unittest.TestCase):
             )
         )
         self.assertEqual([language for _, language in chronological[:20]], list(LANGUAGES))
+
+    def test_default_rotation_is_balanced_over_twenty_days(self):
+        start = date(2026, 11, 14)
+        languages = [
+            item["language"]
+            for offset in range(20)
+            for item in plan_day((start + timedelta(days=offset)).isoformat())
+        ]
+        counts = Counter(languages)
+        self.assertEqual(set(counts), set(LANGUAGES))
+        self.assertTrue(all(counts[language] == 3 for language in LANGUAGES))
 
     def test_all_local_times_are_audience_evening(self):
         plan = plan_day("2026-11-14", sequence_start=12)
