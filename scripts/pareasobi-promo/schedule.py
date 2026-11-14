@@ -55,7 +55,12 @@ def _candidates(day: date, language: str):
         yield local.astimezone(timezone.utc), hour
 
 
-def plan_day(japan_day: str, *, sequence_start: int = 0) -> list[dict]:
+def sequence_start_for_day(japan_day: str) -> int:
+    \"\"\"Return a stable sequence offset that advances by three every Japan day.\"\"\"
+    return date.fromisoformat(japan_day).toordinal() * POSTS_PER_DAY
+
+
+def plan_day(japan_day: str, *, sequence_start: int | None = None) -> list[dict]:
     """Return exactly three language posts with non-colliding local-time slots.
 
     Languages rotate through the supported 20-language list. Each post is
@@ -64,6 +69,8 @@ def plan_day(japan_day: str, *, sequence_start: int = 0) -> list[dict]:
     at least 90 minutes apart.
     """
     day = date.fromisoformat(japan_day)
+    if sequence_start is None:
+        sequence_start = sequence_start_for_day(japan_day)
     selected = [language_for_sequence(sequence_start + i) for i in range(POSTS_PER_DAY)]
     options = [list(_candidates(day, language)) for language in selected]
     best = None
