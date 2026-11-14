@@ -99,15 +99,17 @@ def validate(directory):
     if [i['file'] for i in post['images']]!=expected:raise ValueError('Exactly four question images are required in the approved order')
     if len(post['fingerprints'])!=4 or len(set(post['fingerprints']))!=4:raise ValueError('Four distinct puzzle fingerprints are required')
     if not post['text'] or len(post['text'])>25000:raise ValueError('Invalid post text')
+    if 'http://' in post['text'].lower() or 'https://' in post['text'].lower():raise ValueError('Post text must not contain URLs')
     weighted=weighted_length(post['text'])
     if weighted>25000:raise ValueError('Post exceeds the long-form X text length')
     if weighted>280:
         if post.get('requires_longform') is not True:raise ValueError('Post exceeds the standard X text length; long-form is required')
-        if post['text'] not in (render_text(post['date'],False,post.get('slot','08:00')),render_text(post['date'],True,post.get('slot','08:00'))):
+        if post['text'] not in (render_text(post['date'],post.get('slot','08:00'))):
             raise ValueError('Long-form text does not match the approved copy')
     for item in post['images']:
         p=directory/item['file']
         if not 0<p.stat().st_size<5*1024*1024 or not 0<len(item['alt'])<=1000:raise ValueError('Invalid image or ALT')
+        if any(token in item['alt'].lower() for token in ('http://','https://','qrコード')):raise ValueError('Image ALT must not contain URLs or QR codes')
         with Image.open(p) as image:
             if image.format!='PNG' or image.size!=(2048,2048):raise ValueError('Invalid image dimensions')
         if hashlib.sha256(p.read_bytes()).hexdigest()!=item['sha256']:raise ValueError('Image changed after validation')
