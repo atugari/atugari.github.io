@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>データの保存と復元｜パレあそび</title>
+<meta name="description" content="パレあそびのゲームのデータを、ファイルに保存したり、ファイルから戻したりできます。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:'Noto Sans JP',sans-serif;
+    font-size:16px;line-height:1.7;color:#333;
+    min-height:100dvh;
+    background:
+      radial-gradient(circle at 8% 12%, rgba(255,107,107,.20) 0 42px, transparent 43px),
+      radial-gradient(circle at 92% 18%, rgba(255,209,102,.28) 0 52px, transparent 53px),
+      radial-gradient(circle at 12% 88%, rgba(78,205,196,.22) 0 46px, transparent 47px),
+      radial-gradient(circle at 88% 84%, rgba(116,185,255,.22) 0 56px, transparent 57px),
+      linear-gradient(160deg,#fff6e5 0%,#ffeef2 38%,#eaf6ff 72%,#eafff6 100%);
+  }
+  .wrap{max-width:640px;margin:0 auto;padding:20px 16px 56px;}
+  header{text-align:center;padding:20px 8px 8px;}
+  header .logo{
+    display:inline-block;font-size:15px;font-weight:700;color:#fff;
+    background:linear-gradient(90deg,#ff6b6b,#ffb703,#06aed5,#4ecdc4);
+    padding:6px 18px;border-radius:999px;letter-spacing:.08em;
+    box-shadow:0 4px 14px rgba(0,0,0,.12);
+  }
+  h1{font-size:28px;font-weight:900;margin:16px 0 6px;color:#2b2b2b;}
+  header p{color:#666;font-size:15px;}
+  .card{
+    background:#fff;border-radius:24px;
+    box-shadow:0 8px 24px rgba(0,0,0,.08);
+    padding:22px 20px;margin-top:18px;
+  }
+  .card h2{font-size:20px;font-weight:900;margin-bottom:8px;}
+  .card h2 .dot{display:inline-block;width:14px;height:14px;border-radius:50%;margin-right:8px;vertical-align:-1px;}
+  .card p{color:#555;font-size:15px;}
+  .card p + p{margin-top:8px;}
+  .count{
+    margin-top:14px;background:#fff8e1;border:2px dashed #ffb703;border-radius:16px;
+    padding:12px 16px;font-size:16px;font-weight:700;text-align:center;color:#7a5b00;
+  }
+  .count strong{font-size:22px;color:#e8590c;}
+  .btn{
+    display:block;width:100%;border:none;cursor:pointer;
+    font-family:inherit;font-size:18px;font-weight:900;color:#fff;
+    padding:15px 20px;border-radius:999px;margin-top:14px;
+    box-shadow:0 6px 16px rgba(0,0,0,.15);
+    transition:transform .08s ease, box-shadow .08s ease;
+  }
+  .btn:active{transform:scale(.98);box-shadow:0 3px 8px rgba(0,0,0,.15);}
+  .btn:disabled{opacity:.55;cursor:default;}
+  .btn-save{background:linear-gradient(90deg,#ff6b6b,#ff8e53);}
+  .btn-restore{background:linear-gradient(90deg,#06aed5,#4ecdc4);}
+  .btn-ghost{
+    background:#fff;color:#333;border:2px solid #ddd;
+    box-shadow:none;font-size:15px;padding:11px 18px;
+  }
+  .note{
+    margin-top:14px;background:#f1f8ff;border-radius:16px;padding:14px 16px;
+    font-size:14px;color:#445;
+  }
+  .note strong{color:#1a5fb4;}
+  .excluded{margin-top:10px;}
+  .excluded li{
+    list-style:none;display:inline-block;background:#ffeef2;color:#c2255c;
+    border-radius:999px;padding:4px 14px;margin:4px 4px 0 0;font-size:14px;font-weight:700;
+  }
+  .filebox{margin-top:14px;}
+  .filebox input[type=file]{display:block;width:100%;font-size:15px;font-family:inherit;}
+  .status{
+    margin-top:14px;border-radius:16px;padding:14px 16px;font-size:15px;display:none;
+    white-space:pre-line;
+  }
+  .status.ok{display:block;background:#e6fcf5;color:#087f5b;border:2px solid #63e6be;}
+  .status.err{display:block;background:#fff0f0;color:#c92a2a;border:2px solid #ffa8a8;}
+  .status.info{display:block;background:#fff8e1;color:#7a5b00;border:2px solid #ffd43b;}
+  .back{text-align:center;margin-top:24px;}
+  .back a{
+    display:inline-block;background:#fff;color:#333;font-weight:700;text-decoration:none;
+    padding:12px 26px;border-radius:999px;box-shadow:0 4px 12px rgba(0,0,0,.10);
+  }
+  footer{text-align:center;margin-top:28px;color:#999;font-size:13px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="logo">パレあそび</span>
+    <h1>データの保存と復元</h1>
+    <p>パレあそびのゲームのデータを、ファイルに保存したり、<br>ファイルからブラウザに戻したりできます。</p>
+  </header>
+
+  <section class="card" aria-label="保存について">
+    <h2><span class="dot" style="background:#ff6b6b"></span>保存する</h2>
+    <p>いまこのブラウザに保存されているパレあそびのデータを、1つのファイル（JSON）にまとめてダウンロードします。機種変更やブラウザの整理の前に保存しておくと安心です。</p>
+    <div class="count" id="save-count">いま保存できるデータ：<strong>—</strong> 件</div>
+    <button class="btn btn-save" id="btn-save" type="button">保存する（ファイルをダウンロード）</button>
+    <div class="status" id="save-status" role="status"></div>
+    <div class="note">
+      <strong>保存されないゲームがあります。</strong><br>
+      次のゲームのデータは、この保存には含まれません。
+      <ul class="excluded">
+        <li>ナンプレ帳</li>
+        <li>和同開珎</li>
+        <li>クロスワード</li>
+        <li>シルプレ</li>
+        <li>オセロ</li>
+        <li>ナイン・メンズ・モリス</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="card" aria-label="復元について">
+    <h2><span class="dot" style="background:#06aed5"></span>復元する</h2>
+    <p>保存したファイルをえらぶと、中身をたしかめてからブラウザに戻します。今あるデータは消えません。ファイルにあるデータだけ上書きします。</p>
+    <div class="filebox">
+      <input type="file" id="file-input" accept=".json,application/json">
+    </div>
+    <button class="btn btn-restore" id="btn-restore" type="button" disabled>えらんだファイルから復元する</button>
+    <div class="status" id="restore-status" role="status"></div>
+    <div class="note">
+      <strong>復元の前に中身をたしかめます。</strong><br>
+      ファイルが壊れていたり、パレあそびの保存ファイルでなかったりしたときは、復元せずにエラーを出します。
+      上の6つのゲームのデータがファイルの中にあっても、復元しません。
+    </div>
+  </section>
+
+  <div class="back">
+    <a href="/">パレあそびのトップに戻る</a>
+  </div>
+
+  <footer>パレあそび　データの保存と復元</footer>
+</div>
+
+<script>
+(function(){
+  'use strict';
+  // この保存の対象外にするゲームのデータ。キーの最初の部分で見分けます。
+  // ナンプレ帳：np- / nanpure-（和同開珎 np-wado-v1、クロスワード nanpure-crossword-v1 を含む）
+  // シルプレ：nanpure-shiru- / shiru-（shirupure の文字を含むものも含む）
+  // オセロ：reversi-
+  // ナイン・メンズ・モリス：morris-
+  var EXCLUDED_PREFIXES = ['np-', 'nanpure-', 'shiru', 'reversi-', 'morris-'];
+  function isExcluded(key){
+    for (var i = 0; i < EXCLUDED_PREFIXES.length; i++) {
+      if (key.indexOf(EXCLUDED_PREFIXES[i]) === 0) return true;
+    }
+    if (key.indexOf('shirupure') !== -1) return true;
+    return false;
+  }
+
+  var saveCount = document.getElementById('save-count');
+  var saveStatus = document.getElementById('save-status');
+  var restoreStatus = document.getElementById('restore-status');
+  var fileInput = document.getElementById('file-input');
+  var btnSave = document.getElementById('btn-save');
+  var btnRestore = document.getElementById('btn-restore');
+
+  function setStatus(el, kind, text){
+    el.className = 'status ' + kind;
+    el.textContent = text;
+  }
+  function clearStatus(el){ el.className = 'status'; el.textContent = ''; }
+
+  // 保存できるデータ（対象外をのぞいたもの）を集める
+  function collectItems(){
+    var items = {};
+    var count = 0;
+    try {
+      for (var i = 0; i < localStorage.length; i++) {
+        var key = localStorage.key(i);
+        if (key === null || isExcluded(key)) continue;
+        items[key] = localStorage.getItem(key);
+        count++;
+      }
+    } catch (e) {
+      // 読み取れないときは、集まった分だけ返す
+    }
+    return { items: items, count: count };
+  }
+
+  function refreshCount(){
+    var collected = collectItems();
+    saveCount.innerHTML = 'いま保存できるデータ：<strong>' + collected.count + '</strong> 件';
+    btnSave.disabled = collected.count === 0;
+    if (collected.count === 0) {
+      setStatus(saveStatus, 'info', '保存できるデータがありません。');
+    } else {
+      clearStatus(saveStatus);
+    }
+  }
+
+  // 保存する：JSONファイルとしてダウンロード
+  btnSave.addEventListener('click', function(){
+    var collected = collectItems();
+    if (collected.count === 0) {
+      setStatus(saveStatus, 'info', '保存できるデータがありません。');
+      return;
+    }
+    var data = {
+      app: 'pare-asobi-backup',
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      items: collected.items
+    };
+    var text = JSON.stringify(data, null, 2);
+    var blob = new Blob([text], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var now = new Date();
+    function two(n){ return (n < 10 ? '0' : '') + n; }
+    var name = 'pare-asobi-backup-' + now.getFullYear() + two(now.getMonth() + 1) + two(now.getDate())
+      + '-' + two(now.getHours()) + two(now.getMinutes()) + two(now.getSeconds()) + '.json';
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 5000);
+    setStatus(saveStatus, 'ok', collected.count + '件のデータを保存しました。\nファイル名：' + name);
+  });
+
+  // 復元する：ファイルを選んだらボタンを有効にする
+  fileInput.addEventListener('change', function(){
+    clearStatus(restoreStatus);
+    btnRestore.disabled = !fileInput.files || fileInput.files.length === 0;
+  });
+
+  // 復元する：中身をたしかめてから書き戻す
+  btnRestore.addEventListener('click', function(){
+    var file = fileInput.files && fileInput.files[0];
+    if (!file) {
+      setStatus(restoreStatus, 'err', 'ファイルがえらばれていません。');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setStatus(restoreStatus, 'err', 'ファイルが大きすぎます（5MBまで）。パレあそびの保存ファイルかどうか、たしかめてください。');
+      return;
+    }
+    btnRestore.disabled = true;
+    var reader = new FileReader();
+    reader.onload = function(){
+      var parsed;
+      try {
+        parsed = JSON.parse(reader.result);
+      } catch (e) {
+        setStatus(restoreStatus, 'err', 'ファイルが壊れていて読み込めませんでした。パレあそびで保存したファイルかどうか、たしかめてください。');
+        btnRestore.disabled = false;
+        return;
+      }
+      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)
+          || !parsed.items || typeof parsed.items !== 'object' || Array.isArray(parsed.items)) {
+        setStatus(restoreStatus, 'err', 'パレあそびの保存ファイルではありません。中身の形式がちがいます。');
+        btnRestore.disabled = false;
+        return;
+      }
+      var keys = Object.keys(parsed.items);
+      if (keys.length === 0) {
+        setStatus(restoreStatus, 'err', 'ファイルの中にデータがありません。');
+        btnRestore.disabled = false;
+        return;
+      }
+      var restored = 0, skipped = 0, broken = 0;
+      var problems = [];
+      for (var i = 0; i < keys.length; i++) {
+        var key = keys[i];
+        var value = parsed.items[key];
+        if (typeof key !== 'string' || key.length === 0 || typeof value !== 'string') {
+          broken++;
+          continue;
+        }
+        if (isExcluded(key)) { skipped++; continue; }
+        try {
+          localStorage.setItem(key, value);
+          restored++;
+        } catch (e) {
+          problems.push(key);
+        }
+      }
+      var lines = [];
+      lines.push(restored + '件のデータを復元しました。');
+      if (skipped > 0) lines.push('対象外のゲームのデータ ' + skipped + '件は復元しませんでした。');
+      if (broken > 0) lines.push('形式がおかしいデータ ' + broken + '件はとばしました。');
+      if (problems.length > 0) {
+        lines.push('保存できなかったデータがあります。ブラウザの空き容量をたしかめてください。');
+        setStatus(restoreStatus, 'err', lines.join('\n'));
+      } else {
+        setStatus(restoreStatus, 'ok', lines.join('\n'));
+      }
+      refreshCount();
+      fileInput.value = '';
+      btnRestore.disabled = true;
+    };
+    reader.onerror = function(){
+      setStatus(restoreStatus, 'err', 'ファイルが読み込めませんでした。もう一度お試しください。');
+      btnRestore.disabled = false;
+    };
+    reader.readAsText(file);
+  });
+
+  refreshCount();
+})();
+</script>
+</body>
+</html>
