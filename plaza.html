@@ -28,14 +28,8 @@
         {"@type":"ListItem","position":2,"name":"シルプレ","url":"https://atugari.github.io/puzzles/shirupure/"},
         {"@type":"ListItem","position":3,"name":"和同開珎","url":"https://atugari.github.io/puzzles/wado/"},
         {"@type":"ListItem","position":4,"name":"クロスワード","url":"https://atugari.github.io/puzzles/crossword/"},
-        {"@type":"ListItem","position":5,"name":"クロスてんびん","url":"https://atugari.github.io/puzzles/cross/"},
-        {"@type":"ListItem","position":6,"name":"天秤パズル","url":"https://atugari.github.io/puzzles/tenbin/"},
-        {"@type":"ListItem","position":7,"name":"シルプレ工房・問題作成","url":"https://atugari.github.io/puzzles/studio/"},
-        {"@type":"ListItem","position":8,"name":"パズルの試作室","url":"https://atugari.github.io/puzzles/workshop/"},
-        {"@type":"ListItem","position":9,"name":"丸場所記憶ゲーム","url":"https://atugari.github.io/"},
-        {"@type":"ListItem","position":10,"name":"飛べ飛","url":"https://atugari.github.io/dungeon.html"},
-        {"@type":"ListItem","position":11,"name":"迷路ラボ・迷路作成","url":"https://atugari.github.io/maze/"},
-        {"@type":"ListItem","position":12,"name":"きせかえギャラリー","url":"https://atugari.github.io/skins.html"}
+        {"@type":"ListItem","position":5,"name":"オセロ","url":"https://osero.puzzle-hub-4826.workers.dev"},
+        {"@type":"ListItem","position":6,"name":"ナイン・メンズ・モリス","url":"https://nainmenzumorisu.puzzle-hub-4826.workers.dev"}
       ]}}
     ]
   }
@@ -335,25 +329,6 @@
       display: none !important;
     }
 
-    /* スピード: 2枚のカードを薄く表示 */
-    .game-card.speed-bg { overflow: hidden; }
-    .game-card.speed-bg::before {
-      content: '';
-      position: absolute;
-      right: 17px;
-      top: 50%;
-      width: 70px;
-      height: 76px;
-      transform: translateY(-50%) rotate(7deg);
-      border: 2px solid rgba(26, 26, 26, 0.10);
-      border-radius: 8px;
-      box-shadow: -13px 8px 0 -2px #fff, -13px 8px 0 0 rgba(26, 26, 26, 0.08);
-      background:
-        radial-gradient(circle at 50% 43%, rgba(217, 43, 60, 0.16) 0 7px, transparent 8px),
-        #fff;
-      opacity: .9;
-      pointer-events: none;
-    }
 
     @media (max-width: 380px) {
       .library-tools { padding: 12px; }
@@ -381,7 +356,7 @@
       -webkit-tap-highlight-color: transparent;
       box-shadow: 0 8px 24px rgba(255, 150, 120, 0.14);
     }
-    /* カードを4色のパステルで巡回させる（ナンプレ帳の緑と制作中はそのまま） */
+    /* カードを4色のパステルで巡回させる（ナンプレ帳の緑はそのまま） */
     .game-list .game-card:not(.nanpure-bg):not(.wip):nth-of-type(4n+1) { background: #FFE3E6; border-color: #FFB3C0; }
     .game-list .game-card:not(.nanpure-bg):not(.wip):nth-of-type(4n+2) { background: #FFF3C4; border-color: #FFD94D; }
     .game-list .game-card:not(.nanpure-bg):not(.wip):nth-of-type(4n+3) { background: #D6F0FF; border-color: #9AD4FF; }
@@ -414,148 +389,15 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
     }
 
-    /* 丸場所記憶: 金銀赤の薄い丸を背景に */
-    .game-card.medal-bg {
-      overflow: hidden;
-    }
-    .game-card.medal-bg::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      background:
-        radial-gradient(circle at 76% 26%, rgba(212, 175, 55, 0.18) 0 20px, transparent 21px),
-        radial-gradient(circle at 89% 62%, rgba(150, 155, 165, 0.20) 0 15px, transparent 16px),
-        radial-gradient(circle at 66% 76%, rgba(198, 64, 46, 0.14) 0 11px, transparent 12px);
-      pointer-events: none;
-    }
 
-    /* 飛べ飛: 大きな「飛」を斜めに薄く */
-    .game-card.tobe-bg {
-      overflow: hidden;
-    }
-    .game-card.tobe-bg::before {
-      content: '飛';
-      position: absolute;
-      right: 2px;
-      top: 50%;
-      transform: translateY(-50%) rotate(-18deg);
-      font-size: 92px;
-      font-weight: 900;
-      line-height: 1;
-      color: rgba(26, 26, 26, 0.06);
-      pointer-events: none;
-    }
 
-    /* ショッピング メモ: メモ用紙を薄く */
-    .game-card.memo-bg {
-      overflow: hidden;
-    }
-    .game-card.memo-bg::before {
-      content: '';
-      position: absolute;
-      right: 10px;
-      top: 50%;
-      width: 84px;
-      height: 84px;
-      transform: translateY(-50%) rotate(6deg);
-      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231a1a1a' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 2h12a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z'/%3E%3Cline x1='8.5' y1='7' x2='15.5' y2='7'/%3E%3Cline x1='8.5' y1='11' x2='15.5' y2='11'/%3E%3Cline x1='8.5' y1='15' x2='13' y2='15'/%3E%3C/svg%3E") no-repeat center / contain;
-      opacity: 0.08;
-      pointer-events: none;
-    }
 
-    /* メータータイマー: 縦のメーター(四角)を薄く */
-    .game-card.timer-bg {
-      overflow: hidden;
-    }
-    .game-card.timer-bg::before {
-      content: '';
-      position: absolute;
-      right: 14px;
-      top: 50%;
-      width: 70px;
-      height: 88px;
-      transform: translateY(-50%);
-      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 30' fill='none' stroke='%231a1a1a' stroke-width='1.4'%3E%3Crect x='7' y='2' width='10' height='5'/%3E%3Crect x='7' y='9' width='10' height='5'/%3E%3Crect x='7' y='16' width='10' height='5'/%3E%3Crect x='7' y='23' width='10' height='5'/%3E%3C/svg%3E") no-repeat center / contain;
-      opacity: 0.08;
-      pointer-events: none;
-    }
 
-    /* きせかえギャラリー: 額縁モチーフ */
-    .game-card.gallery-bg { overflow: hidden; }
-    .game-card.gallery-bg::before {
-      content: '';
-      position: absolute;
-      right: 14px;
-      top: 50%;
-      width: 82px;
-      height: 82px;
-      transform: translateY(-50%);
-      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231a1a1a' stroke-width='1.4'%3E%3Crect x='3' y='4' width='18' height='16' rx='1.5'/%3E%3Ccircle cx='8.5' cy='9.5' r='1.8'/%3E%3Cpath d='M4 18l5-5 4 4 3-3 4 4'/%3E%3C/svg%3E") no-repeat center / contain;
-      opacity: 0.08;
-      pointer-events: none;
-    }
 
-    /* 迷路ラボ: 四角い迷路のうずまき */
-    .game-card.maze-bg { overflow: hidden; }
-    .game-card.maze-bg::before {
-      content: '';
-      position: absolute;
-      right: 14px;
-      top: 50%;
-      width: 82px;
-      height: 82px;
-      transform: translateY(-50%);
-      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231a1a1a' stroke-width='1.4'%3E%3Crect x='3' y='3' width='18' height='18'/%3E%3Cpath d='M7 21V7h10v10h-6v-6h3'/%3E%3C/svg%3E") no-repeat center / contain;
-      opacity: 0.08;
-      pointer-events: none;
-    }
 
-    /* エコーダイブ: ひろがる音の輪 */
-    .game-card.echo-bg { overflow: hidden; }
-    .game-card.echo-bg::before {
-      content: '';
-      position: absolute;
-      right: 14px;
-      top: 50%;
-      width: 82px;
-      height: 82px;
-      transform: translateY(-50%);
-      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231a1a1a' stroke-width='1.4' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='1.3' fill='%231a1a1a' stroke='none'/%3E%3Cpath d='M15.5 8.5a5 5 0 0 1 0 7M8.5 8.5a5 5 0 0 0 0 7'/%3E%3Cpath d='M18 5.5a9 9 0 0 1 0 13M6 5.5a9 9 0 0 0 0 13'/%3E%3C/svg%3E") no-repeat center / contain;
-      opacity: 0.08;
-      pointer-events: none;
-    }
     .badge.ai { color: #5a4ad1; border-color: #cdc6f7; background: #f6f3ff; }
 
-    /* ならべパズル100: 4×4の活字ケース */
-    .game-card.narabe-bg { overflow: hidden; }
-    .game-card.narabe-bg::before {
-      content: '';
-      position: absolute;
-      right: 14px;
-      top: 50%;
-      width: 82px;
-      height: 82px;
-      transform: translateY(-50%) rotate(-6deg);
-      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231a1a1a' stroke-width='1.3' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='18' rx='1.5'/%3E%3Cpath d='M7.5 3v18M12 3v18M16.5 3v18M3 7.5h18M3 12h18M3 16.5h18'/%3E%3Cpath d='M5.2 5.2h1.2M9.6 5.2h1.4M14 5.2h1.4M18.4 5.2h1.4M5.2 9.6h1.2M9.6 9.6h1.4M14 9.6h1.4M18.4 9.6h1.4M5.2 14h1.2M9.6 14h1.4M14 14h1.4M18.4 14h1.4M5.2 18.4h1.2M9.6 18.4h1.4M14 18.4h1.4' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat center / contain;
-      opacity: 0.08;
-      pointer-events: none;
-    }
 
-    /* 組み合わせを試す: 4×4盤と3種の石 */
-    .game-card.combo-bg { overflow: hidden; }
-    .game-card.combo-bg::before {
-      content: '';
-      position: absolute;
-      right: 14px;
-      top: 50%;
-      width: 82px;
-      height: 82px;
-      transform: translateY(-50%) rotate(4deg);
-      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231a1a1a' stroke-width='1.15'%3E%3Crect x='3' y='3' width='18' height='18' rx='1.5'/%3E%3Cpath d='M7.5 3v18M12 3v18M16.5 3v18M3 7.5h18M3 12h18M3 16.5h18'/%3E%3Ccircle cx='5.25' cy='5.25' r='1.25' fill='%231a1a1a' stroke='none'/%3E%3Ccircle cx='14.25' cy='9.75' r='1.25' fill='%231a1a1a' stroke='none'/%3E%3Ccircle cx='9.75' cy='14.25' r='1.25' fill='%231a1a1a' stroke='none'/%3E%3C/svg%3E") no-repeat center / contain;
-      opacity: 0.08;
-      pointer-events: none;
-    }
 
     /* 黒白: リバーシ盤を薄く表示 */
     .game-card.reversi-bg { overflow: hidden; }
@@ -750,20 +592,6 @@
   
 .nanpure-bg{background:linear-gradient(135deg,#fff 40%,#edf5ec);border-color:#b6cdbb}.nanpure-bg .card-tag{color:#467756}.nanpure-bg .card-title{color:#214c32}
 
-    /* Move Moove Mooove: square jump and goal */
-    .game-card.move-bg { overflow: hidden; }
-    .game-card.move-bg::before {
-      content: '';
-      position: absolute;
-      right: 20px;
-      top: 21px;
-      width: 23px;
-      height: 23px;
-      border: 4px solid #a6553226;
-      box-shadow: -22px 34px 0 -4px #352d241a, -44px 23px 0 -7px #745b3b1a;
-      pointer-events: none;
-    }
-    .game-card.move-bg .card-title { letter-spacing: .02em; }
 </style>
 <meta property="og:site_name" content="パレあそび">
 <script type="application/ld+json" data-pareasobi-site>{
@@ -844,12 +672,8 @@
     </div>
     <div class="genre-filters" id="genre-filters" aria-label="ジャンル">
       <button type="button" class="genre-filter" data-genre="all" aria-pressed="true">すべて</button>
-      <button type="button" class="genre-filter" data-genre="action" aria-pressed="false">アクション</button>
       <button type="button" class="genre-filter" data-genre="puzzle" aria-pressed="false">パズル</button>
       <button type="button" class="genre-filter" data-genre="card" aria-pressed="false">ボード・カード</button>
-      <button type="button" class="genre-filter" data-genre="explore" aria-pressed="false">探索</button>
-      <button type="button" class="genre-filter" data-genre="tool" aria-pressed="false">ツール</button>
-      <button type="button" class="genre-filter" data-genre="wip" aria-pressed="false">制作中</button>
     </div>
     <div class="sort-row">
       <label class="sort-label" for="sort-select">並び替え</label>
@@ -876,29 +700,6 @@
 
     <a class="game-card nanpure-bg" href="/puzzles/crossword/" id="card-17" data-published="2026-10-30" data-genre="puzzle" data-title="クロスワード"><div class="card-tag">WORDS</div><div class="card-title">クロスワード</div><div class="card-desc">言葉のヒントでマスを埋める。問題作成・保存・印刷も。</div></a>
 
-    <a class="game-card nanpure-bg" href="/puzzles/cross/" id="card-18" data-published="2026-10-30" data-genre="puzzle" data-title="クロスてんびん"><div class="card-tag">NUMBERS</div><div class="card-title">クロスてんびん</div><div class="card-desc">行・列の数字と、×印の斜め同士の合計をそろえる。</div></a>
-
-    <a class="game-card nanpure-bg" href="/puzzles/tenbin/" id="card-19" data-published="2026-10-30" data-genre="puzzle" data-title="天秤"><div class="card-tag">BALANCE</div><div class="card-title">天秤</div><div class="card-desc">天秤を比べて、一番重い記号を見つける。</div></a>
-
-    <a class="game-card nanpure-bg" href="/puzzles/paths/" id="card-20" data-published="2026-10-30" data-genre="puzzle" data-title="しるしのこみち"><div class="card-tag">PATH</div><div class="card-title">しるしのこみち</div><div class="card-desc">○から△を通って□へ。道をつなぐ3問の試作。</div></a>
-
-    <a class="game-card nanpure-bg" href="/puzzles/studio/" id="card-21" data-published="2026-10-30" data-genre="puzzle" data-title="シルプレ工房"><div class="card-tag">CREATE</div><div class="card-title">シルプレ工房</div><div class="card-desc">数字版・4種類の印版を作って、保存して遊ぶ。</div></a>
-
-    <a class="game-card nanpure-bg" href="/puzzles/workshop/" id="card-22" data-published="2026-10-30" data-genre="puzzle" data-title="パズルの試作室"><div class="card-tag">WORKSHOP</div><div class="card-title">パズルの試作室</div><div class="card-desc">制作途中のルールや、問題作成機能を試す。</div></a>
-
-
-    <a class="game-card medal-bg" href="index.html" id="card-0" data-genre="puzzle" data-title="丸場所記憶ゲーム">
-      <div class="card-tag">MEMORY</div>
-      <div class="card-title">丸場所記憶ゲーム</div>
-      <div class="card-desc">丸の場所を記憶して答える<br>金・銀・赤のメダルを目指せ</div>
-    </a>
-
-    <a class="game-card tobe-bg" href="dungeon.html" id="card-1" data-genre="action" data-title="飛べ飛">
-      <div class="card-tag">ACTION</div>
-      <div class="card-title">飛べ飛</div>
-      <div class="card-desc">漢字「飛」が「壁」の隙間をくぐる<br>100壁達成で無理ゲーモード解放</div>
-    </a>
-
     <div class="section-label pop"><span class="spark">✦</span> 新作 <span class="spark">✦</span></div>
 
     <a class="game-card reversi-bg" href="https://osero.puzzle-hub-4826.workers.dev" target="_blank" rel="noopener" id="card-23" data-published="2026-11-16" data-genre="card" data-title="オセロ">
@@ -911,80 +712,6 @@
       <div class="card-tag">MORRIS</div>
       <div class="card-title">ナイン・メンズ・モリス</div>
       <div class="card-desc">3つ並べて相手の駒を取る<br>オンライン対戦・手紙対戦も</div>
-    </a>
-
-    <a class="game-card move-bg" href="move-moove-mooove.html" id="card-14" data-published="2026-10-25" data-genre="puzzle" data-title="Move Moove Mooove">
-      <div class="card-tag">PUZZLE</div>
-      <div class="card-title">Move Moove Mooove</div>
-      <div class="card-desc">跳ぶたびに歩幅が伸びる<br>四角いゴールを目指す思考パズル</div>
-    </a>
-
-    <a class="game-card speed-bg" href="speed.html" id="card-12" data-published="2026-09-18" data-genre="card" data-title="スピード">
-      <div class="card-tag">CARD GAME</div>
-      <div class="card-title">スピード</div>
-      <div class="card-desc">トランプのスピードをAIと対戦<br>10段階の強さから相手を選べる</div>
-    </a>
-
-    <a class="game-card reversi-bg" href="./kuroshiro/" id="card-11" data-published="2026-09-18" data-genre="card" data-title="黒白">
-      <div class="card-tag">BOARD GAME</div>
-      <div class="card-title">黒白</div>
-      <div class="card-desc">AI対戦とオンライン対戦に対応したリバーシ<br>長い接続コードを共有して端末どうしで直接対戦</div>
-    </a>
-
-<a class="game-card combo-bg" href="combination-blocks.html" id="card-10" data-published="2026-09-13" data-genre="puzzle" data-title="Combine &amp; Discover">
-      <div class="card-tag">PUZZLE</div>
-      <div class="card-title">Combine &amp; Discover</div>
-      <div class="card-desc">3種類の石を4×4盤に配置<br>効果を組み合わせて目標点をめざす</div>
-    </a>
-
-    <a class="game-card narabe-bg" href="narabe100.html" id="card-9" data-published="2026-09-12" data-genre="puzzle" data-title="ならべパズル100">
-      <div class="card-tag">PUZZLE</div>
-      <div class="card-title">ならべパズル100</div>
-      <div class="card-desc">ルールの違う並べ替えパズルが100段<br>スライドから魔方陣まで、少しずつ解放</div>
-    </a>
-
-    <a class="game-card echo-bg" href="echo-dive.html" id="card-8" data-published="2026-09-12" data-genre="explore" data-title="エコーダイブ">
-      <div class="card-tag">STEALTH <span class="badge ai">100% AI制作</span></div>
-      <div class="card-title">エコーダイブ</div>
-      <div class="card-desc">まっくらな洞窟を音の反響で探る<br>企画・設計・コード・音 すべてAIが制作</div>
-    </a>
-
-    <a class="game-card maze-bg" href="./maze/" id="card-7" data-published="2026-09-09" data-genre="tool" data-title="迷路ラボ">
-      <div class="card-tag">PERFECT TOOL</div>
-      <div class="card-title">迷路ラボ</div>
-      <div class="card-desc">13種類の作り方で迷路をつくる<br>4種類の探索を動かして見くらべ</div>
-    </a>
-
-    <a class="game-card memo-bg" href="shopping-memo.html" id="card-4" data-published="2026-07-13" data-genre="tool" data-title="ショッピング メモ">
-      <div class="card-tag">PERFECT TOOL</div>
-      <div class="card-title">ショッピング メモ</div>
-      <div class="card-desc">買い物リストをさっと作れる<br>お店ごとにまとめて管理</div>
-    </a>
-
-    <a class="game-card timer-bg" href="timer-gauge.html" id="card-5" data-published="2026-07-27" data-genre="tool" data-title="メータータイマー">
-      <div class="card-tag">TOOL</div>
-      <div class="card-title">メータータイマー</div>
-      <div class="card-desc">メーター付きの多機能タイマー<br>色・音・配置を自由にカスタム</div>
-    </a>
-
-    <a class="game-card gallery-bg" href="skins.html" id="card-6" data-published="2026-08-01" data-genre="tool" data-title="きせかえギャラリー">
-      <div class="card-tag">GALLERY</div>
-      <div class="card-title">きせかえギャラリー</div>
-      <div class="card-desc">タイマーのきせかえを公開・共有<br>みんなの着せ替えを使える</div>
-    </a>
-
-    <div class="section-label">— 制作中 —</div>
-
-    <a class="game-card wip" id="card-2" data-genre="puzzle wip" data-title="感覚謎解き">
-      <div class="card-tag">PUZZLE <span class="badge">制作中</span></div>
-      <div class="card-title">感覚謎解き</div>
-      <div class="card-desc">言葉のない謎解き<br>現在制作中です</div>
-    </a>
-
-    <a class="game-card wip" id="card-3" data-genre="explore wip" data-title="四角迷宮">
-      <div class="card-tag">RPG <span class="badge">制作中</span></div>
-      <div class="card-title">四角迷宮</div>
-      <div class="card-desc">四角いダンジョンを探索する<br>現在制作中です</div>
     </a>
 
   </div>
