@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#ffffff">
+  <meta name="theme-color" content="#FFF8E7">
   <title>パレあそび｜無料ブラウザゲーム・パズル・問題作成ツール</title>
   <meta name="description" content="パレあそびは、無料で遊べるブラウザゲーム・パズル・問題作成ツールの広場です。シルプレ、和同開珎、クロスワード、クロスてんびん、迷路作成、ナンプレ帳、AI対戦ゲームなどをスマホ・PCで楽しめます。登録不要で、作った問題や作品を楽しめる機能も順次公開中。">
   <meta name="keywords" content="現電,幻実世界,電子遊戯,現実世界の電子遊戯,ゲーム,ブラウザゲーム,無料ゲーム,ミニゲーム,丸場所記憶ゲーム,飛べ飛,スピード,黒白,パズル,ショッピング メモ,買い物メモ">
@@ -41,15 +41,59 @@
   }
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     html, body {
-      background: #fff;
+      background: #FFF8E7;
       color: #1a1a1a;
       font-family: 'Noto Serif JP', serif;
       min-height: 100dvh;
+    }
+
+    /* 紙吹雪ドット: 明るいお菓子色の小さな丸を背景いっぱいに散らす */
+    body {
+      background-image:
+        radial-gradient(circle at 6% 10%, rgba(255, 90, 118, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 94% 6%, rgba(255, 201, 60, 0.45) 0 6px, transparent 7px),
+        radial-gradient(circle at 12% 42%, rgba(77, 163, 255, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 88% 38%, rgba(46, 196, 166, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 50% 72%, rgba(255, 90, 118, 0.25) 0 4px, transparent 5px),
+        radial-gradient(circle at 4% 84%, rgba(255, 201, 60, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 96% 86%, rgba(77, 163, 255, 0.30) 0 6px, transparent 7px),
+        radial-gradient(circle at 30% 95%, rgba(46, 196, 166, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 70% 96%, rgba(255, 138, 61, 0.30) 0 5px, transparent 6px);
+      background-attachment: fixed;
+    }
+
+    /* ===== ポップなサイト見出し ===== */
+    .site-header {
+      text-align: center;
+      margin: 0 0 28px;
+      padding: 22px 12px 18px;
+      background: linear-gradient(135deg, #B8F1DD 0%, #D6F0FF 55%, #FFE3E6 100%);
+      border-radius: 28px;
+      box-shadow: 0 8px 24px rgba(255, 150, 120, 0.18);
+    }
+    .site-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(38px, 10vw, 56px);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      line-height: 1.15;
+      background: linear-gradient(90deg, #FF5A76 0%, #FF8A3D 28%, #FFC93C 52%, #2EC4A6 76%, #4DA3FF 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 0 rgba(255, 255, 255, 0.95)) drop-shadow(0 6px 14px rgba(255, 120, 120, 0.25));
+    }
+    .site-sub {
+      font-size: 13px;
+      line-height: 1.5;
+      color: #5a5a5a;
+      margin-top: 8px;
     }
 
     .app {
@@ -198,9 +242,10 @@
     .library-tools {
       margin: -10px 0 18px;
       padding: 14px;
-      border: 1px solid #ececec;
-      border-radius: 14px;
-      background: #fafafa;
+      border: 2px solid #FFE3E6;
+      border-radius: 20px;
+      background: #fff;
+      box-shadow: 0 6px 20px rgba(255, 150, 120, 0.12);
     }
 
     .library-tools-head {
@@ -251,8 +296,9 @@
 
     .genre-filter[aria-pressed="true"] {
       color: #fff;
-      background: #1a1a1a;
-      border-color: #1a1a1a;
+      background: #FF5A76;
+      border-color: #FF5A76;
+      box-shadow: 0 3px 10px rgba(255, 90, 118, 0.35);
     }
 
     .sort-row {
@@ -325,18 +371,25 @@
     .game-card {
       display: block;
       background: #fff;
-      border: 1.5px solid #e8e8e8;
-      border-radius: 12px;
-      padding: 18px 44px 18px 20px;
+      border: 2px solid rgba(0, 0, 0, 0.05);
+      border-radius: 24px;
+      padding: 20px 52px 20px 22px;
       text-decoration: none;
       color: #1a1a1a;
-      transition: background 0.12s, border-color 0.12s;
+      transition: background 0.12s, border-color 0.12s, transform 0.12s, box-shadow 0.12s;
       position: relative;
       -webkit-tap-highlight-color: transparent;
+      box-shadow: 0 8px 24px rgba(255, 150, 120, 0.14);
     }
+    /* カードを4色のパステルで巡回させる（ナンプレ帳の緑と制作中はそのまま） */
+    .game-list .game-card:not(.nanpure-bg):not(.wip):nth-of-type(4n+1) { background: #FFE3E6; border-color: #FFB3C0; }
+    .game-list .game-card:not(.nanpure-bg):not(.wip):nth-of-type(4n+2) { background: #FFF3C4; border-color: #FFD94D; }
+    .game-list .game-card:not(.nanpure-bg):not(.wip):nth-of-type(4n+3) { background: #D6F0FF; border-color: #9AD4FF; }
+    .game-list .game-card:not(.nanpure-bg):not(.wip):nth-of-type(4n+4) { background: #D2F5E3; border-color: #8FE3C0; }
     .game-card:active {
       background: #f8f8f8;
       border-color: #ccc;
+      transform: scale(0.99);
     }
     .game-card.gp-focus {
       outline: 2px solid #888;
@@ -346,11 +399,19 @@
     .game-card::after {
       content: '›';
       position: absolute;
-      right: 18px;
+      right: 14px;
       top: 50%;
       transform: translateY(-50%);
-      font-size: 20px;
-      color: #ccc;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #fff;
+      color: #FF5A76;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 32px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
     }
 
     /* 丸場所記憶: 金銀赤の薄い丸を背景に */
@@ -564,7 +625,7 @@
 
     .card-tag {
       font-size: 10px;
-      color: #aaa;
+      color: rgba(0, 0, 0, 0.55);
       letter-spacing: 0.22em;
       margin-bottom: 5px;
       display: flex;
@@ -572,15 +633,16 @@
       gap: 6px;
     }
     .card-title {
-      font-size: 18px;
-      font-weight: 700;
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: 20px;
+      font-weight: 800;
       color: #1a1a1a;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.04em;
       margin-bottom: 5px;
     }
     .card-desc {
       font-size: 12px;
-      color: #666;
+      color: #555;
       letter-spacing: 0.04em;
       line-height: 1.9;
     }
@@ -596,8 +658,10 @@
     }
 
     .section-label {
-      font-size: 10px;
-      color: #ccc;
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: #FF8FA3;
       letter-spacing: 0.25em;
       text-align: center;
       margin: 20px 0 10px;
@@ -632,18 +696,21 @@
     .footer {
       text-align: center;
       margin-top: 44px;
+      padding: 20px 16px;
       font-size: 11px;
-      color: #bbb;
+      color: #8a7a72;
       line-height: 2.5;
+      background: #FFE3E6;
+      border-radius: 24px;
     }
-    .footer a { color: #525252; font-size: 14px; text-underline-offset: .2em; }
+    .footer a { color: #FF5A76; font-size: 14px; text-underline-offset: .2em; }
 
     /* フッターブランド: グリッチ演出 */
     .footer-brand {
       position: relative;
       display: inline-block;
       font-size: 10px;
-      color: #ccc;
+      color: #c98a96;
       letter-spacing: 0.08em;
     }
     .footer-brand::before,
@@ -762,9 +829,9 @@
 
 <div class="app">
 
-  <header style="text-align:center;margin:0 0 36px">
-    <h1 style="font-size:clamp(30px,8vw,44px);letter-spacing:.04em">パレあそび</h1>
-    <p style="font-size:13px;line-height:1.5;color:#777;margin-top:8px">読み方：ぱれあそび（パレアソビ）</p>
+  <header class="site-header">
+    <h1 class="site-title">パレあそび</h1>
+    <p class="site-sub">読み方：ぱれあそび（パレアソビ）</p>
   </header>
 
   <!-- ===== ゲームカード ===== -->
