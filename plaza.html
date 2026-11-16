@@ -519,6 +519,27 @@
       pointer-events: none;
     }
 
+    /* モリス: 木の盤を薄く表示 */
+    .game-card.morris-bg { overflow: hidden; }
+    .game-card.morris-bg::before {
+      content: '';
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      width: 86px;
+      height: 86px;
+      transform: translateY(-50%) rotate(-4deg);
+      background:
+        radial-gradient(circle at 50% 50%, rgba(90,60,20,.5) 0 4px, transparent 5px),
+        repeating-linear-gradient(0deg, rgba(90,60,20,.16) 0 1px, transparent 1px 28px),
+        repeating-linear-gradient(90deg, rgba(90,60,20,.16) 0 1px, transparent 1px 28px),
+        linear-gradient(135deg, #e8c99a, #d9b380);
+      border: 1px solid rgba(90,60,20,.25);
+      border-radius: 10px;
+      opacity: .3;
+      pointer-events: none;
+    }
+
     /* 作成中カード: 斜線で飛べないことを示す */    .game-card.wip {
       pointer-events: none;
       cursor: default;
@@ -812,6 +833,18 @@
     </a>
 
     <div class="section-label pop"><span class="spark">✦</span> 新作 <span class="spark">✦</span></div>
+
+    <a class="game-card reversi-bg" href="https://osero.puzzle-hub-4826.workers.dev" target="_blank" rel="noopener" id="card-23" data-published="2026-11-16" data-genre="card" data-title="オセロ">
+      <div class="card-tag">REVERSI</div>
+      <div class="card-title">オセロ</div>
+      <div class="card-desc">オンラインで世界中の人と対戦<br>レート・ランキング・観戦も</div>
+    </a>
+
+    <a class="game-card morris-bg" href="https://nainmenzumorisu.puzzle-hub-4826.workers.dev" target="_blank" rel="noopener" id="card-24" data-published="2026-11-16" data-genre="card" data-title="ナイン・メンズ・モリス">
+      <div class="card-tag">MORRIS</div>
+      <div class="card-title">ナイン・メンズ・モリス</div>
+      <div class="card-desc">3つ並べて相手の駒を取る<br>オンライン対戦・手紙対戦も</div>
+    </a>
 
     <a class="game-card move-bg" href="move-moove-mooove.html" id="card-14" data-published="2026-10-25" data-genre="puzzle" data-title="Move Moove Mooove">
       <div class="card-tag">PUZZLE</div>
