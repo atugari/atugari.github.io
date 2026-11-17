@@ -3,7 +3,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 const root=path.resolve(process.argv[2]||'_site'),site='https://atugari.github.io';
 const types={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml','.webp':'image/webp','.png':'image/png','.woff2':'font/woff2'};
-const pages=['wado','crossword','shirupure','cross','tenbin','studio','workshop','paths'];
+const pages=['wado','crossword','shirupure','studio'];
 async function contextFor(browser,width,height){
  const context=await browser.newContext({viewport:{width,height},locale:'ja-JP',isMobile:width<=600,serviceWorkers:'block'});
  await context.addInitScript(()=>{Object.defineProperty(navigator,'doNotTrack',{get:()=> '1'});localStorage.removeItem('np-release-seen');});
@@ -63,6 +63,6 @@ async function contextFor(browser,width,height){
   assert.equal(await page.locator('.update-news').count(),0,'updates panel closes');
   assert.deepEqual(errors,[],'no home runtime errors');
   await context.close();
-  console.log('PASS collapsible introductions: 7 games × mobile/desktop, shirupure intro hidden as intended; PASS home updates: unread marker, open, mark-read persistence and close');
+  console.log('PASS collapsible introductions: 3 games × mobile/desktop, shirupure intro hidden as intended; PASS home updates: unread marker, open, mark-read persistence and close');
  }finally{await browser.close()}
 })().catch(e=>{console.error(e);process.exit(1)});

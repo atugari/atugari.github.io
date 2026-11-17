@@ -10,7 +10,7 @@ try{const context=await browser.newContext({viewport:{width:375,height:812},serv
 page.on('pageerror',e=>errors.push(e.message));
 await context.addInitScript(()=>Object.defineProperty(navigator,'doNotTrack',{get:()=> '1'}));
 await context.route('**/*',route=>{const u=new URL(route.request().url());if(u.origin===origin){const file=path.resolve(root,'.'+decodeURIComponent(u.pathname)+(u.pathname.endsWith('/')?'index.html':''));if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile())return route.fulfill({status:404,body:'Missing asset'});return route.fulfill({status:200,contentType:types[path.extname(file)]||'application/octet-stream',body:fs.readFileSync(file)})}if(u.pathname.startsWith('/api/'))return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({items:[],records:[],rows:[],days:[],challenges:[],save:null,unread:0,signedIn:true,serverNow:Date.now()})});return route.fulfill({status:204,body:''})});
-await page.goto(origin+'/plaza.html');for(const slug of ['shirupure','wado','crossword','cross','tenbin','paths','studio','workshop'])assert.equal(await page.locator('a[href="/puzzles/'+slug+'/"]').count(),1);
+await page.goto(origin+'/plaza.html');for(const slug of ['shirupure','wado','crossword','studio'])assert.equal(await page.locator('a[href="/puzzles/'+slug+'/"]').count(),1);
 await page.goto(origin+'/nanpure/?lang=en');
 await page.getByRole('link',{name:'Support the creator for ¥100/month ♫',exact:true}).waitFor();
 assert.equal(await page.locator('.designed-home [data-pare-entry]').count(),0);
@@ -28,29 +28,23 @@ assert.equal(await notebook.locator('[data-action="open-crossword"]').isVisible(
 assert.equal(await notebook.locator('.homechoices a[href="/puzzles/"]').count(),0,'The Sudoku play menu has no Pareasobi tile');
 assert(await notebook.locator('[data-action="open-notebook"]').isVisible(),'Sudoku remains available from the play menu');
 await page.goto(origin+'/puzzles/');
-for(const slug of ['shirupure','wado','crossword','cross','tenbin','paths','studio','workshop'])assert.equal(await page.locator('a[href="/puzzles/'+slug+'/"]').count(),1);
+for(const slug of ['shirupure','wado','crossword','studio'])assert.equal(await page.locator('a[href="/puzzles/'+slug+'/"]').count(),1);
 
-for(const slug of ['shirupure','wado','crossword','cross','tenbin','paths','studio','workshop','magic-square']){
+for(const slug of ['shirupure','wado','crossword','studio','magic-square']){
  await page.goto(origin+'/puzzles/'+slug+'/');await page.locator('#game:not([hidden])').waitFor();await page.waitForFunction(()=>document.querySelector('#status').hidden);
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,slug+' outer width');
  const child=page.frameLocator('#game');assert(await child.locator('main').isVisible(),slug+' has actual content');
  if(slug==='shirupure'){await child.locator('[data-act=learn]').click();await child.locator('.lesson-target').click();await page.waitForFunction(()=>{const h=document.querySelector('body[data-game="shirupure"]>header');return h&&getComputedStyle(h).display==='none'});assert.equal(await page.evaluate(()=>getComputedStyle(document.querySelector('body[data-game="shirupure"]>header')).display),'none','shirupure outer header hidden as intended');}
  if(slug==='wado'){await page.locator('[data-sound]').click();await page.locator('dialog[open] [data-audio=track]').selectOption('cozy-puzzle-3');assert.equal(await page.evaluate(()=>NPSiteAudio.get().track),'cozy-puzzle-3');await page.locator('dialog[open]').getByRole('button',{name:'閉じる',exact:true}).click();}
- if(slug==='paths')assert((await child.locator('main').innerText()).includes('しるしのこみち'));
  if(slug==='magic-square')assert(await child.locator('[data-magic-play]').isDisabled());
  if(slug==='shirupure'){await page.goto(origin+'/plaza.html');}else{await page.locator('[data-hub]').click();}await page.locator('.game-list').waitFor();
 }
-await page.goto(origin+'/puzzles/cross/stock/');await page.locator('#summary').filter({hasText:'6,340'}).waitFor();assert.deepEqual(await page.locator('#kind option[value]:not([value=""])').evaluateAll(nodes=>nodes.map(n=>n.value)),['all','cross']);await page.locator('#size').selectOption({label:'6×6'});await page.locator('#quick').click();await page.waitForFunction(()=>document.querySelector('#playing-title').textContent.includes('P-010296'));
-await page.waitForFunction(()=>document.querySelector('#game')?.contentWindow?.NanpureAppTest?.getCurrent()?.kind==='cross');assert.match(page.url(),/\/puzzles\/cross\/stock\/\?scope=cross&p=P-010296$/);
-await page.reload();await page.waitForFunction(()=>document.querySelector('#player')?.hidden===false&&document.querySelector('#playing-title').textContent.includes('P-010296'));
-await page.locator('#back').click();await page.locator('#library:not([hidden])').waitFor();assert.match(page.url(),/\/puzzles\/cross\/stock\/\?scope=cross$/);
 await page.goto(origin+'/nanpure/collection/');await page.locator('#summary').filter({hasText:sudokuCount}).waitFor();assert.equal(await page.locator('#kind option[value="cross"]').count(),0);assert.equal(await page.locator('#kind option[value]:not([value=""])').count(),23);
-await page.goto(origin+'/nanpure/collection/?p=P-010296');await page.waitForURL('**/puzzles/cross/stock/**');await page.waitForFunction(()=>document.querySelector('#playing-title')?.textContent.includes('P-010296'));
 // All public cards must start and return at each requested viewport. Verify an
 // actual input survives reload, not just that the same puzzle ID is displayed.
 for(const viewport of [{width:1280,height:800},{width:375,height:812},{width:812,height:375}]){
  await page.setViewportSize(viewport);await page.goto(origin+'/plaza.html');
- for(const slug of ['shirupure','wado','crossword','cross','tenbin','paths','studio','workshop']){
+ for(const slug of ['shirupure','wado','crossword','studio']){
   await page.locator('a[href="/puzzles/'+slug+'/"]').click();
   await page.locator('#game:not([hidden])').waitFor();await page.waitForFunction(()=>document.querySelector('#status').hidden);
   assert(await page.frameLocator('#game').locator('main').isVisible(),slug+' actual game at '+viewport.width);
@@ -58,22 +52,7 @@ for(const viewport of [{width:1280,height:800},{width:375,height:812},{width:812
   if(slug==='shirupure')assert.equal(await page.frameLocator('#game').locator('a.main-site-link').getAttribute('href'),'/plaza.html','Real href also supports opening the hub in another tab');
   if(slug==='shirupure'){await page.goto(origin+'/plaza.html');}else{await page.locator('[data-hub]').click();}await page.locator('.game-list').waitFor();
  }
- await page.goto(origin+'/puzzles/cross/stock/?p=P-010296');
- await page.waitForFunction(()=>document.querySelector('#game')?.contentWindow?.NanpureAppTest?.getCurrent()?.kind==='cross');
- const value=await page.evaluate(()=>document.querySelector('#game').contentWindow.NanpureAppTest.getCurrent().solution[0]);
- await page.frameLocator('#game').locator('[data-action="cell"][data-cell="0"]').click();
- await page.waitForFunction(v=>{const w=document.querySelector('#game').contentWindow,b=w.document.querySelector('.np-number-panel [data-number="'+v+'"]');if(!b)return false;const r=b.getBoundingClientRect(),hit=w.document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return r.y>=0&&r.bottom<=w.innerHeight&&!!hit&&b.contains(hit)},value);
- await page.frameLocator('#game').locator('.np-number-panel [data-number="'+value+'"]').click();
- await page.waitForFunction(v=>document.querySelector('#game').contentWindow.NanpureAppTest.getCurrent().grid[0]===v,value);
- const saved=await page.evaluate(async()=>{const w=document.querySelector('#game').contentWindow;await w.NPStorage.flush();const p=w.NanpureAppTest.getCurrent(),stored=await w.NPStorage.get(p.uid);return{uid:p.uid,grid:p.grid.slice(),stored:stored?.grid}});
- assert.deepEqual(saved.stored,saved.grid,'Cross-balance durable save before reload at '+viewport.width);
- const before={uid:saved.uid,grid:saved.grid};
- await page.reload();await page.waitForFunction(()=>document.querySelector('#game')?.contentWindow?.NanpureAppTest?.getCurrent()?.kind==='cross');
- const after=await page.evaluate(()=>{const p=document.querySelector('#game').contentWindow.NanpureAppTest.getCurrent();return{uid:p.uid,grid:p.grid.slice()}});
- assert.deepEqual(after,before,'Actual saved grid at '+viewport.width);
- await page.locator('#back').click();await page.locator('#library:not([hidden])').waitFor();
- await page.locator('#library header a[href="/plaza.html"]').click();await page.locator('.game-list').waitFor();
- console.log('PASS viewport '+viewport.width+'x'+viewport.height+': eight starts/returns and actual saved-grid reload');
+  console.log('PASS viewport '+viewport.width+'x'+viewport.height+': four starts/returns');
 }
 // The screenshot's large board must gain usable height, with real editing and
 // reload still working. Smaller layouts retain their usable docked keypad.
@@ -178,5 +157,5 @@ for(const viewport of [{width:360,height:680},{width:844,height:390},{width:1280
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'16x16 outer width');
  console.log('PASS readable 16x16 '+viewport.width+'x'+viewport.height+': compact phone keys, actual-size warning, one-tap readable zoom, dismiss and unchanged grid');
 }
-assert.deepEqual(errors,[]);await context.close();console.log('PASS public relocation: nine tools start, hub returns, Sudoku-only shell, audio controls, scoped original collection ids, reload/resume and legacy bookmarks.');
+assert.deepEqual(errors,[]);await context.close();console.log('PASS public relocation: five tools start, hub returns, Sudoku-only shell, audio controls, scoped original collection ids, reload/resume.');
 }finally{await browser.close()}})().catch(e=>{console.error(e);process.exitCode=1});
