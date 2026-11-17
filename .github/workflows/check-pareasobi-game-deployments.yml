@@ -1,69 +1,23 @@
-name: Check two Pareasobi game deployments
+name: Stage Othello reading and translation fix
 
 on:
   push:
     branches: [codex/pareasobi-worker-check-20261117]
     paths: [.github/workflows/check-pareasobi-game-deployments.yml]
 
-permissions: {}
+permissions:
+  contents: read
 
 jobs:
-  inspect:
-    runs-on: ubuntu-latest
-    timeout-minutes: 3
+  stage:
     if: github.repository == 'atugari/atugari.github.io'
-    env:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
     steps:
-      - name: Check access and deployment metadata without reading secrets
-        shell: bash
-        run: |
-          python3 - <<'PY'
-          import json
-          import os
-          import urllib.error
-          import urllib.request
-
-          token = os.environ.get('CLOUDFLARE_API_TOKEN')
-          if not token:
-              raise SystemExit('The existing deployment credential is unavailable to this job.')
-          account = '3fb1db1d33caddf96fec77fac7d571e6'
-          root = f'https://api.cloudflare.com/client/v4/accounts/{account}/workers/scripts'
-
-          import re
-          from email import policy
-          from email.parser import BytesParser
-
-          def get(url):
-              return urllib.request.urlopen(urllib.request.Request(url, headers={'Authorization': f'Bearer {token}'}), timeout=15)
-
-          for worker, version_id in {
-              'osero': '4cb1e458-07b3-4b19-abba-107a4499617e',
-              'nainmenzumorisu': '0efb4f35-2464-4775-a406-dc57bda637c7',
-          }.items():
-              with get(f'{root}/{worker}/versions/{version_id}') as reply:
-                  meta = json.load(reply)['result']
-              details = meta.get('resources') or {}
-              for field in ('script', 'script_runtime'):
-                  item = details.get(field) or {}
-                  print(f'{worker}: {field} fields={",".join(sorted(item))}')
-              with get(f'{root}/{worker}/settings') as reply:
-                  settings = json.load(reply)['result']
-              print(f'{worker}: settings fields={",".join(sorted(settings))}')
-              for path in ('content/v2', ''):
-                  try:
-                      with get(f'{root}/{worker}' + (f'/{path}' if path else '')) as reply:
-                          mime = reply.headers['Content-Type']
-                          data = reply.read()
-                          main_header = reply.headers.get('CF-Worker-Main-Module-Part')
-                  except urllib.error.HTTPError as error:
-                      print(f'{worker}: bundle HTTP {error.code} via {path or "base"}')
-                      continue
-                  parsed = BytesParser(policy=policy.default).parsebytes(('Content-Type: '+mime+'\r\n\r\n').encode()+data)
-                  parts = list(parsed.iter_parts())
-                  blobs = [part.get_payload(decode=True) or b'' for part in parts] if parts else [data]
-                  html = any(re.search(rb'<!doctype html|<html[ >]|<body[ >]', blob, re.I) for blob in blobs)
-                  json_metadata = any(part.get_param('name', header='content-disposition')=='metadata' for part in parts)
-                  print(f'{worker}: bundle bytes={len(data)} MIME={parsed.get_content_type()} parts={len(parts)} main_header={bool(main_header)} html_present={html} has_metadata={json_metadata}')
-                  break
-          PY
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Stage the verified frontend changes
+        run: python3 scripts/stage-othello-reading.py
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
