@@ -1,23 +1,51 @@
-name: Stage Othello reading and translation fix
+name: Route Othello test requests to the staged version
 
 on:
   push:
     branches: [codex/pareasobi-worker-check-20261117]
     paths: [.github/workflows/check-pareasobi-game-deployments.yml]
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
-  stage:
+  verify:
     if: github.repository == 'atugari/atugari.github.io'
     runs-on: ubuntu-latest
-    timeout-minutes: 4
+    timeout-minutes: 3
     steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - name: Stage the verified frontend with the existing compatibility settings
-        run: python3 scripts/stage-othello-reading.py
+      - name: Keep the current Othello version at 100 percent during verification
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import urllib.error
+          import urllib.request
+
+          origin = 'https://api.cloudflare.com/client/v4/accounts/3fb1db1d33caddf96fec77fac7d571e6/workers/scripts/osero'
+          stable = '4cb1e458-07b3-4b19-abba-107a4499617e'
+          staged = 'f819dd37-e358-429f-a7c8-fa01928fad46'
+          def call(path, payload=None):
+              headers = {'Authorization': 'Bearer '+os.environ['CLOUDFLARE_API_TOKEN']}
+              if payload is not None:
+                  headers['Content-Type'] = 'application/json'
+              body = None if payload is None else json.dumps(payload).encode()
+              request = urllib.request.Request(f'{origin}/{path}', headers=headers, data=body)
+              try:
+                  with urllib.request.urlopen(request, timeout=20) as reply:
+                      return json.load(reply)['result']
+              except urllib.error.HTTPError as error:
+                  codes = [entry.get('code') for entry in json.load(error).get('errors', [])]
+                  raise SystemExit(f'Cloudflare returned HTTP {error.code}, error codes {codes}') from None
+
+          live = call('deployments')['deployments'][0]['versions']
+          latest = call('versions')['items'][0]['id']
+          if {entry['version_id']: entry['percentage'] for entry in live} != {stable: 100} or latest != staged:
+              raise SystemExit('The expected live or staged Othello version changed')
+          result = call('deployments', {'strategy':'percentage','versions':[
+              {'version_id':stable,'percentage':100},
+              {'version_id':staged,'percentage':0},
+          ]})
+          print('Othello verification deployment:', result['id'])
+          PY
