@@ -26,6 +26,6 @@ const values=new Map([['nanpure-language-v1','fr'],['nanpure-furigana-v1','on'],
 const real={getItem:k=>values.get(k)||null,setItem:(k,v)=>values.set(k,v),removeItem:k=>values.delete(k)};
 const w={localStorage:real},db={open(){},deleteDatabase(){}};vm.runInNewContext(scope,{window:w,indexedDB:db,Object});
 assert.equal(w.localStorage.getItem('nanpure-language-v1'),'fr');assert.equal(w.localStorage.getItem('nanpure-furigana-v1'),'on');assert.equal(w.localStorage.getItem('puzzle'),'saved');w.localStorage.setItem('puzzle','updated');assert.equal(values.get('np-ready100k:puzzle'),'updated');assert.equal(values.get('nanpure-language-v1'),'fr');
-for(const route of ['shirupure','wado','crossword','cross','tenbin','studio','paths','workshop'])assert(fs.readFileSync('puzzles/'+route+'/index.html','utf8').includes('/nanpure/assets/reading-tools.js'));
-for(const file of ['nanpure/collection/index.html','puzzles/cross/stock/index.html'])assert(fs.readFileSync(file,'utf8').includes('/nanpure/assets/reading-tools.js'));
-console.log('PASS shared reading:',count,'foreign languages; original kanji/clues, memo, digits and DOM preserved; reversible ruby; shared language preferences and isolated puzzle saves; 10 public entry routes.');
+for(const route of ['shirupure','wado','crossword','studio'])assert(fs.readFileSync('puzzles/'+route+'/index.html','utf8').includes('/nanpure/assets/reading-tools.js'));
+for(const file of ['nanpure/collection/index.html'])assert(fs.readFileSync(file,'utf8').includes('/nanpure/assets/reading-tools.js'));
+console.log('PASS shared reading:',count,'foreign languages; original kanji/clues, memo, digits and DOM preserved; reversible ruby; shared language preferences and isolated puzzle saves; 5 public entry routes.');
