@@ -48,6 +48,39 @@ jobs:
                   else:
                       entries = result if isinstance(result, list) else result.get('items', result.get('deployments', []))
                       summaries.append(f'{worker}: {endpoint} accessible, {len(entries)} records returned')
+          for worker in ('osero', 'nainmenzumorisu'):
+              def read(endpoint):
+                  request = urllib.request.Request(
+                      f'{root}/{worker}/{endpoint}',
+                      headers={'Authorization': f'Bearer {token}'},
+                  )
+                  with urllib.request.urlopen(request, timeout=12) as reply:
+                      return json.load(reply)['result']
+
+              result = read('versions')
+              versions = result if isinstance(result, list) else result['items']
+              current = read('deployments')
+              deployments = current if isinstance(current, list) else current['deployments']
+              deployed = {version['version_id'] for version in deployments[0].get('versions', [])}
+              for version in versions:
+                  version_id = version['id']
+                  detail = read(f'versions/{version_id}')
+                  info = detail.get('resources') or {}
+                  bindings = sorted({binding.get('type', '?') for binding in info.get('bindings', [])})
+                  has_preview = (version.get('metadata') or {}).get('hasPreview')
+                  prefix = version_id[:8]
+                  if worker == 'nainmenzumorisu':
+                      try:
+                          url = f'https://{prefix}-{worker}.puzzle-hub-4826.workers.dev/'
+                          with urllib.request.urlopen(url, timeout=8) as reply:
+                              homepage = f'{reply.status} {reply.headers.get_content_type()}'
+                      except urllib.error.HTTPError as error:
+                          homepage = f'HTTP {error.code}'
+                      except urllib.error.URLError:
+                          homepage = 'unreachable'
+                      summaries.append(f'{worker}: version {version_id} active={version_id in deployed} preview={has_preview} homepage={homepage} bindings={",".join(bindings)} resources={",".join(sorted(info))}')
+                  elif version_id in deployed:
+                      summaries.append(f'{worker}: version {version_id} active=True preview={has_preview} bindings={",".join(bindings)} resources={",".join(sorted(info))}')
           with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as report:
               for line in summaries:
                   print(line)
