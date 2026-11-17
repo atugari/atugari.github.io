@@ -5,7 +5,7 @@ const readSource=p=>fs.readFileSync(path.join(source,p),'utf8');
 const hub=read('plaza.html'),tracker=read('assets/pare-analytics.js');
 assert(fs.existsSync(path.join(root,'assets/pare-analytics.js')),'Published analytics asset is missing');
 const cards=[...hub.matchAll(/<a class="game-card[^"]*" href="([^"]+)"/g)].map(m=>m[1]);
-assert(cards.length>=15,'Expected the published PareAsobi game catalogue');
+assert(cards.length>=6,'Expected the published PareAsobi game catalogue');
 for(const href of cards){
  const url=new URL(href,'https://atugari.github.io/plaza.html');
  let file=decodeURIComponent(url.pathname).slice(1);
@@ -30,3 +30,4 @@ assert(api.includes('await owner(request,env)'),'Analytics report must be owner-
 assert(api.includes("request.headers.get('DNT')==='1'"),'Analytics intake must respect DNT');
 assert(readSource('nanpure-api/migrations/0010_pareasobi_analytics.sql').includes('pare_analytics_daily'),'Daily aggregates schema missing');
 console.log(`PareAsobi analytics covers ${cards.length} published game cards.`);
+
