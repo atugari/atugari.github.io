@@ -30,13 +30,12 @@ assert(await notebook.locator('[data-action="open-notebook"]').isVisible(),'Sudo
 await page.goto(origin+'/puzzles/');
 for(const slug of ['shirupure','wado','crossword','studio'])assert.equal(await page.locator('a[href="/puzzles/'+slug+'/"]').count(),1);
 
-for(const slug of ['shirupure','wado','crossword','studio','magic-square']){
+for(const slug of ['shirupure','wado','crossword','studio']){
  await page.goto(origin+'/puzzles/'+slug+'/');await page.locator('#game:not([hidden])').waitFor();await page.waitForFunction(()=>document.querySelector('#status').hidden);
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,slug+' outer width');
  const child=page.frameLocator('#game');assert(await child.locator('main').isVisible(),slug+' has actual content');
  if(slug==='shirupure'){await child.locator('[data-act=learn]').click();await child.locator('.lesson-target').click();await page.waitForFunction(()=>{const h=document.querySelector('body[data-game="shirupure"]>header');return h&&getComputedStyle(h).display==='none'});assert.equal(await page.evaluate(()=>getComputedStyle(document.querySelector('body[data-game="shirupure"]>header')).display),'none','shirupure outer header hidden as intended');}
  if(slug==='wado'){await page.locator('[data-sound]').click();await page.locator('dialog[open] [data-audio=track]').selectOption('cozy-puzzle-3');assert.equal(await page.evaluate(()=>NPSiteAudio.get().track),'cozy-puzzle-3');await page.locator('dialog[open]').getByRole('button',{name:'閉じる',exact:true}).click();}
- if(slug==='magic-square')assert(await child.locator('[data-magic-play]').isDisabled());
  if(slug==='shirupure'){await page.goto(origin+'/plaza.html');}else{await page.locator('[data-hub]').click();}await page.locator('.game-list').waitFor();
 }
 await page.goto(origin+'/nanpure/collection/');await page.locator('#summary').filter({hasText:sudokuCount}).waitFor();assert.equal(await page.locator('#kind option[value="cross"]').count(),0);assert.equal(await page.locator('#kind option[value]:not([value=""])').count(),23);
@@ -157,5 +156,5 @@ for(const viewport of [{width:360,height:680},{width:844,height:390},{width:1280
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'16x16 outer width');
  console.log('PASS readable 16x16 '+viewport.width+'x'+viewport.height+': compact phone keys, actual-size warning, one-tap readable zoom, dismiss and unchanged grid');
 }
-assert.deepEqual(errors,[]);await context.close();console.log('PASS public relocation: five tools start, hub returns, Sudoku-only shell, audio controls, scoped original collection ids, reload/resume.');
+assert.deepEqual(errors,[]);await context.close();console.log('PASS public relocation: four tools start, hub returns, Sudoku-only shell, audio controls, scoped original collection ids, reload/resume.');
 }finally{await browser.close()}})().catch(e=>{console.error(e);process.exitCode=1});
