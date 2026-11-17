@@ -88,9 +88,13 @@ def main():
     mods, entry = existing_modules()
     settings = cloud('settings')
     previous = cloud(f'versions/{BASE_VERSION}')['resources']
-    for setting in ('compatibility_date','compatibility_flags'):
-        if settings.get(setting) != previous['script_runtime'].get(setting):
-            raise SystemExit(f'Active Worker {setting} differs from the latest settings')
+    runtime = previous['script_runtime']
+    if settings.get('compatibility_date') != runtime.get('compatibility_date'):
+        raise SystemExit('The current Worker and settings have different compatibility dates')
+    flags = sorted(settings.get('compatibility_flags') or [])
+    runtime_flags = sorted(runtime.get('compatibility_flags') or [])
+    if flags != runtime_flags:
+        raise SystemExit(f'Compatibility flags differ: settings={flags}, version={runtime_flags}')
     main_module = 'pareasobi-othello-reading.mjs'
     if main_module in mods:
         raise SystemExit('The Othello reading handler is already in this bundle')
@@ -115,7 +119,7 @@ export default {{...original, fetch(request, env, ctx) {{
     metadata = {
         'main_module': main_module,
         'compatibility_date': settings['compatibility_date'],
-        'compatibility_flags': settings['compatibility_flags'],
+        'compatibility_flags': flags,
         'keep_assets': True,
         'assets': {'config': {'run_worker_first': list(sources)}},
         'bindings': bindings,
