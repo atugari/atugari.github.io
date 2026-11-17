@@ -85,7 +85,7 @@
       filter: drop-shadow(0 2px 0 rgba(255, 255, 255, 0.95)) drop-shadow(0 6px 14px rgba(255, 120, 120, 0.25));
     }
     .site-sub {
-      font-size: 13px;
+      font-size: 22px;
       line-height: 1.5;
       color: #5a5a5a;
       margin-top: 8px;
@@ -109,7 +109,7 @@
 
     .title-label {
       text-align: center;
-      font-size: clamp(9px, 2.2vw, 11px);
+      font-size: 22px;
       font-weight: 700;
       color: #bbb;
       letter-spacing: 0.45em;
@@ -144,7 +144,7 @@
     /* フリガナ共通 */
     .title-ruby {
       display: block;
-      font-size: clamp(9px, 2.4vw, 11px);
+      font-size: 22px;
       color: #aaa;
       letter-spacing: 0.18em;
       margin-bottom: 1px;
@@ -219,7 +219,7 @@
     /* 中段: の（中央） */
     .title-no {
       text-align: center;
-      font-size: clamp(20px, 5.8vw, 28px);
+      font-size: clamp(22px, 5.8vw, 28px);
       font-weight: 900;
       color: #1a1a1a;
       letter-spacing: 0.05em;
@@ -233,109 +233,12 @@
     }
 
 
-    /* ===== 一覧の絞り込み・並び替え ===== */
-    .library-tools {
-      margin: -10px 0 18px;
-      padding: 14px;
-      border: 2px solid #FFE3E6;
-      border-radius: 20px;
-      background: #fff;
-      box-shadow: 0 6px 20px rgba(255, 150, 120, 0.12);
-    }
-
-    .library-tools-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-
-    .library-tools-title {
-      font-size: 11px;
-      font-weight: 700;
-      color: #777;
-      letter-spacing: 0.12em;
-    }
-
-    .library-count {
-      font-size: 10px;
-      color: #aaa;
-      white-space: nowrap;
-    }
-
-    .genre-filters {
-      display: flex;
-      gap: 7px;
-      overflow-x: auto;
-      padding: 2px 0 8px;
-      scrollbar-width: thin;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .genre-filter {
-      flex: 0 0 auto;
-      min-height: 34px;
-      padding: 7px 11px;
-      border: 1px solid #dedede;
-      border-radius: 999px;
-      background: #fff;
-      color: #555;
-      font: inherit;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.03em;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .genre-filter[aria-pressed="true"] {
-      color: #fff;
-      background: #FF5A76;
-      border-color: #FF5A76;
-      box-shadow: 0 3px 10px rgba(255, 90, 118, 0.35);
-    }
-
-    .sort-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding-top: 8px;
-      border-top: 1px solid #ededed;
-    }
-
-    .sort-label {
-      font-size: 10px;
-      color: #999;
-      letter-spacing: 0.12em;
-      white-space: nowrap;
-    }
-
-    .sort-select {
-      width: min(210px, 62vw);
-      min-height: 36px;
-      padding: 7px 32px 7px 11px;
-      border: 1px solid #dedede;
-      border-radius: 9px;
-      background: #fff;
-      color: #333;
-      font: inherit;
-      font-size: 11px;
-      font-weight: 700;
-    }
-
     .game-card[hidden],
     .section-label[hidden] {
       display: none !important;
     }
 
 
-    @media (max-width: 380px) {
-      .library-tools { padding: 12px; }
-      .sort-row { align-items: stretch; flex-direction: column; gap: 6px; }
-      .sort-select { width: 100%; }
-    }
 
     /* ===== カードリスト ===== */
     .game-list {
@@ -463,7 +366,7 @@
     }
 
     .card-tag {
-      font-size: 10px;
+      font-size: 22px;
       color: rgba(0, 0, 0, 0.55);
       letter-spacing: 0.22em;
       margin-bottom: 5px;
@@ -473,14 +376,14 @@
     }
     .card-title {
       font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
-      font-size: 20px;
+      font-size: 22px;
       font-weight: 800;
       color: #1a1a1a;
       letter-spacing: 0.04em;
       margin-bottom: 5px;
     }
     .card-desc {
-      font-size: 12px;
+      font-size: 22px;
       color: #555;
       letter-spacing: 0.04em;
       line-height: 1.9;
@@ -488,7 +391,7 @@
 
     .badge {
       display: inline-block;
-      font-size: 9px;
+      font-size: 22px;
       color: #999;
       border: 1px solid #ddd;
       border-radius: 4px;
@@ -498,7 +401,7 @@
 
     .section-label {
       font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
-      font-size: 13px;
+      font-size: 22px;
       font-weight: 700;
       color: #FF8FA3;
       letter-spacing: 0.25em;
@@ -508,7 +411,7 @@
 
     /* 新作ラベル: ポップに目立たせる */
     .section-label.pop {
-      font-size: 16px;
+      font-size: 22px;
       font-weight: 800;
       letter-spacing: 0.3em;
       color: #ff4d6d;
@@ -536,19 +439,19 @@
       text-align: center;
       margin-top: 44px;
       padding: 20px 16px;
-      font-size: 11px;
+      font-size: 22px;
       color: #8a7a72;
-      line-height: 2.5;
+      line-height: 1.9;
       background: #FFE3E6;
       border-radius: 24px;
     }
-    .footer a { color: #FF5A76; font-size: 14px; text-underline-offset: .2em; }
+    .footer a { color: #FF5A76; font-size: 22px; text-underline-offset: .2em; }
 
     /* フッターブランド: グリッチ演出 */
     .footer-brand {
       position: relative;
       display: inline-block;
-      font-size: 10px;
+      font-size: 22px;
       color: #c98a96;
       letter-spacing: 0.08em;
     }
@@ -637,7 +540,7 @@
     }
     .hero-sub {
       margin-top: 12px;
-      font-size: clamp(13px, 3vw, 16px);
+      font-size: 22px;
       font-weight: 700;
       line-height: 1.9;
       color: #234;
@@ -651,7 +554,7 @@
       border: 2px solid #FF9F1C;
       color: #B34700;
       font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
-      font-size: 17px;
+      font-size: 22px;
       font-weight: 800;
       letter-spacing: 0.04em;
       text-decoration: none;
@@ -665,7 +568,7 @@
       transform: rotate(18deg);
     }
     .hero-deco.deco-2 {
-      width: 0; height: 0; left: 7%; top: 62%;
+      width: 0; height: 0; left: 5%; top: auto; bottom: 4%;
       border-left: 16px solid transparent; border-right: 16px solid transparent;
       border-bottom: 28px solid #FF8FA3; transform: rotate(-12deg);
     }
@@ -685,7 +588,7 @@
     }
     .games-heading p {
       margin-top: 6px;
-      font-size: 13px;
+      font-size: 22px;
       font-weight: 700;
       color: #2E9E6B;
       letter-spacing: 0.06em;
@@ -781,7 +684,7 @@
       border-radius: 999px;
       background: rgba(255, 255, 255, 0.85);
       color: #555;
-      font-size: 10px;
+      font-size: 22px;
       letter-spacing: 0.14em;
     }
     .card-desc { line-height: 1.8; }
@@ -793,7 +696,7 @@
       background: rgba(255, 255, 255, 0.92);
       color: #D6334F;
       font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
-      font-size: 15px;
+      font-size: 22px;
       font-weight: 800;
       letter-spacing: 0.05em;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
@@ -885,31 +788,10 @@
 
   <!-- ===== ゲームカード ===== -->
 
-  <!-- ===== 表示設定 ===== -->
-  <section class="library-tools" aria-label="ゲーム一覧の表示設定">
-    <div class="library-tools-head">
-      <div class="library-tools-title">ゲームを探す</div>
-      <div class="library-count" id="library-count" aria-live="polite"></div>
-    </div>
-    <div class="genre-filters" id="genre-filters" aria-label="ジャンル">
-      <button type="button" class="genre-filter" data-genre="all" aria-pressed="true">すべて</button>
-      <button type="button" class="genre-filter" data-genre="puzzle" aria-pressed="false">パズル</button>
-      <button type="button" class="genre-filter" data-genre="card" aria-pressed="false">ボード・カード</button>
-    </div>
-    <div class="sort-row">
-      <label class="sort-label" for="sort-select">並び替え</label>
-      <select class="sort-select" id="sort-select">
-        <option value="default">おすすめ順</option>
-        <option value="newest">新しい順</option>
-        <option value="oldest">古い順</option>
-        <option value="name">名前順</option>
-      </select>
-    </div>
-  </section>
 
   <div class="game-list">
 
-    <a class="game-card nanpure-bg card-yellow" href="/nanpure/" id="card-13" data-published="2026-10-20" data-genre="puzzle" data-title="ナンプレ帳">
+    <a class="game-card nanpure-bg card-yellow" href="/nanpure/" id="card-13" data-published="2026-10-20" data-title="ナンプレ帳">
       <div class="card-slides"><img class="card-shot is-active" src="assets/game-shots/nanpure-1.jpg" alt="ナンプレ帳の画面" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/nanpure-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/nanpure-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
       <div class="card-body">
         <div class="card-head"><div class="card-title">ナンプレ帳</div><div class="card-tag">SUDOKU</div></div>
@@ -918,15 +800,15 @@
       </div>
     </a>
 
-    <a class="game-card nanpure-bg card-pink" href="/puzzles/shirupure/" id="card-15" data-published="2026-10-30" data-genre="puzzle" data-title="シルプレ"><div class="card-slides"><img class="card-shot is-active" src="assets/game-shots/shirupure-1.jpg" alt="シルプレの画面" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/shirupure-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/shirupure-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div><div class="card-body"><div class="card-head"><div class="card-title">シルプレ</div><div class="card-tag">SHIRUPURE</div></div><div class="card-desc">記号を仕切って部屋を作る。練習から660問。</div><span class="card-play">あそぶ →</span></div></a>
+    <a class="game-card nanpure-bg card-pink" href="/puzzles/shirupure/" id="card-15" data-published="2026-10-30" data-title="シルプレ"><div class="card-slides"><img class="card-shot is-active" src="assets/game-shots/shirupure-1.jpg" alt="シルプレの画面" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/shirupure-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/shirupure-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div><div class="card-body"><div class="card-head"><div class="card-title">シルプレ</div><div class="card-tag">SHIRUPURE</div></div><div class="card-desc">記号を仕切って部屋を作る。練習から660問。</div><span class="card-play">あそぶ →</span></div></a>
 
-    <a class="game-card nanpure-bg card-mint" href="/puzzles/wado/" id="card-16" data-published="2026-10-30" data-genre="puzzle" data-title="和同開珎"><div class="card-slides"><img class="card-shot is-active" src="assets/game-shots/wado-1.jpg" alt="和同開珎の画面" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/wado-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/wado-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div><div class="card-body"><div class="card-head"><div class="card-title">和同開珎</div><div class="card-tag">KANJI</div></div><div class="card-desc">四つの熟語に共通する漢字を考える。ヒント・印刷に対応。</div><span class="card-play">あそぶ →</span></div></a>
+    <a class="game-card nanpure-bg card-mint" href="/puzzles/wado/" id="card-16" data-published="2026-10-30" data-title="和同開珎"><div class="card-slides"><img class="card-shot is-active" src="assets/game-shots/wado-1.jpg" alt="和同開珎の画面" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/wado-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/wado-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div><div class="card-body"><div class="card-head"><div class="card-title">和同開珎</div><div class="card-tag">KANJI</div></div><div class="card-desc">四つの熟語に共通する漢字を考える。ヒント・印刷に対応。</div><span class="card-play">あそぶ →</span></div></a>
 
-    <a class="game-card nanpure-bg card-blue" href="/puzzles/crossword/" id="card-17" data-published="2026-10-30" data-genre="puzzle" data-title="クロスワード"><div class="card-slides"><img class="card-shot is-active" src="assets/game-shots/crossword-1.jpg" alt="クロスワードの画面" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/crossword-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/crossword-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div><div class="card-body"><div class="card-head"><div class="card-title">クロスワード</div><div class="card-tag">WORDS</div></div><div class="card-desc">言葉のヒントでマスを埋める。問題作成・保存・印刷も。</div><span class="card-play">あそぶ →</span></div></a>
+    <a class="game-card nanpure-bg card-blue" href="/puzzles/crossword/" id="card-17" data-published="2026-10-30" data-title="クロスワード"><div class="card-slides"><img class="card-shot is-active" src="assets/game-shots/crossword-1.jpg" alt="クロスワードの画面" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/crossword-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/crossword-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div><div class="card-body"><div class="card-head"><div class="card-title">クロスワード</div><div class="card-tag">WORDS</div></div><div class="card-desc">言葉のヒントでマスを埋める。問題作成・保存・印刷も。</div><span class="card-play">あそぶ →</span></div></a>
 
     <div class="section-label pop"><span class="spark">✦</span> 新作 <span class="spark">✦</span></div>
 
-    <a class="game-card reversi-bg card-pink" href="https://osero.puzzle-hub-4826.workers.dev" target="_blank" rel="noopener" id="card-23" data-published="2026-11-16" data-genre="card" data-title="オセロ">
+    <a class="game-card reversi-bg card-pink" href="https://osero.puzzle-hub-4826.workers.dev" target="_blank" rel="noopener" id="card-23" data-published="2026-11-16" data-title="オセロ">
       <div class="card-slides"><img class="card-shot is-active" src="assets/game-shots/othello-1.jpg" alt="オセロの画面" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/othello-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/othello-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
       <div class="card-body">
         <div class="card-head"><div class="card-title">オセロ</div><div class="card-tag">REVERSI</div></div>
@@ -935,7 +817,7 @@
       </div>
     </a>
 
-    <a class="game-card morris-bg card-blue" href="https://nainmenzumorisu.puzzle-hub-4826.workers.dev" target="_blank" rel="noopener" id="card-24" data-published="2026-11-16" data-genre="card" data-title="ナイン・メンズ・モリス">
+    <a class="game-card morris-bg card-blue" href="https://nainmenzumorisu.puzzle-hub-4826.workers.dev" target="_blank" rel="noopener" id="card-24" data-published="2026-11-16" data-title="ナイン・メンズ・モリス">
       <div class="card-slides"><img class="card-shot is-active" src="assets/game-shots/morris-1.jpg" alt="ナイン・メンズ・モリスの画面" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/morris-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/morris-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
       <div class="card-body">
         <div class="card-head"><div class="card-title">ナイン・メンズ・モリス</div><div class="card-tag">MORRIS</div></div>
@@ -950,7 +832,7 @@
   <footer class="footer">
     <a href="/privacy.html#advertising">広告・プライバシーポリシー</a><br>
     <span class="footer-brand" data-text="パレあそび">パレあそび</span><br>
-    <span style="font-size:9px;letter-spacing:0.05em;">ver2026.10.30</span>
+    <span style="font-size:22px;letter-spacing:0.05em;">ver2026.10.30</span>
   </footer>
 
 </div>
@@ -977,89 +859,6 @@
     if (!hasNew) newLabel.hidden = true;
   })();
 
-  // ===== 絞り込み・並び替え =====
-  const gameList = document.querySelector('.game-list');
-  const defaultNodes = gameList ? Array.from(gameList.children) : [];
-  const allCards = gameList ? Array.from(gameList.querySelectorAll('.game-card')) : [];
-  const sectionLabels = gameList ? Array.from(gameList.querySelectorAll('.section-label')) : [];
-  const genreButtons = Array.from(document.querySelectorAll('.genre-filter'));
-  const sortSelect = document.getElementById('sort-select');
-  const libraryCount = document.getElementById('library-count');
-  let activeGenre = 'all';
-
-  function cardMatches(card){
-    if(activeGenre === 'all') return true;
-    return (card.dataset.genre || '').split(/\s+/).includes(activeGenre);
-  }
-
-  function publishedTime(card){
-    const raw = card.dataset.published;
-    if(!raw) return null;
-    const t = new Date(raw + 'T00:00:00').getTime();
-    return Number.isFinite(t) ? t : null;
-  }
-
-  function applyLibraryView(){
-    if(!gameList) return;
-    const sort = sortSelect ? sortSelect.value : 'default';
-
-    if(sort === 'default'){
-      defaultNodes.forEach(node => gameList.appendChild(node));
-    } else {
-      const sorted = [...allCards].sort((a,b) => {
-        if(sort === 'name'){
-          return (a.dataset.title || '').localeCompare(b.dataset.title || '', 'ja');
-        }
-        const at = publishedTime(a), bt = publishedTime(b);
-        if(at == null && bt == null) return 0;
-        if(at == null) return 1;
-        if(bt == null) return -1;
-        return sort === 'newest' ? bt - at : at - bt;
-      });
-      sorted.forEach(card => gameList.appendChild(card));
-    }
-
-    const specialView = activeGenre !== 'all' || sort !== 'default';
-    sectionLabels.forEach(label => {
-      label.hidden = specialView || (label.classList.contains('pop') && label.hidden);
-    });
-
-    let shown = 0;
-    allCards.forEach(card => {
-      const show = cardMatches(card);
-      card.hidden = !show;
-      if(show) shown++;
-    });
-
-    if(!specialView){
-      // 「新作」ラベルは、直後の制作中ラベルまでに表示カードがある時だけ表示。
-      const newLabel = document.querySelector('.section-label.pop');
-      if(newLabel){
-        let n = newLabel.nextElementSibling, hasNew = false;
-        while(n && !(n.classList && n.classList.contains('section-label'))){
-          if(n.classList && n.classList.contains('game-card') && !n.hidden){ hasNew = true; break; }
-          n = n.nextElementSibling;
-        }
-        newLabel.hidden = !hasNew;
-      }
-      const wipLabel = sectionLabels.find(x => !x.classList.contains('pop'));
-      if(wipLabel) wipLabel.hidden = false;
-    }
-
-    genreButtons.forEach(btn => btn.setAttribute('aria-pressed', String(btn.dataset.genre === activeGenre)));
-    if(libraryCount) libraryCount.textContent = `${shown}件表示`;
-
-    _cur = 0;
-    if(_gpConnected) updateCursor();
-  }
-
-  genreButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      activeGenre = btn.dataset.genre || 'all';
-      applyLibraryView();
-    });
-  });
-  if(sortSelect) sortSelect.addEventListener('change', applyLibraryView);
 
   // ===== コントローラー操作 =====
   // Aボタン（buttons[1]）: 決定
@@ -1133,7 +932,6 @@
     }
   }
 
-  applyLibraryView();
   setInterval(pollGamepad, 8);
   window.addEventListener('gamepadconnected', _onConnected);
 
