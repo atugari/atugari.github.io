@@ -65,14 +65,6 @@ jobs:
         with:
           node-version: 22
 
-      - name: Install Kuroshiro dependencies
-        working-directory: kuroshiro
-        run: npm install --no-audit --no-fund
-
-      - name: Build Kuroshiro
-        working-directory: kuroshiro
-        run: npm run build
-
       - name: Generate and refresh pending grouped-home release
         run: |
           npm ci --prefix nanpure-api --no-audit --no-fund
@@ -93,8 +85,6 @@ jobs:
             --exclude='owner-app/' \
             --exclude='.openai/' \
             --exclude='kuroshiro/'
-          mkdir -p _site/kuroshiro
-          cp -a kuroshiro/dist-pages/. _site/kuroshiro/
           touch _site/.nojekyll
 
       - name: Publish PareAsobi analytics asset
