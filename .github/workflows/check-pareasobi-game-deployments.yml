@@ -1,0 +1,55 @@
+name: Check two Pareasobi game deployments
+
+on:
+  push:
+    branches: [codex/pareasobi-worker-check-20261117]
+    paths: [.github/workflows/check-pareasobi-game-deployments.yml]
+
+permissions: {}
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    if: github.repository == 'atugari/atugari.github.io'
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - name: Check access and deployment metadata without reading secrets
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import urllib.error
+          import urllib.request
+
+          token = os.environ.get('CLOUDFLARE_API_TOKEN')
+          if not token:
+              raise SystemExit('The existing deployment credential is unavailable to this job.')
+          account = '3fb1db1d33caddf96fec77fac7d571e6'
+          root = f'https://api.cloudflare.com/client/v4/accounts/{account}/workers/scripts'
+          summaries = []
+          for worker in ('osero', 'nainmenzumorisu'):
+              for endpoint in ('versions', 'deployments', 'settings'):
+                  request = urllib.request.Request(
+                      f'{root}/{worker}/{endpoint}',
+                      headers={'Authorization': f'Bearer {token}'},
+                  )
+                  try:
+                      with urllib.request.urlopen(request, timeout=12) as reply:
+                          result = json.load(reply).get('result', {})
+                  except urllib.error.HTTPError as error:
+                      summaries.append(f'{worker}: {endpoint} returned HTTP {error.code}')
+                      continue
+                  if endpoint == 'settings':
+                      summary = ', '.join(sorted({binding.get('type', '?') for binding in result.get('bindings', [])}))
+                      summaries.append(f'{worker}: {endpoint} accessible, binding types: {summary or "none recorded"}')
+                  else:
+                      entries = result if isinstance(result, list) else result.get('items', result.get('deployments', []))
+                      summaries.append(f'{worker}: {endpoint} accessible, {len(entries)} records returned')
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as report:
+              for line in summaries:
+                  print(line)
+                  print(line, file=report)
+          PY
