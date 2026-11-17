@@ -29,60 +29,41 @@ jobs:
               raise SystemExit('The existing deployment credential is unavailable to this job.')
           account = '3fb1db1d33caddf96fec77fac7d571e6'
           root = f'https://api.cloudflare.com/client/v4/accounts/{account}/workers/scripts'
-          summaries = []
-          for worker in ('osero', 'nainmenzumorisu'):
-              for endpoint in ('versions', 'deployments', 'settings'):
-                  request = urllib.request.Request(
-                      f'{root}/{worker}/{endpoint}',
-                      headers={'Authorization': f'Bearer {token}'},
-                  )
-                  try:
-                      with urllib.request.urlopen(request, timeout=12) as reply:
-                          result = json.load(reply).get('result', {})
-                  except urllib.error.HTTPError as error:
-                      summaries.append(f'{worker}: {endpoint} returned HTTP {error.code}')
-                      continue
-                  if endpoint == 'settings':
-                      summary = ', '.join(sorted({binding.get('type', '?') for binding in result.get('bindings', [])}))
-                      summaries.append(f'{worker}: {endpoint} accessible, binding types: {summary or "none recorded"}')
-                  else:
-                      entries = result if isinstance(result, list) else result.get('items', result.get('deployments', []))
-                      summaries.append(f'{worker}: {endpoint} accessible, {len(entries)} records returned')
-          for worker in ('osero', 'nainmenzumorisu'):
-              def read(endpoint):
-                  request = urllib.request.Request(
-                      f'{root}/{worker}/{endpoint}',
-                      headers={'Authorization': f'Bearer {token}'},
-                  )
-                  with urllib.request.urlopen(request, timeout=12) as reply:
-                      return json.load(reply)['result']
 
-              result = read('versions')
-              versions = result if isinstance(result, list) else result['items']
-              current = read('deployments')
-              deployments = current if isinstance(current, list) else current['deployments']
-              deployed = {version['version_id'] for version in deployments[0].get('versions', [])}
-              for version in versions:
-                  version_id = version['id']
-                  detail = read(f'versions/{version_id}')
-                  info = detail.get('resources') or {}
-                  bindings = sorted({binding.get('type', '?') for binding in info.get('bindings', [])})
-                  has_preview = (version.get('metadata') or {}).get('hasPreview')
-                  prefix = version_id[:8]
-                  if worker == 'nainmenzumorisu':
-                      try:
-                          url = f'https://{prefix}-{worker}.puzzle-hub-4826.workers.dev/'
-                          with urllib.request.urlopen(url, timeout=8) as reply:
-                              homepage = f'{reply.status} {reply.headers.get_content_type()}'
-                      except urllib.error.HTTPError as error:
-                          homepage = f'HTTP {error.code}'
-                      except urllib.error.URLError:
-                          homepage = 'unreachable'
-                      summaries.append(f'{worker}: version {version_id} active={version_id in deployed} preview={has_preview} homepage={homepage} bindings={",".join(bindings)} resources={",".join(sorted(info))}')
-                  elif version_id in deployed:
-                      summaries.append(f'{worker}: version {version_id} active=True preview={has_preview} bindings={",".join(bindings)} resources={",".join(sorted(info))}')
-          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as report:
-              for line in summaries:
-                  print(line)
-                  print(line, file=report)
+          import re
+          from email import policy
+          from email.parser import BytesParser
+
+          def get(url):
+              return urllib.request.urlopen(urllib.request.Request(url, headers={'Authorization': f'Bearer {token}'}), timeout=15)
+
+          for worker, version_id in {
+              'osero': '4cb1e458-07b3-4b19-abba-107a4499617e',
+              'nainmenzumorisu': '0efb4f35-2464-4775-a406-dc57bda637c7',
+          }.items():
+              with get(f'{root}/{worker}/versions/{version_id}') as reply:
+                  meta = json.load(reply)['result']
+              details = meta.get('resources') or {}
+              for field in ('script', 'script_runtime'):
+                  item = details.get(field) or {}
+                  print(f'{worker}: {field} fields={",".join(sorted(item))}')
+              with get(f'{root}/{worker}/settings') as reply:
+                  settings = json.load(reply)['result']
+              print(f'{worker}: settings fields={",".join(sorted(settings))}')
+              for path in ('content/v2', ''):
+                  try:
+                      with get(f'{root}/{worker}' + (f'/{path}' if path else '')) as reply:
+                          mime = reply.headers['Content-Type']
+                          data = reply.read()
+                          main_header = reply.headers.get('CF-Worker-Main-Module-Part')
+                  except urllib.error.HTTPError as error:
+                      print(f'{worker}: bundle HTTP {error.code} via {path or "base"}')
+                      continue
+                  parsed = BytesParser(policy=policy.default).parsebytes(('Content-Type: '+mime+'\r\n\r\n').encode()+data)
+                  parts = list(parsed.iter_parts())
+                  blobs = [part.get_payload(decode=True) or b'' for part in parts] if parts else [data]
+                  html = any(re.search(rb'<!doctype html|<html[ >]|<body[ >]', blob, re.I) for blob in blobs)
+                  json_metadata = any(part.get_param('name', header='content-disposition')=='metadata' for part in parts)
+                  print(f'{worker}: bundle bytes={len(data)} MIME={parsed.get_content_type()} parts={len(parts)} main_header={bool(main_header)} html_present={html} has_metadata={json_metadata}')
+                  break
           PY
