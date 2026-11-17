@@ -1490,7 +1490,7 @@ var a=seElFor(id);a.volume=vol;try{a.currentTime=0;}catch(e){}var pr=a.play();if
 function playPlaceSe(){if(!audioSet.seOn)return;playSeById(audioSet.placeSe,audioSet.seVol/100);}
 function playCaptureSe(){if(!audioSet.seOn)return;playSeById("capture",audioSet.seVol/100);}
 function playStartSe(){if(!audioSet.seOn)return;playSeById("start",audioSet.seVol/100);}
-function playLoseSe(){if(!audioSet.seOn)return;playSeById("lose",audioSet.seVol/100);}function playWinSe(){if(!audioSet.seOn)return;playSeById("win",audioSet.seVol/100);}
+function playLoseSe(){return;}function playWinSe(){if(!audioSet.seOn)return;playSeById("win",audioSet.seVol/100);}
 function previewPlaceSe(){playSeById(audioSet.placeSe,(audioSet.seOn&&audioSet.seVol>0)?audioSet.seVol/100:0.8);}
 function syncAudioUI(){document.querySelectorAll("[data-bgm]").forEach(function(b){b.setAttribute("aria-pressed",b.getAttribute("data-bgm")===audioSet.bgmTrack?"true":"false");});document.querySelectorAll("[data-se-place]").forEach(function(b){b.setAttribute("aria-pressed",b.getAttribute("data-se-place")===audioSet.placeSe?"true":"false");});document.getElementById("bgmOnBtn").setAttribute("aria-pressed",audioSet.bgmOn?"true":"false");document.getElementById("bgmOffBtn").setAttribute("aria-pressed",audioSet.bgmOn?"false":"true");document.getElementById("seOnBtn").setAttribute("aria-pressed",audioSet.seOn?"true":"false");document.getElementById("seOffBtn").setAttribute("aria-pressed",audioSet.seOn?"false":"true");}
 document.querySelectorAll("[data-bgm]").forEach(function(b){b.addEventListener("click",function(){audioSet.bgmTrack=b.getAttribute("data-bgm");audioSet.bgmOn=true;bgmStarted=true;syncAudioUI();applyBgm();saveSettings();saveSettings();});});
