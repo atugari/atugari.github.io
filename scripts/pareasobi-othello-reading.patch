@@ -1,0 +1,503 @@
+--- a/app.js
++++ b/app.js
+@@ -72,8 +72,15 @@
+ const errorText=e=>{const k='err_'+String(e).toLowerCase();return hasKey(lang,k)?t(k):e;};
+ // Fast mode ends on a pool exhaustion, which is a timeout with a winner;
+ // show it as such instead of the raw reason code.
+-let lastSay='';
+-const say=s=>{lastSay=s;tx($('message'),s);};
++let lastMessage=null;
++function renderMessage(){
++ const {key,error}=lastMessage||{};
++ tx($('message'),key?t(key,error===undefined?undefined:{error:errorText(error)}):'');
++}
++function say(key,error){
++ lastMessage=key?{key,error}:null;
++ renderMessage();
++}
+ // Countdown for the player to move. Normal mode: 20 seconds per move;
+ // slow mode: 60 seconds per move; both show the plain countdown below.
+ // Fast mode: the deadline is 3 free seconds plus the player's pool, so show
+@@ -247,8 +254,8 @@
+ // file names never change. Rebuilt on language change like the theme
+ // select, keeping the saved choice.
+ function renderAudioOptions(){
+- const bt=$('bgm-track');if(bt){bt.replaceChildren();BGM_TRACKS.forEach(tr=>{const o=document.createElement('option');o.value=tr.id;o.textContent=t('bgm_'+tr.id);bt.append(o);});bt.value=audioSettings.bgmTrack;}
+- const ps=$('place-se');if(ps){ps.replaceChildren();PLACE_SES.forEach(s=>{const o=document.createElement('option');o.value=s.id;o.textContent=t('se_'+s.id);ps.append(o);});ps.value=audioSettings.placeSe;}
++ const bt=$('bgm-track');if(bt){bt.replaceChildren();BGM_TRACKS.forEach(tr=>{const o=document.createElement('option');o.value=tr.id;tx(o,t('bgm_'+tr.id));bt.append(o);});bt.value=audioSettings.bgmTrack;}
++ const ps=$('place-se');if(ps){ps.replaceChildren();PLACE_SES.forEach(s=>{const o=document.createElement('option');o.value=s.id;tx(o,t('se_'+s.id));ps.append(o);});ps.value=audioSettings.placeSe;}
+ }
+ function initAudioSettings(){
+  renderAudioOptions();
+@@ -314,16 +321,19 @@
+  document.documentElement.dir=isRTL(lang)?'rtl':'ltr';
+  document.title=t('app_title');
+  names=[t('draw'),t('black'),t('white')];
+- document.querySelectorAll('[data-i18n]').forEach(el=>{tx(el,t(el.dataset.i18n));});
+- document.querySelectorAll('[data-i18n-aria]').forEach(el=>{el.setAttribute('aria-label',t(el.dataset.i18nAria));});
++ document.querySelectorAll('[data-i18n]').forEach(el=>{tx(el,t(el.getAttribute('data-i18n')));});
++ document.querySelectorAll('[data-i18n-aria]').forEach(el=>{el.setAttribute('aria-label',t(el.getAttribute('data-i18n-aria')));});
+  const sel=$('lang');if(sel)sel.value=lang;
+  const selTop=$('lang-top');if(selTop)selTop.value=lang;
+  // Greeting phrase buttons are built once, so refresh their text here too.
+  // The buttons show the translated label; the phrase sent to the
+  // opponent stays the fixed Japanese text (see GREET_LABEL_KEYS).
+  document.querySelectorAll('#greet-phrases button').forEach((b,i)=>{tx(b,t(GREET_LABEL_KEYS[i]));});
++ document.querySelectorAll('#greet-emoji button').forEach(b=>b.setAttribute('aria-label',t('greet_aria')));
++ document.querySelectorAll('#lang option[value=ja], #lang-top option[value=ja]').forEach(o=>tx(o,LANG_NAMES.ja));
+  // Keep the last status line in step when the display changes.
+- tx($('message'),lastSay);
++ renderMessage();
++ if(quickWaiting)updateQuickWaitSecs();
+  // The contact form's kind/topic options and the update list are built
+  // by script, so rebuild them too; the contact status line keeps its
+  // last message in the new language.
+@@ -363,7 +373,7 @@
+ function renderThemeOptions(){
+  const sel=$('theme');if(!sel)return;
+  sel.replaceChildren();
+- for(const id of THEMES){const o=document.createElement('option');o.value=id;o.textContent=t('theme_'+id);sel.append(o);}
++ for(const id of THEMES){const o=document.createElement('option');o.value=id;tx(o,t('theme_'+id));sel.append(o);}
+  sel.value=theme;
+ }
+ function initThemeSettings(){
+@@ -419,7 +429,7 @@
+ }
+ function sendGreet(text){
+  if(!ws||ws.readyState!==1||!state)return;
+- if(Date.now()-lastGreetAt<GREET_COOLDOWN_MS){say(t('msg_greet_too_fast'));return;}
++ if(Date.now()-lastGreetAt<GREET_COOLDOWN_MS){say('msg_greet_too_fast');return;}
+  lastGreetAt=Date.now();sendRaw({type:'greet',text,lang});showGreet(session.color,text,lang);
+  document.querySelectorAll('#greet-panel button').forEach(b=>b.disabled=true);
+  setTimeout(()=>document.querySelectorAll('#greet-panel button').forEach(b=>b.disabled=false),GREET_COOLDOWN_MS);
+@@ -443,12 +453,12 @@
+  const kindSel=$('contact-kind'),topicSel=$('contact-topic');if(!kindSel||!topicSel)return;
+  const kind=CONTACT_CATEGORIES.includes(kindSel.value)?kindSel.value:'question';
+  kindSel.replaceChildren();
+- for(const c of CONTACT_CATEGORIES){const o=document.createElement('option');o.value=c;o.textContent=t(KIND_LABEL_KEY[c]);kindSel.append(o);}
++ for(const c of CONTACT_CATEGORIES){const o=document.createElement('option');o.value=c;tx(o,t(KIND_LABEL_KEY[c]));kindSel.append(o);}
+  kindSel.value=kind;
+  const topics=CONTACT_TOPICS[kind]||['other'];
+  const prev=topicSel.value;
+  topicSel.replaceChildren();
+- for(const tp of topics){const o=document.createElement('option');o.value=tp;o.textContent=t(TOPIC_LABEL_KEY[tp]);topicSel.append(o);}
++ for(const tp of topics){const o=document.createElement('option');o.value=tp;tx(o,t(TOPIC_LABEL_KEY[tp]));topicSel.append(o);}
+  if(topics.includes(prev))topicSel.value=prev;
+ }
+ function renderUpdates(){
+@@ -762,7 +772,7 @@
+  starRow('today-star-wins','today_star_wins',d.todayWins);
+  starRow('today-star-gain','today_star_gain',d.todayGain);
+ }
+-const save=()=>{try{sessionStorage.setItem(KEY,JSON.stringify(session));}catch{say(t('msg_no_restore'));}};
++const save=()=>{try{sessionStorage.setItem(KEY,JSON.stringify(session));}catch{say('msg_no_restore');}};
+ function clearPending(){pending=false;clearTimeout(ackTimer);}
+ // End-of-game ceremony （勝負が終わったときの演出）: when a game ends,
+ // after a short pause the board stones are taken off one by one, from
+@@ -1094,7 +1104,7 @@
+ function send(type,extra={}){
+  if(!ws||ws.readyState!==1||!state||pending||replaced)return;
+  pending=true;ws.send(JSON.stringify({type,id:crypto.randomUUID(),rev:state.rev,...extra}));
+- clearTimeout(ackTimer);ackTimer=setTimeout(()=>{clearPending();say(t('msg_no_response'));$('reconnect').hidden=false;draw();},8000);draw();
++ clearTimeout(ackTimer);ackTimer=setTimeout(()=>{clearPending();say('msg_no_response');$('reconnect').hidden=false;draw();},8000);draw();
+ }
+ // Server-down detection: the worker answers GET /api/health with
+ // {ok:true} and nothing else. It is only called when something already
+@@ -1111,7 +1121,7 @@
+   clearTimeout(to);return r.ok;
+  }catch{return false;}
+ }
+-function showServerDown(){serverDown=true;say(t('server_down'));}
++function showServerDown(){serverDown=true;say('server_down');}
+ function clearServerDown(){serverDown=false;}
+ // How many people are playing right now: one light read of the
+ // spectate registry when the lobby opens, then once a minute while
+@@ -1180,7 +1190,7 @@
+    if(m.status==='playing'&&typeof m.moveMsLeft==='number')moveDeadlineAt=Date.now()+m.moveMsLeft;
+    draw();
+    if(m.status==='ended'){
+-    say(t('spectate_ended'));
++    say('spectate_ended');
+     const key='spectate:'+roomId+':'+(state?.winner??'');
+     const already=ceremonyKey===key;
+     const hasResult=!!state&&state.winner!==null;
+@@ -1192,7 +1202,7 @@
+     // time to show, or after 3 seconds when there is no ceremony.
+     setTimeout(()=>{if(spectating&&spectating.roomId===roomId)stopSpectating();},already||hasResult?6000:3000);
+    }
+-  }else if(m.type==='error'){say(t('msg_cannot_operate',{error:errorText(m.error)}));stopSpectating();}
++  }else if(m.type==='error'){say('msg_cannot_operate',m.error);stopSpectating();}
+  };
+  current.onclose=()=>{if(spectating&&spectating.roomId===roomId)stopSpectating();};
+  draw();
+@@ -1234,7 +1244,7 @@
+  const u=new URL('api/rooms/'+session.roomId+'/socket',location.href);u.protocol=location.protocol==='https:'?'wss:':'ws:';
+  const current=new WebSocket(u,['reversi','auth.'+session.token]);ws=current;
+  const deadline=setTimeout(()=>{if(current.readyState!==1)current.close();},10000);
+- current.onopen=()=>{clearTimeout(deadline);clearServerDown();say(t('msg_connected'));};
++ current.onopen=()=>{clearTimeout(deadline);clearServerDown();say('msg_connected');};
+  current.onmessage=e=>{
+   let m;try{m=JSON.parse(e.data);}catch{return;}
+   const wasEnded=state?.status==='ended';
+@@ -1254,7 +1264,7 @@
+    rematchWaiting=false;rematchOfferFrom=null;
+    tx($('rematch-line'),m.from===session.color?t('msg_rematch_cancelled'):t('msg_rematch_declined'));
+   }
+-  else if(m.type==='error'){clearPending();say(t('msg_cannot_operate',{error:errorText(m.error)}));if(m.error==='OPPONENT_OFFLINE')rematchWaiting=false;}
++  else if(m.type==='error'){clearPending();say('msg_cannot_operate',m.error);if(m.error==='OPPONENT_OFFLINE')rematchWaiting=false;}
+   if(m.type==='snapshot'||m.type==='delta')moveDeadlineAt=(m.status==='playing'&&typeof m.moveMsLeft==='number')?Date.now()+m.moveMsLeft:null;
+   draw();
+   // The game just ended (a snapshot or delta that moved it from
+@@ -1265,24 +1275,24 @@
+    if(word)showResultCeremony('online:'+session.roomId+':'+state.winner,state.board,word[0],word[1]);
+   }
+  };
+- current.onerror=()=>say(t('msg_no_connection'));
++ current.onerror=()=>say('msg_no_connection');
+  current.onclose=async e=>{
+   clearTimeout(deadline);clearPending();
+   if(e.code===4001){
+    // Another screen opened this game: this screen is replaced. It must
+    // not reconnect (that would fight the new screen) and cannot move any
+    // more; the board is already disabled because the socket is closed.
+-   replaced=true;manual=true;say(t('msg_replaced'));$('reconnect').hidden=true;
++   replaced=true;manual=true;say('msg_replaced');$('reconnect').hidden=true;
+   }
+-  else if(e.code===1008||e.code===1000||state?.status==='ended'){manual=true;say(t('msg_conn_closed'));$('reconnect').hidden=false;}
++  else if(e.code===1008||e.code===1000||state?.status==='ended'){manual=true;say('msg_conn_closed');$('reconnect').hidden=false;}
+   else if(retries<5){const delay=Math.min(15000,1000*2**retries++)+Math.random()*500;
+    // One light probe per drop (no polling): if the worker answers, only
+    // this socket dropped; if it does not, the server itself is down.
+    // Worst case the five probes add 15 seconds to the backoff, so the
+    // whole retry series still fits inside the 90-second grace.
+-   if(!(await serverAlive()))showServerDown();else say(t('msg_reconnecting'));
++   if(!(await serverAlive()))showServerDown();else say('msg_reconnecting');
+    timer=setTimeout(connect,delay);}
+-  else{manual=true;if(serverDown)say(t('server_down'));else say(t('msg_reconnect_stopped'));$('reconnect').hidden=false;}
++  else{manual=true;if(serverDown)say('server_down');else say('msg_reconnect_stopped');$('reconnect').hidden=false;}
+   draw();
+  };draw();
+ }
+@@ -1421,7 +1431,7 @@
+  // retry and its count. A scheduled retry keeps the count instead.
+  if(!isRetry){enterRetries=0;clearTimeout(enterRetryTimer);}
+  playButtonSe();const password=$('far-password').value;
+- if(!validPassword(password)){say(t('msg_bad_password'));return;}
++ if(!validPassword(password)){say('msg_bad_password');return;}
+  requesting=true;$('far-go').disabled=true;
+  try{
+   // Integrators can provide a short-lived Turnstile response through this callback.
+@@ -1435,16 +1445,16 @@
+   if(!res.ok)throw Error(m.error);
+   session={...m,password};state=null;endRatingShown=false;rematchWaiting=false;rematchOfferFrom=null;confirmCell=null;replaced=false;enterRetries=0;clearTimeout(enterRetryTimer);clearServerDown();save();retries=0;connect();
+  }catch(e){
+-  if(e.message==='DAILY_ROOM_LIMIT'){say(t('msg_daily_limit'));}
+-  else if(e.message==='ROOM_PLAYING'){say(t('msg_room_playing'));}
++  if(e.message==='DAILY_ROOM_LIMIT'){say('msg_daily_limit');}
++  else if(e.message==='ROOM_PLAYING'){say('msg_room_playing');}
+   else if(e.message==='SERVER_ERROR'||e instanceof TypeError){
+    // The request never reached a working server: confirm with the
+    // light health probe, then show the server-down notice and retry
+    // a few times instead of the generic failure message.
+    if(!(await serverAlive())){showServerDown();scheduleEnterRetry();}
+-   else say(t('msg_enter_failed',{error:errorText(e.message)}));
++   else say('msg_enter_failed',e.message);
+   }
+-  else say(t('msg_enter_failed',{error:errorText(e.message)}));
++  else say('msg_enter_failed',e.message);
+  }finally{requesting=false;$('far-go').disabled=false;}
+ }
+ // Automatic retry after a failed entry, only while the server is
+@@ -1467,7 +1477,7 @@
+ function updateQuickWaitSecs(){
+  const el=$('quick-wait-secs');if(!el)return;
+  const s=Math.max(0,Math.floor((Date.now()-quickWaitStartedAt)/1000));
+- el.textContent=t('quick_wait_secs',{s});
++ tx(el,t('quick_wait_secs',{s}));
+ }
+ function stopQuickWait(){
+  quickWaiting=false;clearInterval(quickPollTimer);quickPollTimer=null;
+@@ -1485,7 +1495,7 @@
+ async function pollQuick(){
+  if(!quickWaiting)return;
+  if(Date.now()-quickWaitStartedAt>=QUICK_WAIT_MS){
+-  await cancelQuick();say(t('quick_timeout'));return;
++  await cancelQuick();say('quick_timeout');return;
+  }
+  let m=null,jsonOk=true;
+  try{
+@@ -1497,7 +1507,7 @@
+   // The server did not answer: keep polling (the next poll retries)
+   // and say so, instead of dropping the wait over one failed poll.
+   if(e.message==='SERVER_ERROR'||e instanceof TypeError){showServerDown();return;}
+-  stopQuickWait();say(t('msg_enter_failed',{error:errorText(e.message)}));return;
++  stopQuickWait();say('msg_enter_failed',e.message);return;
+  }
+  if(m.status==='matched'&&m.roomId){
+   stopQuickWait();clearServerDown();
+@@ -1509,7 +1519,7 @@
+   // Still in line: nothing to do until the next poll.
+  }else{
+   // The wait is gone on the server (expired or cancelled elsewhere).
+-  stopQuickWait();say(t('quick_timeout'));
++  stopQuickWait();say('quick_timeout');
+  }
+ }
+ async function enterQuick(isRetry=false){
+@@ -1536,13 +1546,13 @@
+    clearInterval(quickPollTimer);quickPollTimer=setInterval(pollQuick,QUICK_POLL_MS);
+   }
+  }catch(e){
+-  if(e.message==='DAILY_ROOM_LIMIT'){say(t('msg_daily_limit'));}
++  if(e.message==='DAILY_ROOM_LIMIT'){say('msg_daily_limit');}
+   else if(e.message==='SERVER_ERROR'||e instanceof TypeError){
+    // The request never reached a working server: show the notice and
+    // retry a few times instead of the generic failure message.
+    showServerDown();scheduleQuickRetry();
+   }
+-  else say(t('msg_enter_failed',{error:errorText(e.message)}));
++  else say('msg_enter_failed',e.message);
+  }finally{requesting=false;if(!quickWaiting)$('play-go').disabled=false;}
+ }
+ // Automatic retry after a failed quick entry, only while the server is
+@@ -1565,13 +1575,13 @@
+ $('far-go').onclick=()=>enter();
+ $('quick-cancel').onclick=()=>{playButtonSe();cancelQuick();showScreen('menu');};
+ $('start').onclick=()=>{playButtonSe();showScreen('menu');};
+-$('back-to-pare').onclick=()=>{location.href='https://atugari.github.io/';};
++$('back-to-pare').onclick=()=>{location.href='https://pareasobi.com/plaza.html';};
+ $('record-open').onclick=()=>{playButtonSe();showScreen('record');};
+ $('rankings-open').onclick=()=>{playButtonSe();showScreen('rankings');};
+ $('nav-settings').onclick=()=>{
+  playButtonSe();
+  if(session||localGame||cpuGame||spectating)settingsReturn='game';
+- else if(screen==='play'||screen==='far'||screen==='local'||screen==='twoplayer'||screen==='cpu'||screen==='cpushape')settingsReturn=screen;
++ else if(screen!=='settings')settingsReturn=screen;
+  showScreen('settings');
+ };
+ $('nav-back').onclick=()=>{
+@@ -1589,7 +1599,7 @@
+ $('spectate-open').onclick=()=>{playButtonSe();showSubScreen('spectate');};
+ $('spectate-back').onclick=()=>{playButtonSe();showSubScreen(null);};
+ $('spectate-stop').onclick=()=>{playButtonSe();stopSpectating();};
+-$('copy').onclick=async()=>{if(!session?.password)return;try{await navigator.clipboard.writeText(session.password);say(t('msg_copied'));}catch{say(t('msg_copy_manual'));}};
++$('copy').onclick=async()=>{if(!session?.password)return;try{await navigator.clipboard.writeText(session.password);say('msg_copied');}catch{say('msg_copy_manual');}};
+ $('leave').onclick=()=>{hideResultCeremony();if(localGame){playButtonSe();exitLocalGame();return;}if(cpuGame){playButtonSe();exitCpuGame();return;}if(confirm(t('confirm_leave'))){playButtonSe();send('leave');}};
+ $('rematch').onclick=()=>{playButtonSe();if(localGame){startLocalGame();return;}if(cpuGame){startCpuGame();return;}sendRaw({type:'rematch'});};
+ $('rematch-accept').onclick=()=>{playButtonSe();rematchOfferFrom=null;sendRaw({type:'rematch'});};
+--- a/furigana.js
++++ b/furigana.js
+@@ -22,8 +22,6 @@
+ // would be wrong more often than right; it simply gets no ruby. 分 is
+ // in the dictionary with Nanpure's digit rule instead: ぷん after
+ // 0/1/3/4/6/8, ふん otherwise.
+-// もう一戦 is a protected literal: its display must not change, so it
+-// is never given ruby, even though 戦 on its own reads せん.
+ // This file has no DOM access at import time, so node tests can import it.
+ export const FURI_KEY='reversi-furigana-v1';
+ export function getFurigana(){
+@@ -39,6 +37,27 @@
+ }
+ // [word, reading]. Readings are hiragana only.
+ export const FURI_WORDS=[
++ ['日本語','にほんご'],
++ ['一戦','いっせん'],
++ ['一時的','いちじてき'],
++ ['読み込み直して','よみこみなおして'],
++ ['通り','とおり'],
++ ['夢','ゆめ'],
++ ['水','みず'],
++ ['沈む','しずむ'],
++ ['月明かり','つきあかり'],
++ ['灯台','とうだい'],
++ ['夏','なつ'],
++ ['霧','きり'],
++ ['打ち上げ','うちあげ'],
++ ['花火','はなび'],
++ ['駆けっこ','かけっこ'],
++ ['碁石','ごいし'],
++ ['石','いし'],
++ ['低い','ひくい'],
++ ['神秘的','しんぴてき'],
++ ['甘茶','あまちゃ'],
++ ['音楽工房','おんがくこうぼう'],
+  ['読み込み中','よみこみちゅう'],
+  ['暗号化','あんごうか'],
+  ['決まった','きまった'],
+@@ -347,10 +366,8 @@
+ // ごと (5戦ごとに) and ほど (1分ほど), both particles in Japanese.
+ const PARTICLE=/^(?:を|が|に|で|の|は|も|と|へ|や|から|まで|です|ごと|ほど)/;
+ const PUN_DIGITS=/[013468０１３４６８]/;
+-// Phrases that must be shown exactly as-is, never given ruby.
+-const LITERAL=['もう一戦'];
+ function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+-export function rubyHtml(text){
++function formatReading(text, formatWord, formatCharacter){
+  // Nanpure's way (nanpure/releases/2026.11.05.100/furigana.js): a single
+  // kanji never gets ruby inside a longer kanji run or a conjugation.
+  // The char before or after it must not be kanji, and if hiragana
+@@ -365,17 +382,15 @@
+  let out='',i=0;
+  while(i<text.length){
+   let hit=false;
+-  for(const p of LITERAL){
+-   if(text.startsWith(p,i)){out+=esc(p);i+=p.length;hit=true;break;}
+-  }
+-  if(hit)continue;
+   for(const [w,r] of SORTED){
+    if(!text.startsWith(w,i))continue;
+    // 月 after a digit is a month name (1月=いちがつ): allow it even
+    // when kanji follows, and read it がつ (Nanpure's digit rule, the
+    // same idea as 分 → ぷん after 0/1/3/4/6/8).
+-   const monthAfterDigit=w==='月'&&/[0-9０-９]/.test(text[i-1]||'');
+-   if(w.length===1&&KANJI.test(w)&&!monthAfterDigit){
++   const digitBefore=/[0-9０-９]/.test(text[i-1]||'');
++   const monthAfterDigit=w==='月'&&digitBefore;
++   const counterAfterDigit=digitBefore&&['月','分','戦'].includes(w);
++   if(w.length===1&&KANJI.test(w)&&!counterAfterDigit){
+     const before=text[i-1]||'',after=text[i+w.length]||'';
+     if(KANJI.test(before)||KANJI.test(after))continue;
+     if(HIRA.test(after)&&!PARTICLE.test(text.slice(i+1)))continue;
+@@ -383,19 +398,25 @@
+    let reading=r;
+    if(w==='分'&&PUN_DIGITS.test(text[i-1]||''))reading='ぷん';
+    if(monthAfterDigit)reading='がつ';
+-   out+='<ruby>'+esc(w)+'<rt>'+esc(reading)+'</rt></ruby>';i+=w.length;hit=true;break;
++   out+=formatWord(w,reading);i+=w.length;hit=true;break;
+   }
+-  if(!hit){out+=esc(text[i]);i++;}
++  if(!hit){out+=formatCharacter(text[i]);i++;}
+  }
+  return out;
+ }
++export function rubyHtml(text){
++ return formatReading(text,(word,reading)=>'<ruby>'+esc(word)+'<rt>'+esc(reading)+'</rt></ruby>',esc);
++}
+ // Render text into an element: ruby when the language is Japanese and
+ // the setting is on, plain text otherwise (English is never given ruby,
+ // and aria labels / the page title keep using plain text).
+ export function setText(el,text,lang,furiOn){
+  if(!el)return;
+- if(lang==='ja'&&furiOn)el.innerHTML=rubyHtml(text);
+- else el.textContent=text;
++ if(lang!=='ja'||!furiOn){el.textContent=text;return;}
++ // Native dropdowns expose option labels as plain text. Keep the readings
++ // next to their words so the label remains legible on desktop and mobile.
++ if(el.tagName==='OPTION')el.textContent=formatReading(text,(word,reading)=>word+'（'+reading+'）',character=>character);
++ else el.innerHTML=rubyHtml(text);
+ }
+ // Nickname furigana: only generated names get ruby. A generated name is
+ // FIRST + 'の' + SECOND from the nickname word lists (576 combinations,
+--- a/i18n.js
++++ b/i18n.js
+@@ -682,15 +682,15 @@
+   shape_option_random:'随机（特殊形状）',
+   password_input_label:'密码',
+   password_hint:'可使用1到8个字符。数字、平假名、片假名、汉字、字母等都可以使用。',
+-  play_online:'Play online',
+-  play_go:'Play',
++  play_online:"在线对战",
++  play_go:"开始对战",
+   quick_waiting:'正在寻找对手…',
+   quick_timeout:'5分钟内没有找到对手，请再试一次。',
+   back_to_pare:'返回 Pare Asobi',
+   quick_wait_secs:'{s}秒',
+-  play_hint:'Play against someone who enters the same password. If no room has it yet, one is made; if it does, you join it.',
+-  msg_room_playing:'The room with that password is already in a game. Please choose a different password.',
+-  err_room_playing:'The room with that password is already in a game',
++  play_hint:"与输入相同密码的玩家对战。如果房间不存在，系统会创建房间；如果房间已存在，你会加入该房间。",
++  msg_room_playing:"使用该密码的房间正在对战中，请换一个密码。",
++  err_room_playing:"使用该密码的房间正在对战中",
+   err_challenge_required:'无法完成机器人验证。请重新加载页面，然后再试一次。',
+   err_challenge_failed:'机器人验证未通过。请稍后再试一次。',
+   err_challenge_unavailable:'机器人验证暂时不可用。请稍后再试一次。',
+@@ -981,15 +981,15 @@
+   shape_option_random:'隨機（特殊棋形）',
+   password_input_label:'密碼',
+   password_hint:'可使用1到8個字元。數字、平假名、片假名、漢字、字母等都可以使用。',
+-  play_online:'Play online',
+-  play_go:'Play',
++  play_online:"線上對戰",
++  play_go:"開始對戰",
+   quick_waiting:'正在尋找對手…',
+   quick_timeout:'5分鐘內沒有找到對手，請再試一次。',
+   back_to_pare:'返回 Pare Asobi',
+   quick_wait_secs:'{s}秒',
+-  play_hint:'Play against someone who enters the same password. If no room has it yet, one is made; if it does, you join it.',
+-  msg_room_playing:'The room with that password is already in a game. Please choose a different password.',
+-  err_room_playing:'The room with that password is already in a game',
++  play_hint:"與輸入相同密碼的玩家對戰。如果房間不存在，系統會建立房間；如果房間已存在，你會加入該房間。",
++  msg_room_playing:"使用該密碼的房間正在對戰中，請換一個密碼。",
++  err_room_playing:"使用該密碼的房間正在對戰中",
+   err_challenge_required:'無法完成機器人驗證。請重新載入頁面，然後再試一次。',
+   err_challenge_failed:'機器人驗證未通過。請稍後再試一次。',
+   err_challenge_unavailable:'機器人驗證暫時無法使用。請稍後再試一次。',
+@@ -3103,7 +3103,7 @@
+   today_star_gain:'Grootste stijging vandaag: {nick} (+{gain})',
+   today_star_empty:'Nog geen partijen vandaag',
+   month_champ_title:'Kampioen van het algemene klassement {month}/{year}!!',
+-  month_champ_line:'{nick}, rating {rating}',
++  month_champ_line:"{nick}, speelsterkte {rating}",
+   record_streak_now:'Huidige reeks: {streak} zeges',
+   record_streak_best:'Beste reeks: {best} zeges',
+   record_streak_week:'Beste deze week: {week} zeges',
+@@ -3265,8 +3265,8 @@
+   shape_info:'Bord: {shape} (zonder rating)',
+   rating_nochange_variant:'Op bijzondere borden verandert de rating niet',
+   rating_nochange_slow:'In de ontspannen modus verandert de rating niet',
+-  rating_now:'Rating: {rating}{prov}',
+-  rating_changed:'Rating: {rating}{prov} ({delta})',
++  rating_now:"Speelsterkte: {rating}{prov}",
++  rating_changed:"Speelsterkte: {rating}{prov} ({delta})",
+   streak_mult_note:'Opeenvolgende zege nr. {count} tegen dezelfde tegenstander: ×{mult}',
+   streak_next_note:'Je volgende zege tegen dezelfde tegenstander telt ×{mult}',
+   rating_reason_opp_prov:'Je tegenstander is voorlopig, dus de verandering is half zo groot',
+@@ -3357,7 +3357,7 @@
+   se_gurokken:'Glockenspiel',
+   greet_hello:'Op een goed spel!',
+   greet_thanks:'Dank je',
+-  greet_sorry:'Sorry',
++  greet_sorry:"Het spijt me",
+   greet_goodmove:'Mooie zet!',
+   greet_brilliant:'Briljant!',
+  },
+@@ -3402,7 +3402,7 @@
+   today_star_gain:'Största ökningen idag: {nick} (+{gain})',
+   today_star_empty:'Inga partier idag ännu',
+   month_champ_title:'Mästare i den totala rankingen {month}/{year}!!',
+-  month_champ_line:'{nick}, rating {rating}',
++  month_champ_line:"{nick}, spelbetyg {rating}",
+   record_streak_now:'Pågående svit: {streak} segrar',
+   record_streak_best:'Bästa svit: {best} segrar',
+   record_streak_week:'Bästa den här veckan: {week} segrar',
+@@ -3564,8 +3564,8 @@
+   shape_info:'Bräde: {shape} (utan rating)',
+   rating_nochange_variant:'Ratingen ändras inte på variantbräden',
+   rating_nochange_slow:'Ratingen ändras inte i avslappnat läge',
+-  rating_now:'Rating: {rating}{prov}',
+-  rating_changed:'Rating: {rating}{prov} ({delta})',
++  rating_now:"Spelbetyg: {rating}{prov}",
++  rating_changed:"Spelbetyg: {rating}{prov} ({delta})",
+   streak_mult_note:'Segersvit nr {count} mot samma motståndare: ×{mult}',
+   streak_next_note:'Nästa vinst mot samma motståndare räknas ×{mult}',
+   rating_reason_opp_prov:'Din motståndare är provisorisk, så ändringen halveras',
+@@ -4598,7 +4598,7 @@
+   today_star_gain:'Kenaikan rating terbesar hari ini: {nick} (+{gain})',
+   today_star_empty:'Belum ada pertandingan hari ini',
+   month_champ_title:'Juara peringkat keseluruhan {month}/{year}!!',
+-  month_champ_line:'{nick}, rating {rating}',
++  month_champ_line:"{nick}, peringkat {rating}",
+   record_streak_now:'Beruntun saat ini: {streak} kemenangan',
+   record_streak_best:'Beruntun terbaik: {best} kemenangan',
+   record_streak_week:'Terbaik minggu ini: {week} kemenangan',
+@@ -4760,8 +4760,8 @@
+   shape_info:'Papan: {shape} (tanpa rating)',
+   rating_nochange_variant:'Rating tidak berubah di papan varian',
+   rating_nochange_slow:'Rating tidak berubah dalam mode Santai',
+-  rating_now:'Rating: {rating}{prov}',
+-  rating_changed:'Rating: {rating}{prov} ({delta})',
++  rating_now:"Peringkat: {rating}{prov}",
++  rating_changed:"Peringkat: {rating}{prov} ({delta})",
+   streak_mult_note:'Kemenangan beruntun ke-{count} melawan lawan yang sama: ×{mult}',
+   streak_next_note:'Kemenangan berikutnya melawan lawan yang sama akan dihitung ×{mult}',
+   rating_reason_opp_prov:'Lawan masih sementara, jadi perubahannya setengah',
