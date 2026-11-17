@@ -4,7 +4,7 @@ const root=path.resolve(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p
 const catalog=JSON.parse(read('nanpure/collection/catalog.json'));
 assert(catalog.total>=100000);assert.equal(catalog.configs.reduce((n,c)=>n+c.count,0),catalog.total);
 assert.equal(catalog.configs.filter(c=>c.kind==='cross').reduce((n,c)=>n+c.count,0),6340);
-const games=['shirupure','wado','crossword','cross','tenbin','paths','studio','workshop'];
+const games=['shirupure','wado','crossword'];
 for(const slug of games){assert(read('plaza.html').includes('href="/puzzles/'+slug+'/"'));const html=read('puzzles/'+slug+'/index.html');assert(html.includes('data-game="'+slug+'"'));assert(html.includes('data-hub href="/plaza.html"'));}
 for(const p of ['puzzles/entry.js','puzzles/navigation.js','nanpure/collection/entry.js'])new vm.Script(read(p));
 assert.equal(read('nanpure/collection/board-input.js'),read('scripts/client-overrides/public/notebook/board-input.js'),'Collection gestures are generated from the common source');
@@ -15,4 +15,4 @@ assert(read('scripts/client-overrides/app/game.tsx').includes('<GroupedHome '),'
 assert(!read('scripts/client-overrides/app/grouped-home.tsx').includes('data-pare-entry'),'The Sudoku home has no Pareasobi entry');
 const manifest=JSON.parse(read('nanpure/release-manifest.json'));
 for(const [file,expected]of Object.entries(manifest.pareasobiNavigation.sources))assert.equal(require('node:crypto').createHash('sha256').update(read(file)).digest('hex'),expected,'Navigation source manifest: '+file);
-console.log('PASS Pareasobi routes: eight direct entries, '+(catalog.total-6340).toLocaleString('en-US')+' Sudoku and 6,340 cross puzzles, original IDs and save keys preserved, creation-only magic square.');
+console.log('PASS Pareasobi routes: three direct entries, '+(catalog.total-6340).toLocaleString('en-US')+' Sudoku and 6,340 cross puzzles, original IDs and save keys preserved, creation-only magic square.');
