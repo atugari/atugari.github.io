@@ -2,14 +2,13 @@ import hashlib
 import json
 import os
 import re
-import subprocess
-import tempfile
 import urllib.error
 import urllib.request
 import uuid
 from email import policy
 from email.parser import BytesParser
 from pathlib import Path
+from zipfile import ZipFile
 
 ACCOUNT = '3fb1db1d33caddf96fec77fac7d571e6'
 WORKER = 'osero'
@@ -41,30 +40,14 @@ def cloud(path, data=None, content_type=None):
     return (body, mime) if path == 'content/v2' else json.loads(body)['result']
 
 
-def download(path):
-    with urllib.request.urlopen(ORIGIN+'/'+path, timeout=15) as response:
-        return response.read()
-
-
-def sha(data):
-    return hashlib.sha256(data).hexdigest()
-
-
 def checked_sources():
-    patch = Path(__file__).with_name('pareasobi-othello-reading.patch').resolve(strict=True)
-    with tempfile.TemporaryDirectory() as folder:
-        target = Path(folder)
-        for name, (expected, _) in CHECKSUMS.items():
-            body = download(name)
-            if sha(body) != expected:
-                raise SystemExit(f'{name}: the live source changed; apply the fix to that version separately')
-            (target/name).write_bytes(body)
-        subprocess.run(['patch', '--batch', '--fuzz=0', '-p1', '-i', str(patch)], cwd=folder, check=True)
-        files = {}
+    archive = Path(__file__).with_name('pareasobi-othello-reading.zip')
+    files = {}
+    with ZipFile(archive) as zip_file:
         for name, (_, expected) in CHECKSUMS.items():
-            body = (target/name).read_bytes()
-            if sha(body) != expected:
-                raise SystemExit(f'{name}: the patched source did not match the tested file')
+            body = zip_file.read(name)
+            if hashlib.sha256(body).hexdigest() != expected:
+                raise SystemExit(f'{name}: the staged source did not match the tested file')
             files['/'+name] = body.decode()
     return files
 
