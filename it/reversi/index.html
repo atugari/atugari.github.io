@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#FFF8E7">
+  <title>Reversi (Othello) | Gioco da tavolo gratuito online - Pare Asobi</title>
+  <meta name="description" content="Gioca a Reversi (Othello) gratis nel tuo browser. Gioca online contro persone di tutto il mondo con punteggio e classifiche, contro il computer a cinque livelli o in due giocatori su un unico dispositivo. Nessuna registrazione necessaria.">
+  <meta name="keywords" content="reversi, othello, reversi gratis, giocare a othello online, reversi online, gioco da tavolo, gioco gratis nel browser, Pare Asobi">
+  <meta name="robots" content="index, follow">
+  <meta name="google-adsense-account" content="ca-pub-5560584474086870">
+  <link rel="canonical" href="https://pareasobi.com/it/reversi/">
+  <link rel="alternate" hreflang="en" href="https://pareasobi.com/en/reversi/">
+  <link rel="alternate" hreflang="it" href="https://pareasobi.com/it/reversi/">
+  <link rel="alternate" hreflang="x-default" href="https://pareasobi.com/it/reversi/">
+  <meta property="og:title" content="Reversi (Othello) | Gioco da tavolo gratuito online - Pare Asobi">
+  <meta property="og:description" content="Gioca a Reversi (Othello) gratis nel tuo browser: online contro giocatori di tutto il mondo, contro il computer a cinque livelli o in due giocatori su un unico dispositivo.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://pareasobi.com/it/reversi/">
+  <meta property="og:locale" content="it_IT">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Reversi (Othello) | Gioco da tavolo gratuito online - Pare Asobi">
+  <meta name="twitter:description" content="Gioca a Reversi (Othello) gratis nel tuo browser: online contro giocatori di tutto il mondo, contro il computer a cinque livelli o in due giocatori su un unico dispositivo.">
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@graph":[
+      {"@type":"WebSite","@id":"https://pareasobi.com/it/#website","url":"https://pareasobi.com/it/","name":"Pare Asobi","inLanguage":"it"},
+      {"@type":"WebPage","@id":"https://pareasobi.com/it/reversi/#webpage","url":"https://pareasobi.com/it/reversi/","name":"Reversi (Othello) | Gioco da tavolo gratuito online - Pare Asobi","description":"Gioca a Reversi (Othello) gratis nel tuo browser. Gioca online contro persone di tutto il mondo con punteggio e classifiche, contro il computer a cinque livelli o in due giocatori su un unico dispositivo.","inLanguage":"it","isPartOf":{"@id":"https://pareasobi.com/it/#website"}}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: #FFF8E7;
+      color: #1a1a1a;
+      font-family: 'Noto Serif JP', serif;
+      min-height: 100dvh;
+    }
+
+    /* Confetti dots: small bright candy-colored dots scattered over the background */
+    body {
+      background-image:
+        radial-gradient(circle at 6% 10%, rgba(255, 90, 118, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 94% 6%, rgba(255, 201, 60, 0.45) 0 6px, transparent 7px),
+        radial-gradient(circle at 12% 42%, rgba(77, 163, 255, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 88% 38%, rgba(46, 196, 166, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 50% 72%, rgba(255, 90, 118, 0.25) 0 4px, transparent 5px),
+        radial-gradient(circle at 4% 84%, rgba(255, 201, 60, 0.35) 0 6px, transparent 7px),
+        radial-gradient(circle at 96% 86%, rgba(77, 163, 255, 0.30) 0 6px, transparent 7px),
+        radial-gradient(circle at 30% 95%, rgba(46, 196, 166, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 70% 96%, rgba(255, 138, 61, 0.30) 0 5px, transparent 6px);
+      background-attachment: fixed;
+    }
+
+    .app { max-width: 1060px; margin: 0 auto; padding: 20px 16px 64px; }
+    @media (min-width: 720px) {
+      .app { padding: 28px 28px 72px; }
+    }
+
+    /* Logo bar: mint-green rounded band */
+    .site-header {
+      text-align: center;
+      margin: 0 0 18px;
+      padding: 26px 12px 22px;
+      background: linear-gradient(135deg, #A9EDCB 0%, #C2F2DE 55%, #BEE9D2 100%);
+      border-radius: 28px;
+      box-shadow: 0 8px 24px rgba(255, 150, 120, 0.18);
+    }
+    .site-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(44px, 11vw, 76px);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      line-height: 1.15;
+      background: linear-gradient(90deg, #FF5A76 0%, #FF8A3D 28%, #FFC93C 52%, #2EC4A6 76%, #4DA3FF 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 0 rgba(255, 255, 255, 0.95)) drop-shadow(0 6px 14px rgba(255, 120, 120, 0.25));
+    }
+    .site-title a { color: inherit; text-decoration: none; }
+
+    /* Hero: sky-blue band with confetti */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      padding: 34px 18px 30px;
+      margin-bottom: 26px;
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 8% 20%, rgba(255, 90, 118, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 92% 14%, rgba(255, 201, 60, 0.6) 0 7px, transparent 8px),
+        radial-gradient(circle at 16% 82%, rgba(46, 196, 166, 0.55) 0 5px, transparent 6px),
+        radial-gradient(circle at 84% 78%, rgba(255, 138, 61, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 50% 8%, rgba(77, 163, 255, 0.45) 0 5px, transparent 6px),
+        linear-gradient(180deg, #BFE6FF 0%, #D6F0FF 60%, #CDEBFF 100%);
+      box-shadow: 0 8px 24px rgba(77, 163, 255, 0.22);
+    }
+    .hero-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(26px, 6vw, 44px);
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      line-height: 1.35;
+      color: #FF4D6D;
+      text-shadow: 0 2px 0 rgba(255, 255, 255, 0.9);
+    }
+    .hero-sub {
+      margin-top: 12px;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.9;
+      color: #234;
+    }
+    .hero-cta {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 13px 34px;
+      border-radius: 999px;
+      background: #FFC93C;
+      border: 2px solid #FF9F1C;
+      color: #B34700;
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      box-shadow: 0 4px 0 #FF9F1C, 0 8px 18px rgba(255, 159, 28, 0.35);
+    }
+    .hero-cta:active { transform: translateY(2px); box-shadow: 0 2px 0 #FF9F1C; }
+
+    /* Game screenshot slideshow */
+    .play-card {
+      background: #FF9FB2;
+      border: 2px solid #FF7D99;
+      border-radius: 28px;
+      overflow: hidden;
+      margin-bottom: 26px;
+      box-shadow: 0 8px 24px rgba(255, 150, 120, 0.14);
+    }
+    .card-slides {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      background: #fff;
+      border-bottom: 3px solid rgba(255, 255, 255, 0.55);
+    }
+    .card-slides .card-shot {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+    .card-slides .card-shot.is-active { opacity: 1; }
+    .card-dots {
+      position: absolute;
+      left: 50%;
+      bottom: 8px;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .card-dots span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.55);
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18);
+    }
+    .card-dots span.is-active { background: #fff; }
+
+    /* Text sections */
+    .about {
+      margin-top: 26px;
+      padding: 24px 22px;
+      background: #FFF3F5;
+      border-radius: 24px;
+      font-size: 22px;
+      line-height: 1.9;
+      color: #5a4a44;
+    }
+    .about h2 { font-size: 24px; margin-bottom: 10px; color: #3d2f2b; }
+    .about p { margin-bottom: 10px; }
+    .about p:last-child { margin-bottom: 0; }
+    .about a { color: #FF5A76; }
+    .about ol, .about ul { margin: 0 0 10px 26px; }
+    .about li { margin-bottom: 8px; }
+    .about li:last-child { margin-bottom: 0; }
+
+    .footer {
+      text-align: center;
+      margin-top: 44px;
+      padding: 20px 16px;
+      font-size: 22px;
+      color: #8a7a72;
+      line-height: 1.9;
+      background: #FFE3E6;
+      border-radius: 24px;
+    }
+    .footer a { color: #FF5A76; font-size: 22px; text-underline-offset: .2em; }
+    .footer a:active { color: #555; }
+    .footer-brand {
+      display: inline-block;
+      font-size: 22px;
+      color: #c98a96;
+      letter-spacing: 0.08em;
+    }
+  </style>
+  <meta property="og:site_name" content="Pare Asobi">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5560584474086870" crossorigin="anonymous"></script>
+</head>
+<body data-game="pareasobi">
+
+<div class="app">
+
+  <header class="site-header">
+    <h1 class="site-title"><a href="https://pareasobi.com/it/">Pare Asobi</a></h1>
+  </header>
+
+  <section class="hero" aria-label="Gioca a Reversi (Othello)">
+    <p class="hero-title">Reversi (Othello)</p>
+    <p class="hero-sub">Capovolgi la scacchiera, una pedina alla volta.<br>Gratis nel tuo browser — nessuna registrazione, nessuna app da installare.</p>
+    <a class="hero-cta" href="https://osero.puzzle-hub-4826.workers.dev">Gioca a Reversi ora →</a>
+  </section>
+
+  <div class="play-card">
+    <div class="card-slides"><img class="card-shot is-active" src="/assets/game-shots/othello-1.jpg" alt="Schermata di Reversi (Othello) su Pare Asobi" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/othello-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/othello-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
+  </div>
+
+  <section class="about" aria-label="Su Reversi (Othello)">
+    <h2>Che cos'è Reversi (Othello)?</h2>
+    <p>Reversi, conosciuto anche come Othello, è un classico gioco da tavolo per due giocatori. Un giocatore prende le pedine nere e l'altro le pedine bianche, ed entrambi condividono una scacchiera. Le regole si imparano in circa un minuto, ma una sola mossa può ribaltare l'intera partita: è per questo che Reversi è così difficile da lasciare.</p>
+    <p>La scacchiera standard è di 8 per 8 caselle, e la partita inizia con quattro pedine al centro: due nere e due bianche, disposte in diagonale. Da lì, i giocatori piazzano una pedina alla volta a turno, e ogni pedina avversaria intrappolata si capovolge al loro colore. Quando la scacchiera è piena, o quando nessun giocatore ha più una mossa legale, la partita finisce e vince il giocatore con più pedine sulla scacchiera.</p>
+    <p>Su Pare Asobi puoi giocare a Reversi gratis nel tuo browser, sul tuo telefono o computer. Non c'è nulla da scaricare e nessun account da creare: apri semplicemente il gioco e inizia a giocare.</p>
+  </section>
+
+  <section class="about" aria-label="Come si gioca a Reversi (Othello)">
+    <h2>Come si gioca</h2>
+    <ol>
+      <li><strong>Il nero muove per primo.</strong>Piazza una pedina su una casella vuota in modo che intrappoli una o più pedine avversarie in linea retta — orizzontale, verticale o diagonale — tra la tua nuova pedina e una pedina del tuo colore già sulla scacchiera.</li>
+      <li><strong>Ogni pedina intrappolata si capovolge al tuo colore.</strong>Una sola mossa può capovolgere un'intera riga di pedine in una volta, quindi una buona mossa può cambiare molto il punteggio.</li>
+      <li><strong>Se non hai mosse legali, passi.</strong>Il tuo avversario muove di nuovo. La partita continua finché la scacchiera non è piena o nessun giocatore può muovere.</li>
+      <li><strong>Vince il giocatore con più pedine.</strong>Il punteggio finale è semplicemente il numero di pedine di ogni colore rimaste sulla scacchiera.</li>
+      <li><strong>Gli angoli sono le caselle più sicure.</strong>Una volta preso un angolo, non può mai più essere capovolto. Le caselle proprio accanto a un angolo sono rischiose, perché possono regalare quell'angolo al tuo avversario.</li>
+    </ol>
+  </section>
+
+  <section class="about" aria-label="Modi di giocare a Reversi (Othello)">
+    <h2>Modi di giocare</h2>
+    <p><strong>Gioca online contro persone di tutto il mondo.</strong>Inizia una partita veloce e incontra subito un nuovo avversario. Le partite con punteggio usano punteggio, gradi, classifiche e titoli, così puoi vedere il tuo punteggio salire mentre vinci. Le partite rilassate non hanno punteggio e sono più lente, così puoi goderti il gioco senza preoccuparti del tuo punteggio.</p>
+    <p><strong>Gioca contro il computer.</strong>Ci sono cinque livelli del computer, da facile al più forte. Inizia dal livello facile per imparare le regole, poi sali di un livello alla volta finché il livello più forte non ti mette davvero alla prova.</p>
+    <p><strong>Gioca in due giocatori su un unico dispositivo.</strong>Condividi un telefono o uno schermo con un amico e piazza le pedine a turno, proprio come su una scacchiera vera.</p>
+    <p><strong>Prova scacchiere con forme insolite.</strong>Nelle partite contro il computer e nelle partite in due giocatori su un unico dispositivo puoi scegliere la forma della scacchiera: la scacchiera standard 8 per 8, larga, cuore, ciambella, diamante o croce. Ogni forma cambia l'apertura e lo svolgimento della partita.</p>
+    <p><strong>Veloce o lento, scegli tu.</strong>Le partite standard ti danno 20 secondi a mossa per un gioco rapido e vivace. Se preferisci riflettere con calma, il gioco rilassato ti dà molto più tempo. Il gioco è disponibile in 20 lingue.</p>
+  </section>
+
+  <section class="about" aria-label="Domande frequenti su Reversi (Othello)">
+    <h2>Domande frequenti</h2>
+    <p><strong>Reversi è gratuito?</strong>Sì. Reversi su Pare Asobi è completamente gratuito, senza registrazione e senza app da installare.</p>
+    <p><strong>Posso giocare sul mio telefono?</strong>Sì. Il gioco funziona su telefoni, tablet e computer, direttamente nel tuo browser.</p>
+    <p><strong>Serve un account per giocare online?</strong>No. Puoi iniziare una partita veloce online senza creare un account.</p>
+    <p><strong>Qual è la differenza tra Reversi e Othello?</strong>È lo stesso gioco. Othello è il nome più noto di Reversi, ed entrambi i nomi si usano per il gioco di capovolgere le pedine bianche e nere.</p>
+    <p>Looking for more games? Tutti e sei i giochi gratuiti, tra cui Sudoku (Nanpure), Nine Men's Morris, cruciverba, Shirupure e Wado Kaichin, sono sulla <a href="https://pareasobi.com/it/">pagina principale di Pare Asobi in italiano</a>.</p>
+  </section>
+
+  <footer class="footer">
+    <a href="/privacy.html#advertising">Pubblicità e informativa sulla privacy</a><br>
+    <a href="/contact.html">Contattaci</a><br>
+    <a href="/terms.html">Termini di utilizzo</a><br>
+    <a href="/guide.html">Guida al gioco</a> · <a href="/faq.html">Domande frequenti</a> · <a href="/about.html">Su Pare Asobi</a><br>
+    <span style="font-size:18px;">Le guide sono in giapponese per ora.</span><br>
+    <a href="https://pareasobi.com/it/">Torna a Pare Asobi</a><br>
+    <span class="footer-brand">Pare Asobi</span>
+  </footer>
+
+</div>
+
+<script>
+/* Game screenshot slideshow: switches automatically every 4 seconds. No outside library.
+   The first shot still shows if JavaScript is off. Broken images are skipped. */
+(function () {
+  var boxes = document.querySelectorAll('.card-slides');
+  if (!boxes.length) return;
+  boxes.forEach(function (box) {
+    var imgs = Array.prototype.slice.call(box.querySelectorAll('.card-shot'));
+    var dots = Array.prototype.slice.call(box.querySelectorAll('.card-dots span'));
+    var cur = 0, timer = null, visible = true;
+    function alive() { return imgs.filter(function (im) { return !im.dataset.broken; }); }
+    function show(n) {
+      var list = alive();
+      if (!list.length) return;
+      if (list.length === 1) {
+        imgs.forEach(function (im) { im.classList.toggle('is-active', list[0] === im); });
+        dots.forEach(function (d, i) { d.classList.toggle('is-active', list[0] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+        return;
+      }
+      cur = ((n % list.length) + list.length) % list.length;
+      imgs.forEach(function (im) { im.classList.toggle('is-active', list[cur] === im); });
+      dots.forEach(function (d, i) { d.classList.toggle('is-active', list[cur] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+    }
+    function start() { if (timer === null && visible) timer = setInterval(function () { show(cur + 1); }, 4000); }
+    function stop() { if (timer !== null) { clearInterval(timer); timer = null; } }
+    imgs.forEach(function (im) {
+      if (im.complete && im.naturalWidth === 0) im.dataset.broken = '1';
+      im.addEventListener('error', function () { im.dataset.broken = '1'; if (alive().length < 2) stop(); show(cur); });
+    });
+    show(0);
+    document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else start(); });
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { visible = en.isIntersecting; if (visible) start(); else stop(); });
+      }, { rootMargin: '100px' });
+      io.observe(box);
+    } else {
+      start();
+    }
+  });
+})();
+</script>
+<script defer src="/assets/pare-analytics.js"></script>
+</body>
+</html>
