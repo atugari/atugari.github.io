@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#FFF8E7">
+  <title>Pare Asobi | Juegos y rompecabezas gratis en el navegador</title>
+  <meta name="description" content="Pare Asobi es un lugar gratuito para jugar a juegos y rompecabezas en el navegador. Juega al Sudoku (Nanpure), Shirupure, Wado Kaichin, crucigramas, Reversi (Othello) y Nine Men's Morris en tu teléfono o computadora. No necesitas registrarte.">
+  <meta name="keywords" content="juegos gratis, juegos de navegador, juegos gratis en el navegador, minijuegos, rompecabezas, sudoku, nanpure, shirupure, wado kaichin, crucigramas, reversi, othello, nine men's morris">
+  <meta name="robots" content="index, follow">
+  <meta name="google-adsense-account" content="ca-pub-5560584474086870">
+  <link rel="canonical" href="https://pareasobi.com/es/">
+  <link rel="alternate" hreflang="ja" href="https://pareasobi.com/">
+  <link rel="alternate" hreflang="en" href="https://pareasobi.com/en/">
+    <link rel="alternate" hreflang="es" href="https://pareasobi.com/es/">
+  <link rel="alternate" hreflang="x-default" href="https://pareasobi.com/es/">
+  <meta property="og:title" content="Pare Asobi | Juegos y rompecabezas gratis en el navegador">
+  <meta property="og:description" content="A free place to play browser games and puzzles. Play Sudoku (Nanpure), Shirupure, Wado Kaichin, Crossword, Reversi (Othello), and Nine Men's Morris on your phone or computer.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://pareasobi.com/es/">
+  <meta property="og:locale" content="es_ES">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Pare Asobi | Juegos y rompecabezas gratis en el navegador">
+  <meta name="twitter:description" content="A free place to play browser games and puzzles. Play Sudoku (Nanpure), Shirupure, Wado Kaichin, Crossword, Reversi (Othello), and Nine Men's Morris on your phone or computer.">
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@graph":[
+      {"@type":"WebSite","@id":"https://pareasobi.com/es/#website","url":"https://pareasobi.com/es/","name":"Pare Asobi","inLanguage":"es"},
+      {"@type":"CollectionPage","@id":"https://pareasobi.com/es/#webpage","url":"https://pareasobi.com/es/","name":"Pare Asobi | Juegos y rompecabezas gratis en el navegador","description":"Juegos y rompecabezas gratis en el navegador: Sudoku (Nanpure), Shirupure, Wado Kaichin, crucigramas, Reversi (Othello) y Nine Men's Morris.","inLanguage":"es","isPartOf":{"@id":"https://pareasobi.com/es/#website"},"mainEntity":{"@type":"ItemList","itemListElement":[
+        {"@type":"ListItem","position":1,"name":"Sudoku Nanpure | Sudoku gratis","url":"https://pareasobi.com/nanpure/"},
+        {"@type":"ListItem","position":2,"name":"Shirupure","url":"https://pareasobi.com/puzzles/shirupure/"},
+        {"@type":"ListItem","position":3,"name":"Wado Kaichin","url":"https://pareasobi.com/puzzles/wado/"},
+        {"@type":"ListItem","position":4,"name":"Crucigramas","url":"https://pareasobi.com/puzzles/crossword/"},
+        {"@type":"ListItem","position":5,"name":"Othello","url":"https://osero.puzzle-hub-4826.workers.dev"},
+        {"@type":"ListItem","position":6,"name":"Molino (Nine Men's Morris)","url":"https://pareasobi.com/morris/"}
+      ]}}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: #FFF8E7;
+      color: #1a1a1a;
+      font-family: 'Noto Serif JP', serif;
+      min-height: 100dvh;
+    }
+
+    /* 紙吹雪ドット: 明るいお菓子色の小さな丸を背景いっぱいに散らす */
+    body {
+      background-image:
+        radial-gradient(circle at 6% 10%, rgba(255, 90, 118, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 94% 6%, rgba(255, 201, 60, 0.45) 0 6px, transparent 7px),
+        radial-gradient(circle at 12% 42%, rgba(77, 163, 255, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 88% 38%, rgba(46, 196, 166, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 50% 72%, rgba(255, 90, 118, 0.25) 0 4px, transparent 5px),
+        radial-gradient(circle at 4% 84%, rgba(255, 201, 60, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 96% 86%, rgba(77, 163, 255, 0.30) 0 6px, transparent 7px),
+        radial-gradient(circle at 30% 95%, rgba(46, 196, 166, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 70% 96%, rgba(255, 138, 61, 0.30) 0 5px, transparent 6px);
+      background-attachment: fixed;
+    }
+
+    /* ===== ポップなサイト見出し ===== */
+    .site-header {
+      text-align: center;
+      margin: 0 0 28px;
+      padding: 22px 12px 18px;
+      background: linear-gradient(135deg, #B8F1DD 0%, #D6F0FF 55%, #FFE3E6 100%);
+      border-radius: 28px;
+      box-shadow: 0 8px 24px rgba(255, 150, 120, 0.18);
+    }
+    .site-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(38px, 10vw, 56px);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      line-height: 1.15;
+      background: linear-gradient(90deg, #FF5A76 0%, #FF8A3D 28%, #FFC93C 52%, #2EC4A6 76%, #4DA3FF 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 0 rgba(255, 255, 255, 0.95)) drop-shadow(0 6px 14px rgba(255, 120, 120, 0.25));
+    }
+    .site-sub {
+      font-size: 22px;
+      line-height: 1.5;
+      color: #5a5a5a;
+      margin-top: 8px;
+    }
+
+    .app {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 48px 24px 64px;
+    }
+
+    /* ===== 斜めタイトル ===== */
+    /* タイトルブロック全体 */
+    .title-wrap {
+      display: grid;
+      grid-template-rows: auto auto auto;
+      width: 100%;
+      margin-bottom: 40px;
+      row-gap: 6px;
+    }
+
+    .title-label {
+      text-align: center;
+      font-size: 22px;
+      font-weight: 700;
+      color: #bbb;
+      letter-spacing: 0.45em;
+      white-space: nowrap;
+      margin-bottom: 6px;
+      font-family: 'Courier New', 'Osaka-Mono', monospace;
+      text-shadow: 1px 1px 0 #e4e4e4;
+      animation: label-blink 2.4s steps(1) infinite;
+    }
+    .title-label::before { content: '▶ '; }
+    .title-label::after { content: ' ◀'; }
+    @keyframes label-blink {
+      0%, 74%, 100% { opacity: 1; }
+      75%, 92% { opacity: 0.25; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .title-label { animation: none; }
+    }
+
+    /* 上段: 幻実世界（左寄せ） */
+    .title-left {
+      text-align: left;
+      padding-left: 4%;
+    }
+
+    /* ルビ+漢字をinline-blockで包む → ルビが漢字幅基準で中央揃えになる */
+    .title-block {
+      display: inline-block;
+      text-align: center;
+    }
+
+    /* フリガナ共通 */
+    .title-ruby {
+      display: block;
+      font-size: 22px;
+      color: #aaa;
+      letter-spacing: 0.18em;
+      margin-bottom: 1px;
+      font-weight: 400;
+    }
+
+    /* インターネットのルビ: シャドウ付き */
+    .title-ruby.ruby-shadow {
+      text-shadow: 0 2px 4px rgba(123, 92, 255, 0.45);
+    }
+
+    /* 漢字共通 */
+    .title-kanji {
+      display: block;
+      font-size: clamp(30px, 8.8vw, 42px);
+      font-weight: 900;
+      color: #1a1a1a;
+      letter-spacing: 0.05em;
+      line-height: 1;
+    }
+
+    /* 幻実世界: 幻想的なグラデーション文字 */
+    .title-kanji.fantasy {
+      background: linear-gradient(120deg,
+        #7b5cff 0%,
+        #4da3ff 25%,
+        #b06bff 50%,
+        #5ee0d8 75%,
+        #7b5cff 100%);
+      background-size: 300% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 7px rgba(140, 100, 255, 0.35));
+      animation: fantasy-shift 7s ease-in-out infinite;
+    }
+    @keyframes fantasy-shift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .title-kanji.fantasy { animation: none; }
+    }
+
+    /* 電子遊戯: サイバーパンク調ネオン文字 */
+    .title-kanji.cyber {
+      background: linear-gradient(100deg,
+        #00e5ff 0%,
+        #00a8ff 35%,
+        #b400ff 70%,
+        #ff2bd6 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      filter:
+        drop-shadow(0 0 5px rgba(0, 229, 255, 0.5))
+        drop-shadow(0 0 12px rgba(255, 43, 214, 0.3));
+      animation: cyber-flicker 4s linear infinite;
+    }
+    @keyframes cyber-flicker {
+      0%, 6.9%, 7.6%, 41.9%, 42.4%, 43.1%, 43.6%, 100% { opacity: 1; transform: none; }
+      7%, 7.5% { opacity: 0.45; transform: translateX(1px); }
+      42%, 42.3% { opacity: 0.55; transform: translateX(-1px) skewX(2deg); }
+      43.2%, 43.5% { opacity: 0.7; transform: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .title-kanji.cyber { animation: none; }
+    }
+
+    /* 中段: の（中央） */
+    .title-no {
+      text-align: center;
+      font-size: clamp(22px, 5.8vw, 28px);
+      font-weight: 900;
+      color: #1a1a1a;
+      letter-spacing: 0.05em;
+      line-height: 1;
+    }
+
+    /* 下段: 電子遊戯（右寄せ） */
+    .title-right {
+      text-align: right;
+      padding-right: 4%;
+    }
+
+
+    .game-card[hidden],
+    .section-label[hidden] {
+      display: none !important;
+    }
+
+
+
+    /* ===== カードリスト ===== */
+    .game-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .game-card {
+      display: block;
+      background: #fff;
+      border: 2px solid rgba(0, 0, 0, 0.05);
+      border-radius: 24px;
+      padding: 20px 52px 20px 22px;
+      text-decoration: none;
+      color: #1a1a1a;
+      transition: background 0.12s, border-color 0.12s, transform 0.12s, box-shadow 0.12s;
+      position: relative;
+      -webkit-tap-highlight-color: transparent;
+      box-shadow: 0 8px 24px rgba(255, 150, 120, 0.14);
+    }
+    /* v2: カードの色は card-pink / card-yellow / card-blue / card-mint で付ける（下の定義） */
+    .game-card:active {
+      background: #f8f8f8;
+      border-color: #ccc;
+      transform: scale(0.99);
+    }
+    .game-card.gp-focus {
+      outline: 2px solid #888;
+      outline-offset: 2px;
+      border-color: #aaa;
+    }
+    .game-card::after {
+      content: '›';
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #fff;
+      color: #FF5A76;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 32px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    }
+
+
+
+
+
+
+
+    .badge.ai { color: #5a4ad1; border-color: #cdc6f7; background: #f6f3ff; }
+
+
+
+    /* 黒白: リバーシ盤を薄く表示 */
+    .game-card.reversi-bg { overflow: hidden; }
+    .game-card.reversi-bg::before {
+      content: '';
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      width: 86px;
+      height: 86px;
+      transform: translateY(-50%) rotate(-4deg);
+      background:
+        radial-gradient(circle at 31% 31%, rgba(20,20,20,.72) 0 7px, transparent 8px),
+        radial-gradient(circle at 69% 69%, rgba(255,255,255,.96) 0 7px, transparent 8px),
+        linear-gradient(rgba(255,255,255,.12), rgba(255,255,255,.12)),
+        repeating-linear-gradient(0deg, rgba(20,20,20,.18) 0 1px, transparent 1px 21px),
+        repeating-linear-gradient(90deg, rgba(20,20,20,.18) 0 1px, transparent 1px 21px),
+        #bfe8c9;
+      border: 1px solid rgba(20,20,20,.14);
+      border-radius: 10px;
+      opacity: .26;
+      pointer-events: none;
+    }
+
+    /* モリス: 木の盤を薄く表示 */
+    .game-card.morris-bg { overflow: hidden; }
+    .game-card.morris-bg::before {
+      content: '';
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      width: 86px;
+      height: 86px;
+      transform: translateY(-50%) rotate(-4deg);
+      background:
+        radial-gradient(circle at 50% 50%, rgba(90,60,20,.5) 0 4px, transparent 5px),
+        repeating-linear-gradient(0deg, rgba(90,60,20,.16) 0 1px, transparent 1px 28px),
+        repeating-linear-gradient(90deg, rgba(90,60,20,.16) 0 1px, transparent 1px 28px),
+        linear-gradient(135deg, #e8c99a, #d9b380);
+      border: 1px solid rgba(90,60,20,.25);
+      border-radius: 10px;
+      opacity: .3;
+      pointer-events: none;
+    }
+
+    /* 作成中カード: 斜線で飛べないことを示す */    .game-card.wip {
+      pointer-events: none;
+      cursor: default;
+    }
+    .game-card.wip::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: repeating-linear-gradient(
+        -45deg,
+        rgba(0, 0, 0, 0.06) 0px,
+        rgba(0, 0, 0, 0.06) 8px,
+        transparent 8px,
+        transparent 20px
+      );
+      pointer-events: none;
+    }
+    .game-card.wip::after {
+      content: '';
+    }
+
+    .card-tag {
+      font-size: 22px;
+      color: rgba(0, 0, 0, 0.55);
+      letter-spacing: 0.22em;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .card-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: 22px;
+      font-weight: 800;
+      color: #1a1a1a;
+      letter-spacing: 0.04em;
+      margin-bottom: 5px;
+    }
+    .card-desc {
+      font-size: 22px;
+      color: #555;
+      letter-spacing: 0.04em;
+      line-height: 1.9;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 22px;
+      color: #999;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 1px 7px;
+      letter-spacing: 0.06em;
+    }
+
+    .section-label {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: #FF8FA3;
+      letter-spacing: 0.25em;
+      text-align: center;
+      margin: 20px 0 10px;
+    }
+
+    /* 新作ラベル: ポップに目立たせる */
+    .section-label.pop {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 0.3em;
+      color: #ff4d6d;
+      text-shadow: 0 2px 0 rgba(255, 77, 109, 0.18);
+      animation: pop-float 1.4s ease-in-out infinite;
+    }
+    .section-label.pop .spark {
+      display: inline-block;
+      color: #ffb03a;
+      animation: pop-spin 2.8s linear infinite;
+    }
+    @keyframes pop-float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+    @keyframes pop-spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .section-label.pop, .section-label.pop .spark { animation: none; }
+    }
+
+
+    .about {
+      margin-top: 36px;
+      padding: 24px 22px;
+      background: #FFF3F5;
+      border-radius: 24px;
+      font-size: 22px;
+      line-height: 1.9;
+      color: #5a4a44;
+    }
+    .about h2 { font-size: 24px; margin-bottom: 10px; color: #3d2f2b; }
+    .about p { margin-bottom: 10px; }
+    .about p:last-child { margin-bottom: 0; }
+    .about a { color: #FF5A76; }
+
+    .footer {
+      text-align: center;
+      margin-top: 44px;
+      padding: 20px 16px;
+      font-size: 22px;
+      color: #8a7a72;
+      line-height: 1.9;
+      background: #FFE3E6;
+      border-radius: 24px;
+    }
+    .footer a { color: #FF5A76; font-size: 22px; text-underline-offset: .2em; }
+
+    /* フッターブランド: グリッチ演出 */
+    .footer-brand {
+      position: relative;
+      display: inline-block;
+      font-size: 22px;
+      color: #c98a96;
+      letter-spacing: 0.08em;
+    }
+    .footer-brand::before,
+    .footer-brand::after {
+      content: attr(data-text);
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .footer-brand::before {
+      color: #00e5ff;
+      animation: glitch-a 3.4s steps(1) infinite;
+    }
+    .footer-brand::after {
+      color: #ff2bd6;
+      animation: glitch-b 3.4s steps(1) infinite;
+    }
+    @keyframes glitch-a {
+      0%, 88.9%, 94.1%, 100% { opacity: 0; transform: none; clip-path: none; }
+      89% { opacity: 0.9; transform: translate(-1.5px, -1px); clip-path: inset(0 0 50% 0); }
+      91% { opacity: 0.9; transform: translate(1px, 0.5px); clip-path: inset(55% 0 0 0); }
+      93% { opacity: 0.9; transform: translate(-1px, 0); clip-path: inset(20% 0 40% 0); }
+    }
+    @keyframes glitch-b {
+      0%, 88.9%, 94.1%, 100% { opacity: 0; transform: none; clip-path: none; }
+      89.5% { opacity: 0.9; transform: translate(1.5px, 1px); clip-path: inset(45% 0 0 0); }
+      91.5% { opacity: 0.9; transform: translate(-1px, -0.5px); clip-path: inset(0 0 60% 0); }
+      93.5% { opacity: 0.9; transform: translate(1px, 0); clip-path: inset(30% 0 30% 0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .footer-brand::before, .footer-brand::after { animation: none; opacity: 0; }
+    }
+    .footer a:active { color: #555; }
+  
+.nanpure-bg{background:linear-gradient(135deg,#fff 40%,#edf5ec);border-color:#b6cdbb}.nanpure-bg .card-tag{color:#467756}.nanpure-bg .card-title{color:#214c32}
+
+
+    /* ===== イメージ画像どおりのポップな見た目 (v2) ===== */
+    html { scroll-behavior: smooth; }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+    }
+    .app { max-width: 1060px; padding: 20px 16px 64px; }
+    @media (min-width: 720px) {
+      .app { padding: 28px 28px 72px; }
+    }
+
+    /* ロゴバー: ミントグリーンの大きな丸い帯 */
+    .site-header {
+      background: linear-gradient(135deg, #A9EDCB 0%, #C2F2DE 55%, #BEE9D2 100%);
+      border-radius: 28px;
+      padding: 26px 12px 22px;
+      margin-bottom: 18px;
+    }
+    .site-title { font-size: clamp(44px, 11vw, 76px); }
+
+    /* ヒーロー: 空色の帯 + 紙吹雪 */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      padding: 34px 18px 30px;
+      margin-bottom: 26px;
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 8% 20%, rgba(255, 90, 118, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 92% 14%, rgba(255, 201, 60, 0.6) 0 7px, transparent 8px),
+        radial-gradient(circle at 16% 82%, rgba(46, 196, 166, 0.55) 0 5px, transparent 6px),
+        radial-gradient(circle at 84% 78%, rgba(255, 138, 61, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 50% 8%, rgba(77, 163, 255, 0.45) 0 5px, transparent 6px),
+        linear-gradient(180deg, #BFE6FF 0%, #D6F0FF 60%, #CDEBFF 100%);
+      box-shadow: 0 8px 24px rgba(77, 163, 255, 0.22);
+    }
+    .hero-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(26px, 6vw, 44px);
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      line-height: 1.35;
+      color: #FF4D6D;
+      text-shadow: 0 2px 0 rgba(255, 255, 255, 0.9);
+    }
+    .hero-sub {
+      margin-top: 12px;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.9;
+      color: #234;
+    }
+    .hero-cta {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 13px 34px;
+      border-radius: 999px;
+      background: #FFC93C;
+      border: 2px solid #FF9F1C;
+      color: #B34700;
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      box-shadow: 0 4px 0 #FF9F1C, 0 8px 18px rgba(255, 159, 28, 0.35);
+    }
+    .hero-cta:active { transform: translateY(2px); box-shadow: 0 2px 0 #FF9F1C; }
+    .hero-deco { position: absolute; pointer-events: none; }
+    .hero-deco.deco-1 {
+      width: 26px; height: 26px; right: 9%; top: 18%;
+      background: #FFC93C; border: 3px solid #7A5A00; border-radius: 6px;
+      transform: rotate(18deg);
+    }
+    .hero-deco.deco-2 {
+      width: 0; height: 0; left: 5%; top: auto; bottom: 4%;
+      border-left: 16px solid transparent; border-right: 16px solid transparent;
+      border-bottom: 28px solid #FF8FA3; transform: rotate(-12deg);
+    }
+    .hero-deco.deco-3 {
+      width: 34px; height: 34px; right: 16%; bottom: 12%;
+      background: #7FE3C0; border-radius: 50%; opacity: 0.85;
+    }
+
+    /* 見出し: 人気のゲームをチェック! */
+    .games-heading { text-align: center; margin: 6px 0 18px; }
+    .games-heading h2 {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(22px, 5vw, 32px);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      color: #1E88D6;
+    }
+    .games-heading p {
+      margin-top: 6px;
+      font-size: 22px;
+      font-weight: 700;
+      color: #2E9E6B;
+      letter-spacing: 0.06em;
+    }
+
+    /* カード一覧: 2列グリッド */
+    .game-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    @media (min-width: 640px) {
+      .game-list { grid-template-columns: 1fr 1fr; gap: 18px; }
+    }
+    .section-label { grid-column: 1 / -1; }
+
+    /* 大きな色カード + 実際の画面写真 */
+    .game-card {
+      padding: 0 0 18px;
+      overflow: hidden;
+      border-radius: 28px;
+      border-width: 2px;
+    }
+    .game-card::after { content: none; }
+    .game-card.reversi-bg::before, .game-card.morris-bg::before { display: none; }
+    .game-card.card-pink { background: #FF9FB2; border-color: #FF7D99; }
+    .game-card.card-yellow { background: #FFD23F; border-color: #F0AD00; }
+    .game-card.card-blue { background: #6FC1EE; border-color: #3798D8; }
+    .game-card.card-mint { background: #7FE3C0; border-color: #2EBC8A; }
+    .game-card.card-pink .card-title, .game-card.card-yellow .card-title,
+    .game-card.card-blue .card-title, .game-card.card-mint .card-title { color: #20242E; }
+    .game-card.card-pink .card-desc, .game-card.card-yellow .card-desc,
+    .game-card.card-blue .card-desc, .game-card.card-mint .card-desc { color: rgba(20, 24, 40, 0.78); }
+    .card-shot {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      background: #fff;
+      border-bottom: 3px solid rgba(255, 255, 255, 0.55);
+    }
+
+    .card-slides {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      background: #fff;
+      border-bottom: 3px solid rgba(255, 255, 255, 0.55);
+    }
+    .card-slides .card-shot {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border-bottom: 0;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+    .card-slides .card-shot.is-active { opacity: 1; }
+    .card-dots {
+      position: absolute;
+      left: 50%;
+      bottom: 8px;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .card-dots span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.55);
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18);
+    }
+    .card-dots span.is-active { background: #fff; }
+    .card-body { display: block; padding: 16px 18px 0; text-align: center; }
+    .card-head {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+    .card-head .card-title { margin-bottom: 0; font-size: 22px; }
+    .card-head .card-tag {
+      display: inline-block;
+      margin-bottom: 0;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.85);
+      color: #555;
+      font-size: 22px;
+      letter-spacing: 0.14em;
+    }
+    .card-desc { line-height: 1.8; }
+    .card-play {
+      display: inline-block;
+      margin-top: 14px;
+      padding: 8px 26px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.92);
+      color: #D6334F;
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    }
+
+</style>
+<meta property="og:site_name" content="Pare Asobi">
+<script type="application/ld+json" data-pareasobi-site>{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://pareasobi.com/es/#website",
+      "url": "https://pareasobi.com/es/",
+      "name": "Pare Asobi",
+      "inLanguage": "en"
+    },
+    {
+      "@type": "CollectionPage",
+      "@id": "https://pareasobi.com/es/#page",
+      "url": "https://pareasobi.com/es/",
+      "name": "Pare Asobi | Juegos y rompecabezas gratis en el navegador",
+      "description": "Pare Asobi is a free place to play browser games and puzzles. Play Sudoku (Nanpure), Shirupure, Wado Kaichin, Crossword, Reversi (Othello), and Nine Men's Morris on your phone or computer.",
+      "inLanguage": "en",
+      "isPartOf": {
+        "@id": "https://pareasobi.com/es/#website"
+      }
+    }
+  ]
+}</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5560584474086870" crossorigin="anonymous"></script>
+<script defer src="/nanpure/assets/guide-banner.js"></script></head>
+<body data-game="pareasobi">
+
+<div class="app">
+
+  <header class="site-header">
+    <h1 class="site-title">Pare Asobi</h1>
+  </header>
+
+  <section class="hero" aria-label="Welcome to Pare Asobi">
+    <p class="hero-title">¡Juguemos juntos: diversión rápida y casual para todos!</p>
+    <p class="hero-sub">Juegos ligeros, en cualquier momento y lugar: gratis y fáciles de empezar.<br>Empieza ya con seis juegos clásicos.</p>
+    <span class="hero-deco deco-1" aria-hidden="true"></span>
+    <span class="hero-deco deco-2" aria-hidden="true"></span>
+    <span class="hero-deco deco-3" aria-hidden="true"></span>
+  </section>
+
+  <div class="games-heading" id="games">
+    <h2>★ ¡Echa un vistazo a los juegos populares! ★</h2>
+    <p>Todos gratis, sin registro</p>
+  </div>
+
+
+  <!-- ===== Game cards ===== -->
+
+
+  <div class="game-list">
+
+    <a class="game-card nanpure-bg card-yellow" href="/nanpure/" id="card-13" data-published="2026-10-20" data-title="Nanpure">
+      <div class="card-slides"><img class="card-shot is-active" src="/assets/game-shots/nanpure-1.jpg" alt="Captura del juego Nanpure" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/nanpure-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/nanpure-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
+      <div class="card-body">
+        <div class="card-head"><div class="card-title">Sudoku</div><div class="card-tag">SUDOKU</div></div>
+        <div class="card-desc">Genera rompecabezas con muchas reglas distintas<br>Multilingüe, con ayuda de lectura furigana e impresión</div>
+        <span class="card-play">Jugar →</span>
+      </div>
+    </a>
+
+    <a class="game-card nanpure-bg card-pink" href="/puzzles/shirupure/" id="card-15" data-published="2026-10-30" data-title="Shirupure"><div class="card-slides"><img class="card-shot is-active" src="/assets/game-shots/shirupure-1.jpg" alt="Captura del juego Shirupure" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/shirupure-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/shirupure-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div><div class="card-body"><div class="card-head"><div class="card-title">Shirupure</div><div class="card-tag">SHIRUPURE</div></div><div class="card-desc">Divide los símbolos en habitaciones. Practica hasta 660 rompecabezas. (Solo en japonés)</div><span class="card-play">Jugar →</span></div></a>
+
+    <a class="game-card nanpure-bg card-mint" href="/puzzles/wado/" id="card-16" data-published="2026-10-30" data-title="Wado Kaichin"><div class="card-slides"><img class="card-shot is-active" src="/assets/game-shots/wado-1.jpg" alt="Captura del juego Wado Kaichin" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/wado-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/wado-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div><div class="card-body"><div class="card-head"><div class="card-title">Wado Kaichin</div><div class="card-tag">KANJI</div></div><div class="card-desc">Encuentra el kanji común a cuatro modismos. Con pistas e impresión. (Solo en japonés)</div><span class="card-play">Jugar →</span></div></a>
+
+    <a class="game-card nanpure-bg card-blue" href="/puzzles/crossword/" id="card-17" data-published="2026-10-30" data-title="Crossword"><div class="card-slides"><img class="card-shot is-active" src="/assets/game-shots/crossword-1.jpg" alt="Captura del juego de crucigramas" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/crossword-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/crossword-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div><div class="card-body"><div class="card-head"><div class="card-title">Crucigramas</div><div class="card-tag">WORDS</div></div><div class="card-desc">Completa la cuadrícula con las pistas. Crea, guarda e imprime los tuyos. (Solo en japonés)</div><span class="card-play">Jugar →</span></div></a>
+
+    <div class="section-label pop"><span class="spark">✦</span> ¡Nuevo! <span class="spark">✦</span></div>
+
+    <a class="game-card reversi-bg card-pink" href="https://osero.puzzle-hub-4826.workers.dev" target="_blank" rel="noopener" id="card-23" data-published="2026-11-16" data-title="Othello">
+      <div class="card-slides"><img class="card-shot is-active" src="/assets/game-shots/othello-1.jpg" alt="Captura del juego Othello" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/othello-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/othello-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
+      <div class="card-body">
+        <div class="card-head"><div class="card-title">Othello</div><div class="card-tag">REVERSI</div></div>
+        <div class="card-desc">Juega en línea contra personas de todo el mundo<br>Con puntuación, clasificaciones y modo espectador</div>
+        <span class="card-play">Jugar →</span>
+      </div>
+    </a>
+
+    <a class="game-card morris-bg card-blue" href="/morris/" target="_blank" rel="noopener" id="card-24" data-published="2026-11-16" data-title="Nine Men's Morris">
+      <div class="card-slides"><img class="card-shot is-active" src="/assets/game-shots/morris-1.jpg" alt="Captura del juego Nine Men's Morris" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/morris-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/morris-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
+      <div class="card-body">
+        <div class="card-head"><div class="card-title">Molino</div><div class="card-tag">MORRIS</div></div>
+        <div class="card-desc">Alinea tres para quitarle fichas a tu rival<br>También en línea y por correo</div>
+        <span class="card-play">Jugar →</span>
+      </div>
+    </a>
+
+  </div>
+
+  
+  <section class="about" aria-label="Acerca de Pare Asobi">
+    <h2>Acerca de Pare Asobi</h2>
+    <p>Pare Asobi es un lugar gratuito para jugar a juegos y rompecabezas en el navegador. Sin registro y sin instalar ninguna aplicación: ábrelo en tu teléfono o computadora y empieza a jugar.</p>
+    <p>Hay cuatro rompecabezas — Nanpure (Sudoku), Shirupure, Wado Kaichin y crucigramas — y dos juegos de mesa — Reversi (Othello) y Nine Men's Morris. A Reversi y a Morris se puede jugar en línea contra personas de todo el mundo, contra la computadora o con dos jugadores en un mismo dispositivo.</p>
+    <p>En Reversi, voltea las fichas blancas y negras para apoderarte del tablero. En línea puedes jugar con puntuación, rangos, clasificaciones y títulos, elegir entre cinco niveles de computadora y probar tableros con formas poco comunes, como un corazón o una rosquilla, además del tablero estándar de 8×8. Hay partidas rápidas de 20 segundos por jugada y partidas lentas y relajadas.</p>
+    <p>Nine Men's Morris es uno de los juegos de mesa más antiguos del mundo, jugado desde hace más de 2.000 años. Alinea tres de tus fichas para formar un "molino" y quitarle una ficha a tu rival. Coloca tus fichas y luego muévelas por las líneas, y cuando te queden tres, puedes volar a cualquier punto vacío. Juega al clásico con nueve fichas por jugador o al Morabaraba con doce fichas, contra la computadora en tres niveles o con dos jugadores en un mismo dispositivo.</p>
+    <p>Nanpure permite generar rompecabezas con muchas reglas distintas, con soporte multilingüe, ayuda de lectura furigana e impresión. Shirupure, Wado Kaichin y los crucigramas son rompecabezas en japonés: en Shirupure divides símbolos en habitaciones, en Wado Kaichin encuentras el kanji común a cuatro modismos y en los crucigramas completas la cuadrícula con las pistas.</p>
+    <p>Consulta la <a href="/guide.html">guía de juego</a> para aprender a jugar, las <a href="/faq.html">preguntas frecuentes</a> para resolver dudas y <a href="/about.html">Acerca de Pare Asobi</a> para saber más sobre este sitio. Estas guías están en japonés por ahora.</p>
+  </section>
+
+  <footer class="footer">
+    <a href="/privacy.html#advertising">Publicidad y política de privacidad</a><br>
+    <a href="/contact.html">Contacto</a><br>
+    <a href="/terms.html">Condiciones de uso</a><br>
+    <a href="/guide.html">Guía de juego</a> · <a href="/faq.html">Preguntas frecuentes</a> · <a href="/about.html">Acerca de Pare Asobi</a><br>
+    <span style="font-size:18px;">Las guías están en japonés por ahora.</span><br>
+    <span class="footer-brand" data-text="Pare Asobi">Pare Asobi</span><br>
+    <span style="font-size:22px;letter-spacing:0.05em;">ver2026.10.30</span>
+  </footer>
+
+</div>
+
+<script>
+  // ===== 新作の自動管理：公開から1ヶ月で「新作」から外す =====
+  (function(){
+    const newLabel = document.querySelector('.section-label.pop');
+    if (!newLabel) return;
+    const MONTH = 30 * 24 * 60 * 60 * 1000;
+    const now = Date.now();
+    document.querySelectorAll('.game-card[data-published]').forEach(card => {
+      const d = new Date(card.getAttribute('data-published') + 'T00:00:00');
+      if (isNaN(d.getTime())) return;
+      if (now - d.getTime() > MONTH){
+        newLabel.parentNode.insertBefore(card, newLabel);
+      }
+    });
+    let n = newLabel.nextElementSibling, hasNew = false;
+    while (n && !(n.classList && n.classList.contains('section-label'))){
+      if (n.classList && n.classList.contains('game-card')){ hasNew = true; break; }
+      n = n.nextElementSibling;
+    }
+    if (!hasNew) newLabel.hidden = true;
+  })();
+
+
+  // ===== コントローラー操作 =====
+  // Aボタン（buttons[1]）: 決定
+  // Bボタン（buttons[0]）: トップページへ
+  let _cur = 0;
+  let _gpConnected = false;
+  let _prev = {};
+
+  function _btnOn(b){ return b && (b.value > 0.08 || b.pressed); }
+
+  function currentCards(){
+    return Array.from(document.querySelectorAll('.game-card'))
+      .filter(el => !el.hidden && el.getAttribute('href'));
+  }
+
+  function updateCursor(){
+    const cards = currentCards();
+    document.querySelectorAll('.game-card').forEach(el => el.classList.remove('gp-focus'));
+    if(!cards.length) return;
+    _cur = Math.max(0, Math.min(_cur, cards.length - 1));
+    const el = cards[_cur];
+    el.classList.add('gp-focus');
+    const rect = el.getBoundingClientRect();
+    if(rect.bottom > window.innerHeight - 40) window.scrollBy(0, rect.bottom - window.innerHeight + 60);
+    else if(rect.top < 40) window.scrollBy(0, rect.top - 60);
+  }
+
+  function _onConnected(){
+    if(_gpConnected) return;
+    _gpConnected = true;
+    updateCursor();
+  }
+
+  function pollGamepad(){
+    const gps = navigator.getGamepads ? navigator.getGamepads() : [];
+    for(const gp of gps){
+      if(!gp) continue;
+      _onConnected();
+      const idx = gp.index;
+      const cards = currentCards();
+
+      const bA = _btnOn(gp.buttons[1]);
+      if(bA && !_prev[idx+'_A']){
+        const el = cards[_cur];
+        const href = el ? el.getAttribute('href') : null;
+        if(href) window.location.href = href;
+      }
+      _prev[idx+'_A'] = bA;
+
+      const bB = _btnOn(gp.buttons[0]);
+      if(bB && !_prev[idx+'_B']) window.location.href = 'index.html';
+      _prev[idx+'_B'] = bB;
+
+      const up = _btnOn(gp.buttons[12]) || (gp.axes[1] < -0.3);
+      if(up && !_prev[idx+'_up']){
+        _cur = Math.max(0, _cur - 1);
+        updateCursor();
+      }
+      _prev[idx+'_up'] = up;
+
+      const dn = _btnOn(gp.buttons[13]) || (gp.axes[1] > 0.3);
+      if(dn && !_prev[idx+'_dn']){
+        _cur = Math.min(Math.max(0, cards.length - 1), _cur + 1);
+        updateCursor();
+      }
+      _prev[idx+'_dn'] = dn;
+
+      const ly = gp.axes[1], ry = gp.axes[3];
+      const sy = Math.abs(ry) > 0.15 ? ry : (Math.abs(ly) > 0.15 ? ly : 0);
+      if(sy !== 0) window.scrollBy(0, sy * 12);
+    }
+  }
+
+  setInterval(pollGamepad, 8);
+  window.addEventListener('gamepadconnected', _onConnected);
+
+  function _detect(){
+    const g = navigator.getGamepads?.();
+    if(g && [...g].some(x=>x)) _onConnected();
+  }
+  setTimeout(_detect, 0);
+  setTimeout(_detect, 200);
+  setTimeout(_detect, 600);
+</script>
+<script>
+/* カードの画面写真スライド: 4秒ごとに自動で切り替え。外部ライブラリなし。
+   JSが動かなくても1枚目が表示される。画像が読めないものは飛ばす。 */
+(function () {
+  var boxes = document.querySelectorAll('.card-slides');
+  if (!boxes.length) return;
+  boxes.forEach(function (box) {
+    var imgs = Array.prototype.slice.call(box.querySelectorAll('.card-shot'));
+    var dots = Array.prototype.slice.call(box.querySelectorAll('.card-dots span'));
+    var cur = 0, timer = null, visible = true;
+    function alive() { return imgs.filter(function (im) { return !im.dataset.broken; }); }
+    function show(n) {
+      var list = alive();
+      if (!list.length) return;
+      if (list.length === 1) {
+        imgs.forEach(function (im) { im.classList.toggle('is-active', list[0] === im); });
+        dots.forEach(function (d, i) { d.classList.toggle('is-active', list[0] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+        return;
+      }
+      cur = ((n % list.length) + list.length) % list.length;
+      imgs.forEach(function (im) { im.classList.toggle('is-active', list[cur] === im); });
+      dots.forEach(function (d, i) { d.classList.toggle('is-active', list[cur] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+    }
+    function start() { if (timer === null && visible) timer = setInterval(function () { show(cur + 1); }, 4000); }
+    function stop() { if (timer !== null) { clearInterval(timer); timer = null; } }
+    imgs.forEach(function (im) {
+      if (im.complete && im.naturalWidth === 0) im.dataset.broken = '1';
+      im.addEventListener('error', function () { im.dataset.broken = '1'; if (alive().length < 2) stop(); show(cur); });
+    });
+    show(0);
+    document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else start(); });
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { visible = en.isIntersecting; if (visible) start(); else stop(); });
+      }, { rootMargin: '100px' });
+      io.observe(box);
+    } else {
+      start();
+    }
+  });
+})();
+</script>
+<script defer src="/assets/pare-analytics.js"></script>
+</body>
+</html>
