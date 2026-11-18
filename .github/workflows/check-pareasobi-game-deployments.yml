@@ -12,12 +12,12 @@ jobs:
   publish:
     if: github.repository == 'atugari/atugari.github.io'
     runs-on: ubuntu-latest
-    timeout-minutes: 4
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - name: Apply three localized script routes while retaining assets
-        run: python3 scripts/apply-othello-assets-config.py
+      - name: Publish Othello static translations and furigana
+        run: python3 scripts/publish-othello-static-assets.py
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
