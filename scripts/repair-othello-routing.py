@@ -119,7 +119,7 @@ export default {{...original, fetch(request, env, ctx) {{
         'compatibility_date': settings['compatibility_date'],
         'compatibility_flags': flags,
         'keep_assets': True,
-        'assets': {'config': {'run_worker_first': True, 'serve_directly': False}},
+        'assets': {'config': {'serve_directly': False}},
         'bindings': bindings,
         'annotations': {'workers/message':'Fix Othello furigana and localization without replacing the existing assets'},
     }
