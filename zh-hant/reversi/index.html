@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#FFF8E7">
+  <title>黑白棋 | 免費線上棋盤遊戲 - Pare Asobi</title>
+  <meta name="description" content="在瀏覽器中免費玩黑白棋。與世界各地的玩家線上對戰（有段位和排行榜），或挑戰五個難度的電腦，或兩個人共用一臺設備對弈。无需注冊。">
+  <meta name="keywords" content="黑白棋, 奧賽羅, 免費黑白棋, 線上黑白棋, 線上玩奧賽羅, 棋盤遊戲, 免費線上遊戲, Pare Asobi">
+  <meta name="robots" content="index, follow">
+  <meta name="google-adsense-account" content="ca-pub-5560584474086870">
+  <link rel="canonical" href="https://pareasobi.com/zh-hant/reversi/">
+  <link rel="alternate" hreflang="en" href="https://pareasobi.com/en/reversi/">
+  <link rel="alternate" hreflang="zh-Hant" href="https://pareasobi.com/zh-hant/reversi/">
+  <link rel="alternate" hreflang="x-default" href="https://pareasobi.com/zh-hant/reversi/">
+  <meta property="og:title" content="黑白棋 | 免費線上棋盤遊戲 - Pare Asobi">
+  <meta property="og:description" content="在瀏覽器中免費玩黑白棋——與世界各地的玩家線上對戰、挑戰五個難度的電腦，或兩個人共用一臺設備對弈。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://pareasobi.com/zh-hant/reversi/">
+  <meta property="og:locale" content="zh_TW">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="黑白棋 | 免費線上棋盤遊戲 - Pare Asobi">
+  <meta name="twitter:description" content="在瀏覽器中免費玩黑白棋——與世界各地的玩家線上對戰、挑戰五個難度的電腦，或兩個人共用一臺設備對弈。">
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@graph":[
+      {"@type":"WebSite","@id":"https://pareasobi.com/zh-hant/#website","url":"https://pareasobi.com/zh-hant/","name":"Pare Asobi","inLanguage":"zh-Hant"},
+      {"@type":"WebPage","@id":"https://pareasobi.com/zh-hant/reversi/#webpage","url":"https://pareasobi.com/zh-hant/reversi/","name":"黑白棋 | 免費線上棋盤遊戲 - Pare Asobi","description":"在瀏覽器中免費玩黑白棋。與世界各地的玩家線上對戰（有段位和排行榜），或挑戰五個難度的電腦，或兩個人共用一臺設備對弈。","inLanguage":"zh-Hant","isPartOf":{"@id":"https://pareasobi.com/zh-hant/#website"}}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: #FFF8E7;
+      color: #1a1a1a;
+      font-family: 'Noto Serif JP', serif;
+      min-height: 100dvh;
+    }
+
+    /* Confetti dots: small bright candy-colored dots scattered over the background */
+    body {
+      background-image:
+        radial-gradient(circle at 6% 10%, rgba(255, 90, 118, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 94% 6%, rgba(255, 201, 60, 0.45) 0 6px, transparent 7px),
+        radial-gradient(circle at 12% 42%, rgba(77, 163, 255, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 88% 38%, rgba(46, 196, 166, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 50% 72%, rgba(255, 90, 118, 0.25) 0 4px, transparent 5px),
+        radial-gradient(circle at 4% 84%, rgba(255, 201, 60, 0.35) 0 6px, transparent 7px),
+        radial-gradient(circle at 96% 86%, rgba(77, 163, 255, 0.30) 0 6px, transparent 7px),
+        radial-gradient(circle at 30% 95%, rgba(46, 196, 166, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 70% 96%, rgba(255, 138, 61, 0.30) 0 5px, transparent 6px);
+      background-attachment: fixed;
+    }
+
+    .app { max-width: 1060px; margin: 0 auto; padding: 20px 16px 64px; }
+    @media (min-width: 720px) {
+      .app { padding: 28px 28px 72px; }
+    }
+
+    /* Logo bar: mint-green rounded band */
+    .site-header {
+      text-align: center;
+      margin: 0 0 18px;
+      padding: 26px 12px 22px;
+      background: linear-gradient(135deg, #A9EDCB 0%, #C2F2DE 55%, #BEE9D2 100%);
+      border-radius: 28px;
+      box-shadow: 0 8px 24px rgba(255, 150, 120, 0.18);
+    }
+    .site-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(44px, 11vw, 76px);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      line-height: 1.15;
+      background: linear-gradient(90deg, #FF5A76 0%, #FF8A3D 28%, #FFC93C 52%, #2EC4A6 76%, #4DA3FF 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 0 rgba(255, 255, 255, 0.95)) drop-shadow(0 6px 14px rgba(255, 120, 120, 0.25));
+    }
+    .site-title a { color: inherit; text-decoration: none; }
+
+    /* Hero: sky-blue band with confetti */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      padding: 34px 18px 30px;
+      margin-bottom: 26px;
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 8% 20%, rgba(255, 90, 118, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 92% 14%, rgba(255, 201, 60, 0.6) 0 7px, transparent 8px),
+        radial-gradient(circle at 16% 82%, rgba(46, 196, 166, 0.55) 0 5px, transparent 6px),
+        radial-gradient(circle at 84% 78%, rgba(255, 138, 61, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 50% 8%, rgba(77, 163, 255, 0.45) 0 5px, transparent 6px),
+        linear-gradient(180deg, #BFE6FF 0%, #D6F0FF 60%, #CDEBFF 100%);
+      box-shadow: 0 8px 24px rgba(77, 163, 255, 0.22);
+    }
+    .hero-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(26px, 6vw, 44px);
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      line-height: 1.35;
+      color: #FF4D6D;
+      text-shadow: 0 2px 0 rgba(255, 255, 255, 0.9);
+    }
+    .hero-sub {
+      margin-top: 12px;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.9;
+      color: #234;
+    }
+    .hero-cta {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 13px 34px;
+      border-radius: 999px;
+      background: #FFC93C;
+      border: 2px solid #FF9F1C;
+      color: #B34700;
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      box-shadow: 0 4px 0 #FF9F1C, 0 8px 18px rgba(255, 159, 28, 0.35);
+    }
+    .hero-cta:active { transform: translateY(2px); box-shadow: 0 2px 0 #FF9F1C; }
+
+    /* Game screenshot slideshow */
+    .play-card {
+      background: #FF9FB2;
+      border: 2px solid #FF7D99;
+      border-radius: 28px;
+      overflow: hidden;
+      margin-bottom: 26px;
+      box-shadow: 0 8px 24px rgba(255, 150, 120, 0.14);
+    }
+    .card-slides {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      background: #fff;
+      border-bottom: 3px solid rgba(255, 255, 255, 0.55);
+    }
+    .card-slides .card-shot {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+    .card-slides .card-shot.is-active { opacity: 1; }
+    .card-dots {
+      position: absolute;
+      left: 50%;
+      bottom: 8px;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .card-dots span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.55);
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18);
+    }
+    .card-dots span.is-active { background: #fff; }
+
+    /* Text sections */
+    .about {
+      margin-top: 26px;
+      padding: 24px 22px;
+      background: #FFF3F5;
+      border-radius: 24px;
+      font-size: 22px;
+      line-height: 1.9;
+      color: #5a4a44;
+    }
+    .about h2 { font-size: 24px; margin-bottom: 10px; color: #3d2f2b; }
+    .about p { margin-bottom: 10px; }
+    .about p:last-child { margin-bottom: 0; }
+    .about a { color: #FF5A76; }
+    .about ol, .about ul { margin: 0 0 10px 26px; }
+    .about li { margin-bottom: 8px; }
+    .about li:last-child { margin-bottom: 0; }
+
+    .footer {
+      text-align: center;
+      margin-top: 44px;
+      padding: 20px 16px;
+      font-size: 22px;
+      color: #8a7a72;
+      line-height: 1.9;
+      background: #FFE3E6;
+      border-radius: 24px;
+    }
+    .footer a { color: #FF5A76; font-size: 22px; text-underline-offset: .2em; }
+    .footer a:active { color: #555; }
+    .footer-brand {
+      display: inline-block;
+      font-size: 22px;
+      color: #c98a96;
+      letter-spacing: 0.08em;
+    }
+  </style>
+  <meta property="og:site_name" content="Pare Asobi">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5560584474086870" crossorigin="anonymous"></script>
+</head>
+<body data-game="pareasobi">
+
+<div class="app">
+
+  <header class="site-header">
+    <h1 class="site-title"><a href="https://pareasobi.com/zh-hant/">Pare Asobi</a></h1>
+  </header>
+
+  <section class="hero" aria-label="玩黑白棋">
+    <p class="hero-title">黑白棋</p>
+    <p class="hero-sub">一子一子翻轉棋盤。<br>在瀏覽器中免費玩——无需注冊，不用安裝應用。</p>
+    <a class="hero-cta" href="https://osero.puzzle-hub-4826.workers.dev">馬上玩黑白棋 →</a>
+  </section>
+
+  <div class="play-card">
+    <div class="card-slides"><img class="card-shot is-active" src="/assets/game-shots/othello-1.jpg" alt="Pare Asobi 上黑白棋的遊戲截圖" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/othello-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/othello-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
+  </div>
+
+  <section class="about" aria-label="關于黑白棋">
+    <h2>什麼是黑白棋？</h2>
+    <p>黑白棋，也叫奧賽羅，是兩人對弈的經典棋盤遊戲。一方執黑棋，一方執白棋，共用一個棋盤。規則一分鐘就能學會，但一步棋就能讓局勢完全翻轉——這正是黑白棋讓人放不下的魅力。</p>
+    <p>標準棋盤是 8×8 的格子，開局時中間放著四枚棋子：兩黑兩白，斜向相對。之後雙方輪流下一子，夾住的對方棋子都會翻成自己的顏色。棋盤下滿，或雙方都无棋可下時，遊戲結束，棋盤上棋子多的一方獲勝。</p>
+    <p>在 Pare Asobi 上，你可以在瀏覽器中免費玩黑白棋，手機、電腦都可以。不用下載，也不用注冊——打開就能玩。</p>
+  </section>
+
+  <section class="about" aria-label="玩法">
+    <h2>玩法</h2>
+    <ol>
+      <li><strong>黑棋先行。</strong>把棋子放在空格上，讓它和棋盤上已有的己方棋子在一條直線上（橫、豎或斜線）夾住對方的一枚或多枚棋子。</li>
+      <li><strong>被夾住的棋子全部翻成你的顏色。</strong>一步棋可以同時翻轉一整行棋子，所以一步好棋能大幅改變比分。</li>
+      <li><strong>如果你无棋可下，就跳過一手。</strong>對方繼續下。直到棋盤下滿或雙方都无棋可下，遊戲結束。</li>
+      <li><strong>棋子多的一方獲勝。</strong>最終比分就是棋盤上雙方棋子的數量。</li>
+      <li><strong>角是最安全的位置。</strong>一旦佔領角，就永遠不會被翻轉。角旁邊的格子很危險，因為可能把角讓給對方。</li>
+    </ol>
+  </section>
+
+  <section class="about" aria-label="玩法選擇">
+    <h2>玩法選擇</h2>
+    <p><strong>與世界各地的玩家線上對戰。</strong>開始快速匹配，馬上就能遇到新對手。計分對戰有段位、等級、排行榜和稱號，贏棋就能看到段位上升。休閒對戰不計分、節奏更慢，可以安心享受遊戲。</p>
+    <p><strong>和電腦對戰。</strong>電腦有五個難度，從簡單到最強。先從簡單難度熟悉規則，再一級一級往上挑戰，直到最強難度給你真正的考驗。</p>
+    <p><strong>兩個人共用一臺設備對弈。</strong>和朋友共用一部手機或一個屏幕，輪流下棋，就像在真實棋盤上一樣。</p>
+    <p><strong>試試特殊形狀的棋盤。</strong>和電腦對戰或兩人共用一臺設備時，可以選擇棋盤形狀：標準 8×8、寬版、愛心、甜甜圈、鑽石或十字。每種形狀都會改變開局和棋局的走向。</p>
+    <p><strong>快棋慢棋，任你選擇。</strong>標準對戰每步 20 秒，節奏明快；想慢慢思考的話，休閒對戰有充裕的時間。遊戲支持 20 種語言。</p>
+  </section>
+
+  <section class="about" aria-label="常見問題">
+    <h2>常見問題</h2>
+    <p><strong>黑白棋免費嗎？</strong>是的。Pare Asobi 上的黑白棋完全免費，不用注冊，也不用安裝應用。</p>
+    <p><strong>可以在手機上玩嗎？</strong>可以。遊戲在手機、平板和電腦上都能在瀏覽器中直接玩。</p>
+    <p><strong>線上對戰需要賬號嗎？</strong>不需要。不用創建賬號就能開始快速匹配。</p>
+    <p><strong>黑白棋和奧賽羅有什麼區別？</strong>它們是同一個遊戲。奧賽羅是黑白棋最廣為人知的名字，兩個名字指的都是這種翻轉黑白棋子的遊戲。</p>
+    <p>Looking for more games? 請看 <a href="https://pareasobi.com/zh-hant/">Pare Asobi 中文主頁</a>上的全部六款免費遊戲，包括數獨（Nanpure）、九子棋、填字遊戲、Shirupure 和和同開珎。</p>
+  </section>
+
+  <footer class="footer">
+    <a href="/privacy.html#advertising">廣告與隱私政策</a><br>
+    <a href="/contact.html">聯系我們</a><br>
+    <a href="/terms.html">使用條款</a><br>
+    <a href="/guide.html">玩法指南</a> · <a href="/faq.html">常見問題</a> · <a href="/about.html">關于 Pare Asobi</a><br>
+    <span style="font-size:18px;">指南目前只有日語版。</span><br>
+    <a href="https://pareasobi.com/zh-hant/">回到 Pare Asobi</a><br>
+    <span class="footer-brand">Pare Asobi</span>
+  </footer>
+
+</div>
+
+<script>
+/* Game screenshot slideshow: switches automatically every 4 seconds. No outside library.
+   The first shot still shows if JavaScript is off. Broken images are skipped. */
+(function () {
+  var boxes = document.querySelectorAll('.card-slides');
+  if (!boxes.length) return;
+  boxes.forEach(function (box) {
+    var imgs = Array.prototype.slice.call(box.querySelectorAll('.card-shot'));
+    var dots = Array.prototype.slice.call(box.querySelectorAll('.card-dots span'));
+    var cur = 0, timer = null, visible = true;
+    function alive() { return imgs.filter(function (im) { return !im.dataset.broken; }); }
+    function show(n) {
+      var list = alive();
+      if (!list.length) return;
+      if (list.length === 1) {
+        imgs.forEach(function (im) { im.classList.toggle('is-active', list[0] === im); });
+        dots.forEach(function (d, i) { d.classList.toggle('is-active', list[0] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+        return;
+      }
+      cur = ((n % list.length) + list.length) % list.length;
+      imgs.forEach(function (im) { im.classList.toggle('is-active', list[cur] === im); });
+      dots.forEach(function (d, i) { d.classList.toggle('is-active', list[cur] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+    }
+    function start() { if (timer === null && visible) timer = setInterval(function () { show(cur + 1); }, 4000); }
+    function stop() { if (timer !== null) { clearInterval(timer); timer = null; } }
+    imgs.forEach(function (im) {
+      if (im.complete && im.naturalWidth === 0) im.dataset.broken = '1';
+      im.addEventListener('error', function () { im.dataset.broken = '1'; if (alive().length < 2) stop(); show(cur); });
+    });
+    show(0);
+    document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else start(); });
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { visible = en.isIntersecting; if (visible) start(); else stop(); });
+      }, { rootMargin: '100px' });
+      io.observe(box);
+    } else {
+      start();
+    }
+  });
+})();
+</script>
+<script defer src="/assets/pare-analytics.js"></script>
+</body>
+</html>
