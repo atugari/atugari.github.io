@@ -39,13 +39,9 @@ jobs:
                   codes = [entry.get('code') for entry in json.load(error).get('errors', [])]
                   raise SystemExit(f'Cloudflare returned HTTP {error.code}, error codes {codes}') from None
 
-          live = call('deployments')['deployments'][0]['versions']
-          latest = call('versions')['items'][0]['id']
-          if {entry['version_id']: entry['percentage'] for entry in live} != {stable: 100} or latest != staged:
-              raise SystemExit('The expected live or staged Othello version changed')
-          result = call('deployments', {'strategy':'percentage','versions':[
-              {'version_id':stable,'percentage':100},
-              {'version_id':staged,'percentage':0},
-          ]})
-          print('Othello verification deployment:', result['id'])
+          for worker in ('osero','nainmenzumorisu'):
+              origin = 'https://api.cloudflare.com/client/v4/accounts/3fb1db1d33caddf96fec77fac7d571e6/workers/scripts/'+worker
+              versions=call('versions')['items']
+              live=call('deployments')['deployments'][0]['versions']
+              print(worker, 'latest',versions[0]['id'],'live',json.dumps(live))
           PY
