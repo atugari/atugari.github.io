@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#FFF8E7">
+  <title>九子棋 | 免费棋盘游戏 - Pare Asobi</title>
+  <meta name="description" content="在浏览器中免费玩九子棋——世界上最古老的棋盘游戏之一。连成三子吃掉对方的棋子，只剩三子时可以飞。经典九子玩法和十二子莫拉巴拉巴玩法。">
+  <meta name="keywords" content="九子棋, 莫里斯棋, 莫拉巴拉巴, 免费九子棋, 在线九子棋, 棋盘游戏, 免费在线游戏, Pare Asobi">
+  <meta name="robots" content="index, follow">
+  <meta name="google-adsense-account" content="ca-pub-5560584474086870">
+  <link rel="canonical" href="https://pareasobi.com/zh-hans/morris/">
+  <link rel="alternate" hreflang="en" href="https://pareasobi.com/en/morris/">
+  <link rel="alternate" hreflang="zh-Hans" href="https://pareasobi.com/zh-hans/morris/">
+  <link rel="alternate" hreflang="x-default" href="https://pareasobi.com/zh-hans/morris/">
+  <meta property="og:title" content="九子棋 | 免费棋盘游戏 - Pare Asobi">
+  <meta property="og:description" content="在浏览器中免费玩九子棋——世界上最古老的棋盘游戏之一。连成三子吃掉对方的棋子，只剩三子时可以飞。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://pareasobi.com/zh-hans/morris/">
+  <meta property="og:locale" content="zh_CN">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="九子棋 | 免费棋盘游戏 - Pare Asobi">
+  <meta name="twitter:description" content="在浏览器中免费玩九子棋——世界上最古老的棋盘游戏之一。连成三子吃掉对方的棋子，只剩三子时可以飞。">
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@graph":[
+      {"@type":"WebSite","@id":"https://pareasobi.com/zh-hans/#website","url":"https://pareasobi.com/zh-hans/","name":"Pare Asobi","inLanguage":"zh-Hans"},
+      {"@type":"WebPage","@id":"https://pareasobi.com/zh-hans/morris/#webpage","url":"https://pareasobi.com/zh-hans/morris/","name":"九子棋 | 免费棋盘游戏 - Pare Asobi","description":"在浏览器中免费玩九子棋——世界上最古老的棋盘游戏之一。连成三子吃掉对方的棋子，只剩三子时可以飞。经典九子玩法和十二子莫拉巴拉巴玩法。","inLanguage":"zh-Hans","isPartOf":{"@id":"https://pareasobi.com/zh-hans/#website"}}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: #FFF8E7;
+      color: #1a1a1a;
+      font-family: 'Noto Serif JP', serif;
+      min-height: 100dvh;
+    }
+
+    /* Confetti dots: small bright candy-colored dots scattered over the background */
+    body {
+      background-image:
+        radial-gradient(circle at 6% 10%, rgba(255, 90, 118, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 94% 6%, rgba(255, 201, 60, 0.45) 0 6px, transparent 7px),
+        radial-gradient(circle at 12% 42%, rgba(77, 163, 255, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 88% 38%, rgba(46, 196, 166, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 50% 72%, rgba(255, 90, 118, 0.25) 0 4px, transparent 5px),
+        radial-gradient(circle at 4% 84%, rgba(255, 201, 60, 0.35) 0 6px, transparent 7px),
+        radial-gradient(circle at 96% 86%, rgba(77, 163, 255, 0.30) 0 6px, transparent 7px),
+        radial-gradient(circle at 30% 95%, rgba(46, 196, 166, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 70% 96%, rgba(255, 138, 61, 0.30) 0 5px, transparent 6px);
+      background-attachment: fixed;
+    }
+
+    .app { max-width: 1060px; margin: 0 auto; padding: 20px 16px 64px; }
+    @media (min-width: 720px) {
+      .app { padding: 28px 28px 72px; }
+    }
+
+    /* Logo bar: mint-green rounded band */
+    .site-header {
+      text-align: center;
+      margin: 0 0 18px;
+      padding: 26px 12px 22px;
+      background: linear-gradient(135deg, #A9EDCB 0%, #C2F2DE 55%, #BEE9D2 100%);
+      border-radius: 28px;
+      box-shadow: 0 8px 24px rgba(255, 150, 120, 0.18);
+    }
+    .site-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(44px, 11vw, 76px);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      line-height: 1.15;
+      background: linear-gradient(90deg, #FF5A76 0%, #FF8A3D 28%, #FFC93C 52%, #2EC4A6 76%, #4DA3FF 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 0 rgba(255, 255, 255, 0.95)) drop-shadow(0 6px 14px rgba(255, 120, 120, 0.25));
+    }
+    .site-title a { color: inherit; text-decoration: none; }
+
+    /* Hero: sky-blue band with confetti */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      padding: 34px 18px 30px;
+      margin-bottom: 26px;
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 8% 20%, rgba(255, 90, 118, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 92% 14%, rgba(255, 201, 60, 0.6) 0 7px, transparent 8px),
+        radial-gradient(circle at 16% 82%, rgba(46, 196, 166, 0.55) 0 5px, transparent 6px),
+        radial-gradient(circle at 84% 78%, rgba(255, 138, 61, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 50% 8%, rgba(77, 163, 255, 0.45) 0 5px, transparent 6px),
+        linear-gradient(180deg, #BFE6FF 0%, #D6F0FF 60%, #CDEBFF 100%);
+      box-shadow: 0 8px 24px rgba(77, 163, 255, 0.22);
+    }
+    .hero-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(26px, 6vw, 44px);
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      line-height: 1.35;
+      color: #FF4D6D;
+      text-shadow: 0 2px 0 rgba(255, 255, 255, 0.9);
+    }
+    .hero-sub {
+      margin-top: 12px;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.9;
+      color: #234;
+    }
+    .hero-cta {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 13px 34px;
+      border-radius: 999px;
+      background: #FFC93C;
+      border: 2px solid #FF9F1C;
+      color: #B34700;
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      box-shadow: 0 4px 0 #FF9F1C, 0 8px 18px rgba(255, 159, 28, 0.35);
+    }
+    .hero-cta:active { transform: translateY(2px); box-shadow: 0 2px 0 #FF9F1C; }
+
+    /* Game screenshot slideshow */
+    .play-card {
+      background: #6FC1EE;
+      border: 2px solid #3798D8;
+      border-radius: 28px;
+      overflow: hidden;
+      margin-bottom: 26px;
+      box-shadow: 0 8px 24px rgba(77, 163, 255, 0.22);
+    }
+    .card-slides {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      background: #fff;
+      border-bottom: 3px solid rgba(255, 255, 255, 0.55);
+    }
+    .card-slides .card-shot {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+    .card-slides .card-shot.is-active { opacity: 1; }
+    .card-dots {
+      position: absolute;
+      left: 50%;
+      bottom: 8px;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .card-dots span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.55);
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18);
+    }
+    .card-dots span.is-active { background: #fff; }
+
+    /* Text sections */
+    .about {
+      margin-top: 26px;
+      padding: 24px 22px;
+      background: #FFF3F5;
+      border-radius: 24px;
+      font-size: 22px;
+      line-height: 1.9;
+      color: #5a4a44;
+    }
+    .about h2 { font-size: 24px; margin-bottom: 10px; color: #3d2f2b; }
+    .about p { margin-bottom: 10px; }
+    .about p:last-child { margin-bottom: 0; }
+    .about a { color: #FF5A76; }
+    .about ol, .about ul { margin: 0 0 10px 26px; }
+    .about li { margin-bottom: 8px; }
+    .about li:last-child { margin-bottom: 0; }
+    .note {
+      margin-top: 26px;
+      padding: 24px 22px;
+      background: #FFF8E7;
+      border: 2px solid #FFC93C;
+      border-radius: 24px;
+      font-size: 22px;
+      line-height: 1.9;
+      color: #5a4a44;
+    }
+    .note h2 { font-size: 24px; margin-bottom: 10px; color: #3d2f2b; }
+    .note p { margin-bottom: 10px; }
+    .note p:last-child { margin-bottom: 0; }
+
+    .footer {
+      text-align: center;
+      margin-top: 44px;
+      padding: 20px 16px;
+      font-size: 22px;
+      color: #8a7a72;
+      line-height: 1.9;
+      background: #FFE3E6;
+      border-radius: 24px;
+    }
+    .footer a { color: #FF5A76; font-size: 22px; text-underline-offset: .2em; }
+    .footer a:active { color: #555; }
+    .footer-brand {
+      display: inline-block;
+      font-size: 22px;
+      color: #c98a96;
+      letter-spacing: 0.08em;
+    }
+  </style>
+  <meta property="og:site_name" content="Pare Asobi">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5560584474086870" crossorigin="anonymous"></script>
+</head>
+<body data-game="pareasobi">
+
+<div class="app">
+
+  <header class="site-header">
+    <h1 class="site-title"><a href="https://pareasobi.com/zh-hans/">Pare Asobi</a></h1>
+  </header>
+
+  <section class="hero" aria-label="玩九子棋">
+    <p class="hero-title">九子棋</p>
+    <p class="hero-sub">世界上最古老的棋盘游戏之一——已有 2000 多年历史。<br>在浏览器中免费玩——无需注册，不用安装应用。</p>
+    <a class="hero-cta" href="https://pareasobi.com/morris/">马上玩九子棋 →</a>
+  </section>
+
+  <div class="play-card">
+    <div class="card-slides"><img class="card-shot is-active" src="/assets/game-shots/morris-1.jpg" alt="Pare Asobi 上九子棋的游戏截图" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/morris-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/morris-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
+  </div>
+
+  <section class="about" aria-label="关于九子棋">
+    <h2>什么是九子棋？</h2>
+    <p>九子棋是世界上最古老的棋盘游戏之一，已有 2000 多年的历史。两位玩家共用一个由线连接的 24 个点的棋盘。每方九枚棋子——一方黑棋，一方白棋——目标很简单：连成三子，吃掉对方的棋子，直到对方所剩无几。</p>
+    <p>游戏分两个阶段。先轮流把棋子一枚一枚放在空格上。等所有棋子都上盘后，再沿着线把棋子滑动到相邻的点。听起来简单，但每一步落子都很关键：开局时随手放下的棋子，后面可能很难防守。</p>
+    <p>在 Pare Asobi 上，你可以在浏览器中免费玩九子棋，手机、电脑都可以。不用下载，也不用注册——打开就能玩。</p>
+  </section>
+
+  <section class="about" aria-label="玩法">
+    <h2>玩法</h2>
+    <ol>
+      <li><strong>先放棋子。</strong>轮流把一枚棋子放在空格上，黑棋先行，直到双方九枚棋子全部上盘。</li>
+      <li><strong>连成三子即可吃子。</strong>当你的三枚棋子在一条线上连成一线，就形成了一个“磨坊”，可以从棋盘上拿掉对方的一枚棋子。不能拿对方磨坊里的棋子——除非对方所有棋子都在磨坊里。</li>
+      <li><strong>然后移动棋子。</strong>所有棋子放好后，每次沿着线把一枚棋子滑动到相邻的空格。移动中形成的磨坊也可以吃掉对方的一枚棋子。</li>
+      <li><strong>只剩三枚棋子？可以飞了。</strong>当你只剩三枚棋子时，不再限于相邻的点——可以飞到棋盘上的任意空格。</li>
+      <li><strong>怎么赢。</strong>把对方减到只剩两枚棋子，或堵死对方让其无棋可走，即可获胜。如果同一局面出现三次，或 50 步内都没有形成磨坊，游戏自动判和。</li>
+    </ol>
+  </section>
+
+  <section class="about" aria-label="两种玩法">
+    <h2>两种玩法：经典九子棋和莫拉巴拉巴</h2>
+    <p><strong>经典九子棋</strong>每方九枚棋子，在上面介绍的 24 个点的棋盘上进行。</p>
+    <p><strong>莫拉巴拉巴</strong>是十二子版本。每方十二枚棋子，棋盘多了四条斜线。棋子也可以斜着走，斜线上连成三子同样形成磨坊。比经典玩法节奏更快、更开放，考验你对斜线的眼力。</p>
+    <p>两种玩法都在同一个游戏里。每次开新局时都可以切换。</p>
+  </section>
+
+  <section class="about" aria-label="玩法选择">
+    <h2>玩法选择</h2>
+    <p><strong>与世界各地的玩家在线对战。</strong>开始快速匹配，马上就能遇到新对手。在线对战有段位、排行榜和观战功能，还有三种速度：标准（每步 30 秒）、慢棋（每步 2 分钟）和慢棋对战（每步 24 小时）。</p>
+    <p><strong>和电脑对战。</strong> 电脑有三个难度——简单、普通和困难——可以按自己的节奏熟悉规则，再挑战更强的对手。</p>
+    <p><strong>两个人共用一台设备对弈。</strong>和朋友共用一部手机或一个屏幕，轮流放子和移动棋子，就像在真实棋盘上一样。</p>
+    <p><strong>支持 20 种语言。</strong>游戏会用你的语言显示，随时可以在设置里切换。</p>
+  </section>
+
+  <section class="note" aria-label="在线对战">
+    <h2>在线对战已上线</h2>
+    <p>现在可以和世界各地的玩家在线对战了。开始快速匹配，马上就能遇到对手。</p>
+    <p>在线对战有三种速度：标准（每步 30 秒）、慢棋（每步 2 分钟）和慢棋对战（每步 24 小时），还有段位、排行榜和观战功能。当然，也可以随时和电脑对战，或和朋友共用一台设备对弈。</p>
+  </section>
+
+  <section class="about" aria-label="常见问题">
+    <h2>常见问题</h2>
+    <p><strong>九子棋免费吗？</strong>是的。Pare Asobi 上的九子棋完全免费，不用注册，也不用安装应用。</p>
+    <p><strong>可以在手机上玩吗？</strong>可以。游戏在手机、平板和电脑上都能在浏览器中直接玩。</p>
+    <p><strong>什么是磨坊？</strong>磨坊是你的三枚棋子在一条线上连成一线。形成磨坊后，可以从棋盘上拿掉对方的一枚棋子。</p>
+    <p><strong>什么是莫拉巴拉巴？</strong>莫拉巴拉巴是十二子版本的九子棋，棋盘多了四条斜线。允许斜向移动和斜向磨坊。</p>
+    <p>Looking for more games? 请看 <a href="https://pareasobi.com/zh-hans/">Pare Asobi 中文主页</a>上的全部六款免费游戏，包括黑白棋、数独（Nanpure）、填字游戏、Shirupure 和和同开珎。</p>
+  </section>
+
+  <footer class="footer">
+    <a href="/privacy.html#advertising">广告与隐私政策</a><br>
+    <a href="/contact.html">联系我们</a><br>
+    <a href="/terms.html">使用条款</a><br>
+    <a href="/guide.html">玩法指南</a> · <a href="/faq.html">常见问题</a> · <a href="/about.html">关于 Pare Asobi</a><br>
+    <span style="font-size:18px;">指南目前只有日语版。</span><br>
+    <a href="https://pareasobi.com/zh-hans/">回到 Pare Asobi</a><br>
+    <span class="footer-brand">Pare Asobi</span>
+  </footer>
+
+</div>
+
+<script>
+/* Game screenshot slideshow: switches automatically every 4 seconds. No outside library.
+   The first shot still shows if JavaScript is off. Broken images are skipped. */
+(function () {
+  var boxes = document.querySelectorAll('.card-slides');
+  if (!boxes.length) return;
+  boxes.forEach(function (box) {
+    var imgs = Array.prototype.slice.call(box.querySelectorAll('.card-shot'));
+    var dots = Array.prototype.slice.call(box.querySelectorAll('.card-dots span'));
+    var cur = 0, timer = null, visible = true;
+    function alive() { return imgs.filter(function (im) { return !im.dataset.broken; }); }
+    function show(n) {
+      var list = alive();
+      if (!list.length) return;
+      if (list.length === 1) {
+        imgs.forEach(function (im) { im.classList.toggle('is-active', list[0] === im); });
+        dots.forEach(function (d, i) { d.classList.toggle('is-active', list[0] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+        return;
+      }
+      cur = ((n % list.length) + list.length) % list.length;
+      imgs.forEach(function (im) { im.classList.toggle('is-active', list[cur] === im); });
+      dots.forEach(function (d, i) { d.classList.toggle('is-active', list[cur] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+    }
+    function start() { if (timer === null && visible) timer = setInterval(function () { show(cur + 1); }, 4000); }
+    function stop() { if (timer !== null) { clearInterval(timer); timer = null; } }
+    imgs.forEach(function (im) {
+      if (im.complete && im.naturalWidth === 0) im.dataset.broken = '1';
+      im.addEventListener('error', function () { im.dataset.broken = '1'; if (alive().length < 2) stop(); show(cur); });
+    });
+    show(0);
+    document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else start(); });
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { visible = en.isIntersecting; if (visible) start(); else stop(); });
+      }, { rootMargin: '100px' });
+      io.observe(box);
+    } else {
+      start();
+    }
+  });
+})();
+</script>
+<script defer src="/assets/pare-analytics.js"></script>
+</body>
+</html>
