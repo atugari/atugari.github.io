@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#FFF8E7">
+  <title>Moulin (Nine Men's Morris) | Jeu de société gratuit - Pare Asobi</title>
+  <meta name="description" content="Jouez gratuitement à Nine Men's Morris dans votre navigateur : l'un des plus anciens jeux de société au monde. Formez des moulins, prenez les pions de votre adversaire et volez quand il ne vous en reste que trois. Jeu classique à 9 pions et Morabaraba à 12 pions.">
+  <meta name="keywords" content="nine men's morris, morris, moulin, morabaraba, morris gratuit, jouer à morris en ligne, jeu de société, jeu gratuit dans le navigateur, Pare Asobi">
+  <meta name="robots" content="index, follow">
+  <meta name="google-adsense-account" content="ca-pub-5560584474086870">
+  <link rel="canonical" href="https://pareasobi.com/fr/morris/">
+  <link rel="alternate" hreflang="en" href="https://pareasobi.com/en/morris/">
+  <link rel="alternate" hreflang="fr" href="https://pareasobi.com/fr/morris/">
+  <link rel="alternate" hreflang="x-default" href="https://pareasobi.com/fr/morris/">
+  <meta property="og:title" content="Moulin (Nine Men's Morris) | Jeu de société gratuit - Pare Asobi">
+  <meta property="og:description" content="Jouez gratuitement à Nine Men's Morris dans votre navigateur : l'un des plus anciens jeux de société au monde. Formez des moulins, prenez les pions de votre adversaire et volez quand il ne vous en reste que trois.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://pareasobi.com/fr/morris/">
+  <meta property="og:locale" content="fr_FR">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Moulin (Nine Men's Morris) | Jeu de société gratuit - Pare Asobi">
+  <meta name="twitter:description" content="Jouez gratuitement à Nine Men's Morris dans votre navigateur : l'un des plus anciens jeux de société au monde. Formez des moulins, prenez les pions de votre adversaire et volez quand il ne vous en reste que trois.">
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@graph":[
+      {"@type":"WebSite","@id":"https://pareasobi.com/fr/#website","url":"https://pareasobi.com/fr/","name":"Pare Asobi","inLanguage":"fr"},
+      {"@type":"WebPage","@id":"https://pareasobi.com/fr/morris/#webpage","url":"https://pareasobi.com/fr/morris/","name":"Moulin (Nine Men's Morris) | Jeu de société gratuit - Pare Asobi","description":"Jouez gratuitement à Nine Men's Morris dans votre navigateur : l'un des plus anciens jeux de société au monde. Formez des moulins, prenez les pions de votre adversaire et volez quand il ne vous en reste que trois. Jeu classique à 9 pions et Morabaraba à 12 pions.","inLanguage":"fr","isPartOf":{"@id":"https://pareasobi.com/fr/#website"}}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: #FFF8E7;
+      color: #1a1a1a;
+      font-family: 'Noto Serif JP', serif;
+      min-height: 100dvh;
+    }
+
+    /* Confetti dots: small bright candy-colored dots scattered over the background */
+    body {
+      background-image:
+        radial-gradient(circle at 6% 10%, rgba(255, 90, 118, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 94% 6%, rgba(255, 201, 60, 0.45) 0 6px, transparent 7px),
+        radial-gradient(circle at 12% 42%, rgba(77, 163, 255, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 88% 38%, rgba(46, 196, 166, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 50% 72%, rgba(255, 90, 118, 0.25) 0 4px, transparent 5px),
+        radial-gradient(circle at 4% 84%, rgba(255, 201, 60, 0.35) 0 6px, transparent 7px),
+        radial-gradient(circle at 96% 86%, rgba(77, 163, 255, 0.30) 0 6px, transparent 7px),
+        radial-gradient(circle at 30% 95%, rgba(46, 196, 166, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 70% 96%, rgba(255, 138, 61, 0.30) 0 5px, transparent 6px);
+      background-attachment: fixed;
+    }
+
+    .app { max-width: 1060px; margin: 0 auto; padding: 20px 16px 64px; }
+    @media (min-width: 720px) {
+      .app { padding: 28px 28px 72px; }
+    }
+
+    /* Logo bar: mint-green rounded band */
+    .site-header {
+      text-align: center;
+      margin: 0 0 18px;
+      padding: 26px 12px 22px;
+      background: linear-gradient(135deg, #A9EDCB 0%, #C2F2DE 55%, #BEE9D2 100%);
+      border-radius: 28px;
+      box-shadow: 0 8px 24px rgba(255, 150, 120, 0.18);
+    }
+    .site-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(44px, 11vw, 76px);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      line-height: 1.15;
+      background: linear-gradient(90deg, #FF5A76 0%, #FF8A3D 28%, #FFC93C 52%, #2EC4A6 76%, #4DA3FF 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 0 rgba(255, 255, 255, 0.95)) drop-shadow(0 6px 14px rgba(255, 120, 120, 0.25));
+    }
+    .site-title a { color: inherit; text-decoration: none; }
+
+    /* Hero: sky-blue band with confetti */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      padding: 34px 18px 30px;
+      margin-bottom: 26px;
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 8% 20%, rgba(255, 90, 118, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 92% 14%, rgba(255, 201, 60, 0.6) 0 7px, transparent 8px),
+        radial-gradient(circle at 16% 82%, rgba(46, 196, 166, 0.55) 0 5px, transparent 6px),
+        radial-gradient(circle at 84% 78%, rgba(255, 138, 61, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 50% 8%, rgba(77, 163, 255, 0.45) 0 5px, transparent 6px),
+        linear-gradient(180deg, #BFE6FF 0%, #D6F0FF 60%, #CDEBFF 100%);
+      box-shadow: 0 8px 24px rgba(77, 163, 255, 0.22);
+    }
+    .hero-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(26px, 6vw, 44px);
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      line-height: 1.35;
+      color: #FF4D6D;
+      text-shadow: 0 2px 0 rgba(255, 255, 255, 0.9);
+    }
+    .hero-sub {
+      margin-top: 12px;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.9;
+      color: #234;
+    }
+    .hero-cta {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 13px 34px;
+      border-radius: 999px;
+      background: #FFC93C;
+      border: 2px solid #FF9F1C;
+      color: #B34700;
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      box-shadow: 0 4px 0 #FF9F1C, 0 8px 18px rgba(255, 159, 28, 0.35);
+    }
+    .hero-cta:active { transform: translateY(2px); box-shadow: 0 2px 0 #FF9F1C; }
+
+    /* Game screenshot slideshow */
+    .play-card {
+      background: #6FC1EE;
+      border: 2px solid #3798D8;
+      border-radius: 28px;
+      overflow: hidden;
+      margin-bottom: 26px;
+      box-shadow: 0 8px 24px rgba(77, 163, 255, 0.22);
+    }
+    .card-slides {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      background: #fff;
+      border-bottom: 3px solid rgba(255, 255, 255, 0.55);
+    }
+    .card-slides .card-shot {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+    .card-slides .card-shot.is-active { opacity: 1; }
+    .card-dots {
+      position: absolute;
+      left: 50%;
+      bottom: 8px;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .card-dots span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.55);
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18);
+    }
+    .card-dots span.is-active { background: #fff; }
+
+    /* Text sections */
+    .about {
+      margin-top: 26px;
+      padding: 24px 22px;
+      background: #FFF3F5;
+      border-radius: 24px;
+      font-size: 22px;
+      line-height: 1.9;
+      color: #5a4a44;
+    }
+    .about h2 { font-size: 24px; margin-bottom: 10px; color: #3d2f2b; }
+    .about p { margin-bottom: 10px; }
+    .about p:last-child { margin-bottom: 0; }
+    .about a { color: #FF5A76; }
+    .about ol, .about ul { margin: 0 0 10px 26px; }
+    .about li { margin-bottom: 8px; }
+    .about li:last-child { margin-bottom: 0; }
+    .note {
+      margin-top: 26px;
+      padding: 24px 22px;
+      background: #FFF8E7;
+      border: 2px solid #FFC93C;
+      border-radius: 24px;
+      font-size: 22px;
+      line-height: 1.9;
+      color: #5a4a44;
+    }
+    .note h2 { font-size: 24px; margin-bottom: 10px; color: #3d2f2b; }
+    .note p { margin-bottom: 10px; }
+    .note p:last-child { margin-bottom: 0; }
+
+    .footer {
+      text-align: center;
+      margin-top: 44px;
+      padding: 20px 16px;
+      font-size: 22px;
+      color: #8a7a72;
+      line-height: 1.9;
+      background: #FFE3E6;
+      border-radius: 24px;
+    }
+    .footer a { color: #FF5A76; font-size: 22px; text-underline-offset: .2em; }
+    .footer a:active { color: #555; }
+    .footer-brand {
+      display: inline-block;
+      font-size: 22px;
+      color: #c98a96;
+      letter-spacing: 0.08em;
+    }
+  </style>
+  <meta property="og:site_name" content="Pare Asobi">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5560584474086870" crossorigin="anonymous"></script>
+</head>
+<body data-game="pareasobi">
+
+<div class="app">
+
+  <header class="site-header">
+    <h1 class="site-title"><a href="https://pareasobi.com/fr/">Pare Asobi</a></h1>
+  </header>
+
+  <section class="hero" aria-label="Jouer à Nine Men's Morris">
+    <p class="hero-title">Moulin (Nine Men's Morris)</p>
+    <p class="hero-sub">L'un des plus anciens jeux de société au monde : plus de 2 000 ans d'histoire.<br>Gratuit dans votre navigateur : aucune inscription, aucune application à installer.</p>
+    <a class="hero-cta" href="https://pareasobi.com/morris/">Jouer à Morris maintenant →</a>
+  </section>
+
+  <div class="play-card">
+    <div class="card-slides"><img class="card-shot is-active" src="/assets/game-shots/morris-1.jpg" alt="Capture de Nine Men's Morris sur Pare Asobi" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/morris-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/morris-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
+  </div>
+
+  <section class="about" aria-label="À propos de Nine Men's Morris">
+    <h2>Qu'est-ce que Nine Men's Morris ?</h2>
+    <p>Nine Men's Morris est l'un des plus anciens jeux de société au monde, joué depuis plus de 2 000 ans. Deux joueurs partagent un plateau de 24 points reliés par des lignes. Chaque joueur a neuf pions — un côté noirs, l'autre blancs — et le but est simple : alignez trois de vos pions pour prendre les pions de votre adversaire, jusqu'à ce qu'il ne lui reste presque plus rien.</p>
+    <p>Le jeu se joue en deux temps. D'abord, vous placez vos pions, un par un, sur des points vides. Ensuite, une fois tous les pions sur le plateau, vous les faites glisser le long des lignes vers les points voisins. Cela semble simple, mais chaque placement compte : un pion posé sans soin dans l'ouverture peut être difficile à défendre plus tard.</p>
+    <p>Sur Pare Asobi, vous pouvez jouer gratuitement à Nine Men's Morris dans votre navigateur, sur votre téléphone ou votre ordinateur. Rien à télécharger et aucun compte à créer : ouvrez simplement le jeu et commencez à jouer.</p>
+  </section>
+
+  <section class="about" aria-label="Comment jouer à Nine Men's Morris">
+    <h2>Comment jouer</h2>
+    <ol>
+      <li><strong>D'abord, placez vos pions.</strong>Placez un pion à tour de rôle sur un point vide. Les noirs jouent en premier. Continuez jusqu'à ce que les neuf pions de chaque camp soient sur le plateau.</li>
+      <li><strong>Formez un moulin pour prendre un pion.</strong>Quand trois de vos pions sont alignés sur une ligne connectée, vous avez formé un moulin et vous pouvez retirer un pion adverse du plateau. Vous ne pouvez pas prendre un pion qui se trouve dans un moulin, sauf si tous les pions de votre adversaire sont dans des moulins.</li>
+      <li><strong>Ensuite, déplacez vos pions.</strong>Une fois tout placé, faites glisser un pion à la fois vers un point vide voisin le long d'une ligne. Un moulin formé en déplaçant permet aussi de prendre un pion adverse.</li>
+      <li><strong>Il ne vous reste que trois pions ? Vous pouvez voler.</strong>Quand il ne vous reste que trois pions, vous n'êtes plus limité aux points voisins : vous pouvez voler vers n'importe quel point vide du plateau.</li>
+      <li><strong>Comment gagner.</strong>Vous gagnez en réduisant votre adversaire à deux pions, ou en le bloquant pour qu'il n'ait plus de coup. Si la même position se répète trois fois, ou si aucun moulin n'est formé pendant 50 coups, la partie se termine par un match nul automatique.</li>
+    </ol>
+  </section>
+
+  <section class="about" aria-label="Deux versions de Morris">
+    <h2>Deux versions : Morris classique et Morabaraba</h2>
+    <p><strong>Le Morris classique</strong> se joue avec neuf pions par joueur sur le plateau de 24 points décrit ci-dessus.</p>
+    <p><strong>Le Morabaraba</strong> est la version à 12 pions du jeu. Chaque joueur a douze pions et le plateau gagne quatre lignes diagonales supplémentaires. Les pions peuvent aussi se déplacer en diagonale, et trois pions alignés en diagonale forment aussi un moulin. Il se joue plus vite et plus ouvertement que le jeu classique, et il récompense l'œil pour les diagonales.</p>
+    <p>Les deux versions sont disponibles dans le même jeu. Vous pouvez passer de l'une à l'autre chaque fois que vous commencez une nouvelle partie.</p>
+  </section>
+
+  <section class="about" aria-label="Façons de jouer à Nine Men's Morris">
+    <h2>Façons de jouer</h2>
+    <p><strong>Jouez en ligne contre des gens du monde entier.</strong>Lancez une partie rapide et rencontrez un nouvel adversaire tout de suite. Le jeu en ligne propose un classement, des classements et un mode spectateur, et trois vitesses : standard (30 secondes par coup), lente (2 minutes par coup) et par correspondance (24 heures par coup).</p>
+    <p><strong>Jouez contre l'ordinateur.</strong> Il y a trois niveaux d'ordinateur — facile, normal et fort — pour que vous puissiez apprendre les règles à votre rythme, puis affronter un adversaire plus coriace.</p>
+    <p><strong>Jouez à deux joueurs sur un même appareil.</strong>Partagez un téléphone ou un écran avec un ami et placez et déplacez les pions à tour de rôle, comme sur un vrai plateau.</p>
+    <p><strong>Jouez en 20 langues.</strong>Le jeu parle votre langue et vous pouvez la changer depuis les réglages à tout moment.</p>
+  </section>
+
+  <section class="note" aria-label="Jeu en ligne">
+    <h2>Le jeu en ligne est désormais disponible</h2>
+    <p>Vous pouvez désormais jouer en ligne contre des gens du monde entier. Lancez une partie rapide et rencontrez un adversaire tout de suite.</p>
+    <p>Le jeu en ligne propose trois vitesses : standard (30 secondes par coup), lente (2 minutes par coup) et par correspondance (24 heures par coup), ainsi qu'un classement, des classements et un mode spectateur. Bien sûr, vous pouvez aussi jouer contre l'ordinateur ou avec un ami sur le même appareil.</p>
+  </section>
+
+  <section class="about" aria-label="Questions fréquentes sur Nine Men's Morris">
+    <h2>Questions fréquentes</h2>
+    <p><strong>Nine Men's Morris est-il gratuit ?</strong>Oui. Morris sur Pare Asobi est entièrement gratuit, sans inscription et sans application à installer.</p>
+    <p><strong>Puis-je jouer sur mon téléphone ?</strong>Oui. Le jeu fonctionne sur les téléphones, les tablettes et les ordinateurs, directement dans votre navigateur.</p>
+    <p><strong>Qu'est-ce qu'un moulin ?</strong>Un moulin, c'est trois de vos pions alignés sur une ligne connectée. Former un moulin vous permet de retirer un pion adverse du plateau.</p>
+    <p><strong>Qu'est-ce que le Morabaraba ?</strong>Le Morabaraba est la version à 12 pions de Morris, avec quatre lignes diagonales supplémentaires sur le plateau. Les déplacements et les moulins en diagonale sont autorisés.</p>
+    <p>Looking for more games? Les six jeux gratuits, dont Reversi (Othello), Sudoku (Nanpure), mots croisés, Shirupure et Wado Kaichin, sont sur la <a href="https://pareasobi.com/fr/">page principale de Pare Asobi en français</a>.</p>
+  </section>
+
+  <footer class="footer">
+    <a href="/privacy.html#advertising">Publicité et politique de confidentialité</a><br>
+    <a href="/contact.html">Nous contacter</a><br>
+    <a href="/terms.html">Conditions d'utilisation</a><br>
+    <a href="/guide.html">Guide de jeu</a> · <a href="/faq.html">Questions fréquentes</a> · <a href="/about.html">À propos de Pare Asobi</a><br>
+    <span style="font-size:18px;">Les guides sont en japonais pour le moment.</span><br>
+    <a href="https://pareasobi.com/fr/">Retour à Pare Asobi</a><br>
+    <span class="footer-brand">Pare Asobi</span>
+  </footer>
+
+</div>
+
+<script>
+/* Game screenshot slideshow: switches automatically every 4 seconds. No outside library.
+   The first shot still shows if JavaScript is off. Broken images are skipped. */
+(function () {
+  var boxes = document.querySelectorAll('.card-slides');
+  if (!boxes.length) return;
+  boxes.forEach(function (box) {
+    var imgs = Array.prototype.slice.call(box.querySelectorAll('.card-shot'));
+    var dots = Array.prototype.slice.call(box.querySelectorAll('.card-dots span'));
+    var cur = 0, timer = null, visible = true;
+    function alive() { return imgs.filter(function (im) { return !im.dataset.broken; }); }
+    function show(n) {
+      var list = alive();
+      if (!list.length) return;
+      if (list.length === 1) {
+        imgs.forEach(function (im) { im.classList.toggle('is-active', list[0] === im); });
+        dots.forEach(function (d, i) { d.classList.toggle('is-active', list[0] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+        return;
+      }
+      cur = ((n % list.length) + list.length) % list.length;
+      imgs.forEach(function (im) { im.classList.toggle('is-active', list[cur] === im); });
+      dots.forEach(function (d, i) { d.classList.toggle('is-active', list[cur] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+    }
+    function start() { if (timer === null && visible) timer = setInterval(function () { show(cur + 1); }, 4000); }
+    function stop() { if (timer !== null) { clearInterval(timer); timer = null; } }
+    imgs.forEach(function (im) {
+      if (im.complete && im.naturalWidth === 0) im.dataset.broken = '1';
+      im.addEventListener('error', function () { im.dataset.broken = '1'; if (alive().length < 2) stop(); show(cur); });
+    });
+    show(0);
+    document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else start(); });
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { visible = en.isIntersecting; if (visible) start(); else stop(); });
+      }, { rootMargin: '100px' });
+      io.observe(box);
+    } else {
+      start();
+    }
+  });
+})();
+</script>
+<script defer src="/assets/pare-analytics.js"></script>
+</body>
+</html>
