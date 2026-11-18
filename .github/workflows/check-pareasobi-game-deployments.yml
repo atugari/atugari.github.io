@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - name: Apply the corrected Othello asset routing
-        run: python3 scripts/repair-othello-routing.py
+      - name: Apply three localized script routes while retaining assets
+        run: python3 scripts/apply-othello-assets-config.py
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
