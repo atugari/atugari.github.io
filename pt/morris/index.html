@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#FFF8E7">
+  <title>Moinho (Nine Men's Morris) | Jogo de tabuleiro grátis - Pare Asobi</title>
+  <meta name="description" content="Jogue Nine Men's Morris grátis no seu navegador — um dos jogos de tabuleiro mais antigos do mundo. Forme moinhos, tire peças do seu adversário e voe quando restarem três. Jogo clássico com 9 peças e Morabaraba com 12 peças.">
+  <meta name="keywords" content="nine men's morris, morris, moinho, morabaraba, morris grátis, jogar morris on-line, jogo de tabuleiro, jogo grátis no navegador, Pare Asobi">
+  <meta name="robots" content="index, follow">
+  <meta name="google-adsense-account" content="ca-pub-5560584474086870">
+  <link rel="canonical" href="https://pareasobi.com/pt/morris/">
+  <link rel="alternate" hreflang="en" href="https://pareasobi.com/en/morris/">
+  <link rel="alternate" hreflang="pt" href="https://pareasobi.com/pt/morris/">
+  <link rel="alternate" hreflang="x-default" href="https://pareasobi.com/pt/morris/">
+  <meta property="og:title" content="Moinho (Nine Men's Morris) | Jogo de tabuleiro grátis - Pare Asobi">
+  <meta property="og:description" content="Jogue Nine Men's Morris grátis no seu navegador — um dos jogos de tabuleiro mais antigos do mundo. Forme moinhos, tire peças do seu adversário e voe quando restarem três.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://pareasobi.com/pt/morris/">
+  <meta property="og:locale" content="pt_BR">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Moinho (Nine Men's Morris) | Jogo de tabuleiro grátis - Pare Asobi">
+  <meta name="twitter:description" content="Jogue Nine Men's Morris grátis no seu navegador — um dos jogos de tabuleiro mais antigos do mundo. Forme moinhos, tire peças do seu adversário e voe quando restarem três.">
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@graph":[
+      {"@type":"WebSite","@id":"https://pareasobi.com/pt/#website","url":"https://pareasobi.com/pt/","name":"Pare Asobi","inLanguage":"pt"},
+      {"@type":"WebPage","@id":"https://pareasobi.com/pt/morris/#webpage","url":"https://pareasobi.com/pt/morris/","name":"Moinho (Nine Men's Morris) | Jogo de tabuleiro grátis - Pare Asobi","description":"Jogue Nine Men's Morris grátis no seu navegador — um dos jogos de tabuleiro mais antigos do mundo. Forme moinhos, tire peças do seu adversário e voe quando restarem três. Jogo clássico com 9 peças e Morabaraba com 12 peças.","inLanguage":"pt","isPartOf":{"@id":"https://pareasobi.com/pt/#website"}}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: #FFF8E7;
+      color: #1a1a1a;
+      font-family: 'Noto Serif JP', serif;
+      min-height: 100dvh;
+    }
+
+    /* Confetti dots: small bright candy-colored dots scattered over the background */
+    body {
+      background-image:
+        radial-gradient(circle at 6% 10%, rgba(255, 90, 118, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 94% 6%, rgba(255, 201, 60, 0.45) 0 6px, transparent 7px),
+        radial-gradient(circle at 12% 42%, rgba(77, 163, 255, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 88% 38%, rgba(46, 196, 166, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 50% 72%, rgba(255, 90, 118, 0.25) 0 4px, transparent 5px),
+        radial-gradient(circle at 4% 84%, rgba(255, 201, 60, 0.35) 0 6px, transparent 7px),
+        radial-gradient(circle at 96% 86%, rgba(77, 163, 255, 0.30) 0 6px, transparent 7px),
+        radial-gradient(circle at 30% 95%, rgba(46, 196, 166, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 70% 96%, rgba(255, 138, 61, 0.30) 0 5px, transparent 6px);
+      background-attachment: fixed;
+    }
+
+    .app { max-width: 1060px; margin: 0 auto; padding: 20px 16px 64px; }
+    @media (min-width: 720px) {
+      .app { padding: 28px 28px 72px; }
+    }
+
+    /* Logo bar: mint-green rounded band */
+    .site-header {
+      text-align: center;
+      margin: 0 0 18px;
+      padding: 26px 12px 22px;
+      background: linear-gradient(135deg, #A9EDCB 0%, #C2F2DE 55%, #BEE9D2 100%);
+      border-radius: 28px;
+      box-shadow: 0 8px 24px rgba(255, 150, 120, 0.18);
+    }
+    .site-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(44px, 11vw, 76px);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      line-height: 1.15;
+      background: linear-gradient(90deg, #FF5A76 0%, #FF8A3D 28%, #FFC93C 52%, #2EC4A6 76%, #4DA3FF 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 0 rgba(255, 255, 255, 0.95)) drop-shadow(0 6px 14px rgba(255, 120, 120, 0.25));
+    }
+    .site-title a { color: inherit; text-decoration: none; }
+
+    /* Hero: sky-blue band with confetti */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      padding: 34px 18px 30px;
+      margin-bottom: 26px;
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 8% 20%, rgba(255, 90, 118, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 92% 14%, rgba(255, 201, 60, 0.6) 0 7px, transparent 8px),
+        radial-gradient(circle at 16% 82%, rgba(46, 196, 166, 0.55) 0 5px, transparent 6px),
+        radial-gradient(circle at 84% 78%, rgba(255, 138, 61, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 50% 8%, rgba(77, 163, 255, 0.45) 0 5px, transparent 6px),
+        linear-gradient(180deg, #BFE6FF 0%, #D6F0FF 60%, #CDEBFF 100%);
+      box-shadow: 0 8px 24px rgba(77, 163, 255, 0.22);
+    }
+    .hero-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(26px, 6vw, 44px);
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      line-height: 1.35;
+      color: #FF4D6D;
+      text-shadow: 0 2px 0 rgba(255, 255, 255, 0.9);
+    }
+    .hero-sub {
+      margin-top: 12px;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.9;
+      color: #234;
+    }
+    .hero-cta {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 13px 34px;
+      border-radius: 999px;
+      background: #FFC93C;
+      border: 2px solid #FF9F1C;
+      color: #B34700;
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      box-shadow: 0 4px 0 #FF9F1C, 0 8px 18px rgba(255, 159, 28, 0.35);
+    }
+    .hero-cta:active { transform: translateY(2px); box-shadow: 0 2px 0 #FF9F1C; }
+
+    /* Game screenshot slideshow */
+    .play-card {
+      background: #6FC1EE;
+      border: 2px solid #3798D8;
+      border-radius: 28px;
+      overflow: hidden;
+      margin-bottom: 26px;
+      box-shadow: 0 8px 24px rgba(77, 163, 255, 0.22);
+    }
+    .card-slides {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      background: #fff;
+      border-bottom: 3px solid rgba(255, 255, 255, 0.55);
+    }
+    .card-slides .card-shot {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+    .card-slides .card-shot.is-active { opacity: 1; }
+    .card-dots {
+      position: absolute;
+      left: 50%;
+      bottom: 8px;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .card-dots span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.55);
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18);
+    }
+    .card-dots span.is-active { background: #fff; }
+
+    /* Text sections */
+    .about {
+      margin-top: 26px;
+      padding: 24px 22px;
+      background: #FFF3F5;
+      border-radius: 24px;
+      font-size: 22px;
+      line-height: 1.9;
+      color: #5a4a44;
+    }
+    .about h2 { font-size: 24px; margin-bottom: 10px; color: #3d2f2b; }
+    .about p { margin-bottom: 10px; }
+    .about p:last-child { margin-bottom: 0; }
+    .about a { color: #FF5A76; }
+    .about ol, .about ul { margin: 0 0 10px 26px; }
+    .about li { margin-bottom: 8px; }
+    .about li:last-child { margin-bottom: 0; }
+    .note {
+      margin-top: 26px;
+      padding: 24px 22px;
+      background: #FFF8E7;
+      border: 2px solid #FFC93C;
+      border-radius: 24px;
+      font-size: 22px;
+      line-height: 1.9;
+      color: #5a4a44;
+    }
+    .note h2 { font-size: 24px; margin-bottom: 10px; color: #3d2f2b; }
+    .note p { margin-bottom: 10px; }
+    .note p:last-child { margin-bottom: 0; }
+
+    .footer {
+      text-align: center;
+      margin-top: 44px;
+      padding: 20px 16px;
+      font-size: 22px;
+      color: #8a7a72;
+      line-height: 1.9;
+      background: #FFE3E6;
+      border-radius: 24px;
+    }
+    .footer a { color: #FF5A76; font-size: 22px; text-underline-offset: .2em; }
+    .footer a:active { color: #555; }
+    .footer-brand {
+      display: inline-block;
+      font-size: 22px;
+      color: #c98a96;
+      letter-spacing: 0.08em;
+    }
+  </style>
+  <meta property="og:site_name" content="Pare Asobi">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5560584474086870" crossorigin="anonymous"></script>
+</head>
+<body data-game="pareasobi">
+
+<div class="app">
+
+  <header class="site-header">
+    <h1 class="site-title"><a href="https://pareasobi.com/pt/">Pare Asobi</a></h1>
+  </header>
+
+  <section class="hero" aria-label="Jogar Nine Men's Morris">
+    <p class="hero-title">Moinho (Nine Men's Morris)</p>
+    <p class="hero-sub">Um dos jogos de tabuleiro mais antigos do mundo — mais de 2.000 anos de história.<br>Grátis no seu navegador — sem cadastro, sem instalar aplicativo.</p>
+    <a class="hero-cta" href="https://pareasobi.com/morris/">Jogar Morris agora →</a>
+  </section>
+
+  <div class="play-card">
+    <div class="card-slides"><img class="card-shot is-active" src="/assets/game-shots/morris-1.jpg" alt="Captura de Nine Men's Morris no Pare Asobi" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/morris-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/morris-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
+  </div>
+
+  <section class="about" aria-label="Sobre Nine Men's Morris">
+    <h2>O que é Nine Men's Morris?</h2>
+    <p>Nine Men's Morris é um dos jogos de tabuleiro mais antigos do mundo, jogado há mais de 2.000 anos. Dois jogadores compartilham um tabuleiro com 24 pontos ligados por linhas. Cada jogador tem nove peças — um lado pretas, o outro brancas — e o objetivo é simples: alinhe três das suas peças para tirar peças do seu adversário, até que quase não reste nada para ele.</p>
+    <p>O jogo tem duas partes. Primeiro você coloca suas peças, uma de cada vez, em pontos vazios. Depois, quando todas as peças estão no tabuleiro, você as desliza pelas linhas até os pontos vizinhos. Parece simples, mas cada colocação importa: uma peça colocada sem cuidado na abertura pode ser difícil de defender depois.</p>
+    <p>No Pare Asobi você pode jogar Nine Men's Morris grátis no seu navegador, no seu celular ou computador. Não há nada para baixar e nenhuma conta para criar — basta abrir o jogo e começar a jogar.</p>
+  </section>
+
+  <section class="about" aria-label="Como jogar Nine Men's Morris">
+    <h2>Como jogar</h2>
+    <ol>
+      <li><strong>Primeiro, coloque suas peças.</strong>Coloque uma peça por vez em um ponto vazio. As pretas jogam primeiro. Continue até as nove peças de cada lado estarem no tabuleiro.</li>
+      <li><strong>Forme um moinho para tirar uma peça.</strong>Quando três das suas peças ficam alinhadas em uma linha conectada, você formou um moinho e pode remover uma peça do seu adversário do tabuleiro. Você não pode tirar uma peça que esteja dentro de um moinho — a menos que todas as peças do seu adversário estejam em moinhos.</li>
+      <li><strong>Depois mova suas peças.</strong>Quando tudo estiver colocado, deslize uma peça de cada vez até um ponto vazio vizinho por uma linha. Um moinho formado ao mover também permite tirar uma peça do seu adversário.</li>
+      <li><strong>Restam apenas três peças? Você pode voar.</strong>Quando restam apenas três peças, você não está mais limitado aos pontos vizinhos — você pode voar para qualquer ponto vazio do tabuleiro.</li>
+      <li><strong>Como vencer.</strong>Você vence reduzindo seu adversário a duas peças, ou bloqueando-o para que ele não tenha mais jogadas. Se a mesma posição se repetir três vezes, ou se nenhum moinho for formado por 50 jogadas, o jogo termina em empate automaticamente.</li>
+    </ol>
+  </section>
+
+  <section class="about" aria-label="Duas versões de Morris">
+    <h2>Duas versões: Morris clássico e Morabaraba</h2>
+    <p><strong>O Morris clássico</strong> é jogado com nove peças por jogador no tabuleiro de 24 pontos descrito acima.</p>
+    <p><strong>Morabaraba</strong> é a versão com 12 peças do jogo. Cada jogador tem doze peças e o tabuleiro ganha quatro linhas diagonais extras. As peças também podem se mover na diagonal, e três em linha na diagonal também formam um moinho. Ele é mais rápido e mais aberto que o jogo clássico, e recompensa um bom olho para as diagonais.</p>
+    <p>As duas versões estão disponíveis no mesmo jogo. Você pode trocar entre elas sempre que começar um jogo novo.</p>
+  </section>
+
+  <section class="about" aria-label="Formas de jogar Nine Men's Morris">
+    <h2>Formas de jogar</h2>
+    <p><strong>Jogue on-line contra pessoas do mundo inteiro.</strong>Comece uma partida rápida e encontre um novo adversário na hora. O jogo on-line tem pontuação, rankings e modo espectador, e três velocidades: padrão (30 segundos por jogada), lenta (2 minutos por jogada) e por correspondência (24 horas por jogada).</p>
+    <p><strong>Jogue contra o computador.</strong> Há três níveis de computador — fácil, normal e forte —, para que você possa aprender as regras no seu ritmo e depois enfrentar um adversário mais difícil.</p>
+    <p><strong>Jogue com dois jogadores em um só aparelho.</strong>Compartilhe um celular ou uma tela com um amigo e coloque e mova as peças em turnos, como em um tabuleiro de verdade.</p>
+    <p><strong>Jogue em 20 idiomas.</strong>O jogo fala o seu idioma e você pode trocá-lo nas configurações a qualquer momento.</p>
+  </section>
+
+  <section class="note" aria-label="Jogo on-line">
+    <h2>O jogo on-line já está disponível</h2>
+    <p>Agora você pode jogar on-line contra pessoas do mundo inteiro. Comece uma partida rápida e encontre um adversário na hora.</p>
+    <p>O jogo on-line tem três velocidades: padrão (30 segundos por jogada), lenta (2 minutos por jogada) e por correspondência (24 horas por jogada), além de pontuação, rankings e modo espectador. Claro, você também pode jogar contra o computador ou com um amigo no mesmo aparelho.</p>
+  </section>
+
+  <section class="about" aria-label="Perguntas frequentes sobre Nine Men's Morris">
+    <h2>Perguntas frequentes</h2>
+    <p><strong>Nine Men's Morris é grátis?</strong>Sim. Morris no Pare Asobi é totalmente grátis, sem cadastro e sem instalar aplicativo.</p>
+    <p><strong>Posso jogar no meu celular?</strong>Sim. O jogo funciona em celulares, tablets e computadores, direto no seu navegador.</p>
+    <p><strong>O que é um moinho?</strong>Um moinho são três das suas peças em linha em uma linha conectada. Formar um moinho permite remover uma peça do seu adversário do tabuleiro.</p>
+    <p><strong>O que é Morabaraba?</strong>Morabaraba é a versão com 12 peças do Morris, com quatro linhas diagonais extras no tabuleiro. Movimentos e moinhos na diagonal são permitidos.</p>
+    <p>Looking for more games? Os seis jogos grátis, incluindo Reversi (Othello), Sudoku (Nanpure), palavras cruzadas, Shirupure e Wado Kaichin, estão na <a href="https://pareasobi.com/pt/">página principal do Pare Asobi em português</a>.</p>
+  </section>
+
+  <footer class="footer">
+    <a href="/privacy.html#advertising">Publicidade e política de privacidade</a><br>
+    <a href="/contact.html">Fale conosco</a><br>
+    <a href="/terms.html">Termos de uso</a><br>
+    <a href="/guide.html">Guia de jogo</a> · <a href="/faq.html">Perguntas frequentes</a> · <a href="/about.html">Sobre o Pare Asobi</a><br>
+    <span style="font-size:18px;">Os guias estão em japonês por enquanto.</span><br>
+    <a href="https://pareasobi.com/pt/">Voltar ao Pare Asobi</a><br>
+    <span class="footer-brand">Pare Asobi</span>
+  </footer>
+
+</div>
+
+<script>
+/* Game screenshot slideshow: switches automatically every 4 seconds. No outside library.
+   The first shot still shows if JavaScript is off. Broken images are skipped. */
+(function () {
+  var boxes = document.querySelectorAll('.card-slides');
+  if (!boxes.length) return;
+  boxes.forEach(function (box) {
+    var imgs = Array.prototype.slice.call(box.querySelectorAll('.card-shot'));
+    var dots = Array.prototype.slice.call(box.querySelectorAll('.card-dots span'));
+    var cur = 0, timer = null, visible = true;
+    function alive() { return imgs.filter(function (im) { return !im.dataset.broken; }); }
+    function show(n) {
+      var list = alive();
+      if (!list.length) return;
+      if (list.length === 1) {
+        imgs.forEach(function (im) { im.classList.toggle('is-active', list[0] === im); });
+        dots.forEach(function (d, i) { d.classList.toggle('is-active', list[0] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+        return;
+      }
+      cur = ((n % list.length) + list.length) % list.length;
+      imgs.forEach(function (im) { im.classList.toggle('is-active', list[cur] === im); });
+      dots.forEach(function (d, i) { d.classList.toggle('is-active', list[cur] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+    }
+    function start() { if (timer === null && visible) timer = setInterval(function () { show(cur + 1); }, 4000); }
+    function stop() { if (timer !== null) { clearInterval(timer); timer = null; } }
+    imgs.forEach(function (im) {
+      if (im.complete && im.naturalWidth === 0) im.dataset.broken = '1';
+      im.addEventListener('error', function () { im.dataset.broken = '1'; if (alive().length < 2) stop(); show(cur); });
+    });
+    show(0);
+    document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else start(); });
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { visible = en.isIntersecting; if (visible) start(); else stop(); });
+      }, { rootMargin: '100px' });
+      io.observe(box);
+    } else {
+      start();
+    }
+  });
+})();
+</script>
+<script defer src="/assets/pare-analytics.js"></script>
+</body>
+</html>
