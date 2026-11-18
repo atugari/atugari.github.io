@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - name: Update the checked Othello interface
+      - name: Validate the corrected Othello asset routing
         run: python3 scripts/repair-othello-routing.py
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
