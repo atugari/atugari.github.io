@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#FFF8E7">
+  <title>Nine Men's Morris | Free Board Game - Pare Asobi</title>
+  <meta name="description" content="Play Nine Men's Morris free in your browser — one of the oldest board games in the world. Make mills, take your opponent's pieces, and fly when you are down to three. Classic 9-piece game and 12-piece Morabaraba.">
+  <meta name="keywords" content="Nine Men's Morris, Morris, Morabaraba, free Morris, play Morris online, board game, free browser game, Pare Asobi">
+  <meta name="robots" content="index, follow">
+  <meta name="google-adsense-account" content="ca-pub-5560584474086870">
+  <link rel="canonical" href="https://pareasobi.com/en/morris/">
+  <link rel="alternate" hreflang="en" href="https://pareasobi.com/en/morris/">
+  <link rel="alternate" hreflang="x-default" href="https://pareasobi.com/en/morris/">
+  <meta property="og:title" content="Nine Men's Morris | Free Board Game - Pare Asobi">
+  <meta property="og:description" content="Play Nine Men's Morris free in your browser — one of the oldest board games in the world. Make mills, take your opponent's pieces, and fly when you are down to three.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://pareasobi.com/en/morris/">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Nine Men's Morris | Free Board Game - Pare Asobi">
+  <meta name="twitter:description" content="Play Nine Men's Morris free in your browser — one of the oldest board games in the world. Make mills, take your opponent's pieces, and fly when you are down to three.">
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@graph":[
+      {"@type":"WebSite","@id":"https://pareasobi.com/en/#website","url":"https://pareasobi.com/en/","name":"Pare Asobi","inLanguage":"en"},
+      {"@type":"WebPage","@id":"https://pareasobi.com/en/morris/#webpage","url":"https://pareasobi.com/en/morris/","name":"Nine Men's Morris | Free Board Game - Pare Asobi","description":"Play Nine Men's Morris free in your browser — one of the oldest board games in the world. Make mills, take your opponent's pieces, and fly when you are down to three. Classic 9-piece game and 12-piece Morabaraba.","inLanguage":"en","isPartOf":{"@id":"https://pareasobi.com/en/#website"}}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: #FFF8E7;
+      color: #1a1a1a;
+      font-family: 'Noto Serif JP', serif;
+      min-height: 100dvh;
+    }
+
+    /* Confetti dots: small bright candy-colored dots scattered over the background */
+    body {
+      background-image:
+        radial-gradient(circle at 6% 10%, rgba(255, 90, 118, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 94% 6%, rgba(255, 201, 60, 0.45) 0 6px, transparent 7px),
+        radial-gradient(circle at 12% 42%, rgba(77, 163, 255, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 88% 38%, rgba(46, 196, 166, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 50% 72%, rgba(255, 90, 118, 0.25) 0 4px, transparent 5px),
+        radial-gradient(circle at 4% 84%, rgba(255, 201, 60, 0.35) 0 6px, transparent 7px),
+        radial-gradient(circle at 96% 86%, rgba(77, 163, 255, 0.30) 0 6px, transparent 7px),
+        radial-gradient(circle at 30% 95%, rgba(46, 196, 166, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 70% 96%, rgba(255, 138, 61, 0.30) 0 5px, transparent 6px);
+      background-attachment: fixed;
+    }
+
+    .app { max-width: 1060px; margin: 0 auto; padding: 20px 16px 64px; }
+    @media (min-width: 720px) {
+      .app { padding: 28px 28px 72px; }
+    }
+
+    /* Logo bar: mint-green rounded band */
+    .site-header {
+      text-align: center;
+      margin: 0 0 18px;
+      padding: 26px 12px 22px;
+      background: linear-gradient(135deg, #A9EDCB 0%, #C2F2DE 55%, #BEE9D2 100%);
+      border-radius: 28px;
+      box-shadow: 0 8px 24px rgba(255, 150, 120, 0.18);
+    }
+    .site-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(44px, 11vw, 76px);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      line-height: 1.15;
+      background: linear-gradient(90deg, #FF5A76 0%, #FF8A3D 28%, #FFC93C 52%, #2EC4A6 76%, #4DA3FF 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 0 rgba(255, 255, 255, 0.95)) drop-shadow(0 6px 14px rgba(255, 120, 120, 0.25));
+    }
+    .site-title a { color: inherit; text-decoration: none; }
+
+    /* Hero: sky-blue band with confetti */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      padding: 34px 18px 30px;
+      margin-bottom: 26px;
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 8% 20%, rgba(255, 90, 118, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 92% 14%, rgba(255, 201, 60, 0.6) 0 7px, transparent 8px),
+        radial-gradient(circle at 16% 82%, rgba(46, 196, 166, 0.55) 0 5px, transparent 6px),
+        radial-gradient(circle at 84% 78%, rgba(255, 138, 61, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 50% 8%, rgba(77, 163, 255, 0.45) 0 5px, transparent 6px),
+        linear-gradient(180deg, #BFE6FF 0%, #D6F0FF 60%, #CDEBFF 100%);
+      box-shadow: 0 8px 24px rgba(77, 163, 255, 0.22);
+    }
+    .hero-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(26px, 6vw, 44px);
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      line-height: 1.35;
+      color: #FF4D6D;
+      text-shadow: 0 2px 0 rgba(255, 255, 255, 0.9);
+    }
+    .hero-sub {
+      margin-top: 12px;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.9;
+      color: #234;
+    }
+    .hero-cta {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 13px 34px;
+      border-radius: 999px;
+      background: #FFC93C;
+      border: 2px solid #FF9F1C;
+      color: #B34700;
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      box-shadow: 0 4px 0 #FF9F1C, 0 8px 18px rgba(255, 159, 28, 0.35);
+    }
+    .hero-cta:active { transform: translateY(2px); box-shadow: 0 2px 0 #FF9F1C; }
+
+    /* Game screenshot slideshow */
+    .play-card {
+      background: #6FC1EE;
+      border: 2px solid #3798D8;
+      border-radius: 28px;
+      overflow: hidden;
+      margin-bottom: 26px;
+      box-shadow: 0 8px 24px rgba(77, 163, 255, 0.22);
+    }
+    .card-slides {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      background: #fff;
+      border-bottom: 3px solid rgba(255, 255, 255, 0.55);
+    }
+    .card-slides .card-shot {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+    .card-slides .card-shot.is-active { opacity: 1; }
+    .card-dots {
+      position: absolute;
+      left: 50%;
+      bottom: 8px;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .card-dots span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.55);
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18);
+    }
+    .card-dots span.is-active { background: #fff; }
+
+    /* Text sections */
+    .about {
+      margin-top: 26px;
+      padding: 24px 22px;
+      background: #FFF3F5;
+      border-radius: 24px;
+      font-size: 22px;
+      line-height: 1.9;
+      color: #5a4a44;
+    }
+    .about h2 { font-size: 24px; margin-bottom: 10px; color: #3d2f2b; }
+    .about p { margin-bottom: 10px; }
+    .about p:last-child { margin-bottom: 0; }
+    .about a { color: #FF5A76; }
+    .about ol, .about ul { margin: 0 0 10px 26px; }
+    .about li { margin-bottom: 8px; }
+    .about li:last-child { margin-bottom: 0; }
+    .note {
+      margin-top: 26px;
+      padding: 24px 22px;
+      background: #FFF8E7;
+      border: 2px solid #FFC93C;
+      border-radius: 24px;
+      font-size: 22px;
+      line-height: 1.9;
+      color: #5a4a44;
+    }
+    .note h2 { font-size: 24px; margin-bottom: 10px; color: #3d2f2b; }
+    .note p { margin-bottom: 10px; }
+    .note p:last-child { margin-bottom: 0; }
+
+    .footer {
+      text-align: center;
+      margin-top: 44px;
+      padding: 20px 16px;
+      font-size: 22px;
+      color: #8a7a72;
+      line-height: 1.9;
+      background: #FFE3E6;
+      border-radius: 24px;
+    }
+    .footer a { color: #FF5A76; font-size: 22px; text-underline-offset: .2em; }
+    .footer a:active { color: #555; }
+    .footer-brand {
+      display: inline-block;
+      font-size: 22px;
+      color: #c98a96;
+      letter-spacing: 0.08em;
+    }
+  </style>
+  <meta property="og:site_name" content="Pare Asobi">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5560584474086870" crossorigin="anonymous"></script>
+</head>
+<body data-game="pareasobi">
+
+<div class="app">
+
+  <header class="site-header">
+    <h1 class="site-title"><a href="https://pareasobi.com/en/">Pare Asobi</a></h1>
+  </header>
+
+  <section class="hero" aria-label="Play Nine Men's Morris">
+    <p class="hero-title">Nine Men's Morris</p>
+    <p class="hero-sub">One of the oldest board games in the world — over 2,000 years old.<br>Free in your browser — no sign-up, no app to install.</p>
+    <a class="hero-cta" href="https://pareasobi.com/morris/">Play Morris now →</a>
+  </section>
+
+  <div class="play-card">
+    <div class="card-slides"><img class="card-shot is-active" src="/assets/game-shots/morris-1.jpg" alt="Screenshot of Nine Men's Morris on Pare Asobi" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/morris-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/morris-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
+  </div>
+
+  <section class="about" aria-label="About Nine Men's Morris">
+    <h2>What is Nine Men's Morris?</h2>
+    <p>Nine Men's Morris is one of the oldest board games in the world, played for more than 2,000 years. Two players share one board of 24 points, joined by lines. Each player has nine pieces — one side black, the other white — and the goal is simple: line up three of your pieces to take your opponent's pieces, until your opponent has almost nothing left.</p>
+    <p>The game has two parts. First you place your pieces, one at a time, on empty points. Then, once all the pieces are on the board, you slide them along the lines to neighboring points. It sounds simple, but every placement matters: a piece put down carelessly in the opening can be hard to defend later.</p>
+    <p>On Pare Asobi you can play Nine Men's Morris free in your browser, on your phone or your computer. There is nothing to download and no account to create — just open the game and start playing.</p>
+  </section>
+
+  <section class="about" aria-label="How to play Nine Men's Morris">
+    <h2>How to play</h2>
+    <ol>
+      <li><strong>First, place your pieces.</strong> Take turns putting one piece on an empty point. Black moves first. Keep going until all nine pieces of each side are on the board.</li>
+      <li><strong>Make a mill to take a piece.</strong> When three of your pieces line up on a connected line, you have made a mill, and you may remove one of your opponent's pieces from the board. You cannot take a piece that is inside a mill — unless every one of your opponent's pieces is in a mill.</li>
+      <li><strong>Then move your pieces.</strong> Once everything is placed, slide one piece at a time to a neighboring empty point along a line. A mill made by moving also lets you take one of your opponent's pieces.</li>
+      <li><strong>Down to three pieces? You can fly.</strong> When you have only three pieces left, you are no longer limited to neighboring points — you can fly to any empty point on the board.</li>
+      <li><strong>How to win.</strong> You win by reducing your opponent to two pieces, or by blocking them so they have no move left. If the same position comes up three times, or if no mill is made for 50 moves, the game ends in a draw automatically.</li>
+    </ol>
+  </section>
+
+  <section class="about" aria-label="Two versions of Morris">
+    <h2>Two versions: classic Morris and Morabaraba</h2>
+    <p><strong>Classic Nine Men's Morris</strong> is played with nine pieces each, on the board of 24 points described above.</p>
+    <p><strong>Morabaraba</strong> is the 12-piece version of the game. Each player has twelve pieces, and the board gains four extra diagonal lines. Pieces can move diagonally too, and three in a row on a diagonal also makes a mill. It plays faster and more openly than the classic game, and it rewards sharp eyes for diagonal lines.</p>
+    <p>Both versions are available in the same game. You can switch between them whenever you start a new game.</p>
+  </section>
+
+  <section class="about" aria-label="Ways to play Nine Men's Morris">
+    <h2>Ways to play</h2>
+    <p><strong>Play against the computer.</strong> There are three computer levels — easy, normal, and strong — so you can learn the rules at your own pace and then take on a tougher opponent.</p>
+    <p><strong>Play with two players on one device.</strong> Share one phone or one screen with a friend and take turns placing and moving pieces, just like a real board.</p>
+    <p><strong>Play in 20 languages.</strong> The game speaks your language, and you can change it from the settings at any time.</p>
+  </section>
+
+  <section class="note" aria-label="Online play status">
+    <h2>Online play is coming soon</h2>
+    <p>Online play against other players is still in preparation right now. The game server is not connected yet, so the online buttons on the game page are turned off for now.</p>
+    <p>When the server is ready, online play will open with three speeds — standard (30 seconds a move), slow (2 minutes a move), and correspondence (24 hours a move) — plus ratings, rankings, and spectating. For now, you can play right away against the computer or with a friend on the same device.</p>
+  </section>
+
+  <section class="about" aria-label="Frequently asked questions about Nine Men's Morris">
+    <h2>Frequently asked questions</h2>
+    <p><strong>Is Nine Men's Morris free?</strong> Yes. Morris on Pare Asobi is completely free to play, with no sign-up and no app to install.</p>
+    <p><strong>Can I play on my phone?</strong> Yes. The game works on phones, tablets, and computers, right in your browser.</p>
+    <p><strong>What is a mill?</strong> A mill is three of your pieces in a row on a connected line. Making a mill lets you remove one of your opponent's pieces from the board.</p>
+    <p><strong>What is Morabaraba?</strong> Morabaraba is the 12-piece version of Morris, with four extra diagonal lines on the board. Diagonal moves and diagonal mills are allowed.</p>
+    <p>Looking for more games? See all six free games on the <a href="https://pareasobi.com/en/">Pare Asobi English top page</a>, including Reversi (Othello), Sudoku (Nanpure), Crossword, Shirupure, and Wado Kaichin.</p>
+  </section>
+
+  <footer class="footer">
+    <a href="/privacy.html#advertising">Advertising &amp; Privacy Policy</a><br>
+    <a href="/contact.html">Contact Us</a><br>
+    <a href="/terms.html">Terms of Use</a><br>
+    <a href="/guide.html">How to Play</a> · <a href="/faq.html">FAQ</a> · <a href="/about.html">About Pare Asobi</a><br>
+    <span style="font-size:18px;">Guides are in Japanese for now.</span><br>
+    <a href="https://pareasobi.com/en/">Back to Pare Asobi</a><br>
+    <span class="footer-brand">Pare Asobi</span>
+  </footer>
+
+</div>
+
+<script>
+/* Game screenshot slideshow: switches automatically every 4 seconds. No outside library.
+   The first shot still shows if JavaScript is off. Broken images are skipped. */
+(function () {
+  var boxes = document.querySelectorAll('.card-slides');
+  if (!boxes.length) return;
+  boxes.forEach(function (box) {
+    var imgs = Array.prototype.slice.call(box.querySelectorAll('.card-shot'));
+    var dots = Array.prototype.slice.call(box.querySelectorAll('.card-dots span'));
+    var cur = 0, timer = null, visible = true;
+    function alive() { return imgs.filter(function (im) { return !im.dataset.broken; }); }
+    function show(n) {
+      var list = alive();
+      if (!list.length) return;
+      if (list.length === 1) {
+        imgs.forEach(function (im) { im.classList.toggle('is-active', list[0] === im); });
+        dots.forEach(function (d, i) { d.classList.toggle('is-active', list[0] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+        return;
+      }
+      cur = ((n % list.length) + list.length) % list.length;
+      imgs.forEach(function (im) { im.classList.toggle('is-active', list[cur] === im); });
+      dots.forEach(function (d, i) { d.classList.toggle('is-active', list[cur] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+    }
+    function start() { if (timer === null && visible) timer = setInterval(function () { show(cur + 1); }, 4000); }
+    function stop() { if (timer !== null) { clearInterval(timer); timer = null; } }
+    imgs.forEach(function (im) {
+      if (im.complete && im.naturalWidth === 0) im.dataset.broken = '1';
+      im.addEventListener('error', function () { im.dataset.broken = '1'; if (alive().length < 2) stop(); show(cur); });
+    });
+    show(0);
+    document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else start(); });
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { visible = en.isIntersecting; if (visible) start(); else stop(); });
+      }, { rootMargin: '100px' });
+      io.observe(box);
+    } else {
+      start();
+    }
+  });
+})();
+</script>
+<script defer src="/assets/pare-analytics.js"></script>
+</body>
+</html>
