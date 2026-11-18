@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - name: Publish Othello static translations and furigana
+      - name: Publish corrected Othello assets and preserve game API
         run: python3 scripts/publish-othello-static-assets.py
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
