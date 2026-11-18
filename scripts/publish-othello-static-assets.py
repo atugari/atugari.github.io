@@ -28,16 +28,21 @@ def request(url,data,token,mime):
     return payload['result']
 
 def collect():
-    files={};todo=['/index.html'];headers={}
+    files={};todo=['/index.html'];headers={};seen=set()
     with tempfile.TemporaryDirectory() as tmp:
         root=Path(tmp)
         while todo:
             path=todo.pop()
-            if path in files:continue
+            if path in seen:continue
+            seen.add(path)
             if len(files)>100:raise SystemExit('Unexpected asset graph size')
             dest=root/'body';head=root/'headers'
             url=support.ORIGIN+('/' if path=='/index.html' else path)
-            subprocess.run(['curl','--fail','--silent','--show-error','--max-time','45','--retry','2','-D',str(head),'-o',str(dest),url],check=True)
+            fetched=subprocess.run(['curl','--fail','--silent','--show-error','--max-time','45','--retry','2','-D',str(head),'-o',str(dest),url])
+            if fetched.returncode:
+                if fetched.returncode==22 and ' 404' in head.read_text():
+                    print('Ignored unavailable source-reference path:',path);continue
+                raise SystemExit('Unable to download a referenced asset: '+path)
             body=dest.read_bytes();files[path]=body
             if path=='/index.html':
                 for line in head.read_text().splitlines():
