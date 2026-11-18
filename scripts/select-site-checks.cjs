@@ -58,7 +58,7 @@ function planChecks({paths,readAt,sameBlob=()=>false,base='base',head='head',for
     'scripts/release-notes.json','nanpure/releases.json','nanpure-api/src/generation.js','nanpure-api/test/generation.test.mjs'
   ]);
   for(const p of semantic){
-    if(lightweight.has(p)||p.startsWith('nanpure-api/'))continue;
+    if(lightweight.has(p)||p.startsWith('nanpure-api/')||p.startsWith('morris/assets/'))continue;
     if(/^scripts\/collection-100k\//.test(p)||/^nanpure\/collection\//.test(p)){
       selected.corpus=true;if(/\.(?:js|mjs|html|css)$/.test(p))selected.notebook=true;continue;
     }

@@ -62,3 +62,5 @@ test('binary content and incomplete release feeds are never normalized into a fa
   const b=Buffer.from([255,0,128]);assert(Buffer.isBuffer(normalize(b)));assert(normalize(b).equals(b));
   assert.throws(()=>normalize(Buffer.from('var ka="v",wS=[{'),'shell/main.js'));
 });
+
+test('standalone Morris language packs do not select unrelated Sudoku checks',()=>{const p=plan(['morris/index.html','morris/assets/i18n-100.js','morris/assets/i18n-extra/da.example.json','morris/assets/reading.js']);for(const key of ['notebook','wado','corpus','learning','full'])assert.equal(p[key],false);});
