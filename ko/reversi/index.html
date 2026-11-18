@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#FFF8E7">
+  <title>리버시(오델로) | 무료 온라인 보드 게임 - Pare Asobi</title>
+  <meta name="description" content="브라우저에서 리버시(오델로)를 무료로 플레이하세요. 전 세계 사람들과 온라인으로 레이팅과 랭킹 대결을 하거나, 다섯 가지 레벨의 컴퓨터와 대결하거나, 한 기기에서 두 명이 함께 플레이할 수 있습니다. 가입이 필요 없습니다.">
+  <meta name="keywords" content="리버시, 오델로, 무료 리버시, 온라인 오델로, 온라인 리버시, 보드 게임, 무료 브라우저 게임, Pare Asobi">
+  <meta name="robots" content="index, follow">
+  <meta name="google-adsense-account" content="ca-pub-5560584474086870">
+  <link rel="canonical" href="https://pareasobi.com/ko/reversi/">
+  <link rel="alternate" hreflang="en" href="https://pareasobi.com/en/reversi/">
+  <link rel="alternate" hreflang="ko" href="https://pareasobi.com/ko/reversi/">
+  <link rel="alternate" hreflang="x-default" href="https://pareasobi.com/ko/reversi/">
+  <meta property="og:title" content="리버시(오델로) | 무료 온라인 보드 게임 - Pare Asobi">
+  <meta property="og:description" content="브라우저에서 리버시(오델로)를 무료로 플레이하세요 — 전 세계 사람들과 온라인으로, 다섯 가지 레벨의 컴퓨터와, 또는 한 기기에서 두 명이 함께.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://pareasobi.com/ko/reversi/">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="리버시(오델로) | 무료 온라인 보드 게임 - Pare Asobi">
+  <meta name="twitter:description" content="브라우저에서 리버시(오델로)를 무료로 플레이하세요 — 전 세계 사람들과 온라인으로, 다섯 가지 레벨의 컴퓨터와, 또는 한 기기에서 두 명이 함께.">
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@graph":[
+      {"@type":"WebSite","@id":"https://pareasobi.com/ko/#website","url":"https://pareasobi.com/ko/","name":"Pare Asobi","inLanguage":"ko"},
+      {"@type":"WebPage","@id":"https://pareasobi.com/ko/reversi/#webpage","url":"https://pareasobi.com/ko/reversi/","name":"리버시(오델로) | 무료 온라인 보드 게임 - Pare Asobi","description":"브라우저에서 리버시(오델로)를 무료로 플레이하세요. 전 세계 사람들과 온라인으로 레이팅과 랭킹 대결을 하거나, 다섯 가지 레벨의 컴퓨터와 대결하거나, 한 기기에서 두 명이 함께 플레이할 수 있습니다.","inLanguage":"ko","isPartOf":{"@id":"https://pareasobi.com/ko/#website"}}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: #FFF8E7;
+      color: #1a1a1a;
+      font-family: 'Noto Serif JP', serif;
+      min-height: 100dvh;
+    }
+
+    /* Confetti dots: small bright candy-colored dots scattered over the background */
+    body {
+      background-image:
+        radial-gradient(circle at 6% 10%, rgba(255, 90, 118, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 94% 6%, rgba(255, 201, 60, 0.45) 0 6px, transparent 7px),
+        radial-gradient(circle at 12% 42%, rgba(77, 163, 255, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 88% 38%, rgba(46, 196, 166, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 50% 72%, rgba(255, 90, 118, 0.25) 0 4px, transparent 5px),
+        radial-gradient(circle at 4% 84%, rgba(255, 201, 60, 0.35) 0 6px, transparent 7px),
+        radial-gradient(circle at 96% 86%, rgba(77, 163, 255, 0.30) 0 6px, transparent 7px),
+        radial-gradient(circle at 30% 95%, rgba(46, 196, 166, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 70% 96%, rgba(255, 138, 61, 0.30) 0 5px, transparent 6px);
+      background-attachment: fixed;
+    }
+
+    .app { max-width: 1060px; margin: 0 auto; padding: 20px 16px 64px; }
+    @media (min-width: 720px) {
+      .app { padding: 28px 28px 72px; }
+    }
+
+    /* Logo bar: mint-green rounded band */
+    .site-header {
+      text-align: center;
+      margin: 0 0 18px;
+      padding: 26px 12px 22px;
+      background: linear-gradient(135deg, #A9EDCB 0%, #C2F2DE 55%, #BEE9D2 100%);
+      border-radius: 28px;
+      box-shadow: 0 8px 24px rgba(255, 150, 120, 0.18);
+    }
+    .site-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(44px, 11vw, 76px);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      line-height: 1.15;
+      background: linear-gradient(90deg, #FF5A76 0%, #FF8A3D 28%, #FFC93C 52%, #2EC4A6 76%, #4DA3FF 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 0 rgba(255, 255, 255, 0.95)) drop-shadow(0 6px 14px rgba(255, 120, 120, 0.25));
+    }
+    .site-title a { color: inherit; text-decoration: none; }
+
+    /* Hero: sky-blue band with confetti */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      padding: 34px 18px 30px;
+      margin-bottom: 26px;
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 8% 20%, rgba(255, 90, 118, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 92% 14%, rgba(255, 201, 60, 0.6) 0 7px, transparent 8px),
+        radial-gradient(circle at 16% 82%, rgba(46, 196, 166, 0.55) 0 5px, transparent 6px),
+        radial-gradient(circle at 84% 78%, rgba(255, 138, 61, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 50% 8%, rgba(77, 163, 255, 0.45) 0 5px, transparent 6px),
+        linear-gradient(180deg, #BFE6FF 0%, #D6F0FF 60%, #CDEBFF 100%);
+      box-shadow: 0 8px 24px rgba(77, 163, 255, 0.22);
+    }
+    .hero-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(26px, 6vw, 44px);
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      line-height: 1.35;
+      color: #FF4D6D;
+      text-shadow: 0 2px 0 rgba(255, 255, 255, 0.9);
+    }
+    .hero-sub {
+      margin-top: 12px;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.9;
+      color: #234;
+    }
+    .hero-cta {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 13px 34px;
+      border-radius: 999px;
+      background: #FFC93C;
+      border: 2px solid #FF9F1C;
+      color: #B34700;
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      box-shadow: 0 4px 0 #FF9F1C, 0 8px 18px rgba(255, 159, 28, 0.35);
+    }
+    .hero-cta:active { transform: translateY(2px); box-shadow: 0 2px 0 #FF9F1C; }
+
+    /* Game screenshot slideshow */
+    .play-card {
+      background: #FF9FB2;
+      border: 2px solid #FF7D99;
+      border-radius: 28px;
+      overflow: hidden;
+      margin-bottom: 26px;
+      box-shadow: 0 8px 24px rgba(255, 150, 120, 0.14);
+    }
+    .card-slides {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      background: #fff;
+      border-bottom: 3px solid rgba(255, 255, 255, 0.55);
+    }
+    .card-slides .card-shot {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+    .card-slides .card-shot.is-active { opacity: 1; }
+    .card-dots {
+      position: absolute;
+      left: 50%;
+      bottom: 8px;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .card-dots span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.55);
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18);
+    }
+    .card-dots span.is-active { background: #fff; }
+
+    /* Text sections */
+    .about {
+      margin-top: 26px;
+      padding: 24px 22px;
+      background: #FFF3F5;
+      border-radius: 24px;
+      font-size: 22px;
+      line-height: 1.9;
+      color: #5a4a44;
+    }
+    .about h2 { font-size: 24px; margin-bottom: 10px; color: #3d2f2b; }
+    .about p { margin-bottom: 10px; }
+    .about p:last-child { margin-bottom: 0; }
+    .about a { color: #FF5A76; }
+    .about ol, .about ul { margin: 0 0 10px 26px; }
+    .about li { margin-bottom: 8px; }
+    .about li:last-child { margin-bottom: 0; }
+
+    .footer {
+      text-align: center;
+      margin-top: 44px;
+      padding: 20px 16px;
+      font-size: 22px;
+      color: #8a7a72;
+      line-height: 1.9;
+      background: #FFE3E6;
+      border-radius: 24px;
+    }
+    .footer a { color: #FF5A76; font-size: 22px; text-underline-offset: .2em; }
+    .footer a:active { color: #555; }
+    .footer-brand {
+      display: inline-block;
+      font-size: 22px;
+      color: #c98a96;
+      letter-spacing: 0.08em;
+    }
+  </style>
+  <meta property="og:site_name" content="Pare Asobi">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5560584474086870" crossorigin="anonymous"></script>
+</head>
+<body data-game="pareasobi">
+
+<div class="app">
+
+  <header class="site-header">
+    <h1 class="site-title"><a href="https://pareasobi.com/ko/">Pare Asobi</a></h1>
+  </header>
+
+  <section class="hero" aria-label="리버시(오델로) 플레이">
+    <p class="hero-title">리버시(오델로)</p>
+    <p class="hero-sub">한 번에 한 개씩 보드를 뒤집으세요.<br>브라우저에서 무료로 — 가입도, 앱 설치도 필요 없습니다.</p>
+    <a class="hero-cta" href="https://osero.puzzle-hub-4826.workers.dev">지금 리버시 플레이 →</a>
+  </section>
+
+  <div class="play-card">
+    <div class="card-slides"><img class="card-shot is-active" src="/assets/game-shots/othello-1.jpg" alt="Pare Asobi의 리버시(오델로) 게임 화면" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/othello-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/othello-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
+  </div>
+
+  <section class="about" aria-label="리버시(오델로)란?">
+    <h2>리버시(오델로)란?</h2>
+    <p>리버시(오델로라고도 함)는 두 명이 즐기는 클래식 보드 게임입니다. 한 명은 흑돌을, 다른 한 명은 백돌을 가지고 하나의 보드를 공유합니다. 규칙은 1분이면 배울 수 있지만, 한 수만으로 게임이 완전히 뒤집힐 수 있습니다. 그래서 리버시는 쉽게 손에서 놓을 수 없는 게임입니다.</p>
+    <p>표준 보드는 8×8 칸이며, 게임은 가운데에 네 개의 돌(흑돌 두 개, 백돌 두 개)을 대각선으로 놓고 시작합니다. 이후 두 명이 번갈아 돌을 하나씩 놓고, 사이에 낀 상대의 돌은 모두 자신의 색으로 뒤집힙니다. 보드가 가득 차거나, 어느 쪽도 둘 수 없게 되면 게임이 끝나고, 보드에 돌이 더 많은 쪽이 승리합니다.</p>
+    <p>Pare Asobi에서는 브라우저에서 리버시를 무료로 플레이할 수 있습니다. 휴대폰이나 컴퓨터에서 즐길 수 있으며, 다운로드도 계정 생성도 필요 없습니다. 게임을 열고 바로 시작하세요.</p>
+  </section>
+
+  <section class="about" aria-label="플레이 방법">
+    <h2>플레이 방법</h2>
+    <ol>
+      <li><strong>흑돌이 먼저 둡니다.</strong>빈 칸에 돌을 놓아, 새로 놓은 돌과 이미 보드에 있는 자신의 돌 사이에 직선(가로, 세로, 대각선)으로 상대의 돌 하나 이상을 가두세요.</li>
+      <li><strong>갇힌 돌은 모두 자신의 색으로 뒤집힙니다.</strong>한 수로 한 줄의 돌을 모두 뒤집을 수 있으므로, 좋은 한 수로 점수가 크게 바뀔 수 있습니다.</li>
+      <li><strong>둘 수 있는 곳이 없으면 차례를 넘깁니다.</strong>상대가 다시 둡니다. 보드가 가득 차거나 어느 쪽도 둘 수 없을 때까지 게임이 계속됩니다.</li>
+      <li><strong>돌이 더 많은 쪽이 승리합니다.</strong>최종 점수는 보드에 남은 각 색 돌의 개수입니다.</li>
+      <li><strong>모서리는 가장 안전한 칸입니다.</strong>모서리를 차지하면 절대 뒤집히지 않습니다. 모서리 바로 옆 칸은 위험합니다. 그 칸을 두면 모서리를 상대에게 넘겨줄 수 있기 때문입니다.</li>
+    </ol>
+  </section>
+
+  <section class="about" aria-label="플레이 방식">
+    <h2>플레이 방식</h2>
+    <p><strong>전 세계 사람들과 온라인으로 대결하세요.</strong>빠른 매치를 시작하면 바로 새로운 상대를 만날 수 있습니다. 레이팅 대결에서는 레이팅, 랭크, 랭킹, 칭호가 적용되어 승리할수록 레이팅이 올라가는 것을 볼 수 있습니다. 여유 대결은 레이팅이 없고 느리게 진행되므로, 레이팅 걱정 없이 게임을 즐길 수 있습니다.</p>
+    <p><strong>컴퓨터와 대결하세요.</strong>쉬움부터 최강까지 다섯 가지 컴퓨터 레벨이 있습니다. 쉬운 레벨에서 규칙을 익힌 뒤 한 단계씩 올라가 최강 레벨에 도전해 보세요.</p>
+    <p><strong>한 기기에서 두 명이 함께 플레이하세요.</strong>친구와 휴대폰이나 화면 하나를 공유하며 번갈아 돌을 놓으세요. 실제 보드와 같습니다.</p>
+    <p><strong>독특한 모양의 보드를 시도해 보세요.</strong>컴퓨터 대결이나 한 기기에서의 두 명 대결에서는 보드 모양을 선택할 수 있습니다. 표준 8×8 보드, 와이드, 하트, 도넛, 다이아몬드, 십자가 중에서 고르세요. 모양마다 오프닝과 게임 전개가 달라집니다.</p>
+    <p><strong>빠르게 또는 느리게 — 선택은 자유입니다.</strong>표준 게임은 한 수에 20초가 주어져 빠르고 활기차게 진행됩니다. 천천히 생각하고 싶다면 여유 플레이를 선택하세요. 훨씬 더 많은 시간이 주어집니다. 이 게임은 20개 언어를 지원합니다.</p>
+  </section>
+
+  <section class="about" aria-label="자주 묻는 질문">
+    <h2>자주 묻는 질문</h2>
+    <p><strong>리버시는 무료인가요?</strong>네. Pare Asobi의 리버시는 완전히 무료이며, 가입도 앱 설치도 필요 없습니다.</p>
+    <p><strong>휴대폰으로 플레이할 수 있나요?</strong>네. 휴대폰, 태블릿, 컴퓨터에서 브라우저로 바로 플레이할 수 있습니다.</p>
+    <p><strong>온라인으로 플레이하려면 계정이 필요한가요?</strong>아니요. 계정을 만들지 않고도 온라인 빠른 매치를 시작할 수 있습니다.</p>
+    <p><strong>리버시와 오델로의 차이는 무엇인가요?</strong>같은 게임입니다. 오델로는 리버시의 가장 잘 알려진 이름이며, 두 이름 모두 흑백 돌을 뒤집는 게임을 가리킵니다.</p>
+    <p>Looking for more games? 스도쿠(난푸레), 나인 멘스 모리스, 크로스워드, 시루푸레, 와도 카이친을 포함한 여섯 가지 무료 게임을 <a href="https://pareasobi.com/ko/">Pare Asobi 한국어 메인 페이지</a>에서 확인하세요.</p>
+  </section>
+
+  <footer class="footer">
+    <a href="/privacy.html#advertising">광고 및 개인정보처리방침</a><br>
+    <a href="/contact.html">문의하기</a><br>
+    <a href="/terms.html">이용약관</a><br>
+    <a href="/guide.html">플레이 가이드</a> · <a href="/faq.html">자주 묻는 질문</a> · <a href="/about.html">Pare Asobi 소개</a><br>
+    <span style="font-size:18px;">가이드는 현재 일본어로만 제공됩니다.</span><br>
+    <a href="https://pareasobi.com/ko/">Pare Asobi로 돌아가기</a><br>
+    <span class="footer-brand">Pare Asobi</span>
+  </footer>
+
+</div>
+
+<script>
+/* Game screenshot slideshow: switches automatically every 4 seconds. No outside library.
+   The first shot still shows if JavaScript is off. Broken images are skipped. */
+(function () {
+  var boxes = document.querySelectorAll('.card-slides');
+  if (!boxes.length) return;
+  boxes.forEach(function (box) {
+    var imgs = Array.prototype.slice.call(box.querySelectorAll('.card-shot'));
+    var dots = Array.prototype.slice.call(box.querySelectorAll('.card-dots span'));
+    var cur = 0, timer = null, visible = true;
+    function alive() { return imgs.filter(function (im) { return !im.dataset.broken; }); }
+    function show(n) {
+      var list = alive();
+      if (!list.length) return;
+      if (list.length === 1) {
+        imgs.forEach(function (im) { im.classList.toggle('is-active', list[0] === im); });
+        dots.forEach(function (d, i) { d.classList.toggle('is-active', list[0] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+        return;
+      }
+      cur = ((n % list.length) + list.length) % list.length;
+      imgs.forEach(function (im) { im.classList.toggle('is-active', list[cur] === im); });
+      dots.forEach(function (d, i) { d.classList.toggle('is-active', list[cur] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+    }
+    function start() { if (timer === null && visible) timer = setInterval(function () { show(cur + 1); }, 4000); }
+    function stop() { if (timer !== null) { clearInterval(timer); timer = null; } }
+    imgs.forEach(function (im) {
+      if (im.complete && im.naturalWidth === 0) im.dataset.broken = '1';
+      im.addEventListener('error', function () { im.dataset.broken = '1'; if (alive().length < 2) stop(); show(cur); });
+    });
+    show(0);
+    document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else start(); });
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { visible = en.isIntersecting; if (visible) start(); else stop(); });
+      }, { rootMargin: '100px' });
+      io.observe(box);
+    } else {
+      start();
+    }
+  });
+})();
+</script>
+<script defer src="/assets/pare-analytics.js"></script>
+</body>
+</html>
