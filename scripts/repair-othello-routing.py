@@ -33,7 +33,8 @@ def cloud(path, data=None, content_type=None):
             mime = response.headers['Content-Type']
     except urllib.error.HTTPError as error:
         try:
-            codes = [item.get('code') for item in json.load(error).get('errors', [])]
+            items=json.load(error).get('errors', [])
+            codes = [(item.get('code'), str(item.get('message',''))[:600].replace(os.environ['CLOUDFLARE_API_TOKEN'],'[redacted]')) for item in items]
         except (ValueError, AttributeError):
             codes = []
         raise SystemExit(f'Cloudflare {path}: HTTP {error.code}, error codes {codes}') from None
