@@ -1,4 +1,4 @@
-name: Publish Othello furigana corrections
+name: Publish Othello 100 languages and reading controls
 
 on:
   push:
@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - name: Publish corrected Othello assets and preserve game API
-        run: python3 scripts/publish-othello-static-assets.py
+      - name: Publish searchable languages and sentence readings
+        run: python3 scripts/publish-othello-100.py
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
