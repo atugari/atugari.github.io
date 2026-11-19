@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#FFF8E7">
+  <title>Reversi (Othello) | Pulsuz Onlayn Stolüstü Oyun - Pare Asobi</title>
+  <meta name="description" content="Reversi (Othello) oyununu brauzerində pulsuz oyna. Dünyanın hər yerindən insanlarla reytinq və sıralamalarla onlayn oyna, beş səviyyədə kompüterə qarşı oyna və ya bir cihazda iki oyunçu ilə oyna. Qeydiyyat lazım deyil.">
+  <meta name="keywords" content="reversi, othello, pulsuz reversi, othello onlayn oyna, reversi onlayn, stolüstü oyun, pulsuz brauzer oyunu, Pare Asobi">
+  <meta name="robots" content="index, follow">
+  <meta name="google-adsense-account" content="ca-pub-5560584474086870">
+  <link rel="canonical" href="https://pareasobi.com/az/reversi/">
+  <link rel="alternate" hreflang="en" href="https://pareasobi.com/en/reversi/">
+    <link rel="alternate" hreflang="az" href="https://pareasobi.com/az/reversi/">
+  <link rel="alternate" hreflang="x-default" href="https://pareasobi.com/az/reversi/">
+  <meta property="og:title" content="Reversi (Othello) | Pulsuz Onlayn Stolüstü Oyun - Pare Asobi">
+  <meta property="og:description" content="Reversi (Othello) oyununu brauzerində pulsuz oyna — dünyanın hər yerindən oyunçulara qarşı onlayn, beş səviyyədə kompüterə qarşı və ya bir cihazda iki oyunçu ilə.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://pareasobi.com/az/reversi/">
+  <meta property="og:locale" content="az_AZ">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Reversi (Othello) | Pulsuz Onlayn Stolüstü Oyun - Pare Asobi">
+  <meta name="twitter:description" content="Reversi (Othello) oyununu brauzerində pulsuz oyna — dünyanın hər yerindən oyunçulara qarşı onlayn, beş səviyyədə kompüterə qarşı və ya bir cihazda iki oyunçu ilə.">
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@graph":[
+      {"@type":"WebSite","@id":"https://pareasobi.com/az/#website","url":"https://pareasobi.com/az/","name":"Pare Asobi","inLanguage":"az"},
+      {"@type":"WebPage","@id":"https://pareasobi.com/az/reversi/#webpage","url":"https://pareasobi.com/az/reversi/","name":"Reversi (Othello) | Pulsuz Onlayn Stolüstü Oyun - Pare Asobi","description":"Reversi (Othello) oyununu brauzerində pulsuz oyna. Dünyanın hər yerindən insanlarla reytinq və sıralamalarla onlayn oyna, beş səviyyədə kompüterə qarşı oyna və ya bir cihazda iki oyunçu ilə oyna.","inLanguage":"az","isPartOf":{"@id":"https://pareasobi.com/az/#website"}}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: #FFF8E7;
+      color: #1a1a1a;
+      font-family: 'Noto Serif JP', serif;
+      min-height: 100dvh;
+    }
+
+    /* Confetti dots: small bright candy-colored dots scattered over the background */
+    body {
+      background-image:
+        radial-gradient(circle at 6% 10%, rgba(255, 90, 118, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 94% 6%, rgba(255, 201, 60, 0.45) 0 6px, transparent 7px),
+        radial-gradient(circle at 12% 42%, rgba(77, 163, 255, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 88% 38%, rgba(46, 196, 166, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 50% 72%, rgba(255, 90, 118, 0.25) 0 4px, transparent 5px),
+        radial-gradient(circle at 4% 84%, rgba(255, 201, 60, 0.35) 0 6px, transparent 7px),
+        radial-gradient(circle at 96% 86%, rgba(77, 163, 255, 0.30) 0 6px, transparent 7px),
+        radial-gradient(circle at 30% 95%, rgba(46, 196, 166, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 70% 96%, rgba(255, 138, 61, 0.30) 0 5px, transparent 6px);
+      background-attachment: fixed;
+    }
+
+    .app { max-width: 1060px; margin: 0 auto; padding: 20px 16px 64px; }
+    @media (min-width: 720px) {
+      .app { padding: 28px 28px 72px; }
+    }
+
+    /* Logo bar: mint-green rounded band */
+    .site-header {
+      text-align: center;
+      margin: 0 0 18px;
+      padding: 26px 12px 22px;
+      background: linear-gradient(135deg, #A9EDCB 0%, #C2F2DE 55%, #BEE9D2 100%);
+      border-radius: 28px;
+      box-shadow: 0 8px 24px rgba(255, 150, 120, 0.18);
+    }
+    .site-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(44px, 11vw, 76px);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      line-height: 1.15;
+      background: linear-gradient(90deg, #FF5A76 0%, #FF8A3D 28%, #FFC93C 52%, #2EC4A6 76%, #4DA3FF 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 0 rgba(255, 255, 255, 0.95)) drop-shadow(0 6px 14px rgba(255, 120, 120, 0.25));
+    }
+    .site-title a { color: inherit; text-decoration: none; }
+
+    /* Hero: sky-blue band with confetti */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      padding: 34px 18px 30px;
+      margin-bottom: 26px;
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 8% 20%, rgba(255, 90, 118, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 92% 14%, rgba(255, 201, 60, 0.6) 0 7px, transparent 8px),
+        radial-gradient(circle at 16% 82%, rgba(46, 196, 166, 0.55) 0 5px, transparent 6px),
+        radial-gradient(circle at 84% 78%, rgba(255, 138, 61, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 50% 8%, rgba(77, 163, 255, 0.45) 0 5px, transparent 6px),
+        linear-gradient(180deg, #BFE6FF 0%, #D6F0FF 60%, #CDEBFF 100%);
+      box-shadow: 0 8px 24px rgba(77, 163, 255, 0.22);
+    }
+    .hero-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(26px, 6vw, 44px);
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      line-height: 1.35;
+      color: #FF4D6D;
+      text-shadow: 0 2px 0 rgba(255, 255, 255, 0.9);
+    }
+    .hero-sub {
+      margin-top: 12px;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.9;
+      color: #234;
+    }
+    .hero-cta {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 13px 34px;
+      border-radius: 999px;
+      background: #FFC93C;
+      border: 2px solid #FF9F1C;
+      color: #B34700;
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      box-shadow: 0 4px 0 #FF9F1C, 0 8px 18px rgba(255, 159, 28, 0.35);
+    }
+    .hero-cta:active { transform: translateY(2px); box-shadow: 0 2px 0 #FF9F1C; }
+
+    /* Game screenshot slideshow */
+    .play-card {
+      background: #FF9FB2;
+      border: 2px solid #FF7D99;
+      border-radius: 28px;
+      overflow: hidden;
+      margin-bottom: 26px;
+      box-shadow: 0 8px 24px rgba(255, 150, 120, 0.14);
+    }
+    .card-slides {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      background: #fff;
+      border-bottom: 3px solid rgba(255, 255, 255, 0.55);
+    }
+    .card-slides .card-shot {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+    .card-slides .card-shot.is-active { opacity: 1; }
+    .card-dots {
+      position: absolute;
+      left: 50%;
+      bottom: 8px;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .card-dots span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.55);
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18);
+    }
+    .card-dots span.is-active { background: #fff; }
+
+    /* Text sections */
+    .about {
+      margin-top: 26px;
+      padding: 24px 22px;
+      background: #FFF3F5;
+      border-radius: 24px;
+      font-size: 22px;
+      line-height: 1.9;
+      color: #5a4a44;
+    }
+    .about h2 { font-size: 24px; margin-bottom: 10px; color: #3d2f2b; }
+    .about p { margin-bottom: 10px; }
+    .about p:last-child { margin-bottom: 0; }
+    .about a { color: #FF5A76; }
+    .about ol, .about ul { margin: 0 0 10px 26px; }
+    .about li { margin-bottom: 8px; }
+    .about li:last-child { margin-bottom: 0; }
+
+    .footer {
+      text-align: center;
+      margin-top: 44px;
+      padding: 20px 16px;
+      font-size: 22px;
+      color: #8a7a72;
+      line-height: 1.9;
+      background: #FFE3E6;
+      border-radius: 24px;
+    }
+    .footer a { color: #FF5A76; font-size: 22px; text-underline-offset: .2em; }
+    .footer a:active { color: #555; }
+    .footer-brand {
+      display: inline-block;
+      font-size: 22px;
+      color: #c98a96;
+      letter-spacing: 0.08em;
+    }
+  </style>
+  <meta property="og:site_name" content="Pare Asobi">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5560584474086870" crossorigin="anonymous"></script>
+</head>
+<body data-game="pareasobi">
+
+<div class="app">
+
+  <header class="site-header">
+    <h1 class="site-title"><a href="https://pareasobi.com/az/">Pare Asobi</a></h1>
+  </header>
+
+  <section class="hero" aria-label="Reversi (Othello) Oyna">
+    <p class="hero-title">Reversi (Othello)</p>
+    <p class="hero-sub">Lövhəni, bir daş bir daş çevir.<br>Brauzerində pulsuz — qeydiyyat yoxdur, yüklənəcək proqram yoxdur.</p>
+    <a class="hero-cta" href="https://osero.puzzle-hub-4826.workers.dev">Reversi oyna indi →</a>
+  </section>
+
+  <div class="play-card">
+    <div class="card-slides"><img class="card-shot is-active" src="/assets/game-shots/othello-1.jpg" alt="Pare Asobi-də Reversi (Othello) ekran görüntüsü" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/othello-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/othello-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
+  </div>
+
+  <section class="about" aria-label="Reversi (Othello) Haqqında">
+    <h2>Reversi (Othello) nədir?</h2>
+    <p>Reversi, Othello kimi də tanınır, iki oyunçulu klassik stolüstü oyundur. Bir oyunçu qara daşları, digəri ağ daşları götürür və hər iki tərəf tək bir lövhəni paylaşır. Qaydalar təxminən bir dəqiqəyə öyrənilir, amma tək bir gediş bütün oyunu alt-üst edə bilər — Reversi-ni buraxmağı bu qədər çətinləşdirən də budur.</p>
+    <p>Standart lövhə 8-ə 8 xanadır və oyun ortada dörd daşla başlayır: diaqonal qoyulmuş iki qara və iki ağ daş. Buradan etibarən oyunçular növbə ilə bir daş qoyur və sıxışdırdıqları hər daş onların rənginə çevrilir. Lövhə dolanda və ya heç bir oyunçunun qanuni gedişi qalmayanda oyun bitir və lövhədə daha çox daşı olan oyunçu qazanır.</p>
+    <p>Pare Asobi-də Reversi-ni telefonunda və ya kompüterində, brauzerində pulsuz oynaya bilərsən. Yüklənəcək heç nə yoxdur və hesab yaratmağa ehtiyac yoxdur — oyunu aç və oynamağa başla.</p>
+  </section>
+
+  <section class="about" aria-label="Reversi (Othello) Necə Oynanılır">
+    <h2>Necə oynanılır</h2>
+    <ol>
+      <li><strong>Qara əvvəl başlayır.</strong> Yeni daşın ilə lövhədə artıq olan öz rəngindən bir daş arasında, düz xətt üzrə — üfüqi, şaquli və ya diaqonal — rəqibinin bir və ya bir neçə daşını sıxışdıracaq şəkildə boş bir xanaya daş qoy.</li>
+      <li><strong>Sıxışdırılan hər daş sənin rənginə çevrilir.</strong> Tək bir gediş bütün bir sıra daşı birdən çevirə bilər, buna görə də yaxşı bir gediş hesabı çox dəyişə bilər.</li>
+      <li><strong>Qanuni gedişin yoxdursa, növbəni buraxırsan.</strong> Rəqibin yenidən oynayır. Oyun lövhə dolana və ya heç bir oyunçu oynaya bilməyənə qədər davam edir.</li>
+      <li><strong>Ən çox daşı olan oyunçu qazanır.</strong> Son hesab sadəcə lövhədə qalan hər rəngdən daşların sayıdır.</li>
+      <li><strong>Künclər ən təhlükəsiz xanalardır.</strong> Bir künc götürəndə o, bir daha heç vaxt çevrilə bilməz. Küncün düz yanındakı xanalar risklidir, çünki həmin küncü rəqibinə verə bilərlər.</li>
+    </ol>
+  </section>
+
+  <section class="about" aria-label="Reversi (Othello) Oynama Yolları">
+    <h2>Oynama yolları</h2>
+    <p><strong>Dünyanın hər yerindən insanlarla onlayn oyna.</strong> Sürətli oyun başlat və dərhal yeni rəqiblə tanış ol. Reytinqli oyunlarda reytinqlər, rütbələr, sıralamalar və titullar istifadə olunur, beləliklə qazandıqca reytinqinin yüksəldiyini görə bilərsən. Rahat oyunlar reytinqsiz və daha yavaşdır, beləliklə reytinqindən narahat olmadan oyundan həzz ala bilərsən.</p>
+    <p><strong>Kompüterə qarşı oyna.</strong> Asandan ən güclüyə qədər beş kompüter səviyyəsi var. Qaydaları öyrənmək üçün asan səviyyədən başla, sonra ən güclü səviyyə sənə əsl çətinlik verənə qədər səviyyə-səviyyə yüksəl.</p>
+    <p><strong>Bir cihazda iki oyunçu ilə oyna.</strong> Bir dostunla bir telefon və ya bir ekran paylaş və əsl lövhədə olduğu kimi növbə ilə daşları qoy.</p>
+    <p><strong>Qeyri-adi formalı lövhələri sına.</strong> Kompüterə qarşı oyunlarda və bir cihazda iki oyunçulu oyunlarda lövhə formasını seçə bilərsən: standart 8-ə 8 lövhə, geniş, ürək, çörək halqası, almaz və ya xaç. Hər forma açılışı və oyunun inkişaf tərzini dəyişir.</p>
+    <p><strong>Sürətli və ya yavaş — seçim sənindir.</strong> Standart oyunlar sürətli və canlı oyun üçün hər gedişə 20 saniyə verir. Daha çox düşünmək istəyirsənsə, rahat oyun sənə daha çox vaxt verir. Oyun 100 dildə oynanılır.</p>
+  </section>
+
+  <section class="about" aria-label="Reversi (Othello) Haqqında Tez-tez Verilən Suallar">
+    <h2>Tez-tez verilən suallar</h2>
+    <p><strong>Reversi pulsuzdur?</strong> Bəli. Pare Asobi-də Reversi tamamilə pulsuz oynanılır, qeydiyyat yoxdur və yüklənəcək proqram yoxdur.</p>
+    <p><strong>Telefonumda oynaya bilərəm?</strong> Bəli. Oyun telefonlarda, planşetlərdə və kompüterlərdə, birbaşa brauzerində işləyir.</p>
+    <p><strong>Onlayn oynamaq üçün hesabım olmalıdır?</strong> Xeyr. Hesab yaratmadan onlayn sürətli oyun başlada bilərsən.</p>
+    <p><strong>Reversi ilə Othello arasındakı fərq nədir?</strong> Eyni oyundur. Othello Reversi-nin ən tanınmış adıdır və hər iki ad qara-ağ daş çevirmə oyunu üçün istifadə olunur.</p>
+    <p>Daha çox oyun axtarırsan? <a href="https://pareasobi.com/az/">Pare Asobi-nin Azərbaycan dilində əsas səhifəsindəki</a> altı pulsuz oyunun hamısına bax; Sudoku (Nanpure), Dəyirman (Nine Men's Morris), Crossword, Shirupure və Wado Kaichin də var.</p>
+  </section>
+
+  <footer class="footer">
+    <a href="/privacy.html#advertising">Reklam və Məxfilik Siyasəti</a><br>
+    <a href="/contact.html">Bizimlə Əlaqə</a><br>
+    <a href="/terms.html">İstifadə Şərtləri</a><br>
+    <a href="/guide.html">Necə Oynanılır</a> · <a href="/faq.html">Tez-tez Verilən Suallar</a> · <a href="/about.html">Pare Asobi Haqqında</a><br>
+    <span style="font-size:18px;">Təlimatlar hələlik yalnız Yapon dilindədir.</span><br>
+    <a href="https://pareasobi.com/az/">Pare Asobi-yə Qayıt</a><br>
+
+    <span class="footer-brand">Pare Asobi</span>
+  </footer>
+
+</div>
+
+<script>
+/* Game screenshot slideshow: switches automatically every 4 seconds. No outside library.
+   The first shot still shows if JavaScript is off. Broken images are skipped. */
+(function () {
+  var boxes = document.querySelectorAll('.card-slides');
+  if (!boxes.length) return;
+  boxes.forEach(function (box) {
+    var imgs = Array.prototype.slice.call(box.querySelectorAll('.card-shot'));
+    var dots = Array.prototype.slice.call(box.querySelectorAll('.card-dots span'));
+    var cur = 0, timer = null, visible = true;
+    function alive() { return imgs.filter(function (im) { return !im.dataset.broken; }); }
+    function show(n) {
+      var list = alive();
+      if (!list.length) return;
+      if (list.length === 1) {
+        imgs.forEach(function (im) { im.classList.toggle('is-active', list[0] === im); });
+        dots.forEach(function (d, i) { d.classList.toggle('is-active', list[0] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+        return;
+      }
+      cur = ((n % list.length) + list.length) % list.length;
+      imgs.forEach(function (im) { im.classList.toggle('is-active', list[cur] === im); });
+      dots.forEach(function (d, i) { d.classList.toggle('is-active', list[cur] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+    }
+    function start() { if (timer === null && visible) timer = setInterval(function () { show(cur + 1); }, 4000); }
+    function stop() { if (timer !== null) { clearInterval(timer); timer = null; } }
+    imgs.forEach(function (im) {
+      if (im.complete && im.naturalWidth === 0) im.dataset.broken = '1';
+      im.addEventListener('error', function () { im.dataset.broken = '1'; if (alive().length < 2) stop(); show(cur); });
+    });
+    show(0);
+    document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else start(); });
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { visible = en.isIntersecting; if (visible) start(); else stop(); });
+      }, { rootMargin: '100px' });
+      io.observe(box);
+    } else {
+      start();
+    }
+  });
+})();
+</script>
+<script defer src="/assets/pare-analytics.js"></script>
+</body>
+</html>
