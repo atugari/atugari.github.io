@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#FFF8E7">
+  <title>Moară (Nine Men's Morris) | Joc de societate gratuit - Pare Asobi</title>
+  <meta name="description" content="Joacă Moară (Nine Men's Morris) gratuit în browser — unul dintre cele mai vechi jocuri de societate din lume. Fă mori, ia piesele adversarului și zboară când ai rămas cu trei piese. Jocul clasic cu 9 piese și Morabaraba cu 12 piese.">
+  <meta name="keywords" content="Moară, Nine Men's Morris, Morris, Morabaraba, Moară gratuită, joacă Moară online, joc de societate, joc gratuit de browser, Pare Asobi">
+  <meta name="robots" content="index, follow">
+  <meta name="google-adsense-account" content="ca-pub-5560584474086870">
+  <link rel="canonical" href="https://pareasobi.com/ro/morris/">
+  <link rel="alternate" hreflang="en" href="https://pareasobi.com/en/morris/">
+    <link rel="alternate" hreflang="ro" href="https://pareasobi.com/ro/morris/">
+  <link rel="alternate" hreflang="x-default" href="https://pareasobi.com/ro/morris/">
+  <meta property="og:title" content="Moară (Nine Men's Morris) | Joc de societate gratuit - Pare Asobi">
+  <meta property="og:description" content="Joacă Moară (Nine Men's Morris) gratuit în browser — unul dintre cele mai vechi jocuri de societate din lume. Fă mori, ia piesele adversarului și zboară când ai rămas cu trei piese.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://pareasobi.com/ro/morris/">
+  <meta property="og:locale" content="ro_RO">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Moară (Nine Men's Morris) | Joc de societate gratuit - Pare Asobi">
+  <meta name="twitter:description" content="Joacă Moară (Nine Men's Morris) gratuit în browser — unul dintre cele mai vechi jocuri de societate din lume. Fă mori, ia piesele adversarului și zboară când ai rămas cu trei piese.">
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@graph":[
+      {"@type":"WebSite","@id":"https://pareasobi.com/ro/#website","url":"https://pareasobi.com/ro/","name":"Pare Asobi","inLanguage":"ro"},
+      {"@type":"WebPage","@id":"https://pareasobi.com/ro/morris/#webpage","url":"https://pareasobi.com/ro/morris/","name":"Moară (Nine Men's Morris) | Joc de societate gratuit - Pare Asobi","description":"Joacă Moară (Nine Men's Morris) gratuit în browser — unul dintre cele mai vechi jocuri de societate din lume. Fă mori, ia piesele adversarului și zboară când ai rămas cu trei piese. Jocul clasic cu 9 piese și Morabaraba cu 12 piese.","inLanguage":"ro","isPartOf":{"@id":"https://pareasobi.com/ro/#website"}}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: #FFF8E7;
+      color: #1a1a1a;
+      font-family: 'Noto Serif JP', serif;
+      min-height: 100dvh;
+    }
+
+    /* Confetti dots: small bright candy-colored dots scattered over the background */
+    body {
+      background-image:
+        radial-gradient(circle at 6% 10%, rgba(255, 90, 118, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 94% 6%, rgba(255, 201, 60, 0.45) 0 6px, transparent 7px),
+        radial-gradient(circle at 12% 42%, rgba(77, 163, 255, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 88% 38%, rgba(46, 196, 166, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 50% 72%, rgba(255, 90, 118, 0.25) 0 4px, transparent 5px),
+        radial-gradient(circle at 4% 84%, rgba(255, 201, 60, 0.35) 0 6px, transparent 7px),
+        radial-gradient(circle at 96% 86%, rgba(77, 163, 255, 0.30) 0 6px, transparent 7px),
+        radial-gradient(circle at 30% 95%, rgba(46, 196, 166, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 70% 96%, rgba(255, 138, 61, 0.30) 0 5px, transparent 6px);
+      background-attachment: fixed;
+    }
+
+    .app { max-width: 1060px; margin: 0 auto; padding: 20px 16px 64px; }
+    @media (min-width: 720px) {
+      .app { padding: 28px 28px 72px; }
+    }
+
+    /* Logo bar: mint-green rounded band */
+    .site-header {
+      text-align: center;
+      margin: 0 0 18px;
+      padding: 26px 12px 22px;
+      background: linear-gradient(135deg, #A9EDCB 0%, #C2F2DE 55%, #BEE9D2 100%);
+      border-radius: 28px;
+      box-shadow: 0 8px 24px rgba(255, 150, 120, 0.18);
+    }
+    .site-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(44px, 11vw, 76px);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      line-height: 1.15;
+      background: linear-gradient(90deg, #FF5A76 0%, #FF8A3D 28%, #FFC93C 52%, #2EC4A6 76%, #4DA3FF 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 0 rgba(255, 255, 255, 0.95)) drop-shadow(0 6px 14px rgba(255, 120, 120, 0.25));
+    }
+    .site-title a { color: inherit; text-decoration: none; }
+
+    /* Hero: sky-blue band with confetti */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      padding: 34px 18px 30px;
+      margin-bottom: 26px;
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 8% 20%, rgba(255, 90, 118, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 92% 14%, rgba(255, 201, 60, 0.6) 0 7px, transparent 8px),
+        radial-gradient(circle at 16% 82%, rgba(46, 196, 166, 0.55) 0 5px, transparent 6px),
+        radial-gradient(circle at 84% 78%, rgba(255, 138, 61, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 50% 8%, rgba(77, 163, 255, 0.45) 0 5px, transparent 6px),
+        linear-gradient(180deg, #BFE6FF 0%, #D6F0FF 60%, #CDEBFF 100%);
+      box-shadow: 0 8px 24px rgba(77, 163, 255, 0.22);
+    }
+    .hero-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(26px, 6vw, 44px);
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      line-height: 1.35;
+      color: #FF4D6D;
+      text-shadow: 0 2px 0 rgba(255, 255, 255, 0.9);
+    }
+    .hero-sub {
+      margin-top: 12px;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.9;
+      color: #234;
+    }
+    .hero-cta {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 13px 34px;
+      border-radius: 999px;
+      background: #FFC93C;
+      border: 2px solid #FF9F1C;
+      color: #B34700;
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      box-shadow: 0 4px 0 #FF9F1C, 0 8px 18px rgba(255, 159, 28, 0.35);
+    }
+    .hero-cta:active { transform: translateY(2px); box-shadow: 0 2px 0 #FF9F1C; }
+
+    /* Game screenshot slideshow */
+    .play-card {
+      background: #6FC1EE;
+      border: 2px solid #3798D8;
+      border-radius: 28px;
+      overflow: hidden;
+      margin-bottom: 26px;
+      box-shadow: 0 8px 24px rgba(77, 163, 255, 0.22);
+    }
+    .card-slides {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      background: #fff;
+      border-bottom: 3px solid rgba(255, 255, 255, 0.55);
+    }
+    .card-slides .card-shot {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+    .card-slides .card-shot.is-active { opacity: 1; }
+    .card-dots {
+      position: absolute;
+      left: 50%;
+      bottom: 8px;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .card-dots span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.55);
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18);
+    }
+    .card-dots span.is-active { background: #fff; }
+
+    /* Text sections */
+    .about {
+      margin-top: 26px;
+      padding: 24px 22px;
+      background: #FFF3F5;
+      border-radius: 24px;
+      font-size: 22px;
+      line-height: 1.9;
+      color: #5a4a44;
+    }
+    .about h2 { font-size: 24px; margin-bottom: 10px; color: #3d2f2b; }
+    .about p { margin-bottom: 10px; }
+    .about p:last-child { margin-bottom: 0; }
+    .about a { color: #FF5A76; }
+    .about ol, .about ul { margin: 0 0 10px 26px; }
+    .about li { margin-bottom: 8px; }
+    .about li:last-child { margin-bottom: 0; }
+    .note {
+      margin-top: 26px;
+      padding: 24px 22px;
+      background: #FFF8E7;
+      border: 2px solid #FFC93C;
+      border-radius: 24px;
+      font-size: 22px;
+      line-height: 1.9;
+      color: #5a4a44;
+    }
+    .note h2 { font-size: 24px; margin-bottom: 10px; color: #3d2f2b; }
+    .note p { margin-bottom: 10px; }
+    .note p:last-child { margin-bottom: 0; }
+
+    .footer {
+      text-align: center;
+      margin-top: 44px;
+      padding: 20px 16px;
+      font-size: 22px;
+      color: #8a7a72;
+      line-height: 1.9;
+      background: #FFE3E6;
+      border-radius: 24px;
+    }
+    .footer a { color: #FF5A76; font-size: 22px; text-underline-offset: .2em; }
+    .footer a:active { color: #555; }
+    .footer-brand {
+      display: inline-block;
+      font-size: 22px;
+      color: #c98a96;
+      letter-spacing: 0.08em;
+    }
+  </style>
+  <meta property="og:site_name" content="Pare Asobi">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5560584474086870" crossorigin="anonymous"></script>
+</head>
+<body data-game="pareasobi">
+
+<div class="app">
+
+  <header class="site-header">
+    <h1 class="site-title"><a href="https://pareasobi.com/ro/">Pare Asobi</a></h1>
+  </header>
+
+  <section class="hero" aria-label="Joacă Moară (Nine Men's Morris)">
+    <p class="hero-title">Moară (Nine Men's Morris)</p>
+    <p class="hero-sub">Unul dintre cele mai vechi jocuri de societate din lume — de peste 2.000 de ani.<br>Gratuit în browser — fără înregistrare, fără aplicație de instalat.</p>
+    <a class="hero-cta" href="https://pareasobi.com/morris/">Joacă Moară acum →</a>
+  </section>
+
+  <div class="play-card">
+    <div class="card-slides"><img class="card-shot is-active" src="/assets/game-shots/morris-1.jpg" alt="Captură de ecran cu Moara (Nine Men's Morris) pe Pare Asobi" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/morris-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/morris-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
+  </div>
+
+  <section class="about" aria-label="Despre Moară (Nine Men's Morris)">
+    <h2>Ce este Moara (Nine Men's Morris)?</h2>
+    <p>Moara (Nine Men's Morris) este unul dintre cele mai vechi jocuri de societate din lume, jucat de peste 2.000 de ani. Doi jucători împart o tablă cu 24 de puncte, unite prin linii. Fiecare jucător are nouă piese — o parte joacă cu negru, cealaltă cu alb — iar scopul este simplu: aliniază trei dintre piesele tale ca să iei piesele adversarului, până când adversarului nu îi mai rămâne aproape nimic.</p>
+    <p>Jocul are două părți. Mai întâi îți așezi piesele, una câte una, pe punctele libere. Apoi, după ce toate piesele sunt pe tablă, le glisezi de-a lungul liniilor către punctele vecine. Sună simplu, dar fiecare așezare contează: o piesă pusă neglijent la început poate fi greu de apărat mai târziu.</p>
+    <p>Pe Pare Asobi poți juca Moară gratuit în browser, pe telefon sau pe computer. Nu trebuie să descarci nimic și nu trebuie să-ți creezi cont — doar deschide jocul și începe să joci.</p>
+  </section>
+
+  <section class="about" aria-label="Cum se joacă Moară (Nine Men's Morris)">
+    <h2>Cum se joacă</h2>
+    <ol>
+      <li><strong>Mai întâi, așază-ți piesele.</strong> Puneți pe rând câte o piesă pe un punct liber. Negrul mută primul. Continuați până când toate cele nouă piese ale fiecărei părți sunt pe tablă.</li>
+      <li><strong>Fă o moară ca să iei o piesă.</strong> Când trei dintre piesele tale se aliniază pe o linie continuă, ai făcut o moară și poți scoate o piesă a adversarului de pe tablă. Nu poți lua o piesă care se află într-o moară — decât dacă toate piesele adversarului sunt în mori.</li>
+      <li><strong>Apoi mută-ți piesele.</strong> După ce totul este așezat, glisează câte o piesă către un punct vecin liber, de-a lungul unei linii. O moară făcută prin mutare îți permite la fel să iei una dintre piesele adversarului.</li>
+      <li><strong>Ai rămas cu trei piese? Poți zbura.</strong> Când ai doar trei piese, nu te mai limitezi la punctele vecine — poți zbura către orice punct liber de pe tablă.</li>
+      <li><strong>Cum se câștigă.</strong> Câștigi dacă îl reduci pe adversar la două piese sau dacă îl blochezi astfel încât să nu mai aibă nicio mutare. Dacă aceeași poziție apare de trei ori sau dacă nu se face nicio moară timp de 50 de mutări, jocul se termină automat la egalitate.</li>
+    </ol>
+  </section>
+
+  <section class="about" aria-label="Cele două versiuni ale Morii">
+    <h2>Două versiuni: Moara clasică și Morabaraba</h2>
+    <p><strong>Moara clasică (Nine Men's Morris)</strong> se joacă cu câte nouă piese, pe tabla cu 24 de puncte descrisă mai sus.</p>
+    <p><strong>Morabaraba</strong> este versiunea jocului cu 12 piese. Fiecare jucător are douăsprezece piese, iar tabla capătă patru linii diagonale în plus. Piesele se pot mișca și pe diagonală, iar trei piese la rând pe diagonală formează de asemenea o moară. Se joacă mai repede și mai deschis decât jocul clasic și îi răsplătește pe cei cu ochi ager pentru liniile diagonale.</p>
+    <p>Ambele versiuni sunt disponibile în același joc. Poți trece de la una la alta oricând începi un joc nou.</p>
+  </section>
+
+  <section class="about" aria-label="Moduri de joc la Moară (Nine Men's Morris)">
+    <h2>Moduri de joc</h2>
+    <p><strong>Joacă online împotriva oamenilor din întreaga lume.</strong> Începe un joc rapid și întâlnește imediat un adversar nou. În jocul online există scor, clasamente și spectatori, și poți alege dintre trei viteze: obișnuită (30 de secunde pe mutare), lentă (2 minute pe mutare) și prin corespondență (24 de ore pe mutare).</p>
+    <p><strong>Joacă împotriva computerului.</strong> Există trei niveluri de computer — ușor, normal și puternic — ca să poți învăța regulile în ritmul tău și apoi să te măsori cu un adversar mai puternic.</p>
+    <p><strong>Joacă în doi pe un singur dispozitiv.</strong> Împarte un telefon sau un ecran cu un prieten și puneți și mutați piesele pe rând, ca pe o tablă adevărată.</p>
+    <p><strong>Joacă în 100 de limbi.</strong> Jocul vorbește limba ta și o poți schimba oricând din setări.</p>
+  </section>
+
+  <section class="note" aria-label="Joc online">
+    <h2>Jocul online este disponibil acum</h2>
+    <p>Acum poți juca online împotriva oamenilor din întreaga lume. Începe un joc rapid și întâlnește imediat un adversar.</p>
+    <p>În jocul online există trei viteze: obișnuită (30 de secunde pe mutare), lentă (2 minute pe mutare) și prin corespondență (24 de ore pe mutare), precum și scor, clasamente și spectatori. Desigur, poți juca și împotriva computerului sau cu un prieten pe același dispozitiv.</p>
+  </section>
+
+  <section class="about" aria-label="Întrebări frecvente despre Moară (Nine Men's Morris)">
+    <h2>Întrebări frecvente</h2>
+    <p><strong>Este Moara (Nine Men's Morris) gratuită?</strong> Da. Moara pe Pare Asobi este complet gratuită, fără înregistrare și fără aplicație de instalat.</p>
+    <p><strong>Pot juca pe telefon?</strong> Da. Jocul funcționează pe telefoane, tablete și computere, direct în browser.</p>
+    <p><strong>Ce este o moară?</strong> O moară înseamnă trei dintre piesele tale la rând pe o linie continuă. Făcând o moară poți scoate o piesă a adversarului de pe tablă.</p>
+    <p><strong>Ce este Morabaraba?</strong> Morabaraba este versiunea Morii cu 12 piese, cu patru linii diagonale în plus pe tablă. Mutările pe diagonală și morile pe diagonală sunt permise.</p>
+    <p>Cauți mai multe jocuri? Vezi toate cele șase jocuri gratuite pe <a href="https://pareasobi.com/ro/">pagina principală Pare Asobi în română</a>, inclusiv Reversi (Othello), Sudoku (Nanpure), Cuvinte încrucișate, Shirupure și Wado Kaichin.</p>
+  </section>
+
+  <footer class="footer">
+    <a href="/privacy.html#advertising">Reclame și politica de confidențialitate</a><br>
+    <a href="/contact.html">Contact</a><br>
+    <a href="/terms.html">Condiții de utilizare</a><br>
+    <a href="/guide.html">Cum se joacă</a> · <a href="/faq.html">FAQ</a> · <a href="/about.html">Despre Pare Asobi</a><br>
+    <span style="font-size:18px;">Ghidurile sunt deocamdată disponibile numai în japoneză.</span><br>
+    <a href="https://pareasobi.com/ro/">Înapoi la Pare Asobi</a><br>
+    <span class="footer-brand">Pare Asobi</span>
+  </footer>
+
+</div>
+
+<script>
+/* Game screenshot slideshow: switches automatically every 4 seconds. No outside library.
+   The first shot still shows if JavaScript is off. Broken images are skipped. */
+(function () {
+  var boxes = document.querySelectorAll('.card-slides');
+  if (!boxes.length) return;
+  boxes.forEach(function (box) {
+    var imgs = Array.prototype.slice.call(box.querySelectorAll('.card-shot'));
+    var dots = Array.prototype.slice.call(box.querySelectorAll('.card-dots span'));
+    var cur = 0, timer = null, visible = true;
+    function alive() { return imgs.filter(function (im) { return !im.dataset.broken; }); }
+    function show(n) {
+      var list = alive();
+      if (!list.length) return;
+      if (list.length === 1) {
+        imgs.forEach(function (im) { im.classList.toggle('is-active', list[0] === im); });
+        dots.forEach(function (d, i) { d.classList.toggle('is-active', list[0] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+        return;
+      }
+      cur = ((n % list.length) + list.length) % list.length;
+      imgs.forEach(function (im) { im.classList.toggle('is-active', list[cur] === im); });
+      dots.forEach(function (d, i) { d.classList.toggle('is-active', list[cur] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+    }
+    function start() { if (timer === null && visible) timer = setInterval(function () { show(cur + 1); }, 4000); }
+    function stop() { if (timer !== null) { clearInterval(timer); timer = null; } }
+    imgs.forEach(function (im) {
+      if (im.complete && im.naturalWidth === 0) im.dataset.broken = '1';
+      im.addEventListener('error', function () { im.dataset.broken = '1'; if (alive().length < 2) stop(); show(cur); });
+    });
+    show(0);
+    document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else start(); });
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { visible = en.isIntersecting; if (visible) start(); else stop(); });
+      }, { rootMargin: '100px' });
+      io.observe(box);
+    } else {
+      start();
+    }
+  });
+})();
+</script>
+<script defer src="/assets/pare-analytics.js"></script>
+</body>
+</html>
