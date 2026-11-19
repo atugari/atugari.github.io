@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ig">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#FFF8E7">
+  <title>Reversi (Othello) | Egwuregwu Bọọdụ Ịntanetị N'efu - Pare Asobi</title>
+  <meta name="description" content="Gwuo Reversi (Othello) n'efu na ihe nchọgharị gị. Gwuo n'ịntanetị megide ndị mmadụ gburugburu ụwa na ọkwa na ọkwá, megide kọmputa n'ọkwa ise, ma ọ bụ na ndị egwuregwu abụọ n'otu ngwaọrụ. Enweghị ndebanye aha achọrọ.">
+  <meta name="keywords" content="Reversi, Othello, Reversi n'efu, gwuo Othello n'ịntanetị, Reversi ịntanetị, egwuregwu bọọdụ, egwuregwu ihe nchọgharị n'efu, Pare Asobi">
+  <meta name="robots" content="index, follow">
+  <meta name="google-adsense-account" content="ca-pub-5560584474086870">
+  <link rel="canonical" href="https://pareasobi.com/ig/reversi/">
+  <link rel="alternate" hreflang="en" href="https://pareasobi.com/en/reversi/">
+    <link rel="alternate" hreflang="ig" href="https://pareasobi.com/ig/reversi/">
+  <link rel="alternate" hreflang="x-default" href="https://pareasobi.com/ig/reversi/">
+  <meta property="og:title" content="Reversi (Othello) | Egwuregwu Bọọdụ Ịntanetị N'efu - Pare Asobi">
+  <meta property="og:description" content="Gwuo Reversi (Othello) n'efu na ihe nchọgharị gị — n'ịntanetị megide ndị egwuregwu gburugburu ụwa, megide kọmputa n'ọkwa ise, ma ọ bụ na ndị egwuregwu abụọ n'otu ngwaọrụ.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://pareasobi.com/ig/reversi/">
+  <meta property="og:locale" content="ig_NG">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Reversi (Othello) | Egwuregwu Bọọdụ Ịntanetị N'efu - Pare Asobi">
+  <meta name="twitter:description" content="Gwuo Reversi (Othello) n'efu na ihe nchọgharị gị — n'ịntanetị megide ndị egwuregwu gburugburu ụwa, megide kọmputa n'ọkwa ise, ma ọ bụ na ndị egwuregwu abụọ n'otu ngwaọrụ.">
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@graph":[
+      {"@type":"WebSite","@id":"https://pareasobi.com/ig/#website","url":"https://pareasobi.com/ig/","name":"Pare Asobi","inLanguage":"ig"},
+      {"@type":"WebPage","@id":"https://pareasobi.com/ig/reversi/#webpage","url":"https://pareasobi.com/ig/reversi/","name":"Reversi (Othello) | Egwuregwu Bọọdụ Ịntanetị N'efu - Pare Asobi","description":"Gwuo Reversi (Othello) n'efu na ihe nchọgharị gị. Gwuo n'ịntanetị megide ndị mmadụ gburugburu ụwa na ọkwa na ọkwá, megide kọmputa n'ọkwa ise, ma ọ bụ na ndị egwuregwu abụọ n'otu ngwaọrụ.","inLanguage":"ig","isPartOf":{"@id":"https://pareasobi.com/ig/#website"}}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: #FFF8E7;
+      color: #1a1a1a;
+      font-family: 'Noto Serif JP', serif;
+      min-height: 100dvh;
+    }
+
+    /* Confetti dots: small bright candy-colored dots scattered over the background */
+    body {
+      background-image:
+        radial-gradient(circle at 6% 10%, rgba(255, 90, 118, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 94% 6%, rgba(255, 201, 60, 0.45) 0 6px, transparent 7px),
+        radial-gradient(circle at 12% 42%, rgba(77, 163, 255, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 88% 38%, rgba(46, 196, 166, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 50% 72%, rgba(255, 90, 118, 0.25) 0 4px, transparent 5px),
+        radial-gradient(circle at 4% 84%, rgba(255, 201, 60, 0.35) 0 6px, transparent 7px),
+        radial-gradient(circle at 96% 86%, rgba(77, 163, 255, 0.30) 0 6px, transparent 7px),
+        radial-gradient(circle at 30% 95%, rgba(46, 196, 166, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 70% 96%, rgba(255, 138, 61, 0.30) 0 5px, transparent 6px);
+      background-attachment: fixed;
+    }
+
+    .app { max-width: 1060px; margin: 0 auto; padding: 20px 16px 64px; }
+    @media (min-width: 720px) {
+      .app { padding: 28px 28px 72px; }
+    }
+
+    /* Logo bar: mint-green rounded band */
+    .site-header {
+      text-align: center;
+      margin: 0 0 18px;
+      padding: 26px 12px 22px;
+      background: linear-gradient(135deg, #A9EDCB 0%, #C2F2DE 55%, #BEE9D2 100%);
+      border-radius: 28px;
+      box-shadow: 0 8px 24px rgba(255, 150, 120, 0.18);
+    }
+    .site-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(44px, 11vw, 76px);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      line-height: 1.15;
+      background: linear-gradient(90deg, #FF5A76 0%, #FF8A3D 28%, #FFC93C 52%, #2EC4A6 76%, #4DA3FF 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 0 rgba(255, 255, 255, 0.95)) drop-shadow(0 6px 14px rgba(255, 120, 120, 0.25));
+    }
+    .site-title a { color: inherit; text-decoration: none; }
+
+    /* Hero: sky-blue band with confetti */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      padding: 34px 18px 30px;
+      margin-bottom: 26px;
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 8% 20%, rgba(255, 90, 118, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 92% 14%, rgba(255, 201, 60, 0.6) 0 7px, transparent 8px),
+        radial-gradient(circle at 16% 82%, rgba(46, 196, 166, 0.55) 0 5px, transparent 6px),
+        radial-gradient(circle at 84% 78%, rgba(255, 138, 61, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 50% 8%, rgba(77, 163, 255, 0.45) 0 5px, transparent 6px),
+        linear-gradient(180deg, #BFE6FF 0%, #D6F0FF 60%, #CDEBFF 100%);
+      box-shadow: 0 8px 24px rgba(77, 163, 255, 0.22);
+    }
+    .hero-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(26px, 6vw, 44px);
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      line-height: 1.35;
+      color: #FF4D6D;
+      text-shadow: 0 2px 0 rgba(255, 255, 255, 0.9);
+    }
+    .hero-sub {
+      margin-top: 12px;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.9;
+      color: #234;
+    }
+    .hero-cta {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 13px 34px;
+      border-radius: 999px;
+      background: #FFC93C;
+      border: 2px solid #FF9F1C;
+      color: #B34700;
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      box-shadow: 0 4px 0 #FF9F1C, 0 8px 18px rgba(255, 159, 28, 0.35);
+    }
+    .hero-cta:active { transform: translateY(2px); box-shadow: 0 2px 0 #FF9F1C; }
+
+    /* Game screenshot slideshow */
+    .play-card {
+      background: #FF9FB2;
+      border: 2px solid #FF7D99;
+      border-radius: 28px;
+      overflow: hidden;
+      margin-bottom: 26px;
+      box-shadow: 0 8px 24px rgba(255, 150, 120, 0.14);
+    }
+    .card-slides {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      background: #fff;
+      border-bottom: 3px solid rgba(255, 255, 255, 0.55);
+    }
+    .card-slides .card-shot {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+    .card-slides .card-shot.is-active { opacity: 1; }
+    .card-dots {
+      position: absolute;
+      left: 50%;
+      bottom: 8px;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .card-dots span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.55);
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18);
+    }
+    .card-dots span.is-active { background: #fff; }
+
+    /* Text sections */
+    .about {
+      margin-top: 26px;
+      padding: 24px 22px;
+      background: #FFF3F5;
+      border-radius: 24px;
+      font-size: 22px;
+      line-height: 1.9;
+      color: #5a4a44;
+    }
+    .about h2 { font-size: 24px; margin-bottom: 10px; color: #3d2f2b; }
+    .about p { margin-bottom: 10px; }
+    .about p:last-child { margin-bottom: 0; }
+    .about a { color: #FF5A76; }
+    .about ol, .about ul { margin: 0 0 10px 26px; }
+    .about li { margin-bottom: 8px; }
+    .about li:last-child { margin-bottom: 0; }
+
+    .footer {
+      text-align: center;
+      margin-top: 44px;
+      padding: 20px 16px;
+      font-size: 22px;
+      color: #8a7a72;
+      line-height: 1.9;
+      background: #FFE3E6;
+      border-radius: 24px;
+    }
+    .footer a { color: #FF5A76; font-size: 22px; text-underline-offset: .2em; }
+    .footer a:active { color: #555; }
+    .footer-brand {
+      display: inline-block;
+      font-size: 22px;
+      color: #c98a96;
+      letter-spacing: 0.08em;
+    }
+  </style>
+  <meta property="og:site_name" content="Pare Asobi">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5560584474086870" crossorigin="anonymous"></script>
+</head>
+<body data-game="pareasobi">
+
+<div class="app">
+
+  <header class="site-header">
+    <h1 class="site-title"><a href="https://pareasobi.com/ig/">Pare Asobi</a></h1>
+  </header>
+
+  <section class="hero" aria-label="Gwuo Reversi (Othello)">
+    <p class="hero-title">Reversi (Othello)</p>
+    <p class="hero-sub">Tụgharịa bọọdụ, otu diski n'otu oge.<br>N'efu na ihe nchọgharị gị — enweghị ndebanye aha, enweghị ngwa ịwụnye.</p>
+    <a class="hero-cta" href="https://osero.puzzle-hub-4826.workers.dev">Gwuo Reversi ugbu a →</a>
+  </section>
+
+  <div class="play-card">
+    <div class="card-slides"><img class="card-shot is-active" src="/assets/game-shots/othello-1.jpg" alt="Foto ihuenyo nke Reversi (Othello) na Pare Asobi" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/othello-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/othello-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
+  </div>
+
+  <section class="about" aria-label="Gịnị bụ Reversi (Othello)">
+    <h2>Gịnị bụ Reversi (Othello)?</h2>
+    <p>Reversi, nke a makwaara dị ka Othello, bụ egwuregwu bọọdụ ọdịnala maka ndị egwuregwu abụọ. Otu onye egwuregwu na-ewere diski ojii, onye ọzọ na-ewere diski ọcha, akụkụ abụọ ahụ na-ekekọrịta otu bọọdụ. Iwu na-ewe ihe dị ka otu nkeji ịmụta, mana otu mmegharị nwere ike ịtụgharị egwuregwu ahụ dum — nke ahụ bụ ihe na-eme Reversi ka o sie ike ịtọgbọ.</p>
+    <p>Bọọdụ ọkọlọtọ bụ 8 na 8 square, egwuregwu ahụ na-amalite na diski anọ n'etiti: ojii abụọ na ọcha abụọ, etinyere diagonal. Site n'ebe ahụ, ndị egwuregwu na-atụgharị na-edobe otu diski n'otu oge, diski ọ bụla ha jidere na-atụgharị ka ọ bụrụ agba ha. Mgbe bọọdụ jupụtara, ma ọ bụ mgbe onye egwuregwu ọ bụla enweghị mmegharị iwu kwadoro fọdụrụ, egwuregwu ahụ na-akwụsị ma onye egwuregwu nwere diski karịa na bọọdụ na-emeri.</p>
+    <p>Na Pare Asobi ị nwere ike igwu Reversi n'efu na ihe nchọgharị gị, na ekwentị gị ma ọ bụ kọmputa gị. Enweghị ihe ị ga-ebudata ma enweghị akaụntụ ị ga-eke — naanị mepee egwuregwu ahụ ma malite igwu.</p>
+  </section>
+
+  <section class="about" aria-label="Otu esi egwu Reversi (Othello)">
+    <h2>Otu esi egwu</h2>
+    <ol>
+      <li><strong>Oji na-ebu ụzọ.</strong> Dobe diski n'ebe efu ka o wee jide otu diski ma ọ bụ karịa nke onye iro gị n'ahịrị kwụ ọtọ — gafee, ala, ma ọ bụ diagonal — n'etiti diski ọhụrụ gị na diski nke agba gị nke dịlarị na bọọdụ.</li>
+      <li><strong>Diski ọ bụla ejidere na-atụgharị ka ọ bụrụ agba gị.</strong> Otu mmegharị nwere ike ịtụgharị ahịrị diski dum n'otu oge, ya mere otu mmegharị dị mma nwere ike ịgbanwe akara nke ukwuu.</li>
+      <li><strong>Ọ bụrụ na ịnweghị mmegharị iwu kwadoro, ị na-agafe.</strong> Onye iro gị na-ebugharị ọzọ. Egwuregwu na-aga n'ihu ruo mgbe bọọdụ jupụtara ma ọ bụ onye egwuregwu ọ bụla enweghị ike ịbugharị.</li>
+      <li><strong>Onye egwuregwu nwere diski kacha na-emeri.</strong> Akara ikpeazụ bụ naanị ọnụọgụ diski nke agba ọ bụla fọdụrụ na bọọdụ.</li>
+      <li><strong>Nkuku bụ square kacha nwee nchebe.</strong> Ozugbo ị were nkuku, enweghị ike ịtụgharị ya ọzọ. Square ndị dị n'akụkụ nkuku dị ize ndụ, n'ihi na ha nwere ike inye onye iro gị nkuku ahụ.</li>
+    </ol>
+  </section>
+
+  <section class="about" aria-label="Ụzọ esi egwu Reversi (Othello)">
+    <h2>Ụzọ esi egwu</h2>
+    <p><strong>Gwuo n'ịntanetị megide ndị mmadụ gburugburu ụwa.</strong> Malite egwuregwu ngwa ngwa ma zute onye iro ọhụrụ ozugbo. Egwuregwu nwere ọkwa na-eji ọkwa, ọkwá, ọkwa na aha, ka ị nwee ike ịhụ ọkwa gị ka ọ na-arị elu ka ị na-emeri. Egwuregwu izu ike enweghị ọkwa ma dị nwayọọ, ka ị nwee ike ịnụ ụtọ egwuregwu ahụ na-enweghị nchegbu gbasara ọkwa gị.</p>
+    <p><strong>Gwuo megide kọmputa.</strong> Enwere ọkwa kọmputa ise, site na dị mfe ruo nke kacha ike. Malite n'ọkwa dị mfe iji mụta iwu, wee rịgoro otu ọkwa n'otu oge ruo mgbe ọkwa kacha ike nyere gị ezigbo ihe ịma aka.</p>
+    <p><strong>Gwuo na ndị egwuregwu abụọ n'otu ngwaọrụ.</strong> Kekọrịta otu ekwentị ma ọ bụ otu ihuenyo na enyi ma na-atụgharị na-edobe diski, dị ka ezigbo bọọdụ.</p>
+    <p><strong>Nwalee bọọdụ ndị nwere ọdịdị pụrụ iche.</strong> N'egwuregwu kọmputa na egwuregwu ndị egwuregwu abụọ n'otu ngwaọrụ, ị nwere ike ịhọrọ ọdịdị bọọdụ: bọọdụ ọkọlọtọ 8 na 8, obosara, obi, doughnut, diamond, ma ọ bụ obe. Ọdịdị ọ bụla na-agbanwe mmeghe na ụzọ egwuregwu ahụ si apụta.</p>
+    <p><strong>Ngwa ngwa ma ọ bụ nwayọọ — nhọrọ gị.</strong> Egwuregwu ọkọlọtọ na-enye gị sekọnd 20 n'otu mmegharị maka egwuregwu ngwa ngwa na nke dị ndụ. Ọ bụrụ na ị ga-achọ iche echiche nke ọma, egwuregwu izu ike na-enye gị oge karịa. Egwuregwu a dị n'asụsụ 100.</p>
+  </section>
+
+  <section class="about" aria-label="Ajụjụ a na-ajụkarị gbasara Reversi (Othello)">
+    <h2>Ajụjụ a na-ajụkarị</h2>
+    <p><strong>Reversi ọ bụ n'efu?</strong> Ee. Reversi na Pare Asobi bụ n'efu kpamkpam igwu, enweghị ndebanye aha ma enweghị ngwa ịwụnye.</p>
+    <p><strong>Enwere m ike igwu na ekwentị m?</strong> Ee. Egwuregwu a na-arụ ọrụ na ekwentị, mbadamba na kọmputa, ozugbo na ihe nchọgharị gị.</p>
+    <p><strong>Achọrọ m akaụntụ iji gwuo n'ịntanetị?</strong> Mba. Ị nwere ike ịmalite egwuregwu ngwa ngwa n'ịntanetị na-enweghị ịmepụta akaụntụ.</p>
+    <p><strong>Kedu ihe dị iche n'etiti Reversi na Othello?</strong> Ha bụ otu egwuregwu. Othello bụ aha kacha mara amara maka Reversi, a na-ejikwa aha abụọ ahụ maka egwuregwu ịtụgharị diski ojii na ọcha.</p>
+    <p>Na-achọ egwuregwu ndị ọzọ? Lee egwuregwu isii n'efu niile na <a href="https://pareasobi.com/ig/">ibe elu Pare Asobi n'asụsụ Igbo</a>, gụnyere Sudoku (Nanpure), Mill (Nine Men's Morris), Crossword, Shirupure na Wado Kaichin.</p>
+  </section>
+
+  <footer class="footer">
+    <a href="/privacy.html#advertising">Mgbasa Ozi &amp; Amụma Nzuzo</a><br>
+    <a href="/contact.html">Kpọtụrụ Anyị</a><br>
+    <a href="/terms.html">Usoro Ojiji</a><br>
+    <a href="/guide.html">Otu Esi Egwu</a> · <a href="/faq.html">Ajụjụ A Na-ajụkarị</a> · <a href="/about.html">Banyere Pare Asobi</a><br>
+    <span style="font-size:18px;">Ntuziaka dị ugbu a n'asụsụ Japanese naanị.</span><br>
+    <a href="https://pareasobi.com/ig/">Laghachi na Pare Asobi</a><br>
+
+    <span class="footer-brand">Pare Asobi</span>
+  </footer>
+
+</div>
+
+<script>
+/* Game screenshot slideshow: switches automatically every 4 seconds. No outside library.
+   The first shot still shows if JavaScript is off. Broken images are skipped. */
+(function () {
+  var boxes = document.querySelectorAll('.card-slides');
+  if (!boxes.length) return;
+  boxes.forEach(function (box) {
+    var imgs = Array.prototype.slice.call(box.querySelectorAll('.card-shot'));
+    var dots = Array.prototype.slice.call(box.querySelectorAll('.card-dots span'));
+    var cur = 0, timer = null, visible = true;
+    function alive() { return imgs.filter(function (im) { return !im.dataset.broken; }); }
+    function show(n) {
+      var list = alive();
+      if (!list.length) return;
+      if (list.length === 1) {
+        imgs.forEach(function (im) { im.classList.toggle('is-active', list[0] === im); });
+        dots.forEach(function (d, i) { d.classList.toggle('is-active', list[0] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+        return;
+      }
+      cur = ((n % list.length) + list.length) % list.length;
+      imgs.forEach(function (im) { im.classList.toggle('is-active', list[cur] === im); });
+      dots.forEach(function (d, i) { d.classList.toggle('is-active', list[cur] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+    }
+    function start() { if (timer === null && visible) timer = setInterval(function () { show(cur + 1); }, 4000); }
+    function stop() { if (timer !== null) { clearInterval(timer); timer = null; } }
+    imgs.forEach(function (im) {
+      if (im.complete && im.naturalWidth === 0) im.dataset.broken = '1';
+      im.addEventListener('error', function () { im.dataset.broken = '1'; if (alive().length < 2) stop(); show(cur); });
+    });
+    show(0);
+    document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else start(); });
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { visible = en.isIntersecting; if (visible) start(); else stop(); });
+      }, { rootMargin: '100px' });
+      io.observe(box);
+    } else {
+      start();
+    }
+  });
+})();
+</script>
+<script defer src="/assets/pare-analytics.js"></script>
+</body>
+</html>

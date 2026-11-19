@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ha">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#FFF8E7">
+  <title>Reversi (Othello) | Wasan Allo Kan Layi Kyauta - Pare Asobi</title>
+  <meta name="description" content="Yi wasan Reversi (Othello) kyauta a cikin burauzarka. Yi wasa a kan layi da mutane a duk duniya tare da ƙima da matsayi, da kwamfuta a matakai biyar, ko da 'yan wasa biyu a na'ura ɗaya. Ba rajista da ake buƙata.">
+  <meta name="keywords" content="Reversi, Othello, Reversi kyauta, yi Othello a kan layi, Reversi kan layi, wasan allo, wasan burauza kyauta, Pare Asobi">
+  <meta name="robots" content="index, follow">
+  <meta name="google-adsense-account" content="ca-pub-5560584474086870">
+  <link rel="canonical" href="https://pareasobi.com/ha/reversi/">
+  <link rel="alternate" hreflang="en" href="https://pareasobi.com/en/reversi/">
+    <link rel="alternate" hreflang="ha" href="https://pareasobi.com/ha/reversi/">
+  <link rel="alternate" hreflang="x-default" href="https://pareasobi.com/ha/reversi/">
+  <meta property="og:title" content="Reversi (Othello) | Wasan Allo Kan Layi Kyauta - Pare Asobi">
+  <meta property="og:description" content="Yi wasan Reversi (Othello) kyauta a cikin burauzarka — a kan layi da 'yan wasa a duk duniya, da kwamfuta a matakai biyar, ko da 'yan wasa biyu a na'ura ɗaya.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://pareasobi.com/ha/reversi/">
+  <meta property="og:locale" content="ha_NG">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Reversi (Othello) | Wasan Allo Kan Layi Kyauta - Pare Asobi">
+  <meta name="twitter:description" content="Yi wasan Reversi (Othello) kyauta a cikin burauzarka — a kan layi da 'yan wasa a duk duniya, da kwamfuta a matakai biyar, ko da 'yan wasa biyu a na'ura ɗaya.">
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@graph":[
+      {"@type":"WebSite","@id":"https://pareasobi.com/ha/#website","url":"https://pareasobi.com/ha/","name":"Pare Asobi","inLanguage":"ha"},
+      {"@type":"WebPage","@id":"https://pareasobi.com/ha/reversi/#webpage","url":"https://pareasobi.com/ha/reversi/","name":"Reversi (Othello) | Wasan Allo Kan Layi Kyauta - Pare Asobi","description":"Yi wasan Reversi (Othello) kyauta a cikin burauzarka. Yi wasa a kan layi da mutane a duk duniya tare da ƙima da matsayi, da kwamfuta a matakai biyar, ko da 'yan wasa biyu a na'ura ɗaya.","inLanguage":"ha","isPartOf":{"@id":"https://pareasobi.com/ha/#website"}}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: #FFF8E7;
+      color: #1a1a1a;
+      font-family: 'Noto Serif JP', serif;
+      min-height: 100dvh;
+    }
+
+    /* Confetti dots: small bright candy-colored dots scattered over the background */
+    body {
+      background-image:
+        radial-gradient(circle at 6% 10%, rgba(255, 90, 118, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 94% 6%, rgba(255, 201, 60, 0.45) 0 6px, transparent 7px),
+        radial-gradient(circle at 12% 42%, rgba(77, 163, 255, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 88% 38%, rgba(46, 196, 166, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 50% 72%, rgba(255, 90, 118, 0.25) 0 4px, transparent 5px),
+        radial-gradient(circle at 4% 84%, rgba(255, 201, 60, 0.35) 0 6px, transparent 7px),
+        radial-gradient(circle at 96% 86%, rgba(77, 163, 255, 0.30) 0 6px, transparent 7px),
+        radial-gradient(circle at 30% 95%, rgba(46, 196, 166, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 70% 96%, rgba(255, 138, 61, 0.30) 0 5px, transparent 6px);
+      background-attachment: fixed;
+    }
+
+    .app { max-width: 1060px; margin: 0 auto; padding: 20px 16px 64px; }
+    @media (min-width: 720px) {
+      .app { padding: 28px 28px 72px; }
+    }
+
+    /* Logo bar: mint-green rounded band */
+    .site-header {
+      text-align: center;
+      margin: 0 0 18px;
+      padding: 26px 12px 22px;
+      background: linear-gradient(135deg, #A9EDCB 0%, #C2F2DE 55%, #BEE9D2 100%);
+      border-radius: 28px;
+      box-shadow: 0 8px 24px rgba(255, 150, 120, 0.18);
+    }
+    .site-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(44px, 11vw, 76px);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      line-height: 1.15;
+      background: linear-gradient(90deg, #FF5A76 0%, #FF8A3D 28%, #FFC93C 52%, #2EC4A6 76%, #4DA3FF 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 0 rgba(255, 255, 255, 0.95)) drop-shadow(0 6px 14px rgba(255, 120, 120, 0.25));
+    }
+    .site-title a { color: inherit; text-decoration: none; }
+
+    /* Hero: sky-blue band with confetti */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      padding: 34px 18px 30px;
+      margin-bottom: 26px;
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 8% 20%, rgba(255, 90, 118, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 92% 14%, rgba(255, 201, 60, 0.6) 0 7px, transparent 8px),
+        radial-gradient(circle at 16% 82%, rgba(46, 196, 166, 0.55) 0 5px, transparent 6px),
+        radial-gradient(circle at 84% 78%, rgba(255, 138, 61, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 50% 8%, rgba(77, 163, 255, 0.45) 0 5px, transparent 6px),
+        linear-gradient(180deg, #BFE6FF 0%, #D6F0FF 60%, #CDEBFF 100%);
+      box-shadow: 0 8px 24px rgba(77, 163, 255, 0.22);
+    }
+    .hero-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(26px, 6vw, 44px);
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      line-height: 1.35;
+      color: #FF4D6D;
+      text-shadow: 0 2px 0 rgba(255, 255, 255, 0.9);
+    }
+    .hero-sub {
+      margin-top: 12px;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.9;
+      color: #234;
+    }
+    .hero-cta {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 13px 34px;
+      border-radius: 999px;
+      background: #FFC93C;
+      border: 2px solid #FF9F1C;
+      color: #B34700;
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      box-shadow: 0 4px 0 #FF9F1C, 0 8px 18px rgba(255, 159, 28, 0.35);
+    }
+    .hero-cta:active { transform: translateY(2px); box-shadow: 0 2px 0 #FF9F1C; }
+
+    /* Game screenshot slideshow */
+    .play-card {
+      background: #FF9FB2;
+      border: 2px solid #FF7D99;
+      border-radius: 28px;
+      overflow: hidden;
+      margin-bottom: 26px;
+      box-shadow: 0 8px 24px rgba(255, 150, 120, 0.14);
+    }
+    .card-slides {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      background: #fff;
+      border-bottom: 3px solid rgba(255, 255, 255, 0.55);
+    }
+    .card-slides .card-shot {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+    .card-slides .card-shot.is-active { opacity: 1; }
+    .card-dots {
+      position: absolute;
+      left: 50%;
+      bottom: 8px;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .card-dots span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.55);
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18);
+    }
+    .card-dots span.is-active { background: #fff; }
+
+    /* Text sections */
+    .about {
+      margin-top: 26px;
+      padding: 24px 22px;
+      background: #FFF3F5;
+      border-radius: 24px;
+      font-size: 22px;
+      line-height: 1.9;
+      color: #5a4a44;
+    }
+    .about h2 { font-size: 24px; margin-bottom: 10px; color: #3d2f2b; }
+    .about p { margin-bottom: 10px; }
+    .about p:last-child { margin-bottom: 0; }
+    .about a { color: #FF5A76; }
+    .about ol, .about ul { margin: 0 0 10px 26px; }
+    .about li { margin-bottom: 8px; }
+    .about li:last-child { margin-bottom: 0; }
+
+    .footer {
+      text-align: center;
+      margin-top: 44px;
+      padding: 20px 16px;
+      font-size: 22px;
+      color: #8a7a72;
+      line-height: 1.9;
+      background: #FFE3E6;
+      border-radius: 24px;
+    }
+    .footer a { color: #FF5A76; font-size: 22px; text-underline-offset: .2em; }
+    .footer a:active { color: #555; }
+    .footer-brand {
+      display: inline-block;
+      font-size: 22px;
+      color: #c98a96;
+      letter-spacing: 0.08em;
+    }
+  </style>
+  <meta property="og:site_name" content="Pare Asobi">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5560584474086870" crossorigin="anonymous"></script>
+</head>
+<body data-game="pareasobi">
+
+<div class="app">
+
+  <header class="site-header">
+    <h1 class="site-title"><a href="https://pareasobi.com/ha/">Pare Asobi</a></h1>
+  </header>
+
+  <section class="hero" aria-label="Yi wasan Reversi (Othello)">
+    <p class="hero-title">Reversi (Othello)</p>
+    <p class="hero-sub">Juya allo, faifai ɗaya a lokaci.<br>Kyauta a cikin burauzarka — ba rajista, ba shigar da app.</p>
+    <a class="hero-cta" href="https://osero.puzzle-hub-4826.workers.dev">Yi wasan Reversi yanzu →</a>
+  </section>
+
+  <div class="play-card">
+    <div class="card-slides"><img class="card-shot is-active" src="/assets/game-shots/othello-1.jpg" alt="Hoton allo na Reversi (Othello) a Pare Asobi" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/othello-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/othello-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
+  </div>
+
+  <section class="about" aria-label="Menene Reversi (Othello)">
+    <h2>Menene Reversi (Othello)?</h2>
+    <p>Reversi, wanda aka fi sani da Othello, wasan allo ne na gargajiya ga 'yan wasa biyu. Ɗan wasa ɗaya yana ɗaukar faifai baƙi, ɗayan kuma yana ɗaukar faifai fari, kuma ɓangarorin biyu suna raba allo ɗaya. Dokoki suna ɗaukar kamar minti ɗaya a koya, amma motsi ɗaya zai iya juya wasan gaba ɗaya — wannan ne ya sa Reversi yake da wahalar ajiyewa.</p>
+    <p>Allo na al'ada yana da murabba'i 8 a 8, kuma wasan yana farawa da faifai huɗu a tsakiya: baƙi biyu da fari biyu, an ajiye su a diagonal. Daga nan, 'yan wasa suna yin juyayi wajen ajiye faifai ɗaya a lokaci, kuma kowane faifai da suka kama yana juyawa zuwa launinsu. Lokacin da allo ya cika, ko lokacin da babu ɗan wasa da ke da motsi na doka, wasan ya ƙare kuma ɗan wasan da ke da faifai da yawa a kan allo ya yi nasara.</p>
+    <p>A Pare Asobi za ka iya yin wasan Reversi kyauta a cikin burauzarka, a wayarka ko kwamfutarka. Babu abin da za a sauke kuma babu asusun da za a ƙirƙira — kawai ka buɗe wasan ka fara wasa.</p>
+  </section>
+
+  <section class="about" aria-label="Yadda ake wasan Reversi (Othello)">
+    <h2>Yadda ake wasa</h2>
+    <ol>
+      <li><strong>Baƙi ke motsawa da farko.</strong> Ajiye faifai a kan murabba'i marar komai domin ya kama faifai ɗaya ko fiye na abokin hamayyarka a cikin layi madaidaiciya — a faɗi, ƙasa, ko a diagonal — tsakanin sabon faifainka da faifai na launinka da ya riga ya kasance a kan allo.</li>
+      <li><strong>Kowane faifai da aka kama yana juyawa zuwa launinka.</strong> Motsi ɗaya zai iya juya dukan jere na faifai a lokaci ɗaya, don haka motsi ɗaya mai kyau zai iya canza maki da yawa.</li>
+      <li><strong>Idan ba ka da motsi na doka, ka tsallake.</strong> Abokin hamayyarka zai sake motsi. Wasan yana ci gaba har sai allo ya cika ko babu ɗan wasa da zai iya motsi.</li>
+      <li><strong>Ɗan wasan da ke da faifai mafi yawa ya yi nasara.</strong> Makin ƙarshe shine kawai adadin faifai na kowane launi da suka rage a kan allo.</li>
+      <li><strong>Kusurwoyi su ne murabba'i mafi aminci.</strong> Da zarar ka ɗauki kusurwa, ba za a taɓa juya ta ba. Murabba'in da ke kusa da kusurwa suna da haɗari, domin za su iya ba da wannan kusurwar ga abokin hamayyarka.</li>
+    </ol>
+  </section>
+
+  <section class="about" aria-label="Hanyoyin wasan Reversi (Othello)">
+    <h2>Hanyoyin wasa</h2>
+    <p><strong>Yi wasa a kan layi da mutane a duk duniya.</strong> Fara wasa mai sauri ka haɗu da sabon abokin hamayya nan take. Wasannin da ke da ƙima suna amfani da ƙima, matsayi, jerin matsayi da lakabi, don haka za ka iya ganin ƙimarka tana hawa yayin da ka ke cin nasara. Wasannin natsuwa ba su da ƙima kuma suna da hankali, don haka za ka iya jin daɗin wasan ba tare da damuwa game da ƙimarka ba.</p>
+    <p><strong>Yi wasa da kwamfuta.</strong> Akwai matakan kwamfuta biyar, daga mai sauƙi zuwa mafi ƙarfi. Fara daga mataki mai sauƙi don koyon dokoki, sannan ka hau mataki ɗaya a lokaci har sai mataki mafi ƙarfi ya ba ka ƙalubale na gaske.</p>
+    <p><strong>Yi wasa da 'yan wasa biyu a na'ura ɗaya.</strong> Raba waya ɗaya ko allo ɗaya da aboki kuma ku yi juyayi wajen ajiye faifai, kamar allo na gaske.</p>
+    <p><strong>Gwada allo mai siffa marasa al'ada.</strong> A wasannin kwamfuta da wasannin 'yan wasa biyu a na'ura ɗaya, za ka iya zaɓar siffar allo: allo na al'ada 8 a 8, faɗi, zuciya, donat, lu'u-lu'u, ko giciye. Kowane siffa tana canza buɗewa da yadda wasan ke gudana.</p>
+    <p><strong>Mai sauri ko a hankali — zaɓinka ne.</strong> Wasannin al'ada suna ba ka daƙiƙa 20 a kowane motsi don wasa mai sauri da rai. Idan ka fi son yin tunani a hankali, wasan natsuwa yana ba ka lokaci mai yawa. Wasan yana samuwa a cikin harsuna 100.</p>
+  </section>
+
+  <section class="about" aria-label="Tambayoyin da ake yawan yi game da Reversi (Othello)">
+    <h2>Tambayoyin da ake yawan yi</h2>
+    <p><strong>Shin Reversi kyauta ne?</strong> Eh. Reversi a Pare Asobi gaba ɗaya kyauta ne a wasa, ba rajista kuma ba shigar da app.</p>
+    <p><strong>Shin zan iya yin wasa a wayata?</strong> Eh. Wasan yana aiki a wayoyi, allunan kwamfuta da kwamfutoci, kai tsaye a cikin burauzarka.</p>
+    <p><strong>Shin ina buƙatar asusu don yin wasa a kan layi?</strong> A'a. Za ka iya fara wasa mai sauri a kan layi ba tare da ƙirƙirar asusu ba.</p>
+    <p><strong>Menene bambanci tsakanin Reversi da Othello?</strong> Wasan ɗaya ne. Othello shi ne sunan da aka fi sani da Reversi, kuma ana amfani da sunaye biyu don wasan juya faifai baƙi da fari.</p>
+    <p>Kana neman wasu wasanni? Duba duk wasanni shida kyauta a <a href="https://pareasobi.com/ha/">shafin gida na Pare Asobi a harshen Hausa</a>, ciki har da Sudoku (Nanpure), Niƙa (Nine Men's Morris), Crossword, Shirupure da Wado Kaichin.</p>
+  </section>
+
+  <footer class="footer">
+    <a href="/privacy.html#advertising">Talla da Manufar Sirri</a><br>
+    <a href="/contact.html">Tuntuɓe Mu</a><br>
+    <a href="/terms.html">Sharuɗɗan Amfani</a><br>
+    <a href="/guide.html">Yadda Ake Wasa</a> · <a href="/faq.html">Tambayoyin Da Ake Yawan Yi</a> · <a href="/about.html">Game da Pare Asobi</a><br>
+    <span style="font-size:18px;">Jagororin yanzu suna cikin harshen Jafananci kawai.</span><br>
+    <a href="https://pareasobi.com/ha/">Koma zuwa Pare Asobi</a><br>
+
+    <span class="footer-brand">Pare Asobi</span>
+  </footer>
+
+</div>
+
+<script>
+/* Game screenshot slideshow: switches automatically every 4 seconds. No outside library.
+   The first shot still shows if JavaScript is off. Broken images are skipped. */
+(function () {
+  var boxes = document.querySelectorAll('.card-slides');
+  if (!boxes.length) return;
+  boxes.forEach(function (box) {
+    var imgs = Array.prototype.slice.call(box.querySelectorAll('.card-shot'));
+    var dots = Array.prototype.slice.call(box.querySelectorAll('.card-dots span'));
+    var cur = 0, timer = null, visible = true;
+    function alive() { return imgs.filter(function (im) { return !im.dataset.broken; }); }
+    function show(n) {
+      var list = alive();
+      if (!list.length) return;
+      if (list.length === 1) {
+        imgs.forEach(function (im) { im.classList.toggle('is-active', list[0] === im); });
+        dots.forEach(function (d, i) { d.classList.toggle('is-active', list[0] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+        return;
+      }
+      cur = ((n % list.length) + list.length) % list.length;
+      imgs.forEach(function (im) { im.classList.toggle('is-active', list[cur] === im); });
+      dots.forEach(function (d, i) { d.classList.toggle('is-active', list[cur] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+    }
+    function start() { if (timer === null && visible) timer = setInterval(function () { show(cur + 1); }, 4000); }
+    function stop() { if (timer !== null) { clearInterval(timer); timer = null; } }
+    imgs.forEach(function (im) {
+      if (im.complete && im.naturalWidth === 0) im.dataset.broken = '1';
+      im.addEventListener('error', function () { im.dataset.broken = '1'; if (alive().length < 2) stop(); show(cur); });
+    });
+    show(0);
+    document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else start(); });
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { visible = en.isIntersecting; if (visible) start(); else stop(); });
+      }, { rootMargin: '100px' });
+      io.observe(box);
+    } else {
+      start();
+    }
+  });
+})();
+</script>
+<script defer src="/assets/pare-analytics.js"></script>
+</body>
+</html>

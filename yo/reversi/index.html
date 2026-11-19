@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="yo">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#FFF8E7">
+  <title>Reversi (Othello) | Ere Pátákó Lórí Ayélujára Ọ̀fẹ́ - Pare Asobi</title>
+  <meta name="description" content="Ṣe ere Reversi (Othello) lọ́fẹ̀ẹ́ nínú ẹ̀rọ aṣàwákiri rẹ. Ṣe ere lórí ayélujára pẹ̀lú àwọn ènìyàn káàkiri àgbáyé pẹ̀lú ìwọ̀n àti ìpele, pẹ̀lú kọ̀mpútà ní ìpele márùn-ún, tàbí pẹ̀lú àwọn oṣèré méjì lórí ẹ̀rọ kan. Kò sí ìforúkọsílẹ̀ tó ṣe pàtàkì.">
+  <meta name="keywords" content="Reversi, Othello, Reversi ọ̀fẹ́, ṣe Othello lórí ayélujára, Reversi lórí ayélujára, ere pátákó, ere ẹ̀rọ aṣàwákiri ọ̀fẹ́, Pare Asobi">
+  <meta name="robots" content="index, follow">
+  <meta name="google-adsense-account" content="ca-pub-5560584474086870">
+  <link rel="canonical" href="https://pareasobi.com/yo/reversi/">
+  <link rel="alternate" hreflang="en" href="https://pareasobi.com/en/reversi/">
+    <link rel="alternate" hreflang="yo" href="https://pareasobi.com/yo/reversi/">
+  <link rel="alternate" hreflang="x-default" href="https://pareasobi.com/yo/reversi/">
+  <meta property="og:title" content="Reversi (Othello) | Ere Pátákó Lórí Ayélujára Ọ̀fẹ́ - Pare Asobi">
+  <meta property="og:description" content="Ṣe ere Reversi (Othello) lọ́fẹ̀ẹ́ nínú ẹ̀rọ aṣàwákiri rẹ — lórí ayélujára pẹ̀lú àwọn oṣèré káàkiri àgbáyé, pẹ̀lú kọ̀mpútà ní ìpele márùn-ún, tàbí pẹ̀lú àwọn oṣèré méjì lórí ẹ̀rọ kan.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://pareasobi.com/yo/reversi/">
+  <meta property="og:locale" content="yo_NG">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Reversi (Othello) | Ere Pátákó Lórí Ayélujára Ọ̀fẹ́ - Pare Asobi">
+  <meta name="twitter:description" content="Ṣe ere Reversi (Othello) lọ́fẹ̀ẹ́ nínú ẹ̀rọ aṣàwákiri rẹ — lórí ayélujára pẹ̀lú àwọn oṣèré káàkiri àgbáyé, pẹ̀lú kọ̀mpútà ní ìpele márùn-ún, tàbí pẹ̀lú àwọn oṣèré méjì lórí ẹ̀rọ kan.">
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@graph":[
+      {"@type":"WebSite","@id":"https://pareasobi.com/yo/#website","url":"https://pareasobi.com/yo/","name":"Pare Asobi","inLanguage":"yo"},
+      {"@type":"WebPage","@id":"https://pareasobi.com/yo/reversi/#webpage","url":"https://pareasobi.com/yo/reversi/","name":"Reversi (Othello) | Ere Pátákó Lórí Ayélujára Ọ̀fẹ́ - Pare Asobi","description":"Ṣe ere Reversi (Othello) lọ́fẹ̀ẹ́ nínú ẹ̀rọ aṣàwákiri rẹ. Ṣe ere lórí ayélujára pẹ̀lú àwọn ènìyàn káàkiri àgbáyé pẹ̀lú ìwọ̀n àti ìpele, pẹ̀lú kọ̀mpútà ní ìpele márùn-ún, tàbí pẹ̀lú àwọn oṣèré méjì lórí ẹ̀rọ kan.","inLanguage":"yo","isPartOf":{"@id":"https://pareasobi.com/yo/#website"}}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: #FFF8E7;
+      color: #1a1a1a;
+      font-family: 'Noto Serif JP', serif;
+      min-height: 100dvh;
+    }
+
+    /* Confetti dots: small bright candy-colored dots scattered over the background */
+    body {
+      background-image:
+        radial-gradient(circle at 6% 10%, rgba(255, 90, 118, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 94% 6%, rgba(255, 201, 60, 0.45) 0 6px, transparent 7px),
+        radial-gradient(circle at 12% 42%, rgba(77, 163, 255, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 88% 38%, rgba(46, 196, 166, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 50% 72%, rgba(255, 90, 118, 0.25) 0 4px, transparent 5px),
+        radial-gradient(circle at 4% 84%, rgba(255, 201, 60, 0.35) 0 6px, transparent 7px),
+        radial-gradient(circle at 96% 86%, rgba(77, 163, 255, 0.30) 0 6px, transparent 7px),
+        radial-gradient(circle at 30% 95%, rgba(46, 196, 166, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 70% 96%, rgba(255, 138, 61, 0.30) 0 5px, transparent 6px);
+      background-attachment: fixed;
+    }
+
+    .app { max-width: 1060px; margin: 0 auto; padding: 20px 16px 64px; }
+    @media (min-width: 720px) {
+      .app { padding: 28px 28px 72px; }
+    }
+
+    /* Logo bar: mint-green rounded band */
+    .site-header {
+      text-align: center;
+      margin: 0 0 18px;
+      padding: 26px 12px 22px;
+      background: linear-gradient(135deg, #A9EDCB 0%, #C2F2DE 55%, #BEE9D2 100%);
+      border-radius: 28px;
+      box-shadow: 0 8px 24px rgba(255, 150, 120, 0.18);
+    }
+    .site-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(44px, 11vw, 76px);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      line-height: 1.15;
+      background: linear-gradient(90deg, #FF5A76 0%, #FF8A3D 28%, #FFC93C 52%, #2EC4A6 76%, #4DA3FF 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 0 rgba(255, 255, 255, 0.95)) drop-shadow(0 6px 14px rgba(255, 120, 120, 0.25));
+    }
+    .site-title a { color: inherit; text-decoration: none; }
+
+    /* Hero: sky-blue band with confetti */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      padding: 34px 18px 30px;
+      margin-bottom: 26px;
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 8% 20%, rgba(255, 90, 118, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 92% 14%, rgba(255, 201, 60, 0.6) 0 7px, transparent 8px),
+        radial-gradient(circle at 16% 82%, rgba(46, 196, 166, 0.55) 0 5px, transparent 6px),
+        radial-gradient(circle at 84% 78%, rgba(255, 138, 61, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 50% 8%, rgba(77, 163, 255, 0.45) 0 5px, transparent 6px),
+        linear-gradient(180deg, #BFE6FF 0%, #D6F0FF 60%, #CDEBFF 100%);
+      box-shadow: 0 8px 24px rgba(77, 163, 255, 0.22);
+    }
+    .hero-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(26px, 6vw, 44px);
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      line-height: 1.35;
+      color: #FF4D6D;
+      text-shadow: 0 2px 0 rgba(255, 255, 255, 0.9);
+    }
+    .hero-sub {
+      margin-top: 12px;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.9;
+      color: #234;
+    }
+    .hero-cta {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 13px 34px;
+      border-radius: 999px;
+      background: #FFC93C;
+      border: 2px solid #FF9F1C;
+      color: #B34700;
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      box-shadow: 0 4px 0 #FF9F1C, 0 8px 18px rgba(255, 159, 28, 0.35);
+    }
+    .hero-cta:active { transform: translateY(2px); box-shadow: 0 2px 0 #FF9F1C; }
+
+    /* Game screenshot slideshow */
+    .play-card {
+      background: #FF9FB2;
+      border: 2px solid #FF7D99;
+      border-radius: 28px;
+      overflow: hidden;
+      margin-bottom: 26px;
+      box-shadow: 0 8px 24px rgba(255, 150, 120, 0.14);
+    }
+    .card-slides {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      background: #fff;
+      border-bottom: 3px solid rgba(255, 255, 255, 0.55);
+    }
+    .card-slides .card-shot {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+    .card-slides .card-shot.is-active { opacity: 1; }
+    .card-dots {
+      position: absolute;
+      left: 50%;
+      bottom: 8px;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .card-dots span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.55);
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18);
+    }
+    .card-dots span.is-active { background: #fff; }
+
+    /* Text sections */
+    .about {
+      margin-top: 26px;
+      padding: 24px 22px;
+      background: #FFF3F5;
+      border-radius: 24px;
+      font-size: 22px;
+      line-height: 1.9;
+      color: #5a4a44;
+    }
+    .about h2 { font-size: 24px; margin-bottom: 10px; color: #3d2f2b; }
+    .about p { margin-bottom: 10px; }
+    .about p:last-child { margin-bottom: 0; }
+    .about a { color: #FF5A76; }
+    .about ol, .about ul { margin: 0 0 10px 26px; }
+    .about li { margin-bottom: 8px; }
+    .about li:last-child { margin-bottom: 0; }
+
+    .footer {
+      text-align: center;
+      margin-top: 44px;
+      padding: 20px 16px;
+      font-size: 22px;
+      color: #8a7a72;
+      line-height: 1.9;
+      background: #FFE3E6;
+      border-radius: 24px;
+    }
+    .footer a { color: #FF5A76; font-size: 22px; text-underline-offset: .2em; }
+    .footer a:active { color: #555; }
+    .footer-brand {
+      display: inline-block;
+      font-size: 22px;
+      color: #c98a96;
+      letter-spacing: 0.08em;
+    }
+  </style>
+  <meta property="og:site_name" content="Pare Asobi">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5560584474086870" crossorigin="anonymous"></script>
+</head>
+<body data-game="pareasobi">
+
+<div class="app">
+
+  <header class="site-header">
+    <h1 class="site-title"><a href="https://pareasobi.com/yo/">Pare Asobi</a></h1>
+  </header>
+
+  <section class="hero" aria-label="Ṣe ere Reversi (Othello)">
+    <p class="hero-title">Reversi (Othello)</p>
+    <p class="hero-sub">Yí pátákó padà, díìsì kan ní ìgbà kan.<br>Lọ́fẹ̀ẹ́ nínú ẹ̀rọ aṣàwákiri rẹ — kò sí ìforúkọsílẹ̀, kò sí ohun èlò láti fi sori ẹrọ.</p>
+    <a class="hero-cta" href="https://osero.puzzle-hub-4826.workers.dev">Ṣe ere Reversi nísinsìnyí →</a>
+  </section>
+
+  <div class="play-card">
+    <div class="card-slides"><img class="card-shot is-active" src="/assets/game-shots/othello-1.jpg" alt="Àwòrán ojú ìbòjú Reversi (Othello) ní Pare Asobi" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/othello-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/othello-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
+  </div>
+
+  <section class="about" aria-label="Kí ni Reversi (Othello)">
+    <h2>Kí ni Reversi (Othello)?</h2>
+    <p>Reversi, tí a tún mọ̀ sí Othello, jẹ́ ere pátákó ìbílẹ̀ fún àwọn oṣèré méjì. Oṣèré kan ń gba àwọn díìsì dúdú, ẹlòmíràn ń gba àwọn díìsì funfun, àwọn ẹ̀gbẹ́ méjèèjì sì ń pín pátákó kan. Àwọn òfin ń gba ìṣẹ́jú kan láti kọ́, ṣùgbọ́n ìgbésẹ̀ kan ṣoṣo lè yí ere gbogbo padà — èyí ni ohun tí ó ń ṣe Reversi ní ohun tó ṣòro láti fi sílẹ̀.</p>
+    <p>Pátákó déédé jẹ́ 8 ní 8 onígun mẹ́rin, ere sì ń bẹ̀rẹ̀ pẹ̀lú díìsì mẹ́rin ní àárín: dúdú méjì àti funfun méjì, tí a gbé kalẹ̀ ní onígun. Láti ìbẹ̀, àwọn oṣèré ń yí padà láti gbé díìsì kan kalẹ̀ ní ìgbà kan, gbogbo díìsì tí wọ́n bá dì mọ́ ń yí padà sí àwọ̀ wọn. Nígbà tí pátákó bá kún, tàbí nígbà tí kò sí oṣèré tó ní ìgbésẹ̀ tó tọ́ tó kù, ere náà ń parí, oṣèré tó ní díìsì jù lórí pátákó sì ń ṣẹ́gun.</p>
+    <p>Ní Pare Asobi o lè ṣe ere Reversi lọ́fẹ̀ẹ́ nínú ẹ̀rọ aṣàwákiri rẹ, lórí fóònù tàbí kọ̀mpútà rẹ. Kò sí nǹkan láti gbàjáde, kò sí àkọọ́lẹ̀ láti ṣẹ̀dá — ṣe é ṣí ere náà kí o sì bẹ̀rẹ̀ sí ṣe é.</p>
+  </section>
+
+  <section class="about" aria-label="Báwo ni a ṣe ń ṣe Reversi (Othello)">
+    <h2>Báwo ni a ṣe ń ṣe é</h2>
+    <ol>
+      <li><strong>Dúdú ń lọ ní àkọ́kọ́.</strong> Gbé díìsì kalẹ̀ lórí onígun mẹ́rin òfo kí ó lè dì díìsì kan tàbí jù ti ọ̀tá rẹ mọ́ ní ìlà tààrà — kọjá, sílẹ̀, tàbí ní onígun — láàárín díìsì tuntun rẹ àti díìsì àwọ̀ rẹ tó ti wà lórí pátákó.</li>
+      <li><strong>Gbogbo díìsì tí a dì mọ́ ń yí padà sí àwọ̀ rẹ.</strong> Ìgbésẹ̀ kan ṣoṣo lè yí gbogbo ìlà díìsì padà ní ìgbà kan, nítorí náà ìgbésẹ̀ kan tó dára lè yí àmì padà gidigidi.</li>
+      <li><strong>Tí o kò bá ní ìgbésẹ̀ tó tọ́, o ń kọjá.</strong> Ọ̀tá rẹ tún ń lọ. Ere náà ń tẹ̀síwájú títí tí pátákó bá kún tàbí tí kò sí oṣèré tó lè rìn.</li>
+      <li><strong>Oṣèré tó ní díìsì jùlọ ń ṣẹ́gun.</strong> Àmì ìkẹyìn jẹ́ iye díìsì àwọ̀ kọ̀ọ̀kan tó kù lórí pátákó nìkan.</li>
+      <li><strong>Àwọn igun ni àwọn onígun mẹ́rin tó ní ààbò jùlọ.</strong> Nígbà tí o bá ti gba igun kan, a kò lè yí i padà mọ́. Àwọn onígun mẹ́rin tó wà lẹ́gbẹ̀ẹ́ igun jẹ́ ewu, nítorí wọ́n lè fi igun náà fún ọ̀tá rẹ.</li>
+    </ol>
+  </section>
+
+  <section class="about" aria-label="Àwọn ọ̀nà láti ṣe Reversi (Othello)">
+    <h2>Àwọn ọ̀nà láti ṣe é</h2>
+    <p><strong>Ṣe ere lórí ayélujára pẹ̀lú àwọn ènìyàn káàkiri àgbáyé.</strong> Bẹ̀rẹ̀ ere kíákíá kí o sì bá ọ̀tá tuntun pàdé lẹ́sẹ̀kẹsẹ̀. Àwọn ere tó ní ìwọ̀n ń lo ìwọ̀n, ìpele, ìpele àtòjọ àti àkọlé, nítorí náà o lè rí ìwọ̀n rẹ tó ń gòkè bí o ṣe ń ṣẹ́gun. Àwọn ere ìsinmi kò ní ìwọ̀n, wọ́n sì lọ́ra, nítorí náà o lè gbádùn ere náà láìsí àníyàn nípa ìwọ̀n rẹ.</p>
+    <p><strong>Ṣe ere pẹ̀lú kọ̀mpútà.</strong> Àwọn ìpele kọ̀mpútà márùn-ún wà, láti rọrùn sí tó líle jùlọ. Bẹ̀rẹ̀ ní ìpele rọrùn láti kọ́ àwọn òfin, lẹ́yìn náà gòkè ìpele kan ní ìgbà kan títí tí ìpele tó líle jùlọ yóò fi fún ọ ní ìpèníjà gidi.</p>
+    <p><strong>Ṣe ere pẹ̀lú àwọn oṣèré méjì lórí ẹ̀rọ kan.</strong> Pín fóònù kan tàbí ojú ìbòjú kan pẹ̀lú ọ̀rẹ́ kí ẹ sì yí padà láti gbé díìsì kalẹ̀, gẹ́gẹ́ bí pátákó gidi.</p>
+    <p><strong>Gbìyànjú àwọn pátákó tó ní àwọn àpẹẹrẹ àjèjì.</strong> Nínú àwọn ere kọ̀mpútà àti àwọn ere oṣèré méjì lórí ẹ̀rọ kan, o lè yan àpẹẹrẹ pátákó: pátákó déédé 8 ní 8, fífẹ̀, ọkàn, dónáàtì, dáyámọ́ọ̀ndì, tàbí àgbélébùú. Àpẹẹrẹ kọ̀ọ̀kan ń yí ìbẹ̀rẹ̀ padà àti bí ere náà ṣe ń ṣẹlẹ̀.</p>
+    <p><strong>Kíákíá tàbí lọ́ra — yíyàn rẹ ni.</strong> Àwọn ere déédé ń fún ọ ní ìṣẹ́jú ogún fún ìgbésẹ̀ kan fún ere kíákíá tó ní ìgbé ayé. Tí o bá fẹ́ ronú jinlẹ̀, ere ìsinmi ń fún ọ ní àkókò jù. Ere yìí wà ni awọn ede 100.</p>
+  </section>
+
+  <section class="about" aria-label="Àwọn ìbéèrè tí a ń béèrè nígbà gbogbo nípa Reversi (Othello)">
+    <h2>Àwọn ìbéèrè tí a ń béèrè nígbà gbogbo</h2>
+    <p><strong>Ṣé Reversi jẹ́ ọ̀fẹ́?</strong> Bẹ́ẹ̀ni. Reversi ní Pare Asobi jẹ́ ọ̀fẹ́ pátápátá láti ṣe, kò sí ìforúkọsílẹ̀, kò sí ohun èlò láti fi sori ẹrọ.</p>
+    <p><strong>Ṣé mo lè ṣe é lórí fóònù mi?</strong> Bẹ́ẹ̀ni. Ere náà ń ṣiṣẹ́ lórí àwọn fóònù, àwọn tábílẹ́ẹ̀tì àti àwọn kọ̀mpútà, tààrà nínú ẹ̀rọ aṣàwákiri rẹ.</p>
+    <p><strong>Ṣé mo nílò àkọọ́lẹ̀ láti ṣe ere lórí ayélujára?</strong> Rárá. O lè bẹ̀rẹ̀ ere kíákíá lórí ayélujára láìsí ṣíṣẹ̀dá àkọọ́lẹ̀.</p>
+    <p><strong>Kí ni ìyàtọ̀ láàárín Reversi àti Othello?</strong> Wọ́n jẹ́ ere kan náà. Othello ni orúkọ tó mọ̀ jùlọ fún Reversi, a sì ń lo orúkọ méjèèjì fún ere yíyí díìsì dúdú-àti-funfun.</p>
+    <p>Ṣé o ń wá àwọn ere mìíràn? Wo gbogbo àwọn ere ọ̀fẹ́ mẹ́fà ní <a href="https://pareasobi.com/yo/">ojú ìwé àkọ́kọ́ Pare Asobi ní èdè Yorùbá</a>, pẹ̀lú Sudoku (Nanpure), Ọlọ́pọ́ (Nine Men's Morris), Crossword, Shirupure àti Wado Kaichin.</p>
+  </section>
+
+  <footer class="footer">
+    <a href="/privacy.html#advertising">Ìpolówó &amp; Ètò Ìkọ̀kọ̀</a><br>
+    <a href="/contact.html">Kàn Sí Wa</a><br>
+    <a href="/terms.html">Àwọn Òfin Lílò</a><br>
+    <a href="/guide.html">Báwo ni a Ṣe ń Ṣe é</a> · <a href="/faq.html">Àwọn Ìbéèrè Tí A Ń Béèrè Nígbà Gbogbo</a> · <a href="/about.html">Nípa Pare Asobi</a><br>
+    <span style="font-size:18px;">Àwọn ìtọ́sọ́nà wà ní èdè Jápáànù nìkan fún ìgbà yìí.</span><br>
+    <a href="https://pareasobi.com/yo/">Padà sí Pare Asobi</a><br>
+
+    <span class="footer-brand">Pare Asobi</span>
+  </footer>
+
+</div>
+
+<script>
+/* Game screenshot slideshow: switches automatically every 4 seconds. No outside library.
+   The first shot still shows if JavaScript is off. Broken images are skipped. */
+(function () {
+  var boxes = document.querySelectorAll('.card-slides');
+  if (!boxes.length) return;
+  boxes.forEach(function (box) {
+    var imgs = Array.prototype.slice.call(box.querySelectorAll('.card-shot'));
+    var dots = Array.prototype.slice.call(box.querySelectorAll('.card-dots span'));
+    var cur = 0, timer = null, visible = true;
+    function alive() { return imgs.filter(function (im) { return !im.dataset.broken; }); }
+    function show(n) {
+      var list = alive();
+      if (!list.length) return;
+      if (list.length === 1) {
+        imgs.forEach(function (im) { im.classList.toggle('is-active', list[0] === im); });
+        dots.forEach(function (d, i) { d.classList.toggle('is-active', list[0] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+        return;
+      }
+      cur = ((n % list.length) + list.length) % list.length;
+      imgs.forEach(function (im) { im.classList.toggle('is-active', list[cur] === im); });
+      dots.forEach(function (d, i) { d.classList.toggle('is-active', list[cur] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+    }
+    function start() { if (timer === null && visible) timer = setInterval(function () { show(cur + 1); }, 4000); }
+    function stop() { if (timer !== null) { clearInterval(timer); timer = null; } }
+    imgs.forEach(function (im) {
+      if (im.complete && im.naturalWidth === 0) im.dataset.broken = '1';
+      im.addEventListener('error', function () { im.dataset.broken = '1'; if (alive().length < 2) stop(); show(cur); });
+    });
+    show(0);
+    document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else start(); });
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { visible = en.isIntersecting; if (visible) start(); else stop(); });
+      }, { rootMargin: '100px' });
+      io.observe(box);
+    } else {
+      start();
+    }
+  });
+})();
+</script>
+<script defer src="/assets/pare-analytics.js"></script>
+</body>
+</html>
