@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ga">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#FFF8E7">
+  <title>Reversi (Othello) | Cluiche boird ar líne saor in aisce - Pare Asobi</title>
+  <meta name="description" content="Imir Reversi (Othello) saor in aisce i do bhrabhsálaí. Imir ar líne le daoine ar fud an domhain le rátálacha agus ranguithe, i gcoinne an ríomhaire ar chúig leibhéal, nó le beirt imreoirí ag roinnt gléis amháin. Ní gá clárú.">
+  <meta name="keywords" content="reversi, othello, reversi saor in aisce, imir othello ar líne, reversi ar líne, cluiche boird, cluiche brabhsálaí saor in aisce, Pare Asobi">
+  <meta name="robots" content="index, follow">
+  <meta name="google-adsense-account" content="ca-pub-5560584474086870">
+  <link rel="canonical" href="https://pareasobi.com/ga/reversi/">
+  <link rel="alternate" hreflang="en" href="https://pareasobi.com/en/reversi/">
+    <link rel="alternate" hreflang="ga" href="https://pareasobi.com/ga/reversi/">
+  <link rel="alternate" hreflang="x-default" href="https://pareasobi.com/ga/reversi/">
+  <meta property="og:title" content="Reversi (Othello) | Cluiche boird ar líne saor in aisce - Pare Asobi">
+  <meta property="og:description" content="Imir Reversi (Othello) saor in aisce i do bhrabhsálaí — ar líne le himreoirí ar fud an domhain, i gcoinne an ríomhaire ar chúig leibhéal, nó le beirt imreoirí ar ghléas amháin.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://pareasobi.com/ga/reversi/">
+  <meta property="og:locale" content="ga_IE">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Reversi (Othello) | Cluiche boird ar líne saor in aisce - Pare Asobi">
+  <meta name="twitter:description" content="Imir Reversi (Othello) saor in aisce i do bhrabhsálaí — ar líne le himreoirí ar fud an domhain, i gcoinne an ríomhaire ar chúig leibhéal, nó le beirt imreoirí ar ghléas amháin.">
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@graph":[
+      {"@type":"WebSite","@id":"https://pareasobi.com/ga/#website","url":"https://pareasobi.com/ga/","name":"Pare Asobi","inLanguage":"ga"},
+      {"@type":"WebPage","@id":"https://pareasobi.com/ga/reversi/#webpage","url":"https://pareasobi.com/ga/reversi/","name":"Reversi (Othello) | Cluiche boird ar líne saor in aisce - Pare Asobi","description":"Imir Reversi (Othello) saor in aisce i do bhrabhsálaí. Imir ar líne le daoine ar fud an domhain le rátálacha agus ranguithe, i gcoinne an ríomhaire ar chúig leibhéal, nó le beirt imreoirí ag roinnt gléis amháin.","inLanguage":"ga","isPartOf":{"@id":"https://pareasobi.com/ga/#website"}}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: #FFF8E7;
+      color: #1a1a1a;
+      font-family: 'Noto Serif JP', serif;
+      min-height: 100dvh;
+    }
+
+    /* Confetti dots: small bright candy-colored dots scattered over the background */
+    body {
+      background-image:
+        radial-gradient(circle at 6% 10%, rgba(255, 90, 118, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 94% 6%, rgba(255, 201, 60, 0.45) 0 6px, transparent 7px),
+        radial-gradient(circle at 12% 42%, rgba(77, 163, 255, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 88% 38%, rgba(46, 196, 166, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 50% 72%, rgba(255, 90, 118, 0.25) 0 4px, transparent 5px),
+        radial-gradient(circle at 4% 84%, rgba(255, 201, 60, 0.35) 0 6px, transparent 7px),
+        radial-gradient(circle at 96% 86%, rgba(77, 163, 255, 0.30) 0 6px, transparent 7px),
+        radial-gradient(circle at 30% 95%, rgba(46, 196, 166, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 70% 96%, rgba(255, 138, 61, 0.30) 0 5px, transparent 6px);
+      background-attachment: fixed;
+    }
+
+    .app { max-width: 1060px; margin: 0 auto; padding: 20px 16px 64px; }
+    @media (min-width: 720px) {
+      .app { padding: 28px 28px 72px; }
+    }
+
+    /* Logo bar: mint-green rounded band */
+    .site-header {
+      text-align: center;
+      margin: 0 0 18px;
+      padding: 26px 12px 22px;
+      background: linear-gradient(135deg, #A9EDCB 0%, #C2F2DE 55%, #BEE9D2 100%);
+      border-radius: 28px;
+      box-shadow: 0 8px 24px rgba(255, 150, 120, 0.18);
+    }
+    .site-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(44px, 11vw, 76px);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      line-height: 1.15;
+      background: linear-gradient(90deg, #FF5A76 0%, #FF8A3D 28%, #FFC93C 52%, #2EC4A6 76%, #4DA3FF 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 0 rgba(255, 255, 255, 0.95)) drop-shadow(0 6px 14px rgba(255, 120, 120, 0.25));
+    }
+    .site-title a { color: inherit; text-decoration: none; }
+
+    /* Hero: sky-blue band with confetti */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      padding: 34px 18px 30px;
+      margin-bottom: 26px;
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 8% 20%, rgba(255, 90, 118, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 92% 14%, rgba(255, 201, 60, 0.6) 0 7px, transparent 8px),
+        radial-gradient(circle at 16% 82%, rgba(46, 196, 166, 0.55) 0 5px, transparent 6px),
+        radial-gradient(circle at 84% 78%, rgba(255, 138, 61, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 50% 8%, rgba(77, 163, 255, 0.45) 0 5px, transparent 6px),
+        linear-gradient(180deg, #BFE6FF 0%, #D6F0FF 60%, #CDEBFF 100%);
+      box-shadow: 0 8px 24px rgba(77, 163, 255, 0.22);
+    }
+    .hero-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(26px, 6vw, 44px);
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      line-height: 1.35;
+      color: #FF4D6D;
+      text-shadow: 0 2px 0 rgba(255, 255, 255, 0.9);
+    }
+    .hero-sub {
+      margin-top: 12px;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.9;
+      color: #234;
+    }
+    .hero-cta {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 13px 34px;
+      border-radius: 999px;
+      background: #FFC93C;
+      border: 2px solid #FF9F1C;
+      color: #B34700;
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      box-shadow: 0 4px 0 #FF9F1C, 0 8px 18px rgba(255, 159, 28, 0.35);
+    }
+    .hero-cta:active { transform: translateY(2px); box-shadow: 0 2px 0 #FF9F1C; }
+
+    /* Game screenshot slideshow */
+    .play-card {
+      background: #FF9FB2;
+      border: 2px solid #FF7D99;
+      border-radius: 28px;
+      overflow: hidden;
+      margin-bottom: 26px;
+      box-shadow: 0 8px 24px rgba(255, 150, 120, 0.14);
+    }
+    .card-slides {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      background: #fff;
+      border-bottom: 3px solid rgba(255, 255, 255, 0.55);
+    }
+    .card-slides .card-shot {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+    .card-slides .card-shot.is-active { opacity: 1; }
+    .card-dots {
+      position: absolute;
+      left: 50%;
+      bottom: 8px;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .card-dots span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.55);
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18);
+    }
+    .card-dots span.is-active { background: #fff; }
+
+    /* Text sections */
+    .about {
+      margin-top: 26px;
+      padding: 24px 22px;
+      background: #FFF3F5;
+      border-radius: 24px;
+      font-size: 22px;
+      line-height: 1.9;
+      color: #5a4a44;
+    }
+    .about h2 { font-size: 24px; margin-bottom: 10px; color: #3d2f2b; }
+    .about p { margin-bottom: 10px; }
+    .about p:last-child { margin-bottom: 0; }
+    .about a { color: #FF5A76; }
+    .about ol, .about ul { margin: 0 0 10px 26px; }
+    .about li { margin-bottom: 8px; }
+    .about li:last-child { margin-bottom: 0; }
+
+    .footer {
+      text-align: center;
+      margin-top: 44px;
+      padding: 20px 16px;
+      font-size: 22px;
+      color: #8a7a72;
+      line-height: 1.9;
+      background: #FFE3E6;
+      border-radius: 24px;
+    }
+    .footer a { color: #FF5A76; font-size: 22px; text-underline-offset: .2em; }
+    .footer a:active { color: #555; }
+    .footer-brand {
+      display: inline-block;
+      font-size: 22px;
+      color: #c98a96;
+      letter-spacing: 0.08em;
+    }
+  </style>
+  <meta property="og:site_name" content="Pare Asobi">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5560584474086870" crossorigin="anonymous"></script>
+</head>
+<body data-game="pareasobi">
+
+<div class="app">
+
+  <header class="site-header">
+    <h1 class="site-title"><a href="https://pareasobi.com/ga/">Pare Asobi</a></h1>
+  </header>
+
+  <section class="hero" aria-label="Imir Reversi (Othello)">
+    <p class="hero-title">Reversi (Othello)</p>
+    <p class="hero-sub">Cas an bord, diosca amháin ag an am.<br>Saor in aisce i do bhrabhsálaí — ní gá clárú, ní gá aip a shuiteáil.</p>
+    <a class="hero-cta" href="https://osero.puzzle-hub-4826.workers.dev">Imir Reversi anois →</a>
+  </section>
+
+  <div class="play-card">
+    <div class="card-slides"><img class="card-shot is-active" src="/assets/game-shots/othello-1.jpg" alt="Gabháil scáileáin de Reversi (Othello) ar Pare Asobi" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/othello-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/othello-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
+  </div>
+
+  <section class="about" aria-label="Maidir le Reversi (Othello)">
+    <h2>Cad é Reversi (Othello)?</h2>
+    <p>Is cluiche boird clasaiceach do bheirt imreoirí é Reversi, ar a dtugtar Othello freisin. Glacann imreoir amháin na dioscaí dubha, glacann an t-imreoir eile na dioscaí bána, agus roinneann an dá thaobh bord amháin. Foghlaimítear na rialacha i gceann nóiméid, ach is féidir le bogadh amháin an cluiche iomlán a chasadh bun os cionn — sin an fáth go bhfuil sé chomh deacair Reversi a chur síos.</p>
+    <p>Is é an bord caighdeánach bord 8 faoi 8 cearnóg, agus tosaíonn an cluiche le ceithre dhiosca sa lár: dhá dhiosca dhubha agus dhá dhiosca bhána, curtha go trasnánach. As sin amach, cuireann na himreoirí diosca amháin síos faoi seach, agus casann gach diosca a ghabhann siad go dtí a ndath féin. Nuair a bhíonn an bord lán, nó nuair nach bhfuil aon bhogadh dleathach fágtha ag imreoir ar bith, críochnaíonn an cluiche agus buann an t-imreoir a bhfuil an líon is mó dioscaí aige ar an mbord.</p>
+    <p>Ar Pare Asobi is féidir leat Reversi a imirt saor in aisce i do bhrabhsálaí, ar do ghuthán nó ar do ríomhaire. Níl aon rud le híoslódáil agus ní gá cuntas a chruthú — níl le déanamh ach an cluiche a oscailt agus tosú ag imirt.</p>
+  </section>
+
+  <section class="about" aria-label="Conas Reversi (Othello) a imirt">
+    <h2>Conas a imirt</h2>
+    <ol>
+      <li><strong>Bogann Dubh ar dtús.</strong> Cuir diosca ar chearnóg fholamh sa chaoi go ngabhann sé diosca amháin nó níos mó de do chéile comhraic i líne dhíreach — go cothrománach, go hingearach, nó go trasnánach — idir do dhiosca nua agus diosca de do dhath féin atá ar an mbord cheana féin.</li>
+      <li><strong>Casann gach diosca a ghabhtar go dtí do dhath féin.</strong> Is féidir le bogadh amháin sraith iomlán dioscaí a chasadh ag an am céanna, mar sin is féidir le bogadh maith amháin an scór a athrú go mór.</li>
+      <li><strong>Mura bhfuil aon bhogadh dleathach agat, téann tú ar aghaidh.</strong> Bogann do chéile comhraic arís. Leanann an cluiche ar aghaidh go dtí go bhfuil an bord lán nó go dtí nach féidir le himreoir ar bith bogadh.</li>
+      <li><strong>Buann an t-imreoir a bhfuil an líon is mó dioscaí aige.</strong> Is é an scór deiridh go simplí líon na ndioscaí de gach dath atá fágtha ar an mbord.</li>
+      <li><strong>Is iad na coirnéil na cearnóga is sábháilte.</strong> Nuair a ghlacann tú coirnéal, ní féidir é a chasadh go deo. Tá na cearnóga díreach in aice le coirnéal contúirteach, mar is féidir leo an coirnéal sin a thabhairt do do chéile comhraic.</li>
+    </ol>
+  </section>
+
+  <section class="about" aria-label="Bealaí chun Reversi (Othello) a imirt">
+    <h2>Bealaí chun imirt</h2>
+    <p><strong>Imir ar líne le daoine ar fud an domhain.</strong> Tosaigh cluiche tapa agus faigh céile comhraic nua láithreach. Úsáideann cluichí rátáilte rátálacha, céimeanna, ranguithe agus teidil, ionas gur féidir leat féachaint ar do rátáil ag ardú agus tú ag buachan. Tá cluichí scíthe gan rátáil agus níos moille, ionas gur féidir leat taitneamh a bhaint as an gcluiche gan a bheith buartha faoi do rátáil.</p>
+    <p><strong>Imir i gcoinne an ríomhaire.</strong> Tá cúig leibhéal ríomhaire ann, ón leibhéal is éasca go dtí an leibhéal is láidre. Tosaigh ag an leibhéal is éasca chun na rialacha a fhoghlaim, ansin dreap leibhéal ar leibhéal go dtí go dtabharfaidh an leibhéal is láidre dúshlán fíor duit.</p>
+    <p><strong>Imir le beirt imreoirí ar ghléas amháin.</strong> Roinn guthán nó scáileán amháin le cara agus cuir dioscaí síos faoi seach, díreach mar a bheadh bord fíor ann.</p>
+    <p><strong>Bain triail as boird de chruthanna neamhghnácha.</strong> I gcluichí i gcoinne an ríomhaire agus i gcluichí beirte ar ghléas amháin, is féidir leat cruth boird a roghnú: an bord caighdeánach 8 faoi 8, leathan, croí, taoschnó, diamaint, nó cros. Athraíonn gach cruth an oscailt agus an chaoi a bhforbraíonn an cluiche.</p>
+    <p><strong>Tapa nó mall — is tusa a roghnaíonn.</strong> Tugann cluichí caighdeánacha 20 soicind duit in aghaidh an bhogha le haghaidh imeartha tapa beoga. Más fearr leat rudaí a cheapadh go mall, tugann cluiche scíthe i bhfad níos mó ama duit. Tá an cluiche ar fáil i 100 teanga.</p>
+  </section>
+
+  <section class="about" aria-label="Ceisteanna coitianta faoi Reversi (Othello)">
+    <h2>Ceisteanna coitianta</h2>
+    <p><strong>An bhfuil Reversi saor in aisce?</strong> Tá. Tá Reversi ar Pare Asobi go hiomlán saor in aisce, gan gá clárú agus gan aip a shuiteáil.</p>
+    <p><strong>An féidir liom imirt ar mo ghuthán?</strong> Is féidir. Oibríonn an cluiche ar ghutháin, táibléid agus ríomhairí, díreach i do bhrabhsálaí.</p>
+    <p><strong>An bhfuil cuntas ag teastáil uaim chun imirt ar líne?</strong> Níl. Is féidir leat cluiche tapa a thosú ar líne gan cuntas a chruthú.</p>
+    <p><strong>Cad é an difríocht idir Reversi agus Othello?</strong> Is é an cluiche céanna iad. Is é Othello an t-ainm is cáiliúla ar Reversi, agus úsáidtear an dá ainm don chluiche ina gcastar dioscaí dubha agus bána.</p>
+    <p>Ag lorg níos mó cluichí? Féach ar na sé chluiche saor in aisce ar <a href="https://pareasobi.com/ga/">leathanach baile Gaeilge Pare Asobi</a>, lena n-áirítear Sudoku (Nanpure), Muileann (Nine Men's Morris), Crosfhocal, Shirupure, agus Wado Kaichin.</p>
+  </section>
+
+  <footer class="footer">
+    <a href="/privacy.html#advertising">Fógraíocht &amp; Beartas Príobháideachais</a><br>
+    <a href="/contact.html">Déan Teagmháil Linn</a><br>
+    <a href="/terms.html">Téarmaí Úsáide</a><br>
+    <a href="/guide.html">Conas a Imirt</a> · <a href="/faq.html">CC</a> · <a href="/about.html">Maidir le Pare Asobi</a><br>
+    <span style="font-size:18px;">Tá na treoracha i Seapáinis go fóill.</span><br>
+    <a href="https://pareasobi.com/ga/">Ar ais go Pare Asobi</a><br>
+
+    <span class="footer-brand">Pare Asobi</span>
+  </footer>
+
+</div>
+
+<script>
+/* Game screenshot slideshow: switches automatically every 4 seconds. No outside library.
+   The first shot still shows if JavaScript is off. Broken images are skipped. */
+(function () {
+  var boxes = document.querySelectorAll('.card-slides');
+  if (!boxes.length) return;
+  boxes.forEach(function (box) {
+    var imgs = Array.prototype.slice.call(box.querySelectorAll('.card-shot'));
+    var dots = Array.prototype.slice.call(box.querySelectorAll('.card-dots span'));
+    var cur = 0, timer = null, visible = true;
+    function alive() { return imgs.filter(function (im) { return !im.dataset.broken; }); }
+    function show(n) {
+      var list = alive();
+      if (!list.length) return;
+      if (list.length === 1) {
+        imgs.forEach(function (im) { im.classList.toggle('is-active', list[0] === im); });
+        dots.forEach(function (d, i) { d.classList.toggle('is-active', list[0] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+        return;
+      }
+      cur = ((n % list.length) + list.length) % list.length;
+      imgs.forEach(function (im) { im.classList.toggle('is-active', list[cur] === im); });
+      dots.forEach(function (d, i) { d.classList.toggle('is-active', list[cur] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+    }
+    function start() { if (timer === null && visible) timer = setInterval(function () { show(cur + 1); }, 4000); }
+    function stop() { if (timer !== null) { clearInterval(timer); timer = null; } }
+    imgs.forEach(function (im) {
+      if (im.complete && im.naturalWidth === 0) im.dataset.broken = '1';
+      im.addEventListener('error', function () { im.dataset.broken = '1'; if (alive().length < 2) stop(); show(cur); });
+    });
+    show(0);
+    document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else start(); });
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { visible = en.isIntersecting; if (visible) start(); else stop(); });
+      }, { rootMargin: '100px' });
+      io.observe(box);
+    } else {
+      start();
+    }
+  });
+})();
+</script>
+<script defer src="/assets/pare-analytics.js"></script>
+</body>
+</html>
