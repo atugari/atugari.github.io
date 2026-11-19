@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#FFF8E7">
+  <title>Reversi (Othello) | یاریی تەختەی ئۆنلاین بەخۆڕایی - Pare Asobi</title>
+  <meta name="description" content="یاریی Reversi (Othello) لە وێبگەڕەکەتدا بەخۆڕایی بکە. لەگەڵ خەڵکی لە سەرانسەری جیهاندا بە خاڵ و پلەوە ئۆنلاین بکە، لەگەڵ کۆمپیوتەر بە پێنج ئاست، یان لەگەڵ دوو یاریزان لەسەر یەک ئامێر. پێویست ناکات تۆمار بکەیت.">
+  <meta name="keywords" content="Reversi, Othello, Reversi بەخۆڕایی, یاریی Othello ئۆنلاین, Reversi ئۆنلاین, یاریی تەختە, یاریی بەخۆڕایی وێبگەڕ, Pare Asobi">
+  <meta name="robots" content="index, follow">
+  <meta name="google-adsense-account" content="ca-pub-5560584474086870">
+  <link rel="canonical" href="https://pareasobi.com/ku/reversi/">
+  <link rel="alternate" hreflang="en" href="https://pareasobi.com/en/reversi/">
+    <link rel="alternate" hreflang="ku" href="https://pareasobi.com/ku/reversi/">
+  <link rel="alternate" hreflang="x-default" href="https://pareasobi.com/ku/reversi/">
+  <meta property="og:title" content="Reversi (Othello) | یاریی تەختەی ئۆنلاین بەخۆڕایی - Pare Asobi">
+  <meta property="og:description" content="یاریی Reversi (Othello) لە وێبگەڕەکەتدا بەخۆڕایی بکە — ئۆنلاین لەگەڵ یاریزانان لە سەرانسەری جیهاندا، لەگەڵ کۆمپیوتەر بە پێنج ئاست، یان لەگەڵ دوو یاریزان لەسەر یەک ئامێر.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://pareasobi.com/ku/reversi/">
+  <meta property="og:locale" content="ckb_IQ">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Reversi (Othello) | یاریی تەختەی ئۆنلاین بەخۆڕایی - Pare Asobi">
+  <meta name="twitter:description" content="یاریی Reversi (Othello) لە وێبگەڕەکەتدا بەخۆڕایی بکە — ئۆنلاین لەگەڵ یاریزانان لە سەرانسەری جیهاندا، لەگەڵ کۆمپیوتەر بە پێنج ئاست، یان لەگەڵ دوو یاریزان لەسەر یەک ئامێر.">
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@graph":[
+      {"@type":"WebSite","@id":"https://pareasobi.com/ku/#website","url":"https://pareasobi.com/ku/","name":"Pare Asobi","inLanguage":"ku"},
+      {"@type":"WebPage","@id":"https://pareasobi.com/ku/reversi/#webpage","url":"https://pareasobi.com/ku/reversi/","name":"Reversi (Othello) | یاریی تەختەی ئۆنلاین بەخۆڕایی - Pare Asobi","description":"یاریی Reversi (Othello) لە وێبگەڕەکەتدا بەخۆڕایی بکە. لەگەڵ خەڵکی لە سەرانسەری جیهاندا بە خاڵ و پلەوە ئۆنلاین بکە، لەگەڵ کۆمپیوتەر بە پێنج ئاست، یان لەگەڵ دوو یاریزان لەسەر یەک ئامێر بکە.","inLanguage":"ku","isPartOf":{"@id":"https://pareasobi.com/ku/#website"}}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: #FFF8E7;
+      color: #1a1a1a;
+      font-family: 'Noto Serif JP', serif;
+      min-height: 100dvh;
+    }
+
+    /* Confetti dots: small bright candy-colored dots scattered over the background */
+    body {
+      background-image:
+        radial-gradient(circle at 6% 10%, rgba(255, 90, 118, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 94% 6%, rgba(255, 201, 60, 0.45) 0 6px, transparent 7px),
+        radial-gradient(circle at 12% 42%, rgba(77, 163, 255, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 88% 38%, rgba(46, 196, 166, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 50% 72%, rgba(255, 90, 118, 0.25) 0 4px, transparent 5px),
+        radial-gradient(circle at 4% 84%, rgba(255, 201, 60, 0.35) 0 6px, transparent 7px),
+        radial-gradient(circle at 96% 86%, rgba(77, 163, 255, 0.30) 0 6px, transparent 7px),
+        radial-gradient(circle at 30% 95%, rgba(46, 196, 166, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 70% 96%, rgba(255, 138, 61, 0.30) 0 5px, transparent 6px);
+      background-attachment: fixed;
+    }
+
+    .app { max-width: 1060px; margin: 0 auto; padding: 20px 16px 64px; }
+    @media (min-width: 720px) {
+      .app { padding: 28px 28px 72px; }
+    }
+
+    /* Logo bar: mint-green rounded band */
+    .site-header {
+      text-align: center;
+      margin: 0 0 18px;
+      padding: 26px 12px 22px;
+      background: linear-gradient(135deg, #A9EDCB 0%, #C2F2DE 55%, #BEE9D2 100%);
+      border-radius: 28px;
+      box-shadow: 0 8px 24px rgba(255, 150, 120, 0.18);
+    }
+    .site-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(44px, 11vw, 76px);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      line-height: 1.15;
+      background: linear-gradient(90deg, #FF5A76 0%, #FF8A3D 28%, #FFC93C 52%, #2EC4A6 76%, #4DA3FF 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 0 rgba(255, 255, 255, 0.95)) drop-shadow(0 6px 14px rgba(255, 120, 120, 0.25));
+    }
+    .site-title a { color: inherit; text-decoration: none; }
+
+    /* Hero: sky-blue band with confetti */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      padding: 34px 18px 30px;
+      margin-bottom: 26px;
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 8% 20%, rgba(255, 90, 118, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 92% 14%, rgba(255, 201, 60, 0.6) 0 7px, transparent 8px),
+        radial-gradient(circle at 16% 82%, rgba(46, 196, 166, 0.55) 0 5px, transparent 6px),
+        radial-gradient(circle at 84% 78%, rgba(255, 138, 61, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 50% 8%, rgba(77, 163, 255, 0.45) 0 5px, transparent 6px),
+        linear-gradient(180deg, #BFE6FF 0%, #D6F0FF 60%, #CDEBFF 100%);
+      box-shadow: 0 8px 24px rgba(77, 163, 255, 0.22);
+    }
+    .hero-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(26px, 6vw, 44px);
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      line-height: 1.35;
+      color: #FF4D6D;
+      text-shadow: 0 2px 0 rgba(255, 255, 255, 0.9);
+    }
+    .hero-sub {
+      margin-top: 12px;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.9;
+      color: #234;
+    }
+    .hero-cta {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 13px 34px;
+      border-radius: 999px;
+      background: #FFC93C;
+      border: 2px solid #FF9F1C;
+      color: #B34700;
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      box-shadow: 0 4px 0 #FF9F1C, 0 8px 18px rgba(255, 159, 28, 0.35);
+    }
+    .hero-cta:active { transform: translateY(2px); box-shadow: 0 2px 0 #FF9F1C; }
+
+    /* Game screenshot slideshow */
+    .play-card {
+      background: #FF9FB2;
+      border: 2px solid #FF7D99;
+      border-radius: 28px;
+      overflow: hidden;
+      margin-bottom: 26px;
+      box-shadow: 0 8px 24px rgba(255, 150, 120, 0.14);
+    }
+    .card-slides {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      background: #fff;
+      border-bottom: 3px solid rgba(255, 255, 255, 0.55);
+    }
+    .card-slides .card-shot {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+    .card-slides .card-shot.is-active { opacity: 1; }
+    .card-dots {
+      position: absolute;
+      left: 50%;
+      bottom: 8px;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .card-dots span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.55);
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18);
+    }
+    .card-dots span.is-active { background: #fff; }
+
+    /* Text sections */
+    .about {
+      margin-top: 26px;
+      padding: 24px 22px;
+      background: #FFF3F5;
+      border-radius: 24px;
+      font-size: 22px;
+      line-height: 1.9;
+      color: #5a4a44;
+    }
+    .about h2 { font-size: 24px; margin-bottom: 10px; color: #3d2f2b; }
+    .about p { margin-bottom: 10px; }
+    .about p:last-child { margin-bottom: 0; }
+    .about a { color: #FF5A76; }
+    .about ol, .about ul { margin: 0 0 10px 26px; }
+    .about li { margin-bottom: 8px; }
+    .about li:last-child { margin-bottom: 0; }
+
+    .footer {
+      text-align: center;
+      margin-top: 44px;
+      padding: 20px 16px;
+      font-size: 22px;
+      color: #8a7a72;
+      line-height: 1.9;
+      background: #FFE3E6;
+      border-radius: 24px;
+    }
+    .footer a { color: #FF5A76; font-size: 22px; text-underline-offset: .2em; }
+    .footer a:active { color: #555; }
+    .footer-brand {
+      display: inline-block;
+      font-size: 22px;
+      color: #c98a96;
+      letter-spacing: 0.08em;
+    }
+  </style>
+  <meta property="og:site_name" content="Pare Asobi">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5560584474086870" crossorigin="anonymous"></script>
+</head>
+<body data-game="pareasobi">
+
+<div class="app">
+
+  <header class="site-header">
+    <h1 class="site-title"><a href="https://pareasobi.com/ku/">Pare Asobi</a></h1>
+  </header>
+
+  <section class="hero" aria-label="یاریی Reversi (Othello) بکە">
+    <p class="hero-title">Reversi (Othello)</p>
+    <p class="hero-sub">تەختەکە بگۆڕە، یەک دیسک لە یەک کاتدا.<br>لە وێبگەڕەکەتدا بەخۆڕایی — بێ تۆمارکردن، بێ دامەزراندنی بەرنامە.</p>
+    <a class="hero-cta" href="https://osero.puzzle-hub-4826.workers.dev">ئێستا Reversi بکە →</a>
+  </section>
+
+  <div class="play-card">
+    <div class="card-slides"><img class="card-shot is-active" src="/assets/game-shots/othello-1.jpg" alt="وێنەی شاشەی یاریی Reversi (Othello) لە Pare Asobi" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/othello-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/othello-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
+  </div>
+
+  <section class="about" aria-label="دەربارەی Reversi (Othello)">
+    <h2>Reversi (Othello) چییە؟</h2>
+    <p>Reversi، کە بە Othello-ش ناسراوە، یارییەکی کلاسیکی تەختەیە بۆ دوو یاریزان. یەک یاریزان دیسکە ڕەشەکان دەبات و ئەوەی تر دیسکە سپییەکان دەبات، و هەردوو لا یەک تەختە بەش دەکەن. فێربوونی یاساکان نزیکەی یەک خولەک دەخایەنێت، بەڵام یەک جووڵە دەتوانێت هەموو یارییەکە سەراوژێر بکات — ئەمەش ئەوەیە کە Reversi وای لێدەکات بە ئاسانی دانەنرێت.</p>
+    <p>تەختە ستانداردەکە 8 بە 8 چوارگۆشەیە، و یارییەکە بە چوار دیسک لە ناوەڕاستدا دەست پێدەکات: دوو ڕەش و دوو سپی، بە لاری دانراون. لەوێوە، یاریزانان بە نۆرە یەک دیسک دادەنێن، و هەر دیسکێک کە دەیدۆزنەوە بۆ ڕەنگی خۆیان دەگۆڕێت. کاتێک تەختەکە پڕ دەبێت، یان کاتێک هیچ یاریزانێک جووڵەی یاسایی نەمێنێت، یارییەکە کۆتایی دێت و ئەو یاریزانەی زۆرترین دیسکی لەسەر تەختەکە هەیە دەباتەوە.</p>
+    <p>لە Pare Asobi دەتوانیت یاریی Reversi بەخۆڕایی لە وێبگەڕەکەتدا بکەیت، لەسەر مۆبایلەکەت یان کۆمپیوتەرەکەت. هیچ شتێک بۆ داگرتن نییە و پێویست ناکات هەژمار دروست بکەیت — تەنیا یارییەکە بکەرەوە و دەست پێبکە.</p>
+  </section>
+
+  <section class="about" aria-label="چۆن Reversi (Othello) بکەیت">
+    <h2>چۆن بکەیت</h2>
+    <ol>
+      <li><strong>ڕەش سەرەتا دەجووڵێت.</strong> دیسکێک لەسەر چوارگۆشەیەکی بەتاڵ دابنێ بە شێوەیەک کە یەک یان زیاتر لە دیسکەکانی ڕکابەرەکەت لە هێڵێکی ڕاستدا — بە ئاسۆیی، بە ستوونی، یان بە لاری — لەنێوان دیسکە نوێیەکەت و دیسکێکی ڕەنگی خۆت کە لەسەر تەختەکە هەیە، بگرێت.</li>
+      <li><strong>هەر دیسکێکی گیراو دەگۆڕێت بۆ ڕەنگی تۆ.</strong> یەک جووڵە دەتوانێت هەموو ڕیزێکی دیسک لە یەک کاتدا بگۆڕێت، بۆیە یەک جووڵەی باش دەتوانێت خاڵەکە زۆر بگۆڕێت.</li>
+      <li><strong>ئەگەر هیچ جووڵەیەکی یاساییت نەبوو، تێدەپەڕیت.</strong> ڕکابەرەکەت دووبارە دەجووڵێت. یارییەکە بەردەوام دەبێت تا تەختەکە پڕ دەبێت یان هیچ یاریزانێک ناتوانێت بجووڵێت.</li>
+      <li><strong>ئەو یاریزانەی زۆرترین دیسکی هەیە دەباتەوە.</strong> خاڵی کۆتایی بە سادەیی ژمارەی دیسکەکانی هەر ڕەنگێکە کە لەسەر تەختەکە ماونەتەوە.</li>
+      <li><strong>گۆشەکان سەلامەتترین چوارگۆشەکانن.</strong> کاتێک گۆشەیەک دەبەیت، هەرگیز ناتوانرێت بگۆڕدرێت. ئەو چوارگۆشانەی ڕاست لە تەنیشت گۆشەیەکن مەترسیدارن، چونکە دەتوانن ئەو گۆشەیە بدەن بە ڕکابەرەکەت.</li>
+    </ol>
+  </section>
+
+  <section class="about" aria-label="شێوازەکانی یاریکردنی Reversi (Othello)">
+    <h2>شێوازەکانی یاریکردن</h2>
+    <p><strong>لەگەڵ خەڵکی لە سەرانسەری جیهاندا ئۆنلاین بکە.</strong> یارییەکی خێرا دەست پێبکە و دەستبەجێ ڕکابەرێکی نوێ بدۆزەرەوە. یارییە خاڵدارەکان خاڵ و پلە و ڕیزبەندی و نازناو بەکاردەهێنن، بۆیە دەتوانیت ببینیت خاڵەکەت بەرز دەبێتەوە کاتێک دەبەیتەوە. یارییە ئارامەکان بێ خاڵ و هێواشترن، بۆیە دەتوانیت بەبێ نیگەرانی لە خاڵەکەت لە یارییەکە چێژ وەربگریت.</p>
+    <p><strong>لەگەڵ کۆمپیوتەر بکە.</strong> پێنج ئاستی کۆمپیوتەر هەیە، لە ئاسانەوە تا بەهێزترین. لە ئاستی ئاساندا دەست پێبکە بۆ فێربوونی یاساکان، پاشان یەک بە یەک بەرز ببەرەوە تا ئاستی بەهێزترین تەحەدایەکی ڕاستەقینەت پێدەدات.</p>
+    <p><strong>لەگەڵ دوو یاریزان لەسەر یەک ئامێر بکە.</strong> یەک مۆبایل یان یەک شاشە لەگەڵ هاوڕێیەکەتدا بەش بکە و بە نۆرە دیسک دابنێ، هەروەک تەختەیەکی ڕاستەقینە.</p>
+    <p><strong>تەختە بە شێوە نامۆکان تاقی بکەرەوە.</strong> لە یارییەکانی کۆمپیوتەر و یارییە دوو یاریزانەکانی لەسەر یەک ئامێر، دەتوانیت شێوەی تەختەکە هەڵبژێریت: تەختە ستانداردی 8 بە 8، پان، دڵ، دۆنەت، ئەڵماس، یان خاچ. هەر شێوەیەک سەرەتای یارییەکە و شێوازی گەشەکردنی دەگۆڕێت.</p>
+    <p><strong>خێرا یان هێواش — هەڵبژاردنی تۆیە.</strong> یارییە ستانداردەکان 20 چرکە بۆ هەر جووڵەیەک دەدەن بۆ یارییەکی خێرا و زیندوو. ئەگەر دەتەوێت زیاتر بیر بکەیتەوە، یاریی ئارامەکە کاتێکی زۆر زیاترت پێدەدات. یارییەکە بە 100 زمان بەردەستە.</p>
+  </section>
+
+  <section class="about" aria-label="پرسیارە زۆر دووبارەکراوەکان دەربارەی Reversi (Othello)">
+    <h2>پرسیارە زۆر دووبارەکراوەکان</h2>
+    <p><strong>ئایا Reversi بەخۆڕاییە؟</strong> بەڵێ. Reversi لە Pare Asobi بە تەواوی بەخۆڕاییە، بێ تۆمارکردن و بێ دامەزراندنی بەرنامە.</p>
+    <p><strong>ئایا دەتوانم لەسەر مۆبایلەکەم بکەم؟</strong> بەڵێ. یارییەکە لەسەر مۆبایل و تابلێت و کۆمپیوتەر، ڕاستەوخۆ لە وێبگەڕەکەتدا کار دەکات.</p>
+    <p><strong>ئایا بۆ یاریکردنی ئۆنلاین پێویستم بە هەژمار هەیە؟</strong> نەخێر. دەتوانیت بەبێ دروستکردنی هەژمار یارییەکی خێرای ئۆنلاین دەست پێبکەیت.</p>
+    <p><strong>جیاوازی نێوان Reversi و Othello چییە؟</strong> هەمان یاریین. Othello ناسراوترین ناوی Reversi-یە، و هەردوو ناوەکە بۆ یاریی هەڵگەڕانەوەی دیسکە ڕەش و سپییەکان بەکاردەهێنرێن.</p>
+    <p>بەدوای یاریی زیاتردا دەگەڕێیت؟ هەر شەش یارییە بەخۆڕاییەکە لە <a href="https://pareasobi.com/ku/">پەڕەی سەرەکی کوردی Pare Asobi</a> ببینە، لەوانە Sudoku (Nanpure)، Mill (Nine Men's Morris)، Crossword، Shirupure، و Wado Kaichin.</p>
+  </section>
+
+  <footer class="footer">
+    <a href="/privacy.html#advertising">ڕیکلام و سیاسەتی تایبەتمەندی</a><br>
+    <a href="/contact.html">پەیوەندیمان پێوە بکە</a><br>
+    <a href="/terms.html">مەرجەکانی بەکارهێنان</a><br>
+    <a href="/guide.html">چۆن بکەیت</a> · <a href="/faq.html">پرسیارە زۆر دووبارەکراوەکان</a> · <a href="/about.html">دەربارەی Pare Asobi</a><br>
+    <span style="font-size:18px;">ڕێنماییەکان بۆ ئێستا تەنیا بە ژاپۆنییە.</span><br>
+    <a href="https://pareasobi.com/ku/">گەڕانەوە بۆ Pare Asobi</a><br>
+
+    <span class="footer-brand">Pare Asobi</span>
+  </footer>
+
+</div>
+
+<script>
+/* Game screenshot slideshow: switches automatically every 4 seconds. No outside library.
+   The first shot still shows if JavaScript is off. Broken images are skipped. */
+(function () {
+  var boxes = document.querySelectorAll('.card-slides');
+  if (!boxes.length) return;
+  boxes.forEach(function (box) {
+    var imgs = Array.prototype.slice.call(box.querySelectorAll('.card-shot'));
+    var dots = Array.prototype.slice.call(box.querySelectorAll('.card-dots span'));
+    var cur = 0, timer = null, visible = true;
+    function alive() { return imgs.filter(function (im) { return !im.dataset.broken; }); }
+    function show(n) {
+      var list = alive();
+      if (!list.length) return;
+      if (list.length === 1) {
+        imgs.forEach(function (im) { im.classList.toggle('is-active', list[0] === im); });
+        dots.forEach(function (d, i) { d.classList.toggle('is-active', list[0] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+        return;
+      }
+      cur = ((n % list.length) + list.length) % list.length;
+      imgs.forEach(function (im) { im.classList.toggle('is-active', list[cur] === im); });
+      dots.forEach(function (d, i) { d.classList.toggle('is-active', list[cur] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+    }
+    function start() { if (timer === null && visible) timer = setInterval(function () { show(cur + 1); }, 4000); }
+    function stop() { if (timer !== null) { clearInterval(timer); timer = null; } }
+    imgs.forEach(function (im) {
+      if (im.complete && im.naturalWidth === 0) im.dataset.broken = '1';
+      im.addEventListener('error', function () { im.dataset.broken = '1'; if (alive().length < 2) stop(); show(cur); });
+    });
+    show(0);
+    document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else start(); });
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { visible = en.isIntersecting; if (visible) start(); else stop(); });
+      }, { rootMargin: '100px' });
+      io.observe(box);
+    } else {
+      start();
+    }
+  });
+})();
+</script>
+<script defer src="/assets/pare-analytics.js"></script>
+</body>
+</html>
