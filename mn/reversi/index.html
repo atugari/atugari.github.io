@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#FFF8E7">
+  <title>Reversi (Othello) | Үнэгүй онлайн ширээний тоглоом - Pare Asobi</title>
+  <meta name="description" content="Reversi (Othello) тоглоомыг хөтөч дээрээ үнэгүй тоглоорой. Дэлхийн олон орны хүмүүстэй үнэлгээ, зэрэгтэй онлайн, компьютертэй таван түвшинд, эсвэл нэг төхөөрөмж дээр хоёр тоглогчтой тоглоорой. Бүртгүүлэх шаардлагагүй.">
+  <meta name="keywords" content="reversi, othello, үнэгүй reversi, othello онлайн тоглох, reversi онлайн, ширээний тоглоом, үнэгүй хөтөч тоглоом, Pare Asobi">
+  <meta name="robots" content="index, follow">
+  <meta name="google-adsense-account" content="ca-pub-5560584474086870">
+  <link rel="canonical" href="https://pareasobi.com/mn/reversi/">
+  <link rel="alternate" hreflang="en" href="https://pareasobi.com/en/reversi/">
+    <link rel="alternate" hreflang="mn" href="https://pareasobi.com/mn/reversi/">
+  <link rel="alternate" hreflang="x-default" href="https://pareasobi.com/mn/reversi/">
+  <meta property="og:title" content="Reversi (Othello) | Үнэгүй онлайн ширээний тоглоом - Pare Asobi">
+  <meta property="og:description" content="Reversi (Othello) тоглоомыг хөтөч дээрээ үнэгүй тоглоорой — дэлхийн олон орны тоглогчидтой онлайн, компьютертэй таван түвшинд, эсвэл нэг төхөөрөмж дээр хоёр тоглогчтой.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://pareasobi.com/mn/reversi/">
+  <meta property="og:locale" content="mn_MN">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Reversi (Othello) | Үнэгүй онлайн ширээний тоглоом - Pare Asobi">
+  <meta name="twitter:description" content="Reversi (Othello) тоглоомыг хөтөч дээрээ үнэгүй тоглоорой — дэлхийн олон орны тоглогчидтой онлайн, компьютертэй таван түвшинд, эсвэл нэг төхөөрөмж дээр хоёр тоглогчтой.">
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@graph":[
+      {"@type":"WebSite","@id":"https://pareasobi.com/mn/#website","url":"https://pareasobi.com/mn/","name":"Pare Asobi","inLanguage":"mn"},
+      {"@type":"WebPage","@id":"https://pareasobi.com/mn/reversi/#webpage","url":"https://pareasobi.com/mn/reversi/","name":"Reversi (Othello) | Үнэгүй онлайн ширээний тоглоом - Pare Asobi","description":"Reversi (Othello) тоглоомыг хөтөч дээрээ үнэгүй тоглоорой. Дэлхийн олон орны хүмүүстэй үнэлгээ, зэрэгтэй онлайн, компьютертэй таван түвшинд, эсвэл нэг төхөөрөмж дээр хоёр тоглогчтой тоглоорой.","inLanguage":"mn","isPartOf":{"@id":"https://pareasobi.com/mn/#website"}}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: #FFF8E7;
+      color: #1a1a1a;
+      font-family: 'Noto Serif JP', serif;
+      min-height: 100dvh;
+    }
+
+    /* Confetti dots: small bright candy-colored dots scattered over the background */
+    body {
+      background-image:
+        radial-gradient(circle at 6% 10%, rgba(255, 90, 118, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 94% 6%, rgba(255, 201, 60, 0.45) 0 6px, transparent 7px),
+        radial-gradient(circle at 12% 42%, rgba(77, 163, 255, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 88% 38%, rgba(46, 196, 166, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 50% 72%, rgba(255, 90, 118, 0.25) 0 4px, transparent 5px),
+        radial-gradient(circle at 4% 84%, rgba(255, 201, 60, 0.35) 0 6px, transparent 7px),
+        radial-gradient(circle at 96% 86%, rgba(77, 163, 255, 0.30) 0 6px, transparent 7px),
+        radial-gradient(circle at 30% 95%, rgba(46, 196, 166, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 70% 96%, rgba(255, 138, 61, 0.30) 0 5px, transparent 6px);
+      background-attachment: fixed;
+    }
+
+    .app { max-width: 1060px; margin: 0 auto; padding: 20px 16px 64px; }
+    @media (min-width: 720px) {
+      .app { padding: 28px 28px 72px; }
+    }
+
+    /* Logo bar: mint-green rounded band */
+    .site-header {
+      text-align: center;
+      margin: 0 0 18px;
+      padding: 26px 12px 22px;
+      background: linear-gradient(135deg, #A9EDCB 0%, #C2F2DE 55%, #BEE9D2 100%);
+      border-radius: 28px;
+      box-shadow: 0 8px 24px rgba(255, 150, 120, 0.18);
+    }
+    .site-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(44px, 11vw, 76px);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      line-height: 1.15;
+      background: linear-gradient(90deg, #FF5A76 0%, #FF8A3D 28%, #FFC93C 52%, #2EC4A6 76%, #4DA3FF 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 0 rgba(255, 255, 255, 0.95)) drop-shadow(0 6px 14px rgba(255, 120, 120, 0.25));
+    }
+    .site-title a { color: inherit; text-decoration: none; }
+
+    /* Hero: sky-blue band with confetti */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      padding: 34px 18px 30px;
+      margin-bottom: 26px;
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 8% 20%, rgba(255, 90, 118, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 92% 14%, rgba(255, 201, 60, 0.6) 0 7px, transparent 8px),
+        radial-gradient(circle at 16% 82%, rgba(46, 196, 166, 0.55) 0 5px, transparent 6px),
+        radial-gradient(circle at 84% 78%, rgba(255, 138, 61, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 50% 8%, rgba(77, 163, 255, 0.45) 0 5px, transparent 6px),
+        linear-gradient(180deg, #BFE6FF 0%, #D6F0FF 60%, #CDEBFF 100%);
+      box-shadow: 0 8px 24px rgba(77, 163, 255, 0.22);
+    }
+    .hero-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(26px, 6vw, 44px);
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      line-height: 1.35;
+      color: #FF4D6D;
+      text-shadow: 0 2px 0 rgba(255, 255, 255, 0.9);
+    }
+    .hero-sub {
+      margin-top: 12px;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.9;
+      color: #234;
+    }
+    .hero-cta {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 13px 34px;
+      border-radius: 999px;
+      background: #FFC93C;
+      border: 2px solid #FF9F1C;
+      color: #B34700;
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      box-shadow: 0 4px 0 #FF9F1C, 0 8px 18px rgba(255, 159, 28, 0.35);
+    }
+    .hero-cta:active { transform: translateY(2px); box-shadow: 0 2px 0 #FF9F1C; }
+
+    /* Game screenshot slideshow */
+    .play-card {
+      background: #FF9FB2;
+      border: 2px solid #FF7D99;
+      border-radius: 28px;
+      overflow: hidden;
+      margin-bottom: 26px;
+      box-shadow: 0 8px 24px rgba(255, 150, 120, 0.14);
+    }
+    .card-slides {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      background: #fff;
+      border-bottom: 3px solid rgba(255, 255, 255, 0.55);
+    }
+    .card-slides .card-shot {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+    .card-slides .card-shot.is-active { opacity: 1; }
+    .card-dots {
+      position: absolute;
+      left: 50%;
+      bottom: 8px;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .card-dots span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.55);
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18);
+    }
+    .card-dots span.is-active { background: #fff; }
+
+    /* Text sections */
+    .about {
+      margin-top: 26px;
+      padding: 24px 22px;
+      background: #FFF3F5;
+      border-radius: 24px;
+      font-size: 22px;
+      line-height: 1.9;
+      color: #5a4a44;
+    }
+    .about h2 { font-size: 24px; margin-bottom: 10px; color: #3d2f2b; }
+    .about p { margin-bottom: 10px; }
+    .about p:last-child { margin-bottom: 0; }
+    .about a { color: #FF5A76; }
+    .about ol, .about ul { margin: 0 0 10px 26px; }
+    .about li { margin-bottom: 8px; }
+    .about li:last-child { margin-bottom: 0; }
+
+    .footer {
+      text-align: center;
+      margin-top: 44px;
+      padding: 20px 16px;
+      font-size: 22px;
+      color: #8a7a72;
+      line-height: 1.9;
+      background: #FFE3E6;
+      border-radius: 24px;
+    }
+    .footer a { color: #FF5A76; font-size: 22px; text-underline-offset: .2em; }
+    .footer a:active { color: #555; }
+    .footer-brand {
+      display: inline-block;
+      font-size: 22px;
+      color: #c98a96;
+      letter-spacing: 0.08em;
+    }
+  </style>
+  <meta property="og:site_name" content="Pare Asobi">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5560584474086870" crossorigin="anonymous"></script>
+</head>
+<body data-game="pareasobi">
+
+<div class="app">
+
+  <header class="site-header">
+    <h1 class="site-title"><a href="https://pareasobi.com/mn/">Pare Asobi</a></h1>
+  </header>
+
+  <section class="hero" aria-label="Reversi (Othello) тоглох">
+    <p class="hero-title">Reversi (Othello)</p>
+    <p class="hero-sub">Самбарыг нэг нэгээр нь эргүүлээрэй.<br>Хөтөч дээрээ үнэгүй — бүртгүүлэх шаардлагагүй, суулгах програм байхгүй.</p>
+    <a class="hero-cta" href="https://osero.puzzle-hub-4826.workers.dev">Reversi-г одоо тоглоорой →</a>
+  </section>
+
+  <div class="play-card">
+    <div class="card-slides"><img class="card-shot is-active" src="/assets/game-shots/othello-1.jpg" alt="Pare Asobi дахь Reversi (Othello) тоглоомын дэлгэцийн зураг" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/othello-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/othello-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
+  </div>
+
+  <section class="about" aria-label="Reversi (Othello) талаар">
+    <h2>Reversi (Othello) гэж юу вэ?</h2>
+    <p>Reversi буюу Othello нь хоёр тоглогчийн сонгодог ширээний тоглоом. Нэг тоглогч хар дискийг, нөгөө нь цагаан дискийг авч, хоёр тал нэг самбарыг хуваалцдаг. Дүрмийг нэг минутад сурч болох ч нэг нүүдэл бүх тоглоомыг орвонгоор нь эргүүлж чаддаг — Reversi-г орхиход хэцүү болгодог нь энэ юм.</p>
+    <p>Стандарт самбар нь 8×8 нүдтэй бөгөөд тоглоом дунд талын дөрвөн дискээс эхэлдэг: хоёр хар, хоёр цагаан, диагоналиар байрлуулсан. Тэндээс тоглогчид ээлжлэн нэг нэгээр нь диск тавьдаг бөгөөд хавчуулсан диск бүр тэдний өнгө рүү эргэдэг. Самбар дүүрэх эсвэл тоглогчдын хэнд нь ч хууль ёсны нүүдэл үлдэхгүй үед тоглоом дуусч, самбар дээр илүү олон дисктэй тоглогч хождог.</p>
+    <p>Pare Asobi дээр Reversi тоглоомыг хөтөч дээрээ үнэгүй, утас эсвэл компьютер дээрээ тоглож болно. Татах зүйл байхгүй, бүртгэл үүсгэх шаардлагагүй — тоглоомоо нээгээд тоглож эхлээрэй.</p>
+  </section>
+
+  <section class="about" aria-label="Reversi (Othello) яаж тоглох вэ">
+    <h2>Яаж тоглох вэ</h2>
+    <ol>
+      <li><strong>Хар эхлэн нүүдэллэнэ.</strong> Хоосон нүдэн дээр диск тавиад өрсөлдөгчийнхөө нэг буюу хэд хэдэн дискийг шулуун шугамаар — хэвтээ, босоо, эсвэл диагональ — шинэ диск болон самбар дээрх өөрийн өнгийн дискний хооронд хавчуулаарай.</li>
+      <li><strong>Хавчуулсан диск бүр таны өнгө рүү эргэдэг.</strong> Нэг нүүдэл бүхэл бүтэн эгнээ дискийг нэг дор эргүүлж чаддаг тул нэг сайн нүүдэл оноог их өөрчилж чадна.</li>
+      <li><strong>Хууль ёсны нүүдэл байхгүй бол алгасаарай.</strong> Өрсөлдөгч тань дахин нүүдэллэнэ. Самбар дүүрэх эсвэл тоглогчдын хэнд нь ч нүүдэллэх боломжгүй болтол тоглоом үргэлжилнэ.</li>
+      <li><strong>Хамгийн олон дисктэй тоглогч хожно.</strong> Эцсийн оноо бол самбар дээр үлдсэн өнгө бүрийн дискний тоо юм.</li>
+      <li><strong>Булангууд бол хамгийн аюулгүй нүднүүд.</strong> Булан эзэлсний дараа түүнийг хэзээ ч эргүүлж болохгүй. Булангийн яг хажууд байгаа нүднүүд эрсдэлтэй, учир нь тэд булангаа өрсөлдөгчид өгч болзошгүй.</li>
+    </ol>
+  </section>
+
+  <section class="about" aria-label="Reversi (Othello) тоглох арга замууд">
+    <h2>Тоглох арга замууд</h2>
+    <p><strong>Дэлхийн олон орны хүмүүстэй онлайн тоглоорой.</strong> Шуурхай тоглоом эхлүүлээд шинэ өрсөлдөгчтэй шууд танилцаарай. Үнэлгээтэй тоглоомд үнэлгээ, зэрэг, чансаа, цол хэрэглэгддэг тул ялах тусам үнэлгээ тань өсөж байгааг харж болно. Тайван тоглоом нь үнэлгээгүй, удаан тул үнэлгээндээ санаа зовохгүйгээр тоглоомыг таашааж болно.</p>
+    <p><strong>Компьютертэй тоглоорой.</strong> Амарханаас хамгийн хүчтэй хүртэл таван компьютерийн түвшин бий. Дүрмээ сурахын тулд амархан түвшнээс эхлээд хамгийн хүчтэй түвшин танд жинхэнэ сорилт өгөх хүртэл нэг нэгээр нь дээшлээрэй.</p>
+    <p><strong>Нэг төхөөрөмж дээр хоёр тоглогчтой тоглоорой.</strong> Найзтайгаа нэг утас эсвэл нэг дэлгэц хуваалцаад жинхэнэ самбар дээрх шиг ээлжлэн диск тавиарай.</p>
+    <p><strong>Ер бусын хэлбэртэй самбаруудыг туршаад үзээрэй.</strong> Компьютертэй тоглох болон нэг төхөөрөмж дээр хоёр тоглогчтой тоглоход самбарын хэлбэрийг сонгож болно: стандарт 8×8 самбар, өргөн, зүрхэн, пончик, очир эрдэнэ, эсвэл загалмай. Хэлбэр бүр тоглоомын эхлэл болон өрнөлийг өөрчилдөг.</p>
+    <p><strong>Хурдан уу, удаан уу — таны сонголт.</strong> Стандарт тоглоом нь хурдан, амьд тоглоомын тулд нэг нүүдэлд 20 секунд өгдөг. Хэрвээ илүү удаан бодохыг хүсвэл тайван тоглоом танд хамаагүй их цаг өгнө. Тоглоом 100 хэлээр боломжтой.</p>
+  </section>
+
+  <section class="about" aria-label="Reversi (Othello) талаар байнга асуудаг асуултууд">
+    <h2>Байнга асуудаг асуултууд</h2>
+    <p><strong>Reversi үнэгүй юу?</strong> Тийм. Pare Asobi дахь Reversi бүрэн үнэгүй, бүртгүүлэх шаардлагагүй, програм суулгах шаардлагагүй.</p>
+    <p><strong>Утас дээрээ тоглож болох уу?</strong> Тийм. Тоглоом утас, таблет, компьютер дээр хөтөч дотор шууд ажилладаг.</p>
+    <p><strong>Онлайн тоглоход бүртгэл хэрэгтэй юу?</strong> Үгүй. Бүртгэл үүсгэхгүйгээр онлайн шуурхай тоглоом эхлүүлж болно.</p>
+    <p><strong>Reversi болон Othello хоёрын ялгаа нь юу вэ?</strong> Энэ бол нэг тоглоом. Othello бол Reversi-ийн хамгийн алдартай нэр бөгөөд хоёр нэрийг ч хар цагаан диск эргүүлэх тоглоомд хэрэглэдэг.</p>
+    <p>Илүү олон тоглоом хайж байна уу? <a href="https://pareasobi.com/mn/">Pare Asobi монгол нүүр хуудас</a> дахь зургаан үнэгүй тоглоомыг бүгдийг үзээрэй. Үүнд: Sudoku (Nanpure), Тээрэм (Nine Men's Morris), Crossword, Shirupure, Wado Kaichin.</p>
+  </section>
+
+  <footer class="footer">
+    <a href="/privacy.html#advertising">Зар сурталчилгаа ба нууцлалын бодлого</a><br>
+    <a href="/contact.html">Бидэнтэй холбогдох</a><br>
+    <a href="/terms.html">Ашиглах нөхцөл</a><br>
+    <a href="/guide.html">Яаж тоглох вэ</a> · <a href="/faq.html">Байнга асуудаг асуултууд</a> · <a href="/about.html">Pare Asobi талаар</a><br>
+    <span style="font-size:18px;">Зааврууд одоогоор зөвхөн япон хэлээр байна.</span><br>
+    <a href="https://pareasobi.com/mn/">Pare Asobi руу буцах</a><br>
+
+    <span class="footer-brand">Pare Asobi</span>
+  </footer>
+
+</div>
+
+<script>
+/* Game screenshot slideshow: switches automatically every 4 seconds. No outside library.
+   The first shot still shows if JavaScript is off. Broken images are skipped. */
+(function () {
+  var boxes = document.querySelectorAll('.card-slides');
+  if (!boxes.length) return;
+  boxes.forEach(function (box) {
+    var imgs = Array.prototype.slice.call(box.querySelectorAll('.card-shot'));
+    var dots = Array.prototype.slice.call(box.querySelectorAll('.card-dots span'));
+    var cur = 0, timer = null, visible = true;
+    function alive() { return imgs.filter(function (im) { return !im.dataset.broken; }); }
+    function show(n) {
+      var list = alive();
+      if (!list.length) return;
+      if (list.length === 1) {
+        imgs.forEach(function (im) { im.classList.toggle('is-active', list[0] === im); });
+        dots.forEach(function (d, i) { d.classList.toggle('is-active', list[0] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+        return;
+      }
+      cur = ((n % list.length) + list.length) % list.length;
+      imgs.forEach(function (im) { im.classList.toggle('is-active', list[cur] === im); });
+      dots.forEach(function (d, i) { d.classList.toggle('is-active', list[cur] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+    }
+    function start() { if (timer === null && visible) timer = setInterval(function () { show(cur + 1); }, 4000); }
+    function stop() { if (timer !== null) { clearInterval(timer); timer = null; } }
+    imgs.forEach(function (im) {
+      if (im.complete && im.naturalWidth === 0) im.dataset.broken = '1';
+      im.addEventListener('error', function () { im.dataset.broken = '1'; if (alive().length < 2) stop(); show(cur); });
+    });
+    show(0);
+    document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else start(); });
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { visible = en.isIntersecting; if (visible) start(); else stop(); });
+      }, { rootMargin: '100px' });
+      io.observe(box);
+    } else {
+      start();
+    }
+  });
+})();
+</script>
+<script defer src="/assets/pare-analytics.js"></script>
+</body>
+</html>
