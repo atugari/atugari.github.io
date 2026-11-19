@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ceb">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#FFF8E7">
+  <title>Reversi (Othello) | Libre nga Dula sa Board Online - Pare Asobi</title>
+  <meta name="description" content="Pagdula og Reversi (Othello) nga libre sa imong browser. Pagdula online batok sa mga tawo sa tibuok kalibutan nga adunay mga rating ug ranggo, batok sa kompyuter sa lima ka lebel, o nga duha ka magdudula sa usa ka device. Walay pag-sign up nga gikinahanglan.">
+  <meta name="keywords" content="Reversi, Othello, libre nga Reversi, pagdula og Othello online, Reversi online, dula sa board, libre nga dula sa browser, Pare Asobi">
+  <meta name="robots" content="index, follow">
+  <meta name="google-adsense-account" content="ca-pub-5560584474086870">
+  <link rel="canonical" href="https://pareasobi.com/ceb/reversi/">
+  <link rel="alternate" hreflang="en" href="https://pareasobi.com/en/reversi/">
+    <link rel="alternate" hreflang="ceb" href="https://pareasobi.com/ceb/reversi/">
+  <link rel="alternate" hreflang="x-default" href="https://pareasobi.com/ceb/reversi/">
+  <meta property="og:title" content="Reversi (Othello) | Libre nga Dula sa Board Online - Pare Asobi">
+  <meta property="og:description" content="Pagdula og Reversi (Othello) nga libre sa imong browser — online batok sa mga magdudula sa tibuok kalibutan, batok sa kompyuter sa lima ka lebel, o nga duha ka magdudula sa usa ka device.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://pareasobi.com/ceb/reversi/">
+  <meta property="og:locale" content="ceb_PH">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Reversi (Othello) | Libre nga Dula sa Board Online - Pare Asobi">
+  <meta name="twitter:description" content="Pagdula og Reversi (Othello) nga libre sa imong browser — online batok sa mga magdudula sa tibuok kalibutan, batok sa kompyuter sa lima ka lebel, o nga duha ka magdudula sa usa ka device.">
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@graph":[
+      {"@type":"WebSite","@id":"https://pareasobi.com/ceb/#website","url":"https://pareasobi.com/ceb/","name":"Pare Asobi","inLanguage":"ceb"},
+      {"@type":"WebPage","@id":"https://pareasobi.com/ceb/reversi/#webpage","url":"https://pareasobi.com/ceb/reversi/","name":"Reversi (Othello) | Libre nga Dula sa Board Online - Pare Asobi","description":"Pagdula og Reversi (Othello) nga libre sa imong browser. Pagdula online batok sa mga tawo sa tibuok kalibutan nga adunay mga rating ug ranggo, batok sa kompyuter sa lima ka lebel, o nga duha ka magdudula sa usa ka device.","inLanguage":"ceb","isPartOf":{"@id":"https://pareasobi.com/ceb/#website"}}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: #FFF8E7;
+      color: #1a1a1a;
+      font-family: 'Noto Serif JP', serif;
+      min-height: 100dvh;
+    }
+
+    /* Confetti dots: small bright candy-colored dots scattered over the background */
+    body {
+      background-image:
+        radial-gradient(circle at 6% 10%, rgba(255, 90, 118, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 94% 6%, rgba(255, 201, 60, 0.45) 0 6px, transparent 7px),
+        radial-gradient(circle at 12% 42%, rgba(77, 163, 255, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 88% 38%, rgba(46, 196, 166, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 50% 72%, rgba(255, 90, 118, 0.25) 0 4px, transparent 5px),
+        radial-gradient(circle at 4% 84%, rgba(255, 201, 60, 0.35) 0 6px, transparent 7px),
+        radial-gradient(circle at 96% 86%, rgba(77, 163, 255, 0.30) 0 6px, transparent 7px),
+        radial-gradient(circle at 30% 95%, rgba(46, 196, 166, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 70% 96%, rgba(255, 138, 61, 0.30) 0 5px, transparent 6px);
+      background-attachment: fixed;
+    }
+
+    .app { max-width: 1060px; margin: 0 auto; padding: 20px 16px 64px; }
+    @media (min-width: 720px) {
+      .app { padding: 28px 28px 72px; }
+    }
+
+    /* Logo bar: mint-green rounded band */
+    .site-header {
+      text-align: center;
+      margin: 0 0 18px;
+      padding: 26px 12px 22px;
+      background: linear-gradient(135deg, #A9EDCB 0%, #C2F2DE 55%, #BEE9D2 100%);
+      border-radius: 28px;
+      box-shadow: 0 8px 24px rgba(255, 150, 120, 0.18);
+    }
+    .site-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(44px, 11vw, 76px);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      line-height: 1.15;
+      background: linear-gradient(90deg, #FF5A76 0%, #FF8A3D 28%, #FFC93C 52%, #2EC4A6 76%, #4DA3FF 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 0 rgba(255, 255, 255, 0.95)) drop-shadow(0 6px 14px rgba(255, 120, 120, 0.25));
+    }
+    .site-title a { color: inherit; text-decoration: none; }
+
+    /* Hero: sky-blue band with confetti */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      padding: 34px 18px 30px;
+      margin-bottom: 26px;
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 8% 20%, rgba(255, 90, 118, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 92% 14%, rgba(255, 201, 60, 0.6) 0 7px, transparent 8px),
+        radial-gradient(circle at 16% 82%, rgba(46, 196, 166, 0.55) 0 5px, transparent 6px),
+        radial-gradient(circle at 84% 78%, rgba(255, 138, 61, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 50% 8%, rgba(77, 163, 255, 0.45) 0 5px, transparent 6px),
+        linear-gradient(180deg, #BFE6FF 0%, #D6F0FF 60%, #CDEBFF 100%);
+      box-shadow: 0 8px 24px rgba(77, 163, 255, 0.22);
+    }
+    .hero-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(26px, 6vw, 44px);
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      line-height: 1.35;
+      color: #FF4D6D;
+      text-shadow: 0 2px 0 rgba(255, 255, 255, 0.9);
+    }
+    .hero-sub {
+      margin-top: 12px;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.9;
+      color: #234;
+    }
+    .hero-cta {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 13px 34px;
+      border-radius: 999px;
+      background: #FFC93C;
+      border: 2px solid #FF9F1C;
+      color: #B34700;
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      box-shadow: 0 4px 0 #FF9F1C, 0 8px 18px rgba(255, 159, 28, 0.35);
+    }
+    .hero-cta:active { transform: translateY(2px); box-shadow: 0 2px 0 #FF9F1C; }
+
+    /* Game screenshot slideshow */
+    .play-card {
+      background: #FF9FB2;
+      border: 2px solid #FF7D99;
+      border-radius: 28px;
+      overflow: hidden;
+      margin-bottom: 26px;
+      box-shadow: 0 8px 24px rgba(255, 150, 120, 0.14);
+    }
+    .card-slides {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      background: #fff;
+      border-bottom: 3px solid rgba(255, 255, 255, 0.55);
+    }
+    .card-slides .card-shot {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+    .card-slides .card-shot.is-active { opacity: 1; }
+    .card-dots {
+      position: absolute;
+      left: 50%;
+      bottom: 8px;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .card-dots span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.55);
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18);
+    }
+    .card-dots span.is-active { background: #fff; }
+
+    /* Text sections */
+    .about {
+      margin-top: 26px;
+      padding: 24px 22px;
+      background: #FFF3F5;
+      border-radius: 24px;
+      font-size: 22px;
+      line-height: 1.9;
+      color: #5a4a44;
+    }
+    .about h2 { font-size: 24px; margin-bottom: 10px; color: #3d2f2b; }
+    .about p { margin-bottom: 10px; }
+    .about p:last-child { margin-bottom: 0; }
+    .about a { color: #FF5A76; }
+    .about ol, .about ul { margin: 0 0 10px 26px; }
+    .about li { margin-bottom: 8px; }
+    .about li:last-child { margin-bottom: 0; }
+
+    .footer {
+      text-align: center;
+      margin-top: 44px;
+      padding: 20px 16px;
+      font-size: 22px;
+      color: #8a7a72;
+      line-height: 1.9;
+      background: #FFE3E6;
+      border-radius: 24px;
+    }
+    .footer a { color: #FF5A76; font-size: 22px; text-underline-offset: .2em; }
+    .footer a:active { color: #555; }
+    .footer-brand {
+      display: inline-block;
+      font-size: 22px;
+      color: #c98a96;
+      letter-spacing: 0.08em;
+    }
+  </style>
+  <meta property="og:site_name" content="Pare Asobi">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5560584474086870" crossorigin="anonymous"></script>
+</head>
+<body data-game="pareasobi">
+
+<div class="app">
+
+  <header class="site-header">
+    <h1 class="site-title"><a href="https://pareasobi.com/ceb/">Pare Asobi</a></h1>
+  </header>
+
+  <section class="hero" aria-label="Pagdula og Reversi (Othello)">
+    <p class="hero-title">Reversi (Othello)</p>
+    <p class="hero-sub">Balihon ang board, usa ka disc matag higayon.<br>Libre sa imong browser — walay pag-sign up, walay app nga i-install.</p>
+    <a class="hero-cta" href="https://osero.puzzle-hub-4826.workers.dev">Pagdula og Reversi karon →</a>
+  </section>
+
+  <div class="play-card">
+    <div class="card-slides"><img class="card-shot is-active" src="/assets/game-shots/othello-1.jpg" alt="Screenshot sa Reversi (Othello) sa Pare Asobi" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/othello-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/othello-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
+  </div>
+
+  <section class="about" aria-label="Unsa ang Reversi (Othello)">
+    <h2>Unsa ang Reversi (Othello)?</h2>
+    <p>Ang Reversi, nga nailhan usab nga Othello, usa ka klasikong dula sa board alang sa duha ka magdudula. Ang usa ka magdudula mokuha sa mga itom nga disc, ang usa mokuha sa mga puti nga disc, ug ang duha ka bahin mag-ambit sa usa ka board. Ang mga lagda makat-onan sulod sa mga usa ka minuto, apan ang usa ka lihok makapausab sa tibuok dula — mao kana ang nakapalisod sa paghunong sa Reversi.</p>
+    <p>Ang standard nga board kay 8 by 8 ka kuwadrado, ug ang dula magsugod nga adunay upat ka disc sa tunga: duha ka itom ug duha ka puti, nga gibutang nga diagonal. Gikan didto, ang mga magdudula magpulipuli sa pagbutang og usa ka disc matag higayon, ug ang matag disc nga ilang ma-trap mabalhin sa ilang kolor. Kung puno na ang board, o kung walay magdudula nga adunay legal nga lihok nga nabilin, matapos ang dula ug ang magdudula nga adunay mas daghang disc sa board ang modaog.</p>
+    <p>Sa Pare Asobi makadula ka og Reversi nga libre sa imong browser, sa imong telepono o sa imong kompyuter. Walay i-download ug walay account nga himuon — ablihi lang ang dula ug sugdi ang pagdula.</p>
+  </section>
+
+  <section class="about" aria-label="Unsaon pagdula og Reversi (Othello)">
+    <h2>Unsaon pagdula</h2>
+    <ol>
+      <li><strong>Ang itom ang unang molihok.</strong> Ibutang ang usa ka disc sa walay sulod nga kuwadrado aron ma-trap niini ang usa o daghan pa sa mga disc sa imong kontra sa tul-id nga linya — pinahigda, paubos, o diagonal — tali sa imong bag-ong disc ug usa ka disc nga naa nay kolor nimo sa board.</li>
+      <li><strong>Ang matag na-trap nga disc mabalhin sa imong kolor.</strong> Ang usa ka lihok makabalhin sa tibuok nga laray sa mga disc sa usa ka higayon, mao nga ang usa ka maayong lihok makausab pag-ayo sa iskor.</li>
+      <li><strong>Kung wala kay legal nga lihok, mo-pass ka.</strong> Ang imong kontra molihok pag-usab. Magpadayon ang dula hangtod nga puno na ang board o walay magdudula nga makalihok.</li>
+      <li><strong>Ang magdudula nga adunay labing daghang disc ang modaog.</strong> Ang kataposang iskor mao lang ang gidaghanon sa mga disc sa matag kolor nga nabilin sa board.</li>
+      <li><strong>Ang mga eskina mao ang labing luwas nga mga kuwadrado.</strong> Kung makuha nimo ang usa ka eskina, dili na kini mabalhin. Ang mga kuwadrado nga tupad gyud sa usa ka eskina delikado, tungod kay mahimo nilang ihatag kana nga eskina sa imong kontra.</li>
+    </ol>
+  </section>
+
+  <section class="about" aria-label="Mga paagi sa pagdula og Reversi (Othello)">
+    <h2>Mga paagi sa pagdula</h2>
+    <p><strong>Pagdula online batok sa mga tawo sa tibuok kalibutan.</strong> Sugdi ang usa ka dali nga dula ug makigkita dayon og bag-ong kontra. Ang mga rated nga dula naggamit og mga rating, ranggo, ranggo, ug mga titulo, aron makita nimo ang imong rating nga mosaka samtang modaog ka. Ang mga relaks nga dula walay rating ug mas hinay, aron malingaw ka sa dula nga dili mabalaka bahin sa imong rating.</p>
+    <p><strong>Pagdula batok sa kompyuter.</strong> Adunay lima ka lebel sa kompyuter, gikan sa sayon hangtod sa labing kusgan. Sugdi sa sayon nga lebel aron makat-on sa mga lagda, dayon mosaka og usa ka lebel matag higayon hangtod nga ang labing kusgan nga lebel mohatag kanimo og tinuod nga hagit.</p>
+    <p><strong>Pagdula nga duha ka magdudula sa usa ka device.</strong> I-ambit ang usa ka telepono o usa ka screen sa usa ka higala ug magpulipuli sa pagbutang og mga disc, sama sa tinuod nga board.</p>
+    <p><strong>Sulayi ang mga board nga adunay dili kasagaran nga mga porma.</strong> Sa mga dula sa kompyuter ug mga dula nga duha ka magdudula sa usa ka device, makapili ka og porma sa board: ang standard nga 8 by 8 nga board, lapad, kasingkasing, donut, diyamante, o krus. Ang matag porma nag-usab sa sinugdanan ug sa paagi sa pag-uswag sa dula.</p>
+    <p><strong>Paspas o hinay — imong pilion.</strong> Ang mga standard nga dula naghatag kanimo og 20 segundos matag lihok alang sa dali, lagsik nga pagdula. Kung gusto nimo nga maghunahuna pag-ayo, ang relaks nga pagdula naghatag kanimo og mas daghang oras. Ang dula anaa sa 100 ka pinulongan.</p>
+  </section>
+
+  <section class="about" aria-label="Mga pangutana nga kanunayng gipangutana bahin sa Reversi (Othello)">
+    <h2>Mga pangutana nga kanunayng gipangutana</h2>
+    <p><strong>Libre ba ang Reversi?</strong> Oo. Ang Reversi sa Pare Asobi libre gyud nga dulaon, walay pag-sign up ug walay app nga i-install.</p>
+    <p><strong>Makadula ba ko sa akong telepono?</strong> Oo. Ang dula molihok sa mga telepono, tablet, ug kompyuter, diretso sa imong browser.</p>
+    <p><strong>Kinahanglan ba nako og account aron makadula online?</strong> Dili. Makasugod ka og dali nga dula online nga dili maghimo og account.</p>
+    <p><strong>Unsa ang kalainan tali sa Reversi ug Othello?</strong> Pareho ra sila nga dula. Ang Othello mao ang labing nailhan nga ngalan sa Reversi, ug ang duha ka ngalan gigamit alang sa itom-ug-puti nga dula sa pagbalhin og disc.</p>
+    <p>Nangita ka og dugang nga mga dula? Tan-awa ang tanan nga unom ka libre nga dula sa <a href="https://pareasobi.com/ceb/">pangunang panid sa Pare Asobi sa Cebuano</a>, lakip ang Sudoku (Nanpure), Mill (Nine Men's Morris), Crossword, Shirupure, ug Wado Kaichin.</p>
+  </section>
+
+  <footer class="footer">
+    <a href="/privacy.html#advertising">Advertising ug Patakaran sa Privacy</a><br>
+    <a href="/contact.html">Kontaka Kami</a><br>
+    <a href="/terms.html">Mga Termino sa Paggamit</a><br>
+    <a href="/guide.html">Unsaon Pagdula</a> · <a href="/faq.html">Mga Pangutana nga Kanunayng Gipangutana</a> · <a href="/about.html">Mahitungod sa Pare Asobi</a><br>
+    <span style="font-size:18px;">Ang mga giya anaa sa Hapon sa pagkakaron.</span><br>
+    <a href="https://pareasobi.com/ceb/">Balik sa Pare Asobi</a><br>
+
+    <span class="footer-brand">Pare Asobi</span>
+  </footer>
+
+</div>
+
+<script>
+/* Game screenshot slideshow: switches automatically every 4 seconds. No outside library.
+   The first shot still shows if JavaScript is off. Broken images are skipped. */
+(function () {
+  var boxes = document.querySelectorAll('.card-slides');
+  if (!boxes.length) return;
+  boxes.forEach(function (box) {
+    var imgs = Array.prototype.slice.call(box.querySelectorAll('.card-shot'));
+    var dots = Array.prototype.slice.call(box.querySelectorAll('.card-dots span'));
+    var cur = 0, timer = null, visible = true;
+    function alive() { return imgs.filter(function (im) { return !im.dataset.broken; }); }
+    function show(n) {
+      var list = alive();
+      if (!list.length) return;
+      if (list.length === 1) {
+        imgs.forEach(function (im) { im.classList.toggle('is-active', list[0] === im); });
+        dots.forEach(function (d, i) { d.classList.toggle('is-active', list[0] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+        return;
+      }
+      cur = ((n % list.length) + list.length) % list.length;
+      imgs.forEach(function (im) { im.classList.toggle('is-active', list[cur] === im); });
+      dots.forEach(function (d, i) { d.classList.toggle('is-active', list[cur] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+    }
+    function start() { if (timer === null && visible) timer = setInterval(function () { show(cur + 1); }, 4000); }
+    function stop() { if (timer !== null) { clearInterval(timer); timer = null; } }
+    imgs.forEach(function (im) {
+      if (im.complete && im.naturalWidth === 0) im.dataset.broken = '1';
+      im.addEventListener('error', function () { im.dataset.broken = '1'; if (alive().length < 2) stop(); show(cur); });
+    });
+    show(0);
+    document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else start(); });
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { visible = en.isIntersecting; if (visible) start(); else stop(); });
+      }, { rootMargin: '100px' });
+      io.observe(box);
+    } else {
+      start();
+    }
+  });
+})();
+</script>
+<script defer src="/assets/pare-analytics.js"></script>
+</body>
+</html>
