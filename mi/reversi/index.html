@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="mi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#FFF8E7">
+  <title>Reversi (Othello) | Kēmu Papa Ā-ipurangi Kore Utu - Pare Asobi</title>
+  <meta name="description" content="Tākaroa te Reversi (Othello) mō te kore utu i tō pūtirotiro. Tākaroa ā-ipurangi ki ngā tāngata huri noa i te ao me ngā whakatauranga me ngā tūnga, ki te rorohiko i ngā taumata e rima, ki ngā kaitākaro e rua rānei i runga i tētahi pūrere kotahi. Kāore he rēhitatanga e hiahiatia ana.">
+  <meta name="keywords" content="Reversi, Othello, Reversi kore utu, tākaroa te Othello ā-ipurangi, Reversi ā-ipurangi, kēmu papa, kēmu pūtirotiro kore utu, Pare Asobi">
+  <meta name="robots" content="index, follow">
+  <meta name="google-adsense-account" content="ca-pub-5560584474086870">
+  <link rel="canonical" href="https://pareasobi.com/mi/reversi/">
+  <link rel="alternate" hreflang="en" href="https://pareasobi.com/en/reversi/">
+    <link rel="alternate" hreflang="mi" href="https://pareasobi.com/mi/reversi/">
+  <link rel="alternate" hreflang="x-default" href="https://pareasobi.com/mi/reversi/">
+  <meta property="og:title" content="Reversi (Othello) | Kēmu Papa Ā-ipurangi Kore Utu - Pare Asobi">
+  <meta property="og:description" content="Tākaroa te Reversi (Othello) mō te kore utu i tō pūtirotiro — ā-ipurangi ki ngā kaitākaro huri noa i te ao, ki te rorohiko i ngā taumata e rima, ki ngā kaitākaro e rua rānei i runga i tētahi pūrere kotahi.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://pareasobi.com/mi/reversi/">
+  <meta property="og:locale" content="mi_NZ">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Reversi (Othello) | Kēmu Papa Ā-ipurangi Kore Utu - Pare Asobi">
+  <meta name="twitter:description" content="Tākaroa te Reversi (Othello) mō te kore utu i tō pūtirotiro — ā-ipurangi ki ngā kaitākaro huri noa i te ao, ki te rorohiko i ngā taumata e rima, ki ngā kaitākaro e rua rānei i runga i tētahi pūrere kotahi.">
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@graph":[
+      {"@type":"WebSite","@id":"https://pareasobi.com/mi/#website","url":"https://pareasobi.com/mi/","name":"Pare Asobi","inLanguage":"mi"},
+      {"@type":"WebPage","@id":"https://pareasobi.com/mi/reversi/#webpage","url":"https://pareasobi.com/mi/reversi/","name":"Reversi (Othello) | Kēmu Papa Ā-ipurangi Kore Utu - Pare Asobi","description":"Tākaroa te Reversi (Othello) mō te kore utu i tō pūtirotiro. Tākaroa ā-ipurangi ki ngā tāngata huri noa i te ao me ngā whakatauranga me ngā tūnga, ki te rorohiko i ngā taumata e rima, ki ngā kaitākaro e rua rānei i runga i tētahi pūrere kotahi.","inLanguage":"mi","isPartOf":{"@id":"https://pareasobi.com/mi/#website"}}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: #FFF8E7;
+      color: #1a1a1a;
+      font-family: 'Noto Serif JP', serif;
+      min-height: 100dvh;
+    }
+
+    /* Confetti dots: small bright candy-colored dots scattered over the background */
+    body {
+      background-image:
+        radial-gradient(circle at 6% 10%, rgba(255, 90, 118, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 94% 6%, rgba(255, 201, 60, 0.45) 0 6px, transparent 7px),
+        radial-gradient(circle at 12% 42%, rgba(77, 163, 255, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 88% 38%, rgba(46, 196, 166, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 50% 72%, rgba(255, 90, 118, 0.25) 0 4px, transparent 5px),
+        radial-gradient(circle at 4% 84%, rgba(255, 201, 60, 0.35) 0 6px, transparent 7px),
+        radial-gradient(circle at 96% 86%, rgba(77, 163, 255, 0.30) 0 6px, transparent 7px),
+        radial-gradient(circle at 30% 95%, rgba(46, 196, 166, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 70% 96%, rgba(255, 138, 61, 0.30) 0 5px, transparent 6px);
+      background-attachment: fixed;
+    }
+
+    .app { max-width: 1060px; margin: 0 auto; padding: 20px 16px 64px; }
+    @media (min-width: 720px) {
+      .app { padding: 28px 28px 72px; }
+    }
+
+    /* Logo bar: mint-green rounded band */
+    .site-header {
+      text-align: center;
+      margin: 0 0 18px;
+      padding: 26px 12px 22px;
+      background: linear-gradient(135deg, #A9EDCB 0%, #C2F2DE 55%, #BEE9D2 100%);
+      border-radius: 28px;
+      box-shadow: 0 8px 24px rgba(255, 150, 120, 0.18);
+    }
+    .site-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(44px, 11vw, 76px);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      line-height: 1.15;
+      background: linear-gradient(90deg, #FF5A76 0%, #FF8A3D 28%, #FFC93C 52%, #2EC4A6 76%, #4DA3FF 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 0 rgba(255, 255, 255, 0.95)) drop-shadow(0 6px 14px rgba(255, 120, 120, 0.25));
+    }
+    .site-title a { color: inherit; text-decoration: none; }
+
+    /* Hero: sky-blue band with confetti */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      padding: 34px 18px 30px;
+      margin-bottom: 26px;
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 8% 20%, rgba(255, 90, 118, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 92% 14%, rgba(255, 201, 60, 0.6) 0 7px, transparent 8px),
+        radial-gradient(circle at 16% 82%, rgba(46, 196, 166, 0.55) 0 5px, transparent 6px),
+        radial-gradient(circle at 84% 78%, rgba(255, 138, 61, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 50% 8%, rgba(77, 163, 255, 0.45) 0 5px, transparent 6px),
+        linear-gradient(180deg, #BFE6FF 0%, #D6F0FF 60%, #CDEBFF 100%);
+      box-shadow: 0 8px 24px rgba(77, 163, 255, 0.22);
+    }
+    .hero-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(26px, 6vw, 44px);
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      line-height: 1.35;
+      color: #FF4D6D;
+      text-shadow: 0 2px 0 rgba(255, 255, 255, 0.9);
+    }
+    .hero-sub {
+      margin-top: 12px;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.9;
+      color: #234;
+    }
+    .hero-cta {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 13px 34px;
+      border-radius: 999px;
+      background: #FFC93C;
+      border: 2px solid #FF9F1C;
+      color: #B34700;
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      box-shadow: 0 4px 0 #FF9F1C, 0 8px 18px rgba(255, 159, 28, 0.35);
+    }
+    .hero-cta:active { transform: translateY(2px); box-shadow: 0 2px 0 #FF9F1C; }
+
+    /* Game screenshot slideshow */
+    .play-card {
+      background: #FF9FB2;
+      border: 2px solid #FF7D99;
+      border-radius: 28px;
+      overflow: hidden;
+      margin-bottom: 26px;
+      box-shadow: 0 8px 24px rgba(255, 150, 120, 0.14);
+    }
+    .card-slides {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      background: #fff;
+      border-bottom: 3px solid rgba(255, 255, 255, 0.55);
+    }
+    .card-slides .card-shot {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+    .card-slides .card-shot.is-active { opacity: 1; }
+    .card-dots {
+      position: absolute;
+      left: 50%;
+      bottom: 8px;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .card-dots span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.55);
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18);
+    }
+    .card-dots span.is-active { background: #fff; }
+
+    /* Text sections */
+    .about {
+      margin-top: 26px;
+      padding: 24px 22px;
+      background: #FFF3F5;
+      border-radius: 24px;
+      font-size: 22px;
+      line-height: 1.9;
+      color: #5a4a44;
+    }
+    .about h2 { font-size: 24px; margin-bottom: 10px; color: #3d2f2b; }
+    .about p { margin-bottom: 10px; }
+    .about p:last-child { margin-bottom: 0; }
+    .about a { color: #FF5A76; }
+    .about ol, .about ul { margin: 0 0 10px 26px; }
+    .about li { margin-bottom: 8px; }
+    .about li:last-child { margin-bottom: 0; }
+
+    .footer {
+      text-align: center;
+      margin-top: 44px;
+      padding: 20px 16px;
+      font-size: 22px;
+      color: #8a7a72;
+      line-height: 1.9;
+      background: #FFE3E6;
+      border-radius: 24px;
+    }
+    .footer a { color: #FF5A76; font-size: 22px; text-underline-offset: .2em; }
+    .footer a:active { color: #555; }
+    .footer-brand {
+      display: inline-block;
+      font-size: 22px;
+      color: #c98a96;
+      letter-spacing: 0.08em;
+    }
+  </style>
+  <meta property="og:site_name" content="Pare Asobi">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5560584474086870" crossorigin="anonymous"></script>
+</head>
+<body data-game="pareasobi">
+
+<div class="app">
+
+  <header class="site-header">
+    <h1 class="site-title"><a href="https://pareasobi.com/mi/">Pare Asobi</a></h1>
+  </header>
+
+  <section class="hero" aria-label="Tākaroa te Reversi (Othello)">
+    <p class="hero-title">Reversi (Othello)</p>
+    <p class="hero-sub">Hurihia te papa, tētahi kōpae i te wā kotahi.<br>Kore utu i tō pūtirotiro — kāore he rēhitatanga, kāore he taupānga hei tāuta.</p>
+    <a class="hero-cta" href="https://osero.puzzle-hub-4826.workers.dev">Tākaroa te Reversi ināianei →</a>
+  </section>
+
+  <div class="play-card">
+    <div class="card-slides"><img class="card-shot is-active" src="/assets/game-shots/othello-1.jpg" alt="Whakaahua mata o te Reversi (Othello) i Pare Asobi" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/othello-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/othello-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
+  </div>
+
+  <section class="about" aria-label="He aha te Reversi (Othello)">
+    <h2>He aha te Reversi (Othello)?</h2>
+    <p>Ko te Reversi, e mōhiotia ana ko Othello, he kēmu papa tawhito mō ngā kaitākaro e rua. Ka tango tētahi kaitākaro i ngā kōpae mangu, ka tango tētahi i ngā kōpae mā, ā, ka tohatoha ngā taha e rua i tētahi papa kotahi. Tata ki te meneti kotahi te roa o te ako i ngā ture, engari mā tētahi nekehanga kotahi ka huri te kēmu katoa — koirā te take e uaua ai te whakarere i te Reversi.</p>
+    <p>Ko te papa paerewa he 8 ki te 8 ngā tapawhā, ā, ka tīmata te kēmu ki ngā kōpae e whā i waenganui: e rua ngā mangu me e rua ngā mā, i whakatakotoria hauroki. Mai i reira, ka hurihia e ngā kaitākaro te whakatakoto i tētahi kōpae i te wā kotahi, ā, ka huri ngā kōpae katoa e mau ana ki tō rātou tae. Ka kī ana te papa, ka kore rānei he nekehanga ture e toe ana ki tētahi kaitākaro, ka mutu te kēmu, ā, ka toa te kaitākaro he nui ake ōna kōpae i te papa.</p>
+    <p>I Pare Asobi ka taea e koe te tākaro i te Reversi mō te kore utu i tō pūtirotiro, i tō waea, i tō rorohiko rānei. Kāore he mea hei tikiake, kāore he pūkete hei waihanga — whakatuwheratia noa te kēmu ka tīmata ki te tākaro.</p>
+  </section>
+
+  <section class="about" aria-label="Me pēhea te tākaro i te Reversi (Othello)">
+    <h2>Me pēhea te tākaro</h2>
+    <ol>
+      <li><strong>Ko te Mangu te tuatahi ki te neke.</strong> Whakatakotoria tētahi kōpae ki tētahi tapawhā wātea kia mau ai i tētahi, i ētahi atu rānei o ngā kōpae o tō hoa whawhai i tētahi rārangi tika — whakawhiti, ki raro, hauroki rānei — i waenga i tō kōpae hou me tētahi kōpae o tō tae ake kua noho kē ki te papa.</li>
+      <li><strong>Ka huri ngā kōpae katoa i mau ki tō tae.</strong> Mā tētahi nekehanga kotahi ka huri te rarangi katoa o ngā kōpae i te wā kotahi, nō reira mā tētahi nekehanga pai ka nui te huringa o te tatau.</li>
+      <li><strong>Mēnā kāore he nekehanga ture ki a koe, ka hipa koe.</strong> Ka neke anō tō hoa whawhai. Ka haere tonu te kēmu kia kī te papa, kia kore rānei tētahi kaitākaro e neke.</li>
+      <li><strong>Ka toa te kaitākaro he nui ake ōna kōpae.</strong> Ko te tatau whakamutunga ko te maha noa o ngā kōpae o ia tae e toe ana ki te papa.</li>
+      <li><strong>Ko ngā kokonga ngā tapawhā haumaru rawa.</strong> Ka tango ana koe i tētahi kokonga, e kore rawa e taea te huri. He mōrearea ngā tapawhā i te taha tonu o tētahi kokonga, nā te mea ka taea e rātou te tuku taua kokonga ki tō hoa whawhai.</li>
+    </ol>
+  </section>
+
+  <section class="about" aria-label="Ngā huarahi tākaro i te Reversi (Othello)">
+    <h2>Ngā huarahi tākaro</h2>
+    <p><strong>Tākaroa ā-ipurangi ki ngā tāngata huri noa i te ao.</strong> Tīmatahia tētahi kēmu tere ka tūtaki ki tētahi hoa whawhai hou inā tonu nei. Ka whakamahia e ngā kēmu whai whakatauranga ngā whakatauranga, ngā tūnga, ngā rārangi tūnga me ngā taitara, kia kite ai koe i tō whakatauranga e piki ana i a koe e toa ana. He kore whakatauranga ngā kēmu whakangā, he pōturi hoki, kia pārekareka ai koe ki te kēmu me te kore e māharahara mō tō whakatauranga.</p>
+    <p><strong>Tākaroa ki te rorohiko.</strong> E rima ngā taumata rorohiko, mai i te māmā ki te kaha rawa. Tīmatahia i te taumata māmā ki te ako i ngā ture, kātahi ka piki tētahi taumata i te wā kotahi kia hoatu e te taumata kaha rawa he wero tūturu ki a koe.</p>
+    <p><strong>Tākaroa me ngā kaitākaro e rua i runga i tētahi pūrere kotahi.</strong> Tohatohahia tētahi waea, tētahi mata rānei ki tētahi hoa ka hurihia te whakatakoto i ngā kōpae, pērā i te papa tūturu.</p>
+    <p><strong>Whakamātauria ngā papa he āhua rerekē.</strong> I ngā kēmu rorohiko me ngā kēmu e rua ngā kaitākaro i runga i tētahi pūrere kotahi, ka taea e koe te kōwhiri i tētahi āhua papa: te papa paerewa 8 ki te 8, te whānui, te ngākau, te tōnati, te taimana, te ripeka rānei. Ka huri ia āhua i te whakatuwheratanga me te āhua o te kēmu e puta ana.</p>
+    <p><strong>He tere, he pōturi rānei — māu e whiriwhiri.</strong> Ka hoatu e ngā kēmu paerewa he 20 hēkona ia nekehanga ki a koe mō te tākaro tere, hihiri. Mēnā he pai ake ki a koe te whakaaro āta, ka hoatu e te tākaro whakangā he wā roa ake ki a koe. Kei te wātea te kēmu i roto i ngā reo 100.</p>
+  </section>
+
+  <section class="about" aria-label="Ngā pātai auau mō te Reversi (Othello)">
+    <h2>Ngā pātai auau</h2>
+    <p><strong>He kore utu te Reversi?</strong> Āe. He kore utu katoa te Reversi i Pare Asobi hei tākaro, kāore he rēhitatanga, kāore he taupānga hei tāuta.</p>
+    <p><strong>Ka taea e au te tākaro i taku waea?</strong> Āe. Ka mahi te kēmu i ngā waea, i ngā papa, i ngā rorohiko hoki, i tō pūtirotiro tonu.</p>
+    <p><strong>Me whai pūkete au hei tākaro ā-ipurangi?</strong> Kāo. Ka taea e koe te tīmata i tētahi kēmu tere ā-ipurangi me te kore e waihanga pūkete.</p>
+    <p><strong>He aha te rerekētanga i waenga i te Reversi me te Othello?</strong> He kēmu kotahi rāua. Ko Othello te ingoa rongonui rawa mō te Reversi, ā, ka whakamahia ngā ingoa e rua mō te kēmu huri kōpae mangu-mā.</p>
+    <p>Kei te rapu kēmu anō? Tirohia ngā kēmu kore utu e ono katoa i te <a href="https://pareasobi.com/mi/">whārangi matua o Pare Asobi i te reo Māori</a>, tae atu ki te Sudoku (Nanpure), te Mill (Nine Men's Morris), te Crossword, te Shirupure me te Wado Kaichin.</p>
+  </section>
+
+  <footer class="footer">
+    <a href="/privacy.html#advertising">Pānui &amp; Kaupapa Here Tūmataiti</a><br>
+    <a href="/contact.html">Whakapā Mai</a><br>
+    <a href="/terms.html">Ngā Ture Whakamahi</a><br>
+    <a href="/guide.html">Me Pēhea te Tākaro</a> · <a href="/faq.html">Ngā Pātai Auau</a> · <a href="/about.html">Mō Pare Asobi</a><br>
+    <span style="font-size:18px;">Kei te reo Hapanihi ngā aratohu mō tēnei wā.</span><br>
+    <a href="https://pareasobi.com/mi/">Hoki ki Pare Asobi</a><br>
+
+    <span class="footer-brand">Pare Asobi</span>
+  </footer>
+
+</div>
+
+<script>
+/* Game screenshot slideshow: switches automatically every 4 seconds. No outside library.
+   The first shot still shows if JavaScript is off. Broken images are skipped. */
+(function () {
+  var boxes = document.querySelectorAll('.card-slides');
+  if (!boxes.length) return;
+  boxes.forEach(function (box) {
+    var imgs = Array.prototype.slice.call(box.querySelectorAll('.card-shot'));
+    var dots = Array.prototype.slice.call(box.querySelectorAll('.card-dots span'));
+    var cur = 0, timer = null, visible = true;
+    function alive() { return imgs.filter(function (im) { return !im.dataset.broken; }); }
+    function show(n) {
+      var list = alive();
+      if (!list.length) return;
+      if (list.length === 1) {
+        imgs.forEach(function (im) { im.classList.toggle('is-active', list[0] === im); });
+        dots.forEach(function (d, i) { d.classList.toggle('is-active', list[0] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+        return;
+      }
+      cur = ((n % list.length) + list.length) % list.length;
+      imgs.forEach(function (im) { im.classList.toggle('is-active', list[cur] === im); });
+      dots.forEach(function (d, i) { d.classList.toggle('is-active', list[cur] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+    }
+    function start() { if (timer === null && visible) timer = setInterval(function () { show(cur + 1); }, 4000); }
+    function stop() { if (timer !== null) { clearInterval(timer); timer = null; } }
+    imgs.forEach(function (im) {
+      if (im.complete && im.naturalWidth === 0) im.dataset.broken = '1';
+      im.addEventListener('error', function () { im.dataset.broken = '1'; if (alive().length < 2) stop(); show(cur); });
+    });
+    show(0);
+    document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else start(); });
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { visible = en.isIntersecting; if (visible) start(); else stop(); });
+      }, { rootMargin: '100px' });
+      io.observe(box);
+    } else {
+      start();
+    }
+  });
+})();
+</script>
+<script defer src="/assets/pare-analytics.js"></script>
+</body>
+</html>

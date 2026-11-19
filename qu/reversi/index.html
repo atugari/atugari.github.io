@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="qu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#FFF8E7">
+  <title>Reversi (Othello) | Mana Qullqi Llikapi T'ablu Pukllay - Pare Asobi</title>
+  <meta name="description" content="Reversi (Othello) pukllayta mana qullqi navegadorniykipi. Llikapi pukllay pachantin runakunawan chanikuna, kamachiykunata ima, antapachawan pichqa patakunapi, icha iskay pukllaqkunawan huk imallapi. Mana qillqakuyta munanchu.">
+  <meta name="keywords" content="Reversi, Othello, mana qullqi Reversi, Othello llikapi pukllay, llikapi Reversi, t'ablu pukllay, mana qullqi navegador pukllay, Pare Asobi">
+  <meta name="robots" content="index, follow">
+  <meta name="google-adsense-account" content="ca-pub-5560584474086870">
+  <link rel="canonical" href="https://pareasobi.com/qu/reversi/">
+  <link rel="alternate" hreflang="en" href="https://pareasobi.com/en/reversi/">
+    <link rel="alternate" hreflang="qu" href="https://pareasobi.com/qu/reversi/">
+  <link rel="alternate" hreflang="x-default" href="https://pareasobi.com/qu/reversi/">
+  <meta property="og:title" content="Reversi (Othello) | Mana Qullqi Llikapi T'ablu Pukllay - Pare Asobi">
+  <meta property="og:description" content="Reversi (Othello) pukllayta mana qullqi navegadorniykipi — llikapi pachantin pukllaqkunawan, antapachawan pichqa patakunapi, icha iskay pukllaqkunawan huk imallapi.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://pareasobi.com/qu/reversi/">
+  <meta property="og:locale" content="qu_PE">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Reversi (Othello) | Mana Qullqi Llikapi T'ablu Pukllay - Pare Asobi">
+  <meta name="twitter:description" content="Reversi (Othello) pukllayta mana qullqi navegadorniykipi — llikapi pachantin pukllaqkunawan, antapachawan pichqa patakunapi, icha iskay pukllaqkunawan huk imallapi.">
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@graph":[
+      {"@type":"WebSite","@id":"https://pareasobi.com/qu/#website","url":"https://pareasobi.com/qu/","name":"Pare Asobi","inLanguage":"qu"},
+      {"@type":"WebPage","@id":"https://pareasobi.com/qu/reversi/#webpage","url":"https://pareasobi.com/qu/reversi/","name":"Reversi (Othello) | Mana Qullqi Llikapi T'ablu Pukllay - Pare Asobi","description":"Reversi (Othello) pukllayta mana qullqi navegadorniykipi. Llikapi pukllay pachantin runakunawan chanikuna, kamachiykunata ima, antapachawan pichqa patakunapi, icha iskay pukllaqkunawan huk imallapi.","inLanguage":"qu","isPartOf":{"@id":"https://pareasobi.com/qu/#website"}}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: #FFF8E7;
+      color: #1a1a1a;
+      font-family: 'Noto Serif JP', serif;
+      min-height: 100dvh;
+    }
+
+    /* Confetti dots: small bright candy-colored dots scattered over the background */
+    body {
+      background-image:
+        radial-gradient(circle at 6% 10%, rgba(255, 90, 118, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 94% 6%, rgba(255, 201, 60, 0.45) 0 6px, transparent 7px),
+        radial-gradient(circle at 12% 42%, rgba(77, 163, 255, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 88% 38%, rgba(46, 196, 166, 0.35) 0 5px, transparent 6px),
+        radial-gradient(circle at 50% 72%, rgba(255, 90, 118, 0.25) 0 4px, transparent 5px),
+        radial-gradient(circle at 4% 84%, rgba(255, 201, 60, 0.35) 0 6px, transparent 7px),
+        radial-gradient(circle at 96% 86%, rgba(77, 163, 255, 0.30) 0 6px, transparent 7px),
+        radial-gradient(circle at 30% 95%, rgba(46, 196, 166, 0.30) 0 4px, transparent 5px),
+        radial-gradient(circle at 70% 96%, rgba(255, 138, 61, 0.30) 0 5px, transparent 6px);
+      background-attachment: fixed;
+    }
+
+    .app { max-width: 1060px; margin: 0 auto; padding: 20px 16px 64px; }
+    @media (min-width: 720px) {
+      .app { padding: 28px 28px 72px; }
+    }
+
+    /* Logo bar: mint-green rounded band */
+    .site-header {
+      text-align: center;
+      margin: 0 0 18px;
+      padding: 26px 12px 22px;
+      background: linear-gradient(135deg, #A9EDCB 0%, #C2F2DE 55%, #BEE9D2 100%);
+      border-radius: 28px;
+      box-shadow: 0 8px 24px rgba(255, 150, 120, 0.18);
+    }
+    .site-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(44px, 11vw, 76px);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      line-height: 1.15;
+      background: linear-gradient(90deg, #FF5A76 0%, #FF8A3D 28%, #FFC93C 52%, #2EC4A6 76%, #4DA3FF 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 0 rgba(255, 255, 255, 0.95)) drop-shadow(0 6px 14px rgba(255, 120, 120, 0.25));
+    }
+    .site-title a { color: inherit; text-decoration: none; }
+
+    /* Hero: sky-blue band with confetti */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      padding: 34px 18px 30px;
+      margin-bottom: 26px;
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 8% 20%, rgba(255, 90, 118, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 92% 14%, rgba(255, 201, 60, 0.6) 0 7px, transparent 8px),
+        radial-gradient(circle at 16% 82%, rgba(46, 196, 166, 0.55) 0 5px, transparent 6px),
+        radial-gradient(circle at 84% 78%, rgba(255, 138, 61, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 50% 8%, rgba(77, 163, 255, 0.45) 0 5px, transparent 6px),
+        linear-gradient(180deg, #BFE6FF 0%, #D6F0FF 60%, #CDEBFF 100%);
+      box-shadow: 0 8px 24px rgba(77, 163, 255, 0.22);
+    }
+    .hero-title {
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: clamp(26px, 6vw, 44px);
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      line-height: 1.35;
+      color: #FF4D6D;
+      text-shadow: 0 2px 0 rgba(255, 255, 255, 0.9);
+    }
+    .hero-sub {
+      margin-top: 12px;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.9;
+      color: #234;
+    }
+    .hero-cta {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 13px 34px;
+      border-radius: 999px;
+      background: #FFC93C;
+      border: 2px solid #FF9F1C;
+      color: #B34700;
+      font-family: 'M PLUS Rounded 1c', 'Noto Serif JP', serif;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      box-shadow: 0 4px 0 #FF9F1C, 0 8px 18px rgba(255, 159, 28, 0.35);
+    }
+    .hero-cta:active { transform: translateY(2px); box-shadow: 0 2px 0 #FF9F1C; }
+
+    /* Game screenshot slideshow */
+    .play-card {
+      background: #FF9FB2;
+      border: 2px solid #FF7D99;
+      border-radius: 28px;
+      overflow: hidden;
+      margin-bottom: 26px;
+      box-shadow: 0 8px 24px rgba(255, 150, 120, 0.14);
+    }
+    .card-slides {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      background: #fff;
+      border-bottom: 3px solid rgba(255, 255, 255, 0.55);
+    }
+    .card-slides .card-shot {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+    .card-slides .card-shot.is-active { opacity: 1; }
+    .card-dots {
+      position: absolute;
+      left: 50%;
+      bottom: 8px;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .card-dots span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.55);
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18);
+    }
+    .card-dots span.is-active { background: #fff; }
+
+    /* Text sections */
+    .about {
+      margin-top: 26px;
+      padding: 24px 22px;
+      background: #FFF3F5;
+      border-radius: 24px;
+      font-size: 22px;
+      line-height: 1.9;
+      color: #5a4a44;
+    }
+    .about h2 { font-size: 24px; margin-bottom: 10px; color: #3d2f2b; }
+    .about p { margin-bottom: 10px; }
+    .about p:last-child { margin-bottom: 0; }
+    .about a { color: #FF5A76; }
+    .about ol, .about ul { margin: 0 0 10px 26px; }
+    .about li { margin-bottom: 8px; }
+    .about li:last-child { margin-bottom: 0; }
+
+    .footer {
+      text-align: center;
+      margin-top: 44px;
+      padding: 20px 16px;
+      font-size: 22px;
+      color: #8a7a72;
+      line-height: 1.9;
+      background: #FFE3E6;
+      border-radius: 24px;
+    }
+    .footer a { color: #FF5A76; font-size: 22px; text-underline-offset: .2em; }
+    .footer a:active { color: #555; }
+    .footer-brand {
+      display: inline-block;
+      font-size: 22px;
+      color: #c98a96;
+      letter-spacing: 0.08em;
+    }
+  </style>
+  <meta property="og:site_name" content="Pare Asobi">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5560584474086870" crossorigin="anonymous"></script>
+</head>
+<body data-game="pareasobi">
+
+<div class="app">
+
+  <header class="site-header">
+    <h1 class="site-title"><a href="https://pareasobi.com/qu/">Pare Asobi</a></h1>
+  </header>
+
+  <section class="hero" aria-label="Reversi (Othello) pukllay">
+    <p class="hero-title">Reversi (Othello)</p>
+    <p class="hero-sub">T'abluta tikray, huk t'antalla huk kutillapi.<br>Mana qullqi navegadorniykipi — mana qillqakuspa, mana ima ruwayninta churakuspa.</p>
+    <a class="hero-cta" href="https://osero.puzzle-hub-4826.workers.dev">Kunan Reversi pukllay →</a>
+  </section>
+
+  <div class="play-card">
+    <div class="card-slides"><img class="card-shot is-active" src="/assets/game-shots/othello-1.jpg" alt="Reversi (Othello) Pare Asobi llikapi qhaway" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/othello-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="/assets/game-shots/othello-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
+  </div>
+
+  <section class="about" aria-label="Imataq Reversi (Othello)">
+    <h2>Imataq Reversi (Othello)?</h2>
+    <p>Reversi, Othello sutiyuqpas, iskay pukllaqkunapaq ñawpaq t'ablu pukllaymi. Huk pukllaqmi yana t'antakunata hap'in, hukninñataq yuraq t'antakunata, iskaynin kinraymi huk t'abluta rakinakunku. Kamachiykunata yachayqa huk minutulla, ichaqa huk kuyuyllam tukuy pukllayta tikrayta atin — chaymi Reversita saqiyqa sasachakuq.</p>
+    <p>Ñawpaq t'abluqa 8 kaq 8 kuchukuna, pukllayñataqmi chawpipi tawa t'antawan qallarin: iskay yana, iskay yuraq, ch'iqanta churasqa. Chaymanta pukllaqkuna hukmanta huk huk t'antata churanku, hap'isqa t'anta sapaqa paykunapa llimphinman tikrakun. T'ablu hunt'akuptin, icha mana pipas kamachisqa kuyuy kanankama, pukllayqa tukukun, t'ablupi aswan t'antayuq pukllaqmi atipan.</p>
+    <p>Pare Asobipi Reversi pukllayta mana qullqi navegadorniykipi, tilifunuykipi icha antapachaykipi. Mana imata uraykuchinapaq, mana yupayta ruranapaq — pukllayta kicharillay pukllayta qallarinaykipaq.</p>
+  </section>
+
+  <section class="about" aria-label="Imaynata Reversi (Othello) pukllana">
+    <h2>Imaynata pukllana</h2>
+    <ol>
+      <li><strong>Yana ñawpaqta kuyurin.</strong> Huk t'antata ch'usaq kuchupi churay, awqaykipa huk icha aswan t'antankunata chiqan siq'ipi hap'inaykipaq — chimpay, urayman, ch'iqanta ima — musuq t'antaykiwan, t'ablupi kaq kikiykipa llimphin t'antawan chawpinpi.</li>
+      <li><strong>Hap'isqa t'anta sapaqa llimphiykiman tikrakun.</strong> Huk kuyuyllam huk siq'i t'antakunata huk kutillapi tikrayta atin, chayraykum huk allin kuyuyqa chaninta achkata tikrayta atin.</li>
+      <li><strong>Kamachisqa kuyuy mana kaptinqa, qunqay.</strong> Awqaykim musuqmanta kuyurin. Pukllayqa hinalla rinqa t'ablu hunt'akunankama, icha mana pipas kuyuyta atinankama.</li>
+      <li><strong>Aswan t'antayuq pukllaqmi atipan.</strong> Tukuy chaninqa t'ablupi puchuq sapa llimphi t'antakunapa yupayllam.</li>
+      <li><strong>K'uchukunaqa aswan waqaychasqa kuchukunam.</strong> Huk k'uchuta hap'irqaspaykiqa, manapunim tikrakunkachu. K'uchuman kuchu kuchukunaqa chikichasqam, chaykunaqa chay k'uchuta awqaykiman quymanmi.</li>
+    </ol>
+  </section>
+
+  <section class="about" aria-label="Reversi (Othello) pukllanapaq ñankuna">
+    <h2>Pukllanapaq ñankuna</h2>
+    <p><strong>Llikapi pukllay pachantin runakunawan.</strong> Utqay pukllayta qallariy musuq awqata usqhaylla tarinaykipaq. Chaniyuq pukllaykunaqa chanikunata, kamachiykunata, kamachiy qillqakunata, sutikunatapas llamk'achinku, chaniykita qhawanaykipaq atipaspa wiñarichkaptin. Samay pukllaykunaqa mana chaniyuq, pisi ima, pukllayta kusisqa pukllanaykipaq chaniykimanta mana llakikuspa.</p>
+    <p><strong>Antapachawan pukllay.</strong> Pichqa antapacha patakuna, sasallamanta kallpasapaq. Sasalla patapi qallariy kamachiykunata yachanaykipaq, chaymanta huk patata huk kutillapi wichariy kallpasapa pata chiqap sasachakuyta qunankama.</p>
+    <p><strong>Iskay pukllaqkunawan huk imallapi pukllay.</strong> Huk tilifunuta, huk qhawaytapas wawqiykiwan rakinakuy t'antakunata churay hukmanta huk, chiqap t'ablu hina.</p>
+    <p><strong>T'ablukunata mana ñawpaq rikch'ayniyuq ruway.</strong> Antapacha pukllaykunapi, huk imallapi iskay pukllaq pukllaykunapipas, t'ablu rikch'ayta akllayta atinkim: ñawpaq 8 kaq 8 t'ablu, kichasqa, sunqu, t'unta, rumi, chakana ima. Sapa rikch'aymi qallariyta, pukllaypa rikuynintapas tikran.</p>
+    <p><strong>Utqay icha pisi — akllayniyki.</strong> Ñawpaq pukllaykunaqa 20 sikunduskunata qun sapa kuyuy utqaylla, kawsayniyuq pukllanapaq. Allinta yuyayta munaspaykiqa, samay pukllayqa aswan unayta qun. Pukllayqa 100 simikunapi kachkan.</p>
+  </section>
+
+  <section class="about" aria-label="Reversi (Othello)manta sapa kuti tapukusqakuna">
+    <h2>Sapa kuti tapukusqakuna</h2>
+    <p><strong>¿Reversi mana qullqichu?</strong> Arí. Pare Asobipi Reversiqa tukuylla mana qullqi pukllanapaq, mana qillqakuspa, mana ima ruwayninta churakuspa.</p>
+    <p><strong>¿Tilifunuykipi pukllayta atinichu?</strong> Arí. Pukllayqa tilifunukunapi, tablitakunapi, antapachakunapipas llamk'an, chiqallata navegadorniykipi.</p>
+    <p><strong>¿Llikapi pukllanapaq yupayta munanchu?</strong> Manam. Utqay pukllayta llikapi qallariyta atinkim yupayta mana ruraspa.</p>
+    <p><strong>¿Imataq Reversiwan Othellowan ukhupi kaqnin?</strong> Kikin pukllaymi. Othelloqa Reversipaq aswan riqsisqa sutinmi, iskaynin sutikunapas yana-yuraq t'anta tikray pukllaypaq llamk'achisqam.</p>
+    <p>¿Huk pukllaykunata mask'achkankichu? Tukuy suqta mana qullqi pukllaykunata qhaway <a href="https://pareasobi.com/qu/">Pare Asobi Runasimi simipi qallariy p'anqapi</a>, Sudoku (Nanpure), Mill (Nine Men's Morris), Crossword, Shirupure, Wado Kaichin ima.</p>
+  </section>
+
+  <footer class="footer">
+    <a href="/privacy.html#advertising">Willay &amp; Sapallan Kawsay Kamachiy</a><br>
+    <a href="/contact.html">Ñuqaykuwan Rimay</a><br>
+    <a href="/terms.html">Llamk'ay Kamachiykuna</a><br>
+    <a href="/guide.html">Imaynata Pukllana</a> · <a href="/faq.html">Sapa Kuti Tapukusqakuna</a> · <a href="/about.html">Pare Asobimanta</a><br>
+    <span style="font-size:18px;">Pusachiykunaqa kunan Hapunsimillapim kachkan.</span><br>
+    <a href="https://pareasobi.com/qu/">Pare Asobiman kutiy</a><br>
+
+    <span class="footer-brand">Pare Asobi</span>
+  </footer>
+
+</div>
+
+<script>
+/* Game screenshot slideshow: switches automatically every 4 seconds. No outside library.
+   The first shot still shows if JavaScript is off. Broken images are skipped. */
+(function () {
+  var boxes = document.querySelectorAll('.card-slides');
+  if (!boxes.length) return;
+  boxes.forEach(function (box) {
+    var imgs = Array.prototype.slice.call(box.querySelectorAll('.card-shot'));
+    var dots = Array.prototype.slice.call(box.querySelectorAll('.card-dots span'));
+    var cur = 0, timer = null, visible = true;
+    function alive() { return imgs.filter(function (im) { return !im.dataset.broken; }); }
+    function show(n) {
+      var list = alive();
+      if (!list.length) return;
+      if (list.length === 1) {
+        imgs.forEach(function (im) { im.classList.toggle('is-active', list[0] === im); });
+        dots.forEach(function (d, i) { d.classList.toggle('is-active', list[0] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+        return;
+      }
+      cur = ((n % list.length) + list.length) % list.length;
+      imgs.forEach(function (im) { im.classList.toggle('is-active', list[cur] === im); });
+      dots.forEach(function (d, i) { d.classList.toggle('is-active', list[cur] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+    }
+    function start() { if (timer === null && visible) timer = setInterval(function () { show(cur + 1); }, 4000); }
+    function stop() { if (timer !== null) { clearInterval(timer); timer = null; } }
+    imgs.forEach(function (im) {
+      if (im.complete && im.naturalWidth === 0) im.dataset.broken = '1';
+      im.addEventListener('error', function () { im.dataset.broken = '1'; if (alive().length < 2) stop(); show(cur); });
+    });
+    show(0);
+    document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else start(); });
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { visible = en.isIntersecting; if (visible) start(); else stop(); });
+      }, { rootMargin: '100px' });
+      io.observe(box);
+    } else {
+      start();
+    }
+  });
+})();
+</script>
+<script defer src="/assets/pare-analytics.js"></script>
+</body>
+</html>
