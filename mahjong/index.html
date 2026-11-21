@@ -648,6 +648,21 @@ footer{margin-top:22px;font-size:13px;color:var(--muted);line-height:1.7}
 .setrow:has(.ruby-toggle){flex-wrap:wrap}
 .menupop .ruby-toggle{width:100%;margin:6px 0}
 </style>
+<style>
+/* ===== MAHJONG ONLINE ADDITION: lobby & online UI ===== */
+.door-online{display:block;margin:14px auto 0;padding:11px 26px;font:inherit;font-size:16px;font-weight:800;color:var(--gold,#f2b33d);background:transparent;border:2px solid var(--gold,#f2b33d);border-radius:999px;cursor:pointer}
+.mj-err{color:#e0483e;min-height:1.2em;font-weight:700;margin:6px 0}
+.mj-code{font-size:32px;font-weight:900;letter-spacing:.35em;text-align:center;margin:8px 0}
+.mj-seats{list-style:none;padding:0;margin:8px 0}
+.mj-seats li{padding:8px 10px;border:1px solid var(--line,#ccc);border-radius:9px;margin:6px 0;background:var(--panel,#fff)}
+.mj-wait{margin:10px 0;font-weight:700}
+.mj-note{font-size:13px;color:var(--muted,#666)}
+#mjTimer{font-weight:800;color:var(--gold,#f2b33d);margin-left:10px;white-space:nowrap}
+#mjReconnect{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:60}
+#mjReconnect.on{display:flex}
+#mjReconnect .mj-reconnect-card{background:var(--panel,#fff);color:var(--ink,#222);border-radius:14px;padding:22px;max-width:320px;text-align:center}
+#mjReconnect button{margin:6px}
+</style>
 </head>
 <body class="on-title">
 <div class="wrap">
@@ -662,6 +677,7 @@ footer{margin-top:22px;font-size:13px;color:var(--muted);line-height:1.7}
     <p class="door-sub-text" data-i="subtitle">CPUと対戦するリーチ麻雀。4人打ちと3人打ち、どちらも遊べます。</p>
     <button class="door-start" id="btnDoorStart" data-i="doorStart">スタート</button>
     <a class="door-back" href="https://pareasobi.com/"><span data-i="back">パレあそびに戻る</span></a>
+    <button class="door-online" id="btnOnline">オンライン対戦</button>
     <p class="door-note" data-i="onlineNote">オンライン対戦は準備中です。今はCPU対戦だけ遊べます。</p>
   </div>
 </section>
@@ -862,11 +878,69 @@ footer{margin-top:22px;font-size:13px;color:var(--muted);line-height:1.7}
   </div>
 </section>
 
+<!-- MAHJONG ONLINE ADDITION: online lobby screen -->
+<section id="scr-online" class="screen">
+  <div class="screen-head">
+    <button class="backbtn" id="mjBackHome">← タイトルに戻る</button>
+    <h1>オンライン対戦</h1>
+  </div>
+  <p class="sub">4人打ち・ふつうルールです。人が足りない席にはCPUが入ります。途中で抜けた人や接続が切れた人の席も、CPUが代わりに打ちます。</p>
+  <div id="mjLobbyHome">
+    <div class="setbox">
+      <h2>ニックネーム</h2>
+      <div class="setrow"><span class="lab">名前</span>
+        <input id="mjName" type="text" maxlength="12" autocomplete="off" placeholder="名前（12文字まで）">
+      </div>
+      <div class="setrow"><span class="lab">試合の長さ</span>
+        <div class="seg" id="mjSegLen">
+          <button data-v="0" class="sel">東風戦</button>
+          <button data-v="1">東南戦</button>
+        </div>
+      </div>
+      <p class="mj-err" id="mjErr"></p>
+      <button class="bigbtn" id="mjQuickBtn">クイックマッチ</button>
+      <div class="mj-wait" id="mjQuickWait" hidden>対戦相手を探しています… <button class="ghostbtn" id="mjQuickCancel">キャンセル</button></div>
+      <div class="rowbtns">
+        <button class="ghostbtn" id="mjCreateBtn">部屋を作る</button>
+      </div>
+      <div class="setrow"><span class="lab">部屋コード</span>
+        <input id="mjCodeInput" type="text" maxlength="6" autocomplete="off" placeholder="6文字のコード" style="text-transform:uppercase">
+        <button class="ghostbtn" id="mjJoinBtn">部屋に入る</button>
+      </div>
+      <div class="rowbtns" id="mjResumeRow" hidden>
+        <button class="ghostbtn" id="mjResumeBtn">前の部屋に戻る</button>
+      </div>
+    </div>
+  </div>
+  <div id="mjRoomLobby" hidden>
+    <div class="setbox">
+      <h2>部屋コード</h2>
+      <div class="mj-code" id="mjRoomCode">------</div>
+      <p class="sub">このコードを、一緒に遊ぶ人に伝えてください。</p>
+      <ul class="mj-seats" id="mjSeatList"></ul>
+      <p class="mj-note">人が足りなくてもCPUが入ります。</p>
+      <button class="bigbtn" id="mjStartBtn" hidden>スタート</button>
+      <div class="rowbtns">
+        <button class="ghostbtn" id="mjLeaveBtn">部屋を出る</button>
+      </div>
+      <p class="mj-err" id="mjErr2"></p>
+    </div>
+  </div>
+</section>
+
 <footer data-i="foot">牌をタップして捨てます。鳴ける場面ではボタンが出ます。リーチ後は自動でツモ切りになります。</footer>
 </div>
 
 <!-- RESULT / RULES MODAL -->
 <div class="overlay" id="overlay"><div class="modal" id="modal"></div></div>
+
+<!-- MAHJONG ONLINE ADDITION: reconnect overlay -->
+<div id="mjReconnect"><div class="mj-reconnect-card">
+  <p><b>接続が切れました</b></p>
+  <p>対戦はサーバーで続いています。再接続すると戻れます。</p>
+  <button class="bigbtn" id="mjReconnectBtn">再接続する</button>
+  <button class="ghostbtn" id="mjGiveUpBtn">部屋を出る</button>
+</div></div>
 
 <!-- ROUND-START SPLASH -->
 <div class="splash" id="splash" role="status"><div class="splash-card" id="splashCard"></div></div>
@@ -4466,6 +4540,625 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 
 window.addEventListener("mahjong-furigana-change",function(){lastFitKey="";fitForce=true;requestAnimationFrame(fitGame);});
+</script>
+<script>
+/* ================================================================
+   MAHJONG ONLINE ADDITION (phase 1)
+   Everything for online play lives in this one block, added after
+   the original game's scripts. The original CPU game code is not
+   modified: this block only reads its globals (G, CFG, render,
+   showActions, t, tf, ...) and writes a mirror G for online play.
+   ================================================================ */
+const MJ_SERVER_URL = "https://pare-mahjong-online.puzzle-hub-4826.workers.dev";
+(function(){
+"use strict";
+var MJ = {
+  ws: null,
+  session: null,          /* {code, token, seat} */
+  lastState: null,
+  deadline: null,
+  riichiMode: false,
+  actStamp: null,         /* turn stamp already answered (discard/tsumo/kan) */
+  callStamp: null,        /* call-window stamp already answered */
+  handEndShownFor: -1,
+  gameEndShown: false,
+  resultOpen: false,
+  inGameScreen: false,
+  quickTimer: null,
+  len: 0,
+  intentionalClose: false
+};
+function el(id){ return document.getElementById(id); }
+function esc(s){
+  return String(s==null?"":s).replace(/[&<>"']/g, function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+  });
+}
+function mjErrText(e){
+  var m = (e && e.message) ? e.message : String(e||"");
+  if(m.indexOf("ROOM_NOT_FOUND")>=0) return "部屋が見つかりませんでした。コードを確認してください。";
+  if(m.indexOf("ROOM_FULL")>=0) return "その部屋はいっぱいです。";
+  if(m.indexOf("GAME_STARTED")>=0) return "その部屋の対戦はもう始まっています。";
+  if(m.indexOf("NOT_HOST")>=0) return "スタートできるのは部屋を作った人だけです。";
+  if(!m || m.indexOf("HTTP")===0 || m.indexOf("Failed to fetch")>=0 || m.indexOf("NetworkError")>=0)
+    return "サーバーに接続できませんでした。時間をおいてもう一度試してください。";
+  return m;
+}
+function mjSetErr(msg){ var e = el("mjErr"); if(e) e.textContent = msg||""; }
+function mjSetErr2(msg){ var e = el("mjErr2"); if(e) e.textContent = msg||""; }
+function mjNickname(){
+  var v = (el("mjName").value||"").trim();
+  if(v) try{ localStorage.setItem("mjOnlineName", v); }catch(e){}
+  return v;
+}
+function mjApi(path, body){
+  return fetch(MJ_SERVER_URL + path, {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify(body||{})
+  }).then(function(r){
+    return r.json().catch(function(){ return {}; }).then(function(j){
+      if(!r.ok) throw new Error(j.error || j.message || ("HTTP "+r.status));
+      return j;
+    });
+  });
+}
+
+/* ---------------- lobby screen open/close ---------------- */
+function mjOpenLobby(){
+  var scr = el("scr-online"); if(!scr) return;
+  document.querySelectorAll(".screen").forEach(function(s){ s.classList.remove("on"); });
+  scr.classList.add("on");
+  document.body.classList.remove("playing");
+  document.body.classList.add("on-title");
+  window.scrollTo(0,0);
+  if(MJ.session && !MJ.inGameScreen) mjShowRoomView(); else mjShowHomeView();
+}
+function mjHideOnline(){
+  var scr = el("scr-online"); if(scr) scr.classList.remove("on");
+}
+function mjShowHomeView(){
+  el("mjLobbyHome").hidden = false;
+  el("mjRoomLobby").hidden = true;
+  var saved = null;
+  try{ saved = sessionStorage.getItem("mjOnlineSession"); }catch(e){}
+  el("mjResumeRow").hidden = !(saved && !MJ.session);
+}
+function mjShowRoomView(){
+  el("mjLobbyHome").hidden = true;
+  el("mjRoomLobby").hidden = false;
+  if(MJ.session) el("mjRoomCode").textContent = MJ.session.code;
+}
+
+/* ---------------- session / websocket ---------------- */
+function mjSaveSession(){
+  try{
+    if(MJ.session) sessionStorage.setItem("mjOnlineSession", JSON.stringify(MJ.session));
+    else sessionStorage.removeItem("mjOnlineSession");
+  }catch(e){}
+}
+function mjGotSession(res, codeFallback){
+  MJ.session = { code: res.code || codeFallback, token: res.token, seat: res.seat };
+  mjSaveSession();
+  mjSetErr(""); mjSetErr2("");
+  mjShowRoomView();
+  el("mjSeatList").innerHTML = "<li>サーバーに接続しています…</li>";
+  el("mjStartBtn").hidden = true;
+  mjConnect();
+}
+function mjConnect(){
+  var s = MJ.session; if(!s) return;
+  if(MJ.ws){ try{ MJ.ws.close(); }catch(e){} MJ.ws = null; }
+  MJ.intentionalClose = false;
+  var wsUrl = MJ_SERVER_URL.replace(/^http/, "ws")
+    + "/api/rooms/" + encodeURIComponent(s.code)
+    + "/socket?token=" + encodeURIComponent(s.token);
+  var ws = new WebSocket(wsUrl);
+  MJ.ws = ws;
+  ws.onmessage = function(ev){
+    var msg = null;
+    try{ msg = JSON.parse(ev.data); }catch(e){ return; }
+    if(!msg) return;
+    if(msg.type === "state") mjOnState(msg);
+    else if(msg.type === "error"){
+      if(MJ.inGameScreen) setMsg(msg.error || "エラーが発生しました");
+      else mjSetErr2(mjErrText(new Error(msg.error||"")));
+    }
+  };
+  ws.onclose = function(){
+    if(MJ.ws === ws) MJ.ws = null;
+    if(!MJ.intentionalClose && MJ.session) mjShowReconnect(true);
+  };
+  ws.onerror = function(){ /* onclose follows */ };
+}
+function mjSend(obj){
+  if(MJ.ws && MJ.ws.readyState === 1) MJ.ws.send(JSON.stringify(obj));
+}
+function mjShowReconnect(on){
+  var o = el("mjReconnect"); if(o) o.classList.toggle("on", !!on);
+}
+function mjLeaveRoom(){
+  MJ.intentionalClose = true;
+  if(MJ.ws){ try{ MJ.ws.close(); }catch(e){} MJ.ws = null; }
+  if(MJ.quickTimer){ clearTimeout(MJ.quickTimer); MJ.quickTimer = null; }
+  MJ.session = null;
+  mjSaveSession();
+  MJ.lastState = null; MJ.deadline = null;
+  MJ.actStamp = null; MJ.callStamp = null;
+  MJ.handEndShownFor = -1; MJ.gameEndShown = false; MJ.resultOpen = false;
+  MJ.inGameScreen = false; MJ.riichiMode = false;
+  mjShowReconnect(false);
+  closeModal();
+  clearActions();
+  mjShowHomeView();
+  mjHideOnline();
+  showScreen("home");
+}
+
+/* ---------------- lobby actions ---------------- */
+function mjQuick(){
+  var name = mjNickname();
+  if(!name){ mjSetErr("ニックネームを入力してください"); return; }
+  mjSetErr("");
+  el("mjQuickWait").hidden = false;
+  el("mjQuickBtn").disabled = true;
+  mjApi("/api/rooms/quick", {nickname: name, len: MJ.len}).then(function(res){
+    if(res.code && res.token){ mjQuickDone(); mjGotSession(res); return; }
+    if(res.waiting && res.queueId){ mjPollQuick(res.queueId); return; }
+    throw new Error(res.error || "マッチングに失敗しました");
+  }).catch(function(e){ mjQuickDone(); mjSetErr(mjErrText(e)); });
+}
+function mjPollQuick(qid){
+  MJ.quickTimer = setTimeout(function(){
+    MJ.quickTimer = null;
+    mjApi("/api/rooms/quick/status", {queueId: qid}).then(function(res){
+      if(res.code && res.token){ mjQuickDone(); mjGotSession(res); return; }
+      if(res.waiting){ mjPollQuick(qid); return; }
+      throw new Error(res.error || "マッチングに失敗しました");
+    }).catch(function(e){ mjQuickDone(); mjSetErr(mjErrText(e)); });
+  }, 2000);
+}
+function mjQuickDone(){
+  if(MJ.quickTimer){ clearTimeout(MJ.quickTimer); MJ.quickTimer = null; }
+  el("mjQuickWait").hidden = true;
+  el("mjQuickBtn").disabled = false;
+}
+function mjCreate(){
+  var name = mjNickname();
+  if(!name){ mjSetErr("ニックネームを入力してください"); return; }
+  mjSetErr("");
+  mjApi("/api/rooms", {nickname: name, len: MJ.len}).then(function(res){
+    if(res.code && res.token){ mjGotSession(res); return; }
+    throw new Error(res.error || "部屋を作れませんでした");
+  }).catch(function(e){ mjSetErr(mjErrText(e)); });
+}
+function mjJoin(){
+  var name = mjNickname();
+  if(!name){ mjSetErr("ニックネームを入力してください"); return; }
+  var code = (el("mjCodeInput").value||"").trim().toUpperCase();
+  if(!code){ mjSetErr("部屋コードを入力してください"); return; }
+  mjSetErr("");
+  mjApi("/api/rooms/join", {code: code, nickname: name}).then(function(res){
+    if(res.token){ mjGotSession(res, code); return; }
+    throw new Error(res.error || "部屋に入れませんでした");
+  }).catch(function(e){ mjSetErr(mjErrText(e)); });
+}
+function mjStart(){
+  if(!MJ.session) return;
+  mjSetErr2("");
+  mjApi("/api/rooms/start", {code: MJ.session.code, token: MJ.session.token})
+    .catch(function(e){ mjSetErr2(mjErrText(e)); });
+}
+
+/* ---------------- lobby state rendering ---------------- */
+function mjRenderRoomLobby(st){
+  if(MJ.inGameScreen) return;
+  mjShowRoomView();
+  if(st.code) el("mjRoomCode").textContent = st.code;
+  var seats = (st.lobby && st.lobby.seats) || [];
+  el("mjSeatList").innerHTML = seats.map(function(s, i){
+    if(!s || s.empty) return "<li>" + (i+1) + "番席：（空き）</li>";
+    var tail = s.isCpu ? "（CPU）" : (s.connected ? "" : "（接続が切れています）");
+    return "<li>" + (i+1) + "番席：" + esc(s.nickname || "") + tail + "</li>";
+  }).join("");
+  var hostSeat = st.lobby ? st.lobby.hostSeat : null;
+  el("mjStartBtn").hidden = !(MJ.session && hostSeat === MJ.session.seat);
+}
+
+/* ---------------- mirror G from server state ---------------- */
+function mjTile(x){ return {t: x.t, red: !!x.red, id: x.id}; }
+function mjBuildMirror(st){
+  var mySeat = (st.you && typeof st.you.seat === "number") ? st.you.seat : MJ.session.seat;
+  var bySeat = {};
+  (st.players||[]).forEach(function(p){ bySeat[p.seat] = p; });
+  function rot(seat){ return (seat - mySeat + 4) % 4; }
+  var players = [];
+  for(var j = 0; j < 4; j++){
+    var serverSeat = (mySeat + j) % 4;
+    var sp = bySeat[serverSeat] || {};
+    var melds = (sp.melds||[]).map(function(m){
+      return { type: m.type, tile: m.tile, open: !!m.open,
+               tiles: (m.tiles||[]).map(mjTile) };
+    });
+    var hand;
+    if(j === 0){
+      hand = (st.you.hand||[]).map(mjTile);
+      /* The drawn tile is appended last by the server (same flow as
+         the local game); mark it so render() offsets it visually. */
+      if(st.you.canAct && hand.length % 3 === 2 && hand.length)
+        hand[hand.length-1]._drawn = true;
+    }else{
+      /* Opponents' hands are never drawn tile-by-tile by render();
+         only hand.length is shown, so dummies are safe. */
+      hand = [];
+      for(var k = 0; k < (sp.handCount||0); k++) hand.push({t: 0, red: false});
+    }
+    players.push({
+      name: sp.nickname || ("CPU " + serverSeat),
+      human: j === 0,
+      seat: serverSeat,
+      hand: hand,
+      melds: melds,
+      discards: (sp.discards||[]).map(mjTile),
+      score: sp.score || 0,
+      riichi: !!sp.riichi,
+      riichiTurn: false,
+      kita: 0,
+      ippatsu: false,
+      menzen: melds.every(function(m){ return !m.open; }),
+      seatWind: sp.seatWind || 0
+    });
+  }
+  var dead = [];
+  for(var d = 0; d < 14; d++) dead.push({back: true});
+  var indicators = (st.doraIndicators||[]).map(mjTile);
+  indicators.forEach(function(ind, i){
+    var idx = 4 + 2*i;
+    if(idx < 14) dead[idx] = ind;
+  });
+  var wall = [];
+  for(var w = 0; w < (st.wallLeft||0); w++) wall.push({t: 0, red: false});
+  G = {
+    players: players,
+    dealer: rot(st.dealer||0),
+    turn: rot(st.turn||0),
+    handNo: st.handNo||0,
+    round: Math.floor((st.handNo||0)/4),
+    honba: st.honba||0,
+    riichiSticks: st.riichiSticks||0,
+    over: st.phase === "handEnd" || st.phase === "gameEnd",
+    winner: null,
+    wall: wall,
+    dead: dead,
+    doraIndicators: indicators,
+    showUraDora: false,
+    rinshan: dead.slice(0, 4),
+    rinshanIdx: 0,
+    phase: st.phase,
+    currentDrawn: null,
+    discardInfo: null,
+    needDiscardFrom: null,
+    lastDiscard: null,
+    prevScores: null
+  };
+  return rot;
+}
+
+/* ---------------- state handling ---------------- */
+function mjOnState(st){
+  MJ.lastState = st;
+  if(st.you && typeof st.you.seat === "number" && MJ.session){
+    MJ.session.seat = st.you.seat;
+    mjSaveSession();
+  }
+  if(st.phase === "lobby"){ mjRenderRoomLobby(st); return; }
+  mjShowReconnect(false);
+  if(!MJ.inGameScreen){
+    MJ.inGameScreen = true;
+    mjHideOnline();
+    showScreen("game");
+  }
+  if(MJ.resultOpen && (st.phase === "turn" || st.phase === "call")){
+    closeModal(); MJ.resultOpen = false;
+  }
+  CFG.players = 4;
+  CFG.len = st.len || 0;
+  if(CFG.ruleset !== "futsu") CFG.ruleset = "futsu";
+  mjBuildMirror(st);
+  render();
+  MJ.deadline = st.deadline || null;
+  if(st.phase === "handEnd" || st.phase === "gameEnd") clearActions();
+  if(st.phase === "handEnd") mjShowHandEnd(st);
+  else if(st.phase === "gameEnd") mjShowGameEnd(st);
+  else mjArm(st);
+}
+
+/* ---------------- input arming ---------------- */
+function mjTurnStamp(st){
+  return String(st.deadline||"") + "|" + st.handNo + "|" + st.turn;
+}
+function mjArm(st){
+  clearActions();
+  MJ.riichiMode = false;
+  var you = st.you || {};
+  if(st.phase === "turn" && you.canAct){
+    var stamp = mjTurnStamp(st);
+    if(MJ.actStamp === stamp) return; /* already answered this turn */
+    var me = G.players[0];
+    var acts = [];
+    if(you.canAct.tsumo) acts.push({id: "tsumo", label: t("btnTsumo"), cls: "danger"});
+    if(you.canAct.riichi) acts.push({id: "riichi", label: t("btnRiichi"), cls: "primary"});
+    (you.canAct.kans || []).forEach(function(opt, idx){
+      acts.push({id: "kan" + idx, label: t("btnKan") + " " + tileName({t: opt.tile, red: false}), cls: ""});
+    });
+    showActions(acts, function(id){ mjOnAction(id, st, stamp); });
+    renderHandInteractive(me, function(tile){ mjPickTile(tile, st, stamp); });
+    setMsg(me.riichi ? t("msgRiichiAuto") : "あなたの番です");
+    return;
+  }
+  if(st.phase === "call" && you.callOptions){
+    var cstamp = String(st.deadline||"") + "|" + st.handNo + "|call";
+    if(MJ.callStamp === cstamp) return; /* already answered this window */
+    var co = you.callOptions;
+    var cacts = [];
+    if(co.ron) cacts.push({id: "ron", label: t("btnRon"), cls: "danger"});
+    if(co.pon) cacts.push({id: "pon", label: t("btnPon"), cls: ""});
+    if(co.kan) cacts.push({id: "kan", label: t("btnKan"), cls: ""});
+    if(co.chi && co.chi.length) cacts.push({id: "chi", label: t("btnChi"), cls: ""});
+    cacts.push({id: "pass", label: t("btnPass"), cls: ""});
+    showActions(cacts, function(id){
+      MJ.callStamp = cstamp;
+      clearActions(); setMsg("");
+      if(id === "chi"){
+        /* Multiple chi options: phase 1 uses the first option. */
+        mjSend({type: "call", action: "chi", chiBase: co.chi[0].base});
+      }else{
+        mjSend({type: "call", action: id});
+      }
+    });
+    setMsg(co.ron ? t("msgCanRon") : "鳴けます");
+    return;
+  }
+  if(st.phase === "turn" || st.phase === "call"){
+    var cur = (st.players||[])[st.turn];
+    setMsg(cur && cur.nickname ? cur.nickname + "の番です" : "");
+  }
+}
+function mjOnAction(id, st, stamp){
+  if(id === "tsumo"){
+    MJ.actStamp = stamp;
+    clearActions(); setMsg("");
+    mjSend({type: "tsumo"});
+  }else if(id === "riichi"){
+    MJ.riichiMode = true;
+    setMsg(t("msgRiichiPick"));
+    showActions([{id: "riichiCancel", label: "リーチをやめる", cls: ""}], function(){
+      mjArm(st);
+    });
+  }else if(id.indexOf("kan") === 0){
+    var idx = parseInt(id.slice(3), 10) || 0;
+    MJ.actStamp = stamp;
+    clearActions(); setMsg("");
+    mjSend({type: "kan", optIndex: idx});
+  }
+}
+function mjPickTile(tile, st, stamp){
+  if(MJ.actStamp === stamp) return;
+  var me = G.players[0];
+  if(me.riichi && !tile._drawn){
+    setMsg("リーチ中はツモ切りだけできます");
+    return;
+  }
+  MJ.actStamp = stamp;
+  clearActions(); setMsg("");
+  var payload = {t: tile.t, red: !!tile.red};
+  if(tile.id) payload.id = tile.id;
+  if(MJ.riichiMode){
+    MJ.riichiMode = false;
+    mjSend({type: "riichi", tile: payload});
+  }else{
+    mjSend({type: "discard", tile: payload});
+  }
+}
+
+/* ---------------- hand-end / game-end modals ---------------- */
+function mjLocalChanges(st, changes){
+  var mySeat = st.you.seat;
+  var out = [0, 0, 0, 0];
+  (changes||[]).forEach(function(v, seat){ out[(seat - mySeat + 4) % 4] = v || 0; });
+  return out;
+}
+function mjScoreRows(st, changes, winnerLocal){
+  var lc = mjLocalChanges(st, changes);
+  return G.players.map(function(o, i){
+    var d = lc[i], cls = d > 0 ? "pos" : (d < 0 ? "neg" : "");
+    return "<div class='yaku-line score-row" + (i === winnerLocal ? " winner" : "") + "'><span class='nm'>"
+      + esc(o.name) + "</span><span class='score-delta " + cls + "'>" + (d >= 0 ? "+" : "") + d
+      + "</span><span class='score-val' data-from='" + (o.score - d) + "' data-to='" + o.score + "'>"
+      + (o.score - d) + t("scoreSuffix") + "</span></div>";
+  }).join("");
+}
+function mjYakuName(y){
+  if(!y) return "";
+  if(y.key){
+    var nm = t(y.key);
+    if(y.honor != null) nm += " " + honorName(y.honor);
+    return nm;
+  }
+  return y.name || "";
+}
+function mjPointsLabel(pts){
+  if(!pts) return "";
+  if(pts.labelKey){
+    if(pts.labelKey === "lblHanFu")
+      return tf("lblHanFu", {h: pts.labelHan != null ? pts.labelHan : pts.han,
+                             f: pts.labelFu != null ? pts.labelFu : pts.fu});
+    return t(pts.labelKey);
+  }
+  return pts.label || "";
+}
+function mjShowHandEnd(st){
+  var res = st.result; if(!res) return;
+  if(MJ.handEndShownFor === st.handNo) return;
+  MJ.handEndShownFor = st.handNo;
+  MJ.resultOpen = true;
+  var mySeat = st.you.seat;
+  var html = "";
+  var isDraw = !!(res.draw || res.tenpai);
+  var winnerLocal = -1;
+  if(!isDraw){
+    var wSeat = (res.winnerSeat != null) ? res.winnerSeat : res.winner;
+    if(wSeat == null){ isDraw = true; }
+    else{
+      winnerLocal = (wSeat - mySeat + 4) % 4;
+      var wp = G.players[winnerLocal];
+      html += "<h2>" + tf(res.isTsumo ? "winTsumo" : "winRon", {name: wp.name}) + "</h2>";
+      if(res.winnerHand && res.winnerHand.length){
+        var hd = document.createElement("div"); hd.className = "hand";
+        res.winnerHand.forEach(function(x){ hd.appendChild(tileEl({t: x.t, red: !!x.red}, {})); });
+        wp.melds.forEach(function(m){
+          var s = document.createElement("span"); s.className = "meld";
+          m.tiles.forEach(function(x){ s.appendChild(tileEl(x, {})); });
+          hd.appendChild(s);
+        });
+        html += hd.outerHTML;
+      }
+      html += (res.yaku||[]).map(function(y){
+        return "<div class='yaku-line'><span>" + esc(mjYakuName(y)) + "</span><span>"
+          + (y.han||0) + t("hanSuffix") + "</span></div>";
+      }).join("");
+      var pts = res.points || {};
+      if(pts.total != null)
+        html += "<div class='total-line'><span>" + esc(mjPointsLabel(pts)) + "</span><span>"
+          + pts.total + t("scoreSuffix") + "</span></div>";
+      if(res.sticks)
+        html += "<p>" + tf("sticksReceived", {s: res.sticks, p: res.sticks * 1000}) + "</p>";
+      html += "<h3>" + t("scoreMoves") + "</h3>" + mjScoreRows(st, res.changes, winnerLocal);
+    }
+  }
+  if(isDraw){
+    var tenpaiArr = res.tenpai || [];
+    var tenLocal = [false, false, false, false];
+    tenpaiArr.forEach(function(v, seat){ tenLocal[(seat - mySeat + 4) % 4] = !!v; });
+    var lc = mjLocalChanges(st, res.changes);
+    var rows = G.players.map(function(o, i){
+      var d = lc[i], cls = d > 0 ? "pos" : (d < 0 ? "neg" : "");
+      return "<div class='yaku-line score-row" + (tenLocal[i] ? " winner" : "") + "'><span class='nm'>"
+        + tf("drawPlayer", {name: o.name, state: tenLocal[i] ? t("tenpai") : t("noten")})
+        + "</span><span class='score-delta " + cls + "'>" + (d >= 0 ? "+" : "") + d
+        + "</span><span class='score-val' data-from='" + (o.score - d) + "' data-to='" + o.score + "'>"
+        + (o.score - d) + t("scoreSuffix") + "</span></div>";
+    }).join("");
+    html = "<h2>" + t("drawTitle") + "</h2><p>" + t("drawText") + "</p>" + rows;
+  }
+  html += "<button id='mjNext'>" + t("nextHand") + "</button>";
+  openModal(html);
+  el("mjNext").addEventListener("click", function(){
+    closeModal(); MJ.resultOpen = false;
+    mjSend({type: "next"});
+  });
+  animateScoreVals(modal.querySelectorAll(".score-val"));
+}
+function mjShowGameEnd(st){
+  if(MJ.gameEndShown) return;
+  MJ.gameEndShown = true;
+  MJ.resultOpen = true;
+  var rows = null;
+  if(st.standings && st.standings.length){
+    rows = st.standings.slice().sort(function(a, b){ return (b.score||0) - (a.score||0); })
+      .map(function(s){ return {name: s.nickname || s.name || "", score: s.score || 0}; });
+  }else{
+    rows = G.players.map(function(p){ return {name: p.name, score: p.score}; })
+      .sort(function(a, b){ return b.score - a.score; });
+  }
+  var html = "<h2>" + t("finalTitle") + "</h2><table class='rank-table'><tr><th>"
+    + t("rankHead") + "</th><th>" + t("nameHead") + "</th><th>" + t("scoreHead") + "</th></tr>"
+    + rows.map(function(r, i){
+        return "<tr" + (i === 0 ? " class='winner'" : "") + "><td>" + tf("rankFmt", {n: i + 1})
+          + "</td><td>" + esc(r.name) + "</td><td>" + r.score + t("scoreSuffix") + "</td></tr>";
+      }).join("")
+    + "</table><button id='mjLeave'>部屋を出る</button>";
+  openModal(html);
+  el("mjLeave").addEventListener("click", mjLeaveRoom);
+}
+
+/* ---------------- countdown ---------------- */
+var mjTimerEl = document.createElement("span");
+mjTimerEl.id = "mjTimer";
+var promptRow = document.querySelector(".promptrow");
+if(promptRow) promptRow.appendChild(mjTimerEl);
+setInterval(function(){
+  if(!MJ.inGameScreen || !MJ.deadline){ mjTimerEl.textContent = ""; return; }
+  var sec = Math.max(0, Math.ceil((MJ.deadline - Date.now()) / 1000));
+  mjTimerEl.textContent = "残り " + sec + " 秒";
+}, 500);
+
+/* ---------------- wiring ---------------- */
+var btnOnline = el("btnOnline");
+if(btnOnline) btnOnline.addEventListener("click", mjOpenLobby);
+el("mjBackHome").addEventListener("click", function(){
+  if(MJ.session) mjLeaveRoom();
+  else { mjHideOnline(); showScreen("home"); }
+});
+var nameEl = el("mjName");
+try{ nameEl.value = localStorage.getItem("mjOnlineName") || ""; }catch(e){}
+nameEl.addEventListener("input", function(){
+  try{ localStorage.setItem("mjOnlineName", nameEl.value.trim()); }catch(e){}
+});
+el("mjSegLen").querySelectorAll("button").forEach(function(b){
+  b.addEventListener("click", function(){
+    el("mjSegLen").querySelectorAll("button").forEach(function(x){ x.classList.remove("sel"); });
+    b.classList.add("sel");
+    MJ.len = parseInt(b.getAttribute("data-v"), 10) || 0;
+  });
+});
+el("mjQuickBtn").addEventListener("click", mjQuick);
+el("mjQuickCancel").addEventListener("click", mjQuickDone);
+el("mjCreateBtn").addEventListener("click", mjCreate);
+el("mjJoinBtn").addEventListener("click", mjJoin);
+el("mjStartBtn").addEventListener("click", mjStart);
+el("mjLeaveBtn").addEventListener("click", mjLeaveRoom);
+el("mjResumeBtn").addEventListener("click", function(){
+  try{
+    var saved = sessionStorage.getItem("mjOnlineSession");
+    if(saved){ MJ.session = JSON.parse(saved); mjShowRoomView(); mjConnect(); }
+  }catch(e){}
+});
+el("mjReconnectBtn").addEventListener("click", function(){
+  mjShowReconnect(false);
+  mjConnect();
+});
+el("mjGiveUpBtn").addEventListener("click", mjLeaveRoom);
+/* In-game "quit" menu while online: leave the room properly instead
+   of the local handler (which only knows the CPU game). Capture phase
+   so this runs before the original target handler. */
+document.addEventListener("click", function(e){
+  if(MJ.session && e.target && e.target.id === "menuQuit"){
+    e.stopPropagation();
+    e.preventDefault();
+    mjLeaveRoom();
+  }
+}, true);
+/* Changing tile colours mid-turn makes the original code re-render
+   the hand as static tiles; re-arm online input right after. */
+document.addEventListener("click", function(e){
+  var seg = e.target && e.target.closest ? e.target.closest("#segTileMenu,#segCbMenu") : null;
+  if(seg && MJ.inGameScreen && MJ.lastState){
+    var st = MJ.lastState;
+    setTimeout(function(){ if(MJ.lastState === st) mjArm(st); }, 60);
+  }
+}, true);
+/* The door note still says "coming soon" in every language of the
+   original dictionary; online play exists now, so replace the note
+   text and drop its data-i hook so applyLang() does not restore the
+   old wording. (Text stays Japanese; noted in CLIENT_NOTES.md.) */
+var note = document.querySelector("[data-i='onlineNote']");
+if(note){
+  note.removeAttribute("data-i");
+  note.textContent = "オンライン対戦も遊べます。「オンライン対戦」ボタンからどうぞ。";
+}
+})();
+
 </script>
 </body>
 </html>
