@@ -836,34 +836,6 @@
       .wado-trial-board { grid-template: repeat(3, 32px) / repeat(3, 32px); }
       .wado-trial-board span { font-size: 19px; }
     }
-
-    .site-header { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; justify-content: space-between; background: #e8f5e5; }
-    .site-header .start-links { margin: 0; }
-    .site-header .start-links a { background: transparent; padding: 0 7px; }
-    .wado-trial { background: #fff4c8; border-color: #e2bc59; border-radius: 24px; padding: clamp(16px, 4vw, 32px); grid-template-columns: auto minmax(0,1fr); }
-    .wado-trial h2 { font-size: clamp(20px, 5vw, 32px); }
-    .wado-trial-board { grid-row: 1 / 3; grid-column: 1; grid-template: repeat(3, clamp(32px, 9vw, 52px)) / repeat(3, clamp(32px, 9vw, 52px)); }
-    .wado-trial-bottom { grid-column: 2; min-width: 0; }
-    .wado-trial-choices button { background: #fffdf4; min-height: 46px; }
-    .today-puzzles { background: #fffaf0; border: 1px solid #e2d8bf; padding: 16px; border-radius: 20px; margin-bottom: 20px; }
-    .today-puzzles h2 { font-size: 22px; margin: 0 0 10px; }
-    .today-links { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 8px; }
-    .today-links a { display: grid; place-items: center; text-align: center; min-height: 48px; padding: 5px; border-radius: 10px; background: #204e3c; color: #fff; font-weight: 700; }
-    .game-list .game-card { background: #fffdf8; border-color: #e5dcc5; }
-    .game-card .card-slides, .card-diagram { flex: 0 0 82px; width: 82px; height: 62px; border-color: #e0e6da; }
-    .card-diagram { display: grid; grid-template: repeat(2,1fr) / repeat(2,1fr); background: #e9f4ec; border: 1px solid #8aab96; border-radius: 8px; overflow: hidden; }
-    .card-diagram span { display: grid; place-items: center; font-weight: 700; }
-    .card-diagram span:nth-child(odd) { border-right: 3px solid #27623a; }
-    .card-diagram span:nth-child(-n+2) { border-bottom: 1px dotted #8aab96; }
-    .game-card .card-title { color: #204e3c; }
-    .game-card .card-desc { color: #364744; }
-    .today-links a:focus-visible, .game-card:focus-visible { outline: 3px solid #2452a3; outline-offset: 2px; }
-    @media (max-width: 570px) {
-      .site-header { gap: 0 8px; }
-      .wado-trial-board { grid-row: 1; }
-      .wado-trial-bottom { grid-column: 1 / -1; }
-      .today-links { grid-template-columns: repeat(2,minmax(0,1fr)); }
-    }
 </style>
 <meta property="og:site_name" content="パレあそび">
 <script type="application/ld+json" data-pareasobi-site>{
@@ -932,10 +904,21 @@
 
   <header class="site-header">
     <h1 class="site-title">パレあそび</h1>
-    <nav class="start-links" aria-label="サイト内メニュー">
-      <a href="#games">全ゲーム</a><a href="/guide.html">遊び方</a><a href="/en/" lang="en" hreflang="en">English</a>
-    </nav>
   </header>
+
+  <section class="hero" aria-label="パレあそびへようこそ">
+    <p class="hero-title">無料で遊べるパズルと対戦ゲーム</p>
+    <p class="hero-sub">スマホ・PCで登録せずに遊べます。</p>
+    <nav class="start-links" aria-label="はじめての方へ">
+      <a href="/nanpure/daily-sudoku/">今日のナンプレ</a>
+      <a href="/puzzles/shirupure/">シルプレで遊ぶ</a>
+      <a href="/guide.html">遊び方ガイド</a>
+      <a href="/en/" lang="en" hreflang="en">English</a>
+    </nav>
+    <span class="hero-deco deco-1" aria-hidden="true"></span>
+    <span class="hero-deco deco-2" aria-hidden="true"></span>
+    <span class="hero-deco deco-3" aria-hidden="true"></span>
+  </section>
 
   <main>
 
@@ -967,18 +950,9 @@
       <a href="/puzzles/wado/">和同開珎の本編へ →</a>
     </div>
   </section>
-  <section class="today-puzzles" aria-labelledby="today-title">
-    <h2 id="today-title">今日の4問</h2>
-    <div class="today-links">
-      <a href="/nanpure/daily-sudoku/">ナンプレ</a>
-      <a href="/daily.html#wado">和同開珎</a>
-      <a href="/daily.html#crossword">クロスワード</a>
-      <a href="/daily.html#shirupure">シルプレ</a>
-    </div>
-  </section>
-
   <div class="games-heading" id="games">
-    <h2>全ゲーム</h2>
+    <h2>ゲーム一覧（全7ゲーム）</h2>
+    <p>どれも登録不要・無料で遊べるよ</p>
   </div>
 
 
@@ -990,38 +964,38 @@
     <div class="section-label group-label"><span>パズル</span><span class="group-sub">ひとりでじっくり</span></div>
 
     <a class="game-card nanpure-bg card-yellow" href="/nanpure/" id="card-13" data-published="2026-10-20" data-title="ナンプレ帳">
-      <div class="card-slides"><img class="card-shot is-active" src="assets/game-shots/nanpure-1.jpg" alt="ナンプレ帳の画面" width="960" height="600" loading="lazy"></div>
+      <div class="card-slides"><img class="card-shot is-active" src="assets/game-shots/nanpure-1.jpg" alt="ナンプレ帳の画面" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/nanpure-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/nanpure-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
       <div class="card-body">
-        <div class="card-head"><div class="card-title">ナンプレ帳</div></div>
-        <div class="card-desc">いろいろなルールの数独を解く・作る。</div>
-        
+        <div class="card-head"><div class="card-title">ナンプレ帳</div><div class="card-tag">SUDOKU</div></div>
+        <div class="card-desc">いろいろなルールで問題を作って遊ぶ 多言語・ふりがな・印刷に対応</div>
+        <div class="card-chips"><span>作れる</span><span>印刷</span><span>ふりがな</span></div>
       </div>
     </a>
 
     <a class="game-card nanpure-bg card-pink" href="/puzzles/shirupure/" id="card-15" data-published="2026-10-30" data-title="シルプレ">
-      <div class="card-diagram" role="img" aria-label="隣り合う丸の間に仕切りを引くシルプレの例"><span>○</span><span>○</span><span>△</span><span>□</span></div>
+      <div class="card-slides"><img class="card-shot is-active" src="assets/game-shots/shirupure-1.jpg" alt="シルプレの画面" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/shirupure-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/shirupure-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
       <div class="card-body">
-        <div class="card-head"><div class="card-title">シルプレ</div></div>
+        <div class="card-head"><div class="card-title">シルプレ</div><div class="card-tag">SHIRUPURE</div></div>
         <div class="card-desc">記号を手がかりに、線を引いて盤面を部屋に分けるパズル。</div>
-        
+        <div class="card-chips"><span>練習あり</span><span>660問</span></div>
       </div>
     </a>
 
     <a class="game-card nanpure-bg card-mint" href="/puzzles/wado/" id="card-16" data-published="2026-10-30" data-title="和同開珎">
-      <div class="card-slides"><img class="card-shot is-active" src="assets/game-shots/wado-1.jpg" alt="和同開珎の画面" width="960" height="600" loading="lazy"></div>
+      <div class="card-slides"><img class="card-shot is-active" src="assets/game-shots/wado-1.jpg" alt="和同開珎の画面" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/wado-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/wado-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
       <div class="card-body">
-        <div class="card-head"><div class="card-title">和同開珎</div></div>
-        <div class="card-desc">4つの言葉に共通する漢字を探す。</div>
-        
+        <div class="card-head"><div class="card-title">和同開珎</div><div class="card-tag">KANJI</div></div>
+        <div class="card-desc">四つの熟語に共通する漢字を考える。ヒント・印刷に対応。</div>
+        <div class="card-chips"><span>ヒント</span><span>印刷</span></div>
       </div>
     </a>
 
     <a class="game-card nanpure-bg card-blue" href="/puzzles/crossword/" id="card-17" data-published="2026-10-30" data-title="クロスワード">
-      <div class="card-slides"><img class="card-shot is-active" src="assets/game-shots/crossword-1.jpg" alt="クロスワードの画面" width="960" height="600" loading="lazy"></div>
+      <div class="card-slides"><img class="card-shot is-active" src="assets/game-shots/crossword-1.jpg" alt="クロスワードの画面" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/crossword-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/crossword-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
       <div class="card-body">
-        <div class="card-head"><div class="card-title">クロスワード</div></div>
-        <div class="card-desc">タテとヨコのヒントから言葉を埋める。</div>
-        
+        <div class="card-head"><div class="card-title">クロスワード</div><div class="card-tag">WORDS</div></div>
+        <div class="card-desc">言葉のヒントでマスを埋める。問題作成・保存・印刷も。</div>
+        <div class="card-chips"><span>作れる</span><span>保存</span><span>印刷</span></div>
       </div>
     </a>
 
@@ -1030,28 +1004,28 @@
     <div class="section-label pop"><span class="spark">✦</span> 新作 <span class="spark">✦</span></div>
 
     <a class="game-card reversi-bg card-pink" href="https://osero.puzzle-hub-4826.workers.dev" target="_blank" rel="noopener" id="card-23" aria-describedby="reversi-link-note" data-published="2026-11-16" data-title="オセロ">
-      <div class="card-slides"><img class="card-shot is-active" src="assets/game-shots/othello-1.jpg" alt="オセロの画面" width="960" height="600" loading="lazy"></div>
+      <div class="card-slides"><img class="card-shot is-active" src="assets/game-shots/othello-1.jpg" alt="オセロの画面" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/othello-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/othello-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
       <div class="card-body">
-        <div class="card-head"><div class="card-title">オセロ</div></div>
-        <div class="card-desc">ひとりでCPU戦、友だちやオンラインの相手と対戦。</div>
-        <div class="card-chips"><span id="reversi-link-note">別タブで開く</span></div>
+        <div class="card-head"><div class="card-title">オセロ</div><div class="card-tag">REVERSI</div></div>
+        <div class="card-desc">石をはさんでひっくり返す。オンライン対戦・観戦。</div>
+        <div class="card-chips"><span>オンライン</span><span id="reversi-link-note">別タブで開く</span></div>
       </div>
     </a>
 
     <a class="game-card morris-bg card-blue" href="/morris/" id="card-24" data-published="2026-11-16" data-title="ナイン・メンズ・モリス">
-      <div class="card-slides"><img class="card-shot is-active" src="assets/game-shots/morris-1.jpg" alt="ナイン・メンズ・モリスの画面" width="960" height="600" loading="lazy"></div>
+      <div class="card-slides"><img class="card-shot is-active" src="assets/game-shots/morris-1.jpg" alt="ナイン・メンズ・モリスの画面" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/morris-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/morris-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
       <div class="card-body">
-        <div class="card-head"><div class="card-title">ナイン・メンズ・モリス</div></div>
-        <div class="card-desc">3つ並べて駒を取る。CPU戦・2人対戦・手紙対戦。</div>
-        
+        <div class="card-head"><div class="card-title">ナイン・メンズ・モリス</div><div class="card-tag">MORRIS</div></div>
+        <div class="card-desc">3つ並べて相手の駒を取る オンライン対戦・手紙対戦も</div>
+        <div class="card-chips"><span>オンライン</span><span>手紙対戦</span></div>
       </div>
     </a>
     <a class="game-card mahjong-bg card-mint" href="/mahjong/" id="card-25" data-published="2026-11-21" data-title="麻雀">
-      <div class="card-slides"><img class="card-shot is-active" src="assets/game-shots/mahjong-1.svg" alt="麻雀の画面" width="960" height="600" loading="lazy"></div>
+      <div class="card-slides"><img class="card-shot is-active" src="assets/game-shots/mahjong-1.svg" alt="麻雀の画面" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/mahjong-2.svg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/mahjong-3.svg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
       <div class="card-body">
-        <div class="card-head"><div class="card-title">麻雀</div></div>
-        <div class="card-desc">4人打ち・3人打ちのリーチ麻雀。CPU戦・オンライン対戦。</div>
-        
+        <div class="card-head"><div class="card-title">麻雀</div><div class="card-tag">MAHJONG</div></div>
+        <div class="card-desc">4人打ち・3人打ちのリーチ麻雀。CPU戦やオンライン対戦。</div>
+        <div class="card-chips"><span>CPU・オンライン</span><span>4人・3人打ち</span></div>
       </div>
     </a>
 
@@ -1183,6 +1157,48 @@
   setTimeout(_detect, 0);
   setTimeout(_detect, 200);
   setTimeout(_detect, 600);
+</script>
+<script>
+/* カードの画面写真スライド: 4秒ごとに自動で切り替え。外部ライブラリなし。
+   JSが動かなくても1枚目が表示される。画像が読めないものは飛ばす。 */
+(function () {
+  var boxes = document.querySelectorAll('.card-slides');
+  if (!boxes.length || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  boxes.forEach(function (box) {
+    var imgs = Array.prototype.slice.call(box.querySelectorAll('.card-shot'));
+    var dots = Array.prototype.slice.call(box.querySelectorAll('.card-dots span'));
+    var cur = 0, timer = null, visible = true;
+    function alive() { return imgs.filter(function (im) { return !im.dataset.broken; }); }
+    function show(n) {
+      var list = alive();
+      if (!list.length) return;
+      if (list.length === 1) {
+        imgs.forEach(function (im) { im.classList.toggle('is-active', list[0] === im); });
+        dots.forEach(function (d, i) { d.classList.toggle('is-active', list[0] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+        return;
+      }
+      cur = ((n % list.length) + list.length) % list.length;
+      imgs.forEach(function (im) { im.classList.toggle('is-active', list[cur] === im); });
+      dots.forEach(function (d, i) { d.classList.toggle('is-active', list[cur] === imgs[i]); d.style.display = imgs[i].dataset.broken ? 'none' : ''; });
+    }
+    function start() { if (timer === null && visible) timer = setInterval(function () { show(cur + 1); }, 4000); }
+    function stop() { if (timer !== null) { clearInterval(timer); timer = null; } }
+    imgs.forEach(function (im) {
+      if (im.complete && im.naturalWidth === 0) im.dataset.broken = '1';
+      im.addEventListener('error', function () { im.dataset.broken = '1'; if (alive().length < 2) stop(); show(cur); });
+    });
+    show(0);
+    document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else start(); });
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { visible = en.isIntersecting; if (visible) start(); else stop(); });
+      }, { rootMargin: '100px' });
+      io.observe(box);
+    } else {
+      start();
+    }
+  });
+})();
 </script>
 <script>
   (() => {
