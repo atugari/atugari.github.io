@@ -795,6 +795,12 @@
     }
     .about { font-size: 15px; line-height: 1.8; padding: 18px 16px; margin-top: 24px; border-radius: 18px; }
     .about h2 { font-size: 19px; }
+    .about-summary { display: flex; align-items: center; justify-content: space-between; gap: 10px; cursor: pointer; list-style: none; }
+    .about-summary::-webkit-details-marker { display: none; }
+    .about-summary h2 { margin-bottom: 0; }
+    .about-chevron { font-size: 15px; color: #FF5A76; transition: transform .2s ease; flex: 0 0 auto; }
+    .about-fold[open] .about-chevron { transform: rotate(180deg); }
+    .about-body { margin-top: 10px; }
     .footer { font-size: 14px; line-height: 1.8; padding: 16px 12px; margin-top: 28px; border-radius: 18px; }
     .footer a { font-size: 15px; }
     .footer-brand { font-size: 15px; }
@@ -971,12 +977,14 @@
   </div>
 
   
-  <section class="about" aria-label="パレあそびについて">
-    <h2>パレあそびについて</h2>
+  <details class="about about-fold">
+    <summary class="about-summary"><h2>パレあそびについて</h2><span class="about-chevron" aria-hidden="true">▾</span></summary>
+    <div class="about-body">
     <p>パレあそびは、ブラウザーで無料で遊べるゲームとパズルの広場です。登録やアプリのインストールは不要で、スマホでもパソコンでもそのまま遊べます。</p>
     <p>ナンプレ帳（数独）、シルプレ、和同開珎、クロスワードの4つのパズルと、オセロ、ナイン・メンズ・モリス、麻雀の3つのボードゲームがあります。オセロとモリスはオンラインで世界中の人と対戦でき、CPUとの対戦や2人プレイもできます。麻雀は4人打ちと3人打ちに対応し、CPUやオンラインで対戦できます。</p>
     <p>遊び方は<a href="/guide.html">使い方ガイド</a>、よくある質問は<a href="/faq.html">よくある質問</a>をご覧ください。サイトについては<a href="/about.html">パレあそびについて</a>もご覧ください。</p>
-  </section>
+    </div>
+  </details>
 
   </main>
 
