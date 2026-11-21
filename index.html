@@ -799,6 +799,11 @@
     .footer a { font-size: 15px; }
     .footer-brand { font-size: 15px; }
     .footer span { font-size: 14px !important; }
+    .start-links { position: relative; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 12px; }
+    .start-links a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 10px; background: #fff; color: #15394a; font-size: 14px; font-weight: 700; }
+    .card-head { flex-wrap: wrap; }
+    .card-head .card-title { white-space: normal; }
+    .card-desc { font-size: 14px; }
 </style>
 <meta property="og:site_name" content="パレあそび">
 <script type="application/ld+json" data-pareasobi-site>{
@@ -870,13 +875,20 @@
   </header>
 
   <section class="hero" aria-label="パレあそびへようこそ">
-    <p class="hero-title">みんなで、気軽にパパッとあそぼう！</p>
-    <p class="hero-sub">カジュアルゲームをいつでも・無料で・カンタンに。<br>7つのゲームで今すぐ遊べる♪</p>
+    <p class="hero-title">無料で遊べるパズルと対戦ゲーム</p>
+    <p class="hero-sub">スマホ・PCで登録せずに遊べます。</p>
+    <nav class="start-links" aria-label="はじめての方へ">
+      <a href="/nanpure/daily-sudoku/">今日のナンプレ</a>
+      <a href="/puzzles/shirupure/">シルプレで遊ぶ</a>
+      <a href="/guide.html">遊び方ガイド</a>
+      <a href="/en/" lang="en" hreflang="en">English</a>
+    </nav>
     <span class="hero-deco deco-1" aria-hidden="true"></span>
     <span class="hero-deco deco-2" aria-hidden="true"></span>
     <span class="hero-deco deco-3" aria-hidden="true"></span>
   </section>
 
+  <main>
   <div class="games-heading" id="games">
     <h2>ゲーム一覧（全7ゲーム）</h2>
     <p>どれも登録不要・無料で遊べるよ</p>
@@ -903,7 +915,7 @@
       <div class="card-slides"><img class="card-shot is-active" src="assets/game-shots/shirupure-1.jpg" alt="シルプレの画面" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/shirupure-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/shirupure-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
       <div class="card-body">
         <div class="card-head"><div class="card-title">シルプレ</div><div class="card-tag">SHIRUPURE</div></div>
-        <div class="card-desc">記号を仕切って部屋を作る。練習から660問。</div>
+        <div class="card-desc">記号を手がかりに、線を引いて盤面を部屋に分けるパズル。</div>
         <div class="card-chips"><span>練習あり</span><span>660問</span></div>
       </div>
     </a>
@@ -930,16 +942,16 @@
 
     <div class="section-label pop"><span class="spark">✦</span> 新作 <span class="spark">✦</span></div>
 
-    <a class="game-card reversi-bg card-pink" href="https://osero.puzzle-hub-4826.workers.dev" target="_blank" rel="noopener" id="card-23" data-published="2026-11-16" data-title="オセロ">
+    <a class="game-card reversi-bg card-pink" href="https://osero.puzzle-hub-4826.workers.dev" target="_blank" rel="noopener" id="card-23" aria-describedby="reversi-link-note" data-published="2026-11-16" data-title="オセロ">
       <div class="card-slides"><img class="card-shot is-active" src="assets/game-shots/othello-1.jpg" alt="オセロの画面" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/othello-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/othello-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
       <div class="card-body">
         <div class="card-head"><div class="card-title">オセロ</div><div class="card-tag">REVERSI</div></div>
-        <div class="card-desc">オンラインで世界中の人と対戦 レート・ランキング・観戦も</div>
-        <div class="card-chips"><span>オンライン</span><span>ランキング</span></div>
+        <div class="card-desc">石をはさんでひっくり返す。オンライン対戦・観戦。</div>
+        <div class="card-chips"><span>オンライン</span><span id="reversi-link-note">別タブで開く</span></div>
       </div>
     </a>
 
-    <a class="game-card morris-bg card-blue" href="/morris/" target="_blank" rel="noopener" id="card-24" data-published="2026-11-16" data-title="ナイン・メンズ・モリス">
+    <a class="game-card morris-bg card-blue" href="/morris/" id="card-24" data-published="2026-11-16" data-title="ナイン・メンズ・モリス">
       <div class="card-slides"><img class="card-shot is-active" src="assets/game-shots/morris-1.jpg" alt="ナイン・メンズ・モリスの画面" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/morris-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/morris-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
       <div class="card-body">
         <div class="card-head"><div class="card-title">ナイン・メンズ・モリス</div><div class="card-tag">MORRIS</div></div>
@@ -947,12 +959,12 @@
         <div class="card-chips"><span>オンライン</span><span>手紙対戦</span></div>
       </div>
     </a>
-    <a class="game-card mahjong-bg card-mint" href="/mahjong/" target="_blank" rel="noopener" id="card-25" data-published="2026-11-21" data-title="麻雀">
+    <a class="game-card mahjong-bg card-mint" href="/mahjong/" id="card-25" data-published="2026-11-21" data-title="麻雀">
       <div class="card-slides"><img class="card-shot is-active" src="assets/game-shots/mahjong-1.svg" alt="麻雀の画面" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/mahjong-2.svg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/mahjong-3.svg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
       <div class="card-body">
         <div class="card-head"><div class="card-title">麻雀</div><div class="card-tag">MAHJONG</div></div>
-        <div class="card-desc">CPUと対戦するリーチ麻雀 4人打ち・3人打ち、100言語対応</div>
-        <div class="card-chips"><span>CPU対戦</span><span>4人・3人打ち</span><span>100言語</span></div>
+        <div class="card-desc">4人打ち・3人打ちのリーチ麻雀。CPU戦やオンライン対戦。</div>
+        <div class="card-chips"><span>CPU・オンライン</span><span>4人・3人打ち</span></div>
       </div>
     </a>
 
@@ -962,16 +974,17 @@
   <section class="about" aria-label="パレあそびについて">
     <h2>パレあそびについて</h2>
     <p>パレあそびは、ブラウザーで無料で遊べるゲームとパズルの広場です。登録やアプリのインストールは不要で、スマホでもパソコンでもそのまま遊べます。</p>
-    <p>ナンプレ帳（数独）、シルプレ、和同開珎、クロスワードの4つのパズルと、オセロ、ナイン・メンズ・モリス、麻雀の3つのボードゲームがあります。オセロとモリスはオンラインで世界中の人と対戦でき、CPUとの対戦や2人プレイもできます。麻雀はCPUとの対戦で、4人打ちと3人打ちが遊べます。</p>
+    <p>ナンプレ帳（数独）、シルプレ、和同開珎、クロスワードの4つのパズルと、オセロ、ナイン・メンズ・モリス、麻雀の3つのボードゲームがあります。オセロとモリスはオンラインで世界中の人と対戦でき、CPUとの対戦や2人プレイもできます。麻雀は4人打ちと3人打ちに対応し、CPUやオンラインで対戦できます。</p>
     <p>遊び方は<a href="/guide.html">使い方ガイド</a>、よくある質問は<a href="/faq.html">よくある質問</a>をご覧ください。サイトについては<a href="/about.html">パレあそびについて</a>もご覧ください。</p>
   </section>
+
+  </main>
 
   <footer class="footer">
     <a href="/privacy.html#advertising">広告・プライバシーポリシー</a><br>
     <a href="/contact.html">お問い合わせ</a><br>
     <a href="/terms.html">利用規約</a><br>
     <span class="footer-brand" data-text="パレあそび">パレあそび</span><br>
-    <span style="font-size:22px;letter-spacing:0.05em;">ver2026.10.30</span>
   </footer>
 
 </div>
@@ -1089,7 +1102,7 @@
    JSが動かなくても1枚目が表示される。画像が読めないものは飛ばす。 */
 (function () {
   var boxes = document.querySelectorAll('.card-slides');
-  if (!boxes.length) return;
+  if (!boxes.length || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   boxes.forEach(function (box) {
     var imgs = Array.prototype.slice.call(box.querySelectorAll('.card-shot'));
     var dots = Array.prototype.slice.call(box.querySelectorAll('.card-dots span'));

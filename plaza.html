@@ -5,32 +5,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#FFF8E7">
   <title>パレあそび｜無料ブラウザゲーム・パズル</title>
-  <meta name="description" content="パレあそびは、無料で遊べるブラウザゲーム・パズルの広場です。ナンプレ帳、シルプレ、和同開珎、クロスワード、オセロ、ナイン・メンズ・モリスをスマホ・PCで楽しめます。登録不要です。">
-  <meta name="keywords" content="ゲーム,ブラウザゲーム,無料ゲーム,ミニゲーム,パズル,ナンプレ帳,シルプレ,和同開珎,クロスワード,オセロ,ナイン・メンズ・モリス">
+  <meta name="description" content="パレあそびは、無料で遊べるブラウザゲーム・パズルの広場です。ナンプレ帳、シルプレ、和同開珎、クロスワード、オセロ、ナイン・メンズ・モリス、麻雀をスマホ・PCで楽しめます。登録不要です。">
+  <meta name="keywords" content="ゲーム,ブラウザゲーム,無料ゲーム,ミニゲーム,パズル,ナンプレ帳,シルプレ,和同開珎,クロスワード,オセロ,ナイン・メンズ・モリス,麻雀">
   <meta name="robots" content="index, follow">
   <meta name="google-adsense-account" content="ca-pub-5560584474086870">
   <link rel="canonical" href="https://pareasobi.com/">
   <meta property="og:title" content="パレあそび｜無料ブラウザゲーム・パズル">
-  <meta property="og:description" content="無料ブラウザゲーム・パズルの広場。ナンプレ帳、シルプレ、和同開珎、クロスワード、オセロ、ナイン・メンズ・モリスをスマホ・PCで楽しめます。">
+  <meta property="og:description" content="無料ブラウザゲーム・パズルの広場。ナンプレ帳、シルプレ、和同開珎、クロスワード、オセロ、ナイン・メンズ・モリス、麻雀をスマホ・PCで楽しめます。">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://pareasobi.com/plaza.html">
+  <meta property="og:url" content="https://pareasobi.com/">
   <meta property="og:locale" content="ja_JP">
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="パレあそび｜無料ブラウザゲーム・パズル・問題作成ツール">
-  <meta name="twitter:description" content="無料ブラウザゲーム・パズル・問題作成ツールの広場。シルプレ、和同開珎、クロスワード、迷路作成、ナンプレ帳、AI対戦ゲームなどをスマホ・PCで楽しめます。">
+  <meta name="twitter:title" content="パレあそび｜無料ブラウザゲーム・パズル">
+  <meta name="twitter:description" content="無料ブラウザゲーム・パズルの広場。ナンプレ帳、シルプレ、和同開珎、クロスワード、オセロ、ナイン・メンズ・モリス、麻雀をスマホ・PCで楽しめます。">
 
   <script type="application/ld+json">
   {
     "@context":"https://schema.org",
     "@graph":[
       {"@type":"WebSite","@id":"https://pareasobi.com/#website","url":"https://pareasobi.com/","name":"パレあそび","inLanguage":"ja"},
-      {"@type":"CollectionPage","@id":"https://pareasobi.com/plaza.html#webpage","url":"https://pareasobi.com/plaza.html","name":"パレあそび｜無料ブラウザゲーム・パズル・問題作成ツール","description":"無料で遊べるブラウザゲーム、パズル、問題作成ツールの一覧。","inLanguage":"ja","isPartOf":{"@id":"https://pareasobi.com/#website"},"mainEntity":{"@type":"ItemList","itemListElement":[
+      {"@type":"CollectionPage","@id":"https://pareasobi.com/#webpage","url":"https://pareasobi.com/","name":"パレあそび｜無料ブラウザゲーム・パズル","description":"無料で遊べるブラウザゲーム、パズルの一覧。","inLanguage":"ja","isPartOf":{"@id":"https://pareasobi.com/#website"},"mainEntity":{"@type":"ItemList","itemListElement":[
         {"@type":"ListItem","position":1,"name":"ナンプレ帳｜無料ナンプレ・数独","url":"https://pareasobi.com/nanpure/"},
         {"@type":"ListItem","position":2,"name":"シルプレ","url":"https://pareasobi.com/puzzles/shirupure/"},
         {"@type":"ListItem","position":3,"name":"和同開珎","url":"https://pareasobi.com/puzzles/wado/"},
         {"@type":"ListItem","position":4,"name":"クロスワード","url":"https://pareasobi.com/puzzles/crossword/"},
         {"@type":"ListItem","position":5,"name":"オセロ","url":"https://osero.puzzle-hub-4826.workers.dev"},
-        {"@type":"ListItem","position":6,"name":"ナイン・メンズ・モリス","url":"https://pareasobi.com/morris/"}
+        {"@type":"ListItem","position":6,"name":"ナイン・メンズ・モリス","url":"https://pareasobi.com/morris/"},
+        {"@type":"ListItem","position":7,"name":"麻雀","url":"https://pareasobi.com/mahjong/"}
       ]}}
     ]
   }
@@ -343,6 +344,29 @@
       pointer-events: none;
     }
 
+    /* 麻雀: 白い牌を薄く表示 */
+    .game-card.mahjong-bg { overflow: hidden; }
+    .game-card.mahjong-bg::before {
+      content: '';
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      width: 86px;
+      height: 86px;
+      transform: translateY(-50%) rotate(-4deg);
+      background:
+        radial-gradient(circle at 30% 32%, rgba(178,34,52,.55) 0 5px, transparent 6px),
+        radial-gradient(circle at 64% 32%, rgba(21,101,52,.5) 0 5px, transparent 6px),
+        radial-gradient(circle at 47% 60%, rgba(30,64,175,.5) 0 5px, transparent 6px),
+        radial-gradient(circle at 30% 82%, rgba(21,101,52,.45) 0 4px, transparent 5px),
+        radial-gradient(circle at 64% 82%, rgba(178,34,52,.45) 0 4px, transparent 5px),
+        linear-gradient(135deg, #ffffff, #eef0e4);
+      border: 1px solid rgba(21,101,52,.25);
+      border-radius: 10px;
+      opacity: .3;
+      pointer-events: none;
+    }
+
     /* 作成中カード: 斜線で飛べないことを示す */    .game-card.wip {
       pointer-events: none;
       cursor: default;
@@ -628,7 +652,7 @@
       border-width: 2px;
     }
     .game-card::after { content: none; }
-    .game-card.reversi-bg::before, .game-card.morris-bg::before { display: none; }
+    .game-card.reversi-bg::before, .game-card.morris-bg::before, .game-card.mahjong-bg::before { display: none; }
     .game-card.card-pink { background: #FF9FB2; border-color: #FF7D99; }
     .game-card.card-yellow { background: #FFD23F; border-color: #F0AD00; }
     .game-card.card-blue { background: #6FC1EE; border-color: #3798D8; }
@@ -717,6 +741,69 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
     }
 
+
+    /* ===== v3: 小さく見やすく (2026-11-21) ===== */
+    .app { padding: 12px 12px 48px; }
+    .site-header { padding: 10px 12px; margin-bottom: 8px; border-radius: 20px; }
+    .site-title { font-size: clamp(28px, 8vw, 42px); }
+    .hero { padding: 12px 14px 10px; margin-bottom: 12px; border-radius: 20px; }
+    .hero-title { font-size: clamp(19px, 5vw, 26px); }
+    .hero-sub { font-size: 13px; line-height: 1.55; margin-top: 4px; }
+    .hero-deco.deco-1 { width: 20px; height: 20px; right: 4%; top: 8%; }
+    .hero-deco.deco-3 { width: 26px; height: 26px; right: 8%; bottom: 8%; }
+    .games-heading { text-align: left; margin: 0 0 6px; }
+    .games-heading h2 { font-size: 18px; }
+    .games-heading p { font-size: 12px; margin-top: 1px; }
+    .game-list { display: grid; grid-template-columns: 1fr; gap: 8px; }
+    @media (min-width: 720px) {
+      .game-list { grid-template-columns: 1fr 1fr; gap: 10px; }
+    }
+    .section-label { grid-column: 1 / -1; }
+    .section-label.group-label {
+      font-size: 14px; letter-spacing: 0.08em; text-align: left;
+      margin: 6px 2px 0; color: #1E88D6;
+      display: flex; align-items: baseline; gap: 8px;
+    }
+    .section-label.group-label .group-sub { font-size: 11px; color: #8a7a72; letter-spacing: 0.02em; font-weight: 700; }
+    .section-label.pop { font-size: 13px; text-align: left; margin: 8px 2px 0; }
+    .game-card {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 36px 8px 8px; border-radius: 16px; overflow: hidden;
+    }
+    .game-card::after {
+      content: '›'; right: 10px; width: 26px; height: 26px;
+      font-size: 18px; line-height: 24px;
+    }
+    .game-card .card-slides {
+      flex: 0 0 68px; width: 68px; height: 68px; aspect-ratio: auto;
+      border-radius: 12px; border-bottom: 0;
+      border: 2px solid rgba(255, 255, 255, 0.7);
+    }
+    .game-card .card-dots { bottom: 4px; gap: 4px; }
+    .game-card .card-dots span { width: 5px; height: 5px; }
+    .card-body { display: block; padding: 0; text-align: left; flex: 1; min-width: 0; }
+    .card-head { justify-content: flex-start; margin-bottom: 2px; gap: 6px; flex-wrap: nowrap; }
+    .card-head .card-title { font-size: 16px; margin-bottom: 0; white-space: nowrap; }
+    .game-card[data-title="ナイン・メンズ・モリス"] .card-head .card-title { font-size: 14px; letter-spacing: 0; }
+    .card-head .card-tag { font-size: 10px; padding: 2px 7px; letter-spacing: 0.1em; margin-bottom: 0; white-space: nowrap; }
+    .card-desc { font-size: 12.5px; line-height: 1.5; }
+    .card-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+    .card-chips span {
+      font-size: 10px; font-weight: 700; line-height: 1.4;
+      background: rgba(255, 255, 255, 0.85); color: #333;
+      padding: 2px 7px; border-radius: 999px;
+    }
+    .about { font-size: 15px; line-height: 1.8; padding: 18px 16px; margin-top: 24px; border-radius: 18px; }
+    .about h2 { font-size: 19px; }
+    .footer { font-size: 14px; line-height: 1.8; padding: 16px 12px; margin-top: 28px; border-radius: 18px; }
+    .footer a { font-size: 15px; }
+    .footer-brand { font-size: 15px; }
+    .footer span { font-size: 14px !important; }
+    .start-links { position: relative; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 12px; }
+    .start-links a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 10px; background: #fff; color: #15394a; font-size: 14px; font-weight: 700; }
+    .card-head { flex-wrap: wrap; }
+    .card-head .card-title { white-space: normal; }
+    .card-desc { font-size: 14px; }
 </style>
 <meta property="og:site_name" content="パレあそび">
 <script type="application/ld+json" data-pareasobi-site>{
@@ -766,10 +853,10 @@
     },
     {
       "@type": "CollectionPage",
-      "@id": "https://pareasobi.com/plaza.html#page",
-      "url": "https://pareasobi.com/plaza.html",
+      "@id": "https://pareasobi.com/#page",
+      "url": "https://pareasobi.com/",
       "name": "パレあそび（ぱれあそび）｜無料ブラウザゲーム・パズル",
-      "description": "パレあそびは、無料ブラウザゲームとパズルの広場です。ナンプレ帳、シルプレ、和同開珎、クロスワード、オセロ、ナイン・メンズ・モリスをスマホやPCで遊べます。",
+      "description": "パレあそびは、無料ブラウザゲームとパズルの広場です。ナンプレ帳、シルプレ、和同開珎、クロスワード、オセロ、ナイン・メンズ・モリス、麻雀をスマホやPCで遊べます。",
       "inLanguage": "ja",
       "isPartOf": {
         "@id": "https://pareasobi.com/#website"
@@ -788,15 +875,22 @@
   </header>
 
   <section class="hero" aria-label="パレあそびへようこそ">
-    <p class="hero-title">みんなで、気軽にパパッとあそぼう！</p>
-    <p class="hero-sub">カジュアルゲームをいつでも・無料で・カンタンに。<br>6つの定番ゲームで今すぐ遊べる♪</p>
+    <p class="hero-title">無料で遊べるパズルと対戦ゲーム</p>
+    <p class="hero-sub">スマホ・PCで登録せずに遊べます。</p>
+    <nav class="start-links" aria-label="はじめての方へ">
+      <a href="/nanpure/daily-sudoku/">今日のナンプレ</a>
+      <a href="/puzzles/shirupure/">シルプレで遊ぶ</a>
+      <a href="/guide.html">遊び方ガイド</a>
+      <a href="/en/" lang="en" hreflang="en">English</a>
+    </nav>
     <span class="hero-deco deco-1" aria-hidden="true"></span>
     <span class="hero-deco deco-2" aria-hidden="true"></span>
     <span class="hero-deco deco-3" aria-hidden="true"></span>
   </section>
 
+  <main>
   <div class="games-heading" id="games">
-    <h2>★ 人気のゲームをチェック！ ★</h2>
+    <h2>ゲーム一覧（全7ゲーム）</h2>
     <p>どれも登録不要・無料で遊べるよ</p>
   </div>
 
@@ -806,38 +900,71 @@
 
   <div class="game-list">
 
+    <div class="section-label group-label"><span>パズル</span><span class="group-sub">ひとりでじっくり</span></div>
+
     <a class="game-card nanpure-bg card-yellow" href="/nanpure/" id="card-13" data-published="2026-10-20" data-title="ナンプレ帳">
       <div class="card-slides"><img class="card-shot is-active" src="assets/game-shots/nanpure-1.jpg" alt="ナンプレ帳の画面" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/nanpure-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/nanpure-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
       <div class="card-body">
         <div class="card-head"><div class="card-title">ナンプレ帳</div><div class="card-tag">SUDOKU</div></div>
-        <div class="card-desc">いろいろなルールで問題を作って遊ぶ<br>多言語・ふりがな・印刷に対応</div>
-        <span class="card-play">あそぶ →</span>
+        <div class="card-desc">いろいろなルールで問題を作って遊ぶ 多言語・ふりがな・印刷に対応</div>
+        <div class="card-chips"><span>作れる</span><span>印刷</span><span>ふりがな</span></div>
       </div>
     </a>
 
-    <a class="game-card nanpure-bg card-pink" href="/puzzles/shirupure/" id="card-15" data-published="2026-10-30" data-title="シルプレ"><div class="card-slides"><img class="card-shot is-active" src="assets/game-shots/shirupure-1.jpg" alt="シルプレの画面" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/shirupure-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/shirupure-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div><div class="card-body"><div class="card-head"><div class="card-title">シルプレ</div><div class="card-tag">SHIRUPURE</div></div><div class="card-desc">記号を仕切って部屋を作る。練習から660問。</div><span class="card-play">あそぶ →</span></div></a>
+    <a class="game-card nanpure-bg card-pink" href="/puzzles/shirupure/" id="card-15" data-published="2026-10-30" data-title="シルプレ">
+      <div class="card-slides"><img class="card-shot is-active" src="assets/game-shots/shirupure-1.jpg" alt="シルプレの画面" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/shirupure-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/shirupure-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
+      <div class="card-body">
+        <div class="card-head"><div class="card-title">シルプレ</div><div class="card-tag">SHIRUPURE</div></div>
+        <div class="card-desc">記号を手がかりに、線を引いて盤面を部屋に分けるパズル。</div>
+        <div class="card-chips"><span>練習あり</span><span>660問</span></div>
+      </div>
+    </a>
 
-    <a class="game-card nanpure-bg card-mint" href="/puzzles/wado/" id="card-16" data-published="2026-10-30" data-title="和同開珎"><div class="card-slides"><img class="card-shot is-active" src="assets/game-shots/wado-1.jpg" alt="和同開珎の画面" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/wado-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/wado-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div><div class="card-body"><div class="card-head"><div class="card-title">和同開珎</div><div class="card-tag">KANJI</div></div><div class="card-desc">四つの熟語に共通する漢字を考える。ヒント・印刷に対応。</div><span class="card-play">あそぶ →</span></div></a>
+    <a class="game-card nanpure-bg card-mint" href="/puzzles/wado/" id="card-16" data-published="2026-10-30" data-title="和同開珎">
+      <div class="card-slides"><img class="card-shot is-active" src="assets/game-shots/wado-1.jpg" alt="和同開珎の画面" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/wado-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/wado-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
+      <div class="card-body">
+        <div class="card-head"><div class="card-title">和同開珎</div><div class="card-tag">KANJI</div></div>
+        <div class="card-desc">四つの熟語に共通する漢字を考える。ヒント・印刷に対応。</div>
+        <div class="card-chips"><span>ヒント</span><span>印刷</span></div>
+      </div>
+    </a>
 
-    <a class="game-card nanpure-bg card-blue" href="/puzzles/crossword/" id="card-17" data-published="2026-10-30" data-title="クロスワード"><div class="card-slides"><img class="card-shot is-active" src="assets/game-shots/crossword-1.jpg" alt="クロスワードの画面" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/crossword-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/crossword-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div><div class="card-body"><div class="card-head"><div class="card-title">クロスワード</div><div class="card-tag">WORDS</div></div><div class="card-desc">言葉のヒントでマスを埋める。問題作成・保存・印刷も。</div><span class="card-play">あそぶ →</span></div></a>
+    <a class="game-card nanpure-bg card-blue" href="/puzzles/crossword/" id="card-17" data-published="2026-10-30" data-title="クロスワード">
+      <div class="card-slides"><img class="card-shot is-active" src="assets/game-shots/crossword-1.jpg" alt="クロスワードの画面" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/crossword-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/crossword-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
+      <div class="card-body">
+        <div class="card-head"><div class="card-title">クロスワード</div><div class="card-tag">WORDS</div></div>
+        <div class="card-desc">言葉のヒントでマスを埋める。問題作成・保存・印刷も。</div>
+        <div class="card-chips"><span>作れる</span><span>保存</span><span>印刷</span></div>
+      </div>
+    </a>
+
+    <div class="section-label group-label board"><span>対戦・ボードゲーム</span><span class="group-sub">CPU・オンライン</span></div>
 
     <div class="section-label pop"><span class="spark">✦</span> 新作 <span class="spark">✦</span></div>
 
-    <a class="game-card reversi-bg card-pink" href="https://osero.puzzle-hub-4826.workers.dev" target="_blank" rel="noopener" id="card-23" data-published="2026-11-16" data-title="オセロ">
+    <a class="game-card reversi-bg card-pink" href="https://osero.puzzle-hub-4826.workers.dev" target="_blank" rel="noopener" id="card-23" aria-describedby="reversi-link-note" data-published="2026-11-16" data-title="オセロ">
       <div class="card-slides"><img class="card-shot is-active" src="assets/game-shots/othello-1.jpg" alt="オセロの画面" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/othello-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/othello-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
       <div class="card-body">
         <div class="card-head"><div class="card-title">オセロ</div><div class="card-tag">REVERSI</div></div>
-        <div class="card-desc">オンラインで世界中の人と対戦<br>レート・ランキング・観戦も</div>
-        <span class="card-play">あそぶ →</span>
+        <div class="card-desc">石をはさんでひっくり返す。オンライン対戦・観戦。</div>
+        <div class="card-chips"><span>オンライン</span><span id="reversi-link-note">別タブで開く</span></div>
       </div>
     </a>
 
-    <a class="game-card morris-bg card-blue" href="/morris/" target="_blank" rel="noopener" id="card-24" data-published="2026-11-16" data-title="ナイン・メンズ・モリス">
+    <a class="game-card morris-bg card-blue" href="/morris/" id="card-24" data-published="2026-11-16" data-title="ナイン・メンズ・モリス">
       <div class="card-slides"><img class="card-shot is-active" src="assets/game-shots/morris-1.jpg" alt="ナイン・メンズ・モリスの画面" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/morris-2.jpg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/morris-3.jpg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
       <div class="card-body">
         <div class="card-head"><div class="card-title">ナイン・メンズ・モリス</div><div class="card-tag">MORRIS</div></div>
-        <div class="card-desc">3つ並べて相手の駒を取る<br>オンライン対戦・手紙対戦も</div>
-        <span class="card-play">あそぶ →</span>
+        <div class="card-desc">3つ並べて相手の駒を取る オンライン対戦・手紙対戦も</div>
+        <div class="card-chips"><span>オンライン</span><span>手紙対戦</span></div>
+      </div>
+    </a>
+    <a class="game-card mahjong-bg card-mint" href="/mahjong/" id="card-25" data-published="2026-11-21" data-title="麻雀">
+      <div class="card-slides"><img class="card-shot is-active" src="assets/game-shots/mahjong-1.svg" alt="麻雀の画面" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/mahjong-2.svg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/mahjong-3.svg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
+      <div class="card-body">
+        <div class="card-head"><div class="card-title">麻雀</div><div class="card-tag">MAHJONG</div></div>
+        <div class="card-desc">4人打ち・3人打ちのリーチ麻雀。CPU戦やオンライン対戦。</div>
+        <div class="card-chips"><span>CPU・オンライン</span><span>4人・3人打ち</span></div>
       </div>
     </a>
 
@@ -847,16 +974,17 @@
   <section class="about" aria-label="パレあそびについて">
     <h2>パレあそびについて</h2>
     <p>パレあそびは、ブラウザーで無料で遊べるゲームとパズルの広場です。登録やアプリのインストールは不要で、スマホでもパソコンでもそのまま遊べます。</p>
-    <p>ナンプレ帳（数独）、シルプレ、和同開珎、クロスワードの4つのパズルと、オセロ、ナイン・メンズ・モリスの2つのボードゲームがあります。オセロとモリスはオンラインで世界中の人と対戦でき、CPUとの対戦や2人プレイもできます。</p>
+    <p>ナンプレ帳（数独）、シルプレ、和同開珎、クロスワードの4つのパズルと、オセロ、ナイン・メンズ・モリス、麻雀の3つのボードゲームがあります。オセロとモリスはオンラインで世界中の人と対戦でき、CPUとの対戦や2人プレイもできます。麻雀は4人打ちと3人打ちに対応し、CPUやオンラインで対戦できます。</p>
     <p>遊び方は<a href="/guide.html">使い方ガイド</a>、よくある質問は<a href="/faq.html">よくある質問</a>をご覧ください。サイトについては<a href="/about.html">パレあそびについて</a>もご覧ください。</p>
   </section>
+
+  </main>
 
   <footer class="footer">
     <a href="/privacy.html#advertising">広告・プライバシーポリシー</a><br>
     <a href="/contact.html">お問い合わせ</a><br>
     <a href="/terms.html">利用規約</a><br>
     <span class="footer-brand" data-text="パレあそび">パレあそび</span><br>
-    <span style="font-size:22px;letter-spacing:0.05em;">ver2026.10.30</span>
   </footer>
 
 </div>
@@ -872,6 +1000,8 @@
       const d = new Date(card.getAttribute('data-published') + 'T00:00:00');
       if (isNaN(d.getTime())) return;
       if (now - d.getTime() > MONTH){
+        const boardLabel = document.querySelector('.section-label.group-label.board');
+        if (boardLabel && !(card.compareDocumentPosition(boardLabel) & Node.DOCUMENT_POSITION_PRECEDING)) return;
         newLabel.parentNode.insertBefore(card, newLabel);
       }
     });
@@ -972,7 +1102,7 @@
    JSが動かなくても1枚目が表示される。画像が読めないものは飛ばす。 */
 (function () {
   var boxes = document.querySelectorAll('.card-slides');
-  if (!boxes.length) return;
+  if (!boxes.length || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   boxes.forEach(function (box) {
     var imgs = Array.prototype.slice.call(box.querySelectorAll('.card-shot'));
     var dots = Array.prototype.slice.call(box.querySelectorAll('.card-dots span'));
