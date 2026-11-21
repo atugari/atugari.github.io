@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="パレあそびの日替わりミニパズル。和同開珎、クロスワード、シルプレを遊べます。">
+<link rel="canonical" href="https://pareasobi.com/daily.html">
+<title>今日の4問 | パレあそび</title>
+<style>
+  *{box-sizing:border-box}body{margin:0;background:#fff8e7;color:#20372d;font:1rem/1.65 system-ui,sans-serif}
+  main{width:min(100% - 24px,720px);margin:16px auto 40px}h1,h2,p{margin:0 0 8px}
+  section{margin:16px 0;padding:clamp(14px,4vw,26px);border:1px solid #d7dfc7;border-radius:18px;background:#fffdf7;scroll-margin:12px}
+  a{color:#18583c;font-weight:700}nav{display:flex;flex-wrap:wrap;gap:8px 18px}
+  nav a{padding:6px 0}button,input{font:inherit}button{padding:8px 14px;min-height:44px;border:1px solid #1d5b42;border-radius:9px;background:#205d44;color:#fff;cursor:pointer}
+  input{min-width:0;max-width:100%;min-height:44px;border:1px solid #6f8b7d;border-radius:8px;padding:7px 9px;background:#fff;color:#20372d}
+  :focus-visible{outline:3px solid #1e56a2;outline-offset:2px}form{display:grid;gap:8px;justify-items:start;margin:12px 0}
+  output{display:block;min-height:1.65em;font-weight:700}details{margin:6px 0}summary{cursor:pointer;color:#18583c}
+  .cross{display:grid;grid-template-columns:repeat(3,2.2rem);gap:3px;margin:10px 0}
+  .cross span,.cell{display:grid;place-items:center;min-height:2.2rem;background:#e9f5ed;border-radius:4px;font-weight:700}
+  .cross .outside{visibility:hidden}.rooms{display:grid;grid-template-columns:repeat(7,1fr);width:min(100%,310px);gap:2px;margin:12px 0}
+  .edge{padding:0;min-height:32px;min-width:0;color:#254337;background:#edf1e9;border-color:#83968a;border-radius:4px}
+  .edge[aria-pressed="true"]{background:#205d44;color:#fff}.cell{min-height:32px}
+</style>
+<script defer src="/assets/pare-daily-mini.js"></script>
+</head>
+<body>
+<main>
+<a href="/">‹ パレあそび</a>
+<h1>今日の4問</h1>
+<p id="date"></p>
+<nav aria-label="問題を選ぶ"><a href="/nanpure/daily-sudoku/">ナンプレ</a><a href="#wado">和同開珎</a><a href="#crossword">クロスワード</a><a href="#shirupure">シルプレ</a></nav>
+<noscript><p>ミニパズルを解くにはJavaScriptを有効にしてください。本編は各リンクから開けます。</p></noscript>
+<section id="wado">
+  <h2>和同開珎</h2>
+  <p>同じ漢字を□に入れて、4つの言葉を作ろう。</p>
+  <div id="wado-play"></div>
+  <a href="/puzzles/wado/">和同開珎の本編へ</a>
+</section>
+<section id="crossword">
+  <h2>ミニクロスワード</h2>
+  <p>タテとヨコに3文字ずつ入ります。真ん中の文字は共通です。</p>
+  <div id="crossword-play"></div>
+  <a href="/puzzles/crossword/">クロスワードの本編へ</a>
+</section>
+<section id="shirupure">
+  <h2>ミニシルプレ</h2>
+  <p>マスの間を押して線を引き、6マスずつの部屋を2つ作ろう。どちらの部屋にも○・△・□が1つずつ入ります。</p>
+  <div id="shirupure-play"></div>
+  <a href="/puzzles/shirupure/">シルプレの本編へ</a>
+</section>
+</main>
+</body>
+</html>
