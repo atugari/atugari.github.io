@@ -1,7 +1,7 @@
 // Check the files a crawler receives before executing any JavaScript.
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 const {parseHTML}=require(process.argv[2]||'linkedom');
-const root=path.resolve(__dirname,'..'),origin='https://atugari.github.io',home=origin+'/nanpure/';
+const root=path.resolve(__dirname,'..'),origin='https://pareasobi.com',home=origin+'/nanpure/';
 const codes=['ja','en','zh-Hans','zh-Hant','ko','es','fr','de','pt','it','nl','sv','pl','cs','ru','id','vi','th','hi','ar'];
 const urls=new Map(codes.map(code=>[code,code==='ja'?home:home+code.toLowerCase()+'/']));
 const sitemap=parseHTML(fs.readFileSync(path.join(root,'sitemap.xml'),'utf8')).document;
