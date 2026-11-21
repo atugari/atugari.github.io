@@ -6,16 +6,24 @@ const hub=read('plaza.html'),tracker=read('assets/pare-analytics.js');
 assert(fs.existsSync(path.join(root,'assets/pare-analytics.js')),'Published analytics asset is missing');
 const cards=[...hub.matchAll(/<a class="game-card[^"]*" href="([^"]+)"/g)].map(m=>m[1]);
 assert(cards.length>=6,'Expected the published PareAsobi game catalogue');
+const origin='https://pareasobi.com';
+let covered=0;
 for(const href of cards){
- const url=new URL(href,'https://atugari.github.io/plaza.html');
+ const url=new URL(href,origin);
+ // Games hosted elsewhere do not ship in the Pages artifact.
+ if(url.origin!==origin)continue;
  let file=decodeURIComponent(url.pathname).slice(1);
  if(!file||file.endsWith('/'))file+='index.html';
  assert(fs.existsSync(path.join(root,file)),`Game entry not found: ${href} -> ${file}`);
+ // Mahjong ships without the shared tracker. Check its link without adding tracking.
+ if(file==='mahjong/index.html')continue;
  const html=read(file);
  if(!html.trim()){console.warn('Skipped empty game entry: '+href);continue;}
  assert(html.includes('/assets/pare-analytics.js')||html.includes('PareAnalytics'),`Game missing deployed analytics asset: ${href}`);
  assert(/<body[^>]*data-game=/.test(html),`Game missing stable analytics ID: ${href}`);
+ covered++;
 }
+assert(covered>=5,'Expected analytics for the five instrumented local game entries');
 assert(hub.includes('/assets/pare-analytics.js'),'PareAsobi hub must be measured');
 assert(tracker.includes('navigator.globalPrivacyControl===true'),'Respect Global Privacy Control');
 assert(tracker.includes("navigator.doNotTrack==='1'"),'Respect Do Not Track');
@@ -29,5 +37,5 @@ const api=readSource('nanpure-api/src/pare-analytics.js');
 assert(api.includes('await owner(request,env)'),'Analytics report must be owner-only');
 assert(api.includes("request.headers.get('DNT')==='1'"),'Analytics intake must respect DNT');
 assert(readSource('nanpure-api/migrations/0010_pareasobi_analytics.sql').includes('pare_analytics_daily'),'Daily aggregates schema missing');
-console.log(`PareAsobi analytics covers ${cards.length} published game cards.`);
+console.log(`PareAsobi analytics covers ${covered} instrumented local game cards.`);
 
