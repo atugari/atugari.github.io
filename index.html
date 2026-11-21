@@ -5,19 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#FFF8E7">
   <title>パレあそび｜無料ブラウザゲーム・パズル</title>
-  <meta name="description" content="パレあそびは、無料で遊べるブラウザゲーム・パズルの広場です。ナンプレ帳、シルプレ、和同開珎、クロスワード、オセロ、ナイン・メンズ・モリスをスマホ・PCで楽しめます。登録不要です。">
-  <meta name="keywords" content="ゲーム,ブラウザゲーム,無料ゲーム,ミニゲーム,パズル,ナンプレ帳,シルプレ,和同開珎,クロスワード,オセロ,ナイン・メンズ・モリス">
+  <meta name="description" content="パレあそびは、無料で遊べるブラウザゲーム・パズルの広場です。ナンプレ帳、シルプレ、和同開珎、クロスワード、オセロ、ナイン・メンズ・モリス、麻雀をスマホ・PCで楽しめます。登録不要です。">
+  <meta name="keywords" content="ゲーム,ブラウザゲーム,無料ゲーム,ミニゲーム,パズル,ナンプレ帳,シルプレ,和同開珎,クロスワード,オセロ,ナイン・メンズ・モリス,麻雀">
   <meta name="robots" content="index, follow">
   <meta name="google-adsense-account" content="ca-pub-5560584474086870">
   <link rel="canonical" href="https://pareasobi.com/">
   <meta property="og:title" content="パレあそび｜無料ブラウザゲーム・パズル">
-  <meta property="og:description" content="無料ブラウザゲーム・パズルの広場。ナンプレ帳、シルプレ、和同開珎、クロスワード、オセロ、ナイン・メンズ・モリスをスマホ・PCで楽しめます。">
+  <meta property="og:description" content="無料ブラウザゲーム・パズルの広場。ナンプレ帳、シルプレ、和同開珎、クロスワード、オセロ、ナイン・メンズ・モリス、麻雀をスマホ・PCで楽しめます。">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://pareasobi.com/">
   <meta property="og:locale" content="ja_JP">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="パレあそび｜無料ブラウザゲーム・パズル">
-  <meta name="twitter:description" content="無料ブラウザゲーム・パズルの広場。ナンプレ帳、シルプレ、和同開珎、クロスワード、オセロ、ナイン・メンズ・モリスをスマホ・PCで楽しめます。">
+  <meta name="twitter:description" content="無料ブラウザゲーム・パズルの広場。ナンプレ帳、シルプレ、和同開珎、クロスワード、オセロ、ナイン・メンズ・モリス、麻雀をスマホ・PCで楽しめます。">
 
   <script type="application/ld+json">
   {
@@ -30,7 +30,8 @@
         {"@type":"ListItem","position":3,"name":"和同開珎","url":"https://pareasobi.com/puzzles/wado/"},
         {"@type":"ListItem","position":4,"name":"クロスワード","url":"https://pareasobi.com/puzzles/crossword/"},
         {"@type":"ListItem","position":5,"name":"オセロ","url":"https://osero.puzzle-hub-4826.workers.dev"},
-        {"@type":"ListItem","position":6,"name":"ナイン・メンズ・モリス","url":"https://pareasobi.com/morris/"}
+        {"@type":"ListItem","position":6,"name":"ナイン・メンズ・モリス","url":"https://pareasobi.com/morris/"},
+        {"@type":"ListItem","position":7,"name":"麻雀","url":"https://pareasobi.com/mahjong/"}
       ]}}
     ]
   }
@@ -343,6 +344,29 @@
       pointer-events: none;
     }
 
+    /* 麻雀: 白い牌を薄く表示 */
+    .game-card.mahjong-bg { overflow: hidden; }
+    .game-card.mahjong-bg::before {
+      content: '';
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      width: 86px;
+      height: 86px;
+      transform: translateY(-50%) rotate(-4deg);
+      background:
+        radial-gradient(circle at 30% 32%, rgba(178,34,52,.55) 0 5px, transparent 6px),
+        radial-gradient(circle at 64% 32%, rgba(21,101,52,.5) 0 5px, transparent 6px),
+        radial-gradient(circle at 47% 60%, rgba(30,64,175,.5) 0 5px, transparent 6px),
+        radial-gradient(circle at 30% 82%, rgba(21,101,52,.45) 0 4px, transparent 5px),
+        radial-gradient(circle at 64% 82%, rgba(178,34,52,.45) 0 4px, transparent 5px),
+        linear-gradient(135deg, #ffffff, #eef0e4);
+      border: 1px solid rgba(21,101,52,.25);
+      border-radius: 10px;
+      opacity: .3;
+      pointer-events: none;
+    }
+
     /* 作成中カード: 斜線で飛べないことを示す */    .game-card.wip {
       pointer-events: none;
       cursor: default;
@@ -628,7 +652,7 @@
       border-width: 2px;
     }
     .game-card::after { content: none; }
-    .game-card.reversi-bg::before, .game-card.morris-bg::before { display: none; }
+    .game-card.reversi-bg::before, .game-card.morris-bg::before, .game-card.mahjong-bg::before { display: none; }
     .game-card.card-pink { background: #FF9FB2; border-color: #FF7D99; }
     .game-card.card-yellow { background: #FFD23F; border-color: #F0AD00; }
     .game-card.card-blue { background: #6FC1EE; border-color: #3798D8; }
@@ -769,7 +793,7 @@
       "@id": "https://pareasobi.com/#page",
       "url": "https://pareasobi.com/",
       "name": "パレあそび（ぱれあそび）｜無料ブラウザゲーム・パズル",
-      "description": "パレあそびは、無料ブラウザゲームとパズルの広場です。ナンプレ帳、シルプレ、和同開珎、クロスワード、オセロ、ナイン・メンズ・モリスをスマホやPCで遊べます。",
+      "description": "パレあそびは、無料ブラウザゲームとパズルの広場です。ナンプレ帳、シルプレ、和同開珎、クロスワード、オセロ、ナイン・メンズ・モリス、麻雀をスマホやPCで遊べます。",
       "inLanguage": "ja",
       "isPartOf": {
         "@id": "https://pareasobi.com/#website"
@@ -840,6 +864,14 @@
         <span class="card-play">あそぶ →</span>
       </div>
     </a>
+    <a class="game-card mahjong-bg card-mint" href="/mahjong/" target="_blank" rel="noopener" id="card-25" data-published="2026-11-21" data-title="麻雀">
+      <div class="card-slides"><img class="card-shot is-active" src="assets/game-shots/mahjong-1.svg" alt="麻雀の画面" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/mahjong-2.svg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots/mahjong-3.svg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
+      <div class="card-body">
+        <div class="card-head"><div class="card-title">麻雀</div><div class="card-tag">MAHJONG</div></div>
+        <div class="card-desc">CPUと対戦するリーチ麻雀<br>4人打ち・3人打ち、100言語対応</div>
+        <span class="card-play">あそぶ →</span>
+      </div>
+    </a>
 
   </div>
 
@@ -847,7 +879,7 @@
   <section class="about" aria-label="パレあそびについて">
     <h2>パレあそびについて</h2>
     <p>パレあそびは、ブラウザーで無料で遊べるゲームとパズルの広場です。登録やアプリのインストールは不要で、スマホでもパソコンでもそのまま遊べます。</p>
-    <p>ナンプレ帳（数独）、シルプレ、和同開珎、クロスワードの4つのパズルと、オセロ、ナイン・メンズ・モリスの2つのボードゲームがあります。オセロとモリスはオンラインで世界中の人と対戦でき、CPUとの対戦や2人プレイもできます。</p>
+    <p>ナンプレ帳（数独）、シルプレ、和同開珎、クロスワードの4つのパズルと、オセロ、ナイン・メンズ・モリス、麻雀の3つのボードゲームがあります。オセロとモリスはオンラインで世界中の人と対戦でき、CPUとの対戦や2人プレイもできます。麻雀はCPUとの対戦で、4人打ちと3人打ちが遊べます。</p>
     <p>遊び方は<a href="/guide.html">使い方ガイド</a>、よくある質問は<a href="/faq.html">よくある質問</a>をご覧ください。サイトについては<a href="/about.html">パレあそびについて</a>もご覧ください。</p>
   </section>
 
