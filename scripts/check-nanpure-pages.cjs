@@ -12,7 +12,7 @@ assert(w.document.querySelector('#root h1')?.textContent.includes('ナンプレ�
 assert(!w.document.querySelector('.designed-home :is(.home-bottom-links,.home-version,[data-home-guide],[data-pare-entry])'),'Removed home shortcuts must be absent before JavaScript');
 const initialIntro=w.document.querySelector('#root .site-intro');
 assert(initialIntro&&initialIntro.textContent.includes('数独')&&initialIntro.textContent.includes('無料'),'Missing visible public introduction');
-assert.equal(w.document.querySelector('link[rel="canonical"]')?.getAttribute('href'),'https://atugari.github.io/nanpure/');
+assert.equal(w.document.querySelector('link[rel="canonical"]')?.getAttribute('href'),'https://pareasobi.com/nanpure/');
 const guideLinks=[...initialIntro.querySelectorAll('a[href]')];
 assert(guideLinks.length>=3,'Missing crawlable guide links');
 const titles=new Set();
@@ -21,15 +21,15 @@ for(const link of guideLinks){
  const {document}=parseHTML(fs.readFileSync(path.join(repo,href,'index.html'),'utf8'));
  assert(document.querySelector('article h1')||document.querySelector('main h1'),'Guide must have one useful main heading');
  assert((document.querySelector('article')||document.querySelector('main'))?.textContent.trim().length>300,'Guide is missing useful static content');
- assert.equal(document.querySelector('link[rel="canonical"]')?.getAttribute('href'),'https://atugari.github.io'+href);
+ assert.equal(document.querySelector('link[rel="canonical"]')?.getAttribute('href'),'https://pareasobi.com'+href);
  const title=document.querySelector('title')?.textContent;assert(title&&!titles.has(title),'Guide titles must be distinct');titles.add(title);
  assert(document.querySelector('meta[name="description"]')?.getAttribute('content'));
  for(const script of document.querySelectorAll('script[type="application/ld+json"]'))JSON.parse(script.textContent);
  assert([...document.querySelectorAll('a[href]')].some(a=>a.getAttribute('href')==='/nanpure/'),'Guide has no route back to the game');
 }
-assert(fs.readFileSync(path.join(repo,'robots.txt'),'utf8').includes('Sitemap: https://atugari.github.io/sitemap.xml'));
+assert(fs.readFileSync(path.join(repo,'robots.txt'),'utf8').includes('Sitemap: https://pareasobi.com/sitemap.xml'));
 assert(!fs.readFileSync(path.join(repo,'robots.txt'),'utf8').includes('Disallow: /nanpure/releases/'),'Do not block rendering assets');
-Object.assign(w,{window:w,self:w,Headers,sessionStorage:{getItem:()=>null,setItem(){},removeItem(){}},localStorage:{getItem:k=>values.get(k)||null,setItem:(k,v)=>values.set(k,String(v)),removeItem:k=>values.delete(k)},location:{origin:'https://atugari.github.io',href:'https://atugari.github.io/nanpure/',pathname:'/nanpure/',search:'',hash:''},history:{replaceState(){},pushState(){},go(){}},performance,URL,URLSearchParams,TextEncoder,TextDecoder,AbortController,structuredClone,queueMicrotask,setTimeout,clearTimeout,setInterval:(_,ms)=>{intervals.push(ms);return intervals.length},clearInterval(){},requestAnimationFrame:()=>0,cancelAnimationFrame(){},scrollTo(){},matchMedia:()=>({matches:false,addEventListener(){},removeEventListener(){}}),fetch:async url=>{requests.push(url);if(url==='/nanpure/version.json')return{ok:true,json:async()=>({version:manifest.version})};assert(String(url).startsWith(manifest.online+'/api/'),'Unexpected endpoint '+url);return {ok:true,json:async()=>({day:'2026-10-21',serverNow:Date.now(),challenges:[{day:'2026-10-21',level:1,n:9,kind:'normal',title:'Test',rules:'Test'}],records:[],rows:[],items:[],days:[],signedIn:true,save:null})}},console:{...console,error:(...e)=>errors.push(e.map(String).join(' '))}});
+Object.assign(w,{window:w,self:w,Headers,sessionStorage:{getItem:()=>null,setItem(){},removeItem(){}},localStorage:{getItem:k=>values.get(k)||null,setItem:(k,v)=>values.set(k,String(v)),removeItem:k=>values.delete(k)},location:{origin:'https://pareasobi.com',href:'https://pareasobi.com/nanpure/',pathname:'/nanpure/',search:'',hash:''},history:{replaceState(){},pushState(){},go(){}},performance,URL,URLSearchParams,TextEncoder,TextDecoder,AbortController,structuredClone,queueMicrotask,setTimeout,clearTimeout,setInterval:(_,ms)=>{intervals.push(ms);return intervals.length},clearInterval(){},requestAnimationFrame:()=>0,cancelAnimationFrame(){},scrollTo(){},matchMedia:()=>({matches:false,addEventListener(){},removeEventListener(){}}),fetch:async url=>{requests.push(url);if(url==='/nanpure/version.json')return{ok:true,json:async()=>({version:manifest.version})};assert(String(url).startsWith(manifest.online+'/api/'),'Unexpected endpoint '+url);return {ok:true,json:async()=>({day:'2026-10-21',serverNow:Date.now(),challenges:[{day:'2026-10-21',level:1,n:9,kind:'normal',title:'Test',rules:'Test'}],records:[],rows:[],items:[],days:[],signedIn:true,save:null})}},console:{...console,error:(...e)=>errors.push(e.map(String).join(' '))}});
 w.parent=w;w.HTMLElement.prototype.showModal=function(){this.open=true};w.HTMLElement.prototype.close=function(){this.open=false};
 Object.defineProperty(w.document,'hidden',{value:false});
 const context=vm.createContext(w),modules=new Map();
@@ -41,7 +41,7 @@ function button(text){const b=[...w.document.querySelectorAll('button')].find(x=
 (async()=>{
  // Every declared script/style URL and CSS asset must exist in the shipped tree.
  for(const file of Object.keys(manifest.files).filter(x=>/\.(html|css)$/.test(x))){const text=fs.readFileSync(path.join(repo,file),'utf8');const refs=[...text.matchAll(/(?:src|href)=["']([^"']+)["']|url\(["']?([^\s)'";]+)["']?\)/g)];for(const m of refs){let url=m[1]||m[2];if(!url||!url.startsWith(manifest.base))continue;url=url.split(/[?#]/)[0];assert(fs.existsSync(path.join(repo,url)),'Missing local asset '+url)}}
- for(const name of ['site-theme.js','ui-text.js']){Object.defineProperty(w.document,'currentScript',{configurable:true,value:{src:'https://atugari.github.io'+manifest.base+name}});vm.runInContext(fs.readFileSync(path.join(base,name),'utf8'),context);}
+ for(const name of ['site-theme.js','ui-text.js']){Object.defineProperty(w.document,'currentScript',{configurable:true,value:{src:'https://pareasobi.com'+manifest.base+name}});vm.runInContext(fs.readFileSync(path.join(base,name),'utf8'),context);}
  const entry=await load(path.join(base,'shell/main.js'));await entry.evaluate();await settle(()=>w.document.querySelector('.main-choice')&&requests.some(x=>x===manifest.online+'/api/contact?summary=1'),'home render and initial effects');
  assert(w.document.querySelector('h1')?.textContent.includes('ナンプレ帳'));
  assert.equal(w.document.querySelectorAll('iframe.notebook').length,0,'Home must not preload the puzzle notebook');
