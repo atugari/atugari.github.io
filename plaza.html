@@ -804,6 +804,38 @@
     .card-head { flex-wrap: wrap; }
     .card-head .card-title { white-space: normal; }
     .card-desc { font-size: 14px; }
+
+    .wado-trial {
+      display: grid; grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center; gap: 16px; margin: 0 0 18px; padding: 18px;
+      border: 1px solid #a8c7ac; border-radius: 18px; background: #f1fbef; color: #203729;
+    }
+    .wado-trial h2 { margin: 0 0 6px; font-size: clamp(17px, 4vw, 22px); }
+    .wado-trial p { margin: 0; font-size: 15px; line-height: 1.65; }
+    .wado-trial-board { display: grid; grid-template: repeat(3, 38px) / repeat(3, 38px); gap: 3px; }
+    .wado-trial-board span {
+      display: grid; place-items: center; border: 1px solid #a8c7ac;
+      border-radius: 7px; background: white; font-size: 22px; font-weight: 700;
+    }
+    .wado-trial-board [data-wado-center] { border: 2px solid #38734b; background: #e1f2df; }
+    .wado-trial-bottom { grid-column: 1 / -1; }
+    .wado-trial-choices:not([hidden]) { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 6px; }
+    .wado-trial-choices button {
+      min-width: 44px; min-height: 44px; border: 1px solid #76977d; border-radius: 8px;
+      background: white; color: #203729; font-family: inherit; font-size: 19px; font-weight: 700;
+      cursor: pointer;
+    }
+    .wado-trial-choices button[aria-pressed="true"] { background: #27623a; color: white; }
+    .wado-trial :focus-visible { outline: 3px solid #244d9b; outline-offset: 2px; }
+    .wado-trial details { margin-top: 6px; }
+    .wado-trial summary, .wado-trial a { color: #205333; font-weight: 700; }
+    .wado-trial summary { display: list-item; width: fit-content; padding: 8px 0; cursor: pointer; }
+    .wado-trial a { display: inline-block; padding: 8px 0 0; }
+    @media (max-width: 420px) {
+      .wado-trial { padding: 12px; gap: 10px; }
+      .wado-trial-board { grid-template: repeat(3, 32px) / repeat(3, 32px); }
+      .wado-trial-board span { font-size: 19px; }
+    }
 </style>
 <meta property="og:site_name" content="パレあそび">
 <script type="application/ld+json" data-pareasobi-site>{
@@ -889,6 +921,35 @@
   </section>
 
   <main>
+
+  <section class="wado-trial" aria-labelledby="wado-trial-title">
+    <div>
+      <h2 id="wado-trial-title">お試し1問 · 和同開珎</h2>
+      <p>□に同じ漢字を入れて、4つの言葉を完成させよう。</p>
+      <p>生□・草□・□束・□火</p>
+    </div>
+    <div class="wado-trial-board" aria-hidden="true">
+      <span style="grid-area: 1 / 2">生</span>
+      <span style="grid-area: 2 / 1">草</span>
+      <span style="grid-area: 2 / 2" data-wado-center>□</span>
+      <span style="grid-area: 2 / 3">束</span>
+      <span style="grid-area: 3 / 2">火</span>
+    </div>
+    <div class="wado-trial-bottom">
+      <div class="wado-trial-choices" role="group" aria-label="答えの候補" hidden>
+        <button type="button" aria-pressed="false">木</button>
+        <button type="button" aria-pressed="false">花</button>
+        <button type="button" aria-pressed="false">雪</button>
+        <button type="button" aria-pressed="false">鳥</button>
+      </div>
+      <p role="status" data-wado-feedback></p>
+      <details>
+        <summary>答えを見る</summary>
+        <p>答えは「花」。生花・草花・花束・花火ができます。</p>
+      </details>
+      <a href="/puzzles/wado/">和同開珎の本編へ →</a>
+    </div>
+  </section>
   <div class="games-heading" id="games">
     <h2>ゲーム一覧（全7ゲーム）</h2>
     <p>どれも登録不要・無料で遊べるよ</p>
@@ -1138,6 +1199,38 @@
     }
   });
 })();
+</script>
+<script>
+  (() => {
+    const trial = document.querySelector('.wado-trial');
+    const choices = trial.querySelector('.wado-trial-choices');
+    const buttons = Array.from(choices.querySelectorAll('button'));
+    const center = trial.querySelector('[data-wado-center]');
+    const feedback = trial.querySelector('[data-wado-feedback]');
+    const solution = trial.querySelector('details');
+    let solved = false;
+
+    buttons.forEach(button => {
+      button.addEventListener('click', () => {
+        if (solved) return;
+        const choice = button.textContent;
+        buttons.forEach(option => option.setAttribute('aria-pressed', String(option === button)));
+        if (choice === '花') {
+          solved = true;
+          feedback.textContent = '正解！ 生花・草花・花束・花火ができます。';
+          center.textContent = choice;
+          buttons.forEach(option => option.setAttribute('aria-disabled', 'true'));
+          return;
+        }
+        feedback.textContent = '「' + choice + '」では、4つすべての言葉はできません。';
+      });
+    });
+
+    solution.addEventListener('toggle', () => {
+      center.textContent = solved || solution.open ? '花' : '□';
+    });
+    choices.hidden = false;
+  })();
 </script>
 <script defer src="/assets/pare-analytics.js"></script>
 </body>
