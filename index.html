@@ -810,6 +810,123 @@
     .card-head { flex-wrap: wrap; }
     .card-head .card-title { white-space: normal; }
     .card-desc { font-size: 14px; }
+
+    /* ===== 読みやすさ: 文字を太くする上書き (2026-11-22) ===== */
+    .card-desc { font-weight: 600; line-height: 1.65; }
+    .hero-sub { font-weight: 700; }
+    .games-heading p { font-weight: 700; }
+    .group-sub { font-weight: 700; }
+    .about p { font-weight: 600; }
+    .about h2 { font-weight: 800; }
+    .card-chips span { font-weight: 700; }
+    .start-links a { font-weight: 700; }
+    .section-label { font-weight: 800; }
+
+    /* ===== 今日の問題 (2026-11-22) ===== */
+    .daily-sec {
+      background: #FFFDF7; border: 2px solid #FFD98E; border-radius: 20px;
+      padding: 16px 14px 18px; margin-bottom: 26px; text-align: center;
+      box-shadow: 0 6px 18px rgba(255, 159, 28, 0.12);
+    }
+    .daily-head { display: flex; align-items: baseline; justify-content: center; gap: 10px; flex-wrap: wrap; }
+    .daily-title { margin: 0; font-size: 21px; font-weight: 800; color: #D63A57; letter-spacing: 0.04em; }
+    .daily-date { font-size: 14px; font-weight: 700; color: #3d2f2b; }
+    .daily-stamp {
+      font-size: 12.5px; font-weight: 700; color: #177245; background: #DFF5E3;
+      border: 1.5px solid #7BC98F; border-radius: 999px; padding: 2px 10px;
+    }
+    .daily-stamp[hidden] { display: none; }
+    .daily-type { margin: 8px 0 2px; font-size: 16px; font-weight: 700; color: #3d2f2b; }
+    .daily-how { margin: 0 auto 12px; max-width: 520px; font-size: 13.5px; font-weight: 600; line-height: 1.6; color: #5a4a42; }
+    .daily-msg { min-height: 24px; margin: 12px 0 0; font-size: 15px; font-weight: 700; color: #3d2f2b; }
+    .daily-msg-clear { color: #177245; font-size: 18px; }
+    .daily-actions { display: flex; justify-content: center; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    .daily-btn {
+      display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px;
+      border-radius: 999px; border: 2px solid #d8cfc4; background: #fff; color: #3d2f2b;
+      font-size: 15px; font-weight: 700; cursor: pointer; text-decoration: none;
+    }
+    .daily-btn[hidden] { display: none; }
+    .daily-btn-main { background: #FF9F1C; border-color: #FF9F1C; color: #3d2f2b; }
+    .daily-btn-more { border-color: #FF5A76; color: #D63A57; background: #fff; }
+    /* ナンプレ */
+    .daily-sudoku {
+      display: grid; grid-template-columns: repeat(9, 1fr);
+      width: min(340px, 100%); margin: 0 auto; background: #fff;
+      border: 3px solid #3d2f2b; border-radius: 6px; overflow: hidden;
+    }
+    .daily-cell {
+      aspect-ratio: 1; border: 0; border-right: 1px solid #D8CFC2; border-bottom: 1px solid #D8CFC2;
+      background: #fff; color: #1E88D6; font-size: 19px; font-weight: 700; padding: 0; cursor: pointer;
+    }
+    .daily-cell:nth-child(9n) { border-right: 0; }
+    .daily-cell:nth-child(n+73) { border-bottom: 0; }
+    .daily-b3r { border-right: 2.5px solid #3d2f2b; }
+    .daily-b3b { border-bottom: 2.5px solid #3d2f2b; }
+    .daily-given { color: #3d2f2b; font-weight: 800; background: #FBF7EE; }
+    .daily-peer { background: #FFF3D0; }
+    .daily-sel { background: #FFE08A; }
+    .daily-wrong { color: #D92B2B; background: #FFE3E3; }
+    .daily-pad { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: 10px; }
+    .daily-padbtn {
+      min-width: 44px; height: 44px; padding: 0 10px; border-radius: 10px;
+      border: 2px solid #FFC93C; background: #fff; color: #3d2f2b;
+      font-size: 18px; font-weight: 700; cursor: pointer;
+    }
+    .daily-padbtn-erase { border-color: #d8cfc4; font-size: 14px; }
+    /* 和同開珎 */
+    .daily-wado-words { display: grid; gap: 8px; justify-items: center; }
+    .daily-wado-row { display: flex; gap: 8px; }
+    .daily-wado-cell {
+      width: 52px; height: 52px; display: flex; align-items: center; justify-content: center;
+      background: #fff; border: 2px solid #E4D9C8; border-radius: 10px;
+      font-size: 30px; font-weight: 700; color: #3d2f2b;
+    }
+    .daily-wado-blank { border-color: #FF9F1C; background: #FFF7E8; color: #FF9F1C; }
+    .daily-wado-hit { border-color: #7BC98F; background: #DFF5E3; color: #177245; }
+    .daily-cands { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 14px; }
+    .daily-cand {
+      width: 52px; height: 52px; border-radius: 12px; border: 2px solid #1E88D6; background: #fff;
+      color: #1E88D6; font-size: 26px; font-weight: 700; cursor: pointer; padding: 0;
+    }
+    .daily-cand-bad { background: #eee; border-color: #ccc; color: #999; animation: daily-shake 0.3s ease; }
+    .daily-cand-hit { background: #DFF5E3; border-color: #7BC98F; color: #177245; }
+    @keyframes daily-shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      75% { transform: translateX(4px); }
+    }
+    /* クロスワード */
+    .daily-xgrid {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 2px;
+      width: min(300px, 100%); margin: 0 auto; padding: 2px;
+      background: #3d2f2b; border: 2.5px solid #3d2f2b; border-radius: 4px;
+    }
+    .daily-xcell {
+      position: relative; aspect-ratio: 1; border: 0; background: #fff; padding: 0;
+      font-size: 22px; font-weight: 700; color: #3d2f2b; cursor: pointer;
+    }
+    .daily-xblack { background: #3d2f2b; cursor: default; }
+    .daily-xnum { position: absolute; top: 1px; left: 3px; font-size: 10px; font-weight: 700; color: #8a7a72; pointer-events: none; }
+    .daily-xword { background: #FFF3D0; }
+    .daily-xsel { background: #FFE08A; }
+    .daily-xwrong { color: #D92B2B; background: #FFE3E3; }
+    .daily-palette { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: 10px; }
+    .daily-palbtn {
+      min-width: 42px; height: 42px; padding: 0 8px; border-radius: 10px;
+      border: 2px solid #FFC93C; background: #fff; color: #3d2f2b;
+      font-size: 18px; font-weight: 700; cursor: pointer;
+    }
+    .daily-palbtn-erase { border-color: #d8cfc4; font-size: 14px; }
+    .daily-clues { margin: 12px auto 0; max-width: 440px; text-align: left; }
+    .daily-clue-title { margin: 8px 0 4px; font-size: 14px; font-weight: 700; color: #1E88D6; }
+    .daily-clues ul { list-style: none; margin: 0; padding: 0; }
+    .daily-clues li {
+      font-size: 14px; font-weight: 600; line-height: 1.6; color: #3d2f2b;
+      padding: 2px 6px; border-radius: 6px; cursor: pointer;
+    }
+    .daily-clues li b { font-weight: 700; }
+
 </style>
 <meta property="og:site_name" content="パレあそび">
 <script type="application/ld+json" data-pareasobi-site>{
@@ -891,6 +1008,23 @@
     <span class="hero-deco deco-1" aria-hidden="true"></span>
     <span class="hero-deco deco-2" aria-hidden="true"></span>
     <span class="hero-deco deco-3" aria-hidden="true"></span>
+  </section>
+
+  <section class="daily-sec" aria-label="今日の問題">
+    <div class="daily-head">
+      <h2 class="daily-title">今日の問題</h2>
+      <span class="daily-date" id="daily-date"></span>
+      <span class="daily-stamp" id="daily-stamp" hidden>今日はクリア済み</span>
+    </div>
+    <p class="daily-type" id="daily-type"></p>
+    <p class="daily-how" id="daily-how"></p>
+    <div class="daily-play" id="daily-play"></div>
+    <p class="daily-msg" id="daily-msg" role="status"></p>
+    <div class="daily-actions">
+      <button type="button" class="daily-btn daily-btn-main" id="daily-check">こたえ合わせ</button>
+      <button type="button" class="daily-btn" id="daily-reset">リセット</button>
+      <a class="daily-btn daily-btn-more" id="daily-more" href="#">もっと遊ぶ</a>
+    </div>
   </section>
 
   <main>
@@ -1147,5 +1281,369 @@
 })();
 </script>
 <script defer src="/assets/pare-analytics.js"></script>
+
+<script>
+(function () {
+  'use strict';
+  var WADO = [{"a": "火", "w": ["花火", "火曜", "消火", "火事"]}, {"a": "花", "w": ["造花", "花見", "生花", "花束"]}, {"a": "空", "w": ["青空", "空気", "夜空", "空港"]}, {"a": "鳥", "w": ["小鳥", "鳥肉", "白鳥", "鳥居"]}, {"a": "風", "w": ["台風", "風景", "和風", "風船"]}, {"a": "光", "w": ["日光", "光景", "観光", "光線"]}, {"a": "木", "w": ["樹木", "木材", "大木", "木曜"]}, {"a": "雨", "w": ["大雨", "雨具", "降雨", "雨量"]}, {"a": "海", "w": ["大海", "海外", "内海", "海岸"]}, {"a": "星", "w": ["惑星", "星空", "流星", "星雲"]}, {"a": "雪", "w": ["大雪", "雪国", "吹雪", "雪道"]}, {"a": "魚", "w": ["金魚", "魚屋", "鮮魚", "魚肉"]}, {"a": "目", "w": ["注目", "目的", "一目", "目次"]}, {"a": "口", "w": ["人口", "口紅", "入口", "口笛"]}, {"a": "足", "w": ["一足", "足音", "遠足", "足元"]}, {"a": "話", "w": ["会話", "話題", "昔話", "話術"]}];
+  var CROSS = [{"grid": ["あ####", "めがね##", "##こえ#", "###ん#", "#####"], "across": [[2, "目にかける道具"], [4, "話すときに口から出るもの"]], "down": [[1, "空からふる水"], [3, "にゃーと鳴く動物"], [5, "まるい形。お金の単位でもある"]]}, {"grid": ["あ####", "きのこ##", "##めん#", "#####", "#####"], "across": [[2, "傘の形をした食べもの"], [4, "ラーメンやうどんの長い食べもの"]], "down": [[1, "夏の次の季節"], [3, "ごはんの材料"]]}, {"grid": ["ゆ####", "きもの##", "##りす#", "#####", "#####"], "across": [[2, "和服のこと"], [4, "木の実を食べる小さな動物"]], "down": [[1, "冬にふる白いもの"], [3, "おにぎりに巻く黒いもの"]]}, {"grid": ["は####", "なみだ##", "##いぬ#", "###の#", "#####"], "across": [[2, "悲しいときに目から出る水"], [4, "わんと鳴く動物"]], "down": [[1, "咲いてきれいな植物の部分"], [3, "上に物をのせるもの"], [5, "服を作る布"]]}, {"grid": ["そ####", "らーめん#", "##が##", "##ね##", "#####"], "across": [[2, "中華の麺の料理"]], "down": [[1, "見上げると広がるもの"], [3, "目にかける道具"]]}, {"grid": ["か####", "ぜんぶ##", "##たま#", "###ち#", "#####"], "across": [[2, "残らずみんな"], [4, "まるいもの。ボール"]], "down": [[1, "強く吹くと葉が揺れるもの"], [3, "ぶーと鳴く動物"], [5, "人がたくさん住む所"]]}, {"grid": ["つ####", "きんぎょ#", "##ん##", "#####", "#####"], "across": [[2, "赤い小さな魚。水槽で飼う"]], "down": [[1, "夜空に光るまるいもの"], [3, "金と並ぶ貴い金属"]]}, {"grid": ["ほ####", "しろい##", "##すし#", "###か#", "#####"], "across": [[2, "雪のような色のようす"], [4, "魚とごはんの日本の食べもの"]], "down": [[1, "夜空に光る小さな点"], [3, "座るための道具"], [5, "角のある動物。奈良公園にいる"]]}, {"grid": ["う####", "みそ###", "#らく##", "#####", "#####"], "across": [[2, "みそ汁の材料"], [4, "つらくないようす"]], "down": [[1, "泳げる広い水の場所"], [3, "見上げると広がるもの"]]}, {"grid": ["あ####", "さかな##", "##つき#", "###の#", "###こ#"], "across": [[2, "水の中を泳ぐ生きもの"], [4, "夜空に光るまるいもの"]], "down": [[1, "1日の始まりの時間"], [3, "暑い季節"], [5, "傘の形をした食べもの"]]}, {"grid": ["は####", "るす###", "#しか##", "##ぜ##", "#####"], "across": [[2, "家にいないこと"], [4, "角のある動物。奈良公園にいる"]], "down": [[1, "桜が咲く季節"], [3, "魚とごはんの日本の食べもの"], [5, "強く吹くと葉が揺れるもの"]]}];
+
+  var now = new Date();
+  var Y = now.getFullYear(), M = now.getMonth(), D = now.getDate();
+  function pad2(n) { return (n < 10 ? '0' : '') + n; }
+  var dateStr = Y + '-' + pad2(M + 1) + '-' + pad2(D);
+  var days = Math.floor(Date.UTC(Y, M, D) / 86400000);
+  var type = ((days % 3) + 3) % 3;
+  try {
+    var q = new URLSearchParams(location.search).get('daily');
+    if (q === '0' || q === '1' || q === '2') type = parseInt(q, 10);
+  } catch (e) {}
+  var NAMES = ['ナンプレ', '和同開珎', 'クロスワード'];
+  var MORE = ['/nanpure/', '/puzzles/wado/', '/puzzles/crossword/'];
+  var HOW = [
+    'タテとヨコと3×3のブロックに同じ数字が入らないように数字を置こう。マスを押してから下の数字を押してね',
+    '4つの熟語すべてに入る漢字が1つあるよ。下の候補から選んで押してね',
+    'タテとヨコのカギを読んで言葉を入れよう。マスを押してから下の文字を選んでね'
+  ];
+  function hashStr(s) { var h = 2166136261; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+  function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  var rng = mulberry32(hashStr(dateStr + ':pare-daily'));
+  function shuffle(arr) { for (var i = arr.length - 1; i > 0; i--) { var j = Math.floor(rng() * (i + 1)); var t = arr[i]; arr[i] = arr[j]; arr[j] = t; } return arr; }
+
+  document.getElementById('daily-date').textContent = (M + 1) + '月' + D + '日（' + '日月火水木金土'.charAt(now.getDay()) + '）';
+  document.getElementById('daily-type').textContent = '今日は' + NAMES[type];
+  document.getElementById('daily-how').textContent = HOW[type];
+  document.getElementById('daily-more').setAttribute('href', MORE[type]);
+  var msgEl = document.getElementById('daily-msg');
+  var stampEl = document.getElementById('daily-stamp');
+  var playEl = document.getElementById('daily-play');
+  var checkBtn = document.getElementById('daily-check');
+  var resetBtn = document.getElementById('daily-reset');
+  function stored(k) { try { return window.localStorage.getItem(k); } catch (e) { return null; } }
+  function store(k, v) { try { window.localStorage.setItem(k, v); } catch (e) {} }
+  if (stored('pareDailyCleared') === dateStr) stampEl.hidden = false;
+  function setMsg(t, cls) { msgEl.textContent = t; msgEl.className = 'daily-msg' + (cls ? ' ' + cls : ''); }
+  function doClear() {
+    setMsg('クリア！今日の問題を解けたね', 'daily-msg-clear');
+    store('pareDailyCleared', dateStr);
+    stampEl.hidden = false;
+  }
+
+  /* ================= ナンプレ ================= */
+  function buildSudoku() {
+    var rand = mulberry32(hashStr(dateStr + ':sudoku'));
+    function shuf(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(rand() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+    function ok(g, idx, v) {
+      var r = Math.floor(idx / 9), c = idx % 9, k;
+      for (k = 0; k < 9; k++) { if (g[r * 9 + k] === v || g[k * 9 + c] === v) return false; }
+      var br = r - r % 3, bc = c - c % 3;
+      for (k = 0; k < 9; k++) { if (g[(br + Math.floor(k / 3)) * 9 + bc + (k % 3)] === v) return false; }
+      return true;
+    }
+    var sol = []; for (var i0 = 0; i0 < 81; i0++) sol.push(0);
+    (function fill(g) {
+      function step() {
+        var idx = g.indexOf(0);
+        if (idx < 0) return true;
+        var nums = shuf([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+        for (var n = 0; n < 9; n++) {
+          if (ok(g, idx, nums[n])) { g[idx] = nums[n]; if (step()) return true; g[idx] = 0; }
+        }
+        return false;
+      }
+      step();
+    })(sol);
+    function count(g, cap) {
+      var idx = g.indexOf(0);
+      if (idx < 0) return 1;
+      var total = 0;
+      for (var v = 1; v <= 9; v++) {
+        if (ok(g, idx, v)) { g[idx] = v; total += count(g, cap); g[idx] = 0; if (total >= cap) return total; }
+      }
+      return total;
+    }
+    var puz = sol.slice();
+    var order = shuf([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80]);
+    var givens = 81, changed = true, guard = 0;
+    while (givens > 40 && changed && guard < 5) {
+      changed = false; guard++;
+      for (var o = 0; o < 81 && givens > 40; o++) {
+        var ix = order[o];
+        if (puz[ix] === 0) continue;
+        var bak = puz[ix]; puz[ix] = 0;
+        if (count(puz.slice(), 2) === 1) { givens--; changed = true; } else { puz[ix] = bak; }
+      }
+    }
+    var user = puz.slice();
+    var wrong = {};
+    var sel = puz.indexOf(0); if (sel < 0) sel = 0;
+    var gridEl = document.createElement('div'); gridEl.className = 'daily-sudoku';
+    var cells = [];
+    for (var i = 0; i < 81; i++) {
+      (function (idx) {
+        var r = Math.floor(idx / 9), c = idx % 9;
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'daily-cell' + (puz[idx] !== 0 ? ' daily-given' : '') + (c % 3 === 2 && c < 8 ? ' daily-b3r' : '') + (r % 3 === 2 && r < 8 ? ' daily-b3b' : '');
+        b.setAttribute('aria-label', (r + 1) + '行' + (c + 1) + '列');
+        b.addEventListener('click', function () { sel = idx; render(); });
+        cells.push(b); gridEl.appendChild(b);
+      })(i);
+    }
+    playEl.appendChild(gridEl);
+    var padEl = document.createElement('div'); padEl.className = 'daily-pad';
+    for (var n = 1; n <= 9; n++) {
+      (function (num) {
+        var b = document.createElement('button');
+        b.type = 'button'; b.className = 'daily-padbtn'; b.textContent = String(num);
+        b.addEventListener('click', function () { put(num); });
+        padEl.appendChild(b);
+      })(n);
+    }
+    var er = document.createElement('button');
+    er.type = 'button'; er.className = 'daily-padbtn daily-padbtn-erase'; er.textContent = '消す';
+    er.addEventListener('click', function () { put(0); });
+    padEl.appendChild(er);
+    playEl.appendChild(padEl);
+    function render() {
+      var sr = Math.floor(sel / 9), sc = sel % 9;
+      for (var i = 0; i < 81; i++) {
+        var r = Math.floor(i / 9), c = i % 9;
+        cells[i].textContent = user[i] === 0 ? '' : String(user[i]);
+        cells[i].classList.toggle('daily-peer', i !== sel && (r === sr || c === sc || (Math.floor(r / 3) === Math.floor(sr / 3) && Math.floor(c / 3) === Math.floor(sc / 3))));
+        cells[i].classList.toggle('daily-sel', i === sel);
+        cells[i].classList.toggle('daily-wrong', !!wrong[i]);
+      }
+    }
+    function isSolved() { for (var i = 0; i < 81; i++) { if (user[i] !== sol[i]) return false; } return true; }
+    function put(num) {
+      if (puz[sel] !== 0) { setMsg('はじめからある数字は変えられないよ', ''); return; }
+      user[sel] = num; delete wrong[sel]; render();
+      if (isSolved()) doClear();
+    }
+    checkBtn.addEventListener('click', function () {
+      wrong = {};
+      var empty = 0;
+      for (var i = 0; i < 81; i++) {
+        if (user[i] === 0) empty++;
+        else if (user[i] !== sol[i]) wrong[i] = true;
+      }
+      render();
+      var nw = Object.keys(wrong).length;
+      if (nw === 0 && empty === 0) doClear();
+      else if (nw > 0) setMsg('赤いマスがちがっているよ', '');
+      else setMsg('まちがいはないよ。その調子で進めよう', '');
+    });
+    resetBtn.addEventListener('click', function () {
+      user = puz.slice(); wrong = {}; sel = puz.indexOf(0); if (sel < 0) sel = 0;
+      render(); setMsg('はじめの状態にもどしたよ', '');
+    });
+    render();
+    setMsg('まずは空いているマスを押してみよう', '');
+  }
+
+  /* ================= 和同開珎 ================= */
+  function buildWado() {
+    var pz = WADO[Math.floor(rng() * WADO.length)];
+    var done = false;
+    var wordsEl = document.createElement('div'); wordsEl.className = 'daily-wado-words';
+    var blanks = [];
+    pz.w.forEach(function (word) {
+      var row = document.createElement('div'); row.className = 'daily-wado-row';
+      for (var k = 0; k < 2; k++) {
+        var s = document.createElement('span');
+        if (word.charAt(k) === pz.a) { s.className = 'daily-wado-cell daily-wado-blank'; s.textContent = '□'; blanks.push(s); }
+        else { s.className = 'daily-wado-cell'; s.textContent = word.charAt(k); }
+        row.appendChild(s);
+      }
+      wordsEl.appendChild(row);
+    });
+    playEl.appendChild(wordsEl);
+    var candEl = document.createElement('div'); candEl.className = 'daily-cands';
+    var others = shuffle(WADO.map(function (p) { return p.a; }).filter(function (a) { return a !== pz.a; })).slice(0, 5);
+    var cands = shuffle([pz.a].concat(others));
+    var btns = [];
+    cands.forEach(function (kj) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'daily-cand'; b.textContent = kj;
+      b.addEventListener('click', function () {
+        if (done) return;
+        if (kj === pz.a) {
+          done = true;
+          blanks.forEach(function (s) { s.textContent = pz.a; s.classList.remove('daily-wado-blank'); s.classList.add('daily-wado-hit'); });
+          btns.forEach(function (x) { x.disabled = true; });
+          b.classList.add('daily-cand-hit');
+          doClear();
+        } else {
+          b.classList.add('daily-cand-bad'); b.disabled = true;
+          setMsg('ハズレ。もう一度考えてみよう', '');
+        }
+      });
+      btns.push(b); candEl.appendChild(b);
+    });
+    playEl.appendChild(candEl);
+    checkBtn.hidden = true;
+    resetBtn.addEventListener('click', function () {
+      done = false;
+      blanks.forEach(function (s) { s.textContent = '□'; s.classList.add('daily-wado-blank'); s.classList.remove('daily-wado-hit'); });
+      btns.forEach(function (x) { x.disabled = false; x.classList.remove('daily-cand-bad', 'daily-cand-hit'); });
+      setMsg('はじめの状態にもどしたよ', '');
+    });
+    setMsg('共通する漢字はどれかな', '');
+  }
+
+  /* ================= クロスワード ================= */
+  function buildCross() {
+    var pz = CROSS[Math.floor(rng() * CROSS.length)];
+    var grid = pz.grid, H = grid.length, W = grid[0].length;
+    var sol = [], user = [], r, c;
+    for (r = 0; r < H; r++) {
+      sol.push(grid[r].split(''));
+      user.push(grid[r].split('').map(function (ch) { return ch === '#' ? '#' : ''; }));
+    }
+    function isLetter(rr, cc) { return rr >= 0 && rr < H && cc >= 0 && cc < W && grid[rr].charAt(cc) !== '#'; }
+    function inAcross(rr, cc) { return isLetter(rr, cc) && (isLetter(rr, cc - 1) || isLetter(rr, cc + 1)); }
+    function inDown(rr, cc) { return isLetter(rr, cc) && (isLetter(rr - 1, cc) || isLetter(rr + 1, cc)); }
+    var numMap = {}, startA = {}, startD = {}, num = 0;
+    for (r = 0; r < H; r++) for (c = 0; c < W; c++) {
+      if (!isLetter(r, c)) continue;
+      var sA = !isLetter(r, c - 1) && isLetter(r, c + 1);
+      var sD = !isLetter(r - 1, c) && isLetter(r + 1, c);
+      if (sA || sD) { num++; numMap[r + ',' + c] = num; if (sA) startA[num] = [r, c]; if (sD) startD[num] = [r, c]; }
+    }
+    function pickDir(rr, cc, cur) { var a = inAcross(rr, cc), d = inDown(rr, cc); if (a && d) return cur || 'A'; return a ? 'A' : 'D'; }
+    var sel = null;
+    outer: for (r = 0; r < H; r++) for (c = 0; c < W; c++) { if (isLetter(r, c)) { sel = { r: r, c: c, dir: pickDir(r, c, null) }; break outer; } }
+    function wordCells(rr, cc, dir) {
+      var dr = dir === 'D' ? 1 : 0, dc = dir === 'A' ? 1 : 0;
+      var sr = rr, sc = cc;
+      while (isLetter(sr - dr, sc - dc)) { sr -= dr; sc -= dc; }
+      var cells = [];
+      while (isLetter(sr, sc)) { cells.push([sr, sc]); sr += dr; sc += dc; }
+      return cells;
+    }
+    var wrong = {};
+    var gridEl = document.createElement('div'); gridEl.className = 'daily-xgrid';
+    var cellEls = {};
+    for (r = 0; r < H; r++) for (c = 0; c < W; c++) {
+      (function (rr, cc) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        if (!isLetter(rr, cc)) { b.className = 'daily-xcell daily-xblack'; b.disabled = true; }
+        else {
+          b.className = 'daily-xcell';
+          if (numMap[rr + ',' + cc]) {
+            var ns = document.createElement('span');
+            ns.className = 'daily-xnum'; ns.textContent = String(numMap[rr + ',' + cc]);
+            b.appendChild(ns);
+          }
+          var cs = document.createElement('span'); cs.className = 'daily-xchar';
+          b.appendChild(cs);
+          b.addEventListener('click', function () {
+            if (sel && sel.r === rr && sel.c === cc && inAcross(rr, cc) && inDown(rr, cc)) sel.dir = sel.dir === 'A' ? 'D' : 'A';
+            else sel = { r: rr, c: cc, dir: pickDir(rr, cc, sel ? sel.dir : null) };
+            render();
+          });
+          cellEls[rr + ',' + cc] = { btn: b, ch: cs };
+        }
+        gridEl.appendChild(b);
+      })(r, c);
+    }
+    playEl.appendChild(gridEl);
+    var palEl = document.createElement('div'); palEl.className = 'daily-palette';
+    var letters = [];
+    for (r = 0; r < H; r++) for (c = 0; c < W; c++) if (isLetter(r, c) && letters.indexOf(sol[r][c]) < 0) letters.push(sol[r][c]);
+    var decoyPool = [];
+    CROSS.forEach(function (p) { p.grid.join('').split('').forEach(function (ch) { if (ch !== '#' && letters.indexOf(ch) < 0 && decoyPool.indexOf(ch) < 0) decoyPool.push(ch); }); });
+    var palette = shuffle(letters.concat(shuffle(decoyPool).slice(0, 3)));
+    palette.forEach(function (ch) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'daily-palbtn'; b.textContent = ch;
+      b.addEventListener('click', function () { put(ch); });
+      palEl.appendChild(b);
+    });
+    var er = document.createElement('button');
+    er.type = 'button'; er.className = 'daily-palbtn daily-palbtn-erase'; er.textContent = '消す';
+    er.addEventListener('click', function () { put(''); });
+    palEl.appendChild(er);
+    playEl.appendChild(palEl);
+    var cluesEl = document.createElement('div'); cluesEl.className = 'daily-clues';
+    function clueGroup(title, list, starts, dir) {
+      var h = document.createElement('p'); h.className = 'daily-clue-title'; h.textContent = title;
+      cluesEl.appendChild(h);
+      var ul = document.createElement('ul');
+      list.forEach(function (item) {
+        var li = document.createElement('li');
+        var b = document.createElement('b'); b.textContent = item[0] + '. ';
+        li.appendChild(b);
+        li.appendChild(document.createTextNode(item[1]));
+        li.addEventListener('click', function () {
+          var st = starts[item[0]];
+          if (st) { sel = { r: st[0], c: st[1], dir: dir }; render(); }
+        });
+        ul.appendChild(li);
+      });
+      cluesEl.appendChild(ul);
+    }
+    clueGroup('ヨコのカギ', pz.across, startA, 'A');
+    clueGroup('タテのカギ', pz.down, startD, 'D');
+    playEl.appendChild(cluesEl);
+    function render() {
+      var wc = sel ? wordCells(sel.r, sel.c, sel.dir) : [];
+      var inWord = {};
+      wc.forEach(function (cell) { inWord[cell[0] + ',' + cell[1]] = true; });
+      Object.keys(cellEls).forEach(function (k) {
+        var e = cellEls[k], parts = k.split(','), rr = +parts[0], cc = +parts[1];
+        e.ch.textContent = user[rr][cc];
+        e.btn.classList.toggle('daily-xword', !!inWord[k] && !(sel && sel.r === rr && sel.c === cc));
+        e.btn.classList.toggle('daily-xsel', !!(sel && sel.r === rr && sel.c === cc));
+        e.btn.classList.toggle('daily-xwrong', !!wrong[k]);
+      });
+    }
+    function isSolved() {
+      for (var r2 = 0; r2 < H; r2++) for (var c2 = 0; c2 < W; c2++) if (isLetter(r2, c2) && user[r2][c2] !== sol[r2][c2]) return false;
+      return true;
+    }
+    function put(ch) {
+      if (!sel) return;
+      user[sel.r][sel.c] = ch;
+      delete wrong[sel.r + ',' + sel.c];
+      if (ch !== '') {
+        var wc = wordCells(sel.r, sel.c, sel.dir);
+        for (var i = 0; i < wc.length; i++) {
+          if (wc[i][0] === sel.r && wc[i][1] === sel.c && i + 1 < wc.length) { sel = { r: wc[i + 1][0], c: wc[i + 1][1], dir: sel.dir }; break; }
+        }
+      }
+      render();
+      if (isSolved()) doClear();
+    }
+    checkBtn.addEventListener('click', function () {
+      wrong = {};
+      var empty = 0;
+      for (var r2 = 0; r2 < H; r2++) for (var c2 = 0; c2 < W; c2++) {
+        if (!isLetter(r2, c2)) continue;
+        if (user[r2][c2] === '') empty++;
+        else if (user[r2][c2] !== sol[r2][c2]) wrong[r2 + ',' + c2] = true;
+      }
+      render();
+      var nw = Object.keys(wrong).length;
+      if (nw === 0 && empty === 0) doClear();
+      else if (nw > 0) setMsg('赤いマスがちがっているよ', '');
+      else setMsg('まちがいはないよ。その調子で進めよう', '');
+    });
+    resetBtn.addEventListener('click', function () {
+      for (var r2 = 0; r2 < H; r2++) for (var c2 = 0; c2 < W; c2++) if (isLetter(r2, c2)) user[r2][c2] = '';
+      wrong = {}; render(); setMsg('はじめの状態にもどしたよ', '');
+    });
+    render();
+    setMsg('まずはマスを押してみよう', '');
+  }
+
+  if (type === 0) buildSudoku();
+  else if (type === 1) buildWado();
+  else buildCross();
+})();
+</script>
+
 </body>
 </html>
