@@ -1293,10 +1293,10 @@
   function pad2(n) { return (n < 10 ? '0' : '') + n; }
   var dateStr = Y + '-' + pad2(M + 1) + '-' + pad2(D);
   var days = Math.floor(Date.UTC(Y, M, D) / 86400000);
-  var type = ((days % 3) + 3) % 3;
+  var type = (((days % 2) + 2) % 2 === 0) ? 0 : 2;
   try {
     var q = new URLSearchParams(location.search).get('daily');
-    if (q === '0' || q === '1' || q === '2') type = parseInt(q, 10);
+    if (q === '0' || q === '2') type = parseInt(q, 10);
   } catch (e) {}
   var NAMES = ['ナンプレ', '和同開珎', 'クロスワード'];
   var MORE = ['/nanpure/', '/puzzles/wado/', '/puzzles/crossword/'];
