@@ -1162,10 +1162,10 @@
       "key": "2026-11-22@18:00",
       "day": "2026-11-22",
       "slot": "18:00",
-      "status": "ready",
-      "post_id": null,
+      "status": "sent",
+      "post_id": "2124427934328856936",
       "due": 1795338000000,
-      "sent_at": null,
+      "sent_at": 1795338064564,
       "error": null,
       "date": "2026-11-22",
       "fingerprints": [
@@ -1179,10 +1179,10 @@
       "key": "2026-11-22@21:00",
       "day": "2026-11-22",
       "slot": "21:00",
-      "status": "ready",
-      "post_id": null,
+      "status": "sent",
+      "post_id": "2124473233357640136",
       "due": 1795348800000,
-      "sent_at": null,
+      "sent_at": 1795348864857,
       "error": null,
       "date": "2026-11-22",
       "fingerprints": [
@@ -1326,6 +1326,74 @@
         "cbfe9a52d61fdc896eced2903ae7ef2788f3ea8d4e8480b55dffe26fb4ea249a",
         "58ce42f49c5871bfbcd4a96bb93433ef007d3a22a75c428c49624a8abcb0949a",
         "ce05e0649376910f17be3ebbcc0d0e7ccaee88b0856ad17b7a30fb2f9b735570"
+      ]
+    },
+    "2026-11-25@08:00": {
+      "key": "2026-11-25@08:00",
+      "day": "2026-11-25",
+      "slot": "08:00",
+      "status": "ready",
+      "post_id": null,
+      "due": 1795561200000,
+      "sent_at": null,
+      "error": null,
+      "date": "2026-11-25",
+      "fingerprints": [
+        "ae577392e28540589cc46343c42ffcbc83cc95249dde1f2ab3bb29afac6b83cf",
+        "5034f0e96c916c717b69be4805ca7d1b8e825f49647fdbed03d7d1642c835d26",
+        "3f6b474cd42c60cbc483a7062d5ab16e7b536d4a37b2657839be4e2e66bf2369",
+        "42fff6e27e80736064b21abdd089fac01c3a279db23bb5dc3f59a6fd6f6b5aba"
+      ]
+    },
+    "2026-11-25@12:00": {
+      "key": "2026-11-25@12:00",
+      "day": "2026-11-25",
+      "slot": "12:00",
+      "status": "ready",
+      "post_id": null,
+      "due": 1795575600000,
+      "sent_at": null,
+      "error": null,
+      "date": "2026-11-25",
+      "fingerprints": [
+        "73cf6452232a391960d22bff19e0fc9b8881b216c2991a17e3d040851bfb3a18",
+        "2cddf03875b515254f16e46c5a72627bb046aaa5b59cfcb153316e1e5d085b22",
+        "518e122ebb3372f7d067d3cf290ac3abc0330ecc3918a28fa1a75b4761284d8a",
+        "f7e8c2ef72724a6087187415d4427570f073e5be15021ea3104d2d92811c88a2"
+      ]
+    },
+    "2026-11-25@18:00": {
+      "key": "2026-11-25@18:00",
+      "day": "2026-11-25",
+      "slot": "18:00",
+      "status": "ready",
+      "post_id": null,
+      "due": 1795597200000,
+      "sent_at": null,
+      "error": null,
+      "date": "2026-11-25",
+      "fingerprints": [
+        "c47007598d3658112123aec92510045f4272b0db366de03798ac943252e8a614",
+        "2569dc909b49120afad0f029738e3828b9bf24a6068821e500872b3e83134ac1",
+        "14be16daed6c68546768b3458180f93cd1923e1dabc4940b9a43333f6fa2ffd3",
+        "9aa4b8c374b8ba23675838b2e1e3531cf87526c449980c4cea701046261f1251"
+      ]
+    },
+    "2026-11-25@21:00": {
+      "key": "2026-11-25@21:00",
+      "day": "2026-11-25",
+      "slot": "21:00",
+      "status": "ready",
+      "post_id": null,
+      "due": 1795608000000,
+      "sent_at": null,
+      "error": null,
+      "date": "2026-11-25",
+      "fingerprints": [
+        "9c38e46812b0a8dd0d3af071910592d45f1811511cbb40c4fd97683db4fc3de1",
+        "9d1e62c341f09a7518202bc80c80fb4559629d2fbb846e3f062884256e6fc3eb",
+        "ab5b2787a3c33a68102ea1ee25354016a9e66e120559269296767612aa234eb2",
+        "7d31578d2d989a3e79deb2f810304e96581671e7e3934993fb4ee065a212894e"
       ]
     }
   }
