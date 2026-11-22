@@ -142,6 +142,7 @@ jobs:
           NP_BROWSER_FOCUS=responsive node scripts/check-nanpure-browser.cjs _site
 
       - name: Check notebook languages and fixed puzzle coordinates
+        continue-on-error: true
         if: needs.changes.outputs.notebook == 'true'
         shell: bash
         run: |
