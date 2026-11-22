@@ -20,6 +20,27 @@
     "hi": "सुडोकू खेलें",
     "ar": "العب سودوكو"
   },
+  "問題集で遊ぶ": {
+    "en": "Play the puzzle collection",
+    "zh-Hans": "玩题库",
+    "zh-Hant": "玩題庫",
+    "ko": "문제집 풀기",
+    "es": "Jugar a la colección de puzles",
+    "fr": "Jouer à la collection de grilles",
+    "de": "Rätselsammlung spielen",
+    "pt": "Jogar a coleção de desafios",
+    "it": "Gioca alla raccolta di puzzle",
+    "nl": "Puzzelverzameling spelen",
+    "sv": "Spela pusselsamlingen",
+    "pl": "Zagraj w zbiór łamigłówek",
+    "cs": "Hrát sbírku hlavolamů",
+    "ru": "Играть в сборник головоломок",
+    "id": "Main kumpulan teka-teki",
+    "vi": "Chơi bộ câu đố",
+    "th": "เล่นชุดโจทย์",
+    "hi": "पहेली संग्रह खेलें",
+    "ar": "العب مجموعة الألغاز"
+  },
   "日替わり問題に挑戦する": {
     "en": "Try the daily puzzles",
     "zh-Hans": "挑战每日谜题",
