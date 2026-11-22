@@ -496,7 +496,7 @@ async function checkJigsawCreationAndPrint(page,lang,expected){
  assert(frame,'Notebook iframe is attached: '+lang);
  await frame.waitForFunction(lang=>!!window.NanpureAppTest&&window.NPI18n?.get()===lang,lang,{timeout:20000});
  await frame.locator('[data-action="open-notebook"]').click();
- await frame.locator('[data-action="start"][data-flow="create"]').click();
+ await frame.evaluate(()=>window.NPWebsiteTool('open-create'));
  await frame.locator('[data-action="web-single"]').click();
  await frame.locator('[data-action="pick-kind"][data-kind="jigsaw"]').click();
  const complexityRow='.review-row:has([data-action="edit-create"][data-step="complexity"]) > b';

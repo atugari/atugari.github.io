@@ -121,6 +121,7 @@
   --home-daily-ink: #452c00;
   --home-learn-bg: #dfedfa;
   --home-works-bg: #ece1f5;
+  --home-collection-bg: #dff0e2;
   --home-design-bg: #e2edeb;
   --home-titles-bg: #f0e7d9;
   --home-action-ink: #172d21;
@@ -146,6 +147,7 @@ html:is([data-site-theme="lounge"], [data-site-theme="contrast-dark"]) .np-stepp
   --home-daily-bg: #f1d9a0;
   --home-learn-bg: #294869;
   --home-works-bg: #423654;
+  --home-collection-bg: #2e4a3a;
   --home-design-bg: #254755;
   --home-titles-bg: #504139;
   --home-action-ink: var(--theme-ink);
@@ -168,6 +170,7 @@ html[data-site-theme="contrast-dark"] .np-stepped-home {
   --home-control-ink: var(--home-daily-ink);
 }
 .np-stepped-home .learn-choice { --home-control-bg: var(--home-learn-bg); }
+.np-stepped-home .collection-choice { --home-control-bg: var(--home-collection-bg); }
 .np-stepped-home .works-choice {
   --home-control-bg: var(--home-works-bg);
   list-style: none;

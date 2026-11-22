@@ -78,7 +78,7 @@ async function setup(browser,width,height,theme='color'){
    return Math.abs((circle.left+circle.right)-(icon.left+icon.right))<1&&Math.abs((circle.top+circle.bottom)-(icon.top+icon.bottom))<1;
   }));
   assert(centered,'Each chevron is centered in its circle');
-  assert.deepEqual(await page.locator('.designed-home .start-choices strong').allTextContents(),['ナンプレで遊ぶ','ナンプレを作る','日替わりナンプレに挑戦する','ナンプレを学ぶ','ナンプレの作品を見る']);
+  assert.deepEqual(await page.locator('.designed-home .start-choices strong').allTextContents(),['日替わりナンプレに挑戦する','ナンプレで遊ぶ','問題集で遊ぶ','ナンプレを学ぶ']);
   assert.equal(await page.locator('.designed-home [data-collection-entry]').count(),0);
   assert.equal(await page.locator('.designed-home :is(.home-bottom-links,.home-version,[data-home-guide],[data-pare-entry])').count(),0);
   const support=page.locator('.home-support-button');
@@ -88,11 +88,8 @@ async function setup(browser,width,height,theme='color'){
   for(const side of ['width','height'])assert(Math.abs(supportSize[side]-playSize[side]*2/3)<1,'Support '+side+' is two thirds of the play card');
   const cards=await page.locator('.start-choices .choice-card').evaluateAll(nodes=>nodes.map(e=>({height:e.offsetHeight,width:e.offsetWidth,background:getComputedStyle(e).backgroundColor})));
   for(const card of cards)assert.deepEqual([card.width,card.height],[cards[0].width,cards[0].height],'All home entry cards have the same size');
-  assert.notEqual(cards[3].background,cards[4].background,'Learning and works use different colors');
+  assert.notEqual(cards[2].background,cards[3].background,'Collection and learning use different colors');
   assert.equal(await page.locator('.learn-choice').getAttribute('href'),'/nanpure/learn/');
-  await page.locator('.works-choice').click();
-  assert(await page.locator('.np-home-more .home-event').isVisible());
-  await page.locator('.works-choice').click();
   await page.evaluate(()=>{window.scrollTo(0,0);document.querySelector('.designed-home').scrollTop=0});
   const box=await page.evaluate(()=>{const m=document.querySelector('.designed-home'),rects=Array.from(m.querySelectorAll('button,a')).filter(e=>e.getClientRects().length&&getComputedStyle(e).visibility!=='hidden').map(e=>({text:e.textContent.trim(),r:e.getBoundingClientRect().toJSON()}));return{height:m.clientHeight,scroll:m.scrollHeight,width:innerWidth,viewport:innerHeight,rects};});
   assert(box.scroll>=box.height,JSON.stringify({width,height,...box}));
@@ -102,8 +99,11 @@ async function setup(browser,width,height,theme='color'){
   const tile=page.locator('.np-title-card.earned').first();await tile.click();await page.locator('.np-title-details[open]').waitFor();assert((await page.locator('.np-title-description').textContent()).length>0);assert.equal(await page.locator('.np-title-details').evaluate(e=>getComputedStyle(e).animationName),'none');await page.locator('.np-title-details>header button').click();
   await page.locator('.np-title-notification input').uncheck();await page.waitForFunction(()=>NPAchievements.getState().notification==='off');await page.evaluate(()=>NPAchievements.capture('ui',{action:'last-book'}));await page.locator('.np-titles>header button').click();if(await page.locator('.game-dialog[open]').isVisible())await page.locator('.game-dialog .dialog-close').click();assert.equal(await page.locator('.np-title-toast').count(),0);
   await page.reload();await page.locator('.np-home-ready').waitFor();assert.equal(await page.evaluate(()=>NPAchievements.getState().notification),'off');assert(await page.evaluate(()=>!!NPAchievements.getState().earned['NP-0001']));
-  await page.locator('.create-choice').click();
-  await page.frameLocator('iframe.notebook').locator('[data-action="web-single"]').waitFor();
+  await page.locator('.main-choice').click();
+  await page.frameLocator('iframe.notebook').locator('[data-action="open-notebook"]').click();
+  assert.equal(await page.frameLocator('iframe.notebook').locator('[data-action="start"][data-flow="create"]').count(),0,'The free-play screen has no generation entrance');
+  await page.frameLocator('iframe.notebook').locator('[data-action="open-multi-create"]').click();
+  await page.frameLocator('iframe.notebook').locator('[data-action="pick-multi"]').first().waitFor();
   await page.goto(site+'/nanpure/');
   await page.locator('.main-choice').click();
   await page.frameLocator('iframe.notebook').locator('[data-action="open-notebook"]').waitFor();

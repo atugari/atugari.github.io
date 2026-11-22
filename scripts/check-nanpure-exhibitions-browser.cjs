@@ -22,11 +22,7 @@ const repo=path.resolve(__dirname,'..'),root=path.resolve(process.argv[2]||'_sit
    const file=path.join(root,decodeURIComponent(u.pathname).replace(/^\//,'')+(u.pathname.endsWith('/')?'index.html':''));if(fs.existsSync(file)&&fs.statSync(file).isFile())return route.fulfill({status:200,contentType:types[path.extname(file)]||'application/octet-stream',body:fs.readFileSync(file)});return route.fulfill({status:404,body:'not found'});
   });
   try{
-   await page.goto(origin+'/nanpure/');await page.locator('[data-stepped-home]').waitFor();
-   assert.equal(await page.locator('.home-event').isVisible(),false,'Secondary home links stay folded until requested');
-   await page.locator('.np-home-more summary').click();
-
-   await page.locator('.home-event').click();await page.locator('.exhibition-art.current').waitFor();
+   await page.goto(origin+'/nanpure/exhibitions/');await page.locator('.exhibition-art.current').waitFor();
    await page.getByRole('link',{name:'この作品を鑑賞する',exact:true}).click();await page.locator('.reaction-buttons button').filter({hasText:'発想が好き'}).click();await page.locator('.reaction-buttons button[aria-pressed=true]').waitFor();assert.equal((await api('exhibitions?entry='+other)).reactions.idea.count,1);
    await page.locator('[data-nav=event]').click();await page.getByRole('button',{name:'作品を出展する',exact:true}).click();await page.locator('#submit-button:enabled').waitFor();await page.locator('#submission-confirm').check();await page.locator('#submit-button').click();await page.locator('.owner-area').waitFor();
    const entry=new URL(page.url()).searchParams.get('entry');assert(entry);assert.equal(DB.raw.prepare('SELECT count(*) n FROM exhibition_entries WHERE active=1').get().n,2);
@@ -35,7 +31,7 @@ const repo=path.resolve(__dirname,'..'),root=path.resolve(process.argv[2]||'_sit
    await page.locator('.publish-replay-form input[type=checkbox]').check();await page.getByRole('button',{name:'このリプレイを公開する',exact:true}).click();await page.locator('.replay-reveal').waitFor();const replay=new URL(page.url()).searchParams.get('replay');assert(replay);
    await page.getByRole('button',{name:'解答を含むリプレイを見る',exact:true}).click();await page.getByRole('button',{name:'1手進む',exact:true}).click();await page.locator('.replay-note').filter({hasText:'最後のひとマスに気づいた！'}).waitFor();const stored=await api('exhibitions?replay='+replay);assert.equal(stored.replay.recording.steps.length,1);assert.equal(stored.replay.recording.steps[0].i,80);assert.equal(stored.replay.recording.annotations[0].step,1);
    await page.getByRole('link',{name:'自分の展示室',exact:true}).click();await page.locator('#main[aria-busy=false]').waitFor();await page.getByRole('button',{name:'ねこのいる午後を見る',exact:true}).click();await page.getByRole('button',{name:'公開済みのリプレイを飾る',exact:true}).click();await page.getByRole('button',{name:'9×9を解いた道のり',exact:true}).click();await page.locator('#save').click();await page.getByText('展示室を保存して公開しました。共有ボタンから紹介できます。',{exact:true}).waitFor();await page.reload();await page.locator('a[href="/nanpure/exhibitions/?replay='+replay+'"]').waitFor();await page.getByRole('link',{name:'ねこのナンプレ展 · 出展作品',exact:true}).waitFor();
-   const bounds=await page.locator('html').evaluate(e=>({width:e.clientWidth,scroll:e.scrollWidth}));assert(bounds.scroll<=bounds.width+2,JSON.stringify(bounds));assert.deepEqual(errors,[]);console.log('PASS exhibition '+width+'x'+height+': home, reactions, submit, real clear recording, annotation, publication/readback and gallery attachment');
+   const bounds=await page.locator('html').evaluate(e=>({width:e.clientWidth,scroll:e.scrollWidth}));assert(bounds.scroll<=bounds.width+2,JSON.stringify(bounds));assert.deepEqual(errors,[]);console.log('PASS exhibition '+width+'x'+height+': direct entry, reactions, submit, real clear recording, annotation, publication/readback and gallery attachment');
   }finally{await context.close();DB.raw.close();}
  }}finally{await browser.close()}
 })().catch(e=>{console.error(e);process.exit(1)});
