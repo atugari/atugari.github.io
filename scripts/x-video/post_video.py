@@ -183,21 +183,41 @@ def _processing_info_of(resp):
     return {}
 
 
+def _request_json(method, url, body=None, timeout=120):
+    data = json.dumps(body).encode() if body is not None else None
+    headers = {"Authorization": oauth_header(method, url)}
+    if data is not None:
+        headers["Content-Type"] = "application/json"
+    req = urllib.request.Request(url, data=data, method=method, headers=headers)
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            raw = r.read().decode()
+            return json.loads(raw) if raw else {}
+    except urllib.error.HTTPError as e:
+        detail = e.read().decode(errors="replace")[:500]
+        raise RuntimeError(f"X API {e.code} {method} {url}: {detail}") from None
+
+
 def upload_video(path):
-    """Chunked upload via /2/media/upload (INIT/APPEND/FINALIZE)."""
+    """Chunked upload, current v2 shape (dedicated paths, since 2025):
+    POST /2/media/upload/initialize (JSON) -> POST /2/media/upload/{id}/append
+    (multipart chunks) -> POST /2/media/upload/{id}/finalize -> STATUS polls.
+    The old command=INIT/APPEND/FINALIZE parameters on /2/media/upload are
+    rejected by the API now."""
     total = os.path.getsize(path)
-    init = api_form("INIT", {"command": "INIT", "total_bytes": str(total),
-                             "media_type": "video/mp4", "media_category": "tweet_video"})
+    init = _request_json("POST", API + "/2/media/upload/initialize",
+                         {"total_bytes": total, "media_type": "video/mp4",
+                          "media_category": "tweet_video"})
     media_id = _media_id_of(init)
     with open(path, "rb") as f:
         seg = 0
         while True:
-            chunk = f.read(5 * 1024 * 1024)
+            chunk = f.read(4 * 1024 * 1024)
             if not chunk:
                 break
-            api_form("APPEND", {"command": "APPEND", "media_id": media_id, "segment_index": str(seg)}, chunk)
+            _append_chunk(media_id, seg, chunk)
             seg += 1
-    fin = api_form("FINALIZE", {"command": "FINALIZE", "media_id": media_id})
+    fin = _request_json("POST", f"{API}/2/media/upload/{media_id}/finalize")
     info = _processing_info_of(fin)
     for _ in range(60):
         if info.get("state") in (None, "succeeded"):
@@ -210,32 +230,22 @@ def upload_video(path):
     raise RuntimeError("video processing did not finish")
 
 
-def api_form(command, fields, chunk=None):
-    # The v2 media endpoint takes every command as multipart/form-data.
-    # (Sending INIT as form-urlencoded is rejected: the API reports each
-    # field as an invalid query parameter.) With multipart bodies, OAuth
-    # signs only the oauth_* parameters, never the body fields.
-    url = API + "/2/media/upload"
+def _append_chunk(media_id, segment_index, chunk):
+    url = f"{API}/2/media/upload/{media_id}/append"
     boundary = "----xvideo" + uuid.uuid4().hex
-    body = b""
-    for k, v in fields.items():
-        body += f"--{boundary}\r\nContent-Disposition: form-data; name=\"{k}\"\r\n\r\n{v}\r\n".encode()
-    if chunk is not None:
-        body += f"--{boundary}\r\nContent-Disposition: form-data; name=\"media\"; filename=\"chunk\"\r\nContent-Type: application/octet-stream\r\n\r\n".encode()
-        body += chunk
-        body += b"\r\n"
-    body += f"--{boundary}--\r\n".encode()
+    body = f"--{boundary}\r\nContent-Disposition: form-data; name=\"segment_index\"\r\n\r\n{segment_index}\r\n".encode()
+    body += f"--{boundary}\r\nContent-Disposition: form-data; name=\"media\"; filename=\"chunk\"\r\nContent-Type: application/octet-stream\r\n\r\n".encode()
+    body += chunk + f"\r\n--{boundary}--\r\n".encode()
     req = urllib.request.Request(url, data=body, method="POST", headers={
         "Authorization": oauth_header("POST", url),
         "Content-Type": f"multipart/form-data; boundary={boundary}",
     })
     try:
         with urllib.request.urlopen(req, timeout=120) as r:
-            raw = r.read().decode()
-            return json.loads(raw) if raw else {}
+            r.read()
     except urllib.error.HTTPError as e:
         detail = e.read().decode(errors="replace")[:500]
-        raise RuntimeError(f"X API {e.code} media {command}: {detail}") from None
+        raise RuntimeError(f"X API {e.code} media APPEND {segment_index}: {detail}") from None
 
 
 def api_get_status(media_id):
