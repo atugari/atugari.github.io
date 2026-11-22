@@ -1,0 +1,80 @@
+{
+  "account": "parade166",
+  "backlog": [
+    {
+      "kind": "video",
+      "note": "公開済み。2026-11-22にパレードの指示でXへ投稿する",
+      "text": "文字だけで再現しました\n「バッドアップル」文字版です。\nYouTubeでも公開中 https://youtu.be/dcKgUFkdaoY",
+      "title": "バッドアップル 文字版",
+      "youtube_id": "dcKgUFkdaoY"
+    },
+    {
+      "kind": "short",
+      "note": "2026-11-22公開済み。同日にパレードの指示でXへ投稿する",
+      "text": "水玉ショート第1弾「壁に当たると分裂する水玉、何個まで増える？」\n壁に当たると分裂します。最後は1,205個でした。\nYouTubeでも公開中 https://youtube.com/shorts/yZIx8EG4SW4",
+      "title": "壁に当たると分裂する水玉、何個まで増える？",
+      "youtube_id": "yZIx8EG4SW4"
+    }
+  ],
+  "entries": [
+    {
+      "kind": "short",
+      "text": "水玉ショート第2弾「倍率ゲート」\n×2の輪をくぐると水玉が増えます。最後は何個？\nYouTubeでも公開中 https://youtube.com/shorts/W0TfVOhEo1A",
+      "title": "倍率ゲート",
+      "x_time_jst": "2026-11-23T19:30:00+09:00",
+      "youtube_id": "W0TfVOhEo1A",
+      "youtube_publish_jst": "2026-11-23T19:00:00+09:00"
+    },
+    {
+      "kind": "short",
+      "text": "水玉ショート第3弾「色うつり」\n当たった水玉に色がうつります。最後は何個？\nYouTubeでも公開中 https://youtube.com/shorts/N1VVeAVMwZI",
+      "title": "色うつり",
+      "x_time_jst": "2026-11-24T19:30:00+09:00",
+      "youtube_id": "N1VVeAVMwZI",
+      "youtube_publish_jst": "2026-11-24T19:00:00+09:00"
+    },
+    {
+      "kind": "video",
+      "text": "文字だけで映画を再現しました\n「Big Buck Bunny」全編の文字版です。\nYouTubeでも公開中 https://youtu.be/p4_qzf_nWZU",
+      "title": "Big Buck Bunny 文字版",
+      "x_time_jst": "2026-11-28T19:30:00+09:00",
+      "youtube_id": "p4_qzf_nWZU",
+      "youtube_publish_jst": "2026-11-28T19:00:00+09:00"
+    },
+    {
+      "kind": "video",
+      "text": "文字だけで映画を再現しました\n「Sintel」全編の文字版です。\nYouTubeでも公開中 https://youtu.be/BaEhUsMCqXs",
+      "title": "Sintel 文字版",
+      "x_time_jst": "2026-12-05T19:30:00+09:00",
+      "youtube_id": "BaEhUsMCqXs",
+      "youtube_publish_jst": "2026-12-05T19:00:00+09:00"
+    },
+    {
+      "kind": "video",
+      "text": "文字だけで映画を再現しました\n「Elephants Dream」全編の文字版です。\nYouTubeでも公開中 https://youtu.be/ER5KyrMesYU",
+      "title": "Elephants Dream 文字版",
+      "x_time_jst": "2026-12-12T19:30:00+09:00",
+      "youtube_id": "ER5KyrMesYU",
+      "youtube_publish_jst": "2026-12-12T19:00:00+09:00"
+    },
+    {
+      "kind": "video",
+      "text": "文字だけで映画を再現しました\n「西遊記 孫悟空」（1926年・大藤信郎）の文字版です。\nYouTubeでも公開中 https://youtu.be/qb4DLTKBZMw",
+      "title": "西遊記 孫悟空 文字版",
+      "x_time_jst": "2026-12-19T19:30:00+09:00",
+      "youtube_id": "qb4DLTKBZMw",
+      "youtube_publish_jst": "2026-12-19T19:00:00+09:00"
+    },
+    {
+      "kind": "video",
+      "text": "文字だけで再現しました\n「千本桜」の文字版です。\nYouTubeでも公開中 https://youtu.be/1yahqjrbpu4",
+      "title": "千本桜 文字版",
+      "x_time_jst": "2026-12-26T19:30:00+09:00",
+      "youtube_id": "1yahqjrbpu4",
+      "youtube_publish_jst": "2026-12-26T19:00:00+09:00"
+    }
+  ],
+  "note": "Xへの動画投稿の予約一覧。パズル投稿の枠（08:00・12:00・18:00・21:00）には置かない。youtube_idが重複よけの鍵で、history.jsonに入ったものは二度上げない。",
+  "slot_jst": "19:30",
+  "version": 1
+}
