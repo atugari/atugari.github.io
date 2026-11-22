@@ -168,12 +168,27 @@ def download_video(entry, dest_dir):
     return out
 
 
+def _media_id_of(resp):
+    for container in (resp, resp.get("data") or {}):
+        for key in ("media_id_string", "media_id", "id"):
+            if container.get(key):
+                return str(container[key])
+    raise RuntimeError(f"no media id in response: {str(resp)[:200]}")
+
+
+def _processing_info_of(resp):
+    for container in (resp, resp.get("data") or {}):
+        if container.get("processing_info"):
+            return container["processing_info"]
+    return {}
+
+
 def upload_video(path):
     """Chunked upload via /2/media/upload (INIT/APPEND/FINALIZE)."""
     total = os.path.getsize(path)
     init = api_form("INIT", {"command": "INIT", "total_bytes": str(total),
                              "media_type": "video/mp4", "media_category": "tweet_video"})
-    media_id = str(init["media_id_string"] if "media_id_string" in init else init["media_id"])
+    media_id = _media_id_of(init)
     with open(path, "rb") as f:
         seg = 0
         while True:
@@ -183,7 +198,7 @@ def upload_video(path):
             api_form("APPEND", {"command": "APPEND", "media_id": media_id, "segment_index": str(seg)}, chunk)
             seg += 1
     fin = api_form("FINALIZE", {"command": "FINALIZE", "media_id": media_id})
-    info = fin.get("processing_info") or {}
+    info = _processing_info_of(fin)
     for _ in range(60):
         if info.get("state") in (None, "succeeded"):
             return media_id
@@ -191,26 +206,28 @@ def upload_video(path):
             raise RuntimeError("video processing failed")
         time.sleep(max(1, int(info.get("check_after_secs", 5))))
         st = api_get_status(media_id)
-        info = st.get("processing_info") or {}
+        info = _processing_info_of(st)
     raise RuntimeError("video processing did not finish")
 
 
 def api_form(command, fields, chunk=None):
+    # The v2 media endpoint takes every command as multipart/form-data.
+    # (Sending INIT as form-urlencoded is rejected: the API reports each
+    # field as an invalid query parameter.) With multipart bodies, OAuth
+    # signs only the oauth_* parameters, never the body fields.
     url = API + "/2/media/upload"
-    if command == "APPEND":
-        boundary = "----xvideo" + uuid.uuid4().hex
-        body = b""
-        for k, v in fields.items():
-            body += f"--{boundary}\r\nContent-Disposition: form-data; name=\"{k}\"\r\n\r\n{v}\r\n".encode()
+    boundary = "----xvideo" + uuid.uuid4().hex
+    body = b""
+    for k, v in fields.items():
+        body += f"--{boundary}\r\nContent-Disposition: form-data; name=\"{k}\"\r\n\r\n{v}\r\n".encode()
+    if chunk is not None:
         body += f"--{boundary}\r\nContent-Disposition: form-data; name=\"media\"; filename=\"chunk\"\r\nContent-Type: application/octet-stream\r\n\r\n".encode()
-        body += chunk + f"\r\n--{boundary}--\r\n".encode()
-        ctype = f"multipart/form-data; boundary={boundary}"
-    else:
-        body = urllib.parse.urlencode(fields).encode()
-        ctype = "application/x-www-form-urlencoded"
+        body += chunk
+        body += b"\r\n"
+    body += f"--{boundary}--\r\n".encode()
     req = urllib.request.Request(url, data=body, method="POST", headers={
-        "Authorization": oauth_header("POST", url, fields if command != "APPEND" else {}),
-        "Content-Type": ctype,
+        "Authorization": oauth_header("POST", url),
+        "Content-Type": f"multipart/form-data; boundary={boundary}",
     })
     try:
         with urllib.request.urlopen(req, timeout=120) as r:
