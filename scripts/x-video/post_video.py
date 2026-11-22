@@ -135,7 +135,8 @@ def api_json(method, route, body=None):
         with urllib.request.urlopen(req, timeout=30) as r:
             return json.loads(r.read().decode())
     except urllib.error.HTTPError as e:
-        raise RuntimeError(f"X API {e.code} {route}") from None
+        detail = e.read().decode(errors="replace")[:500]
+        raise RuntimeError(f"X API {e.code} {route}: {detail}") from None
 
 
 def check_account():
@@ -216,7 +217,8 @@ def api_form(command, fields, chunk=None):
             raw = r.read().decode()
             return json.loads(raw) if raw else {}
     except urllib.error.HTTPError as e:
-        raise RuntimeError(f"X API {e.code} media {command}") from None
+        detail = e.read().decode(errors="replace")[:500]
+        raise RuntimeError(f"X API {e.code} media {command}: {detail}") from None
 
 
 def api_get_status(media_id):
