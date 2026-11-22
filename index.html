@@ -974,9 +974,6 @@
       <span class="daily-date" id="daily-date"></span>
       <span class="daily-stamp" id="daily-stamp" hidden>今日はクリア済み</span>
     </div>
-    <p class="daily-type" id="daily-type"></p>
-    <p class="daily-diff" id="daily-diff"></p>
-    <p class="daily-how" id="daily-how"></p>
     <div class="daily-play" id="daily-play"></div>
     <p class="daily-msg" id="daily-msg" role="status"></p>
     <div class="daily-actions">
@@ -1251,9 +1248,6 @@
   var dateStr = Y + '-' + pad2(M + 1) + '-' + pad2(D);
   var days = Math.floor(Date.UTC(Y, M, D) / 86400000);
   var dateEl = document.getElementById('daily-date');
-  var typeEl = document.getElementById('daily-type');
-  var diffEl = document.getElementById('daily-diff');
-  var howEl = document.getElementById('daily-how');
   var playEl = document.getElementById('daily-play');
   var msgEl = document.getElementById('daily-msg');
   var stampEl = document.getElementById('daily-stamp');
@@ -1265,12 +1259,6 @@
   function stored(k) { try { return window.localStorage.getItem(k); } catch (e) { return null; } }
   function store(k, v) { try { window.localStorage.setItem(k, v); } catch (e) {} }
   if (stored('pareDailyCleared') === dateStr) stampEl.hidden = false;
-  var HOW = {
-    normal: 'タテとヨコと3×3のブロックに同じ数字が入らないように数字を置こう。マスを押してから下の数字を押してね',
-    diagonal: 'タテとヨコと3×3のブロックに加えて、2本の対角線にも同じ数字が入らないようにしよう。マスを押してから下の数字を押してね',
-    jigsaw: 'タテとヨコと、太線で囲まれた形の中に同じ数字が入らないようにしよう。マスを押してから下の数字を押してね',
-    killer: '点線の枠の左上の数がその枠の合計だよ。枠の中では数字は重ならない。タテとヨコと3×3のブロックにも同じ数字は入らないよ'
-  };
   function hashStr(s) { var h = 2166136261; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
   function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 
@@ -1278,11 +1266,12 @@
     .then(function (r) { if (!r.ok) throw new Error('ng'); return r.json(); })
     .then(function (stock) {
       if (!stock || !stock.length) throw new Error('empty');
+      stock = stock.filter(function (pz) { return pz.rule === 'normal'; });
+      if (!stock.length) throw new Error('empty');
       start(stock);
     })
     .catch(function () {
-      typeEl.textContent = '今日の問題を読み込めませんでした';
-      howEl.textContent = '時間をおいて開き直してね';
+      msgEl.textContent = '今日の問題を読み込めませんでした。時間をおいて開き直してね';
       checkBtn.hidden = true;
       resetBtn.hidden = true;
     });
@@ -1302,9 +1291,6 @@
 
   function start(stock) {
     var pz = stock[pickIndex(stock)];
-    typeEl.textContent = '今日はナンプレ（' + pz.ruleLabel + '）';
-    diffEl.textContent = '難易度：' + pz.difficulty;
-    howEl.textContent = HOW[pz.rule] || HOW.normal;
     build(pz);
   }
 
