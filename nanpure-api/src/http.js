@@ -1,4 +1,5 @@
-export const siteOrigin='https://atugari.github.io';
+export const siteOrigin='https://pareasobi.com';
+export const siteOrigins=['https://pareasobi.com','https://atugari.github.io'];
 export class Problem extends Error {constructor(status,message){super(message);this.status=status}}
 export const fail=(status,message)=>{throw new Problem(status,message)};
 export const json=(data,status=200)=>Response.json(data,{status});
