@@ -757,6 +757,7 @@
       display: flex; align-items: baseline; gap: 8px;
     }
     .section-label.group-label .group-sub { font-size: 11px; color: #8a7a72; letter-spacing: 0.02em; font-weight: 700; }
+    .section-label.group-label .group-name.framed { font-size: 17px; border: 2px solid #3D83B7; border-radius: 999px; padding: 3px 14px; background: #FFFFFF; line-height: 1.3; }
     .section-label.pop { font-size: 13px; text-align: left; margin: 8px 2px 0; }
     .game-card {
       display: flex; align-items: center; gap: 10px;
@@ -829,7 +830,7 @@
     /* ===== 今日の問題 (2026-11-22) ===== */
     .daily-sec {
       background: #FFFDF7; border: 2px solid #EDD9B1; border-radius: 20px;
-      padding: 0 14px 18px; margin-bottom: 26px; text-align: center;
+      padding: 0 14px 18px; margin-bottom: 10px; text-align: center;
       box-shadow: 0 6px 18px rgba(255, 159, 28, 0.12);
     }
     .daily-head { display: flex; align-items: baseline; justify-content: center; gap: 10px; flex-wrap: wrap; }
@@ -988,8 +989,7 @@
 
   <main>
   <div class="games-heading" id="games">
-    <h2>ゲーム一覧（全7ゲーム）</h2>
-    <p>どれも登録不要・無料で遊べるよ</p>
+    <h2>ゲーム一覧</h2>
   </div>
 
 
@@ -998,7 +998,7 @@
 
   <div class="game-list">
 
-    <div class="section-label group-label"><span>パズル</span><span class="group-sub">ひとりでじっくり</span></div>
+    <div class="section-label group-label"><span class="group-name framed">パズル</span></div>
 
     <a class="game-card nanpure-bg card-yellow" href="/nanpure/" id="card-13" data-published="2026-10-20" data-title="ナンプレ帳">
       <div class="card-slides"><img class="card-shot is-active" src="assets/game-shots-s/nanpure-1.svg" alt="ナンプレ帳の画面" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots-s/nanpure-2.svg" alt="" width="960" height="600" loading="lazy"><img class="card-shot" src="assets/game-shots-s/nanpure-3.svg" alt="" width="960" height="600" loading="lazy"><div class="card-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div></div>
