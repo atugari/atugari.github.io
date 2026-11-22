@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#EAF6FF" />
+<meta name="google-adsense-account" content="ca-pub-5560584474086870" />
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5560584474086870" crossorigin="anonymous"></script>
+<title>シャボンことば｜言葉をつないでお題にたどり着くゲーム - パレあそび</title>
+<meta name="description" content="シャボン玉に入った言葉を選んでスタートからお題の言葉へたどり着く速さを競うゲーム。全てのつながりに理由がありクリア後に説明付きで読み返せます。無料・登録不要。" />
+<link rel="canonical" href="https://pareasobi.com/shabon/" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='42' fill='%23BDEBFF' fill-opacity='0.55' stroke='%237FC8E8' stroke-width='5'/%3E%3Cellipse cx='36' cy='34' rx='14' ry='9' fill='white' fill-opacity='0.85' transform='rotate(-24 36 34)'/%3E%3C/svg%3E" />
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  :root{
+    --ink:#173A4A; --muted:#5B7A88; --line:#BFE0EE;
+    --sky1:#EAF7FF; --sky2:#D3EEFB; --card:#FFFFFF;
+    --accent:#0072B2; --accent2:#0E7A5F;
+    --gold:#F5B301; --gold2:#FFD94D; --goldink:#5A3B00;
+    --danger:#D93A2B;
+  }
+  html,body{ margin:0; padding:0; }
+  body{
+    font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP",sans-serif;
+    color:var(--ink); background:linear-gradient(180deg,var(--sky1),var(--sky2) 70%,#C4E7F7);
+    min-height:100vh; font-weight:700;
+  }
+  button{ font-family:inherit; font-weight:800; cursor:pointer; }
+  .wrap{ max-width:760px; margin:0 auto; padding:10px 12px 40px; }
+  header.top{ display:flex; align-items:center; gap:10px; padding:6px 2px 10px; }
+  .logo-bubble{ width:44px; height:44px; border-radius:50%; flex:none;
+    background:radial-gradient(circle at 32% 28%, rgba(255,255,255,.95), rgba(255,255,255,.25) 42%, rgba(140,210,245,.35) 75%, rgba(110,190,235,.5));
+    border:2px solid #8FD0EE; box-shadow:inset 0 0 12px rgba(255,255,255,.8), 0 3px 8px rgba(30,110,150,.18); }
+  h1{ font-size:26px; margin:0; letter-spacing:.02em; }
+  h1 .en{ display:block; font-size:11px; color:var(--muted); letter-spacing:.28em; font-weight:800; }
+  .back{ margin-left:auto; font-size:13px; color:var(--accent); text-decoration:none; background:#fff; border:2px solid var(--line); padding:8px 12px; border-radius:999px; white-space:nowrap; }
+  .card{ background:var(--card); border:2px solid var(--line); border-radius:18px; padding:16px; box-shadow:0 6px 18px rgba(30,110,150,.10); }
+  .lead{ font-size:15px; line-height:1.75; margin:2px 0 12px; }
+  .howto{ font-size:14px; line-height:1.8; background:#F2FAFF; border:2px dashed var(--line); border-radius:14px; padding:10px 14px; margin:12px 0; }
+  .howto b{ color:var(--accent); }
+  .goldword{ color:var(--goldink); background:linear-gradient(180deg,var(--gold2),var(--gold)); border-radius:8px; padding:1px 7px; box-shadow:0 0 10px rgba(245,179,1,.55); }
+  .btn{ display:inline-block; border:none; border-radius:999px; padding:13px 22px; font-size:16px; background:var(--accent); color:#fff; box-shadow:0 4px 0 #005A8C; }
+  .btn:active{ transform:translateY(3px); box-shadow:0 1px 0 #005A8C; }
+  .btn.gold{ background:linear-gradient(180deg,var(--gold2),var(--gold)); color:var(--goldink); box-shadow:0 4px 0 #B97F00, 0 0 18px rgba(245,179,1,.5); }
+  .btn.gold:active{ box-shadow:0 1px 0 #B97F00; }
+  .btn.ghost{ background:#fff; color:var(--accent); border:2px solid var(--line); box-shadow:none; }
+  .btn.small{ padding:9px 16px; font-size:14px; }
+  .daily{ border-color:var(--gold); background:linear-gradient(180deg,#FFFDF4,#FFF6D8); }
+  .daily .tag{ display:inline-block; background:var(--gold); color:var(--goldink); font-size:12px; border-radius:999px; padding:3px 10px; margin-bottom:8px; }
+  .route-big{ font-size:21px; margin:4px 0 10px; }
+  .route-big .arrow{ color:var(--muted); margin:0 6px; }
+  .plist{ display:grid; gap:10px; margin-top:12px; }
+  .pitem{ display:flex; align-items:center; gap:10px; width:100%; text-align:left; background:#fff; border:2px solid var(--line); border-radius:16px; padding:12px 14px; font-size:16px; color:var(--ink); }
+  .pitem:active{ background:#F2FAFF; }
+  .pitem .no{ flex:none; width:30px; height:30px; border-radius:50%; background:#E3F4FD; color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:14px; }
+  .pitem .rt{ flex:1; line-height:1.45; }
+  .pitem .rt small{ display:block; color:var(--muted); font-size:12px; font-weight:700; }
+  .pitem .rec{ flex:none; text-align:right; font-size:12px; color:var(--muted); line-height:1.5; }
+  .pitem .rec b{ color:var(--accent2); font-size:14px; }
+  .pitem .go{ flex:none; color:var(--accent); font-size:20px; }
+  .sec-title{ font-size:17px; margin:20px 2px 4px; }
+  footer{ text-align:center; color:var(--muted); font-size:12px; margin-top:26px; line-height:1.9; }
+  footer a{ color:var(--accent); }
+
+  /* ===== game ===== */
+  .hud{ position:sticky; top:0; z-index:30; background:linear-gradient(180deg,rgba(234,247,255,.97),rgba(234,247,255,.88)); backdrop-filter:blur(4px); padding:8px 0 8px; }
+  .hud-row{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .goal-chip{ background:linear-gradient(180deg,var(--gold2),var(--gold)); color:var(--goldink); border-radius:999px; padding:7px 14px; font-size:15px; box-shadow:0 0 14px rgba(245,179,1,.55); }
+  .goal-chip small{ font-size:11px; display:block; line-height:1; opacity:.75; }
+  .cur{ font-size:14px; color:var(--muted); }
+  .cur b{ color:var(--ink); font-size:17px; }
+  .timerbox{ margin-left:auto; text-align:right; }
+  #timer{ font-size:32px; font-variant-numeric:tabular-nums; line-height:1; color:var(--ink); font-weight:900; }
+  #timer.warn{ color:#E07B00; }
+  #timer.danger{ color:var(--danger); animation:pulse .5s infinite alternate; }
+  @keyframes pulse{ from{ transform:scale(1);} to{ transform:scale(1.09);} }
+  .tbar{ height:8px; background:#fff; border:2px solid var(--line); border-radius:99px; margin-top:8px; overflow:hidden; }
+  #tbarfill{ height:100%; width:100%; background:linear-gradient(90deg,#37B6F0,#0E7A5F); transition:width .2s linear; }
+  #tbarfill.warn{ background:linear-gradient(90deg,#FFB340,#E07B00); }
+  #tbarfill.danger{ background:linear-gradient(90deg,#FF7A5C,var(--danger)); }
+  .trail{ display:flex; gap:6px; flex-wrap:wrap; margin-top:10px; align-items:center; }
+  .trail .lbl{ font-size:12px; color:var(--muted); }
+  .chip{ border:2px solid var(--line); background:#fff; color:var(--accent); border-radius:999px; padding:5px 11px; font-size:13px; }
+  .chip.now{ background:var(--accent); border-color:var(--accent); color:#fff; }
+  .chip.goal{ background:linear-gradient(180deg,var(--gold2),var(--gold)); border-color:var(--gold); color:var(--goldink); }
+  .trail .arr{ color:var(--muted); font-size:11px; }
+  .field{ position:relative; height:62vh; min-height:430px; margin-top:6px; border-radius:22px; overflow:hidden;
+    background:radial-gradient(ellipse at 20% 12%, rgba(255,255,255,.9), rgba(255,255,255,0) 55%), linear-gradient(180deg,#CDEFFC,#AEE0F7 60%,#97D4F2);
+    border:2px solid #A9DDF3; box-shadow:inset 0 0 40px rgba(255,255,255,.55); }
+  .bubble{ position:absolute; border-radius:50%; border:2px solid rgba(127,200,232,.9);
+    background:radial-gradient(circle at 32% 26%, rgba(255,255,255,.98), rgba(255,255,255,.35) 40%, rgba(150,215,248,.30) 72%, rgba(120,195,238,.45));
+    box-shadow:inset 0 0 14px rgba(255,255,255,.85), inset -6px -8px 16px rgba(110,180,225,.25), 0 6px 14px rgba(30,110,150,.16);
+    color:var(--ink); display:flex; align-items:center; justify-content:center; text-align:center;
+    padding:8px; line-height:1.25; animation:floaty ease-in-out infinite alternate; user-select:none; }
+  .bubble:active{ transform:scale(.94); }
+  @keyframes floaty{ from{ margin-top:-7px; } to{ margin-top:9px; } }
+  .bubble.goal{ border:3px solid var(--gold); color:var(--goldink);
+    background:radial-gradient(circle at 32% 26%, #FFF8D6, #FFE97A 42%, #FFD94D 72%, #F5B301);
+    box-shadow:0 0 26px 8px rgba(245,179,1,.65), inset 0 0 14px rgba(255,255,255,.9), 0 6px 14px rgba(150,100,0,.25);
+    animation:floaty ease-in-out infinite alternate, goldpulse 0.9s ease-in-out infinite alternate; z-index:5; }
+  @keyframes goldpulse{ from{ box-shadow:0 0 16px 4px rgba(245,179,1,.5), inset 0 0 14px rgba(255,255,255,.9);} to{ box-shadow:0 0 34px 12px rgba(245,179,1,.85), inset 0 0 14px rgba(255,255,255,.9);} }
+  .bubble .gtag{ position:absolute; top:-11px; left:50%; transform:translateX(-50%); background:var(--gold); color:var(--goldink); font-size:11px; border-radius:999px; padding:2px 9px; box-shadow:0 2px 6px rgba(150,100,0,.3); white-space:nowrap; }
+  .gamebtns{ display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+  .msg{ min-height:24px; font-size:14px; color:var(--accent); margin-top:10px; text-align:center; }
+
+  /* ===== clear ===== */
+  .clear-head{ text-align:center; padding:8px 0 2px; }
+  .clear-head .big{ font-size:30px; margin:4px 0; }
+  .stars{ font-size:30px; color:var(--gold); letter-spacing:.15em; text-shadow:0 2px 8px rgba(245,179,1,.5); }
+  .stats{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:14px 0; }
+  .stat{ background:#F2FAFF; border:2px solid var(--line); border-radius:14px; padding:10px; text-align:center; }
+  .stat small{ display:block; color:var(--muted); font-size:12px; }
+  .stat b{ font-size:22px; font-variant-numeric:tabular-nums; }
+  .stat .newrec{ color:var(--danger); font-size:12px; display:block; }
+  .route-list{ margin:8px 0; }
+  .step{ display:flex; gap:10px; padding:9px 4px; border-bottom:2px dotted var(--line); font-size:15px; line-height:1.6; align-items:baseline; }
+  .step:last-child{ border-bottom:none; }
+  .step .n{ flex:none; width:24px; height:24px; border-radius:50%; background:#E3F4FD; color:var(--accent); font-size:12px; display:flex; align-items:center; justify-content:center; transform:translateY(4px); }
+  .step .why{ color:var(--muted); font-size:13px; display:block; font-weight:700; }
+  .step .to-goal{ color:var(--goldink); }
+  .detour-title{ font-size:14px; color:var(--muted); margin:16px 0 2px; }
+  .btnrow{ display:flex; gap:8px; flex-wrap:wrap; margin-top:16px; justify-content:center; }
+  .hidden{ display:none !important; }
+  @media (max-width:480px){
+    h1{ font-size:22px; }
+    #timer{ font-size:27px; }
+    .field{ height:58vh; min-height:400px; }
+    .route-big{ font-size:19px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="logo-bubble" aria-hidden="true"></div>
+    <h1>シャボンことば<span class="en">SHABON KOTOBA</span></h1>
+    <a class="back" href="/">パレあそびに戻る</a>
+  </header>
+
+  <!-- ===== HOME ===== -->
+  <main id="screen-home">
+    <div class="card">
+      <p class="lead">シャボン玉に入った言葉を選んでスタートの言葉からお題の言葉へたどり着く速さを競うゲームです。</p>
+      <div class="howto">
+        ・画面の言葉は全て今の言葉に関係する言葉だけ<br />
+        ・全てのつながりには<strong>理由</strong>があります。クリア後に自分の道のりを説明付きで読めます<br />
+        ・選んだ後でも上の道のりから<strong>自由に戻れます</strong>（タイマーは止まりません）<br />
+        ・お題の言葉が出たら <span class="goldword">金色</span> に光ります
+      </div>
+      <div class="daily card" id="daily-box">
+        <span class="tag">今日のお題</span>
+        <div class="route-big"><span id="daily-route"></span></div>
+        <button class="btn gold" id="daily-btn">今日のお題で遊ぶ</button>
+        <span id="daily-rec" style="margin-left:10px;font-size:13px;color:var(--muted);"></span>
+      </div>
+      <div class="sec-title">お題一覧（同じお題で記録を競えます）</div>
+      <div class="plist" id="plist"></div>
+      <p style="font-size:12px;color:var(--muted);line-height:1.7;margin-top:14px;">記録はこの端末の中だけに保存されます。みんなで同じ記録を競うランキングはまだありません。</p>
+    </div>
+  </main>
+
+  <!-- ===== GAME ===== -->
+  <main id="screen-game" class="hidden">
+    <div class="hud">
+      <div class="hud-row">
+        <div class="goal-chip"><small>お題</small><span id="goal-word"></span></div>
+        <div class="cur">スタート <b id="start-word"></b><br />今は <b id="cur-word"></b></div>
+        <div class="timerbox"><div id="timer">0:00.00</div></div>
+      </div>
+      <div class="tbar"><div id="tbarfill"></div></div>
+      <div class="trail" id="trail"></div>
+    </div>
+    <div class="field" id="field"></div>
+    <div class="msg" id="msg"></div>
+    <div class="gamebtns">
+      <button class="btn ghost small" id="btn-restart">最初から</button>
+      <button class="btn ghost small" id="btn-sound">音：オン</button>
+      <button class="btn ghost small" id="btn-quit">やめる</button>
+    </div>
+  </main>
+
+  <!-- ===== CLEAR ===== -->
+  <main id="screen-clear" class="hidden">
+    <div class="card">
+      <div class="clear-head">
+        <div style="font-size:15px;color:var(--muted);">クリア！</div>
+        <div class="big" id="clear-route"></div>
+        <div class="stars" id="stars"></div>
+      </div>
+      <div class="stats">
+        <div class="stat"><small>かかった時間</small><b id="st-time"></b><span class="newrec" id="st-timerec"></span></div>
+        <div class="stat"><small>選んだ回数</small><b id="st-steps"></b><span class="newrec" id="st-steprec"></span></div>
+        <div class="stat"><small>たどった道の手数</small><b id="st-path"></b></div>
+        <div class="stat"><small>一番短い道</small><b id="st-shortest"></b></div>
+      </div>
+      <div class="sec-title" style="margin-top:6px;">あなたの道のり（説明付き）</div>
+      <div class="route-list" id="route-list"></div>
+      <div id="detour-wrap" class="hidden">
+        <div class="detour-title">寄り道（戻る前にたどった道）</div>
+        <div class="route-list" id="detour-list"></div>
+      </div>
+      <div class="btnrow">
+        <button class="btn" id="btn-retry">もう一度</button>
+        <button class="btn gold" id="btn-next">次のお題へ</button>
+        <button class="btn ghost" id="btn-share">結果をXで共有</button>
+        <button class="btn ghost" id="btn-home">お題一覧へ</button>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    シャボンことば｜<a href="/">パレあそび</a>の無料ゲームです。登録不要で遊べます。
+  </footer>
+</div>
+
+<script>
+"use strict";
+/* ===== 言葉のつながり（全て理由付き） ===== */
+const EDGES = [["イカ", "タコ", "どちらも海に住む軟体動物。足はイカが10本でタコが8本"], ["イカ", "墨", "イカは敵から逃げる時に墨を吐く"], ["イカ", "海", "イカは海に住む生き物"], ["イカ", "噴射", "イカは水を噴射して後ろへ進む"], ["イカ", "クラーケン", "クラーケンは巨大なイカの姿で描かれる北欧の海の怪物"], ["イカ", "寿司", "イカは寿司のネタとして人気がある"], ["イカ", "10", "イカの足は10本ある"], ["タコ", "たこ焼き", "たこ焼きの中にはタコが入っている"], ["タコ", "墨", "タコも敵から逃げる時に墨を吐く"], ["タコ", "8", "タコの足は8本ある"], ["海", "魚", "魚は海に住む生き物"], ["海", "船", "船は海の上を進む乗り物"], ["海", "塩", "海の水には塩が溶けている"], ["海", "波", "海の表面には風で波が立つ"], ["海", "泳ぐ", "海では泳ぐことができる"], ["海", "深海", "深海は海の深い所のこと"], ["海", "貝", "貝は海の底に住むものが多い"], ["海", "夏", "夏は海で泳ぐ人が増える季節"], ["魚", "寿司", "魚は寿司のネタになる"], ["魚", "釣り", "釣りは魚を釣る遊びや仕事"], ["魚", "市場", "市場ではとれたての魚が売られる"], ["魚", "泳ぐ", "魚は水中を泳ぐ"], ["魚", "料理", "魚は焼いたり煮たりして料理になる"], ["貝", "真珠", "真珠は貝の中で作られる"], ["貝", "砂浜", "砂浜には貝がらが落ちていることが多い"], ["砂浜", "海", "砂浜は海に面した砂の浜辺"], ["波", "サーフィン", "サーフィンは波に乗るスポーツ"], ["波", "音", "波が浜に打ち寄せると音がする"], ["船", "港", "船は港に出入りする"], ["船", "釣り", "船に乗って釣りをすることがある"], ["船", "ロープ", "船ではロープで荷物や帆を固定する"], ["船", "旅行", "船に乗って旅行することがある"], ["港", "市場", "港の近くには魚の市場があることが多い"], ["深海", "暗闇", "深海には光が届かず暗闇が広がる"], ["深海", "宇宙", "深海と宇宙はどちらも人が簡単に行けない未知の世界として比べられる"], ["噴射", "ロケット", "ロケットはガスを噴射して飛ぶ"], ["ロケット", "宇宙", "ロケットは宇宙へ行くための乗り物"], ["ロケット", "人工衛星", "人工衛星はロケットで宇宙へ運ばれる"], ["ロケット", "速い", "ロケットはとても速く飛ぶ"], ["宇宙", "星", "星は宇宙に輝く天体"], ["宇宙", "月", "月は地球の周りを回る天体で宇宙にある"], ["宇宙", "地球", "地球は宇宙にある私たちの星"], ["宇宙", "無重力", "宇宙船の中では無重力に近い状態になる"], ["星", "夜", "星は夜の空に光って見える"], ["星", "流れ星", "流れ星は夜空を一瞬で流れる光のこと"], ["星", "望遠鏡", "望遠鏡で星を大きく見ることができる"], ["流れ星", "願い事", "流れ星が見えたら願い事をするという言い伝えがある"], ["月", "夜", "月は夜の空に出る"], ["月", "うさぎ", "月にはうさぎが餅をつく姿が見えるという言い伝えがある"], ["月", "丸", "満月の月は丸く見える"], ["月", "空", "月は空に見える"], ["地球", "山", "山は地球の陸地にある"], ["地球", "天気", "天気は地球の大気の中で起きる変化"], ["地球", "丸", "地球は丸い"], ["地球", "人工衛星", "人工衛星は地球の周りを回る"], ["夜", "暗闇", "夜は暗闇が広がる時間帯"], ["夜", "眠る", "人は夜に眠ることが多い"], ["夜", "花火", "花火は夜空で光る"], ["人工衛星", "天気", "人工衛星は天気の観測にも使われる"], ["寿司", "ご飯", "寿司はご飯を使う料理"], ["寿司", "包丁", "寿司職人は包丁でネタを切る"], ["ご飯", "おにぎり", "おにぎりはご飯を握った食べ物"], ["ご飯", "米", "ご飯は米を炊いたもの"], ["ご飯", "白", "ご飯は白い"], ["米", "田んぼ", "米は田んぼで育つ"], ["田んぼ", "カエル", "田んぼにはカエルが住む"], ["田んぼ", "雨", "田んぼには雨の水も大切"], ["たこ焼き", "粉", "たこ焼きは小麦粉の生地を焼いて作る"], ["たこ焼き", "ソース", "たこ焼きにはソースをかける"], ["たこ焼き", "祭り", "たこ焼きは祭りの屋台でよく売られる"], ["粉", "パン", "パンは小麦粉から作られる"], ["パン", "焼く", "パンは焼いて作る"], ["卵", "焼く", "卵は焼いて食べることがある"], ["卵", "鳥", "鳥は卵を産む"], ["卵", "料理", "卵は料理によく使われる"], ["料理", "包丁", "料理では包丁を使って材料を切る"], ["料理", "火", "料理では火を使って加熱する"], ["料理", "塩", "塩は料理の味付けに使う"], ["料理", "給食", "給食は学校で食べる料理"], ["火", "花火", "花火は火薬が燃えて光と音を出す"], ["火", "太陽", "太陽は高温のガスが燃えるように光る星"], ["祭り", "夏", "夏には祭りが多い"], ["祭り", "花火", "祭りの夜には花火が上がることが多い"], ["祭り", "町", "町では祭りが開かれる"], ["花火", "音", "花火は大きな音と光が特徴"], ["太陽", "天気", "太陽の光は天気に大きく関係する"], ["太陽", "夏", "夏は太陽の光が強い季節"], ["太陽", "花", "花は太陽の光を浴びて育つ"], ["雨", "雲", "雨は雲から降る"], ["雨", "傘", "雨の日には傘をさす"], ["雨", "虹", "雨上がりに太陽が出ると虹が見えることがある"], ["雨", "カエル", "雨の日にはカエルがよく鳴く"], ["雲", "天気", "雲の様子で天気が分かることがある"], ["雲", "空", "雲は空に浮かぶ"], ["空", "鳥", "鳥は空を飛ぶ"], ["空", "飛行機", "飛行機は空を飛ぶ"], ["虹", "色", "虹は7色に見える"], ["色", "黒", "黒は色の一つ"], ["色", "ピンク", "ピンクは色の一つ"], ["色", "白", "白は色の一つ"], ["黒", "墨", "墨は黒い液体"], ["黒", "暗闇", "暗闇は黒く見える"], ["雪", "冬", "雪は冬に降ることが多い"], ["雪", "白", "雪は白い"], ["雪", "スキー", "スキーは雪の上を滑るスポーツ"], ["雪", "山", "高い山の頂上には雪が残ることがある"], ["冬", "夏", "夏と冬は反対の季節"], ["山", "川", "山には川の始まりがある"], ["山", "木", "山には木が多く生える"], ["山", "登山", "登山は山に登ること"], ["川", "魚", "川にも魚が住む"], ["川", "海", "川は海へ流れ込む"], ["木", "花", "木に花が咲くものがある"], ["木", "鳥", "鳥は木の枝にとまる"], ["木", "本", "本の紙は木から作られる"], ["花", "春", "春には花が多く咲く"], ["春", "桜", "桜は春に咲く花"], ["桜", "ピンク", "桜の花はピンク色のものが多い"], ["鳥", "歌", "鳥はさえずって歌うように鳴く"], ["歌", "音", "歌は音と声で作られる"], ["音", "音楽", "音楽は音を組み合わせたもの"], ["音楽", "ピアノ", "ピアノは音楽を演奏する楽器"], ["本", "学校", "学校では本を使って勉強する"], ["本", "図書館", "図書館には本がたくさんある"], ["本", "勉強", "本を読むことは勉強の一つ"], ["学校", "先生", "学校には先生がいる"], ["学校", "勉強", "学校では勉強をする"], ["学校", "友達", "学校では友達と過ごす"], ["学校", "給食", "学校には給食がある"], ["学校", "プール", "学校にプールがあることが多い"], ["勉強", "数", "勉強には数を数える算数がある"], ["数", "10", "10は数の一つ"], ["数", "8", "8は数の一つ"], ["電車", "駅", "電車は駅に止まる"], ["電車", "旅行", "電車に乗って旅行することがある"], ["電車", "速い", "電車は速く移動できる乗り物"], ["駅", "町", "駅は町の中心になることが多い"], ["町", "市場", "町には市場がある"], ["飛行機", "旅行", "飛行機に乗って旅行することがある"], ["飛行機", "空港", "飛行機は空港を出入りする"], ["空港", "旅行", "空港は旅行の出発点になることが多い"], ["眠る", "夢", "眠ると夢を見ることがある"], ["夢", "願い事", "願い事には夢をかなえたい気持ちが込められる"], ["泳ぐ", "プール", "プールでは泳ぐことができる"], ["プール", "夏", "プールは夏に人気の場所"], ["サーフィン", "スポーツ", "サーフィンはスポーツの一つ"], ["スキー", "スポーツ", "スキーはスポーツの一つ"], ["サッカー", "スポーツ", "サッカーはスポーツの一つ"], ["サッカー", "ボール", "サッカーはボールを使うスポーツ"], ["ボール", "丸", "ボールは丸い"], ["スポーツ", "走る", "走ることは多くのスポーツの基本"], ["走る", "速い", "走ると速く移動できる"], ["登山", "スポーツ", "登山はスポーツとして楽しむ人も多い"], ["ロープ", "凧", "凧はロープ（糸）をつけて揚げる"], ["凧", "空", "凧は空に揚げる"], ["凧", "風", "凧は風の力で揚がる"], ["風", "波", "風が吹くと波が立つ"], ["風", "天気", "風は天気の変化と関係する"], ["クラーケン", "タコ", "クラーケンは巨大なタコの姿で描かれることもある"]];
+const ADJ = {};
+const WHY = {};
+function key(a,b){ return a < b ? a+"|"+b : b+"|"+a; }
+for (const [a,b,w] of EDGES){
+  (ADJ[a] = ADJ[a] || []).push(b);
+  (ADJ[b] = ADJ[b] || []).push(a);
+  WHY[key(a,b)] = w;
+}
+for (const n in ADJ) ADJ[n] = [...new Set(ADJ[n])];
+
+/* ===== お題（スタート→お題・一番短い道は自動で数える） ===== */
+const PUZZLES = [
+  { start:"イカ", goal:"ロケット" },
+  { start:"イカ", goal:"真珠" },
+  { start:"サッカー", goal:"雪" },
+  { start:"卵", goal:"月" },
+  { start:"魚", goal:"たこ焼き" },
+  { start:"電車", goal:"花火" },
+  { start:"本", goal:"月" },
+  { start:"星", goal:"ピアノ" },
+  { start:"桜", goal:"宇宙" },
+  { start:"スキー", goal:"傘" },
+  { start:"学校", goal:"ロケット" },
+  { start:"カエル", goal:"真珠" },
+];
+function shortest(start, goal){
+  const d = { [start]:0 }, prev = {}, q = [start];
+  while (q.length){
+    const x = q.shift();
+    if (x === goal) break;
+    for (const y of ADJ[x] || []) if (!(y in d)){ d[y] = d[x]+1; prev[y] = x; q.push(y); }
+  }
+  if (!(goal in d)) return { len:Infinity, path:[] };
+  const path = []; let c = goal;
+  while (c){ path.unshift(c); c = prev[c]; }
+  return { len:d[goal], path };
+}
+for (const p of PUZZLES) p.shortest = shortest(p.start, p.goal).len;
+
+/* ===== 記録（この端末だけ） ===== */
+const REC_KEY = "shabon_records_v1";
+function loadRec(){ try { return JSON.parse(localStorage.getItem(REC_KEY)) || {}; } catch(e){ return {}; } }
+function saveRec(r){ try { localStorage.setItem(REC_KEY, JSON.stringify(r)); } catch(e){} }
+
+/* ===== 音（Web Audioでその場で作る） ===== */
+let audioCtx = null, soundOn = true;
+function ac(){ if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === "suspended") audioCtx.resume(); return audioCtx; }
+function tone(freq, dur, type, vol, when){
+  if (!soundOn) return;
+  try {
+    const c = ac(), o = c.createOscillator(), g = c.createGain(), t = c.currentTime + (when||0);
+    o.type = type || "sine"; o.frequency.value = freq;
+    g.gain.setValueAtTime(vol || 0.12, t); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + dur);
+  } catch(e){}
+}
+const sndPop  = () => { tone(520, .12, "sine", .15); tone(880, .1, "sine", .08, .03); };
+const sndGold = () => { tone(1318, .25, "sine", .12); tone(1760, .35, "sine", .10, .09); };
+const sndTick = () => tone(1050, .04, "square", .03);
+const sndClear= () => { [523,659,784,1046].forEach((f,i)=>tone(f,.28,"triangle",.13,i*.11)); };
+
+/* ===== 画面切り替え ===== */
+const $ = id => document.getElementById(id);
+function show(name){
+  for (const s of ["home","game","clear"]) $("screen-"+s).classList.toggle("hidden", s !== name);
+  window.scrollTo(0,0);
+}
+
+/* ===== ホーム ===== */
+function dailyIndex(){
+  const d = new Date(); const n = d.getFullYear()*372 + (d.getMonth()+1)*31 + d.getDate();
+  return n % PUZZLES.length;
+}
+function fmt(ms){
+  const m = Math.floor(ms/60000), s = Math.floor(ms%60000/1000), c = Math.floor(ms%1000/10);
+  return m + ":" + String(s).padStart(2,"0") + "." + String(c).padStart(2,"0");
+}
+function renderHome(){
+  const rec = loadRec(), di = dailyIndex(), dp = PUZZLES[di];
+  $("daily-route").innerHTML = dp.start + '<span class="arrow">→</span><span class="goldword">' + dp.goal + "</span>";
+  const dr = rec[di];
+  $("daily-rec").textContent = dr ? "ベスト " + fmt(dr.bestTime) : "まだ記録なし";
+  $("daily-btn").onclick = () => startGame(di);
+  const pl = $("plist"); pl.innerHTML = "";
+  PUZZLES.forEach((p, i) => {
+    const r = rec[i];
+    const b = document.createElement("button");
+    b.className = "pitem";
+    b.innerHTML = '<span class="no">' + (i+1) + '</span><span class="rt">' + p.start + ' → ' + p.goal +
+      '<small>一番短い道は ' + p.shortest + ' 手</small></span>' +
+      '<span class="rec">' + (r ? 'ベスト<br /><b>' + fmt(r.bestTime) + '</b>' : '記録なし') + '</span><span class="go">›</span>';
+    b.onclick = () => startGame(i);
+    pl.appendChild(b);
+  });
+  show("home");
+}
+
+/* ===== ゲーム ===== */
+let G = null, rafId = null, lastTickSec = -1;
+function hashStr(s){ let h = 2166136261; for (let i=0;i<s.length;i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h>>>0); }
+function startGame(idx){
+  const p = PUZZLES[idx];
+  G = { idx, puzzle:p, path:[p.start], detours:[], totalSteps:0, startAt:performance.now(), elapsed:0, done:false, goldSeen:false };
+  $("goal-word").textContent = p.goal;
+  $("start-word").textContent = p.start;
+  $("msg").textContent = "";
+  show("game");
+  renderField(); renderTrail(); runTimer();
+}
+function cur(){ return G.path[G.path.length-1]; }
+function runTimer(){
+  cancelAnimationFrame(rafId); lastTickSec = -1;
+  const BAR_FULL = 120000; /* 2分でバーが空になる目安（記録はその後も続く） */
+  const loop = () => {
+    if (!G || G.done) return;
+    G.elapsed = performance.now() - G.startAt;
+    const t = $("timer"); t.textContent = fmt(G.elapsed);
+    const sec = Math.floor(G.elapsed/1000);
+    t.className = G.elapsed >= 60000 ? "danger" : G.elapsed >= 30000 ? "warn" : "";
+    t.id = "timer";
+    const f = $("tbarfill");
+    f.style.width = Math.max(0, 100 - G.elapsed/BAR_FULL*100) + "%";
+    f.className = G.elapsed >= 60000 ? "danger" : G.elapsed >= 30000 ? "warn" : "";
+    f.id = "tbarfill";
+    if (soundOn && sec >= 10 && sec !== lastTickSec){ lastTickSec = sec; sndTick(); }
+    rafId = requestAnimationFrame(loop);
+  };
+  rafId = requestAnimationFrame(loop);
+}
+function renderTrail(){
+  const tr = $("trail"); tr.innerHTML = '<span class="lbl">道のり（押すと戻れる）</span>';
+  G.path.forEach((w, i) => {
+    if (i) { const a = document.createElement("span"); a.className = "arr"; a.textContent = "→"; tr.appendChild(a); }
+    const c = document.createElement("button");
+    c.className = "chip" + (i === G.path.length-1 ? " now" : "") + (w === G.puzzle.goal ? " goal" : "");
+    c.textContent = w;
+    c.onclick = () => jumpBack(i);
+    tr.appendChild(c);
+  });
+}
+function jumpBack(i){
+  if (!G || G.done || i === G.path.length-1) return;
+  const removed = G.path.splice(i+1);
+  if (removed.length) G.detours.push({ from: G.path[i], words: removed.slice() });
+  sndPop(); G.goldSeen = false; renderField(); renderTrail();
+  $("msg").textContent = "「" + cur() + "」に戻りました。タイマーは進んでいます。";
+}
+function layoutPositions(words, seedBase){
+  /* お題ごとに同じ並びになるよう種を固定する（全員同じ条件で競うため） */
+  const n = words.length, pos = [];
+  const cols = n <= 4 ? 2 : n <= 6 ? 3 : n <= 9 ? 3 : 4;
+  const rows = Math.ceil(n / cols);
+  words.forEach((w, i) => {
+    const h = hashStr(seedBase + "|" + w + "|" + i);
+    const col = i % cols, row = Math.floor(i / cols);
+    const x = ((col + 0.5) / cols) * 100 + ((h % 13) - 6);
+    const y = ((row + 0.5) / rows) * 100 + (((h >> 4) % 11) - 5);
+    pos.push({ x: Math.min(88, Math.max(12, x)), y: Math.min(86, Math.max(13, y)), h });
+  });
+  return pos;
+}
+function renderField(){
+  const f = $("field"); f.innerHTML = "";
+  $("cur-word").textContent = cur();
+  const words = (ADJ[cur()] || []).slice();
+  /* 並びはお題と今の言葉で決まる固定順（シャッフルで運に左右されないように） */
+  words.sort((a,b) => hashStr(G.idx + "|" + cur() + "|" + a) - hashStr(G.idx + "|" + cur() + "|" + b));
+  const pos = layoutPositions(words, G.idx + "|" + cur());
+  const size = words.length <= 4 ? 118 : words.length <= 6 ? 104 : words.length <= 9 ? 94 : 84;
+  let goldHere = false;
+  words.forEach((w, i) => {
+    const isGoal = w === G.puzzle.goal; if (isGoal) goldHere = true;
+    const b = document.createElement("button");
+    b.className = "bubble" + (isGoal ? " goal" : "");
+    const fs = w.length >= 5 ? size*0.20 : w.length >= 4 ? size*0.23 : size*0.27;
+    b.style.width = size + "px"; b.style.height = size + "px";
+    b.style.left = "calc(" + pos[i].x + "% - " + size/2 + "px)";
+    b.style.top = "calc(" + pos[i].y + "% - " + size/2 + "px)";
+    b.style.fontSize = fs + "px";
+    b.style.animationDuration = (2.6 + (pos[i].h % 14)/10) + "s";
+    b.innerHTML = (isGoal ? '<span class="gtag">お題</span>' : "") + "<span>" + w + "</span>";
+    b.onclick = () => choose(w);
+    f.appendChild(b);
+  });
+  if (goldHere && !G.goldSeen){ G.goldSeen = true; sndGold(); $("msg").textContent = "お題の「" + G.puzzle.goal + "」が出ました！"; }
+  else if (goldHere){ $("msg").textContent = "お題の「" + G.puzzle.goal + "」が出ています！"; }
+}
+function choose(w){
+  if (!G || G.done) return;
+  G.totalSteps++;
+  G.path.push(w);
+  if (w === G.puzzle.goal){ sndGold(); finish(); return; }
+  sndPop(); G.goldSeen = false; renderField(); renderTrail();
+}
+function finish(){
+  G.done = true; G.elapsed = performance.now() - G.startAt;
+  cancelAnimationFrame(rafId); sndClear();
+  const p = G.puzzle, pathLen = G.path.length - 1;
+  const rec = loadRec(), old = rec[G.idx];
+  const isFirst = !old;
+  const newTime = isFirst || G.elapsed < old.bestTime;
+  const newSteps = isFirst || G.totalSteps < old.bestSteps;
+  rec[G.idx] = {
+    bestTime: isFirst ? G.elapsed : Math.min(old.bestTime, G.elapsed),
+    bestSteps: isFirst ? G.totalSteps : Math.min(old.bestSteps, G.totalSteps),
+    firstTime: isFirst ? G.elapsed : old.firstTime,
+    clears: (old ? old.clears : 0) + 1,
+  };
+  saveRec(rec);
+  $("clear-route").innerHTML = p.start + " → " + '<span class="goldword">' + p.goal + "</span>";
+  const stars = pathLen <= p.shortest ? 3 : pathLen <= p.shortest + 2 ? 2 : 1;
+  $("stars").textContent = "★★★".slice(0, stars) + "☆☆☆".slice(0, 3 - stars);
+  $("st-time").textContent = fmt(G.elapsed);
+  $("st-timerec").textContent = newTime ? (isFirst ? "初記録！" : "記録更新！") : "";
+  $("st-steps").textContent = G.totalSteps + " 回";
+  $("st-steprec").textContent = newSteps && !isFirst ? "記録更新！" : "";
+  $("st-path").textContent = pathLen + " 手";
+  $("st-shortest").textContent = p.shortest + " 手";
+  const rl = $("route-list"); rl.innerHTML = "";
+  for (let i = 0; i < G.path.length - 1; i++){
+    const a = G.path[i], b = G.path[i+1];
+    const d = document.createElement("div"); d.className = "step";
+    d.innerHTML = '<span class="n">' + (i+1) + '</span><span><b class="' + (b === p.goal ? "to-goal" : "") + '">' + a + " → " + b + '</b><span class="why">' + (WHY[key(a,b)] || "") + "</span></span>";
+    rl.appendChild(d);
+  }
+  const dw = $("detour-wrap"), dl = $("detour-list");
+  if (G.detours.length){
+    dw.classList.remove("hidden"); dl.innerHTML = "";
+    for (const dt of G.detours){
+      let prev = dt.from;
+      for (const w of dt.words){
+        const d = document.createElement("div"); d.className = "step";
+        d.innerHTML = '<span class="n">寄</span><span><b>' + prev + " → " + w + '</b><span class="why">' + (WHY[key(prev,w)] || "") + "</span></span>";
+        dl.appendChild(d); prev = w;
+      }
+    }
+  } else dw.classList.add("hidden");
+  $("btn-next").textContent = G.idx + 1 < PUZZLES.length ? "次のお題へ" : "最初のお題へ";
+  show("clear");
+}
+
+/* ===== ボタン ===== */
+$("btn-restart").onclick = () => { if (G) startGame(G.idx); };
+$("btn-quit").onclick = () => { if (G){ G.done = true; cancelAnimationFrame(rafId); } renderHome(); };
+$("btn-sound").onclick = e => { soundOn = !soundOn; e.target.textContent = soundOn ? "音：オン" : "音：オフ"; if (soundOn) sndPop(); };
+$("btn-retry").onclick = () => startGame(G.idx);
+$("btn-home").onclick = () => renderHome();
+$("btn-next").onclick = () => startGame((G.idx + 1) % PUZZLES.length);
+$("btn-share").onclick = () => {
+  const p = G.puzzle;
+  const text = "シャボンことば「" + p.start + "→" + p.goal + "」を " + fmt(G.elapsed) + "（" + G.totalSteps + "回選択・一番短い道は" + p.shortest + "手）でクリア！ #パレあそび https://pareasobi.com/shabon/";
+  window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(text), "_blank", "noopener");
+};
+
+renderHome();
+</script>
+</body>
+</html>
