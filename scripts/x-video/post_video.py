@@ -146,12 +146,22 @@ def check_account():
     return name
 
 
-def download_video(youtube_id, dest_dir):
+def download_video(entry, dest_dir):
+    youtube_id = entry["youtube_id"]
     out = os.path.join(dest_dir, f"{youtube_id}.mp4")
-    subprocess.run(
-        ["yt-dlp", "-f", "bv*[height<=1080]+ba/b[height<=1080]", "--merge-output-format", "mp4",
-         "-o", out, f"https://www.youtube.com/watch?v={youtube_id}"],
-        check=True, capture_output=True, timeout=1500)
+    media_url = entry.get("media_url")
+    if media_url:
+        # Preferred source: the exact file, hosted as a release asset.
+        # (YouTube blocks downloads from GitHub Actions addresses, so the
+        # scheduled runs cannot rely on fetching from YouTube directly.)
+        urllib.request.urlretrieve(media_url, out)
+    else:
+        # Fallback: fetch the public YouTube version. Output is left
+        # visible in the log so a failure shows its reason.
+        subprocess.run(
+            ["yt-dlp", "-f", "bv*[height<=1080]+ba/b[height<=1080]", "--merge-output-format", "mp4",
+             "-o", out, f"https://www.youtube.com/watch?v={youtube_id}"],
+            check=True, timeout=1500)
     if not os.path.exists(out) or os.path.getsize(out) == 0:
         raise RuntimeError("download produced no file")
     return out
@@ -217,7 +227,7 @@ def api_get_status(media_id):
 
 
 def post_entry(entry, workdir):
-    path = download_video(entry["youtube_id"], workdir)
+    path = download_video(entry, workdir)
     media_id = upload_video(path)
     result = api_json("POST", "/2/tweets", {"text": entry["text"], "media": {"media_ids": [media_id]}})
     post_id = str((result.get("data") or {}).get("id", ""))
