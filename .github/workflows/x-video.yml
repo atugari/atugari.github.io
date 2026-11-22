@@ -1,0 +1,82 @@
+name: X video posts (YouTube videos and shorts)
+
+# Separate from x-four-daily.yml (puzzle posts at 08:00 / 12:00 / 18:00 / 21:00 JST).
+# This workflow only handles video posts at 19:30 JST, reuses the same
+# GitHub Secrets, and never touches nanpure-x-worker/ or scripts/x-four/.
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'dry-run: validate only / check: X account only / post-due: post the entry due now / post-id: post one named video now'
+        type: choice
+        options: [dry-run, check, post-due, post-id]
+        default: dry-run
+      youtube_id:
+        description: 'For post-id only: the YouTube video ID to post'
+        type: string
+        required: false
+        default: ''
+  schedule:
+    # 19:30 JST daily = 10:30 UTC. The script itself refuses to post
+    # outside the 30-minute window after an entry's x_time_jst.
+    - cron: '30 10 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: x-video
+  cancel-in-progress: false
+
+jobs:
+  x-video:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test duplicate and slot guards
+        run: python -m unittest discover -s scripts/x-video -p 'test_*.py' -v
+      - name: Validate queue (no X access)
+        if: github.event_name == 'schedule' || inputs.mode == 'dry-run'
+        env:
+          X_VIDEO_MODE: dry-run
+        run: python scripts/x-video/post_video.py
+      - name: Check X posting account
+        if: inputs.mode == 'check'
+        env:
+          X_VIDEO_MODE: check
+          X_EXPECTED_USERNAME: parade166
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+        run: python scripts/x-video/post_video.py
+      - name: Post the video due now (at most one)
+        if: github.event_name == 'schedule' || inputs.mode == 'post-due' || inputs.mode == 'post-id'
+        env:
+          X_VIDEO_MODE: ${{ inputs.mode == 'post-id' && 'post-id' || 'post-due' }}
+          X_VIDEO_YOUTUBE_ID: ${{ inputs.youtube_id }}
+          X_EXPECTED_USERNAME: parade166
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+        run: |
+          pip install -q yt-dlp
+          python scripts/x-video/post_video.py
+      - name: Save posting history
+        if: github.event_name == 'schedule' || inputs.mode == 'post-due' || inputs.mode == 'post-id'
+        run: |
+          if ! git diff --quiet -- scripts/x-video/history.json; then
+            git config user.name "x-video"
+            git config user.email "actions@github.com"
+            git add scripts/x-video/history.json
+            git commit -m "Record X video post"
+            git push
+          fi
