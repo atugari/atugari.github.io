@@ -1,0 +1,62 @@
+{
+  "今日の問題": {
+    "en": "Today’s puzzle",
+    "zh-Hans": "今天的题目",
+    "zh-Hant": "今天的題目",
+    "ko": "오늘의 문제",
+    "es": "El problema de hoy",
+    "fr": "La grille du jour",
+    "de": "Heutiges Rätsel",
+    "pt": "O desafio de hoje"
+  },
+  "全てリセット": {
+    "en": "Reset all",
+    "zh-Hans": "全部重置",
+    "zh-Hant": "全部重置",
+    "ko": "모두 초기화",
+    "es": "Restablecer todo",
+    "fr": "Tout réinitialiser",
+    "de": "Alles zurücksetzen",
+    "pt": "Redefinir tudo"
+  },
+  "クリア！": {
+    "en": "Clear!",
+    "zh-Hans": "过关！",
+    "zh-Hant": "過關！",
+    "ko": "클리어!",
+    "es": "¡Completado!",
+    "fr": "Réussi !",
+    "de": "Geschafft!",
+    "pt": "Concluído!"
+  },
+  "赤いマスが間違っているよ": {
+    "en": "The red cells are wrong",
+    "zh-Hans": "红色的格子填错了",
+    "zh-Hant": "紅色的格子填錯了",
+    "ko": "빨간 칸이 틀렸어요",
+    "es": "Las celdas rojas están mal",
+    "fr": "Les cases rouges sont fausses",
+    "de": "Die roten Felder sind falsch",
+    "pt": "As células vermelhas estão erradas"
+  },
+  "まだ空いているマスがあるよ": {
+    "en": "Some cells are still empty",
+    "zh-Hans": "还有空格没填",
+    "zh-Hant": "還有空格沒填",
+    "ko": "아직 빈 칸이 있어요",
+    "es": "Aún quedan celdas vacías",
+    "fr": "Il reste des cases vides",
+    "de": "Es sind noch Felder leer",
+    "pt": "Ainda há células vazias"
+  },
+  "今日の問題を読み込めませんでした。時間をおいて開き直してね": {
+    "en": "Couldn’t load today’s puzzle. Please reopen it later.",
+    "zh-Hans": "无法加载今日题目。请稍后再打开。",
+    "zh-Hant": "無法載入今日題目。請稍後再打開。",
+    "ko": "오늘의 문제를 불러오지 못했습니다. 나중에 다시 열어 주세요.",
+    "es": "No se pudo cargar el problema de hoy. Vuelve a abrirlo más tarde.",
+    "fr": "Impossible de charger la grille du jour. Réessayez plus tard.",
+    "de": "Das heutige Rätsel konnte nicht geladen werden. Bitte später erneut öffnen.",
+    "pt": "Não foi possível carregar o desafio de hoje. Abra novamente mais tarde."
+  }
+}
