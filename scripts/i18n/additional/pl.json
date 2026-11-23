@@ -3607,5 +3607,11 @@
   "11言語を追加し、20言語で遊べるようになりました。": "Dodano 11 języków: teraz dostępne w 20 językach.",
   "言語を選ぶと、設定・ルール・ヒント・印刷の説明も切り替わります。": "Zmiana języka tłumaczy również ustawienia, zasady, wskazówki i instrukcje drukowania.",
   "アラビア語の右から読む表示に対応しました。": "Arabski obsługuje teraz wyświetlacz od prawej do lewej.",
-  "選んだ言語だけを読み込み、盤面の数字と途中経過を保ちます。": "Tylko wybrany język jest wczytywany, podczas gdy puzzle cyfry i postęp są zachowane."
+  "選んだ言語だけを読み込み、盤面の数字と途中経過を保ちます。": "Tylko wybrany język jest wczytywany, podczas gdy puzzle cyfry i postęp są zachowane.",
+  "今日の問題": "Dzisiejsza łamigłówka",
+  "全てリセット": "Resetuj wszystko",
+  "クリア！": "Ukończono!",
+  "赤いマスが間違っているよ": "Czerwone pola są błędne",
+  "まだ空いているマスがあるよ": "Są jeszcze puste pola",
+  "今日の問題を読み込めませんでした。時間をおいて開き直してね": "Nie udało się wczytać dzisiejszej łamigłówki. Otwórz ponownie później."
 }

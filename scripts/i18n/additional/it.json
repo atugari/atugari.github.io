@@ -3607,5 +3607,11 @@
   "11言語を追加し、20言語で遊べるようになりました。": "11 lingue aggiunte: ora disponibile in 20 lingue.",
   "言語を選ぶと、設定・ルール・ヒント・印刷の説明も切り替わります。": "Cambiare la lingua traduce anche impostazioni, regole, suggerimenti e istruzioni di stampa.",
   "アラビア語の右から読む表示に対応しました。": "L'arabo ora supporta il display destro a sinistra.",
-  "選んだ言語だけを読み込み、盤面の数字と途中経過を保ちます。": "Solo la lingua selezionata viene caricata, mentre le cifre e i progressi del puzzle sono conservati."
+  "選んだ言語だけを読み込み、盤面の数字と途中経過を保ちます。": "Solo la lingua selezionata viene caricata, mentre le cifre e i progressi del puzzle sono conservati.",
+  "今日の問題": "Il puzzle di oggi",
+  "全てリセット": "Reimposta tutto",
+  "クリア！": "Completato!",
+  "赤いマスが間違っているよ": "Le caselle rosse sono sbagliate",
+  "まだ空いているマスがあるよ": "Ci sono ancora caselle vuote",
+  "今日の問題を読み込めませんでした。時間をおいて開き直してね": "Impossibile caricare il puzzle di oggi. Riprova più tardi."
 }
