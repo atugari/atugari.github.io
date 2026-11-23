@@ -3607,5 +3607,11 @@
   "11言語を追加し、20言語で遊べるようになりました。": "Thêm 11 thứ tiếng: hiện nay có trong 20 thứ tiếng.",
   "言語を選ぶと、設定・ルール・ヒント・印刷の説明も切り替わります。": "Thay đổi ngôn ngữ cũng dịch các thiết lập, quy tắc, gợi ý và hướng dẫn in ấn.",
   "アラビア語の右から読む表示に対応しました。": "Ả Rập bây giờ hỗ trợ màn hình từ phải sang trái.",
-  "選んだ言語だけを読み込み、盤面の数字と途中経過を保ちます。": "Chỉ có ngôn ngữ đã chọn mới được tải, còn số giải đố và tiến bộ được bảo tồn."
+  "選んだ言語だけを読み込み、盤面の数字と途中経過を保ちます。": "Chỉ có ngôn ngữ đã chọn mới được tải, còn số giải đố và tiến bộ được bảo tồn.",
+  "今日の問題": "Câu đố hôm nay",
+  "全てリセット": "Đặt lại tất cả",
+  "クリア！": "Hoàn thành!",
+  "赤いマスが間違っているよ": "Các ô màu đỏ bị sai",
+  "まだ空いているマスがあるよ": "Vẫn còn ô trống",
+  "今日の問題を読み込めませんでした。時間をおいて開き直してね": "Không tải được câu đố hôm nay. Hãy mở lại sau."
 }
