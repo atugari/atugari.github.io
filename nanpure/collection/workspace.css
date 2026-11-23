@@ -152,7 +152,3 @@ body.np-collection-workspace>.storage-warning{top:50px;bottom:auto;left:8px;righ
   grid-template-areas:"head head" "layout layout" "numbers board" "linked linked" "membership membership" "hints hints" "actions actions" "feedback feedback";
  }
 }
-
-/* PareAsobi daily board colors: givens light blue, empty cells paler blue (selection states keep their own colors) */
-#board .cell.given:not(.selected,.peer,.guide,.same,.wrong){background:#D9EAF7}
-#board .cell:not(.given,.selected,.peer,.guide,.same,.wrong){background:#EAF3FB}
