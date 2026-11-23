@@ -1230,10 +1230,10 @@
       "key": "2026-11-23@18:00",
       "day": "2026-11-23",
       "slot": "18:00",
-      "status": "ready",
-      "post_id": null,
+      "status": "sent",
+      "post_id": "2124790325231181919",
       "due": 1795424400000,
-      "sent_at": null,
+      "sent_at": 1795424465337,
       "error": null,
       "date": "2026-11-23",
       "fingerprints": [
@@ -1247,10 +1247,10 @@
       "key": "2026-11-23@21:00",
       "day": "2026-11-23",
       "slot": "21:00",
-      "status": "ready",
-      "post_id": null,
+      "status": "sent",
+      "post_id": "2124835620585709628",
       "due": 1795435200000,
-      "sent_at": null,
+      "sent_at": 1795435264499,
       "error": null,
       "date": "2026-11-23",
       "fingerprints": [
@@ -1264,10 +1264,10 @@
       "key": "2026-11-24@08:00",
       "day": "2026-11-24",
       "slot": "08:00",
-      "status": "ready",
-      "post_id": null,
+      "status": "sent",
+      "post_id": "2125001712482267193",
       "due": 1795474800000,
-      "sent_at": null,
+      "sent_at": 1795474863963,
       "error": null,
       "date": "2026-11-24",
       "fingerprints": [
@@ -1394,6 +1394,74 @@
         "9d1e62c341f09a7518202bc80c80fb4559629d2fbb846e3f062884256e6fc3eb",
         "ab5b2787a3c33a68102ea1ee25354016a9e66e120559269296767612aa234eb2",
         "7d31578d2d989a3e79deb2f810304e96581671e7e3934993fb4ee065a212894e"
+      ]
+    },
+    "2026-11-26@08:00": {
+      "key": "2026-11-26@08:00",
+      "day": "2026-11-26",
+      "slot": "08:00",
+      "status": "ready",
+      "post_id": null,
+      "due": 1795647600000,
+      "sent_at": null,
+      "error": null,
+      "date": "2026-11-26",
+      "fingerprints": [
+        "1b542bc80e15d53084ed34589752262173b9a89749b000ae36c812fa8aa474a9",
+        "efa1c65be1e1d19bd8fa7761a16730a9fa16d6829f6b6a5d04f6857508afb677",
+        "cb2bfa53fc3325e8b8d1a29e855a46761932cdfad2cfeab435e7090e39b56cee",
+        "84c2d41ca94ebd8ae91fc4c110cccf33b651da010a1234e5fe2557c834a499d4"
+      ]
+    },
+    "2026-11-26@12:00": {
+      "key": "2026-11-26@12:00",
+      "day": "2026-11-26",
+      "slot": "12:00",
+      "status": "ready",
+      "post_id": null,
+      "due": 1795662000000,
+      "sent_at": null,
+      "error": null,
+      "date": "2026-11-26",
+      "fingerprints": [
+        "14c1dabae358936aa450b6d6465e53da384b4385199addaa1639a9f2d45e9836",
+        "a400bffd232ccf14daf927f694997b5587ffea9f4d2ae0a997a92a28b733e516",
+        "5b4be7e2d3ef87541d5b22d49ce9dbc415108def0813e8e288aadf0e4d09d746",
+        "c994d2f7d89fa4f3684f4602b3b6fbddd42533bcf689951dc190fbd0a9c70d33"
+      ]
+    },
+    "2026-11-26@18:00": {
+      "key": "2026-11-26@18:00",
+      "day": "2026-11-26",
+      "slot": "18:00",
+      "status": "ready",
+      "post_id": null,
+      "due": 1795683600000,
+      "sent_at": null,
+      "error": null,
+      "date": "2026-11-26",
+      "fingerprints": [
+        "53a1ef2acf9e3344b9895ac8f9bfc75d0585e5adf62fceb88edd739da66e10d7",
+        "aa9dc929c6caacba8cfe6d035f0610b8f9e909f11ab09c3cdbd267c26c2cab03",
+        "ab0cd578e5be4895f4d172f048d20f417eb35371321402af69e2ba6dfbfe8424",
+        "3e434c4c0bd6a753129f8dc91a1340d4aa844031a4f26f377842df7e80e584fa"
+      ]
+    },
+    "2026-11-26@21:00": {
+      "key": "2026-11-26@21:00",
+      "day": "2026-11-26",
+      "slot": "21:00",
+      "status": "ready",
+      "post_id": null,
+      "due": 1795694400000,
+      "sent_at": null,
+      "error": null,
+      "date": "2026-11-26",
+      "fingerprints": [
+        "87d6aee1c0d64599743b6393bba04b4dba77a2586cfb487b6abd7e9d415e5dd8",
+        "97400950c096029b9084d1c093ab9c6b5b9fff4428a4c0bea465b90443296d82",
+        "253ca74cc5f23f6559ad16654c120ae8214f31a3e3ff7adfae1e8ca54e5da1b0",
+        "162fc7bd9a6bc45937743239cf6ca01181a30a4135d03472803aec6f764ca6b2"
       ]
     }
   }
