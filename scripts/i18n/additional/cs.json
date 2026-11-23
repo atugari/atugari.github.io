@@ -3607,5 +3607,11 @@
   "11言語を追加し、20言語で遊べるようになりました。": "Přidáno 11 jazyků: nyní k dispozici ve 20 jazycích.",
   "言語を選ぶと、設定・ルール・ヒント・印刷の説明も切り替わります。": "Změna jazyka také překládá nastavení, pravidla, rady a tiskové instrukce.",
   "アラビア語の右から読む表示に対応しました。": "Arabština nyní podporuje pravé až levé zobrazení.",
-  "選んだ言語だけを読み込み、盤面の数字と途中経過を保ちます。": "Pouze vybraný jazyk je načten, zatímco číslice puzzle a pokrok jsou zachovány."
+  "選んだ言語だけを読み込み、盤面の数字と途中経過を保ちます。": "Pouze vybraný jazyk je načten, zatímco číslice puzzle a pokrok jsou zachovány.",
+  "今日の問題": "Dnešní hádanka",
+  "全てリセット": "Resetovat vše",
+  "クリア！": "Hotovo!",
+  "赤いマスが間違っているよ": "Červená políčka jsou špatně",
+  "まだ空いているマスがあるよ": "Ještě zbývají prázdná políčka",
+  "今日の問題を読み込めませんでした。時間をおいて開き直してね": "Dnešní hádanku se nepodařilo načíst. Otevřete ji prosím později."
 }
