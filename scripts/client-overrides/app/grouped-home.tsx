@@ -4,8 +4,11 @@
 export default function GroupedHome({t,onPractice,onDaily,onPanel,markRead,unread,resume,Theme,Intro}:any){
  const art=(symbol:string)=><span className="choice-art" aria-hidden="true"><span className="art-emblem">{symbol}</span></span>;
  const arrow=<span className="choice-arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></span>;
+ const now=new Date(),dateLabel=(now.getMonth()+1)+'月'+now.getDate()+'日（'+'日月火水木金土'.charAt(now.getDay())+'）';
  return <main className="start-screen designed-home np-stepped-home np-home-ready" data-grouped-home="" data-stepped-home="">
+  <div className="home-back-row"><a className="home-back-pare" href="/"><span aria-hidden="true">‹</span>{t('パレあそびに戻る')}</a></div>
   <div className="home-topline"><Theme compact onOpen={()=>onPanel('theme')}/><button type="button" className="home-updates-entry" onClick={()=>{markRead?.();onPanel('updates')}}>{t('更新情報')}{unread&&<span className="home-updates-dot" aria-label={t('未読のお知らせあり')}/>}</button></div>
+  <section className="pd-sec" id="pare-daily" aria-label={t('今日の問題')}><div className="pd-head"><h2 className="pd-title">{t('今日の問題')}</h2><span className="pd-date" data-pd-date="">{dateLabel}</span></div><div data-pd-body=""></div></section>
   <div className="start-choices">
    <button type="button" className="choice-card daily-choice" onClick={onDaily}>{art('日')}<span className="choice-copy"><strong>{t('日替わりナンプレに挑戦する')}</strong></span>{arrow}</button>
    <button type="button" className="choice-card main-choice" onClick={()=>onPractice()}>{art('数')}<span className="choice-copy"><strong>{t('ナンプレで遊ぶ')}</strong></span>{arrow}</button>

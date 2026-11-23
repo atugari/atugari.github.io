@@ -375,3 +375,31 @@ html[data-site-theme="contrast-dark"] .np-stepped-home {
 .np-stepped-home .home-updates-entry{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:7px 12px;border:1px solid var(--theme-line,#b8cbbd);border-radius:10px;background:var(--theme-surface,#fffdf7);color:var(--theme-ink,#20372c);font:inherit;font-size:max(14px,var(--ui-min-font,0px));font-weight:700;cursor:pointer}
 .np-stepped-home .home-updates-entry:focus-visible{outline:3px solid var(--theme-accent,#3d7659);outline-offset:3px}
 .np-stepped-home .home-updates-dot{position:absolute;top:4px;right:4px;width:8px;height:8px;border-radius:50%;background:#d22;box-shadow:0 0 0 2px var(--theme-surface,#fffdf7)}
+
+/* Back to Pare Asobi + the same daily puzzle as the Pare Asobi top page. */
+.np-stepped-home .home-back-row{display:flex;justify-content:flex-start}
+.np-stepped-home .home-back-pare{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:7px 14px;border:1px solid var(--theme-line,#b8cbbd);border-radius:10px;background:var(--theme-surface,#fffdf7);color:var(--theme-ink,#20372c);font-size:max(14px,var(--ui-min-font,0px));font-weight:700;text-decoration:none}
+.np-stepped-home .home-back-pare:focus-visible{outline:3px solid var(--theme-accent,#3d7659);outline-offset:3px}
+.np-stepped-home .pd-sec{display:none;border:1px solid var(--theme-line,#b8cbbd);border-radius:18px;background:var(--theme-surface,#fffdf7);padding:14px 12px 16px;text-align:center}
+.np-stepped-home .pd-sec[data-pd-ready]{display:block}
+.np-stepped-home .pd-head{display:flex;align-items:baseline;justify-content:center;gap:10px;margin-bottom:10px}
+.np-stepped-home .pd-title{margin:0;font-size:21px;font-weight:800;color:#BB5568;letter-spacing:.04em;line-height:1.1}
+.np-stepped-home .pd-date{font-size:14px;font-weight:700;color:var(--theme-ink,#3d2f2b)}
+.np-stepped-home .pd-board{display:grid;grid-template-columns:repeat(9,1fr);width:min(340px,100%);margin:0 auto;background:#fff;border:3px solid #3d2f2b;border-radius:6px;overflow:hidden}
+.np-stepped-home .pd-cell{aspect-ratio:1;border:0;border-right:1px solid #D8CFC2;border-bottom:1px solid #D8CFC2;background:#fff;color:#1E88D6;font-size:clamp(16px,6vw,23px);font-weight:700;padding:0;cursor:pointer}
+.np-stepped-home .pd-cell:nth-child(9n){border-right:0}
+.np-stepped-home .pd-cell:nth-child(n+73){border-bottom:0}
+.np-stepped-home .pd-b3r{border-right:2.5px solid #3d2f2b}
+.np-stepped-home .pd-b3b{border-bottom:2.5px solid #3d2f2b}
+.np-stepped-home .pd-given{color:#3d2f2b;font-weight:800;background:#D9EAF7}
+.np-stepped-home .pd-peer{background:#FFF3D0}
+.np-stepped-home .pd-sel{background:#FFE08A}
+.np-stepped-home .pd-wrong{background:#FFE3E3;color:#D33}
+.np-stepped-home .pd-pad{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:10px}
+.np-stepped-home .pd-padbtn{width:44px;height:44px;padding:0;border-radius:10px;border:2px solid #E1C781;background:#fff;color:#3d2f2b;font-size:22px;font-weight:700;cursor:pointer}
+.np-stepped-home .pd-erase{border-color:#d8cfc4;font-size:16px}
+.np-stepped-home .pd-msg{min-height:24px;margin:12px 0 0;font-size:15px;font-weight:700;color:#3d2f2b}
+.np-stepped-home .pd-msg-clear{color:#177245;font-size:18px}
+.np-stepped-home .pd-btns{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:10px}
+.np-stepped-home .pd-btn{display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border-radius:999px;border:2px solid #d8cfc4;background:#fff;color:#3d2f2b;font-size:15px;font-weight:700;cursor:pointer}
+.np-stepped-home .pd-btn-main{background:#DCA75F;border-color:#DCA75F;color:#3d2f2b}
