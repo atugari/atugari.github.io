@@ -6,11 +6,23 @@ const t=text=>w.NPI18n?.t(text)||text;
 // The site footer sits after the app shell in the document, which makes the
 // page itself slightly taller than the screen. On phones that extra scroll
 // can leave the shell (and its header) pushed out of view with no way back.
-// Keep a reference to the footer and move it to the end of the shell's own
-// scrolling area; the shell re-renders its main area, so pdFooterMove is
-// re-run from the observer below whenever the footer gets dropped.
+// Keep a reference to the footer and, on the home screen only, move it to
+// the end of the shell's own scrolling area; the shell re-renders its main
+// area, so pdFooterMove is re-run from the observer below whenever the
+// footer gets dropped. On every other screen the footer stays after the
+// shell as before: inside a play screen's main it would become a layout
+// item and squeeze the board.
 const pdFooterNode=document.querySelector('.nanpure-site-footer');
-function pdFooterMove(){const main=document.querySelector('.site-shell main');if(pdFooterNode&&main&&pdFooterNode.parentElement!==main)main.append(pdFooterNode);}
+function pdFooterMove(){
+ if(!pdFooterNode)return;
+ const shell=document.querySelector('.site-shell');if(!shell)return;
+ if(shell.classList.contains('mode-home')){
+  const main=shell.querySelector('main');
+  if(main&&pdFooterNode.parentElement!==main)main.append(pdFooterNode);
+ }else if(pdFooterNode.parentElement!==document.body){
+  document.body.append(pdFooterNode);
+ }
+}
 pdFooterMove();
 function showGuide(){
  const main=document.querySelector('.designed-home'),source=main?.querySelector('.site-intro'),button=main?.querySelector('[data-home-guide]');if(!source)return;
