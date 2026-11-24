@@ -71,8 +71,8 @@ async function setup(browser,width,height,theme='color'){
    await close.click();await page.locator('.game-dialog[open]').waitFor({state:'detached'});
   }
   assert.equal(await page.locator('.designed-home .start-title').count(),0);
-  assert.match(await page.locator('.theme-entry.compact').textContent(),/^背景とボタンを変更/);
-  assert.equal(await page.locator('.home-topline [data-np-titles]').count(),0,'The home top line has no titles entry');
+  assert.equal(await page.locator('.designed-home .theme-entry').count(),0,'The home has no theme entry');
+  assert.equal(await page.locator('.designed-home [data-np-titles]').count(),0,'The home has no titles entry');
   const centered=await page.locator('.start-choices .choice-arrow').evaluateAll(nodes=>nodes.every(node=>{
    const circle=node.getBoundingClientRect(),icon=node.querySelector('svg').getBoundingClientRect();
    return Math.abs((circle.left+circle.right)-(icon.left+icon.right))<1&&Math.abs((circle.top+circle.bottom)-(icon.top+icon.bottom))<1;
@@ -112,6 +112,6 @@ async function setup(browser,width,height,theme='color'){
   assert.equal(await collection.locator('strong').textContent(),'すぐ遊べるナンプレ集');
   assert.equal(await collection.getAttribute('href'),'/nanpure/collection/');
   await page.locator('.back-button').click();
-  await page.locator('.daily-choice').click();await page.locator('.difficulty-screen').waitFor();await page.waitForFunction(()=>!document.querySelector('[data-np-titles]'));await page.locator('.back-button').click();await page.locator('.np-home-ready').waitFor();assert.equal(await page.locator('.home-topline [data-np-titles]').count(),0,'The home top line has no titles entry');await page.locator('.menu-button').click();await page.locator('[data-menu-group="records"] > summary').click();await page.locator('.site-menu [data-np-titles]').click();await page.locator('.np-titles[open]').waitFor();assert.deepEqual(f.errors,[]);await f.context.close();console.log('PASS home bounds, no overlapping actions, static title details, notification preference and return home:',width,height,theme);
+  await page.locator('.daily-choice').click();await page.locator('.difficulty-screen').waitFor();await page.waitForFunction(()=>!document.querySelector('[data-np-titles]'));await page.locator('.back-button').click();await page.locator('.np-home-ready').waitFor();assert.equal(await page.locator('.designed-home [data-np-titles]').count(),0,'The home has no titles entry');await page.locator('.menu-button').click();await page.locator('[data-menu-group="records"] > summary').click();await page.locator('.site-menu [data-np-titles]').click();await page.locator('.np-titles[open]').waitFor();assert.deepEqual(f.errors,[]);await f.context.close();console.log('PASS home bounds, no overlapping actions, static title details, notification preference and return home:',width,height,theme);
  }
 }finally{await browser.close()}})().catch(e=>{console.error(e);process.exit(1)});

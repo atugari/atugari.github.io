@@ -378,6 +378,7 @@ html[data-site-theme="contrast-dark"] .np-stepped-home {
 
 /* Back to Pare Asobi + the same daily puzzle as the Pare Asobi top page. */
 .np-stepped-home .home-back-row{display:flex;justify-content:flex-start}
+.np-stepped-home .home-lower-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px}
 .np-stepped-home .home-back-pare{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:7px 14px;border:1px solid var(--theme-line,#b8cbbd);border-radius:10px;background:var(--theme-surface,#fffdf7);color:var(--theme-ink,#20372c);font-size:max(14px,var(--ui-min-font,0px));font-weight:700;text-decoration:none}
 .np-stepped-home .home-back-pare:focus-visible{outline:3px solid var(--theme-accent,#3d7659);outline-offset:3px}
 .np-stepped-home .pd-sec{display:block;border:1px solid var(--theme-line,#b8cbbd);border-radius:18px;background:var(--theme-surface,#fffdf7);padding:14px 12px 16px;text-align:center}

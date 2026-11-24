@@ -32,7 +32,7 @@ function showGuide(){
  const actions=document.createElement('div');actions.className='np-home-guide-actions';const original=main.querySelector('.tutorial-entry');if(original){const b=document.createElement('button');b.type='button';b.textContent=original.textContent;b.onclick=()=>{box.close();original.click()};actions.append(b)}
  box.append(head,content,actions);box.addEventListener('close',()=>{box.remove();button?.focus({preventScroll:true})});document.body.append(box);box.showModal();
 }
-function mount(){document.querySelectorAll('[data-home-title],[data-home-guide]').forEach(node=>{if(!node.closest('.designed-home'))node.remove()});const main=document.querySelector('.designed-home');if(!main)return null;main.classList.add('np-home-ready');return main.querySelector('.home-topline')}
+function mount(){document.querySelectorAll('[data-home-title],[data-home-guide]').forEach(node=>{if(!node.closest('.designed-home'))node.remove()});const main=document.querySelector('.designed-home');if(!main)return null;main.classList.add('np-home-ready');return main.querySelector('.home-topline')||main}
 w.NPHomeLayout={mount,showGuide};let queued=false;new MutationObserver(()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;mount()})}).observe(document.documentElement,{childList:true,subtree:true});mount();
 // Pare Asobi daily puzzle: same stock and same date pick as the top page.
 function pdHash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
