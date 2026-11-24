@@ -90,7 +90,8 @@ async function setup(browser,width,height,theme='color'){
   const cards=await page.locator('.start-choices .choice-card').evaluateAll(nodes=>nodes.map(e=>({height:e.offsetHeight,width:e.offsetWidth,background:getComputedStyle(e).backgroundColor})));
   for(const card of cards)assert.equal(card.width,cards[0].width,'All home entry cards have the same width');
   for(const card of [cards[0],cards[2],cards[3],cards[4]])assert.equal(card.height,cards[0].height,'Home entry cards without a description have the same height');
-  assert(cards[1].height>cards[0].height,'The multi creation card is taller because it carries a description');
+  assert.equal(await page.locator('.main-choice small').textContent(),'4×4から25×25の大きさのナンプレを重ね、難易度や重ねる個数などを選ぶ事で自作の問題を作る事が出来ます。','The multi creation card carries its description');
+  assert(await page.locator('.main-choice small').isVisible(),'The multi creation description is visible');
   assert.notEqual(cards[3].background,cards[4].background,'Collection and learning use different colors');
   assert.equal(await page.locator('.learn-choice').getAttribute('href'),'/nanpure/learn/');
   await page.evaluate(()=>{window.scrollTo(0,0);document.querySelector('.designed-home').scrollTop=0});
