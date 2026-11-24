@@ -78,7 +78,7 @@ async function setup(browser,width,height,theme='color'){
    return Math.abs((circle.left+circle.right)-(icon.left+icon.right))<1&&Math.abs((circle.top+circle.bottom)-(icon.top+icon.bottom))<1;
   }));
   assert(centered,'Each chevron is centered in its circle');
-  assert.deepEqual(await page.locator('.designed-home .start-choices strong').allTextContents(),['ランキング問題に挑戦！','自作のナンプレを作る','今日の問題集','ナンプレを学ぶ']);
+  assert.deepEqual(await page.locator('.designed-home .start-choices strong').allTextContents(),['ランキング問題に挑戦！','マルチナンプレを作る','模様を描いて作る','今日の問題集','ナンプレを学ぶ']);
   assert.equal(await page.locator('.designed-home [data-collection-entry]').count(),0);
   assert.equal(await page.locator('.designed-home :is(.home-bottom-links,.home-version,[data-home-guide],[data-pare-entry])').count(),0);
   const support=page.locator('.home-support-button');
@@ -88,7 +88,7 @@ async function setup(browser,width,height,theme='color'){
   for(const side of ['width','height'])assert(Math.abs(supportSize[side]-playSize[side]*2/3)<1,'Support '+side+' is two thirds of the play card');
   const cards=await page.locator('.start-choices .choice-card').evaluateAll(nodes=>nodes.map(e=>({height:e.offsetHeight,width:e.offsetWidth,background:getComputedStyle(e).backgroundColor})));
   for(const card of cards)assert.deepEqual([card.width,card.height],[cards[0].width,cards[0].height],'All home entry cards have the same size');
-  assert.notEqual(cards[2].background,cards[3].background,'Collection and learning use different colors');
+  assert.notEqual(cards[3].background,cards[4].background,'Collection and learning use different colors');
   assert.equal(await page.locator('.learn-choice').getAttribute('href'),'/nanpure/learn/');
   await page.evaluate(()=>{window.scrollTo(0,0);document.querySelector('.designed-home').scrollTop=0});
   const box=await page.evaluate(()=>{const m=document.querySelector('.designed-home'),rects=Array.from(m.querySelectorAll('button,a')).filter(e=>e.getClientRects().length&&getComputedStyle(e).visibility!=='hidden').map(e=>({text:e.textContent.trim(),r:e.getBoundingClientRect().toJSON()}));return{height:m.clientHeight,scroll:m.scrollHeight,width:innerWidth,viewport:innerHeight,rects};});
@@ -100,17 +100,23 @@ async function setup(browser,width,height,theme='color'){
   await page.locator('.np-title-notification input').uncheck();await page.waitForFunction(()=>NPAchievements.getState().notification==='off');await page.evaluate(()=>NPAchievements.capture('ui',{action:'last-book'}));await page.locator('.np-titles>header button').click();if(await page.locator('.game-dialog[open]').isVisible())await page.locator('.game-dialog .dialog-close').click();assert.equal(await page.locator('.np-title-toast').count(),0);
   await page.reload();await page.locator('.np-home-ready').waitFor();assert.equal(await page.evaluate(()=>NPAchievements.getState().notification),'off');assert(await page.evaluate(()=>!!NPAchievements.getState().earned['NP-0001']));
   await page.locator('.main-choice').click();
-  await page.frameLocator('iframe.notebook').locator('[data-action="open-notebook"]').click();
-  assert.equal(await page.frameLocator('iframe.notebook').locator('[data-action="start"][data-flow="create"]').count(),0,'The free-play screen has no generation entrance');
-  await page.frameLocator('iframe.notebook').locator('[data-action="open-multi-create"]').click();
   await page.frameLocator('iframe.notebook').locator('[data-action="pick-multi"]').first().waitFor();
   await page.goto(site+'/nanpure/');
+  await page.locator('.pattern-choice').click();
+  await page.frameLocator('iframe.notebook').locator('#np-pattern-page').waitFor();
+  await page.goto(site+'/nanpure/');
   await page.locator('.main-choice').click();
+  await page.frameLocator('iframe.notebook').locator('[data-action="pick-multi"]').first().waitFor();
+  await page.locator('.choose-rules').click();
   await page.frameLocator('iframe.notebook').locator('[data-action="open-notebook"]').waitFor();
   const collection=page.frameLocator('iframe.notebook').locator('[data-collection-entry]');
   await collection.waitFor();
   assert.equal(await collection.locator('strong').textContent(),'すぐ遊べるナンプレ集');
   assert.equal(await collection.getAttribute('href'),'/nanpure/collection/');
+  await page.frameLocator('iframe.notebook').locator('[data-action="open-notebook"]').click();
+  assert.equal(await page.frameLocator('iframe.notebook').locator('[data-action="start"][data-flow="create"]').count(),0,'The free-play screen has no generation entrance');
+  await page.locator('.choose-rules').click();
+  await page.frameLocator('iframe.notebook').locator('[data-action="open-notebook"]').waitFor();
   await page.locator('.back-button').click();
   await page.locator('.daily-choice').click();await page.locator('.difficulty-screen').waitFor();await page.waitForFunction(()=>!document.querySelector('[data-np-titles]'));await page.locator('.back-button').click();await page.locator('.np-home-ready').waitFor();assert.equal(await page.locator('.designed-home [data-np-titles]').count(),0,'The home has no titles entry');await page.locator('.menu-button').click();await page.locator('[data-menu-group="records"] > summary').click();await page.locator('.site-menu [data-np-titles]').click();await page.locator('.np-titles[open]').waitFor();assert.deepEqual(f.errors,[]);await f.context.close();console.log('PASS home bounds, no overlapping actions, static title details, notification preference and return home:',width,height,theme);
  }

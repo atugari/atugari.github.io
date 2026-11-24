@@ -2594,5 +2594,31 @@
     "th": "สร้างซูโดกุของคุณเอง",
     "hi": "अपना खुद का सुडोकू बनाएं",
     "ar": "أنشئ السودوكو الخاص بك"
+  },
+  "マルチナンプレを作る": {
+    "ar": "إنشاء سودوكو متعدد",
+    "cs": "Vytvořit multi Sudoku",
+    "hi": "मल्टी सुडोकू बनाएं",
+    "id": "Buat Sudoku multi",
+    "it": "Crea un Sudoku multiplo",
+    "nl": "Maak een multi-Sudoku",
+    "pl": "Utwórz multi Sudoku",
+    "ru": "Создать мульти-судоку",
+    "sv": "Skapa ett multi-Sudoku",
+    "th": "สร้างซูโดกุหลายกระดาน",
+    "vi": "Tạo Sudoku đa bảng"
+  },
+  "模様を描いて作る": {
+    "ar": "ارسم نمطًا للإنشاء",
+    "cs": "Nakreslit vzor a vytvořit",
+    "hi": "पैटर्न बनाकर बनाएं",
+    "id": "Gambar pola untuk membuat",
+    "it": "Disegna un motivo per creare",
+    "nl": "Teken een patroon om te maken",
+    "pl": "Narysuj wzór, aby utworzyć",
+    "ru": "Нарисовать узор и создать",
+    "sv": "Rita ett mönster för att skapa",
+    "th": "วาดลวดลายเพื่อสร้าง",
+    "vi": "Vẽ họa tiết để tạo"
   }
 }

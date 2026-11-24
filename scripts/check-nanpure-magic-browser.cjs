@@ -29,7 +29,8 @@ async function finish(f){assert.deepEqual(f.errors,[]);assert.deepEqual(f.writes
 async function journey(browser){
  const f=await setup(browser),{page}=f;
  await page.locator('.main-choice').click();await page.waitForFunction(()=>document.querySelector('iframe.notebook')?.contentWindow?.NanpureAppTest);
- const frame=await(await page.locator('iframe.notebook').elementHandle()).contentFrame();
+ await page.locator('.choose-rules').click();
+ const frame=await(await page.locator('iframe.notebook').elementHandle()).contentFrame();await frame.locator('[data-future="magic-square"]').waitFor({state:'attached'});
  const future=frame.locator('[data-future="magic-square"]');assert(await future.isDisabled());assert.equal(await future.getAttribute('aria-disabled'),'true');
  assert(await frame.getByRole('button',{name:'イラストロジック帳を開く'}).isDisabled());
  await future.evaluate(el=>el.click());assert.equal(await frame.evaluate(()=>NanpureAppTest.getRoute().flow),'hub','disabled entry cannot start a game');

@@ -18,6 +18,7 @@ module.exports = {
   ...require('./catalog-home-97.json'),
   ...require('./catalog-home-98.json'),
   ...require('./catalog-home-99.json'),
+  ...require('./catalog-home-100.json'),
 };
 // Additional languages are split by locale to keep updates reviewable.
 // Visitors receive one generated language pack, never this combined catalog.

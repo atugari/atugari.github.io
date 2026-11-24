@@ -19,7 +19,7 @@ await page.getByRole('link',{name:'月100円で製作者を応援しよう♫',e
 assert.equal(await page.locator('.designed-home [data-pare-entry]').count(),0);
 assert.equal(await page.locator('.shiru-entry').isVisible(),false);
 // The prerendered home buttons receive their click handlers when the shell mounts.
-await page.waitForFunction(()=>window.NPAchievementShellAttached);await page.locator('.main-choice').click();const notebook=page.frameLocator('iframe.notebook');await notebook.locator('[data-action="open-notebook"]').waitFor();await notebook.locator('[data-action="open-crossword"]').waitFor({state:'attached'});await notebook.locator('[data-action="open-prototype"]').waitFor({state:'attached'});
+await page.waitForFunction(()=>window.NPAchievementShellAttached);await page.locator('.main-choice').click();const notebook=page.frameLocator('iframe.notebook');await notebook.locator('[data-action="pick-multi"]').first().waitFor();await page.locator('.choose-rules').click();await notebook.locator('[data-action="open-notebook"]').waitFor();await notebook.locator('[data-action="open-crossword"]').waitFor({state:'attached'});await notebook.locator('[data-action="open-prototype"]').waitFor({state:'attached'});
 // The navigation adapter hides the non-Sudoku entries with data-np-moved, but the
 // notebook re-renders its menu when the language pack lands, briefly showing fresh
 // buttons. Wait until both entries stay hidden for a full second before asserting.
@@ -122,7 +122,7 @@ for(const viewport of [{width:1280,height:800},{width:375,height:812},{width:812
   await page.waitForFunction(uid=>document.querySelector('#game')?.contentWindow?.NanpureAppTest?.getCurrent()?.uid===uid,before.uid);
   assert.deepEqual(await page.evaluate(()=>document.querySelector('#game').contentWindow.NanpureAppTest.getCurrent().grid),before.grid,'New '+n+'x'+n+' reload at '+viewport.width);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'New board outer width');
-  await page.locator('#back').click();await page.locator('#library:not([hidden])').waitFor();await page.locator('#library header a[href="/nanpure/"]').click();await page.waitForFunction(()=>window.NPAchievementShellAttached);await page.locator('.main-choice').click();await page.frameLocator('iframe.notebook').locator('[data-collection-entry]').waitFor();
+  await page.locator('#back').click();await page.locator('#library:not([hidden])').waitFor();await page.locator('#library header a[href="/nanpure/"]').click();await page.waitForFunction(()=>window.NPAchievementShellAttached);await page.locator('.main-choice').click();await page.frameLocator('iframe.notebook').locator('[data-action="pick-multi"]').first().waitFor();await page.locator('.choose-rules').click();await page.frameLocator('iframe.notebook').locator('[data-collection-entry]').waitFor();
  }
  console.log('PASS appended sizes '+viewport.width+'x'+viewport.height+': filters, start, keypad, erase, undo, durable grid, reload and notebook return');
 }
