@@ -68,7 +68,7 @@ function button(text){const b=[...w.document.querySelectorAll('button')].find(x=
  button('‹ 戻る');await settle(()=>w.document.querySelector('.site-shell.mode-home'),'return home');assert(w.document.querySelector('.site-shell').classList.contains('mode-home'));
  button('お問い合わせ');await settle(()=>w.document.querySelector('.contact-form'),'contact panel');assert(w.document.querySelector('.contact-form'));assert(!w.document.querySelector('.pages-online'));
  button('閉じる ×');await settle(()=>!w.document.querySelector('.contact-form'),'contact dismissal');
- button('日替わりナンプレに挑戦する');await settle(()=>w.document.querySelector('.daily-ranking-link'),'daily ranking entry');
+ button('ランキング問題に挑戦！');await settle(()=>w.document.querySelector('.daily-ranking-link'),'daily ranking entry');
  w.document.querySelector('.daily-ranking-link').click();await settle(()=>w.document.querySelector('.ranking'),'ranking panel');assert(w.document.querySelector('.ranking'));
  assert.equal(errors.length,0,errors.join('\n'));assert(requests.some(x=>x===manifest.online+'/api/contact?summary=1'));
  assert(!html.includes('chatgpt.site'));
