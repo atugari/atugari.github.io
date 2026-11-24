@@ -333,6 +333,7 @@ async function checkResponsiveFreePlay(browser,root,viewport){
   const element=await page.locator('iframe.notebook').elementHandle(),frame=await element.contentFrame();
   assert(frame,'Free Play iframe: '+label);
   await frame.waitForFunction(()=>!!window.NanpureAppTest&&window.NPI18n?.get()==='en',{},{timeout:20000});
+  await page.locator('.choose-rules').click();
   await frame.locator('[data-action="open-notebook"]').waitFor();
   assert.equal(indexRequests,1,'Delayed notebook boot never duplicates index request: '+label);
 
@@ -495,6 +496,7 @@ async function checkJigsawCreationAndPrint(page,lang,expected){
  const iframe=await page.locator('iframe.notebook').elementHandle(),frame=await iframe.contentFrame();
  assert(frame,'Notebook iframe is attached: '+lang);
  await frame.waitForFunction(lang=>!!window.NanpureAppTest&&window.NPI18n?.get()===lang,lang,{timeout:20000});
+ await page.locator('.choose-rules').click();
  await frame.locator('[data-action="open-notebook"]').click();
  await frame.evaluate(()=>window.NPWebsiteTool('open-create'));
  await frame.locator('[data-action="web-single"]').click();
