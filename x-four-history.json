@@ -1315,10 +1315,10 @@
       "key": "2026-11-24@21:00",
       "day": "2026-11-24",
       "slot": "21:00",
-      "status": "ready",
-      "post_id": null,
+      "status": "sent",
+      "post_id": "2125198023403720843",
       "due": 1795521600000,
-      "sent_at": null,
+      "sent_at": 1795521668168,
       "error": null,
       "date": "2026-11-24",
       "fingerprints": [
@@ -1462,6 +1462,74 @@
         "97400950c096029b9084d1c093ab9c6b5b9fff4428a4c0bea465b90443296d82",
         "253ca74cc5f23f6559ad16654c120ae8214f31a3e3ff7adfae1e8ca54e5da1b0",
         "162fc7bd9a6bc45937743239cf6ca01181a30a4135d03472803aec6f764ca6b2"
+      ]
+    },
+    "2026-11-27@08:00": {
+      "key": "2026-11-27@08:00",
+      "day": "2026-11-27",
+      "slot": "08:00",
+      "status": "ready",
+      "post_id": null,
+      "due": 1795734000000,
+      "sent_at": null,
+      "error": null,
+      "date": "2026-11-27",
+      "fingerprints": [
+        "ebf7d99383b3aaf26fc996fa4471af8e9a01fa72a4a93808ce3897f54091d19e",
+        "cf6f3a8939b2b728a66039d3f960d083ac474bd1e69b4dad23c6cd589fd621f7",
+        "abd230c2c5afb8e1a827a37f3ddbe27e97c4ebeb002a3dbbcd64e6533665147f",
+        "1a96e3e3f759bdc9c45a546a555bc81308600d3eaa888adb904291586301b3bf"
+      ]
+    },
+    "2026-11-27@12:00": {
+      "key": "2026-11-27@12:00",
+      "day": "2026-11-27",
+      "slot": "12:00",
+      "status": "ready",
+      "post_id": null,
+      "due": 1795748400000,
+      "sent_at": null,
+      "error": null,
+      "date": "2026-11-27",
+      "fingerprints": [
+        "eafc99edce90a565c72d67ae9fa98eef68453abd596847b4640d6833e8e0635a",
+        "d01c69bfa0aeffb837d6ea08006bd403d90bea7aa16f39b89397c693d7e3ae85",
+        "0387540080f768c8ce6d937a9adb28f816e864910f92293ed39b66ac492cb94b",
+        "1b303dd5912c4bb1a559c373c87f6a6f9fadcfc74011e95dd2a516a9d0b6126d"
+      ]
+    },
+    "2026-11-27@18:00": {
+      "key": "2026-11-27@18:00",
+      "day": "2026-11-27",
+      "slot": "18:00",
+      "status": "ready",
+      "post_id": null,
+      "due": 1795770000000,
+      "sent_at": null,
+      "error": null,
+      "date": "2026-11-27",
+      "fingerprints": [
+        "517aca3f3bdc57715434a8debce52ca89e4629184197d7aefa987871e72f01b7",
+        "928a41be182ea19890e5a3626d44c326fec783725f42c7c07b76ef2a6b148e0e",
+        "6abffbe9da08ef6d3e427c285700f446eb0571b13b18481d3c31e1457dad4df0",
+        "13767b709230b6ceb47f84ea181c31f2fe94be2bb046aa0982cc7d0459c63c78"
+      ]
+    },
+    "2026-11-27@21:00": {
+      "key": "2026-11-27@21:00",
+      "day": "2026-11-27",
+      "slot": "21:00",
+      "status": "ready",
+      "post_id": null,
+      "due": 1795780800000,
+      "sent_at": null,
+      "error": null,
+      "date": "2026-11-27",
+      "fingerprints": [
+        "7639e4e3f08e723673f7dea5ac445f27ad2fd22513e5716f74772d0cc189ad50",
+        "46d829e4bcae0ac183a153587204603aedf34f778e1c7655ef8c88fc1c7fcb02",
+        "07eed238e4d71577b275683da6b0e4b9d410de5f85c97b89eed4264d0a1a2279",
+        "c70100e5bb66b62dfec58b1f79aeb2c6c38a5948db6923a0bc60eba8d07c4323"
       ]
     }
   }
