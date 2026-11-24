@@ -848,13 +848,21 @@
     .daily-msg-clear { color: #177245; font-size: 18px; }
     .daily-actions { display: flex; justify-content: center; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
     .daily-btn {
-      display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px;
+      display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 4px;
       border-radius: 999px; border: 2px solid #d8cfc4; background: #fff; color: #3d2f2b;
-      font-size: 15px; font-weight: 700; cursor: pointer; text-decoration: none;
+      font-size: clamp(14px, 4.55vw, 17px); font-weight: 700; cursor: pointer; text-decoration: none;
+      flex: 1 1 0; min-width: 0; white-space: nowrap; touch-action: manipulation; letter-spacing: -0.02em;
     }
+    #daily-reset { flex-grow: 1.18; }
+    @media (max-width: 330px) { .daily-actions { gap: 6px; } .daily-btn { padding: 0 2px; } }
+    @media (max-width: 300px) { .daily-btn { font-size: 13px; } }
     .daily-btn[hidden] { display: none; }
+    .daily-btn:active { background: #EAF3FB; }
     .daily-btn-main { background: #1565A8; border-color: #0D4A7A; color: #fff; }
-    .daily-btn-more { border-color: #E37689; color: #BB5568; background: #fff; }
+    .daily-btn-main:active { background: #0D4A7A; }
+    .daily-btn-more { border-color: #E37689; color: #BB5568; background: #fff; flex: 1 1 100%; padding: 0 14px; }
+    @media (min-width: 560px) { .daily-btn-more { flex: 0 1 auto; } }
+    .daily-btn-more:active { background: #FDECEF; }
     /* ナンプレ */
     .daily-sudoku {
       display: grid; grid-template-columns: repeat(9, 1fr);
@@ -877,8 +885,9 @@
     .daily-padbtn {
       width: 44px; height: 44px; padding: 0; border-radius: 10px;
       border: 2px solid #E1C781; background: #fff; color: #3d2f2b;
-      font-size: 22px; font-weight: 700; cursor: pointer;
+      font-size: 22px; font-weight: 700; cursor: pointer; touch-action: manipulation;
     }
+    .daily-padbtn:active { background: #BDDCF5; }
     .daily-padbtn-erase { border-color: #d8cfc4; font-size: 16px; }
     /* ルール別の盤面 */
     .daily-diff { margin: 0 0 2px; font-size: 14px; font-weight: 700; color: #BB5568; }
@@ -1448,19 +1457,30 @@
     undoBtn.onclick = function () {
       if (cleared || !history.length) return;
       var last = history.pop();
-      var idx = last[0];
-      state[idx] = last[1];
-      cells[idx].textContent = last[1] || '';
-      cells[idx].classList.remove('daily-wrong');
-      select(idx);
+      if (last[0] === 'R') {
+        state = last[1].split('').map(Number);
+        cells.forEach(function (cellEl, j) {
+          cellEl.textContent = state[j] || '';
+          cellEl.classList.remove('daily-wrong');
+        });
+        if (sel >= 0) select(sel);
+      } else {
+        var idx = last[0];
+        state[idx] = last[1];
+        cells[idx].textContent = last[1] || '';
+        cells[idx].classList.remove('daily-wrong');
+        select(idx);
+      }
       saveState();
       msgEl.textContent = '';
+      if (state.every(function (v, j) { return v === sol[j]; })) doClear();
     };
     resetBtn.onclick = function () {
       cleared = false;
       msgEl.classList.remove('daily-msg-clear');
+      history.push(['R', state.join('')]);
+      if (history.length > 200) history.shift();
       state = givens.slice();
-      history = [];
       cells.forEach(function (cellEl, j) {
         cellEl.textContent = givens[j] || '';
         cellEl.classList.remove('daily-wrong');
@@ -1479,7 +1499,8 @@
         }
         if (Array.isArray(savedDaily.h)) {
           savedDaily.h.forEach(function (p) {
-            if (Array.isArray(p) && p.length === 2 && p[0] >= 0 && p[0] < 81 && p[1] >= 0 && p[1] <= 9) history.push([p[0] | 0, p[1] | 0]);
+            if (Array.isArray(p) && p.length === 2 && p[0] === 'R' && /^[0-9]{81}$/.test(p[1] || '')) history.push(['R', p[1]]);
+            else if (Array.isArray(p) && p.length === 2 && p[0] >= 0 && p[0] < 81 && p[1] >= 0 && p[1] <= 9) history.push([p[0] | 0, p[1] | 0]);
           });
         }
         if (state.every(function (v, j) { return v === sol[j]; })) doClear();

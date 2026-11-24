@@ -396,10 +396,16 @@ html[data-site-theme="contrast-dark"] .np-stepped-home {
 .np-stepped-home .pd-sel{background:#FFE08A}
 .np-stepped-home .pd-wrong{background:#FFE3E3;color:#D33}
 .np-stepped-home .pd-pad{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:4px}
-.np-stepped-home .pd-padbtn{width:44px;height:44px;padding:0;border-radius:10px;border:2px solid #E1C781;background:#fff;color:#3d2f2b;font-size:22px;font-weight:700;cursor:pointer}
+.np-stepped-home .pd-padbtn{width:44px;height:44px;padding:0;border-radius:10px;border:2px solid #E1C781;background:#fff;color:#3d2f2b;font-size:22px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.np-stepped-home .pd-padbtn:active{background:#BDDCF5}
 .np-stepped-home .pd-erase{border-color:#d8cfc4;font-size:16px}
 .np-stepped-home .pd-msg{min-height:24px;margin:12px 0 0;font-size:15px;font-weight:700;color:#3d2f2b}
 .np-stepped-home .pd-msg-clear{color:#177245;font-size:18px}
-.np-stepped-home .pd-btns{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:10px}
-.np-stepped-home .pd-btn{display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border-radius:999px;border:2px solid #d8cfc4;background:#fff;color:#3d2f2b;font-size:15px;font-weight:700;cursor:pointer}
+.np-stepped-home .pd-btns{display:flex;flex-wrap:nowrap;justify-content:center;gap:8px;margin-top:10px}
+.np-stepped-home .pd-btn{display:inline-flex;align-items:center;justify-content:center;flex:1 1 0;min-width:0;white-space:nowrap;min-height:48px;padding:0 4px;border-radius:999px;border:2px solid #d8cfc4;background:#fff;color:#3d2f2b;font-size:clamp(14px,4.55vw,17px);font-weight:700;cursor:pointer;touch-action:manipulation;letter-spacing:-0.02em}
+.np-stepped-home .pd-btns .pd-btn:last-child{flex-grow:1.18}
+@media (max-width:330px){.np-stepped-home .pd-btns{gap:6px}.np-stepped-home .pd-btn{padding:0 2px}}
+@media (max-width:300px){.np-stepped-home .pd-btn{font-size:13px}}
+.np-stepped-home .pd-btn:active{background:#EAF3FB}
 .np-stepped-home .pd-btn-main{background:#1565A8;border-color:#0D4A7A;color:#fff}
+.np-stepped-home .pd-btn-main:active{background:#0D4A7A}
