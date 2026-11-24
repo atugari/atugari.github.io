@@ -39,7 +39,7 @@ function pdHash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(
 function pdRng(a){return function(){a|=0;a=a+0x6D2B79F5|0;let x=Math.imul(a^a>>>15,1|a);x=x+Math.imul(x^x>>>7,61|x)^x;return((x^x>>>14)>>>0)/4294967296;};}
 function pdBuild(sec,body,pz,dateStr){
  const givens=pz.givens.split('').map(Number),sol=pz.solution.split('').map(Number);
- let state=givens.slice(),sel=-1,cleared=false;const wrong=new Set();
+ let state=givens.slice(),sel=-1,cleared=false;const wrong=new Set();const history=[];
  body.innerHTML='';
  const board=document.createElement('div');board.className='pd-board';board.setAttribute('role','grid');
  const cells=[];
@@ -47,8 +47,8 @@ function pdBuild(sec,body,pz,dateStr){
  const paint=()=>{cells.forEach((el,i)=>{const c=i%9,r=Math.floor(i/9);el.className='pd-cell'+(givens[i]?' pd-given':'')+(sel>=0&&peer(i,sel)?' pd-peer':'')+(i===sel?' pd-sel':'')+(wrong.has(i)?' pd-wrong':'')+(c%3===2&&c<8?' pd-b3r':'')+(r%3===2&&r<8?' pd-b3b':'');el.textContent=state[i]||'';});};
  for(let i=0;i<81;i++){const b=document.createElement('button');b.type='button';b.setAttribute('aria-label',(Math.floor(i/9)+1)+'行'+(i%9+1)+'列');b.addEventListener('click',()=>{sel=i;paint();});cells.push(b);board.append(b);}
  const pad=document.createElement('div');pad.className='pd-pad';
- const saveState=()=>{try{localStorage.setItem('pareDailyState',JSON.stringify({d:dateStr,g:pz.givens,s:state.join('')}));}catch(e){}};
- const input=d=>{if(cleared||sel<0||givens[sel])return;state[sel]=d;wrong.delete(sel);saveState();paint();};
+ const saveState=()=>{try{localStorage.setItem('pareDailyState',JSON.stringify({d:dateStr,g:pz.givens,s:state.join(''),h:history}));}catch(e){}};
+ const input=d=>{if(cleared||sel<0||givens[sel])return;history.push([sel,state[sel]]);if(history.length>200)history.shift();state[sel]=d;wrong.delete(sel);saveState();paint();};
  for(let d=1;d<=9;d++){const b=document.createElement('button');b.type='button';b.className='pd-padbtn';b.textContent=String(d);b.addEventListener('click',()=>input(d));pad.append(b);}
  const er=document.createElement('button');er.type='button';er.className='pd-padbtn pd-erase';er.textContent=t('消す');er.addEventListener('click',()=>input(0));pad.append(er);
  const msg=document.createElement('p');msg.className='pd-msg';msg.setAttribute('role','status');
@@ -56,10 +56,12 @@ function pdBuild(sec,body,pz,dateStr){
  const check=document.createElement('button');check.type='button';check.className='pd-btn pd-btn-main';check.textContent=t('答え合わせ');
  check.addEventListener('click',()=>{if(cleared)return;let wc=0,em=0;wrong.clear();state.forEach((v,j)=>{if(v!==0&&v!==sol[j]){wrong.add(j);wc++;}if(v===0)em++;});paint();if(!wc&&!em){cleared=true;msg.textContent=t('クリア！');msg.classList.add('pd-msg-clear');try{localStorage.setItem('pareDailyCleared',dateStr);}catch(e){}return;}msg.classList.remove('pd-msg-clear');msg.textContent=t(wc?'赤いマスが間違っているよ':'まだ空いているマスがあるよ');});
  const reset=document.createElement('button');reset.type='button';reset.className='pd-btn';reset.textContent=t('全てリセット');
- reset.addEventListener('click',()=>{cleared=false;state=givens.slice();wrong.clear();saveState();msg.textContent='';msg.classList.remove('pd-msg-clear');paint();});
- btns.append(check,reset);
+ reset.addEventListener('click',()=>{cleared=false;state=givens.slice();wrong.clear();history.length=0;saveState();msg.textContent='';msg.classList.remove('pd-msg-clear');paint();});
+ const undo=document.createElement('button');undo.type='button';undo.className='pd-btn';undo.textContent=t('一つ戻す');
+ undo.addEventListener('click',()=>{if(cleared||!history.length)return;const last=history.pop(),idx=last[0];state[idx]=last[1];wrong.delete(idx);sel=idx;saveState();paint();});
+ btns.append(undo,check,reset);
  body.append(board,pad,msg,btns);
- try{const sv=JSON.parse(localStorage.getItem('pareDailyState')||'null');if(sv&&sv.d===dateStr&&sv.g===pz.givens&&/^[0-9]{81}$/.test(sv.s||'')){for(let j=0;j<81;j++){if(!givens[j])state[j]=Number(sv.s.charAt(j));}}}catch(e){}
+ try{const sv=JSON.parse(localStorage.getItem('pareDailyState')||'null');if(sv&&sv.d===dateStr&&sv.g===pz.givens&&/^[0-9]{81}$/.test(sv.s||'')){for(let j=0;j<81;j++){if(!givens[j])state[j]=Number(sv.s.charAt(j));}if(Array.isArray(sv.h)){sv.h.forEach(p=>{if(Array.isArray(p)&&p.length===2&&p[0]>=0&&p[0]<81&&p[1]>=0&&p[1]<=9)history.push([p[0]|0,p[1]|0]);});}}}catch(e){}
  try{if(localStorage.getItem('pareDailyCleared')===dateStr){cleared=true;msg.textContent=t('クリア！');msg.classList.add('pd-msg-clear');}}catch(e){}
  paint();
  sec.dataset.pdReady='ready';

@@ -853,7 +853,7 @@
       font-size: 15px; font-weight: 700; cursor: pointer; text-decoration: none;
     }
     .daily-btn[hidden] { display: none; }
-    .daily-btn-main { background: #DCA75F; border-color: #DCA75F; color: #3d2f2b; }
+    .daily-btn-main { background: #1565A8; border-color: #0D4A7A; color: #fff; }
     .daily-btn-more { border-color: #E37689; color: #BB5568; background: #fff; }
     /* ナンプレ */
     .daily-sudoku {
@@ -982,6 +982,7 @@
     <div class="daily-play" id="daily-play"></div>
     <p class="daily-msg" id="daily-msg" role="status"></p>
     <div class="daily-actions">
+      <button type="button" class="daily-btn" id="daily-undo">一つ戻す</button>
       <button type="button" class="daily-btn daily-btn-main" id="daily-check">答え合わせ</button>
       <button type="button" class="daily-btn" id="daily-reset">全てリセット</button>
       <a class="daily-btn daily-btn-more" id="daily-more" href="#">もっと遊ぶ</a>
@@ -1257,6 +1258,7 @@
   var stampEl = document.getElementById('daily-stamp');
   var checkBtn = document.getElementById('daily-check');
   var resetBtn = document.getElementById('daily-reset');
+  var undoBtn = document.getElementById('daily-undo');
   var moreEl = document.getElementById('daily-more');
   dateEl.textContent = (M + 1) + '月' + D + '日（' + '日月火水木金土'.charAt(now.getDay()) + '）';
   moreEl.setAttribute('href', '/nanpure/');
@@ -1278,6 +1280,7 @@
       msgEl.textContent = '今日の問題を読み込めませんでした。時間をおいて開き直してね';
       checkBtn.hidden = true;
       resetBtn.hidden = true;
+      undoBtn.hidden = true;
     });
 
   function pickIndex(stock) {
@@ -1309,6 +1312,7 @@
       cages.forEach(function (cg, ci) { cg[1].forEach(function (cell) { cageOf[cell] = ci; }); });
     }
     var state = givens.slice();
+    var history = [];
     var sel = -1;
     var cleared = false;
     var wrap = document.createElement('div');
@@ -1409,6 +1413,8 @@
     }
     function enter(num) {
       if (cleared || sel < 0 || givens[sel]) return;
+      history.push([sel, state[sel]]);
+      if (history.length > 200) history.shift();
       state[sel] = num;
       cells[sel].textContent = num || '';
       cells[sel].classList.remove('daily-wrong');
@@ -1417,7 +1423,7 @@
       if (state.every(function (v, j) { return v === sol[j]; })) doClear();
     }
     function saveState() {
-      store('pareDailyState', JSON.stringify({ d: dateStr, g: pz.givens, s: state.join('') }));
+      store('pareDailyState', JSON.stringify({ d: dateStr, g: pz.givens, s: state.join(''), h: history }));
     }
     function doClear() {
       cleared = true;
@@ -1439,10 +1445,22 @@
       msgEl.classList.remove('daily-msg-clear');
       msgEl.textContent = wrong ? '赤いマスが間違っているよ' : 'まだ空いているマスがあるよ';
     };
+    undoBtn.onclick = function () {
+      if (cleared || !history.length) return;
+      var last = history.pop();
+      var idx = last[0];
+      state[idx] = last[1];
+      cells[idx].textContent = last[1] || '';
+      cells[idx].classList.remove('daily-wrong');
+      select(idx);
+      saveState();
+      msgEl.textContent = '';
+    };
     resetBtn.onclick = function () {
       cleared = false;
       msgEl.classList.remove('daily-msg-clear');
       state = givens.slice();
+      history = [];
       cells.forEach(function (cellEl, j) {
         cellEl.textContent = givens[j] || '';
         cellEl.classList.remove('daily-wrong');
@@ -1458,6 +1476,11 @@
             state[j2] = Number(savedDaily.s.charAt(j2));
             cells[j2].textContent = state[j2] || '';
           }
+        }
+        if (Array.isArray(savedDaily.h)) {
+          savedDaily.h.forEach(function (p) {
+            if (Array.isArray(p) && p.length === 2 && p[0] >= 0 && p[0] < 81 && p[1] >= 0 && p[1] <= 9) history.push([p[0] | 0, p[1] | 0]);
+          });
         }
         if (state.every(function (v, j) { return v === sol[j]; })) doClear();
         else msgEl.textContent = '';

@@ -2542,5 +2542,18 @@
   },
   "古い順": {
     "ar": "الأقدم أولًا"
+  },
+  "一つ戻す": {
+    "it": "Annulla mossa",
+    "nl": "Zet terug",
+    "sv": "Ångra drag",
+    "pl": "Cofnij ruch",
+    "cs": "Vrátit tah",
+    "ru": "Отменить ход",
+    "id": "Urungkan langkah",
+    "vi": "Hoàn tác",
+    "th": "ย้อนกลับหนึ่งตา",
+    "hi": "एक चाल वापस",
+    "ar": "تراجع عن خطوة"
   }
 }

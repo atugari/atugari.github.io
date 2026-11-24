@@ -16,6 +16,7 @@ module.exports = {
   ...require('./catalog-magic-library-43.json'),
   ...require('./catalog-wado-44.cjs'),
   ...require('./catalog-home-97.json'),
+  ...require('./catalog-home-98.json'),
 };
 // Additional languages are split by locale to keep updates reviewable.
 // Visitors receive one generated language pack, never this combined catalog.

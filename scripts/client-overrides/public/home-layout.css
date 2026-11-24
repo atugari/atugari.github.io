@@ -402,4 +402,4 @@ html[data-site-theme="contrast-dark"] .np-stepped-home {
 .np-stepped-home .pd-msg-clear{color:#177245;font-size:18px}
 .np-stepped-home .pd-btns{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:10px}
 .np-stepped-home .pd-btn{display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border-radius:999px;border:2px solid #d8cfc4;background:#fff;color:#3d2f2b;font-size:15px;font-weight:700;cursor:pointer}
-.np-stepped-home .pd-btn-main{background:#DCA75F;border-color:#DCA75F;color:#3d2f2b}
+.np-stepped-home .pd-btn-main{background:#1565A8;border-color:#0D4A7A;color:#fff}
