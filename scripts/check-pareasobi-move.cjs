@@ -5,7 +5,7 @@ const catalog=JSON.parse(read('nanpure/collection/catalog.json'));
 assert(catalog.total>=100000);assert.equal(catalog.configs.reduce((n,c)=>n+c.count,0),catalog.total);
 assert.equal(catalog.configs.filter(c=>c.kind==='cross').reduce((n,c)=>n+c.count,0),6340);
 const games=['shirupure','wado','crossword'];
-for(const slug of games){assert(read('plaza.html').includes('href="/puzzles/'+slug+'/"'));const html=read('puzzles/'+slug+'/index.html');assert(html.includes('data-game="'+slug+'"'));assert(html.includes('data-hub href="/plaza.html"'));}
+for(const slug of games){assert(read('index.html').includes('href="/puzzles/'+slug+'/"'));const html=read('puzzles/'+slug+'/index.html');assert(html.includes('data-game="'+slug+'"'));assert(html.includes('data-hub href="/plaza.html"'));}
 for(const p of ['puzzles/entry.js','puzzles/navigation.js','nanpure/collection/entry.js'])new vm.Script(read(p));
 assert.equal(read('nanpure/collection/board-input.js'),read('scripts/client-overrides/public/notebook/board-input.js'),'Collection gestures are generated from the common source');
 assert(!/localStorage\.(?:clear|removeItem)|indexedDB\.deleteDatabase/.test(read('puzzles/navigation.js')+read('puzzles/entry.js')));

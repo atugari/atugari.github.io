@@ -10,7 +10,7 @@ try{const context=await browser.newContext({viewport:{width:375,height:812},serv
 page.on('pageerror',e=>errors.push(e.message));
 await context.addInitScript(()=>Object.defineProperty(navigator,'doNotTrack',{get:()=> '1'}));
 await context.route('**/*',route=>{const u=new URL(route.request().url());if(u.origin===origin){const file=path.resolve(root,'.'+decodeURIComponent(u.pathname)+(u.pathname.endsWith('/')?'index.html':''));if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile())return route.fulfill({status:404,body:'Missing asset'});return route.fulfill({status:200,contentType:types[path.extname(file)]||'application/octet-stream',body:fs.readFileSync(file)})}if(u.pathname.startsWith('/api/'))return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({items:[],records:[],rows:[],days:[],challenges:[],save:null,unread:0,signedIn:true,serverNow:Date.now()})});return route.fulfill({status:204,body:''})});
-await page.goto(origin+'/plaza.html');for(const slug of ['shirupure','wado','crossword'])assert.equal(await page.locator('a.game-card[href="/puzzles/'+slug+'/"]').count(),1);
+await page.goto(origin+'/');for(const slug of ['shirupure','wado','crossword'])assert.equal(await page.locator('a.game-card[href="/puzzles/'+slug+'/"]').count(),1);
 await page.goto(origin+'/nanpure/?lang=en');
 await page.getByRole('link',{name:'Support the creator for ¥100/month ♫',exact:true}).waitFor();
 assert.equal(await page.locator('.designed-home [data-pare-entry]').count(),0);
@@ -36,20 +36,20 @@ for(const slug of ['shirupure','wado','crossword','studio']){
  const child=page.frameLocator('#game');assert(await child.locator('main').isVisible(),slug+' has actual content');
  if(slug==='shirupure'){await child.locator('[data-act=learn]').click();await child.locator('.lesson-target').click();await page.waitForFunction(()=>{const h=document.querySelector('body[data-game="shirupure"]>header');return h&&getComputedStyle(h).display==='none'});assert.equal(await page.evaluate(()=>getComputedStyle(document.querySelector('body[data-game="shirupure"]>header')).display),'none','shirupure outer header hidden as intended');}
  if(slug==='wado'){await page.locator('[data-sound]').click();await page.locator('dialog[open] [data-audio=track]').selectOption('cozy-puzzle-3');assert.equal(await page.evaluate(()=>NPSiteAudio.get().track),'cozy-puzzle-3');await page.locator('dialog[open]').getByRole('button',{name:'閉じる',exact:true}).click();}
- if(slug==='shirupure'){await page.goto(origin+'/plaza.html');}else{await page.locator('[data-hub]').click();}await page.locator('.game-list').waitFor();
+ if(slug==='shirupure'){await page.goto(origin+'/');}else{await page.locator('[data-hub]').click();}await page.locator('.game-list').waitFor();
 }
 await page.goto(origin+'/nanpure/collection/');await page.locator('#summary').filter({hasText:sudokuCount}).waitFor();assert.equal(await page.locator('#kind option[value="cross"]').count(),0);assert.equal(await page.locator('#kind option[value]:not([value=""])').count(),23);
 // All public cards must start and return at each requested viewport. Verify an
 // actual input survives reload, not just that the same puzzle ID is displayed.
 for(const viewport of [{width:1280,height:800},{width:375,height:812},{width:812,height:375}]){
- await page.setViewportSize(viewport);await page.goto(origin+'/plaza.html');
+ await page.setViewportSize(viewport);await page.goto(origin+'/');
  for(const slug of ['shirupure','wado','crossword']){
   await page.locator('a.game-card[href="/puzzles/'+slug+'/"]').click();
   await page.locator('#game:not([hidden])').waitFor();await page.waitForFunction(()=>document.querySelector('#status').hidden);
   assert(await page.frameLocator('#game').locator('main').isVisible(),slug+' actual game at '+viewport.width);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,slug+' outer width '+viewport.width);
   if(slug==='shirupure')assert.equal(await page.frameLocator('#game').locator('a.main-site-link').getAttribute('href'),'/plaza.html','Real href also supports opening the hub in another tab');
-  if(slug==='shirupure'){await page.goto(origin+'/plaza.html');}else{await page.locator('[data-hub]').click();}await page.locator('.game-list').waitFor();
+  if(slug==='shirupure'){await page.goto(origin+'/');}else{await page.locator('[data-hub]').click();}await page.locator('.game-list').waitFor();
  }
   console.log('PASS viewport '+viewport.width+'x'+viewport.height+': three starts/returns');
 }
