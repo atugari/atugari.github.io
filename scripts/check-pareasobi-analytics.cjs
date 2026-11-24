@@ -2,7 +2,7 @@ const fs=require('node:fs'),path=require('node:path'),assert=require('node:asser
 const source=process.cwd(),root=path.resolve(process.argv[2]||source);
 const read=p=>fs.readFileSync(path.join(root,p),'utf8');
 const readSource=p=>fs.readFileSync(path.join(source,p),'utf8');
-const hub=read('plaza.html'),tracker=read('assets/pare-analytics.js');
+const hub=read('index.html'),tracker=read('assets/pare-analytics.js');
 assert(fs.existsSync(path.join(root,'assets/pare-analytics.js')),'Published analytics asset is missing');
 const cards=[...hub.matchAll(/<a class="game-card[^"]*" href="([^"]+)"/g)].map(m=>m[1]);
 assert(cards.length>=6,'Expected the published PareAsobi game catalogue');
