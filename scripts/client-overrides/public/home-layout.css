@@ -396,7 +396,7 @@ html[data-site-theme="contrast-dark"] .np-stepped-home {
 .np-stepped-home .pd-sel{background:#FFE08A}
 .np-stepped-home .pd-wrong{background:#FFE3E3;color:#D33}
 .np-stepped-home .pd-pad{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:4px}
-.np-stepped-home .pd-padbtn{width:44px;height:44px;padding:0;border-radius:10px;border:2px solid #E1C781;background:#fff;color:#3d2f2b;font-size:22px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.np-stepped-home .pd-padbtn{width:44px;height:44px;padding:0;border-radius:10px;border:2px solid #E1C781;background:#fff;color:#3d2f2b;font-size:26px;font-weight:700;cursor:pointer;touch-action:manipulation}
 .np-stepped-home .pd-padbtn:active{background:#BDDCF5}
 .np-stepped-home .pd-erase{border-color:#d8cfc4;font-size:16px}
 .np-stepped-home .pd-msg{min-height:24px;margin:12px 0 0;font-size:15px;font-weight:700;color:#3d2f2b}
