@@ -834,9 +834,11 @@
       padding: 0 14px 18px; margin-bottom: 10px; text-align: center;
       box-shadow: 0 6px 18px rgba(255, 159, 28, 0.12);
     }
-    .daily-head { display: flex; align-items: baseline; justify-content: center; gap: 10px; flex-wrap: wrap; }
+    .daily-head { display: grid; grid-template-columns: 1fr auto 1fr; align-items: baseline; gap: 10px; }
+    .daily-diff { font-size: 14px; font-weight: 800; color: #9C6B1E; justify-self: start; white-space: nowrap; min-width: 0; }
+    @media (max-width: 360px) { .daily-diff, .daily-date { font-size: 13px; } }
     .daily-title { margin: 0; font-size: 21px; font-weight: 800; color: #BB5568; letter-spacing: 0.04em; line-height: 1.1; }
-    .daily-date { font-size: 14px; font-weight: 700; color: #3d2f2b; }
+    .daily-date { font-size: 14px; font-weight: 700; color: #3d2f2b; justify-self: end; white-space: nowrap; min-width: 0; }
     .daily-stamp {
       font-size: 12.5px; font-weight: 700; color: #177245; background: #DFF5E3;
       border: 1.5px solid #93C09F; border-radius: 999px; padding: 2px 10px;
@@ -986,6 +988,7 @@
 
   <section class="daily-sec" aria-label="今日の問題">
     <div class="daily-head">
+      <span class="daily-diff" id="daily-diff"></span>
       <h2 class="daily-title">今日の問題</h2>
       <span class="daily-date" id="daily-date"></span>
       <span class="daily-stamp" id="daily-stamp" hidden>今日はクリア済み</span>
@@ -1312,7 +1315,11 @@
     build(pz);
   }
 
+  var LV_NAMES = ['入門','やさしい','初級','初中級','中級','中上級','上級','難問','超難問','最上','特上','名人','達人','極み','極限','超極限','究極','至高'];
   function build(pz) {
+    var dm = /Lv\.(\d+)/.exec(pz.difficulty || '');
+    var diffEl = document.getElementById('daily-diff');
+    if (dm && diffEl) diffEl.textContent = 'Lv.' + (+dm[1]) + ' ' + (LV_NAMES[+dm[1] - 1] || '');
     var givens = pz.givens.split('').map(Number);
     var sol = pz.solution.split('').map(Number);
     var regions = pz.regions ? pz.regions.split('').map(Number) : null;

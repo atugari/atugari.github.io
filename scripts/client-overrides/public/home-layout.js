@@ -37,7 +37,9 @@ w.NPHomeLayout={mount,showGuide};let queued=false;new MutationObserver(()=>{if(q
 // Pare Asobi daily puzzle: same stock and same date pick as the top page.
 function pdHash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
 function pdRng(a){return function(){a|=0;a=a+0x6D2B79F5|0;let x=Math.imul(a^a>>>15,1|a);x=x+Math.imul(x^x>>>7,61|x)^x;return((x^x>>>14)>>>0)/4294967296;};}
+const PD_LV_NAMES=['入門','やさしい','初級','初中級','中級','中上級','上級','難問','超難問','最上','特上','名人','達人','極み','極限','超極限','究極','至高'];
 function pdBuild(sec,body,pz,dateStr){
+ const dm=/Lv\.(\d+)/.exec(pz.difficulty||'');const diffEl=sec.querySelector('[data-pd-diff]');if(dm&&diffEl)diffEl.textContent='Lv.'+(+dm[1])+' '+t(PD_LV_NAMES[+dm[1]-1]||'');
  const givens=pz.givens.split('').map(Number),sol=pz.solution.split('').map(Number);
  let state=givens.slice(),sel=-1,cleared=false;const wrong=new Set();const history=[];
  body.innerHTML='';
