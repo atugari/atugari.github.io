@@ -28,7 +28,7 @@ const cell=(frame,index)=>frame.locator('#board [data-cell="'+index+'"]');
 const choice=(target,key)=>target.locator('[data-appearance="'+key+'"]');
 async function openView(frame){await frame.locator('#np-play-settings-button').click();await frame.locator('[aria-controls="np-settings-page-view"]').click();await choice(frame,'regionWidth').waitFor();}
 // Independent expected menu labels catch untranslated or incorrect common UI.
-const additional={"it": "Crea un Sudoku multiplo", "nl": "Maak een multi-Sudoku", "sv": "Skapa ett multi-Sudoku", "pl": "Utwórz multi Sudoku", "cs": "Vytvořit multi Sudoku", "ru": "Создать мульти-судоку", "id": "Buat Sudoku multi", "vi": "Tạo Sudoku đa bảng", "th": "สร้างซูโดกุหลายกระดาน", "hi": "मल्टी सुडोकू बनाएं", "ar": "إنشاء سودوكو متعدد"};
+const additional={"it": "Crea il tuo Sudoku multiplo", "nl": "Maak je eigen multi-Sudoku", "sv": "Skapa ditt eget multi-Sudoku", "pl": "Utwórz własne multi Sudoku", "cs": "Vytvořit vlastní multi Sudoku", "ru": "Создать своё мульти-судоку", "id": "Buat Sudoku multi sendiri", "vi": "Tạo Sudoku đa bảng của riêng bạn", "th": "สร้างซูโดกุหลายกระดานของคุณเอง", "hi": "अपना मल्टी सुडोकू बनाएं", "ar": "أنشئ سودوكو متعددًا خاصًا بك"};
 async function audit(target,selector,label){
  // New notebook dialogs are translated by a MutationObserver/rAF batch. Wait
  // for its visible text, as the existing creation/print journeys do, without

@@ -2620,5 +2620,31 @@
     "sv": "Rita ett mönster för att skapa",
     "th": "วาดลวดลายเพื่อสร้าง",
     "vi": "Vẽ họa tiết để tạo"
+  },
+  "自作マルチナンプレを作る": {
+    "ar": "أنشئ سودوكو متعددًا خاصًا بك",
+    "cs": "Vytvořit vlastní multi Sudoku",
+    "hi": "अपना मल्टी सुडोकू बनाएं",
+    "id": "Buat Sudoku multi sendiri",
+    "it": "Crea il tuo Sudoku multiplo",
+    "nl": "Maak je eigen multi-Sudoku",
+    "pl": "Utwórz własne multi Sudoku",
+    "ru": "Создать своё мульти-судоку",
+    "sv": "Skapa ditt eget multi-Sudoku",
+    "th": "สร้างซูโดกุหลายกระดานของคุณเอง",
+    "vi": "Tạo Sudoku đa bảng của riêng bạn"
+  },
+  "4×4から25×25の大きさのナンプレを重ね、難易度や重ねる個数などを選ぶ事で自作の問題を作る事が出来ます。": {
+    "ar": "قم بتراكب شبكات سودوكو من 4×4 إلى 25×25 واختر مستوى الصعوبة وعدد الشبكات لإنشاء ألغازك الخاصة。",
+    "cs": "Překrývejte mřížky Sudoku od 4×4 do 25×25 a zvolte obtížnost a počet mřížek a vytvářejte vlastní úlohy.",
+    "hi": "4×4 से 25×25 तक के सुडोकू बोर्डों को ओवरलैप करें और कठिनाई व बोर्डों की संख्या चुनकर अपनी पहेलियाँ बनाएँ।",
+    "id": "Tumpuk papan Sudoku dari 4×4 hingga 25×25 dan pilih tingkat kesulitan serta jumlah papan untuk membuat soal Anda sendiri.",
+    "it": "Sovrapponi griglie di Sudoku da 4×4 a 25×25 e scegli la difficoltà e il numero di griglie per creare i tuoi puzzle.",
+    "nl": "Leg Sudoku-roosters van 4×4 tot 25×25 over elkaar en kies de moeilijkheid en het aantal roosters om je eigen puzzels te maken.",
+    "pl": "Nakładaj plansze Sudoku od 4×4 do 25×25 i wybieraj trudność oraz liczbę plansz, aby tworzyć własne łamigłówki.",
+    "ru": "Накладывайте сетки судоку от 4×4 до 25×25, выбирайте сложность и количество сеток и создавайте свои задачи.",
+    "sv": "Lägg Sudoku-rutnät från 4×4 till 25×25 ovanpå varandra och välj svårighetsgrad och antal rutnät för att skapa egna pussel.",
+    "th": "ซ้อนตารางซูโดกุขนาด 4×4 ถึง 25×25 และเลือกระดับความยากและจำนวนตารางเพื่อสร้างโจทย์ของคุณเอง",
+    "vi": "Chồng các bảng Sudoku từ 4×4 đến 25×25 và chọn độ khó cùng số lượng bảng để tạo câu đố của riêng bạn."
   }
 }
