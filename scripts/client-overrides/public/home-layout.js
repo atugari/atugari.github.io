@@ -47,7 +47,8 @@ function pdBuild(sec,body,pz,dateStr){
  const paint=()=>{cells.forEach((el,i)=>{const c=i%9,r=Math.floor(i/9);el.className='pd-cell'+(givens[i]?' pd-given':'')+(sel>=0&&peer(i,sel)?' pd-peer':'')+(i===sel?' pd-sel':'')+(wrong.has(i)?' pd-wrong':'')+(c%3===2&&c<8?' pd-b3r':'')+(r%3===2&&r<8?' pd-b3b':'');el.textContent=state[i]||'';});};
  for(let i=0;i<81;i++){const b=document.createElement('button');b.type='button';b.setAttribute('aria-label',(Math.floor(i/9)+1)+'行'+(i%9+1)+'列');b.addEventListener('click',()=>{sel=i;paint();});cells.push(b);board.append(b);}
  const pad=document.createElement('div');pad.className='pd-pad';
- const input=d=>{if(cleared||sel<0||givens[sel])return;state[sel]=d;wrong.delete(sel);paint();};
+ const saveState=()=>{try{localStorage.setItem('pareDailyState',JSON.stringify({d:dateStr,g:pz.givens,s:state.join('')}));}catch(e){}};
+ const input=d=>{if(cleared||sel<0||givens[sel])return;state[sel]=d;wrong.delete(sel);saveState();paint();};
  for(let d=1;d<=9;d++){const b=document.createElement('button');b.type='button';b.className='pd-padbtn';b.textContent=String(d);b.addEventListener('click',()=>input(d));pad.append(b);}
  const er=document.createElement('button');er.type='button';er.className='pd-padbtn pd-erase';er.textContent=t('消す');er.addEventListener('click',()=>input(0));pad.append(er);
  const msg=document.createElement('p');msg.className='pd-msg';msg.setAttribute('role','status');
@@ -55,9 +56,10 @@ function pdBuild(sec,body,pz,dateStr){
  const check=document.createElement('button');check.type='button';check.className='pd-btn pd-btn-main';check.textContent=t('答え合わせ');
  check.addEventListener('click',()=>{if(cleared)return;let wc=0,em=0;wrong.clear();state.forEach((v,j)=>{if(v!==0&&v!==sol[j]){wrong.add(j);wc++;}if(v===0)em++;});paint();if(!wc&&!em){cleared=true;msg.textContent=t('クリア！');msg.classList.add('pd-msg-clear');try{localStorage.setItem('pareDailyCleared',dateStr);}catch(e){}return;}msg.classList.remove('pd-msg-clear');msg.textContent=t(wc?'赤いマスが間違っているよ':'まだ空いているマスがあるよ');});
  const reset=document.createElement('button');reset.type='button';reset.className='pd-btn';reset.textContent=t('全てリセット');
- reset.addEventListener('click',()=>{cleared=false;state=givens.slice();wrong.clear();msg.textContent='';msg.classList.remove('pd-msg-clear');paint();});
+ reset.addEventListener('click',()=>{cleared=false;state=givens.slice();wrong.clear();saveState();msg.textContent='';msg.classList.remove('pd-msg-clear');paint();});
  btns.append(check,reset);
  body.append(board,pad,msg,btns);
+ try{const sv=JSON.parse(localStorage.getItem('pareDailyState')||'null');if(sv&&sv.d===dateStr&&sv.g===pz.givens&&/^[0-9]{81}$/.test(sv.s||'')){for(let j=0;j<81;j++){if(!givens[j])state[j]=Number(sv.s.charAt(j));}}}catch(e){}
  try{if(localStorage.getItem('pareDailyCleared')===dateStr){cleared=true;msg.textContent=t('クリア！');msg.classList.add('pd-msg-clear');}}catch(e){}
  paint();
  sec.dataset.pdReady='ready';

@@ -1413,7 +1413,11 @@
       cells[sel].textContent = num || '';
       cells[sel].classList.remove('daily-wrong');
       msgEl.textContent = '';
+      saveState();
       if (state.every(function (v, j) { return v === sol[j]; })) doClear();
+    }
+    function saveState() {
+      store('pareDailyState', JSON.stringify({ d: dateStr, g: pz.givens, s: state.join('') }));
     }
     function doClear() {
       cleared = true;
@@ -1443,8 +1447,22 @@
         cellEl.textContent = givens[j] || '';
         cellEl.classList.remove('daily-wrong');
       });
+      saveState();
       msgEl.textContent = 'はじめの状態にもどしたよ';
     };
+    try {
+      var savedDaily = JSON.parse(stored('pareDailyState') || 'null');
+      if (savedDaily && savedDaily.d === dateStr && savedDaily.g === pz.givens && /^[0-9]{81}$/.test(savedDaily.s || '')) {
+        for (var j2 = 0; j2 < 81; j2++) {
+          if (!givens[j2]) {
+            state[j2] = Number(savedDaily.s.charAt(j2));
+            cells[j2].textContent = state[j2] || '';
+          }
+        }
+        if (state.every(function (v, j) { return v === sol[j]; })) doClear();
+        else msgEl.textContent = '';
+      }
+    } catch (e) {}
   }
 })();
 </script>
