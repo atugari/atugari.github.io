@@ -2555,5 +2555,44 @@
     "th": "ย้อนกลับหนึ่งตา",
     "hi": "एक चाल वापस",
     "ar": "تراجع عن خطوة"
+  },
+  "ランキング問題に挑戦！": {
+    "it": "Sfida i puzzle della classifica!",
+    "nl": "Daag de ranglijstpuzzels uit!",
+    "sv": "Anta rankingpusslen!",
+    "pl": "Podejmij wyzwanie puzzli rankingowych!",
+    "cs": "Vyzvi rankingové hádanky!",
+    "ru": "Бросьте вызов рейтинговым головоломкам!",
+    "id": "Tantang teka-teki peringkat!",
+    "vi": "Thử thách câu đố xếp hạng!",
+    "th": "ท้าทายปริศนาจัดอันดับ!",
+    "hi": "रैंकिंग पहेलियों को चुनौती दें!",
+    "ar": "تحدَّ ألغاز التصنيف!"
+  },
+  "今日の問題集": {
+    "it": "Raccolta di puzzle di oggi",
+    "nl": "Puzzelcollectie van vandaag",
+    "sv": "Dagens pusselsamling",
+    "pl": "Dzisiejszy zbiór puzzli",
+    "cs": "Dnešní sbírka hádanek",
+    "ru": "Сегодняшняя коллекция головоломок",
+    "id": "Koleksi teka-teki hari ini",
+    "vi": "Bộ câu đố hôm nay",
+    "th": "ชุดปริศนาวันนี้",
+    "hi": "आज का पहेली संग्रह",
+    "ar": "مجموعة ألغاز اليوم"
+  },
+  "自作のナンプレを作る": {
+    "it": "Crea il tuo Sudoku",
+    "nl": "Maak je eigen Sudoku",
+    "sv": "Skapa ditt eget Sudoku",
+    "pl": "Stwórz własne Sudoku",
+    "cs": "Vytvoř si vlastní Sudoku",
+    "ru": "Создайте свой собственный судоку",
+    "id": "Buat Sudoku sendiri",
+    "vi": "Tạo Sudoku của riêng bạn",
+    "th": "สร้างซูโดกุของคุณเอง",
+    "hi": "अपना खुद का सुडोकू बनाएं",
+    "ar": "أنشئ السودوكو الخاص بك"
   }
 }

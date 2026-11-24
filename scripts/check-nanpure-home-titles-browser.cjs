@@ -78,7 +78,7 @@ async function setup(browser,width,height,theme='color'){
    return Math.abs((circle.left+circle.right)-(icon.left+icon.right))<1&&Math.abs((circle.top+circle.bottom)-(icon.top+icon.bottom))<1;
   }));
   assert(centered,'Each chevron is centered in its circle');
-  assert.deepEqual(await page.locator('.designed-home .start-choices strong').allTextContents(),['日替わりナンプレに挑戦する','ナンプレで遊ぶ','問題集で遊ぶ','ナンプレを学ぶ']);
+  assert.deepEqual(await page.locator('.designed-home .start-choices strong').allTextContents(),['ランキング問題に挑戦！','自作のナンプレを作る','今日の問題集','ナンプレを学ぶ']);
   assert.equal(await page.locator('.designed-home [data-collection-entry]').count(),0);
   assert.equal(await page.locator('.designed-home :is(.home-bottom-links,.home-version,[data-home-guide],[data-pare-entry])').count(),0);
   const support=page.locator('.home-support-button');
