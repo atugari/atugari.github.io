@@ -3,6 +3,15 @@ if(w.NPHomeLayout)return;
 const asset=new URL('./',document.currentScript?.src||location.href);
 if(!document.querySelector('link[data-home-layout]')){const style=document.createElement('link');style.rel='stylesheet';style.href=new URL('home-layout.css',asset).href;style.dataset.homeLayout='';document.head.append(style)}
 const t=text=>w.NPI18n?.t(text)||text;
+// The site footer sits after the app shell in the document, which makes the
+// page itself slightly taller than the screen. On phones that extra scroll
+// can leave the shell (and its header) pushed out of view with no way back.
+// Keep a reference to the footer and move it to the end of the shell's own
+// scrolling area; the shell re-renders its main area, so pdFooterMove is
+// re-run from the observer below whenever the footer gets dropped.
+const pdFooterNode=document.querySelector('.nanpure-site-footer');
+function pdFooterMove(){const main=document.querySelector('.site-shell main');if(pdFooterNode&&main&&pdFooterNode.parentElement!==main)main.append(pdFooterNode);}
+pdFooterMove();
 function showGuide(){
  const main=document.querySelector('.designed-home'),source=main?.querySelector('.site-intro'),button=main?.querySelector('[data-home-guide]');if(!source)return;
  const box=document.createElement('dialog');box.className='np-home-guide';box.setAttribute('aria-labelledby','np-home-guide-heading');
@@ -55,6 +64,6 @@ function pdEnhance(){
   pdBuild(sec,body,normal[idxs[((days%normal.length)+normal.length)%normal.length]],dateStr);
  }).catch(()=>{sec.dataset.pdReady='failed';const p=document.createElement('p');p.className='pd-msg';p.textContent=t('今日の問題を読み込めませんでした。時間をおいて開き直してね');body.append(p);});
 }
-let pdQueued=false;new MutationObserver(()=>{if(pdQueued)return;pdQueued=true;requestAnimationFrame(()=>{pdQueued=false;pdEnhance();});}).observe(document.documentElement,{childList:true,subtree:true});pdEnhance();
+let pdQueued=false;new MutationObserver(()=>{if(pdQueued)return;pdQueued=true;requestAnimationFrame(()=>{pdQueued=false;pdFooterMove();pdEnhance();});}).observe(document.documentElement,{childList:true,subtree:true});pdEnhance();
 
 })(window);
