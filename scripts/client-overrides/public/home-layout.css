@@ -380,8 +380,7 @@ html[data-site-theme="contrast-dark"] .np-stepped-home {
 .np-stepped-home .home-back-row{display:flex;justify-content:flex-start}
 .np-stepped-home .home-back-pare{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:7px 14px;border:1px solid var(--theme-line,#b8cbbd);border-radius:10px;background:var(--theme-surface,#fffdf7);color:var(--theme-ink,#20372c);font-size:max(14px,var(--ui-min-font,0px));font-weight:700;text-decoration:none}
 .np-stepped-home .home-back-pare:focus-visible{outline:3px solid var(--theme-accent,#3d7659);outline-offset:3px}
-.np-stepped-home .pd-sec{display:none;border:1px solid var(--theme-line,#b8cbbd);border-radius:18px;background:var(--theme-surface,#fffdf7);padding:14px 12px 16px;text-align:center}
-.np-stepped-home .pd-sec[data-pd-ready]{display:block}
+.np-stepped-home .pd-sec{display:block;border:1px solid var(--theme-line,#b8cbbd);border-radius:18px;background:var(--theme-surface,#fffdf7);padding:14px 12px 16px;text-align:center}
 .np-stepped-home .pd-head{display:flex;align-items:baseline;justify-content:center;gap:10px;margin-bottom:10px}
 .np-stepped-home .pd-title{margin:0;font-size:21px;font-weight:800;color:#BB5568;letter-spacing:.04em;line-height:1.1}
 .np-stepped-home .pd-date{font-size:14px;font-weight:700;color:var(--theme-ink,#3d2f2b)}

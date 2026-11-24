@@ -74,7 +74,7 @@ function pdEnhance(){
   const idxs=normal.map((_,i)=>i),rng=pdRng(pdHash('pare-daily-stock-v1'));
   for(let i=idxs.length-1;i>0;i--){const j=Math.floor(rng()*(i+1)),tmp=idxs[i];idxs[i]=idxs[j];idxs[j]=tmp;}
   pdBuild(sec,body,normal[idxs[((days%normal.length)+normal.length)%normal.length]],dateStr);
- }).catch(()=>{sec.dataset.pdReady='failed';const p=document.createElement('p');p.className='pd-msg';p.textContent=t('今日の問題を読み込めませんでした。時間をおいて開き直してね');body.append(p);});
+ }).catch(()=>{sec.dataset.pdReady='failed';body.innerHTML='';const p=document.createElement('p');p.className='pd-msg';p.textContent=t('今日の問題を読み込めませんでした。時間をおいて開き直してね');body.append(p);});
 }
 let pdQueued=false;new MutationObserver(()=>{if(pdQueued)return;pdQueued=true;requestAnimationFrame(()=>{pdQueued=false;pdFooterMove();pdEnhance();});}).observe(document.documentElement,{childList:true,subtree:true});pdEnhance();
 
