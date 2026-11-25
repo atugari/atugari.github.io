@@ -60,6 +60,45 @@ window.addEventListener('message',e=>{
  if(e.origin!==location.origin||e.source!==frame.contentWindow)return;
  if(e.data?.type==='np-notebook-playing')(window.NPSiteAudio||frame.contentWindow.NPSiteAudio)?.setActive(!!e.data.playing);
  if(e.data?.type==='np-site-open'&&e.data.panel==='audio')showAudio();
+ if(e.data?.type==='np-notebook-route')onRoute(e.data.key,!!e.data.freshDocument,e.data.intent);
+});
+// Browser Back steps back through the game's screens: the child posts
+// its route on every screen change, and one Back press is one appBack.
+let routeStack=[],routeDepth=-1,syncingHistory=false;
+try{history.replaceState({pz:0},'')}catch{}
+function onRoute(key,fresh,intent){
+ if(fresh||routeDepth<0){routeStack=[key];routeDepth=0;try{history.replaceState({pz:0},'')}catch{}return}
+ if(key===routeStack[routeDepth])return;
+ const ix=routeStack.indexOf(key);
+ if(intent==='back'||(ix>=0&&ix<routeDepth)){
+  if(ix<0){routeStack=[key];routeDepth=0;try{history.replaceState({pz:0},'')}catch{}return}
+  const delta=ix-routeDepth;routeStack.length=ix+1;routeDepth=ix;
+  if(delta<0){syncingHistory=true;history.go(delta)}
+  return;
+ }
+ routeStack.length=routeDepth+1;routeStack.push(key);routeDepth++;
+ try{history.pushState({pz:routeDepth},'')}catch{}
+}
+window.addEventListener('popstate',e=>{
+ if(syncingHistory){syncingHistory=false;return}
+ const target=e.state&&typeof e.state.pz==='number'?e.state.pz:null;
+ if(target===null||target>=routeDepth)return;
+ routeDepth=target;routeStack.length=target+1;
+ frame.contentWindow?.appBack?.();
+ // If appBack only closed a sub-step inside the same screen, the route
+ // key does not change and no route message arrives. Re-arm one history
+ // step so the next Back press keeps stepping instead of leaving.
+ setTimeout(()=>{
+  try{
+   const w=frame.contentWindow;if(!w||w.location.href==='about:blank')return;
+   const route=w.NPTenbin?.getScreen?.()||w.NPCrossword?.getScreen?.()||w.ShirupureCourse?.getScreen?.()||w.document.body?.dataset?.screen||'home';
+   const key=w.location.pathname+':'+route;
+   if(key===routeStack[routeDepth])return;
+   if(routeStack.indexOf(key)>=0)return;
+   routeStack.length=routeDepth+1;routeStack.push(key);routeDepth++;
+   history.pushState({pz:routeDepth},'');
+  }catch{}
+ },450);
 });
 const audioDialog=document.createElement('dialog');audioDialog.className='audio-dialog';audioDialog.setAttribute('aria-label','音の設定');document.body.append(audioDialog);
 function showAudio(){
