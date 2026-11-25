@@ -1482,6 +1482,11 @@ else{el.pause();}
 function startBgmOnce(){bgmStarted=true;primeAudio();applyBgm();}
 document.addEventListener("pointerdown",primeAudio);
 document.addEventListener("keydown",primeAudio);
+/* ページが見えていない間（タブ切り替え・背面・ホーム画面）は音を止める。戻ってきたら、対戦画面にいる場合だけBGMを再開する */
+document.addEventListener("visibilitychange",function(){
+if(document.hidden){try{if(bgmAudio)bgmAudio.pause();}catch(e){}try{if(actx&&actx.state==="running")actx.suspend();}catch(e){}}
+else{applyBgm();}
+});
 /* 効果音の再生エンジン：以前は鳴らすたびに new Audio() していたが、端末のWebViewでは「作った直後の再生」が始まらないことがある。そこで (1) 音ごとにAudio要素を用意して使い回し、最初のタップで読み込みまで済ませる (2) WebAudioのバッファ再生も用意し、用意できていればそちらで鳴らす（両方鳴らないよう排他にする）
    【無音の原因と対策】以前の primeAudio はタップのたびに全効果音とBGMへ load() を呼び直していた。load() は再生中・再生待ちの音を打ち切るため、置くタップ自身の pointerdown で読み込み直しが走り、その直後の click で鳴らす置く音と競合して、たまに音が消えていた（BGMが止まるのも同じ原因）。またバッファの読み込みに一度失敗すると再試行されず、その対戦はずっと競合する要素再生のままになっていた。対策：要素の読み込みは初回だけ、バッファはページ読み込み直後から先読みして失敗したら必ず再試行可能にし、要素再生は2個のプールを交互に使って「前の音がまだ鳴っている」状態と重ならないようにする */
 var seEls={},seElIdx={},seBufs={},seBufLoading={},actx=null,sePrimed=false;
