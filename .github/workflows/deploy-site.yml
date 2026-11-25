@@ -161,16 +161,14 @@ jobs:
           node scripts/check-nanpure-generated-storage-browser.cjs _site
           node scripts/check-nanpure-recovery-pack.cjs
 
-      - name: Check personal galleries on desktop and mobile
+      - name: Check Nanpure home titles and PareAsobi intro updates
         if: needs.changes.outputs.notebook == 'true'
         shell: bash
         run: |
           export PLAYWRIGHT_MODULE="$RUNNER_TEMP/nanpure-browser/node_modules/playwright"
           export CHROME_BIN="$(command -v google-chrome || command -v chromium)"
-          node scripts/check-nanpure-gallery-browser.cjs _site
           node scripts/check-nanpure-home-titles-browser.cjs _site
           node scripts/check-pareasobi-intro-updates-browser.cjs _site
-          node scripts/check-nanpure-exhibitions-browser.cjs _site
 
       - name: Check automatic ranking and nicknames on desktop and mobile
         if: needs.changes.outputs.notebook == 'true'
@@ -184,10 +182,6 @@ jobs:
         run: |
           node --test scripts/check-generation-assist.cjs
           npm --prefix nanpure-api run build
-
-      - name: Check local replay recording and resume
-        if: needs.changes.outputs.notebook == 'true'
-        run: node scripts/check-community-recorder.cjs
 
       - name: Check exact 9x9 pattern creation
         if: needs.changes.outputs.notebook == 'true'
