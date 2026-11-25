@@ -740,6 +740,8 @@ footer{margin-top:22px;font-size:13px;color:var(--muted);line-height:1.7}
     <h1 data-i="updatesBtn">更新内容</h1>
   </div>
   <ul class="upd-list">
+    <li class="upd-item"><div class="upd-date">2026-11-25</div><p class="upd-text">ページを開いていない間は、音が止まるようにしました</p></li>
+    <li class="upd-item"><div class="upd-date">2026-11-25</div><p class="upd-text">ブラウザの戻るボタンで、前の画面に戻れるようにしました</p></li>
     <li class="upd-item"><div class="upd-date">2026-11-25</div><p class="upd-text">対戦中に文字や点数が選択・コピーされないようにしました</p></li>
     <li class="upd-item"><div class="upd-date">2026-11-25</div><p class="upd-text">変えた設定が、ブラウザを更新してもそのまま残るようにしました</p></li>
     <li class="upd-item"><div class="upd-date">2026-11-25</div><p class="upd-text">牌のデザインを、本物の牌の見本と同じ見た目に直しました</p></li>
@@ -1485,9 +1487,36 @@ function unlockAudio(){
 ["pointerdown","touchend","click"].forEach(function(ev){
   document.addEventListener(ev,unlockAudio,true);
 });
+/* Silence while the page is not visible. Switching tabs, sending
+   the browser to the background or turning the screen off suspends
+   the one shared context, which stops the BGM, the effects and the
+   voices together and holds the music where it was. Coming back
+   resumes only when sound had actually been playing (nothing is
+   started before the first tap has unlocked audio) and only while
+   at least one of the sound toggles is on; bgmApply() then brings
+   the music back if its own toggle is on. Match progress, saves
+   and online play are not touched. */
+var acHiddenMuted=false;
+function acMuteHidden(){
+  if(!AC)return;
+  if(AC.state==="running"||AC.state==="interrupted"||bgmSrcNode){
+    acHiddenMuted=true;
+    try{ var p=AC.suspend(); if(p&&p.catch)p.catch(function(){}); }catch(e){}
+  }
+}
+function acUnmuteVisible(){
+  if(!acHiddenMuted)return;
+  acHiddenMuted=false;
+  if(!(SND.bgm||SND.se||SND.voice))return;
+  acResume();
+  bgmApply();
+}
 document.addEventListener("visibilitychange",function(){
-  if(!document.hidden){ acResume(); bgmApply(); }
+  if(document.hidden||document.visibilityState==="hidden")acMuteHidden();
+  else acUnmuteVisible();
 });
+document.addEventListener("pagehide",acMuteHidden);
+window.addEventListener("pageshow",acUnmuteVisible);
 function playBuf(buf,vol){
   var ctx=acCreate(); if(!ctx||!buf)return;
   if(ctx.state!=="running"){ acResume(); if(ctx.state!=="running")return; }
@@ -4904,16 +4933,88 @@ rw:[
 ]
 };
 function showRules(){
+  if(!mjRulesHist&&mjNavCur!=="game"){ mjRulesHist=true; try{ history.pushState({mj:1,s:mjNavCur,d:mjNavStack.length-1,m:1},""); }catch(e){} }
   var pages=RULE_PAGES_BY_LANG[curLang]||RULE_PAGES_BY_LANG.en;
   var pg=pages[rulePage];
   openModal("<h2>"+tf("rulesTitle",{a:rulePage+1,b:pages.length})+"</h2><h3>"+pg.h+"</h3>"+pg.b
     +"<div class='pager'><button id='rPrev' "+(rulePage===0?"disabled style='opacity:.4'":"")+">"+t("prevBtn")+"</button><button id='rNext'>"+(rulePage===pages.length-1?t("closeBtn"):t("nextBtn"))+"</button></div>");
   document.getElementById("rPrev").addEventListener("click",function(){if(rulePage>0){rulePage--;showRules();}});
-  document.getElementById("rNext").addEventListener("click",function(){if(rulePage<pages.length-1){rulePage++;showRules();}else closeModal();});
+  document.getElementById("rNext").addEventListener("click",function(){if(rulePage<pages.length-1){rulePage++;showRules();}else{ closeModal(); mjRulesBack(); }});
 }
 
 /* ================= Home wiring ================= */
+/* ================= Browser Back / Forward =================
+   The game is a single page, so without help the browser's Back
+   button leaves for the top page at once. Every in-game screen
+   switch now records one history entry, and Back walks back
+   through the game's own screens one at a time; once the game's
+   entries run out, Back leaves the page exactly as before.
+   The match screen itself is guarded: entering a match pushes a
+   guard entry over the screen the player came from, and a Back
+   press during a match just puts the guard back -- a match is
+   only ever left through its in-game buttons, so neither a CPU
+   match nor an online opponent is disturbed. The rules pager is
+   a modal: opening it (outside a match) adds one entry, and Back
+   closes the modal instead of leaving the screen under it. */
+var mjNavStack=["home"], mjNavCur="home", mjNavGuard=false, mjNavExpect=-1, mjNavSilent=false, mjRulesHist=false;
+try{ history.replaceState({mj:1,s:"home",d:0},""); }catch(e){}
+function mjNavState(s,d,g){ var st={mj:1,s:s,d:d}; if(g)st.g=1; return st; }
+function mjNavGo(name){
+  if(name===mjNavCur)return;
+  var wasGame=(mjNavCur==="game");
+  mjNavCur=name;
+  if(name==="game"){
+    mjNavGuard=true;
+    try{ history.pushState(mjNavState(mjNavStack[mjNavStack.length-1],mjNavStack.length-1,1),""); }catch(e){}
+    return;
+  }
+  var idx=mjNavStack.indexOf(name);
+  if(idx<0){
+    mjNavGuard=false;
+    mjNavStack.push(name);
+    try{ history.pushState(mjNavState(name,mjNavStack.length-1,0),""); }catch(e){}
+    return;
+  }
+  if(idx===mjNavStack.length-1&&!wasGame)return;
+  var topPos=mjNavStack.length-1+(mjNavGuard?1:0);
+  mjNavGuard=false;
+  mjNavExpect=idx;
+  mjNavStack.length=idx+1;
+  var dist=idx-topPos;
+  if(dist===0){ mjNavExpect=-1; return; }
+  try{ history.go(dist); }catch(e){ mjNavExpect=-1; }
+}
+function mjRulesBack(){
+  if(!mjRulesHist)return;
+  mjRulesHist=false;
+  mjNavExpect=mjNavStack.length-1;
+  try{ history.back(); }catch(e){ mjNavExpect=-1; }
+}
+function mjNavPop(e){
+  if(mjNavExpect>=0){ mjNavExpect=-1; return; }
+  if(mjRulesHist){ mjRulesHist=false; closeModal(); return; }
+  if(mjNavCur==="game"){
+    try{ history.pushState(mjNavState(mjNavStack[mjNavStack.length-1],mjNavStack.length-1,1),""); }catch(err){}
+    return;
+  }
+  var st=e&&e.state;
+  mjNavSilent=true;
+  if(st&&st.mj&&st.s){
+    mjNavStack.length=st.d+1; mjNavStack[st.d]=st.s;
+    if(st.s==="online"){ if(window.mjNavOpenLobby)window.mjNavOpenLobby(); }
+    else { var os=document.getElementById("scr-online"); if(os)os.classList.remove("on"); showScreen(st.s); }
+    mjNavCur=st.s;
+  }else{
+    mjNavStack=["home"];
+    var os2=document.getElementById("scr-online"); if(os2)os2.classList.remove("on");
+    showScreen("home");
+    mjNavCur="home";
+  }
+  mjNavSilent=false;
+}
+window.addEventListener("popstate",mjNavPop);
 function showScreen(name){
+  if(!mjNavSilent)mjNavGo(name);
   document.getElementById("scr-home").classList.toggle("on",name==="home");
   var pl=document.getElementById("scr-play"); if(pl)pl.classList.toggle("on",name==="play");
   var st=document.getElementById("scr-settings"); if(st)st.classList.toggle("on",name==="settings");
@@ -5214,10 +5315,15 @@ function mjOpenLobby(){
   document.body.classList.add("on-title");
   window.scrollTo(0,0);
   if(MJ.session && !MJ.inGameScreen) mjShowRoomView(); else mjShowHomeView();
+  if(!mjNavSilent)mjNavGo("online"); else mjNavCur="online";
 }
 function mjHideOnline(){
   var scr = el("scr-online"); if(scr) scr.classList.remove("on");
 }
+/* The browser-back logic in the main script lives outside this
+   block, so it cannot call mjOpenLobby directly; this bridge lets
+   a Forward press re-open the lobby exactly as the button does. */
+window.mjNavOpenLobby = mjOpenLobby;
 function mjShowHomeView(){
   el("mjLobbyHome").hidden = false;
   el("mjRoomLobby").hidden = true;
