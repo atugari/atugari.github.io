@@ -60,7 +60,7 @@
         radial-gradient(circle at 96% 86%, rgba(77, 163, 255, 0.18) 0 6px, transparent 7px),
         radial-gradient(circle at 30% 95%, rgba(46, 196, 166, 0.18) 0 4px, transparent 5px),
         radial-gradient(circle at 70% 96%, rgba(255, 138, 61, 0.18) 0 5px, transparent 6px);
-      background-attachment: fixed;
+      background-size: 100% 100dvh;
     }
 
     /* ===== ポップなサイト見出し ===== */
@@ -435,12 +435,12 @@
       letter-spacing: 0.3em;
       color: #E16B80;
       text-shadow: 0 2px 0 rgba(255, 77, 109, 0.18);
-      animation: pop-float 1.4s ease-in-out infinite;
+      animation: none;
     }
     .section-label.pop .spark {
       display: inline-block;
       color: #E0AF65;
-      animation: pop-spin 2.8s linear infinite;
+      animation: none;
     }
     @keyframes pop-float {
       0%, 100% { transform: translateY(0); }
@@ -501,11 +501,11 @@
     }
     .footer-brand::before {
       color: #00e5ff;
-      animation: glitch-a 3.4s steps(1) infinite;
+      animation: none;
     }
     .footer-brand::after {
       color: #ff2bd6;
-      animation: glitch-b 3.4s steps(1) infinite;
+      animation: none;
     }
     @keyframes glitch-a {
       0%, 88.9%, 94.1%, 100% { opacity: 0; transform: none; clip-path: none; }
