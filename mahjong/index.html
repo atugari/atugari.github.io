@@ -434,6 +434,22 @@ body.playing footer{display:none}
 #scr-game .promptrow .msg{flex:1;min-width:0}
 #scr-game .promptrow .actions{flex:none;margin:0 0 0 auto;min-height:0}
 #scr-game .actions button{min-height:42px;padding:8px 14px}
+/* Chi combination picker buttons: the three tiles of one sequence at
+   river-tile size, so the prompt row keeps its reserved height and the
+   hand below never jumps. The called tile gets the same gold outline
+   as a freshly drawn tile in the hand. Short landscape shrinks the
+   tiles a step so the row still fits its slimmer reservation. */
+#scr-game .actions button.chi-opt{display:inline-flex;align-items:center;gap:2px;padding:4px 7px}
+#scr-game .actions button.chi-opt .t{width:24px;height:34px;padding:1px;cursor:pointer}
+#scr-game .actions button.chi-opt .t .tile-face .man-num{font-size:10px}
+#scr-game .actions button.chi-opt .t .tile-face .man-char{font-size:15px}
+#scr-game .actions button.chi-opt .t .tile-face .honor-char{font-size:19px}
+#scr-game .actions button.chi-opt .t.called{outline:2px solid var(--gold);outline-offset:-2px}
+body.playing.land.short #scr-game .actions button.chi-opt{padding:3px 6px}
+body.playing.land.short #scr-game .actions button.chi-opt .t{width:19px;height:27px}
+body.playing.land.short #scr-game .actions button.chi-opt .t .tile-face .man-num{font-size:8px}
+body.playing.land.short #scr-game .actions button.chi-opt .t .tile-face .man-char{font-size:12px}
+body.playing.land.short #scr-game .actions button.chi-opt .t .tile-face .honor-char{font-size:15px}
 /* (The --hrows reservation for the hand+melds flow lives on .handrow
    itself, in both orientations, so it cannot be lost to a media query.) */
 /* Landscape: JS adds .land to <body> whenever the measured viewport
@@ -2725,8 +2741,16 @@ async function resolveCalls(fromPlayer,disc){
     var chis=chiOptions(np,disc);
     if(chis.length){
       if(np.human){
-        var ch2=await askHuman([{id:"chi",label:t("btnChi"),cls:"primary"},{id:"pass",label:t("btnPass"),cls:""}],t("msgCanChi"));
-        if(ch2==="chi"){ doChi(np,fromPlayer,disc,chis[0]); return {type:"claim",player:ni}; }
+        if(chis.length>1){
+          /* Several sequences can be built with the called tile: the
+             player picks which one (see askChiChoice). A single
+             combination keeps the plain チー/見逃す prompt below. */
+          var pick=await askChiChoice(np,disc,chis);
+          if(pick){ doChi(np,fromPlayer,disc,pick); return {type:"claim",player:ni}; }
+        }else{
+          var ch2=await askHuman([{id:"chi",label:t("btnChi"),cls:"primary"},{id:"pass",label:t("btnPass"),cls:""}],t("msgCanChi"));
+          if(ch2==="chi"){ doChi(np,fromPlayer,disc,chis[0]); return {type:"claim",player:ni}; }
+        }
       }else{
         var chiPick=chiDecide(np,disc,chis);
         if(chiPick){ doChi(np,fromPlayer,disc,chiPick); return {type:"claim",player:ni}; }
@@ -2791,6 +2815,31 @@ function askHuman(opts,msg){
   return new Promise(function(res){
     setMsg(msg);
     showActions(opts,function(id){ setMsg(""); res(id); });
+  });
+}
+/* CHI combination picker, shown only when the called tile completes
+   more than one sequence: one button per combination, displaying the
+   exact three tiles the meld will consist of — the two hand tiles are
+   the same first matches doChi will take (red fives included), and
+   the called tile carries a gold outline like a freshly drawn tile.
+   Resolves with the chosen option, or null when the player passes. */
+function askChiChoice(pl,disc,opts){
+  return new Promise(function(res){
+    setMsg(t("msgCanChi"));
+    var a=document.getElementById("actions"); a.innerHTML="";
+    opts.forEach(function(opt){
+      var trio=[disc];
+      opt.use.forEach(function(u){ trio.push(pl.hand.find(function(x){return x.t===u;})); });
+      sortTiles(trio);
+      var b=document.createElement("button"); b.className="chi-opt primary";
+      b.setAttribute("aria-label",trio.map(function(x){return tileName(x);}).join(" "));
+      trio.forEach(function(x){ b.appendChild(tileEl(x,{cls:x===disc?"called":""})); });
+      b.addEventListener("click",function(){ clearActions(); setMsg(""); res(opt); });
+      a.appendChild(b);
+    });
+    var pb=document.createElement("button"); pb.textContent=t("btnPass");
+    pb.addEventListener("click",function(){ clearActions(); setMsg(""); res(null); });
+    a.appendChild(pb);
   });
 }
 
