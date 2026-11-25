@@ -5,7 +5,7 @@ on:
     branches: [main]
     paths:
       - 'nanpure-api/**'
-        - 'nanpure-version.json'
+      - 'nanpure-version.json'
       - '.github/workflows/deploy-nanpure-api.yml'
   workflow_dispatch:
   schedule:
