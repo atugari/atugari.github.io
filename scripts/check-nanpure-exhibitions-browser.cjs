@@ -2,8 +2,8 @@
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright'),fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),{pathToFileURL}=require('node:url');
 const repo=path.resolve(__dirname,'..'),root=path.resolve(process.argv[2]||'_site'),origin='https://atugari.github.io';
 (async()=>{
- const {default:worker}=await import(pathToFileURL(path.join(repo,'nanpure-api/src/index.js'))),{database}=await import(pathToFileURL(path.join(repo,'nanpure-api/test/db.mjs'))),{emptyRoom}=await import(pathToFileURL(path.join(repo,'nanpure/gallery/model.mjs')));
- const {events}=await import(pathToFileURL(path.join(repo,'nanpure/exhibitions/model.mjs')));events[0].start='2000-01-01T00:00:00+09:00';events[0].end='2100-01-01T00:00:00+09:00';
+ const {default:worker}=await import(pathToFileURL(path.join(repo,'nanpure-api/src/index.js'))),{database}=await import(pathToFileURL(path.join(repo,'nanpure-api/test/db.mjs'))),{emptyRoom}=await import(pathToFileURL(path.join(repo,'nanpure-api/src/gallery-model.mjs')));
+ const {events}=await import(pathToFileURL(path.join(repo,'nanpure-api/src/exhibitions-model.mjs')));events[0].start='2000-01-01T00:00:00+09:00';events[0].end='2100-01-01T00:00:00+09:00';
  const browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_BIN||undefined,args:['--no-sandbox']}),types={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml','.webp':'image/webp'};
  try{for(const [width,height]of [[1280,900],[360,740]]){
   const DB=database(),key='f'.repeat(64),errors=[],solution=Array.from({length:81},(_,i)=>(Math.floor(i/9)*3+Math.floor(Math.floor(i/9)/3)+i%9)%9+1),puzzle=solution.slice();puzzle[80]=0;

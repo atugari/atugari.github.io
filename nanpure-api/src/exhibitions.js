@@ -1,6 +1,6 @@
 import {fail,json,input,identity,limit,hash} from './http.js';
-import {cleanSlot} from '../../nanpure/gallery/model.mjs';
-import {events,phase,reactions,cleanText,cleanReplay,MAX_REPLAY_BYTES,puzzleKey} from '../../nanpure/exhibitions/model.mjs';
+import {cleanSlot} from './gallery-model.mjs';
+import {events,phase,reactions,cleanText,cleanReplay,MAX_REPLAY_BYTES,puzzleKey} from './exhibitions-model.mjs';
 const visible='e.active=1 AND g.published=1';
 const idOK=id=>/^[a-f0-9]{24}$/.test(id||'');
 const eventFor=id=>{const event=events.find(e=>e.id===id);if(!event)fail(404,'この企画展は見つかりません。');return event};

@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
-import {cleanPuzzle} from '../../nanpure/gallery/model.mjs';
+import {cleanPuzzle} from '../src/gallery-model.mjs';
 test('all 22 shipped sudoku rules retain their rule metadata when exhibited',async()=>{
  globalThis.self=globalThis;const {readProblemPack}=await import('../../nanpure/collection/pack-reader.mjs');
  const base=new URL('../../nanpure/collection/',import.meta.url),catalog=JSON.parse(fs.readFileSync(new URL('catalog.json',base))),kinds=[...new Set(catalog.configs.map(c=>c.kind))].filter(k=>k!=='cross');assert.equal(kinds.length,22);

@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import os from 'node:os';import fs from 'node:fs';import path from 'node:path';
-import {openDatabase,createServer} from '../oracle/server.mjs';import worker from '../src/index.js';import {emptyRoom} from '../../nanpure/gallery/model.mjs';
+import {openDatabase,createServer} from '../oracle/server.mjs';import worker from '../src/index.js';import {emptyRoom} from '../src/gallery-model.mjs';
 test('OCI SQLite adapter preserves a room and its hashed owner across restart',async()=>{
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'gallery-oci-')),file=path.join(dir,'gallery.sqlite'),key='c'.repeat(64);let db=openDatabase(file);
  const request=(body)=>new Request('http://api.test/api/gallery'+(body?'':'?mine=1'),{method:body?'POST':'GET',headers:{Origin:'https://atugari.github.io','X-Gallery-Key':key},...(body?{body:JSON.stringify(body)}:{})});

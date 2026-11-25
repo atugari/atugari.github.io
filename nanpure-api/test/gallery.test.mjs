@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import worker from '../src/index.js';import {database} from './db.mjs';
-import {emptyRoom,slotFromPuzzle,validCompletion,cleanRoom,MAX_BYTES} from '../../nanpure/gallery/model.mjs';
+import {emptyRoom,slotFromPuzzle,validCompletion,cleanRoom,MAX_BYTES} from '../src/gallery-model.mjs';
 const origin='https://atugari.github.io',key='a'.repeat(64),other='b'.repeat(64);
 function fixture(n=9){const b=Math.sqrt(n),solution=Array.from({length:n*n},(_,i)=>(Math.floor(i/n)*b+Math.floor(Math.floor(i/n)/b)+i%n)%n+1);return {uid:'test',kind:'normal',n,level:3,puzzle:solution.map((v,i)=>i%3===0?v:0),solution,grid:solution.slice(),completed:true,elapsed:140,video:{hints:1,errors:0}}}
 const room=()=>({...emptyRoom(),slots:[slotFromPuzzle(fixture(),'clear'),null,null,null,null,null,null]});

@@ -6,7 +6,7 @@
   "online": "https://puzzle-api.puzzle-hub-4826.workers.dev",
   "files": {
     "nanpure/index.html": "00ece16de3aeff7452d63b8e7ffcff3175bf176d117959526584d82c6d717d68",
-    "nanpure.html": "b9585e4659bb2a234bede05222fb0366b49002475202499d60274c17ebef2dc3",
+    "nanpure.html": "396a2c1d26e062b39ecef7cbb3ab3bd4c3d96dbbccc985752bc1087f1774967b",
     "nanpure/version.json": "594077212a2447a05e44e84ca6520cab1f02285bc7c6aa64e97c42093b2edb57",
     "nanpure/releases.json": "23c96f19d9bc5d01398d828a81e3d520ed585c7fe208fb3a66161c645d374487",
     "nanpure/guide/index.html": "da36cb90200749f9674004b10cd81ad2c0a8b22b3fdb352686c3f3b913130ac2",
@@ -809,9 +809,6 @@
     "nanpure/assets/secondary-theme.css": "825712236433f791b5fcece2de0b47db275ab1722fec737487e728984bbe289e",
     "nanpure/learn/replay.mjs": "48a16eaee7a098ed13467ff7ac8391cc0cfc54b235266a5ba1b856b97f03ab42",
     "nanpure/collection/player-storage.js": "2072019db0428be54a0f9bc7adb73f6b032e165a02c0ad39c82fac8d2f5690c0",
-    "nanpure/exhibitions/home.mjs": "d095410f8695a9b08b4d7f2b8687b82aea18f5f92117f8374fe1a2d87762d111",
-    "nanpure/gallery/entry.js": "efd79fff7e0de2c415a6c57995f367598362e9b30b08bb0095b865f935d0b866",
-    "nanpure/collection-test/player.html": "f1865adb1a6f03ac5ac35048b85216738a48cf10d773f30eb00ab0e2b6f8c064",
     "nanpure/releases/2026.11.04.93/achievements-catalog.js": "0ba29d1d693bd2b567aa507a56a8247a2f746a637f0d705e530018b8f7813279",
     "nanpure/releases/2026.11.04.93/achievements-core.js": "9a06808a6d2a85310fb08f3d4c47f5f82997b6cbd212f6ef2c6928d1b084df79",
     "nanpure/releases/2026.11.04.93/achievements-hooks.js": "ea5494fd9a395aac72c4514b33015f1010f9983cd782a53be53b6a80d07d4d0b",
@@ -2481,12 +2478,6 @@
       "scripts/i18n/catalog-pattern-posting-83.cjs": "014ac7212406308b08e5ef0d6dce89a9a38eaa7dc4fef3b9b5662098405ea684"
     }
   },
-  "gallery": {
-    "version": 2,
-    "path": "/nanpure/gallery/",
-    "backend": "workers-d1",
-    "migrationTarget": "oracle-always-free"
-  },
   "rankingSourceSha256": "6852be5247dfeb0bf67239eef1199e7779d7807e454e067c95674f0f923e9d78",
   "rankingAutomatic": {
     "sources": {
@@ -2502,38 +2493,13 @@
       "scripts/prepare-ranking-auto-release.mjs": "52b82934c0d8da24b6d3a0498163468e1a28f2e5ee14539f039b98e363f948e4"
     }
   },
-  "communitySourceSha256": "ac0bc5a8fc338582b4c25a7086dc8207f377810f6547cc3458821de9df7d442e",
+  "communitySourceSha256": "9e3a71623af2436ca1f05770925b00e573b65917a261d72fde305def1340462d",
   "community": {
     "version": 1,
     "path": "/nanpure/exhibitions/",
     "sources": {
-      "nanpure/exhibitions/app.mjs": "ab08ff7cbff6f8c5da517fa480571d322e02f390688d1ee71850a276a983aae9",
-      "nanpure/exhibitions/art.mjs": "da6aac242f7b624e00ea25db900781b99135cd750133bfb0d9faea6502271ef1",
-      "nanpure/exhibitions/entry.js": "2f61b0be784d929ddfb0b6a365c2fbfdae00ba8738b583e22fd9f1b5b00f880a",
-      "nanpure/exhibitions/home-locale.mjs": "206c3978d25283ce146eed2d86e7604e5b7a103cb5c6c5b3dee4c408a9fee682",
-      "nanpure/exhibitions/home.css": "74a7fee53e523d653909c1680491b49066b2f902f0af29ccb2ecb8609c0048fd",
-      "nanpure/exhibitions/home.mjs": "d095410f8695a9b08b4d7f2b8687b82aea18f5f92117f8374fe1a2d87762d111",
-      "nanpure/exhibitions/index.html": "b8210ff2afcb2bd785ef086844832aee7e2b0c587846bf16ae977f20c62fda0f",
-      "nanpure/exhibitions/journal.mjs": "b3a5fd53512b6599397dd1915410ef9d5a6c548c7c339b85f711f98a1a4ebf9d",
-      "nanpure/exhibitions/model.mjs": "748b08d351fab5a733ef11a1648579af2319bb2fdd5ac5c05bceef402eb0e4b6",
-      "nanpure/exhibitions/play-support.mjs": "c34e3b5459afe7516f8b68136f3814165a8512eb20e6a7430f1778cbe9a073b5",
-      "nanpure/exhibitions/recorder.js": "30e24cddf101ad16a45e5120de3e0b9949a6f1a4d5157b2bb4ddfacdde1898ef",
-      "nanpure/exhibitions/replay-view.mjs": "e59647746afa35177198cc5292bc4a94858d4ce6c1f9e8380a08f319eabb8adf",
-      "nanpure/exhibitions/service.mjs": "3d43dba80b860e40569616b8f9a4482c6dc7c7e6cb1e90b9ebc7a3324c1a4cbc",
-      "nanpure/exhibitions/style.css": "16632d4e31cfd95fc39f453fc5cd5c8b4faf8ed0a4abeef0b3cc55ea2edad6df",
-      "nanpure/gallery/app.mjs": "e6c8f785403456e4c77b320ed164702cac101acb2ba1f31f55d623efcace9bd5",
-      "nanpure/gallery/carousel.mjs": "c8f241886c9710e9e08e6d06eb08273d291e94e2f72aa0400e5e63776e66d85c",
-      "nanpure/gallery/config.js": "bc65a974b5487a909e733f392414986e40f452de9935a68fb2d64c2cdc35d072",
-      "nanpure/gallery/data.mjs": "482eabf595bdf9b56b6f172152c3343518539b9efe8da556a133fb7bca91ee2f",
-      "nanpure/gallery/entry.js": "efd79fff7e0de2c415a6c57995f367598362e9b30b08bb0095b865f935d0b866",
-      "nanpure/gallery/index.html": "9205fd880ef3d75bd1f19caf8b8a747a7359f20fadde2679dca36649a08c40f7",
-      "nanpure/gallery/model.mjs": "f4d99f55a93018a6476c03ef4954ae2a87862c6de3723864321b4eac2c8598c5",
-      "nanpure/gallery/museum.css": "215939b664265f7419b17afabe66af58c8be04b63cca8077c8d7699140cccf59",
-      "nanpure/gallery/style.css": "fec795c5343c2f327d91cd1336e1b79ca4b93df709ac8a144cd8f5cee2d92039",
       "scripts/prepare-community-release.mjs": "33a9fb917ae8423b810b27fb0643a645556dcc6b9d9cf449cfdc16bb3c3373c4",
-      "scripts/install-nanpure-gallery.mjs": "b2e6911267653b292cca09973bdfa09e1b489c4dd4b64139d90f373822e6aba4",
-      "scripts/check-community-recorder.cjs": "763dd501a441f8a2b5bd203572165ee1aa69f8f0467dfded08ef37df4102b1af",
-      "scripts/check-nanpure-exhibitions-browser.cjs": "2103bca74722aa99fb3578ed68eda6ece35d3c36993a5afd5c3fcf84febd5c5f"
+      "scripts/check-community-recorder.cjs": "763dd501a441f8a2b5bd203572165ee1aa69f8f0467dfded08ef37df4102b1af"
     }
   },
   "lazyStorage": {

@@ -1,5 +1,5 @@
 import {fail,json,input,identity,limit,hash} from './http.js';
-import {cleanRoom,MAX_BYTES} from '../../nanpure/gallery/model.mjs';
+import {cleanRoom,MAX_BYTES} from './gallery-model.mjs';
 const project=r=>({id:r.id,room:JSON.parse(r.content),published:!!r.published,revision:r.revision,updated:r.updated,bytes:r.bytes});
 export async function gallery(request,db,url=new URL(request.url)){
  if(request.method==='GET'){

@@ -1,7 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import worker from '../src/index.js';import {database} from './db.mjs';
-import {emptyRoom,slotFromPuzzle} from '../../nanpure/gallery/model.mjs';
-import {events,phase,cleanReplay,replayGrid} from '../../nanpure/exhibitions/model.mjs';
+import {emptyRoom,slotFromPuzzle} from '../src/gallery-model.mjs';
+import {events,phase,cleanReplay,replayGrid} from '../src/exhibitions-model.mjs';
 // The fixture catalog stays open independently of the real event date.
 events[0].start='2000-01-01T00:00:00+09:00';events[0].end='2100-01-01T00:00:00+09:00';
 const origin='https://atugari.github.io',key='a'.repeat(64),other='b'.repeat(64),event=events[0].id;
