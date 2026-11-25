@@ -6,13 +6,11 @@ import{contact,contactImage,admin}from'./contact.js';
 import{cloud}from'./cloud.js';
 import{cloudRetired,cloudRetirement,deleteRetiredCloudData}from'./shared/cloud-retirement.js';
 import{achievements}from'./achievements.js';
-import{gallery}from'./gallery.js';
-import{exhibitions}from'./exhibitions.js';
 import{rankingProfile}from'./ranking-profile.js';
 import{importLegacy}from'./import.js';
 import{visit,overview,apiVersion}from'./owner.js';
 import{pareAnalytics}from'./pare-analytics.js';
-const tables=['generation_relays','generation_requests','attempts','daily_stock','daily_assignments','daily_maintenance','inquiries','cloud_saves','rate_limits','contact_images','cloud_uploads','cloud_chunks','visit_sessions','visit_browsers','visit_days','owner_usage_snapshots','achievement_members','achievement_owned','galleries','ranking_profiles','exhibition_entries','exhibition_reactions','gallery_replays','pare_analytics_daily','pare_analytics_unique','pare_analytics_sessions'];
+const tables=['generation_relays','generation_requests','attempts','daily_stock','daily_assignments','daily_maintenance','inquiries','cloud_saves','rate_limits','contact_images','cloud_uploads','cloud_chunks','visit_sessions','visit_browsers','visit_days','owner_usage_snapshots','achievement_members','achievement_owned','ranking_profiles','pare_analytics_daily','pare_analytics_unique','pare_analytics_sessions'];
 export default {async scheduled(event,env){if(cloudRetired())await deleteRetiredCloudData(env.DB);await cleanGeneration(env.DB);if(env.DB){const cutoff=japanDay(Date.now()-90*86400000);await env.DB.batch([env.DB.prepare('DELETE FROM pare_analytics_unique WHERE day<?').bind(cutoff),env.DB.prepare('DELETE FROM pare_analytics_sessions WHERE day<?').bind(cutoff),env.DB.prepare('DELETE FROM pare_analytics_daily WHERE day<?').bind(cutoff)]);}},async fetch(request,env){let response;const url=new URL(request.url),origin=request.headers.get('origin');
  try{
   if(origin!==null&&!siteOrigins.includes(origin)&&origin!==url.origin)fail(403,'送信元を確認できません。');
@@ -20,8 +18,8 @@ export default {async scheduled(event,env){if(cloudRetired())await deleteRetired
   if(url.pathname==='/api/cloud'&&cloudRetired()){if(env.DB)await deleteRetiredCloudData(env.DB);fail(410,'クラウド保存は提供を終了しました。引き継ぎファイルをご利用ください。');}
   if(request.method==='OPTIONS'){
    const method=request.headers.get('access-control-request-method'),headers=(request.headers.get('access-control-request-headers')||'').toLowerCase().split(',').map(s=>s.trim()).filter(Boolean);
-   if(!['GET','POST'].includes(method)||headers.some(h=>!['content-type','x-nanpure-key','x-cloud-key','x-contact-key','x-gallery-key','authorization'].includes(h)))fail(405,'この操作は利用できません。');
-   response=new Response(null,{status:204,headers:{'Access-Control-Allow-Methods':'GET, POST, OPTIONS','Access-Control-Allow-Headers':'Content-Type, X-Nanpure-Key, X-Cloud-Key, X-Contact-Key, X-Gallery-Key, Authorization','Access-Control-Max-Age':'600'}});
+   if(!['GET','POST'].includes(method)||headers.some(h=>!['content-type','x-nanpure-key','x-cloud-key','x-contact-key','authorization'].includes(h)))fail(405,'この操作は利用できません。');
+   response=new Response(null,{status:204,headers:{'Access-Control-Allow-Methods':'GET, POST, OPTIONS','Access-Control-Allow-Headers':'Content-Type, X-Nanpure-Key, X-Cloud-Key, X-Contact-Key, Authorization','Access-Control-Max-Age':'600'}});
   }else{
    if(!['GET','POST'].includes(request.method))fail(405,'この操作は利用できません。');
    if(request.method==='POST'&&!origin)fail(403,'送信元を確認できません。');
@@ -38,8 +36,6 @@ export default {async scheduled(event,env){if(cloudRetired())await deleteRetired
    else if(url.pathname==='/api/contact')response=await contact(request,env,url);
    else if(url.pathname==='/api/contact/image'&&request.method==='GET')response=await contactImage(request,env,url);
    else if(url.pathname==='/api/achievements')response=await achievements(request,env.DB);
-   else if(url.pathname==='/api/gallery')response=await gallery(request,env.DB,url);
-   else if(url.pathname==='/api/exhibitions')response=await exhibitions(request,env.DB,url);
    else if(url.pathname==='/api/cloud')response=await cloud(request,env.DB,url);
    else if(url.pathname==='/api/admin')response=await admin(request,env);
    else if(url.pathname==='/api/admin/import'&&request.method==='POST')response=await importLegacy(request,env);
