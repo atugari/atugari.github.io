@@ -104,13 +104,13 @@ async function setup(browser,width,height,theme='color'){
   await page.locator('.np-title-notification input').uncheck();await page.waitForFunction(()=>NPAchievements.getState().notification==='off');await page.evaluate(()=>NPAchievements.capture('ui',{action:'last-book'}));await page.locator('.np-titles>header button').click();if(await page.locator('.game-dialog[open]').isVisible())await page.locator('.game-dialog .dialog-close').click();assert.equal(await page.locator('.np-title-toast').count(),0);
   await page.reload();await page.locator('.np-home-ready').waitFor();assert.equal(await page.evaluate(()=>NPAchievements.getState().notification),'off');assert(await page.evaluate(()=>!!NPAchievements.getState().earned['NP-0001']));
   await page.locator('.main-choice').click();
-  await page.frameLocator('iframe.notebook').locator('[data-action="pick-multi"]').first().waitFor();
+  await page.frameLocator('iframe.notebook').locator('#multi-sizes-form').waitFor();
   await page.goto(site+'/nanpure/');
   await page.locator('.pattern-choice').click();
   await page.frameLocator('iframe.notebook').locator('#np-pattern-page').waitFor();
   await page.goto(site+'/nanpure/');
   await page.locator('.main-choice').click();
-  await page.frameLocator('iframe.notebook').locator('[data-action="pick-multi"]').first().waitFor();
+  await page.frameLocator('iframe.notebook').locator('#multi-sizes-form').waitFor();
   await page.locator('.choose-rules').click();
   await page.frameLocator('iframe.notebook').locator('[data-action="open-notebook"]').waitFor();
   const collection=page.frameLocator('iframe.notebook').locator('[data-collection-entry]');
