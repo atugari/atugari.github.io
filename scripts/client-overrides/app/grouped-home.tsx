@@ -11,7 +11,6 @@ export default function GroupedHome({t,onPractice,onDaily,onPanel,markRead,unrea
    <button type="button" className="choice-card daily-choice" onClick={onDaily}>{art('日')}<span className="choice-copy"><strong>{t('ランキング問題に挑戦！')}</strong></span>{arrow}</button>
    <button type="button" className="choice-card main-choice" onClick={()=>onPractice('open-multi-create')}><span className="choice-copy"><strong>{t('自作マルチナンプレを作る')}</strong><small>{t('4×4から25×25の大きさのナンプレを重ね、難易度や重ねる個数などを選ぶ事で自作の問題を作る事が出来ます。')}</small></span></button>
    <button type="button" className="choice-card pattern-choice" onClick={()=>onPractice('open-pattern')}>{art('模')}<span className="choice-copy"><strong>{t('模様を描いて作る')}</strong></span>{arrow}</button>
-   <a className="choice-card collection-choice" href="/nanpure/collection/">{art('集')}<span className="choice-copy"><strong>{t('今日の問題集')}</strong></span>{arrow}</a>
    <a className="choice-card learn-choice" data-learning-entry="" href="/nanpure/learn/">{art('学')}<span className="choice-copy"><strong>{t('ナンプレを学ぶ')}</strong></span>{arrow}</a>
   </div>
   <div className="home-lower-row"><a className="home-back-pare" href="/"><span aria-hidden="true">‹</span>{t('パレあそびに戻る')}</a><button type="button" className="home-updates-entry" onClick={()=>{markRead?.();onPanel('updates')}}>{t('更新情報')}{unread&&<span className="home-updates-dot" aria-label={t('未読のお知らせあり')}/>}</button></div>

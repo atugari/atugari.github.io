@@ -43,7 +43,6 @@ async function openRecord(sourceId,desiredMode='explain'){
   $('library').hidden=true;$('lesson').hidden=false;tell('');
   $('problem-number').textContent=record.sourceId;$('problem-title').textContent='普通の9×9 · 元の難度 Lv.'+record.puzzle.level;
   $('problem-info').textContent=(81-record.puzzle.puzzle.filter(Boolean).length)+'マスの空欄 · '+(solvedRoute(record)?'最後までの手順を確認済み':'途中までの手順を確認済み');
-  $('play-original').href='/nanpure/collection/?p='+encodeURIComponent(record.sourceId);
   $('modes').querySelectorAll('button').forEach(b=>{const limited=['video','rival'].includes(b.dataset.mode)&&!solvedRoute(record);b.disabled=limited;b.title=limited?'最後まで解けた問題で使えます。':'';});
   $('practice-type').replaceChildren();setMode(['explain','practice','video','rival'].includes(desiredMode)?desiredMode:'explain');window.scrollTo({top:0,behavior:'instant'});
  }catch(error){if(ticket===epoch)tell(error.message);}

@@ -31,7 +31,7 @@ module.exports=async function checkReplay({all,A,root,domPath}){
 
  if(domPath){
   const {parseHTML}=require(domPath),themeSource=fs.readFileSync(path.join(root,'nanpure/releases/2026.11.03.85/site-theme.js'),'utf8');
-  for(const page of ['nanpure/learn/index.html','nanpure/collection/index.html']){
+  for(const page of ['nanpure/learn/index.html']){
    const html=fs.readFileSync(path.join(root,page),'utf8'),{document}=parseHTML(html),listeners={},saved=new Map([['np-site-theme-v1',JSON.stringify({theme:'lounge'})]]);
    assert.ok(document.querySelector('script[src$="site-theme.js"]'));assert.ok(document.querySelector('link[href*="secondary-theme.css"]'));
    const window={addEventListener:(name,fn)=>listeners[name]=fn,dispatchEvent(){}};

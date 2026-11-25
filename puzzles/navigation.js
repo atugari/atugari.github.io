@@ -34,22 +34,6 @@ function install(w){
    d.querySelectorAll('a[data-collection-entry]').forEach(link=>{
     if(playMenu?.contains(link)&&!collection)collection=link;else link.remove();
    });
-   if(playMenu){
-    if(!collection){
-     collection=d.createElement('a');
-     collection.href='/nanpure/collection/';
-     collection.target='_top';
-     collection.className='choice';
-     collection.dataset.collectionEntry='';
-     collection.setAttribute('data-i18n-skip','');
-     collection.innerHTML='<span class="text"><strong></strong></span><span class="arrow" aria-hidden="true">›</span>';
-     playMenu.append(collection);
-    }
-    const language=w.NPI18n?.get?.()||d.documentElement.lang||'ja';
-    const label=collectionLabels[language]||collectionLabels.en;
-    const title=collection.querySelector('strong');
-    if(title.textContent!==label)title.textContent=label;
-   }
    d.querySelectorAll('iframe').forEach(f=>{if(f.dataset.pareWatching)return;f.dataset.pareWatching='';f.addEventListener('load',()=>visit(f));visit(f)});
   }
   let queued=false;function schedule(){if(queued)return;queued=true;w.requestAnimationFrame(()=>{queued=false;update()})}

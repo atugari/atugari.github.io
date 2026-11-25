@@ -78,7 +78,7 @@ async function setup(browser,width,height,theme='color'){
    return Math.abs((circle.left+circle.right)-(icon.left+icon.right))<1&&Math.abs((circle.top+circle.bottom)-(icon.top+icon.bottom))<1;
   }));
   assert(centered,'Each chevron is centered in its circle');
-  assert.deepEqual(await page.locator('.designed-home .start-choices strong').allTextContents(),['ランキング問題に挑戦！','自作マルチナンプレを作る','模様を描いて作る','今日の問題集','ナンプレを学ぶ']);
+  assert.deepEqual(await page.locator('.designed-home .start-choices strong').allTextContents(),['ランキング問題に挑戦！','自作マルチナンプレを作る','模様を描いて作る','ナンプレを学ぶ']);
   assert.equal(await page.locator('.designed-home [data-collection-entry]').count(),0);
   assert.equal(await page.locator('.designed-home :is(.home-bottom-links,.home-version,[data-home-guide],[data-pare-entry])').count(),0);
   const support=page.locator('.home-support-button');
@@ -89,10 +89,9 @@ async function setup(browser,width,height,theme='color'){
   assert(supportSize.height>0&&supportSize.height<playSize.height,'Support button stays smaller than the play card');
   const cards=await page.locator('.start-choices .choice-card').evaluateAll(nodes=>nodes.map(e=>({height:e.offsetHeight,width:e.offsetWidth,background:getComputedStyle(e).backgroundColor})));
   for(const card of cards)assert.equal(card.width,cards[0].width,'All home entry cards have the same width');
-  for(const card of [cards[0],cards[2],cards[3],cards[4]])assert.equal(card.height,cards[0].height,'Home entry cards without a description have the same height');
+  for(const card of [cards[0],cards[2],cards[3]])assert.equal(card.height,cards[0].height,'Home entry cards without a description have the same height');
   assert.equal(await page.locator('.main-choice small').textContent(),'4×4から25×25の大きさのナンプレを重ね、難易度や重ねる個数などを選ぶ事で自作の問題を作る事が出来ます。','The multi creation card carries its description');
   assert(await page.locator('.main-choice small').isVisible(),'The multi creation description is visible');
-  assert.notEqual(cards[3].background,cards[4].background,'Collection and learning use different colors');
   assert.equal(await page.locator('.learn-choice').getAttribute('href'),'/nanpure/learn/');
   await page.evaluate(()=>{window.scrollTo(0,0);document.querySelector('.designed-home').scrollTop=0});
   const box=await page.evaluate(()=>{const m=document.querySelector('.designed-home'),rects=Array.from(m.querySelectorAll('button,a')).filter(e=>e.getClientRects().length&&getComputedStyle(e).visibility!=='hidden').map(e=>({text:e.textContent.trim(),r:e.getBoundingClientRect().toJSON()}));return{height:m.clientHeight,scroll:m.scrollHeight,width:innerWidth,viewport:innerHeight,rects};});
@@ -113,10 +112,7 @@ async function setup(browser,width,height,theme='color'){
   await page.frameLocator('iframe.notebook').locator('#multi-sizes-form').waitFor();
   await page.locator('.choose-rules').click();
   await page.frameLocator('iframe.notebook').locator('[data-action="open-notebook"]').waitFor();
-  const collection=page.frameLocator('iframe.notebook').locator('[data-collection-entry]');
-  await collection.waitFor();
-  assert.equal(await collection.locator('strong').textContent(),'すぐ遊べるナンプレ集');
-  assert.equal(await collection.getAttribute('href'),'/nanpure/collection/');
+  assert.equal(await page.frameLocator('iframe.notebook').locator('[data-collection-entry]').count(),0,'The play menu has no collection entry');
   await page.frameLocator('iframe.notebook').locator('[data-action="open-notebook"]').click();
   assert.equal(await page.frameLocator('iframe.notebook').locator('[data-action="start"][data-flow="create"]').count(),0,'The free-play screen has no generation entrance');
   await page.locator('.choose-rules').click();
