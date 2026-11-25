@@ -164,7 +164,15 @@ body.cb .t.red{background:#fff3df;border-color:#e69f00;border-bottom-color:#d55e
 .tile-preview .t .tile-face .man-char{font-size:20px}
 .tile-preview .t .tile-face .honor-char{font-size:26px}
 .tile-preview-cap{font-size:12px;color:var(--muted);width:100%}
-.menupop{min-width:min(340px,92vw);width:min(360px,92vw);max-width:92vw;padding:14px;max-height:calc(var(--app-h,100vh) - 96px);overflow-y:auto}
+/* The panel is centred on the screen (position:fixed) instead of
+   hanging under the menu button: hung from the centre strip, its box
+   ran past the bottom of short screens, and even scrolled to its very
+   end the last items (voice / BGM toggles, furigana, Quit) sat below
+   the visible area where no scrolling could ever bring them into
+   view. Centred, the whole panel is always inside the screen at any
+   aspect ratio, and its own scrolling reaches every item. */
+.menupop{position:fixed;left:50%;right:auto;top:50%;transform:translate(-50%,-50%);z-index:60;min-width:min(340px,92vw);width:min(360px,92vw);max-width:92vw;padding:14px;max-height:calc(var(--app-h,100vh) - 24px);overflow-y:auto}
+html[dir="rtl"] .menupop{left:50%;right:auto}
 .menupop-title{font-size:16px;padding:6px 6px 10px;margin-bottom:8px}
 .menupop button{min-height:52px;font-size:17px;padding:12px 14px;margin-top:8px;border-radius:11px}
 .menubtn{min-height:40px;font-size:15px;padding:4px 14px}
@@ -561,12 +569,17 @@ body.playing.compact:not(.land) #scr-game .msg{font-size:13px}
 body.playing.compact:not(.land) .handrow{padding-top:3px;min-height:calc(58px*var(--u)*var(--hrows) + 7px)}
 body.playing.compact:not(.land) .discards{padding:2px;margin-top:1px;height:calc(34px*var(--ur)*2 + 8px)}
 /* Preserve legible tile sizes in small portrait viewports. The table can
-   scroll if its minimum-size rows exceed the visible height. */
+   scroll if its minimum-size rows exceed the visible height. Rivers
+   never scroll, in portrait any more than in landscape: a river that
+   outgrows its reserved rows steps its tiles down (see .discards.t1-.t3
+   and tightenRivers) until every discard and meld tile fits inside the
+   box. The old portrait rule scrolled each long river to its bottom,
+   which hid its first row outright. */
 body.playing:not(.land) #scr-game .table{overflow-y:auto;padding-inline:3px}
 body.playing:not(.land) #opps{gap:2px}
 body.playing:not(.land) .opp,
 body.playing:not(.land) .myarea{padding-inline:3px}
-body.playing:not(.land) .discards{overflow-y:auto;scrollbar-width:thin;--rl:var(--ur)}
+body.playing:not(.land) .discards{overflow:hidden}
 body.playing:not(.land) .promptrow{gap:4px}
 body.playing:not(.land) #scr-game .promptrow .actions{max-width:100%;flex:0 1 auto;gap:4px}
 
@@ -740,6 +753,9 @@ footer{margin-top:22px;font-size:13px;color:var(--muted);line-height:1.7}
     <h1 data-i="updatesBtn">更新内容</h1>
   </div>
   <ul class="upd-list">
+    <li class="upd-item"><div class="upd-date">2026-11-25</div><p class="upd-text">ホーム画面から戻ってきたときも、URLバーが出ないようにしました</p></li>
+    <li class="upd-item"><div class="upd-date">2026-11-25</div><p class="upd-text">全画面でも、敵の牌が全部見えるようにしました</p></li>
+    <li class="upd-item"><div class="upd-date">2026-11-25</div><p class="upd-text">対戦中のメニューが、一番下まで見えるようにしました</p></li>
     <li class="upd-item"><div class="upd-date">2026-11-25</div><p class="upd-text">ページを開いていない間は、音が止まるようにしました</p></li>
     <li class="upd-item"><div class="upd-date">2026-11-25</div><p class="upd-text">ブラウザの戻るボタンで、前の画面に戻れるようにしました</p></li>
     <li class="upd-item"><div class="upd-date">2026-11-25</div><p class="upd-text">対戦中に文字や点数が選択・コピーされないようにしました</p></li>
@@ -3576,8 +3592,12 @@ function fitGame(){
   }
   /* Shrink loop: some webviews over-report their visible height, which
      is how rivers ended up painted over the rows below. If the table
-     still overflows, step the river scale down first, then the hand
-     scale, until it fits. The floors (river 0.40, hand 0.38) sit far
+     still overflows, step the scales down until it fits — landscape
+     steps the river scale first, then the hand; portrait, which
+     prefers standard-size tiles and only reaches this loop when a
+     box is genuinely too short or narrow for them, steps the two
+     scales together, the larger first, so neither collapses to dots
+     while the other stays full size. The floors (river 0.40, hand 0.38) sit far
      below anything a normal box reaches — the loop breaks the moment
      the table fits — and exist only so a genuinely short box (split
      screen, an extreme letterbox) can always trade tile size for
@@ -3586,10 +3606,16 @@ function fitGame(){
      needing the deepest steps. */
   for(var k=0;k<64;k++){
     if(!tableOverflows(scr))break;
-    var riverFloor=landNow?0.40:1, handFloor=landNow?0.38:1;
-    if(ur>riverFloor){ur=Math.max(riverFloor,Math.round((ur-0.04)*100)/100);}
-    else if(uh>handFloor){uh=Math.max(handFloor,Math.round((uh-0.04)*100)/100);}
-    else break;
+    if(landNow){
+      if(ur>0.40){ur=Math.max(0.40,Math.round((ur-0.04)*100)/100);}
+      else if(uh>0.38){uh=Math.max(0.38,Math.round((uh-0.04)*100)/100);}
+      else break;
+    }else{
+      if(ur>=uh&&ur>0.40){ur=Math.max(0.40,Math.round((ur-0.04)*100)/100);}
+      else if(uh>0.38){uh=Math.max(0.38,Math.round((uh-0.04)*100)/100);}
+      else if(ur>0.40){ur=Math.max(0.40,Math.round((ur-0.04)*100)/100);}
+      else break;
+    }
     apply();
   }
   lastFitKey=key;
@@ -3866,11 +3892,6 @@ function tightenRivers(){
   if(!document.body.classList.contains("playing"))return;
   var boxes=document.querySelectorAll("#scr-game .discards");
   for(var i=0;i<boxes.length;i++){
-    if(!document.body.classList.contains("land")){
-      boxes[i].classList.remove("t1","t2","t3");
-      boxes[i].scrollTop=boxes[i].scrollHeight;
-      continue;
-    }
     var pi=boxes[i].dataset&&boxes[i].dataset.player!=null?parseInt(boxes[i].dataset.player,10):0;
     while(boxes[i].scrollHeight>boxes[i].clientHeight+2&&RIVER_TIGHT[pi]<3){
       RIVER_TIGHT[pi]++;
@@ -5075,6 +5096,31 @@ function enterFullscreen(){
     if(p&&p.catch)p.catch(function(){});
   }catch(e){}
 }
+/* Leaving for the phone's home screen (or another app or tab) drops
+   the browser out of fullscreen, so coming back to the tab shows the
+   URL bar again. A page may only re-enter fullscreen inside a user
+   gesture, so returning arms a one-shot instead: the next tap
+   anywhere — the tap the player makes anyway to play on — quietly
+   asks for fullscreen again first. Arming happens when the page
+   becomes visible again, and if fullscreen is lost some other way,
+   and only while a match is on screen; other screens are untouched,
+   and where fullscreen is unavailable the request does nothing, as
+   before. */
+var fsReturnArmed=false;
+function fsArmReturn(){
+  if(!document.body.classList.contains("playing"))return;
+  if(document.fullscreenElement||document.webkitFullscreenElement)return;
+  fsReturnArmed=true;
+}
+document.addEventListener("visibilitychange",function(){ if(!document.hidden)fsArmReturn(); });
+window.addEventListener("pageshow",fsArmReturn);
+document.addEventListener("fullscreenchange",fsArmReturn);
+document.addEventListener("webkitfullscreenchange",fsArmReturn);
+document.addEventListener("pointerdown",function(){
+  if(!fsReturnArmed)return;
+  fsReturnArmed=false;
+  if(document.body.classList.contains("playing"))enterFullscreen();
+},true);
 function startFromSettings(){
   enterFullscreen();
   setMsg("");
