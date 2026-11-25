@@ -34,6 +34,11 @@
 html,body{margin:0;padding:0;height:100%}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic UI","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+/* No text selection or copy callout on long press anywhere in the game
+   (scores, tiles, buttons, labels). Text fields stay selectable so the
+   nickname, room code and language search can still be typed/pasted. */
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input,textarea{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
 button,select{font:inherit;min-height:44px}
 button{cursor:pointer}
 a{color:var(--gold)}
@@ -735,6 +740,7 @@ footer{margin-top:22px;font-size:13px;color:var(--muted);line-height:1.7}
     <h1 data-i="updatesBtn">更新内容</h1>
   </div>
   <ul class="upd-list">
+    <li class="upd-item"><div class="upd-date">2026-11-25</div><p class="upd-text">対戦中に文字や点数が選択・コピーされないようにしました</p></li>
     <li class="upd-item"><div class="upd-date">2026-11-25</div><p class="upd-text">変えた設定が、ブラウザを更新してもそのまま残るようにしました</p></li>
     <li class="upd-item"><div class="upd-date">2026-11-25</div><p class="upd-text">牌のデザインを、本物の牌の見本と同じ見た目に直しました</p></li>
     <li class="upd-item"><div class="upd-date">2026-11-25</div><p class="upd-text">CPUとの対戦は、ブラウザを更新しても途中から続けられるようにしました</p></li>
