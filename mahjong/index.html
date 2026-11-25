@@ -314,7 +314,7 @@ body.playing.land.short .discards.t3{--rl:calc(var(--ur)*0.66)}
 .hand .t{cursor:pointer}
 .hand .t.drawn{margin-left:10px;outline:2px solid var(--gold);outline-offset:-2px}
 .hand .t.off{cursor:default;pointer-events:none}
-.t{display:inline-flex;flex:none;overflow:hidden;flex-direction:column;align-items:center;justify-content:center;width:calc(42px*var(--u));height:calc(58px*var(--u));background:var(--tile-bg);border:1px solid var(--tile-edge);border-bottom:3px solid #b8ad8d;border-radius:6px;color:var(--tile-ink);font-weight:700;line-height:1.05;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;padding:2px;font-family:inherit}
+.t{display:inline-flex;flex:none;overflow:hidden;flex-direction:column;align-items:center;justify-content:center;width:calc(42px*var(--u));height:calc(58px*var(--u));background:linear-gradient(180deg,#fffef9 0%,var(--tile-bg) 52%,#f1e9d2 100%);border:1px solid var(--tile-edge);border-bottom:3px solid #b3a582;border-radius:7px;box-shadow:inset 0 1px 0 rgba(255,255,255,.9),inset 0 -3px 5px rgba(133,110,64,.20),inset 1px 0 2px rgba(133,110,64,.10),inset -1px 0 2px rgba(133,110,64,.10),0 1px 2px rgba(24,18,4,.30);color:var(--tile-ink);font-weight:700;line-height:1.05;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;padding:2px;font-family:inherit}
 /* Hand tiles are <button>s, and the global button min-height (44px)
    would otherwise inflate them past the height the tile fit reserved
    whenever the hand scale drops below ~0.76 — one source of tiles
@@ -327,6 +327,10 @@ body.playing.land.short .discards.t3{--rl:calc(var(--ur)*0.66)}
 .tile-face .man-num{font-size:calc(17px*var(--u));color:#1e3a5f;font-weight:800;line-height:1.05}
 .tile-face .man-char{font-size:calc(24px*var(--u));color:var(--red);font-weight:900;line-height:1.05}
 .tile-face .honor-char{font-size:calc(30px*var(--u));font-weight:900;line-height:1}
+/* Carved-into-ivory lettering: a light catch along the groove's lower
+   edge and a soft shade above it, so the printed characters read as
+   engraving filled with colour, like a real tile. */
+.tile-face .man-num,.tile-face .man-char,.tile-face .honor-char{text-shadow:0 1px 0 rgba(255,255,255,.65),0 -1px 1px rgba(96,74,32,.28)}
 .t.red{color:var(--red);background:#fff6f0;border-color:#e5a09a;border-bottom-color:#c0272d}
 .t.red .man-num,.t.red .man-char{color:var(--red)}
 .t.honor .big{font-size:calc(17px*var(--u))}
@@ -714,6 +718,7 @@ footer{margin-top:22px;font-size:13px;color:var(--muted);line-height:1.7}
     <h1 data-i="updatesBtn">更新内容</h1>
   </div>
   <ul class="upd-list">
+    <li class="upd-item"><div class="upd-date">2026-11-25</div><p class="upd-text">牌のデザインを本物の牌に近い彫りの絵に変えました</p></li>
     <li class="upd-item"><div class="upd-date">2026-11-25</div><p class="upd-text">チーで組み合わせが複数あるとき、自分で選べるようにしました</p></li>
     <li class="upd-item"><div class="upd-date">2026-11-25</div><p class="upd-text">「更新内容」ボタンを追加しました</p></li>
     <li class="upd-item"><div class="upd-date">2026-11-21</div><p class="upd-text">オンライン対戦が遊べるようになりました</p></li>
@@ -1497,7 +1502,7 @@ function tilePalette(){
   if(CFG.colorblind)return {manNum:"#0072b2",manChar:"#d55e00",pin:["#0072b2","#e69f00","#0072b2","#e69f00"],pinCenter:"#d55e00",sou:["#0072b2","#e69f00","#009e73"],red:"#d55e00",honor:{4:"#0072b2",5:"#e69f00",6:"#d55e00"}};
   if(CFG.tileColor==="black"){var b="#1f2937";return {manNum:b,manChar:"#111111",pin:[b,b,b,b],pinCenter:b,sou:[b,b,b],red:b,honor:{4:b,5:b,6:b}};}
   if(CFG.tileColor==="brown"){var br="#6b3a12",br2="#8a5a1d";return {manNum:"#5b3413",manChar:"#7c4a16",pin:[br,br2,br,br2],pinCenter:"#7c4a16",sou:[br,br2,br],red:"#7c4a16",honor:{4:br,5:br,6:br}};}
-  return {manNum:"#1e3a5f",manChar:"#c0272d",pin:["#1d4ed8","#15803d","#1d4ed8","#15803d"],pinCenter:"#c0272d",sou:["#15803d","#1d4ed8","#c0272d"],red:"#c0272d",honor:{4:"#2563eb",5:"#15803d",6:"#c0272d"}};
+  return {manNum:"#1e3a5f",manChar:"#c0272d",pin:["#1d4ed8","#c0272d","#1d4ed8","#c0272d"],pinCenter:"#c0272d",sou:["#15803d","#1d4ed8","#c0272d"],red:"#c0272d",honor:{4:"#2563eb",5:"#15803d",6:"#c0272d"}};
 }
 function renderPreviews(){
   document.querySelectorAll("[data-preview]").forEach(function(box){
@@ -3264,47 +3269,99 @@ var PIP_POS={
   8:[[12,10],[28,10],[12,21],[28,21],[12,34],[28,34],[12,45],[28,45]],
   9:[[10,12],[20,12],[30,12],[10,27],[20,27],[30,27],[10,42],[20,42],[30,42]]
 };
-function pipSvg(cx,cy,r,col){
-  return "<circle cx='"+cx+"' cy='"+cy+"' r='"+r+"' fill='#fffdf5' stroke='"+col+"' stroke-width='1.7'/><circle cx='"+cx+"' cy='"+cy+"' r='"+(Math.round(r*0.58*10)/10)+"' fill='none' stroke='"+col+"' stroke-width='1.1'/><circle cx='"+cx+"' cy='"+cy+"' r='"+(Math.round(r*0.22*10)/10)+"' fill='"+col+"'/>";
+/* One pin pip as carved concentric rings: a pale copy of the ring sits
+   a breath lower, like light catching the bottom edge of the groove,
+   then the two-tone rings and centre dot are laid into it. */
+function pipSvg(cx,cy,r,colA,colB){
+  return "<circle cx='"+cx+"' cy='"+(Math.round((cy+0.9)*10)/10)+"' r='"+r+"' fill='#fffdf5' opacity='.55'/>"
+    +"<circle cx='"+cx+"' cy='"+cy+"' r='"+r+"' fill='none' stroke='"+colA+"' stroke-width='1.9'/>"
+    +"<circle cx='"+cx+"' cy='"+cy+"' r='"+(Math.round(r*0.6*10)/10)+"' fill='none' stroke='"+colB+"' stroke-width='1.3'/>"
+    +"<circle cx='"+cx+"' cy='"+cy+"' r='"+(Math.round(r*0.24*10)/10)+"' fill='"+colA+"'/>";
 }
 function pinFace(n,redTile){
   var pal=tilePalette();
   var cols=pal.pin;
   if(n===1){
-    return "<svg viewBox='0 0 40 54' aria-hidden='true'><circle cx='20' cy='27' r='15' fill='#fffdf5' stroke='"+cols[0]+"' stroke-width='2'/><circle cx='20' cy='27' r='10.5' fill='none' stroke='"+cols[1]+"' stroke-width='1.8'/><circle cx='20' cy='27' r='6' fill='none' stroke='"+pal.pinCenter+"' stroke-width='1.6'/><circle cx='20' cy='27' r='2.4' fill='"+pal.pinCenter+"'/></svg>";
+    return "<svg viewBox='0 0 40 54' aria-hidden='true'>"
+      +"<circle cx='20' cy='27.9' r='15' fill='#fffdf5' opacity='.55'/>"
+      +"<circle cx='20' cy='27' r='15' fill='none' stroke='"+cols[0]+"' stroke-width='2.2'/>"
+      +"<circle cx='20' cy='27' r='10.8' fill='none' stroke='"+cols[1]+"' stroke-width='1.9'/>"
+      +"<circle cx='20' cy='27' r='6.6' fill='none' stroke='"+cols[0]+"' stroke-width='1.6'/>"
+      +"<circle cx='20' cy='27' r='2.6' fill='"+pal.pinCenter+"'/></svg>";
   }
   var r=n<=4?7.4:6.1;
   var pos=PIP_POS[n]||PIP_POS[1];
   var s="<svg viewBox='0 0 40 54' aria-hidden='true'>";
   pos.forEach(function(p,i){
-    var col=redTile?pal.red:(n===5&&i===2?pal.red:cols[i%4]);
-    s+=pipSvg(p[0],p[1],r,col);
+    var main=redTile?pal.red:cols[i%4];
+    var sub=redTile?pal.red:cols[(i+1)%4];
+    if(n===5&&i===2){main=pal.red;sub=pal.red;}
+    s+=pipSvg(p[0],p[1],r,main,sub);
   });
   return s+"</svg>";
 }
-function bambooSvg(cx,cy,col,sc){
-  return "<g transform='translate("+cx+" "+cy+") scale("+sc+")'><rect x='-3.4' y='-7' width='6.8' height='6.2' rx='3' fill='"+col+"'/><rect x='-3.4' y='0.8' width='6.8' height='6.2' rx='3' fill='"+col+"'/><rect x='-3.4' y='-1.1' width='6.8' height='1.9' fill='#fffdf5'/></g>";
+/* One bamboo stalk, drawn the way a real tile carves it: two rounded
+   segments split by the pale node groove, a slim highlight down one
+   side and a soft shade down the other so the stalk reads round, and
+   a pale underlay offset a breath lower — light catching the bottom
+   edge of the carving. No leaves: a stalk is just a stalk. */
+function bambooSvg(cx,cy,col,sc,rot){
+  return "<g transform='translate("+cx+" "+cy+") rotate("+(rot||0)+") scale("+sc+")'>"
+    +"<rect x='-3.2' y='-6.1' width='6.4' height='14' rx='3' fill='#fffdf5' opacity='.55'/>"
+    +"<rect x='-3.2' y='-7' width='6.4' height='6.3' rx='2.9' fill='"+col+"'/>"
+    +"<rect x='-3.2' y='0.7' width='6.4' height='6.3' rx='2.9' fill='"+col+"'/>"
+    +"<rect x='-3.2' y='-1' width='6.4' height='1.7' fill='#fffdf5'/>"
+    +"<rect x='-2.2' y='-6.1' width='1.4' height='12.2' rx='.7' fill='#ffffff' opacity='.30'/>"
+    +"<rect x='1.5' y='-6.1' width='1.2' height='12.2' rx='.6' fill='#000000' opacity='.10'/>"
+    +"</g>";
+}
+/* 1-sou is the peacock, as on real Japanese tiles: a fanned tail of
+   leaf feathers, each carrying a blue eye with a red heart, over a
+   blue body and crested head. */
+function peacockSvg(pal){
+  var g=pal.sou[0],b=pal.sou[1],r=pal.red;
+  var s="<svg viewBox='0 0 40 54' aria-hidden='true'>";
+  [-48,-32,-16,0,16,32,48].forEach(function(a){
+    s+="<g transform='rotate("+a+" 20 41)'>"
+      +"<path d='M20 41 C16.6 31 16.6 21 20 12.5 C23.4 21 23.4 31 20 41 Z' fill='"+g+"' stroke='rgba(60,40,0,.18)' stroke-width='.5'/>"
+      +"<circle cx='20' cy='18' r='3' fill='"+b+"'/>"
+      +"<circle cx='20' cy='18' r='1.5' fill='"+r+"'/>"
+      +"</g>";
+  });
+  s+="<path d='M20 31 C14.5 36.5 14.5 44.5 20 48 C25.5 44.5 25.5 36.5 20 31 Z' fill='"+b+"' stroke='rgba(60,40,0,.18)' stroke-width='.5'/>"
+    +"<rect x='18.6' y='27' width='2.8' height='6' fill='"+b+"'/>"
+    +"<path d='M17.6 22.4 L19.2 26.4 M20 21.6 L20 26.4 M22.4 22.4 L20.8 26.4' stroke='"+b+"' stroke-width='.8' fill='none'/>"
+    +"<circle cx='17.6' cy='21.4' r='1' fill='"+g+"'/><circle cx='20' cy='20.6' r='1' fill='"+g+"'/><circle cx='22.4' cy='21.4' r='1' fill='"+g+"'/>"
+    +"<circle cx='20' cy='26.8' r='3.6' fill='"+b+"' stroke='rgba(60,40,0,.18)' stroke-width='.5'/>"
+    +"<path d='M23.2 25.9 L26.4 27.1 L23.2 28.3 Z' fill='"+r+"'/>"
+    +"<circle cx='21.2' cy='26.1' r='.75' fill='#fffdf5'/>"
+    +"</svg>";
+  return s;
 }
 function souFace(n,redTile){
   var pal=tilePalette();
-  if(n===1){
-    return "<svg viewBox='0 0 40 54' aria-hidden='true'>"+bambooSvg(20,27,pal.sou[0],2.15)+"<circle cx='20' cy='27' r='3' fill='"+pal.red+"'/></svg>";
-  }
-  var pos=PIP_POS[n]||PIP_POS[1];
-  var sc=0.92;
-  if(n===8){
-    /* 8 bamboo = 16 segments in 2 cols x 4 rows: the shared PIP rows sit
-       only 11 units apart while a bamboo at 0.92 scale is ~12.9 tall, so
-       neighbouring bamboo overlapped. Even out the rows and shrink the
-       bamboo so every segment clears its neighbours. */
-    pos=[[12,8.5],[28,8.5],[12,20.8],[28,20.8],[12,33.2],[28,33.2],[12,45.5],[28,45.5]];
-    sc=0.78;
-  }
+  if(n===1)return peacockSvg(pal);
+  var G=pal.sou[0],B=pal.sou[1],R=pal.red;
+  /* The traditional bamboo layouts, as carved on real tiles:
+     [x, y, colour, scale, tilt]. 2 stands in a column; 3 is one over
+     two; 4 is 2x2; 5 is the four corners around a red centre; 6 is
+     three over three; 7 runs a red-headed diagonal of three over a
+     row of four; 8 leans its stalks into a W above and an M below;
+     9 is the full 3x3 — green over blue over red. */
+  var L={
+    2:[[20,13.5,G,1.5],[20,40.5,B,1.5]],
+    3:[[20,13,G,1.35],[12,39,B,1.15],[28,39,B,1.15]],
+    4:[[12,14,G,1.15],[28,14,B,1.15],[12,40,B,1.15],[28,40,G,1.15]],
+    5:[[11,13,G,1.1],[29,13,B,1.1],[20,27,R,1.1],[11,41,B,1.1],[29,41,G,1.1]],
+    6:[[10,14,G,1.05],[20,14,G,1.05],[30,14,G,1.05],[10,40,B,1.05],[20,40,B,1.05],[30,40,B,1.05]],
+    7:[[9.5,10.5,R,.8,-14],[16.5,14,G,.8,-14],[23.5,17.5,G,.8,-14],[7.5,40,G,.82],[15,40,B,.82],[25,40,B,.82],[32.5,40,G,.82]],
+    8:[[8.5,13.5,G,.82,-16],[15.5,13.5,G,.82,16],[24.5,13.5,G,.82,-16],[31.5,13.5,G,.82,16],[8.5,40.5,B,.82,16],[15.5,40.5,B,.82,-16],[24.5,40.5,B,.82,16],[31.5,40.5,B,.82,-16]],
+    9:[[10,12,G,.95],[20,12,G,.95],[30,12,G,.95],[10,27,B,.95],[20,27,B,.95],[30,27,B,.95],[10,42,R,.95],[20,42,R,.95],[30,42,R,.95]]
+  };
+  var pos=L[n]||L[2];
   var s="<svg viewBox='0 0 40 54' aria-hidden='true'>";
-  pos.forEach(function(p,i){
-    var col=redTile?pal.red:(i%5===4?pal.red:pal.sou[i%3===1?1:0]);
-    if(n===5&&i===2)col=pal.red;
-    s+=bambooSvg(p[0],p[1],col,sc);
+  pos.forEach(function(p){
+    s+=bambooSvg(p[0],p[1],redTile?R:p[2],p[3],p[4]||0);
   });
   return s+"</svg>";
 }
@@ -3316,6 +3373,9 @@ function tileFaceHtml(x){
   }
   if(tp<18){ return pinFace(tp-9+1,x.red); }
   if(tp<27){ return souFace(tp-18+1,x.red); }
+  /* 白 (haku) is blank on a real tile — no character at all, so there
+     is never pale lettering lost on the ivory face. */
+  if(tp===31){ return "<span class='tile-face'></span>"; }
   var col=pal.honor[tp-27]||"#1f2937";
   return "<span class='tile-face'><span class='honor-char' style='color:"+col+"'>"+HONOR[tp-27]+"</span></span>";
 }
