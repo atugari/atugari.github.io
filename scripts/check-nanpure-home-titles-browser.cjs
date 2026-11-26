@@ -110,7 +110,7 @@ async function setup(browser,width,height,theme='color'){
   await page.goto(site+'/nanpure/');
   await page.locator('.main-choice').click();
   await page.frameLocator('iframe.notebook').locator('#multi-sizes-form').waitFor();
-  await page.locator('.back-button').click();
+  const nbFrame2=await (await page.locator('iframe.notebook').elementHandle()).contentFrame();await nbFrame2.evaluate(()=>NPWebsiteHome());
   await page.locator('.choose-rules').click();
   await page.frameLocator('iframe.notebook').locator('[data-action="open-notebook"]').waitFor();
   assert.equal(await page.frameLocator('iframe.notebook').locator('[data-collection-entry]').count(),0,'The play menu has no collection entry');
