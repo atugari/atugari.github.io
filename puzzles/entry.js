@@ -19,7 +19,7 @@ function launch(w){
 }
 function wire(w){
  const d=w.document;if(d.documentElement.dataset.pareEntry)return;d.documentElement.dataset.pareEntry=game;
- if(game==='wado'){const st=w.document.createElement('style');st.textContent='.play-header .back,.play-header strong{display:none!important}.play-header .header-tools{margin-left:auto}';(w.document.head||w.document.documentElement).append(st)}
+ if(game==='wado'){const st=w.document.createElement('style');st.textContent='.play-header .back,.play-header strong{display:none!important}.play-header .header-tools{margin-left:auto}#play-settings label:has(>#play-count),#play-settings label:has(>#play-size){display:none!important}.setting-shortcut{border:1px solid #acbdb0!important;background:#fffefa!important;border-radius:12px;padding:11px 15px;min-height:48px;color:#285849;justify-content:space-between;font-size:.92em}';(w.document.head||w.document.documentElement).append(st);for(const id of['play-count','play-size']){const sel=w.document.getElementById(id),lab=sel&&sel.closest('label');if(lab)lab.style.display='none'}}
  // All game links back to the old notebook now return to the public hub.
  d.addEventListener('click',e=>{
   const b=e.target.closest?.('a,button');if(!b)return;
@@ -114,7 +114,8 @@ async function open(){try{
  const response=await fetch('/nanpure/version.json',{cache:'no-store'});if(!response.ok)throw Error('version');const {version}=await response.json();
  if(!/^\d{4}\.\d{2}\.\d{2}\.\d+$/.test(version)||!targets[game])throw Error('version');base='/nanpure/releases/'+version+'/notebook/';
  const audio=document.createElement('script');audio.src='/nanpure/releases/'+version+'/site-audio.js';await new Promise(resolve=>{audio.onload=audio.onerror=resolve;document.head.append(audio)});
- frame.src=base+targets[game];
+ if(game==='wado'){try{const raw=localStorage.getItem('np-wado-v1');if(raw){const d=JSON.parse(raw);if(d&&d.preferences&&(d.preferences.wordCount!==4||d.preferences.uiSize!=='normal')){d.preferences.wordCount=4;d.preferences.uiSize='normal';localStorage.setItem('np-wado-v1',JSON.stringify(d))}}}catch{}}
+  frame.src=base+targets[game];
  }catch{fail()}}
 open();
 })();
