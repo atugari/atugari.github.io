@@ -333,6 +333,7 @@ async function checkResponsiveFreePlay(browser,root,viewport){
   const element=await page.locator('iframe.notebook').elementHandle(),frame=await element.contentFrame();
   assert(frame,'Free Play iframe: '+label);
   await frame.waitForFunction(()=>!!window.NanpureAppTest&&window.NPI18n?.get()==='en',{},{timeout:20000});
+  await frame.locator('#multi-sizes-form').waitFor();await page.locator('.back-button').click();
   await page.locator('.choose-rules').click();
   await frame.locator('[data-action="open-notebook"]').waitFor();
   assert.equal(indexRequests,1,'Delayed notebook boot never duplicates index request: '+label);
