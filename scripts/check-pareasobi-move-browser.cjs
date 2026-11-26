@@ -18,7 +18,7 @@ await page.getByRole('link',{name:'月100円で製作者を応援しよう♫',e
 assert.equal(await page.locator('.designed-home [data-pare-entry]').count(),0);
 assert.equal(await page.locator('.shiru-entry').isVisible(),false);
 // The prerendered home buttons receive their click handlers when the shell mounts.
-await page.waitForFunction(()=>window.NPAchievementShellAttached);await page.locator('.main-choice').click();const notebook=page.frameLocator('iframe.notebook');await notebook.locator('#multi-sizes-form').waitFor();await page.locator('.back-button').click();await page.locator('.choose-rules').click();await notebook.locator('[data-action="open-notebook"]').waitFor();await notebook.locator('[data-action="open-crossword"]').waitFor({state:'attached'});await notebook.locator('[data-action="open-prototype"]').waitFor({state:'attached'});
+await page.waitForFunction(()=>window.NPAchievementShellAttached);await page.locator('.main-choice').click();const notebook=page.frameLocator('iframe.notebook');await notebook.locator('#multi-sizes-form').waitFor();await page.evaluate(()=>{document.querySelector('iframe.notebook')?.contentWindow?.NPWebsiteHome?.();});await page.locator('.choose-rules').click();await notebook.locator('[data-action="open-notebook"]').waitFor();await notebook.locator('[data-action="open-crossword"]').waitFor({state:'attached'});await notebook.locator('[data-action="open-prototype"]').waitFor({state:'attached'});
 // The navigation adapter hides the non-Sudoku entries with data-np-moved, but the
 // notebook re-renders its menu when the language pack lands, briefly showing fresh
 // buttons. Wait until both entries stay hidden for a full second before asserting.

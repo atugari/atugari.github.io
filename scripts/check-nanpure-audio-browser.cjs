@@ -30,7 +30,7 @@ async function openNotebook(page,n=9){
  await page.locator('.main-choice').click();await page.waitForFunction(()=>{const f=document.querySelector('iframe.notebook');return f&&getComputedStyle(f).visibility==='visible';});
  const frame=await(await page.locator('iframe.notebook').elementHandle()).contentFrame();await frame.waitForFunction(()=>!!window.NPKeyBindings&&!!window.NanpureAppTest);
  await frame.evaluate(async p=>{NanpureAppTest.validate(p);const lib=NanpureAppTest.getLibrary();lib.splice(0,lib.length,p);await NPStorage.save(lib,p);},classic(n));
- await frame.locator('#multi-sizes-form').waitFor();await page.locator('.back-button').click();await page.locator('.choose-rules').click();await frame.locator('[data-action="open-notebook"]').waitFor();
+ await frame.locator('#multi-sizes-form').waitFor();await frame.evaluate(()=>NPWebsiteHome());await page.locator('.choose-rules').click();await frame.locator('[data-action="open-notebook"]').waitFor();
  for(const selector of ['[data-action="open-notebook"]','[data-action="start"][data-flow="play"]','[data-action="pick-play"][data-id="ci-keys-'+n+'"]','[data-action="begin-play"][data-id="ci-keys-'+n+'"]'])await frame.locator(selector).click();
  await frame.locator('#np-play-settings-button').click();await frame.locator('[aria-controls="np-settings-page-input"]').click();await frame.locator('#play-input-mode').selectOption('cell');await frame.locator('#play-input-mode:not([disabled])').waitFor();await frame.locator('#np-play-settings').evaluate(d=>d.close());await tick(page);return frame;
 }

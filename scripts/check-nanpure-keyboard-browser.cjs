@@ -79,7 +79,7 @@ async function openNotebook(page,kind){
   if(!NanpureAppTest.validate(p))throw Error('Invalid deterministic fixture');
   const lib=NanpureAppTest.getLibrary();lib.splice(0,lib.length,p);await NPStorage.save(lib,p);return p.uid;
  },{kind,normal:classic(kind===100?100:16)});
- await frame.locator('#multi-sizes-form').waitFor();await page.locator('.back-button').click();await page.locator('.choose-rules').click();await frame.locator('[data-action="open-notebook"]').waitFor();
+ await frame.locator('#multi-sizes-form').waitFor();await frame.evaluate(()=>NPWebsiteHome());await page.locator('.choose-rules').click();await frame.locator('[data-action="open-notebook"]').waitFor();
  for(const selector of ['[data-action="open-notebook"]','[data-action="start"][data-flow="play"]','[data-action="pick-play"][data-id="'+uid+'"]','[data-action="begin-play"][data-id="'+uid+'"]'])await activate(page,frame.locator(selector));
  await frame.locator('#board [data-cell="0"]').waitFor();
  // Notebook preferences are in NPStorage.meta (IndexedDB), not localStorage.

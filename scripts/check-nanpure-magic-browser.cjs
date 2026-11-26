@@ -29,7 +29,7 @@ async function finish(f){assert.deepEqual(f.errors,[]);assert.deepEqual(f.writes
 async function journey(browser){
  const f=await setup(browser),{page}=f;
  await page.locator('.main-choice').click();await page.waitForFunction(()=>document.querySelector('iframe.notebook')?.contentWindow?.NanpureAppTest);
- await page.frameLocator('iframe.notebook').locator('#multi-sizes-form').waitFor();await page.locator('.back-button').click();await page.locator('.choose-rules').click();
+ await page.frameLocator('iframe.notebook').locator('#multi-sizes-form').waitFor();await page.evaluate(()=>{document.querySelector('iframe.notebook')?.contentWindow?.NPWebsiteHome?.();});await page.locator('.choose-rules').click();
  const frame=await(await page.locator('iframe.notebook').elementHandle()).contentFrame();await frame.locator('[data-future="magic-square"]').waitFor({state:'attached'});
  const future=frame.locator('[data-future="magic-square"]');assert(await future.isDisabled());assert.equal(await future.getAttribute('aria-disabled'),'true');
  assert(await frame.getByRole('button',{name:'イラストロジック帳を開く'}).isDisabled());
