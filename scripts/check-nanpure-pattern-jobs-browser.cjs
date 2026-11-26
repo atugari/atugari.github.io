@@ -43,6 +43,6 @@ async function setup(browser,viewport){
  assert(await page.locator('.designed-home').isVisible());
  const notebook=page.frames().find(f=>f.url().includes('/notebook/index.html')),before=await notebook.evaluate(()=>NPPatternQueue.list()[0].attempts);
  await notebook.waitForFunction(attempts=>NPPatternQueue.list()[0].attempts>attempts,before);assert.equal(await notebook.evaluate(()=>NPPatternQueue.list()[0].state),'checking','Returning to the outer homepage keeps generating');
- await page.locator('.main-choice').click();await frame.locator('#multi-sizes-form').waitFor();await page.locator('.choose-rules').click();await frame.locator('[data-pattern-jobs-dock]').click();assert(await frame.locator('.pattern-jobs-dialog').isVisible());await frame.locator('[data-job-stop]').click();assert.deepEqual(errors,[]);await context.close();
+ await page.locator('.main-choice').click();await frame.locator('#multi-sizes-form').waitFor();await notebook.evaluate(()=>NPWebsiteHome());await frame.locator('[data-pattern-jobs-dock]').click();assert(await frame.locator('.pattern-jobs-dialog').isVisible());await frame.locator('[data-job-stop]').click();assert.deepEqual(errors,[]);await context.close();
  console.log('PASS outer homepage Back and reentry preserve the real generation worker');
 }finally{await browser.close()}})().catch(error=>{console.error(error);process.exit(1)});

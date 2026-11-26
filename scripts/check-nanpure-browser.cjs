@@ -496,6 +496,7 @@ async function checkJigsawCreationAndPrint(page,lang,expected){
  const iframe=await page.locator('iframe.notebook').elementHandle(),frame=await iframe.contentFrame();
  assert(frame,'Notebook iframe is attached: '+lang);
  await frame.waitForFunction(lang=>!!window.NanpureAppTest&&window.NPI18n?.get()===lang,lang,{timeout:20000});
+ await frame.locator('#multi-sizes-form').waitFor();await page.locator('.back-button').click();
  await page.locator('.choose-rules').click();
  await frame.locator('[data-action="open-notebook"]').click();
  await frame.evaluate(()=>window.NPWebsiteTool('open-create'));

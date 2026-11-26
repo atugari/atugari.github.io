@@ -19,3 +19,11 @@ w.NPSiteLayout={get:()=>mode,set,apply,status:()=>error};let initial=read();try{
 const css=document.createElement('link');css.rel='stylesheet';css.href=new URL('site-layout.css',asset).href;document.head.append(css);
 let queued=false;const schedule=()=>{if(!queued){queued=true;requestAnimationFrame(()=>{queued=false;mount()})}};new MutationObserver(schedule).observe(document.documentElement,{childList:true,subtree:true});w.addEventListener('np-language-change',()=>{document.querySelectorAll('.np-site-layout-control').forEach(n=>n.replaceWith(control()))});w.addEventListener('storage',e=>{if(e.key===key||e.key===null)apply(read())});w.addEventListener('resize',()=>{for(const note of document.querySelectorAll('[data-layout-note]'))note.hidden=mode!=='pc'||innerWidth>=500});mount();
 })();
+/* Shell chrome: keep only the back button while a multi puzzle is arranged,
+   and return to an interrupted multi creation after a browser reload. */
+(()=>{'use strict';if(window!==window.parent)return;const w=window;
+w.addEventListener('message',e=>{if(e.origin!==location.origin)return;const d=e.data;if(d&&d.type==='np-chrome-minimal'){const el=document.querySelector('.site-shell');if(el)el.classList.toggle('np-minimal',!!d.minimal)}});
+const clearIfGone=()=>{const f=document.querySelector('iframe.notebook');if(!f||!f.getClientRects().length){const el=document.querySelector('.site-shell');if(el)el.classList.remove('np-minimal')}};
+w.addEventListener('click',()=>setTimeout(clearIfGone,60),true);
+try{const nav=performance.getEntriesByType('navigation')[0],at=Number(localStorage.getItem('nanpure-resume-multi-v1')||0);
+if(nav&&nav.type==='reload'&&at&&Date.now()-at<86400000){const t0=Date.now();const iv=setInterval(()=>{const b=document.querySelector('.main-choice');if(b){clearInterval(iv);b.click()}else if(Date.now()-t0>10000)clearInterval(iv)},300)}else if(at&&Date.now()-at>=86400000)localStorage.removeItem('nanpure-resume-multi-v1')}catch{}})();
