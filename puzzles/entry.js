@@ -19,6 +19,7 @@ function launch(w){
 }
 function wire(w){
  const d=w.document;if(d.documentElement.dataset.pareEntry)return;d.documentElement.dataset.pareEntry=game;
+ if(game==='wado'){const st=w.document.createElement('style');st.textContent='.play-header .back,.play-header strong{display:none!important}.play-header .header-tools{margin-left:auto}';(w.document.head||w.document.documentElement).append(st)}
  // All game links back to the old notebook now return to the public hub.
  d.addEventListener('click',e=>{
   const b=e.target.closest?.('a,button');if(!b)return;

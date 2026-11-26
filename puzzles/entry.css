@@ -10,3 +10,6 @@
 .game-intro-content p{margin:0}
 .game-intro-content p+p{margin-top:8px}
 .game-intro-content a{color:inherit}
+
+body[data-game="wado"] header a[data-hub]{background:#ffffff;border:2.5px solid #e8590c;border-radius:10px;padding:8px 14px;min-height:44px;color:#e8590c;font-size:16px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;box-sizing:border-box}
+body[data-game="wado"] header h1{font-size:24px;white-space:nowrap;flex:none}

@@ -34,7 +34,7 @@ for(const slug of ['shirupure','wado','crossword','studio']){
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,slug+' outer width');
  const child=page.frameLocator('#game');assert(await child.locator('main').isVisible(),slug+' has actual content');
  if(slug==='shirupure'){await child.locator('[data-act=learn]').click();await child.locator('.lesson-target').click();await page.waitForFunction(()=>{const h=document.querySelector('body[data-game="shirupure"]>header');return h&&getComputedStyle(h).display==='none'});assert.equal(await page.evaluate(()=>getComputedStyle(document.querySelector('body[data-game="shirupure"]>header')).display),'none','shirupure outer header hidden as intended');}
- if(slug==='wado'){await page.locator('[data-sound]').click();await page.locator('dialog[open] [data-audio=track]').selectOption('cozy-puzzle-3');assert.equal(await page.evaluate(()=>NPSiteAudio.get().track),'cozy-puzzle-3');await page.locator('dialog[open]').getByRole('button',{name:'閉じる',exact:true}).click();}
+ if(slug==='wado'){assert.equal(await page.locator('[data-sound]').count(),0,'wado sound button removed');}
  if(slug==='shirupure'){await page.goto(origin+'/');}else{await page.locator('[data-hub]').click();}await page.locator('.game-list').waitFor();
 }
 // All public cards must start and return at each requested viewport. Verify an
