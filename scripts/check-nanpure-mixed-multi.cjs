@@ -203,7 +203,7 @@ const svg={getScreenCTM:()=>({a:.8,d:.8,e:10,f:20}),querySelector:()=>({setAttri
 const editor={querySelector:()=>svg,setPointerCapture(){}};
 const editorCtx=vm.createContext({E:{multiShape:'custom',multiSizes:[9,9],multiLinks:[{parent:0,dx:6,dy:6}]},NanpureMulti:ctx.NanpureMulti,NP:ctx.NP,r:ctx.NP.KIND,document:{addEventListener:(type,fn)=>handlers[type]=fn,querySelector:()=>status},fn:()=>redraws++,$e:()=>'',u:ctx.NP.esc,Ue:()=>'',h:-1});
 vm.runInContext(app.slice(editorStart,editorEnd),editorCtx);
-assert(editorCtx.mixedSettings().includes('data-multi-offset="1"'));
+assert(!editorCtx.mixedSettings().includes('data-multi-offset'),'position inputs are removed from the create screen');
 const pointer={target:{closest:()=>editor},pointerId:7,button:0,clientX:330,clientY:340,preventDefault(){}};
 handlers.pointerdown(pointer);handlers.pointermove({...pointer,clientX:266,clientY:308});handlers.pointerup({...pointer,clientX:266,clientY:308});
 assert.equal(JSON.stringify(editorCtx.E.multiLinks),JSON.stringify([{parent:0,dx:4,dy:5}]));assert(redraws>0);assert(attributes.transform.includes('-80 -40'));
@@ -215,8 +215,9 @@ editorCtx.E={multiShape:'custom',multiSizes:flower.sizes,multiLinks:flower.links
 const flowerForm=editorCtx.mixedSettings();
 assert(!flowerForm.includes('class="notice error"'),'recorded layout has no red validation error');
 assert(!/<button[^>]*type="submit"[^>]*disabled/.test(flowerForm),'recorded layout can continue');
-assert.equal((flowerForm.match(/min="-200" max="200"/g)||[]).length,14,'all position inputs accept the same bounds as dragging');
-assert(flowerForm.includes('value="18" data-multi-offset="3"'),'D retains the recorded offset beyond its reference board');
+assert(!flowerForm.includes('data-multi-offset'),'flower form has no position inputs');
+const flowerLayout=editorCtx.NanpureMulti.mixedLayout('custom',flower.sizes,flower.links);
+assert.equal(JSON.stringify(flowerLayout.boards.map(b=>[b.x,b.y])),JSON.stringify(flower.coordinates),'recorded layout keeps every board position, including D beyond its reference board');
 const print=fs.readFileSync(path.join(base,'print.html'),'utf8');assert(print.includes('<script src="common.js"></script><script src="mixed-multi.js"></script>'));
 assert(fs.readFileSync(path.join(base,'app.js'),'utf8').includes('"generator-source","core-mixed-multi"].map'));
 assert(fs.readFileSync(path.join(base,'portable.js'),'utf8').includes('"generator-source","core-mixed-multi"].map'));
