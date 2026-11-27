@@ -221,5 +221,5 @@ body #app:has(#multi-sizes-form){padding-top:0!important}
 .multi-size-row{margin-top:10px;border:1px solid #b8c8b9;border-radius:10px;background:var(--paper,#fff);padding:8px 12px;font-weight:700}
 .multi-size-row select{font-size:17px;font-weight:700;padding:6px}
 
-#multi-sizes-form .multi-layout-preview[data-multi-layout-editor]{height:auto;max-height:78vh;overflow:auto;overscroll-behavior:contain}
+#multi-sizes-form .multi-layout-preview[data-multi-layout-editor]{height:auto;min-height:280px;max-height:78vh;overflow:auto;overscroll-behavior:contain}
 #multi-sizes-form .multi-layout-preview[data-multi-layout-editor] svg{max-height:none}
