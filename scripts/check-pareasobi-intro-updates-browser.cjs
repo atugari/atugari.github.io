@@ -36,7 +36,7 @@ async function contextFor(browser,width,height){
      await page.waitForFunction(()=>{const el=document.querySelector('details.game-intro');return el&&getComputedStyle(el).display==='none';},null,{timeout:10000});
      continue;
     }
-    if(key==='wado'){assert.equal(await intro.count(),0,'wado intro removed');await frame.waitFor({state:'visible',timeout:30000});const wbox=await frame.boundingBox();assert(wbox&&wbox.height>120,'wado has a usable play area');continue;}
+    if(key==='wado'){assert.equal(await intro.count(),0,'wado intro removed');assert.equal(await page.locator('#levels button').count(),10,'wado shows 10 difficulty buttons');const wbox=await page.locator('#levels').boundingBox();assert(wbox&&wbox.height>120,'wado has a usable play area');continue;}
     await intro.waitFor();assert.equal(await intro.evaluate(e=>e.open),false,key+' starts collapsed');
     await frame.waitFor({state:'visible',timeout:30000});
     await page.waitForFunction(()=>{const f=document.querySelector('#game');try{return !!f?.contentDocument?.querySelector('main')}catch{return false}},null,{timeout:30000});
