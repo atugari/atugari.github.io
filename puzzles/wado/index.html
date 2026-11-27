@@ -1,6 +1,6 @@
 <!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>和同開珎問題｜無料の共通漢字パズル｜パレあそび</title><meta name="description" content="四つの熟語に共通して入る漢字を考える無料の和同開珎問題パズル。ヒントを使って挑戦でき、スマホ・PCで遊べます。"><link rel="canonical" href="https://pareasobi.com/puzzles/wado/"><link rel="stylesheet" href="../entry.css?v=20261109-intro1"><script defer src="/nanpure/assets/reading-tools.js?v=20261101-reading1"></script><meta name="robots" content="index, follow, max-image-preview:large"><meta property="og:type" content="website"><meta property="og:site_name" content="パレあそび"><meta property="og:title" content="和同開珎問題｜無料の共通漢字パズル｜パレあそび"><meta property="og:description" content="四つの熟語に共通して入る漢字を考える無料の和同開珎問題パズル。ヒントを使って挑戦でき、スマホ・PCで遊べます。"><meta property="og:url" content="https://pareasobi.com/puzzles/wado/"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="和同開珎問題｜無料の共通漢字パズル｜パレあそび"><meta name="twitter:description" content="四つの熟語に共通して入る漢字を考える無料の和同開珎問題パズル。ヒントを使って挑戦でき、スマホ・PCで遊べます。"><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"和同開珎問題","url":"https://pareasobi.com/puzzles/wado/","description":"四つの熟語に共通して入る漢字を考える無料の和同開珎問題パズル。ヒントを使って挑戦でき、スマホ・PCで遊べます。","applicationCategory":"GameApplication","operatingSystem":"Any","browserRequirements":"Requires JavaScript","isAccessibleForFree":true,"inLanguage":"ja","offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"}}</script><script defer src="/nanpure/assets/guide-banner.js"></script><style>
-.wado-main{max-width:560px;margin:0 auto;padding:8px 16px 40px}
-.wado-main h2.q{font-size:clamp(22px,6vw,30px);text-align:center;margin:18px 0 14px;color:#23403a}
+.wado-main{width:100%;max-width:560px;margin:0 auto;padding:8px 16px 40px}
+.wado-main h2.q{font-size:clamp(22px,6vw,30px);text-align:center;margin:8px 0 14px;color:#23403a}
 .board{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;grid-template-rows:auto auto auto auto auto;justify-items:center;align-items:center;gap:2px;max-width:340px;margin:0 auto}
 .board .cell{width:64px;height:64px;border:2px solid #5b7267;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:700;color:#23403a}
 .board .cell.center{background:#e7f2e9;border-color:#285849;color:#285849}
@@ -11,7 +11,7 @@
 .pos-center{grid-column:3;grid-row:3}
 .pos-aright{grid-column:4;grid-row:3}.pos-right{grid-column:5;grid-row:3}
 .pos-abottom{grid-column:3;grid-row:4}.pos-bottom{grid-column:3;grid-row:5}
-.tagline{text-align:center;color:#5b7267;margin:14px 0 20px}
+.daily-head{display:flex;justify-content:center;align-items:baseline;gap:10px;margin:16px 0 0}.daily-label{font-size:19px;font-weight:800;color:#23403a}.daily-level{font-weight:700;color:#5b7267}
 .pick-note{text-align:center;font-weight:700;color:#23403a;margin:18px 0 10px}
 .levels{display:grid;gap:8px}
 .levels button{width:100%;text-align:left;min-height:48px;border:1px solid #acbdb0;border-radius:12px;padding:11px 15px;background:#fffefa;color:#285849;font-weight:700;font-size:16px;cursor:pointer}
@@ -51,15 +51,15 @@ rt{display:none!important}
 </style></head><body data-game="wado"><header><a data-hub href="/plaza.html">パレあそびへ戻る</a><h1>和同開珎問題</h1></header>
 <main class="wado-main">
  <section id="view-title">
+  <div class="daily-head"><span class="daily-label">今日の問題</span><span class="daily-level" id="daily-level"></span></div>
   <h2 class="q">真ん中に入る漢字は？</h2>
-  <div class="board welcome-board" aria-hidden="true" data-i18n-skip translate="no">
-   <div class="cell pos-top">学</div><div class="arrow pos-atop">↓</div>
-   <div class="cell pos-left">先</div><div class="arrow pos-aleft">→</div>
+  <div class="board welcome-board" data-i18n-skip translate="no">
+   <div class="cell pos-top" id="sample-top">学</div><div class="arrow pos-atop">↓</div>
+   <div class="cell pos-left" id="sample-left">先</div><div class="arrow pos-aleft">→</div>
    <div class="cell center pos-center" id="sample-center">？</div><div class="arrow pos-aright">→</div>
-   <div class="cell pos-right">活</div>
-   <div class="arrow pos-abottom">↓</div><div class="cell pos-bottom">徒</div>
+   <div class="cell pos-right" id="sample-right">活</div>
+   <div class="arrow pos-abottom">↓</div><div class="cell pos-bottom" id="sample-bottom">徒</div>
   </div>
-  <p class="tagline">同じ漢字で、言葉がつながる。</p>
   <form class="answer-row" id="sample-form"><input id="sample-input" type="text" autocomplete="off" placeholder="中央の漢字1文字" aria-label="中央に入る漢字"><button data-i18n-skip translate="no" type="submit" class="primary-btn">答える</button></form>
   <p class="feedback" id="sample-feedback" role="status"></p>
   <div class="example" id="sample-example" hidden></div>
@@ -178,27 +178,52 @@ function showExample(){
   box.innerHTML='<h3>解答例：'+p.answer+'</h3><ul>'+items+'</ul><p class="help">別の漢字でも、すべての熟語が成り立つ場合があります。</p>';
   box.hidden=false;
 }
-const SAMPLE={arms:{top:'学',left:'先',right:'活',bottom:'徒'},answer:'生',answers:['生']};
-let sampleSolved=false;
+const FALLBACK={arms:{top:'学',left:'先',right:'活',bottom:'徒'},answer:'生',answers:['生']};
+let daily=null,dailyDate='',sampleSolved=false;
+function jstToday(){return new Date(Date.now()+9*3600*1000).toISOString().slice(0,10);}
+function dailyKeyOf(p){return p.arms.top+p.arms.left+p.arms.right+p.arms.bottom+p.answer;}
+function showSampleExample(){
+  const items=['top','left','right','bottom'].map(k=>'<li>'+wordFor(daily,k,daily.answer)+'</li>').join('');
+  const box=$('sample-example');
+  box.innerHTML='<h3>解答例：'+daily.answer+'</h3><ul>'+items+'</ul>';
+  box.hidden=false;
+}
+function setDaily(p,dateStr,levelName){
+  daily=p;dailyDate=dateStr||jstToday();sampleSolved=false;
+  for(const k of ['top','left','right','bottom'])$('sample-'+k).textContent=p.arms[k]||'';
+  $('daily-level').textContent=levelName?('難易度：'+levelName):'';
+  const c=$('sample-center');c.textContent='？';c.classList.remove('solved');
+  $('sample-input').value='';$('sample-input').disabled=false;
+  $('sample-feedback').textContent='';$('sample-feedback').className='feedback';
+  $('sample-example').hidden=true;$('sample-example').innerHTML='';
+  let saved=null;try{saved=JSON.parse(localStorage.getItem('pare-wado-daily')||'null');}catch(e){}
+  if(saved&&saved.date===dailyDate&&saved.key===dailyKeyOf(p)&&p.answers.includes(saved.v)){
+    sampleSolved=true;
+    c.textContent=saved.v;c.classList.add('solved');
+    $('sample-input').value=saved.v;$('sample-input').disabled=true;
+    const fb=$('sample-feedback');fb.textContent='正解！';fb.className='feedback ok';
+    showSampleExample();
+  }
+}
 $('sample-form').addEventListener('submit',e=>{
   e.preventDefault();
-  if(sampleSolved)return;
+  if(!daily||sampleSolved)return;
   const v=$('sample-input').value.trim();
   if(!v)return;
   const fb=$('sample-feedback');
-  if(SAMPLE.answers.includes(v)){
+  if(daily.answers.includes(v)){
     sampleSolved=true;
     const c=$('sample-center');c.textContent=v;c.classList.add('solved');
     $('sample-input').disabled=true;
     fb.textContent='正解！';fb.className='feedback ok';
-    const items=['top','left','right','bottom'].map(k=>'<li>'+wordFor(SAMPLE,k,SAMPLE.answer)+'</li>').join('');
-    const box=$('sample-example');
-    box.innerHTML='<h3>解答例：'+SAMPLE.answer+'</h3><ul>'+items+'</ul>';
-    box.hidden=false;
+    try{localStorage.setItem('pare-wado-daily',JSON.stringify({date:dailyDate,key:dailyKeyOf(daily),v}));}catch(e){}
+    showSampleExample();
   }else{
     fb.textContent='ちがうみたい。もう一度考えてみて。';fb.className='feedback ng';
   }
 });
+setDaily(FALLBACK,jstToday(),'');
+fetch(API+'/daily').then(r=>r.json()).then(d=>{if(d&&d.puzzle&&d.puzzle.answers)setDaily(d.puzzle,d.date,LEVEL_NAMES[d.level-1]);}).catch(()=>{});
 $('answer-form').addEventListener('submit',e=>{
   e.preventDefault();
   if(!current||solved)return;
