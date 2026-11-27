@@ -200,7 +200,7 @@ function showSampleExample(){
 function setDaily(p,dateStr,levelName){
   daily=p;dailyDate=dateStr||jstToday();sampleSolved=false;
   for(const k of ['top','left','right','bottom'])$('sample-'+k).textContent=p.arms[k]||'';
-  $('daily-level').textContent=levelName?('難易度：'+levelName):'';
+  $('daily-level').textContent=levelName?('【難易度/'+levelName+'】'):'';
   const c=$('sample-center');c.textContent='？';c.classList.remove('solved');
   $('sample-input').value='';$('sample-input').disabled=false;
   $('sample-feedback').textContent='';$('sample-feedback').className='feedback';
