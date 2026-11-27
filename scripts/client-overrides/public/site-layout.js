@@ -22,12 +22,10 @@ let queued=false;const schedule=()=>{if(!queued){queued=true;requestAnimationFra
 /* Shell chrome: keep only the back button while a multi puzzle is arranged,
    and return to an interrupted multi creation after a browser reload. */
 (()=>{'use strict';if(window!==window.parent)return;const w=window;
-let wantMinimal=false;const applyMinimal=()=>{const el=document.querySelector('.site-shell');if(el)el.classList.toggle('np-minimal',wantMinimal)};
-w.addEventListener('message',e=>{if(e.origin!==location.origin)return;const d=e.data;if(d&&d.type==='np-chrome-minimal'){wantMinimal=!!d.minimal;applyMinimal()}});
-const clearIfGone=()=>{const f=document.querySelector('iframe.notebook');if(!f||!f.getClientRects().length){wantMinimal=false;const el=document.querySelector('.site-shell');if(el)el.classList.remove('np-minimal')}};
+let wantMinimal=false;
 const healMinimal=()=>{if(!wantMinimal)return;const f=document.querySelector('iframe.notebook');if(!f||!f.getClientRects().length)return;const el=document.querySelector('.site-shell');if(el&&!el.classList.contains('np-minimal'))el.classList.add('np-minimal')};
+w.addEventListener('message',e=>{if(e.origin!==location.origin)return;const d=e.data;if(d&&d.type==='np-chrome-minimal'){wantMinimal=!!d.minimal;if(wantMinimal)healMinimal();else{const el=document.querySelector('.site-shell');if(el)el.classList.remove('np-minimal')}}});
 new MutationObserver(healMinimal).observe(document.documentElement,{attributes:true,attributeFilter:['class'],subtree:true});
 w.addEventListener('pageshow',healMinimal);setInterval(healMinimal,1000);
-w.addEventListener('click',()=>setTimeout(clearIfGone,60),true);
 try{const nav=performance.getEntriesByType('navigation')[0],at=Number(localStorage.getItem('nanpure-resume-multi-v1')||0);
 if(nav&&nav.type==='reload'&&at&&Date.now()-at<86400000){const t0=Date.now();const iv=setInterval(()=>{const b=document.querySelector('.main-choice');if(b){clearInterval(iv);b.click()}else if(Date.now()-t0>10000)clearInterval(iv)},300)}else if(at&&Date.now()-at>=86400000)localStorage.removeItem('nanpure-resume-multi-v1')}catch{}})();
