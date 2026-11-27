@@ -55,11 +55,14 @@ rt{display:none!important}
   <div class="board welcome-board" aria-hidden="true" data-i18n-skip translate="no">
    <div class="cell pos-top">学</div><div class="arrow pos-atop">↓</div>
    <div class="cell pos-left">先</div><div class="arrow pos-aleft">→</div>
-   <div class="cell center pos-center">？</div><div class="arrow pos-aright">→</div>
+   <div class="cell center pos-center" id="sample-center">？</div><div class="arrow pos-aright">→</div>
    <div class="cell pos-right">活</div>
    <div class="arrow pos-abottom">↓</div><div class="cell pos-bottom">徒</div>
   </div>
   <p class="tagline">同じ漢字で、言葉がつながる。</p>
+  <form class="answer-row" id="sample-form"><input id="sample-input" type="text" autocomplete="off" placeholder="中央の漢字1文字" aria-label="中央に入る漢字"><button data-i18n-skip translate="no" type="submit" class="primary-btn">答える</button></form>
+  <p class="feedback" id="sample-feedback" role="status"></p>
+  <div class="example" id="sample-example" hidden></div>
   <p class="pick-note">難易度を選ぶと問題が始まります</p>
   <div class="levels" id="levels"></div>
   <p class="solved-count" id="solved-count" hidden></p>
@@ -175,6 +178,27 @@ function showExample(){
   box.innerHTML='<h3>解答例：'+p.answer+'</h3><ul>'+items+'</ul><p class="help">別の漢字でも、すべての熟語が成り立つ場合があります。</p>';
   box.hidden=false;
 }
+const SAMPLE={arms:{top:'学',left:'先',right:'活',bottom:'徒'},answer:'生',answers:['生']};
+let sampleSolved=false;
+$('sample-form').addEventListener('submit',e=>{
+  e.preventDefault();
+  if(sampleSolved)return;
+  const v=$('sample-input').value.trim();
+  if(!v)return;
+  const fb=$('sample-feedback');
+  if(SAMPLE.answers.includes(v)){
+    sampleSolved=true;
+    const c=$('sample-center');c.textContent=v;c.classList.add('solved');
+    $('sample-input').disabled=true;
+    fb.textContent='正解！';fb.className='feedback ok';
+    const items=['top','left','right','bottom'].map(k=>'<li>'+wordFor(SAMPLE,k,SAMPLE.answer)+'</li>').join('');
+    const box=$('sample-example');
+    box.innerHTML='<h3>解答例：'+SAMPLE.answer+'</h3><ul>'+items+'</ul>';
+    box.hidden=false;
+  }else{
+    fb.textContent='ちがうみたい。もう一度考えてみて。';fb.className='feedback ng';
+  }
+});
 $('answer-form').addEventListener('submit',e=>{
   e.preventDefault();
   if(!current||solved)return;
