@@ -43,7 +43,7 @@ for(const viewport of [{width:1280,height:800},{width:375,height:812},{width:812
  await page.setViewportSize(viewport);await page.goto(origin+'/');
  for(const slug of ['shirupure','wado','crossword']){
   await page.locator('a.game-card[href="/puzzles/'+slug+'/"]').click();
-  if(slug==='wado'){await page.locator('#levels button').first().waitFor();assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'wado outer width '+viewport.width);await page.locator('#wado-top-link').click();await page.locator('#levels button').first().waitFor();continue;}
+  if(slug==='wado'){await page.locator('#levels button').first().waitFor();assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'wado outer width '+viewport.width);await page.locator('#wado-top-link').click();await page.locator('#levels button').first().waitFor();await page.goto(origin+'/');await page.locator('.game-list').waitFor();continue;}
   await page.locator('#game:not([hidden])').waitFor();await page.waitForFunction(()=>document.querySelector('#status').hidden);
   assert(await page.frameLocator('#game').locator('main').isVisible(),slug+' actual game at '+viewport.width);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,slug+' outer width '+viewport.width);
