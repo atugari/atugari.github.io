@@ -444,20 +444,20 @@ select.text-input{appearance:auto}
 .greet-row .btn{flex:1 1 40%}
 .contact-done{border:1.5px solid var(--teal);border-radius:12px;padding:12px 14px;font-size:.95rem;margin:0 0 18px;display:none}
 
-/* ===== お問い合わせ：準備中は「入力できない」ことが一目で分かるようにする ===== */
-/* 準備中のバッジ（既存の「準備中」の言葉をそのまま使う）。送り先がつながると is-locked が外れて消える */
+/* ===== お問い合わせ：未接続は「入力できない」ことが一目で分かるようにする ===== */
+/* 未接続のバッジ（既存のバッジの言葉をそのまま使う）。送り先がつながると is-locked が外れて消える */
 .prep-badge{display:none;flex:none;font-size:.72rem;font-weight:900;letter-spacing:.08em;color:var(--gold);border:1.5px solid var(--gold);border-radius:999px;padding:2px 10px;line-height:1.5;background:var(--surface)}
 #screen-contact.is-locked .prep-badge{display:inline-block}
-/* 各入力欄の見出し行：名前の右に「準備中」バッジを並べる */
+/* 各入力欄の見出し行：名前の右にバッジを並べる */
 #screen-contact .field-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
 #screen-contact .field-head>span:first-child{font-size:.8rem;font-weight:900;letter-spacing:.1em;color:var(--muted)}
-/* 上の「準備中」のお知らせはスクロールしても画面の上部に残り、理由がいつでも見える */
+/* 上のお知らせはスクロールしても画面の上部に残り、理由がいつでも見える */
 #contactPrep{position:sticky;top:10px;z-index:6;box-shadow:var(--shadow)}
-/* 準備中の入力欄：薄い背景・破線の枠・押せないカーソルで、通常の入力欄と見分けが付くようにする */
+/* 未接続の入力欄：薄い背景・破線の枠・押せないカーソルで、通常の入力欄と見分けが付くようにする */
 #screen-contact.is-locked .text-input{background:var(--surface-2);border-style:dashed;color:var(--muted);cursor:not-allowed;opacity:.72}
 #screen-contact.is-locked .text-input::placeholder{color:var(--muted);opacity:.8}
 #screen-contact.is-locked .btn-gold:disabled{cursor:not-allowed;filter:grayscale(.6)}
-/* 送信ボタンの直前にも「準備中」を出す（下までスクロールしても理由が分かる） */
+/* 送信ボタンの直前にもバッジを出す（下までスクロールしても理由が分かる） */
 .contact-lock-note{display:none;margin:16px 0 0;text-align:center}
 #screen-contact.is-locked .contact-lock-note{display:block}
 
@@ -575,7 +575,7 @@ select.text-input{appearance:auto}
       <div class="door-sub-actions">
         <button type="button" class="btn ba ba-letter" id="doorMyTurns" data-i18n="myTurns">あなたの番の対戦</button>
         <a class="btn ba ba-pare" id="doorBackPare" href="https://pareasobi.com/" data-i18n="backToPare">パレあそびに戻る</a>
-        <p class="menu-note" style="margin:0"><span data-i18n="onlineCountLabel">対戦中の人数</span>：<strong class="js-online-count" data-i18n="onlinePrepStrong">準備中</strong></p>
+        <p class="menu-note" style="margin:0"><span data-i18n="onlineCountLabel">対戦中の人数</span>：<strong class="js-online-count" data-i18n="onlinePrepStrong">読み込み中</strong></p>
       </div>
     </div>
   </section>
@@ -590,7 +590,7 @@ select.text-input{appearance:auto}
       <button type="button" class="menu-row ba ba-slate" id="menuSettings"><span data-i18n="settings">設定</span><span class="chev">›</span></button>
       <button type="button" class="menu-row ba ba-teal" id="menuContact"><span data-i18n="contact">お問い合わせ</span><span class="chev">›</span></button>
     </nav>
-    <p class="menu-note" data-i18n="menuOnlineNote">オンライン対戦・ランキング・観戦は準備中です。</p>
+    <p class="menu-note" data-i18n="menuOnlineNote">オンライン対戦は「対戦する」から、観戦とランキングは「観戦・ランキング」から使えます</p>
     <div class="ad-slot" data-ad-slot="" hidden><p class="ad-label" data-i18n="adLabel">広告</p><div class="ad-body"></div></div>
   </section>
 
@@ -646,8 +646,8 @@ select.text-input{appearance:auto}
   <section class="screen" id="screen-online">
     <div class="topbar"><button type="button" class="back-btn" data-to="play" data-i18n="back">← もどる</button><span class="t" data-i18n="onlinePlay">オンラインでプレイ</span><span class="sp"></span></div>
     <div class="setup-card">
-      <p class="online-prep" id="onlinePrep"><strong data-i18n="onlinePrepStrong">準備中</strong><br><span data-i18n="onlinePrepText">オンライン対戦のサーバーはまだ準備中です。つながるようになったら、ここから対戦できるようになります。いまは対戦ボタンと入力は押せません。</span></p>
-      <p class="online-prep" id="onlineServerNote" hidden><strong data-i18n="serverNotPublished">サーバー未公開のため準備中</strong><br><span data-i18n="serverNotPublishedText">オンライン対戦のサーバーにまだつながりません。公開されるまで、オンライン対戦は使えません。</span></p>
+      <p class="online-prep" id="onlinePrep"><strong data-i18n="onlinePrepStrong">読み込み中</strong><br><span data-i18n="onlinePrepText">オンライン対戦のサーバーに接続しています。つながるまで、対戦ボタンと入力は押せません。</span></p>
+      <p class="online-prep" id="onlineServerNote" hidden><strong data-i18n="serverNotPublished">サーバーにつながりません</strong><br><span data-i18n="serverNotPublishedText">オンライン対戦のサーバーに接続できませんでした。通信の状態を確認して、もう一度開いてみてください。</span></p>
       <p class="online-status" id="onlineStatus" role="status" aria-live="polite"></p>
       <div class="field"><span data-i18n="nickname">ニックネーム</span>
         <div class="nick-row">
@@ -697,7 +697,7 @@ select.text-input{appearance:auto}
         <p style="margin:4px 0 0;font-size:.85rem;color:var(--muted)" data-i18n="letterNote">手紙対戦は1手に24時間まで使えます。時間切れになると、自動で1手打ちます。</p>
       </div>
       <div class="field"><span data-i18n="onlineCountLabel">対戦中の人数</span>
-        <p class="online-prep js-online-count" style="margin:0"><strong data-i18n="onlinePrepStrong">準備中</strong></p>
+        <p class="online-prep js-online-count" style="margin:0"><strong data-i18n="onlinePrepStrong">読み込み中</strong></p>
       </div>
     </div>
     <div class="ad-slot" data-ad-slot="" hidden><p class="ad-label" data-i18n="adLabel">広告</p><div class="ad-body"></div></div>
@@ -948,9 +948,9 @@ select.text-input{appearance:auto}
   <section class="screen is-locked" id="screen-contact">
     <div class="topbar"><button type="button" class="back-btn" data-to="menu" data-i18n="back">← もどる</button><span class="t" data-i18n="contact">お問い合わせ</span><span class="sp"></span></div>
     <div class="setup-card">
-      <p class="online-prep" id="contactPrep"><strong data-i18n="onlinePrepStrong">準備中</strong><br><span data-i18n="contactPrep">お問い合わせの送り先はまだ準備中です。つながるようになったら、ここから送れるようになります。いまは入力と送信ボタンは押せません。</span></p>
+      <p class="online-prep" id="contactPrep"><strong data-i18n="onlinePrepStrong">読み込み中</strong><br><span data-i18n="contactPrep">お問い合わせの送り先に接続しています。つながるまで、入力と送信ボタンは押せません。</span></p>
       <p class="contact-done" id="contactDone" role="status"></p>
-      <div class="field"><div class="field-head"><span data-i18n="contactKind">種類</span><span class="prep-badge" data-i18n="onlinePrepStrong">準備中</span></div>
+      <div class="field"><div class="field-head"><span data-i18n="contactKind">種類</span><span class="prep-badge" data-i18n="onlinePrepStrong">読み込み中</span></div>
         <select class="text-input" id="contactKind" disabled>
           <option value="question" data-i18n="kindQ">質問</option>
           <option value="bug" data-i18n="kindBug">不具合の報告</option>
@@ -958,22 +958,22 @@ select.text-input{appearance:auto}
           <option value="other" data-i18n="kindOther">その他</option>
         </select>
       </div>
-      <div class="field"><div class="field-head"><span data-i18n="contactTopic">話題</span><span class="prep-badge" data-i18n="onlinePrepStrong">準備中</span></div>
+      <div class="field"><div class="field-head"><span data-i18n="contactTopic">話題</span><span class="prep-badge" data-i18n="onlinePrepStrong">読み込み中</span></div>
         <input type="text" class="text-input" id="contactTopic" data-i18n-ph="topicPh" placeholder="話題を入力してください" autocomplete="off" disabled>
       </div>
-      <div class="field"><div class="field-head"><span data-i18n="contactBody">内容</span><span class="prep-badge" data-i18n="onlinePrepStrong">準備中</span></div>
+      <div class="field"><div class="field-head"><span data-i18n="contactBody">内容</span><span class="prep-badge" data-i18n="onlinePrepStrong">読み込み中</span></div>
         <textarea class="text-input" id="contactBody" data-i18n-ph="bodyPh" placeholder="内容を入力してください" disabled></textarea>
       </div>
-      <div class="field"><div class="field-head"><span data-i18n="contactEmail">メール（任意）</span><span class="prep-badge" data-i18n="onlinePrepStrong">準備中</span></div>
+      <div class="field"><div class="field-head"><span data-i18n="contactEmail">メール（任意）</span><span class="prep-badge" data-i18n="onlinePrepStrong">読み込み中</span></div>
         <input type="email" class="text-input" id="contactEmail" data-i18n-ph="emailPh" placeholder="返信が必要なときだけ入力してください" autocomplete="email" disabled>
       </div>
-      <p class="contact-lock-note"><span class="prep-badge" data-i18n="onlinePrepStrong">準備中</span></p>
+      <p class="contact-lock-note"><span class="prep-badge" data-i18n="onlinePrepStrong">読み込み中</span></p>
       <button type="button" class="btn-gold block" id="contactSend" disabled data-i18n="sendBtn">送信する</button>
     </div>
     <p class="set-label" style="margin-top:24px" data-i18n="myInq">自分のお問い合わせ</p>
     <div class="setup-card">
-      <p class="online-prep" id="contactMyPrep" style="margin:0 0 10px"><strong data-i18n="onlinePrepStrong">準備中</strong></p>
-      <p style="margin:0 0 6px;font-size:.92rem;color:var(--muted)" data-i18n="myInqPrep">送り先がつながると、ここで自分の送信内容と返答を見られるようになります。</p>
+      <p class="online-prep" id="contactMyPrep" style="margin:0 0 10px"><strong data-i18n="onlinePrepStrong">読み込み中</strong></p>
+      <p style="margin:0 0 6px;font-size:.92rem;color:var(--muted)" data-i18n="myInqPrep">ここで自分の送信内容と返答を見られます。</p>
       <div id="myInqList"></div>
     </div>
     <div class="ad-slot" data-ad-slot="" hidden><p class="ad-label" data-i18n="adLabel">広告</p><div class="ad-body"></div></div>
@@ -988,7 +988,7 @@ select.text-input{appearance:auto}
     </nav>
     <div class="setup-card" style="margin-top:14px">
       <div class="field" style="margin-bottom:0"><span data-i18n="onlineCountLabel">対戦中の人数</span>
-        <p class="online-prep js-online-count" style="margin:0"><strong data-i18n="onlinePrepStrong">準備中</strong></p>
+        <p class="online-prep js-online-count" style="margin:0"><strong data-i18n="onlinePrepStrong">読み込み中</strong></p>
       </div>
     </div>
     <div class="ad-slot" data-ad-slot="" hidden><p class="ad-label" data-i18n="adLabel">広告</p><div class="ad-body"></div></div>
@@ -1017,9 +1017,9 @@ select.text-input{appearance:auto}
   <section class="screen" id="screen-ranking">
     <div class="topbar"><button type="button" class="back-btn" data-to="onlinehub" data-i18n="back">← もどる</button><span class="t" data-i18n="ranking">ランキング</span><span class="sp"></span></div>
     <div class="setup-card">
-      <p class="online-prep" id="rankingPrepNote"><strong data-i18n="onlinePrepStrong">準備中</strong><br><span data-i18n="rankingPrep">レート・ランキング・観戦は、オンライン対戦のサーバーがつながってから使えるようになります。いまは準備中です。</span></p>
+      <p class="online-prep" id="rankingPrepNote"><strong data-i18n="onlinePrepStrong">読み込み中</strong><br><span data-i18n="rankingPrep">オンライン対戦のサーバーにつながると、レート・ランキング・観戦が表示されます。</span></p>
       <div class="field"><span data-i18n="rateLabel">あなたのレート</span>
-        <div id="myRatingBox"><p class="online-prep" style="margin:0"><strong data-i18n="onlinePrepStrong">準備中</strong></p></div>
+        <div id="myRatingBox"><p class="online-prep" style="margin:0"><strong data-i18n="onlinePrepStrong">読み込み中</strong></p></div>
       </div>
       <div class="field"><span data-i18n="titlesLabel">称号</span>
         <div id="myTitles"></div>
@@ -1047,7 +1047,7 @@ select.text-input{appearance:auto}
   <section class="screen" id="screen-spectate">
     <div class="topbar"><button type="button" class="back-btn" data-to="onlinehub" data-i18n="back">← もどる</button><span class="t" data-i18n="spectate">観戦</span><span class="sp"></span></div>
     <div class="setup-card">
-      <p class="online-prep" id="spectatePrepNote" style="margin:0 0 12px"><strong data-i18n="onlinePrepStrong">準備中</strong><br><span data-i18n="spectatePrep">観戦は、オンライン対戦のサーバーがつながってから使えるようになります。いまは準備中です。</span></p>
+      <p class="online-prep" id="spectatePrepNote" style="margin:0 0 12px"><strong data-i18n="onlinePrepStrong">読み込み中</strong><br><span data-i18n="spectatePrep">オンライン対戦のサーバーにつながると、観戦できる対戦が表示されます。</span></p>
       <p class="online-status" id="spectateStatus" role="status" aria-live="polite"></p>
       <div id="spectateList"></div>
     </div>
@@ -1308,7 +1308,7 @@ document.getElementById("menuPlay").addEventListener("click",function(){show("sc
 document.getElementById("menuCpu").addEventListener("click",function(){show("screen-cpu");});
 document.getElementById("menu2p").addEventListener("click",function(){show("screen-2p");});
 document.getElementById("menuOnline").addEventListener("click",function(){show("screen-online");});
-/* オンライン対戦サーバーの住所はここ1か所だけ（モリス専用 Worker）。サーバーがまだ公開されていない間は、送信してもつながらず、そのときは「サーバー未公開のため準備中」と正直に表示する。つながるふりはしない */
+/* オンライン対戦サーバーの住所はここ1か所だけ（モリス専用 Worker）。サーバーがまだ公開されていない間は、送信してもつながらず、そのときは「サーバーにつながりません」と正直に表示する。つながるふりはしない */
 var ONLINE_SERVER_URL="https://nainmenzumorisu.puzzle-hub-4826.workers.dev";
 var TURNSTILE_SITE_KEY="0x4AAAAAAGDXLaWWNAiKSvBa";
 var PID_KEY="morris-player-v1",SEAT_KEY="morris-seat-v1",NICK_KEY="morris-nickname-v1";
@@ -1576,10 +1576,10 @@ if(!st.board[idx]&&tutDestinations(st,st.selected).indexOf(idx)>=0){var from=st.
 tutSetMsg(t("tutHint"));}
 document.getElementById("menuTutorial").addEventListener("click",function(){tutStartStage(0);show("screen-tutorial");});
 document.getElementById("tutRestart").addEventListener("click",function(){tutStartStage(0);});
-/* --- 3. 称号：サーバーから返ってきた称号（名前と条件）をそのまま表示する。カード側では称号を作らない。未接続の間は serverTitles が null のままで「準備中」だけを出す --- */
+/* --- 3. 称号：サーバーから返ってきた称号（名前と条件）をそのまま表示する。カード側では称号を作らない。未接続の間は serverTitles が null のままで「読み込み中」だけを出す --- */
 var serverTitles=null;
 function renderTitles(){var box=document.getElementById("myTitles");if(!box)return;while(box.firstChild)box.removeChild(box.firstChild);if(!serverTitles){var p=document.createElement("p");p.className="online-prep";p.style.margin="0";var s=document.createElement("strong");s.textContent=t("onlinePrepStrong");p.appendChild(s);p.appendChild(document.createElement("br"));p.appendChild(document.createTextNode(t("titlesPrep")));box.appendChild(p);return;}serverTitles.forEach(function(x){var row=document.createElement("div");row.className="title-row";var nm=document.createElement("span");nm.className="title-name";nm.textContent=(x&&x.name!=null)?String(x.name):"";var cd=document.createElement("span");cd.className="title-cond";cd.textContent=(x&&x.condition!=null)?String(x.condition):"";row.appendChild(nm);row.appendChild(cd);box.appendChild(row);});}
-/* ランキングも同じ作り：サーバーが返した行（順位・名前・レート・称号名）をそのまま出す。未接続の間は作った数字・名前は出さず「準備中」だけ */
+/* ランキングも同じ作り：サーバーが返した行（順位・名前・レート・称号名）をそのまま出す。未接続の間は作った数字・名前は出さず「読み込み中」だけ */
 var serverRanking=null;
 function renderRankingList(){var box=document.getElementById("rankingList");if(!box)return;while(box.firstChild)box.removeChild(box.firstChild);if(!serverRanking){var p=document.createElement("p");p.className="online-prep";p.style.margin="0";var s=document.createElement("strong");s.textContent=t("onlinePrepStrong");p.appendChild(s);p.appendChild(document.createElement("br"));p.appendChild(document.createTextNode(t("rankingPrep")));box.appendChild(p);return;}serverRanking.forEach(function(x){var row=document.createElement("div");row.className="title-row";var nm=document.createElement("span");nm.className="title-name";nm.textContent=((x&&x.rank!=null)?String(x.rank)+". ":"")+((x&&x.name!=null)?String(x.name):"")+((x&&x.rating!=null)?" ("+String(x.rating)+")":"")+((x&&x.points!=null)?t("pointsSuffix",{n:x.points}):"");row.appendChild(nm);if(x&&x.title){var cd=document.createElement("span");cd.className="title-cond";cd.textContent=String(x.title);row.appendChild(cd);}box.appendChild(row);});}
 /* --- 4. オンラインの対戦モードは3つ：通常（1手30秒）／ゆっくり（1手2分のライブ対戦）／手紙（1手24時間の通信対戦）。ゆっくり・手紙は時間切れで自動で1手打つ。部屋作成では mode:'normal'|'slow'|'letter' を送る --- */
@@ -1614,11 +1614,11 @@ var turnDeadline=null,turnTimerInt=null;
 function fmtRemain(ms){if(ms<0)ms=0;if(ms>=3600000){var m=Math.floor(ms/60000);return t("slowRemain",{h:Math.floor(m/60),m:m%60});}var s=Math.floor(ms/1000);return t("remainMinSec",{m:Math.floor(s/60),s:s%60});}
 function updateTurnTimer(){var el=document.getElementById("turnTimer");if(!el)return;if(turnDeadline){el.hidden=false;el.textContent=fmtRemain(turnDeadline-Date.now());}else{el.hidden=true;el.textContent="";}}
 function setTurnDeadline(ts){turnDeadline=ts||null;if(turnTimerInt){clearInterval(turnTimerInt);turnTimerInt=null;}updateTurnTimer();if(turnDeadline)turnTimerInt=setInterval(updateTurnTimer,1000);}
-/* 自分の番の対戦一覧（GET /api/my-turns が返す部屋：コード・9人／12人・相手・残り時間）。未接続の間は「準備中」だけ */
+/* 自分の番の対戦一覧（GET /api/my-turns が返す部屋：コード・9人／12人・相手・残り時間）。未接続の間は「読み込み中」だけ */
 var serverMyTurns=null;
 function renderMyTurns(){var box=document.getElementById("myTurnsList");if(!box)return;while(box.firstChild)box.removeChild(box.firstChild);if(!serverMyTurns){var p=document.createElement("p");p.className="online-prep";p.style.margin="0";var s=document.createElement("strong");s.textContent=t("onlinePrepStrong");p.appendChild(s);p.appendChild(document.createElement("br"));p.appendChild(document.createTextNode(t("myTurnsPrep")));box.appendChild(p);return;}serverMyTurns.forEach(function(r){var code=String((r&&(r.code||r.roomId))||"");var row=document.createElement(code?"button":"div");if(code)row.type="button";row.className="myturn-row"+(code?" as-btn":"");var head=document.createElement("span");head.className="mt-head";head.textContent=t("roomCodePh")+" "+code+" ・ "+t((r&&String(r.variant)==="12")?"pieces12":"pieces9")+((r&&r.mode)?" ・ "+t(r.mode==="letter"?"modeLetter":(r.mode==="slow"?"modeSlow":"modeNormal")):"");var sub=document.createElement("span");sub.className="mt-sub";var rem=(r&&(r.remainingMs!=null?r.remainingMs:(r.moveMsLeft!=null?r.moveMsLeft:(r.deadline?r.deadline-Date.now():null))));var opp=(r&&r.opponent!=null)?((typeof r.opponent==="object")?(r.opponent.nick||""):r.opponent):"";sub.textContent=t("opponentLabel")+"："+String(opp)+((rem!=null&&isFinite(rem))?" ・ "+fmtRemain(rem):"");row.appendChild(head);row.appendChild(sub);if(code)row.addEventListener("click",function(){var inp=document.getElementById("onlineRoomCode");if(inp)inp.value=code;show("screen-online");attemptJoinRoom();});box.appendChild(row);});}
 function refreshMyTurns(){if(!ONLINE_SERVER_URL)return;onlineApiGet("/api/my-turns").then(function(r){return r.json();}).then(function(d){var list=Array.isArray(d)?d:(d&&(d.games||d.rooms||d.myTurns));if(Array.isArray(list)){serverMyTurns=list;renderMyTurns();}}).catch(function(){});}
-/* ランキング画面を開いたときに /api/me と /api/rankings を pid ヘッダー付きで読み、返ってきた自分のレート・称号・順位だけを表示する。つながらない間は「準備中」のまま（数字や名前は作らない）。自分のレートはランキング画面だけに出す（対戦画面には相手の分だけ出す決まり） */
+/* ランキング画面を開いたときに /api/me と /api/rankings を pid ヘッダー付きで読み、返ってきた自分のレート・称号・順位だけを表示する。つながらない間は「読み込み中」のまま（数字や名前は作らない）。自分のレートはランキング画面だけに出す（対戦画面には相手の分だけ出す決まり） */
 var rankingScope="week",rankingRank="all",serverMe=null;
 var RANK_NAMES_JA=["見習い","駆け出し","中堅","上級者","達人","名手","覇者"];
 (function(){var sel=document.getElementById("rankFilterSel");if(sel){RANK_NAMES_JA.forEach(function(nm,i){var o=document.createElement("option");o.value=String(i);o.textContent=nm;sel.appendChild(o);});sel.addEventListener("change",function(){rankingRank=sel.value;refreshOnlineProfile();});}})();
@@ -1690,7 +1690,7 @@ function onlineResign(){var st=onlineState;if(!st||st.status!=="playing")return;
 function sendRematchRequest(){var st=onlineState;if(!st||st.status!=="ended")return;wsSend({type:"rematch",id:msgId(),rev:st.rev});}
 function showGreet(m){var idx=GREET_JA.indexOf(m.text);if(idx<0)return;var feed=document.getElementById("greetFeed");if(!feed)return;var fromLetter=(m.from===1?"B":"W");var mine=(gameMode==="online"&&onlineState&&fromLetter===onlineState.myLetter);var text;if(mine||!m.lang||m.lang===langCur)text=greetTextIn(langCur,idx);else text=greetTextIn(m.lang,idx)+"（"+greetTextIn(langCur,idx)+"）";var line=name(fromLetter)+"："+text;feed.textContent=feed.textContent?(feed.textContent+"\n"+line):line;var lines=feed.textContent.split("\n");if(lines.length>3)feed.textContent=lines.slice(lines.length-3).join("\n");}
 document.querySelectorAll("#greetBtns [data-greet-idx]").forEach(function(b){b.addEventListener("click",function(){if(gameMode!=="online"||!onlineState)return;var idx=parseInt(b.getAttribute("data-greet-idx"),10);wsSend({type:"greet",id:msgId(),rev:onlineState.rev,text:GREET_JA[idx],lang:langCur});});});
-/* オンライン人数（GET /api/online）：つながったときだけ数字を出し、つながらない間は「準備中」のままにする */
+/* オンライン人数（GET /api/online）：つながったときだけ数字を出し、つながらない間は「読み込み中」のままにする */
 var lastOnlinePlayers=null;
 function paintOnlineCounts(){if(lastOnlinePlayers===null)return;document.querySelectorAll(".js-online-count").forEach(function(el){el.textContent=t("onlineNow",{n:lastOnlinePlayers});});}
 function refreshOnlineCounts(){if(!ONLINE_SERVER_URL)return;fetch(ONLINE_SERVER_URL+"/api/online",{method:"GET"}).then(function(r){return r.json();}).then(function(d){if(d&&typeof d.players==="number"){lastOnlinePlayers=d.players;paintOnlineCounts();}}).catch(function(){});}
