@@ -12,6 +12,7 @@
 .pos-aright{grid-column:4;grid-row:3}.pos-right{grid-column:5;grid-row:3}
 .pos-abottom{grid-column:3;grid-row:4}.pos-bottom{grid-column:3;grid-row:5}
 .daily-head{display:flex;justify-content:center;align-items:baseline;gap:10px;margin:16px 0 0}.daily-label{font-size:19px;font-weight:800;color:#23403a}.daily-level{font-size:19px;font-weight:700;color:#5b7267}
+header h1 a{color:inherit;text-decoration:none}
 .pick-note{text-align:center;font-size:18px;font-weight:700;color:#23403a;margin:18px 0 10px}
 .levels{display:grid;gap:8px}
 .levels button{width:100%;text-align:left;min-height:48px;border:1px solid #acbdb0;border-radius:12px;padding:11px 15px;background:#fffefa;color:#285849;font-weight:700;font-size:16px;cursor:pointer}
@@ -57,7 +58,7 @@ rt{display:none!important}
 .alt-note{text-align:center;color:#5b7267;font-size:13px;line-height:1.6;margin:10px auto 0;max-width:420px}
 .load-error{text-align:center;color:#c0392b;font-weight:700;margin-top:12px}
 [hidden]{display:none!important}
-</style></head><body data-game="wado"><header><a data-hub href="/plaza.html">パレあそびへ戻る</a><h1>和同開珎問題</h1></header>
+</style></head><body data-game="wado"><header><h1><a id="wado-top-link" href="/puzzles/wado/" data-i18n-skip translate="no">和同開珎問題のトップへ戻る</a></h1></header>
 <main class="wado-main">
  <section id="view-title">
   <div class="daily-head"><span class="daily-label">今日の問題</span><span class="daily-level" id="daily-level"></span></div>
@@ -82,7 +83,7 @@ rt{display:none!important}
   </details>
  </section>
  <section id="view-play" hidden>
-  <div class="play-top"><button data-i18n-skip translate="no" type="button" class="quiet-btn" id="to-title">‹ はじめの画面</button><span class="meta" id="play-meta"></span></div>
+  <div class="play-top"><span class="meta" id="play-meta"></span></div>
   <h2 class="q">真ん中に入る漢字は？</h2>
   <div class="board" id="play-board" role="img" aria-label="和同開珎問題の盤面" data-i18n-skip translate="no">
    <div class="cell pos-top" id="cell-top"></div><div class="arrow pos-atop">↓</div>
@@ -290,7 +291,7 @@ function toTitle(){
   showSolvedCount();
   window.scrollTo(0,0);
 }
-$('to-title').addEventListener('click',()=>{history.back();});
+
 window.addEventListener('popstate',()=>{toTitle();});
 </script>
 </body></html>

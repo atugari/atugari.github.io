@@ -30,7 +30,7 @@ await page.goto(origin+'/puzzles/');
 for(const slug of ['shirupure','wado','crossword','studio'])assert.equal(await page.locator('a[href="/puzzles/'+slug+'/"]').count(),1);
 
 for(const slug of ['shirupure','wado','crossword','studio']){
- await page.goto(origin+'/puzzles/'+slug+'/');if(slug==='wado'){await page.locator('#levels button').first().waitFor();assert.equal(await page.locator('#levels button').count(),10,'wado difficulty list');assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'wado outer width');assert.equal(await page.locator('[data-sound]').count(),0,'wado sound button removed');await page.locator('[data-hub]').click();await page.locator('.game-list').waitFor();continue;}await page.locator('#game:not([hidden])').waitFor();await page.waitForFunction(()=>document.querySelector('#status').hidden);
+ await page.goto(origin+'/puzzles/'+slug+'/');if(slug==='wado'){await page.locator('#levels button').first().waitFor();assert.equal(await page.locator('#levels button').count(),10,'wado difficulty list');assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'wado outer width');assert.equal(await page.locator('[data-sound]').count(),0,'wado sound button removed');await page.locator('#wado-top-link').click();await page.locator('#levels button').first().waitFor();continue;}await page.locator('#game:not([hidden])').waitFor();await page.waitForFunction(()=>document.querySelector('#status').hidden);
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,slug+' outer width');
  const child=page.frameLocator('#game');assert(await child.locator('main').isVisible(),slug+' has actual content');
  if(slug==='shirupure'){await child.locator('[data-act=learn]').click();await child.locator('.lesson-target').click();await page.waitForFunction(()=>{const h=document.querySelector('body[data-game="shirupure"]>header');return h&&getComputedStyle(h).display==='none'});assert.equal(await page.evaluate(()=>getComputedStyle(document.querySelector('body[data-game="shirupure"]>header')).display),'none','shirupure outer header hidden as intended');}
@@ -43,7 +43,7 @@ for(const viewport of [{width:1280,height:800},{width:375,height:812},{width:812
  await page.setViewportSize(viewport);await page.goto(origin+'/');
  for(const slug of ['shirupure','wado','crossword']){
   await page.locator('a.game-card[href="/puzzles/'+slug+'/"]').click();
-  if(slug==='wado'){await page.locator('#levels button').first().waitFor();assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'wado outer width '+viewport.width);await page.locator('[data-hub]').click();await page.locator('.game-list').waitFor();continue;}
+  if(slug==='wado'){await page.locator('#levels button').first().waitFor();assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'wado outer width '+viewport.width);await page.locator('#wado-top-link').click();await page.locator('#levels button').first().waitFor();continue;}
   await page.locator('#game:not([hidden])').waitFor();await page.waitForFunction(()=>document.querySelector('#status').hidden);
   assert(await page.frameLocator('#game').locator('main').isVisible(),slug+' actual game at '+viewport.width);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,slug+' outer width '+viewport.width);
