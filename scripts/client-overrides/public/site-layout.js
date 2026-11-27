@@ -23,9 +23,11 @@ let queued=false;const schedule=()=>{if(!queued){queued=true;requestAnimationFra
    and return to an interrupted multi creation after a browser reload. */
 (()=>{'use strict';if(window!==window.parent)return;const w=window;
 let wantMinimal=false;
-const healMinimal=()=>{if(!wantMinimal)return;const f=document.querySelector('iframe.notebook');if(!f||!f.getClientRects().length)return;const el=document.querySelector('.site-shell');if(el&&!el.classList.contains('np-minimal'))el.classList.add('np-minimal')};
+const guardMinimal=()=>{const el=document.querySelector('.site-shell');if(!el)return;const f=document.querySelector('iframe.notebook');const vis=!!(f&&f.getClientRects().length);const home=el.classList.contains('mode-home');if(wantMinimal&&vis&&!home){if(!el.classList.contains('np-minimal'))el.classList.add('np-minimal')}else if(!f||(home&&Date.now()-armedAt>2500)){el.classList.remove('np-minimal')}};
+const healMinimal=guardMinimal;
 w.addEventListener('message',e=>{if(e.origin!==location.origin)return;const d=e.data;if(d&&d.type==='np-chrome-minimal'){wantMinimal=!!d.minimal;if(wantMinimal)healMinimal();else{const el=document.querySelector('.site-shell');if(el)el.classList.remove('np-minimal')}}});
-new MutationObserver(healMinimal).observe(document.documentElement,{attributes:true,attributeFilter:['class'],subtree:true});
-w.addEventListener('pageshow',healMinimal);setInterval(healMinimal,1000);
+let armedAt=0;w.addEventListener('click',e=>{if(e.target&&e.target.closest&&e.target.closest('.main-choice')){wantMinimal=true;armedAt=Date.now();const el=document.querySelector('.site-shell');if(el)el.classList.add('np-minimal')}},true);
+const shellObs=new MutationObserver(()=>{if(!wantMinimal)return;const el=document.querySelector('.site-shell');if(!el||el.classList.contains('np-minimal')||el.classList.contains('mode-home'))return;const f=document.querySelector('iframe.notebook');if(f&&f.getClientRects().length)el.classList.add('np-minimal')});const watchShell=()=>{const el=document.querySelector('.site-shell');if(el)shellObs.observe(el,{attributes:true,attributeFilter:['class']})};watchShell();
+w.addEventListener('pageshow',healMinimal);setInterval(()=>{watchShell();healMinimal()},500);
 try{const nav=performance.getEntriesByType('navigation')[0],at=Number(localStorage.getItem('nanpure-resume-multi-v1')||0);
 if(nav&&nav.type==='reload'&&at&&Date.now()-at<86400000){const t0=Date.now();const iv=setInterval(()=>{const b=document.querySelector('.main-choice');if(b){clearInterval(iv);b.click()}else if(Date.now()-t0>10000)clearInterval(iv)},300)}else if(at&&Date.now()-at>=86400000)localStorage.removeItem('nanpure-resume-multi-v1')}catch{}})();
