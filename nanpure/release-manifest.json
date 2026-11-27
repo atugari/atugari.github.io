@@ -197,7 +197,7 @@
     "nanpure/ar/index.html": "d288e98cd8389b06653bdcfd0b0742deec1c44e558d0d5baa9443c6c5ec1e7bd",
     "nanpure/collection/entry.js": "4b5f6659be0fb7f54c27dd26bf3c3673da28d0d1cc5b0ff9cd3e7b1972cf5e90",
     "nanpure/collection/entry.css": "f1bee8de65f9cfa36f40097062b21e363bc2e78e5c9bf82c5a01b92dee369662",
-    "puzzles/entry.js": "27a26bae0106fa7e7c506a454e33790d2d99d29ce46d5bb6b5f1921a772354e6",
+    "puzzles/entry.js": "f800633cb2f566d40cd7943bdac77edd5f197fc451f231db9f51f5dc30f8683f",
     "puzzles/entry.css": "93b341af16d313e122065c94118d40b8a8a4fa1f0f3ab03f6913fc151572beeb",
     "puzzles/navigation.js": "8e0cd898642762ed5ef1cf89a6cd0751e1dba90caa47fb0fc667138a18dfe0fa",
     "puzzles/index.html": "aa47600dcecca18b0c996266b247e293ba18618b5c23a7fc8e10116e7ee79616",
@@ -2260,7 +2260,7 @@
     "sources": {
       "nanpure/collection/catalog-model.mjs": "f20bc440da026a79cafab808dcb515b0926086d0e3dc66eb5b68060f484d7f00",
       "nanpure/collection/pack-reader.mjs": "7e4a2902ac7e25b280478ab68158ad6ef28e94de11e1b6e41b4885d699a5db3f",
-      "puzzles/entry.js": "27a26bae0106fa7e7c506a454e33790d2d99d29ce46d5bb6b5f1921a772354e6",
+      "puzzles/entry.js": "f800633cb2f566d40cd7943bdac77edd5f197fc451f231db9f51f5dc30f8683f",
       "puzzles/navigation.js": "8e0cd898642762ed5ef1cf89a6cd0751e1dba90caa47fb0fc667138a18dfe0fa",
       "scripts/seo/build-seo.mjs": "d0ada96690a81b9ff181ddf4928ca72ba4771c4b39800fb3c72e3c65a18dc8df",
       "scripts/prepare-pareasobi-move.mjs": "3d7f983715b77fb53ee22e4cb944d39f8abcf9dd0f1ac0a518408aa6426a2961",
