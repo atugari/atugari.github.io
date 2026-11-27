@@ -205,3 +205,11 @@ body.compact-playing #hundred-nav .play-caption{display:none}
 
 .multi-level-fold{margin-top:16px;border-top:2px solid #b8c8b9;padding-top:10px}.multi-level-fold>summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center;gap:4px}.multi-level-fold .choices{margin-top:10px}
 #multi-sizes-form.multi-editor-canvas.multi-layout-preview{height:clamp(280px,52vh,560px);height:clamp(280px,52svh,560px)}
+
+body #app:has(#multi-sizes-form){padding-top:0!important}
+#multi-sizes-form .multi-editor-canvas .multi-layout-preview{margin-top:0;border-top:2px solid #000}
+.multi-help-fold{margin-top:14px;border:1px solid #b8c8b9;border-radius:10px;background:var(--paper,#fff);padding:0 14px}
+.multi-help-fold>summary{cursor:pointer;font-weight:700;min-height:48px;display:flex;align-items:center}
+.multi-help-body{padding-bottom:12px;line-height:1.7}
+.multi-help-body p{margin:4px 0}
+.multi-help-head{font-weight:700;margin:10px 0 4px}
