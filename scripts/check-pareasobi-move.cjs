@@ -2,7 +2,7 @@
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
 const root=path.resolve(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8');
 const games=['shirupure','wado','crossword'];
-for(const slug of games){assert(read('index.html').includes('href="/puzzles/'+slug+'/"'));const html=read('puzzles/'+slug+'/index.html');assert(html.includes('data-game="'+slug+'"'));assert(html.includes('data-hub href="/plaza.html"'));}
+for(const slug of games){assert(read('index.html').includes('href="/puzzles/'+slug+'/"'));const html=read('puzzles/'+slug+'/index.html');assert(html.includes('data-game="'+slug+'"'));if(slug==='wado'){assert(html.includes('id="wado-top-link" href="/puzzles/wado/"'));assert(!html.includes('data-hub'));}else assert(html.includes('data-hub href="/plaza.html"'));}
 for(const p of ['puzzles/entry.js','puzzles/navigation.js','nanpure/collection/entry.js'])new vm.Script(read(p));
 assert(!/localStorage\.(?:clear|removeItem)|indexedDB\.deleteDatabase/.test(read('puzzles/navigation.js')+read('puzzles/entry.js')));
 assert(!read('scripts/client-overrides/app/game.tsx').includes('className="shiru-entry"'),'The generating source must not restore the old home entry');
