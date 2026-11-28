@@ -1,0 +1,81 @@
+name: X note posts (note article announcements)
+
+# Separate from x-four-daily.yml (puzzle posts) and x-video.yml (video
+# posts at 19:30 JST). This workflow only handles text posts that
+# announce note articles, reuses the same GitHub Secrets, and never
+# touches nanpure-x-worker/, scripts/x-four/ or scripts/x-video/.
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'dry-run: validate only / check: X account only / post-due: post the entry due now / post-id: post one named note article now'
+        type: choice
+        options: [dry-run, check, post-due, post-id]
+        default: dry-run
+      note_id:
+        description: 'For post-id only: the note article ID to post'
+        type: string
+        required: false
+        default: ''
+  schedule:
+    # 12:00 JST daily = 03:00 UTC. The script itself refuses to post
+    # outside the 30-minute window after an entry's x_time_jst.
+    - cron: '0 3 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: x-note
+  cancel-in-progress: false
+
+jobs:
+  x-note:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test duplicate and slot guards
+        run: python -m unittest discover -s scripts/x-note -p 'test_*.py' -v
+      - name: Validate queue (no X access)
+        if: github.event_name == 'schedule' || inputs.mode == 'dry-run'
+        env:
+          X_NOTE_MODE: dry-run
+        run: python scripts/x-note/post_note.py
+      - name: Check X posting account
+        if: inputs.mode == 'check'
+        env:
+          X_NOTE_MODE: check
+          X_EXPECTED_USERNAME: parade166
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+        run: python scripts/x-note/post_note.py
+      - name: Post the note announcement due now (at most one)
+        if: github.event_name == 'schedule' || inputs.mode == 'post-due' || inputs.mode == 'post-id'
+        env:
+          X_NOTE_MODE: ${{ inputs.mode == 'post-id' && 'post-id' || 'post-due' }}
+          X_NOTE_ID: ${{ inputs.note_id }}
+          X_EXPECTED_USERNAME: parade166
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+        run: python scripts/x-note/post_note.py
+      - name: Save posting history and queue
+        if: github.event_name == 'schedule' || inputs.mode == 'post-due' || inputs.mode == 'post-id'
+        run: |
+          if ! git diff --quiet -- scripts/x-note/queue.json scripts/x-note/history.json; then
+            git config user.name "x-note"
+            git config user.email "actions@github.com"
+            git add scripts/x-note/queue.json scripts/x-note/history.json
+            git commit -m "Record X note post"
+            git push
+          fi
